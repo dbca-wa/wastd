@@ -1,0 +1,19 @@
+machine:
+  python:
+    version: 2.7
+
+dependencies:
+  pre:
+    - mkdir -p /home/ubuntu/wastd/logs/
+    - touch /home/ubuntu/wastd/logs/wastd.log
+
+database:
+  post:
+    - psql -c "CREATE EXTENSION postgis;" -U ubuntu -d circle_test
+
+test:
+  override:
+    - coverage run --source="." manage.py test
+    - coverage html
+  post:
+    - coveralls
