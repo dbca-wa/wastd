@@ -15,7 +15,8 @@ database:
 
 test:
   override:
-    - coverage run --source="." manage.py test --settings=config.settings.test
+    - manage.py test --settings=config.settings.test
+      #- coverage run --source="." manage.py test --settings=config.settings.test
     - coverage html
   post:
     - coveralls
