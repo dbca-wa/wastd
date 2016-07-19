@@ -48,3 +48,6 @@ django_compressor==2.0
 
 
 # Your custom requirements go here
+
+# DevOps
+Fabric
