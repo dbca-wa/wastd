@@ -18,6 +18,21 @@ currenntly lets all automated remote tests fail. Local testing passes however.
 
 LICENSE: MIT
 
+Setup the app
+-------------
+Create a virtualenv project, clone this repo and pip install the requirements::
+    $ mkproject wastd
+    (wastd) path/to/wastd:$ git clone git@github.com:florianm/wastd.git
+    $ pip install -r requirements/production.txt
+    $ pip install -r requirements/local.txt
+    $ pip install -r requirements/test.txt
+    $ touch .env
+
+.env must contain a working DATABASE_URL, such as (with your respective DBUSER,
+DBPASS, HOST, PORT)::
+    DATABASE_URL="postgis://DBUSER:DBPASS@HOST:PORT/DBNAME"
+See env.example for other useful settings.
+
 
 Settings
 ------------

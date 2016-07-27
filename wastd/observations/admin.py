@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from django import forms
+# from django import forms
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from .models import Observation
+from .models import Observation, MediaAttachment
 
 
 # class MyUserChangeForm(UserChangeForm):
@@ -30,6 +28,8 @@ from .models import Observation
 #             return username
 #         raise forms.ValidationError(self.error_messages['duplicate_username'])
 
+class MediaAttachmentInline(admin.TabularInline):
+    model = MediaAttachment
 
 @admin.register(Observation)
 class ObservationAdmin(admin.ModelAdmin):
@@ -40,4 +40,4 @@ class ObservationAdmin(admin.ModelAdmin):
     # ) + AuthUserAdmin.fieldsets
     # list_display = ('username', 'name', 'is_superuser')
     # search_fields = ['name']
-    pass
+    inlines = [MediaAttachmentInline, ]
