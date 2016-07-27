@@ -59,3 +59,8 @@ Fabric
 
 # Revisions
 django-reversion
+
+# API
+djangorestframework
+markdown
+django-filter
