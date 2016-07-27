@@ -3,6 +3,14 @@
 # Bleeding edge Django
 django==1.9.7
 
+# DPaW custom
+https://static.dpaw.wa.gov.au/static/py/dpaw-utils/dist/dpaw-utils-0.3a11.tar.gz
+# provides:
+# django-confy>=1.0.4
+django-extensions
+# django-redis==3.6.2
+# psycopg2==2.5.2
+
 # Configuration
 django-confy
 django-environ==0.4.0
@@ -44,10 +52,10 @@ redis>=2.10.0
 
 django_compressor==2.0
 
-
-
-
 # Your custom requirements go here
 
 # DevOps
 Fabric
+
+# Revisions
+django-reversion

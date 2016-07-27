@@ -23,13 +23,15 @@ DJANGO_APPS = (
     # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.gis',
+    'django.contrib.humanize',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Useful template tags:
-    # 'django.contrib.humanize',
+    'django_extensions',
+
 
     # Admin
     'django.contrib.admin',
@@ -46,6 +48,7 @@ LOCAL_APPS = (
     # custom users app
     'wastd.users.apps.UsersConfig',
     # Your stuff: custom apps go here
+    'wastd.observations.apps.ObservationsConfig',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

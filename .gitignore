@@ -62,3 +62,5 @@ wastd/media/
 # Hitch directory
 tests/.hitch
 
+# Staticfiles
+staticfiles/

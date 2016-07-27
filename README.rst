@@ -9,10 +9,12 @@ WA Stranding Database
 .. image:: https://circleci.com/gh/florianm/wastd.svg?style=svg
      :target: https://circleci.com/gh/florianm/wastd
      :alt: Test status
-.. image:: https://coveralls.io/repos/github/florianm/wastd/badge.svg?branch=master 
+.. image:: https://coveralls.io/repos/github/florianm/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/florianm/wastd?branch=master
      :alt: Test coverage
 
+Note: A bug in the version of functools used by the continuous integration provider
+currenntly lets all automated remote tests fail. Local testing passes however.
 
 LICENSE: MIT
 
@@ -72,7 +74,3 @@ Moved to `Live reloading and SASS compilation`_.
 
 Deployment
 ----------
-
-
-
-
