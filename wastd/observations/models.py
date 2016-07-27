@@ -33,6 +33,11 @@ class Observation(geo_models.Model):
         """The unicode representation."""
         return "Obs {0} on {1} by {2}".format(self.pk, self.when, self.who)
 
+    @property
+    def wkt(self):
+        """Return the Well Known Text (WKT) representation of the point coordinates."""
+        return self.where.coords
+
 
 @python_2_unicode_compatible
 class MediaAttachment(models.Model):
