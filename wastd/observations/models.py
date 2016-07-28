@@ -35,8 +35,8 @@ class Observation(geo_models.Model):
 
     @property
     def wkt(self):
-        """Return the Well Known Text (WKT) representation of the point coordinates."""
-        return self.where.coords
+        """Return the point coordinates as Well Known Text (WKT)."""
+        return self.where.wkt
 
 
 @python_2_unicode_compatible

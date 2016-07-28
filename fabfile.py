@@ -9,14 +9,24 @@ from fabric.colors import green, yellow  # red
 env.hosts = ['localhost', ]
 
 
+def pip():
+    """Install python requirements."""
+    local("pip install -r requirements/all.txt")
+
+
 def migrate():
     """Syncdb, update permissions, migrate all apps."""
     local("python manage.py migrate")
     local("python manage.py update_permissions")
 
 
+def shell():
+    """Open a shell_plus."""
+    local('python manage.py shell_plus')
+
+
 def go():
-    """Run the app with runserver (dev)."""
+    """Run the app with local settings and runserver (dev)."""
     local('python manage.py runserver --settings=config.settings.local 0.0.0.0:5000')
 
 

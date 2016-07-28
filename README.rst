@@ -77,9 +77,7 @@ Create a virtualenv project, clone this repo and pip install the requirements::
 
     $ mkproject wastd
     (wastd) path/to/wastd:$ git clone git@github.com:florianm/wastd.git
-    $ pip install -r requirements/production.txt
-    $ pip install -r requirements/local.txt
-    $ pip install -r requirements/test.txt
+    $ pip install -r requirements/all.txt
     $ cp env.example .env
 
 .env must contain a working DATABASE_URL, such as (with your respective DBUSER,
@@ -91,5 +89,15 @@ See env.example for other useful settings.
 
 Then, migrate the database and start the app::
 
-    $ ./manage.py migrate
+    $ fab migrate
     $ fab go
+
+Upgrade
+-------
+
+::
+
+    $ git pull
+    $ fab pip
+    $ fab migrate
+    $ fab go # or restart production server

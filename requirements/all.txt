@@ -1,0 +1,5 @@
+# All dependencies
+-r base.txt
+-r local.txt
+-r production.txt
+-r test.txt
