@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import
 # from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.gis.db import models as geo_models
+from polymorphic.models import PolymorphicModel
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,7 +12,7 @@ from wastd.users.models import User
 
 
 @python_2_unicode_compatible
-class Observation(geo_models.Model):
+class Observation(PolymorphicModel, geo_models.Model):
     """The base Observation class."""
 
     when = models.DateTimeField(

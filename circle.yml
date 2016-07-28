@@ -12,7 +12,6 @@ database:
   post:
     - psql -c "CREATE EXTENSION postgis;" -U ubuntu -d circle_test
 
-
 test:
   override:
     - python manage.py test --settings=config.settings.test

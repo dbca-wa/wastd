@@ -45,7 +45,7 @@ redis>=2.10.0
 django_compressor==2.0
 
 # Your custom requirements go here
-django-extensions
+django-extensions==1.6.7
 
 
 # DPaW SSO
