@@ -1,5 +1,3 @@
-
-
 # Bleeding edge Django
 django==1.9.7
 

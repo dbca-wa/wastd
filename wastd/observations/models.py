@@ -63,17 +63,14 @@ class Observation(PolymorphicModel, geo_models.Model):
 
     when = models.DateTimeField(
         verbose_name=_("Observed on"),
-        blank=True, null=True,
         help_text=_("The observation datetime"))
     where = geo_models.PointField(
         srid=4326,
         verbose_name=_("Observed at"),
-        blank=True, null=True,
         help_text=_("The observation location as point in WGS84"))
     who = models.ForeignKey(
         User,
         verbose_name=_("Observed by"),
-        blank=True, null=True,
         help_text=_("The observer has to be a registered system user"))
 
     class Meta:
@@ -144,6 +141,7 @@ class StrandingObservation(Observation):
         max_length=300,
         verbose_name=_("Health status"),
         choices=HEALTH_CHOICES,
+        default="alive",
         help_text=_("On a scale from the Fresh Prince of Bel Air to 80s Hair "
                     "Metal: how dead and decomposed is the animal?"),)
 
@@ -288,8 +286,8 @@ class MediaAttachment(models.Model):
     media_type = models.CharField(
         max_length=300,
         verbose_name=_("Attachment type"),
-        blank=True, null=True,
         choices=MEDIA_TYPE_CHOICES,
+        default="other",
         help_text=_("What is the attached file about?"),)
 
     title = models.CharField(
