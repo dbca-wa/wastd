@@ -3,41 +3,73 @@ from __future__ import absolute_import, unicode_literals
 
 # from django import forms
 from django.contrib import admin
-from .models import Observation, MediaAttachment
+from .models import (Observation, StrandingObservation, TurtleStrandingObservation,
+                     DistinguishingFeature, MediaAttachment)
 
 
-# class MyUserChangeForm(UserChangeForm):
-#     class Meta(UserChangeForm.Meta):
-#         model = User
-#
-#
-# class MyUserCreationForm(UserCreationForm):
-#
-#     error_message = UserCreationForm.error_messages.update({
-#         'duplicate_username': 'This username has already been taken.'
-#     })
-#
-#     class Meta(UserCreationForm.Meta):
-#         model = User
-#
-#     def clean_username(self):
-#         username = self.cleaned_data["username"]
-#         try:
-#             User.objects.get(username=username)
-#         except User.DoesNotExist:
-#             return username
-#         raise forms.ValidationError(self.error_messages['duplicate_username'])
+@admin.register(DistinguishingFeature)
+class DistinguishingFeaturesAdmin(admin.ModelAdmin):
+    """Admin for DistinguishingFeatures."""
+
+    list_display = ('name', 'description')
+
 
 class MediaAttachmentInline(admin.TabularInline):
+    """TabularInlineAdmin for MediaAttachment."""
+
     model = MediaAttachment
+
 
 @admin.register(Observation)
 class ObservationAdmin(admin.ModelAdmin):
+    """Admin for Observation with inline for MediaAttachment."""
+    date_hierarchy = 'when'
+    list_filter = ('who', )
     # form = MyUserChangeForm
     # add_form = MyUserCreationForm
-    # fieldsets = (
-            # ('User Profile', {'fields': ('name',)}),
-    # ) + AuthUserAdmin.fieldsets
+    fieldsets = (
+        ('Observation', {'fields': ('when', 'where', 'who')}),)
+    # )# + AuthUserAdmin.fieldsets
     # list_display = ('username', 'name', 'is_superuser')
     # search_fields = ['name']
+    inlines = [MediaAttachmentInline, ]
+
+
+@admin.register(StrandingObservation)
+class StrandingObservationAdmin(admin.ModelAdmin):
+    """Admin for StrandingObservation with inline for TurtleMorphometrics."""
+
+    date_hierarchy = 'when'
+    list_filter = ('who', 'species', 'health', )
+    filter_horizontal = ['features', ]
+    fieldsets = ObservationAdmin.fieldsets + (
+        ('Animal', {'fields': ('species', 'health', 'behaviour', 'features')}),
+        ('Actions', {'fields': ('management_actions', 'comments',)}),
+        )
+    list_display = ('when', 'wkt', 'species', 'health_display')
+
+    def health_display(self, obj):
+        """Make health status human readable."""
+        return obj.get_health_display()
+    health_display.short_description = 'Health status'
+
+
+@admin.register(TurtleStrandingObservation)
+class TurtleStrandingObservationAdmin(admin.ModelAdmin):
+    """Admin for TurtleStrandingObservations."""
+
+    date_hierarchy = 'when'
+    fieldsets = ObservationAdmin.fieldsets + (
+        ('Animal', {'fields': (
+            'species', 'health', 'behaviour', 'features', 'sex', 'maturity',
+            )}),
+        ('Morphometrics', {'fields': (
+            ('curved_carapace_length_mm', 'curved_carapace_length_accuracy',),
+            ('curved_carapace_width_mm', 'curved_carapace_width_accuracy',),
+            ('tail_length_mm', 'tail_length_accuracy',),
+            ('maximum_head_width_mm', 'maximum_head_width_accuracy',),
+            )}),
+        ('Actions', {'fields': ('management_actions', 'comments',)}),
+        )
+    list_display = ('when', 'wkt', 'species', 'get_health_display')
     inlines = [MediaAttachmentInline, ]

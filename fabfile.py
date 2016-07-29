@@ -2,7 +2,7 @@
 
 Convenience wrapper for often used operations.
 """
-from fabric.api import local, env, settings  # cd, run
+from fabric.api import local, env  # settings, cd, run
 from fabric.colors import green, yellow  # red
 # from fabric.contrib.files import exists, upload_template
 
@@ -30,26 +30,10 @@ def go():
     local('python manage.py runserver --settings=config.settings.local 0.0.0.0:5000')
 
 
-def _pep257():
-    """Write PEP257 compliance warnings to logs/pep257.log."""
-    print(yellow("Writing PEP257 warnings to logs/pep257.log..."))
-    with settings(warn_only=True):
-        local('pydocstyle --ignore="migrations" > logs/pep257.log',
-              capture=True)
-
-
-def _pep8():
-    """Write PEP8 compliance warnings to logs/pep8.log."""
-    print(yellow("Writing PEP8 warnings to logs/pep8.log..."))
-    with settings(warn_only=True):
-        local('flake8 --exclude="migrations" --max-line-length=120 ' +
-              '--output-file=logs/pep8.log wastd', capture=True)
-
-
 def pep():
     """Run PEP style compliance audit and write warnings to logs/pepXXX.log."""
-    _pep8()
-    _pep257()
+    local('pydocstyle > logs/pep257.log', capture=True)
+    local('flake8', capture=True)
 
 
 def test():
