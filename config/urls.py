@@ -10,6 +10,7 @@ from django.views import defaults as default_views
 
 from rest_framework import routers, serializers, viewsets
 from wastd.observations.models import Observation
+from djgeojson.views import GeoJSONLayerView
 
 from django.contrib.admin import site
 import adminactions.actions as actions
@@ -60,6 +61,9 @@ urlpatterns = [
     url(r'^api/1/', include(router.urls), name='api'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^adminactions/', include('adminactions.urls')),
+    url(r'^observations.geojson$',
+        GeoJSONLayerView.as_view(model=Observation, geometry_field="where",),
+        name='observation-geojson'),
 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -7,6 +7,7 @@ from django.contrib.gis.db import models as geo_models
 from polymorphic.models import PolymorphicModel
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from wastd.users.models import User
 
@@ -89,6 +90,10 @@ class Observation(PolymorphicModel, geo_models.Model):
     def wkt(self):
         """Return the point coordinates as Well Known Text (WKT)."""
         return self.where.wkt
+
+    @property
+    def popupContent(self):
+        return mark_safe("{0} {1}".format(self.when, self.who))
 
 
 @python_2_unicode_compatible

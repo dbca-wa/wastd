@@ -20,19 +20,18 @@
     display: inline-block;
   }
 
-  .navbar-nav .nav-item + .nav-item {
-    margin-left: 0;
-  }
+  .navbar-nav .nav-item + .nav-item { margin-left: 0; }
 
-  .nav.navbar-nav.pull-xs-right {
-    float: none !important;
-  }
+  .nav.navbar-nav.pull-xs-right { float: none !important; }
 }
 
 /* Display django-debug-toolbar.
    See https://github.com/django-debug-toolbar/django-debug-toolbar/issues/742
    and https://github.com/pydanny/cookiecutter-django/issues/317
 */
-[hidden][style="display: block;"] {
-  display: block !important;
+[hidden][style="display: block;"] { display: block !important; }
+
+#map {
+    width: auto;
+    height: 100%;
 }

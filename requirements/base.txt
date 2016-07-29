@@ -40,7 +40,8 @@ django-redis==4.4.3
 redis>=2.10.0
 
 
-
+# Map
+django-geojson
 
 django_compressor==2.0
 

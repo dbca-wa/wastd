@@ -38,6 +38,7 @@ THIRD_PARTY_APPS = (
     'allauth.socialaccount',    # registration
     'rest_framework',           # API
     'adminactions',             # extra admin trickery
+    'djgeojson',                # GeoJSON views
     )
 
 # Apps specific for this project go here.
