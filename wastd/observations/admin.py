@@ -29,9 +29,6 @@ class ObservationAdmin(admin.ModelAdmin):
     # add_form = MyUserCreationForm
     fieldsets = (
         ('Observation', {'fields': ('when', 'where', 'who')}),)
-    # )# + AuthUserAdmin.fieldsets
-    # list_display = ('username', 'name', 'is_superuser')
-    # search_fields = ['name']
     inlines = [MediaAttachmentInline, ]
 
 
@@ -47,6 +44,7 @@ class StrandingObservationAdmin(admin.ModelAdmin):
         ('Actions', {'fields': ('management_actions', 'comments',)}),
         )
     list_display = ('when', 'wkt', 'species', 'health_display')
+    inlines = [MediaAttachmentInline, ]
 
     def health_display(self, obj):
         """Make health status human readable."""
@@ -59,6 +57,8 @@ class TurtleStrandingObservationAdmin(admin.ModelAdmin):
     """Admin for TurtleStrandingObservations."""
 
     date_hierarchy = 'when'
+    list_filter = ('who', 'species', 'health', )
+    filter_horizontal = ['features', ]
     fieldsets = ObservationAdmin.fieldsets + (
         ('Animal', {'fields': (
             'species', 'health', 'behaviour', 'features', 'sex', 'maturity',

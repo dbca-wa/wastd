@@ -1,5 +1,5 @@
 # Bleeding edge Django
-django==1.9.7
+django==1.9.8
 
 # Configuration
 django-confy
