@@ -27,7 +27,7 @@ def shell():
 
 def go():
     """Run the app with local settings and runserver (dev)."""
-    local('python manage.py runserver --settings=config.settings.local 0.0.0.0:5000')
+    local('python manage.py runserver --settings=config.settings.local 0.0.0.0:8220')
 
 
 def pep():
