@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
@@ -62,10 +63,13 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^observations.geojson$',
-        GeoJSONLayerView.as_view(model=Observation, geometry_field="where",),
+        GeoJSONLayerView.as_view(model=Observation,
+                                 properties=('popupContent', ),
+                                 geometry_field="where",),
         name='observation-geojson'),
 
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
+    + staticfiles_urlpatterns()
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.css" />
+{% endblock %}
 
-{% block content %}
+{% block map %}
 <div id="map"></div>
-{% endblock content %}
+{% endblock map %}
 
 
 {% block javascript%}
@@ -12,10 +16,39 @@
 <script src="https://static.dpaw.wa.gov.au/static/libs/leaflet-providers/1.0.29/leaflet-providers.min.js"></script>
 
 <script>
-var map = L.map('map').setView([-25, 115], 5);
-L.tileLayer.provider('Esri.WorldImagery').addTo(map);
-var layer = L.geoJson();
-map.addLayer(layer);
-$.getJSON("{% url 'observation-geojson' %}", function (data) {layer.addData(data);});
+
+// Base maps
+var esri_worldimagery = L.tileLayer.provider('Esri.WorldImagery'),
+    osm_mapnik = L.tileLayer.provider('OpenStreetMap.Mapnik'),
+    esri_ocean = L.tileLayer.provider('Esri.OceanBasemap'),
+    modis_terra = L.tileLayer.provider('NASAGIBS.ModisTerraTrueColorCR');
+
+
+var map = L.map('map', {
+    center: [-25, 115],
+    zoom: 5,
+    layers: [esri_worldimagery]
+});
+
+// Observations
+$.getJSON("{% url 'observation-geojson' %}", function (data) {
+    L.geoJson(data, {
+        style: function (feature) { return {}; },
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(feature.properties.popupContent);
+        }
+    }).addTo(map);
+});
+
+// Layer groups
+var baseMaps = {
+    "ESRI WorldImagery": esri_worldimagery,
+    "ESRI OceanBasemap": esri_ocean,
+    "OpenStreetMap": osm_mapnik,
+    "MODIS Terra": modis_terra};
+
+// Layer controls
+L.control.layers(baseMaps).addTo(map);
+
 </script>
 {% endblock %}

@@ -93,7 +93,10 @@ class Observation(PolymorphicModel, geo_models.Model):
 
     @property
     def popupContent(self):
-        return mark_safe("{0} {1}".format(self.when, self.who))
+        """HTML for a map popup."""
+        return mark_safe(
+            "<h3>Observation</h3><p>{0} reported by {1}<p>".format(
+                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who))
 
 
 @python_2_unicode_compatible
@@ -175,6 +178,13 @@ class StrandingObservation(Observation):
         return "StrandingObs {0} on {1} by {2} of {3}".format(
             self.pk, self.when, self.who, self.get_species_display())
 
+    @property
+    def popupContent(self):
+        """HTML for a map popup."""
+        return mark_safe(
+            "<h3>{0}</h3><p>{1}</p><p>seen on {2} reported by {3}<p>".format(
+                self.get_species_display(), self.get_health_display(),
+                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who))
 
 @python_2_unicode_compatible
 class TurtleStrandingObservation(StrandingObservation):
@@ -270,6 +280,14 @@ class TurtleStrandingObservation(StrandingObservation):
         return "TurtleStrandingObs {0} on {1} by {2} of {3}".format(
             self.pk, self.when, self.who, self.get_species_display())
 
+    @property
+    def popupContent(self):
+        """HTML for a map popup."""
+        return mark_safe(
+            "<h3>{0}</h3><p>{1} {4} {5}</p><p>seen on {2} reported by {3}<p>".format(
+                self.get_species_display(), self.get_health_display(),
+                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who,
+                self.get_maturity_display(), self.get_sex_display()))
 
 # -----------------------------------------------------------------------------#
 # Child models of Observations
