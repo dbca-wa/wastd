@@ -16,6 +16,7 @@ from wastd.observations.models import (Observation, StrandingObservation,
                                        TurtleStrandingObservation,
                                        MediaAttachment, TagObservation)
 from wastd.users.models import User
+from wastd.observations.views import schema_view
 from djgeojson.views import GeoJSONLayerView
 
 
@@ -171,6 +172,8 @@ urlpatterns = [
 
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'),
         name='about'),
+
+    url(r'api-docs/1/', schema_view, name="api-docs"),
 
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, include(admin.site.urls)),
