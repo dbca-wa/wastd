@@ -37,6 +37,7 @@ THIRD_PARTY_APPS = (
     'allauth.account',          # registration
     'allauth.socialaccount',    # registration
     'rest_framework',           # API
+    'rest_framework_gis',       # API spatial fields
     'rest_framework_swagger',   # API docs
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views

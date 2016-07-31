@@ -72,7 +72,7 @@ class ObservationSerializer(serializers.HyperlinkedModelSerializer):
         """Class options."""
 
         model = Observation
-        fields = ('wkt', 'when', 'who',
+        fields = ('where', 'when', 'who',
                   'mediaattachment_set', 'tagobservation_set')
 
 
@@ -88,7 +88,7 @@ class StrandingObservationSerializer(serializers.HyperlinkedModelSerializer):
         """Class options."""
 
         model = StrandingObservation
-        fields = ('wkt', 'when', 'who', 'species', 'health', 'behaviour',
+        fields = ('where', 'when', 'who', 'species', 'health', 'behaviour',
                   'mediaattachment_set', 'tagobservation_set',
                   'management_actions', 'comments')
 
@@ -105,13 +105,14 @@ class TurtleStrandingObservationSerializer(serializers.HyperlinkedModelSerialize
         """Class options."""
 
         model = TurtleStrandingObservation
-        fields = ('wkt', 'when', 'who', 'species', 'health', 'behaviour',
+        fields = ('where', 'when', 'who', 'species', 'health', 'behaviour',
                   'mediaattachment_set', 'tagobservation_set',
                   'management_actions', 'comments', 'sex', 'maturity',
                   'curved_carapace_length_mm', 'curved_carapace_length_accuracy',
                   'curved_carapace_width_mm', 'curved_carapace_width_accuracy',
                   'tail_length_mm', 'tail_length_accuracy',
                   'maximum_head_width_mm', 'maximum_head_width_accuracy')
+
 
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):

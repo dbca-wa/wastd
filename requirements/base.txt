@@ -64,6 +64,7 @@ django-reversion
 
 # API
 djangorestframework
+djangorestframework-gis
 markdown
 django-filter
 django-rest-swagger

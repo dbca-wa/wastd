@@ -43,40 +43,56 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-toggleable-xs" id="bs-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <!-- <li class="nav-item">
-                <a class="nav-link" href="{% url 'home' %}">Home</a>
-              </li> -->
-              {% if request.user.is_staff %}
+
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'admin:index' %}" target="_"
-                title="Open admin page in new tab">Data entry</a>
+              <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Data
+                  </button>
+                  <div class="dropdown-menu">
+                    {% if request.user.is_staff %}
+                    <a class="dropdown-item" href="{% url 'admin:index' %}"
+                    target="_" title="Open admin page in new tab">Curate data</a>
+                    {% endif %}
+                    <a class="dropdown-item" href="/api/1/" target="_"
+                    title="Open API preview in new tab">Browse API</a>
+                  </div>
+                </div>
               </li>
-              {% endif %}
+
               <li class="nav-item">
-                <a class="nav-link" href="/api/1/" target="_"
-                title="Open API preview in new tab">API</a>
+              <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Learn more
+                  </button>
+                  <div class="dropdown-menu">
+                      <a class="dropdown-item" href='http://wastd.readthedocs.io/'
+                      target="_" title="Open Documentation in new tab">Read the Documentation</a>
+                      <a class="dropdown-item" href="{% url 'api-docs' %}" target="_"
+                      title="Open API documentation in new tab">Explore the API</a>
+                  </div>
+                </div>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'api-docs' %}" target="_"
-                title="Open API documentation in new tab">API Docs</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href='http://wastd.readthedocs.io/'
-                target="_" title="Open Documentation in new tab">Documentation</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">About</a>
-              </li>
+
             </ul>
 
             <ul class="nav navbar-nav pull-xs-right">
               {% if request.user.is_authenticated %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'account_logout' %}">{% trans "Sign out" %}</a>
-                </li>
+              <li class="nav-item">
+              <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Welcome, {{ request.user.name }}
+                  </button>
+                  <div class="dropdown-menu">
+                      <a class="dropdown-item" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
+                      <a class="dropdown-item" href="{% url 'account_logout' %}">{% trans "Sign out" %}</a>
+                  </div>
+                </div>
+              </li>
+
               {% else %}
                 <li class="nav-item">
                   <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
