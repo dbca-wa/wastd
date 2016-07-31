@@ -230,7 +230,7 @@ class TurtleStrandingObservation(StrandingObservation):
     curved_carapace_length_mm = models.PositiveIntegerField(
         verbose_name=_("Curved Carapace Length (mm)"),
         blank=True, null=True,
-        help_text=_(""),)
+        help_text=_("The Curved Carapace Length in millimetres."),)
 
     curved_carapace_length_accuracy = models.CharField(
         max_length=300,
@@ -242,7 +242,7 @@ class TurtleStrandingObservation(StrandingObservation):
     curved_carapace_width_mm = models.PositiveIntegerField(
         verbose_name=_("Curved Carapace Width (mm)"),
         blank=True, null=True,
-        help_text=_(""),)
+        help_text=_("Curved Carapace Width in millimetres."),)
 
     curved_carapace_width_accuracy = models.CharField(
         max_length=300,
@@ -252,9 +252,9 @@ class TurtleStrandingObservation(StrandingObservation):
         help_text=_("The measurement type as indication of accuracy."),)
 
     tail_length_mm = models.PositiveIntegerField(
-        verbose_name=_("Tail Length (mm)"),
+        verbose_name=_("c (mm)"),
         blank=True, null=True,
-        help_text=_("Measured from carapace"),)
+        help_text=_("The Tail Length, measured from carapace in millimetres."),)
 
     tail_length_accuracy = models.CharField(
         max_length=300,
@@ -266,7 +266,7 @@ class TurtleStrandingObservation(StrandingObservation):
     maximum_head_width_mm = models.PositiveIntegerField(
         verbose_name=_("Maximum Head Width (mm)"),
         blank=True, null=True,
-        help_text=_(""),)
+        help_text=_("The Maximum Head Width in millimetres."),)
 
     maximum_head_width_accuracy = models.CharField(
         max_length=300,
@@ -327,3 +327,82 @@ class MediaAttachment(models.Model):
     def __str__(self):
         """The unicode representation."""
         return self.title
+
+@python_2_unicode_compatible
+class TagObservation(models.Model):
+    """An Observation of an identifying tag on an observed entity.
+
+    The identifying tag can be a flipper tag on a turtle, a PIT tag,
+    a satellite tag, a barcode on a sample taken off an animal, a whisker ID
+    from a picture of a pinniped, a genetic fingerprint or similar.
+
+    The tag has its own life cycle through stages of production, delivery,
+    affiliation with an animal, repeated sightings and disposal.
+
+    The life cycle stages will vary between tag types.
+
+    A TagObservation will find the tag in exactly one of the life cycle stages.
+
+    The life history of each tag can be reconstructed from the sum of all of its
+    TagObservations.
+
+    As TagObservations can occur without an Observation of an animal, the
+    FK to Observations is optional.
+    """
+
+    TYPE_CHOICES = (
+        ('flipper-tag', 'Flipper Tag'),
+        ('pit-tag', 'PIT Tag'),
+        ('satellite-tag', 'Satellite Tag'),
+        ('physical-sample', 'Physical Sample'),
+        ('genetic-fingerprint', 'Genetic Fingerprint'),
+        ('whisker-id', 'Whisker ID'),
+        ('other', 'Other'),)
+
+    STATUS_CHOICES = (
+        ('ordered', 'Ordered from manufacturer'),
+        ('produced', 'Produced by manufacturer'),
+        ('delivered', 'Delivered to HQ'),
+        ('allocated', 'Allocated to field team'),
+        ('attached', 'Attached to an animal'),
+        ('recaptured', 'Re-sighted as attached to animal'),
+        ('detached', 'Taken off an animal'),
+        ('found', 'Found detached'),
+        ('returned', 'Returned to HQ'),
+        ('decommissioned', 'Decommissioned from active tag pool'),
+        ('destroyed', 'Destroyed'),
+        ('observed', 'Observed in any other context, see comments'),)
+
+    observation = models.ForeignKey(
+        Observation,
+        blank=True, null=True,
+        verbose_name=_("Observation"),
+        help_text=("During which Observation was this tag encountered?"),)
+
+    type = models.CharField(
+        max_length=300,
+        verbose_name=_("Tag type"),
+        choices=TYPE_CHOICES,
+        default="flipper-tag",
+        help_text=_("The Tag type."),)
+
+    status = models.CharField(
+        max_length=300,
+        verbose_name=_("Tag status"),
+        choices=STATUS_CHOICES,
+        default="recaptured",
+        help_text=_("The status this tag was seen in, or brought into."),)
+
+    name = models.CharField(
+        max_length=1000,
+        verbose_name=_("Tag ID"),
+        help_text=_("The ID of a tag must be unique within the tag type."),)
+
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "{0} ({1})".format(self.name, self.get_status_display())

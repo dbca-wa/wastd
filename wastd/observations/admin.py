@@ -3,7 +3,9 @@ from __future__ import absolute_import, unicode_literals
 
 # from django import forms
 from django.contrib import admin
-from .models import (Observation, StrandingObservation, TurtleStrandingObservation,
+from .models import (Observation,
+                     StrandingObservation, TurtleStrandingObservation,
+                     TagObservation,
                      DistinguishingFeature, MediaAttachment)
 
 
@@ -20,6 +22,12 @@ class MediaAttachmentInline(admin.TabularInline):
     model = MediaAttachment
 
 
+class TagObservationInline(admin.TabularInline):
+    """TabularInlineAdmin for TagObservation."""
+
+    model = TagObservation
+
+
 @admin.register(Observation)
 class ObservationAdmin(admin.ModelAdmin):
     """Admin for Observation with inline for MediaAttachment."""
@@ -29,7 +37,7 @@ class ObservationAdmin(admin.ModelAdmin):
     # add_form = MyUserCreationForm
     fieldsets = (
         ('Observation', {'fields': ('when', 'where', 'who')}),)
-    inlines = [MediaAttachmentInline, ]
+    inlines = [TagObservationInline, MediaAttachmentInline, ]
 
 
 @admin.register(StrandingObservation)
@@ -44,7 +52,7 @@ class StrandingObservationAdmin(admin.ModelAdmin):
         ('Actions', {'fields': ('management_actions', 'comments',)}),
         )
     list_display = ('when', 'wkt', 'species', 'health_display')
-    inlines = [MediaAttachmentInline, ]
+    inlines = [TagObservationInline, MediaAttachmentInline, ]
 
     def health_display(self, obj):
         """Make health status human readable."""
@@ -72,4 +80,4 @@ class TurtleStrandingObservationAdmin(admin.ModelAdmin):
         ('Actions', {'fields': ('management_actions', 'comments',)}),
         )
     list_display = ('when', 'wkt', 'species', 'get_health_display')
-    inlines = [MediaAttachmentInline, ]
+    inlines = [TagObservationInline, MediaAttachmentInline, ]
