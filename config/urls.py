@@ -5,42 +5,164 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.admin import site
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
+from adminactions import actions
 from rest_framework import routers, serializers, viewsets
-from wastd.observations.models import Observation
+from wastd.observations.models import (Observation, StrandingObservation,
+                                       TurtleStrandingObservation,
+                                       MediaAttachment, TagObservation)
+from wastd.users.models import User
 from djgeojson.views import GeoJSONLayerView
 
-from django.contrib.admin import site
-import adminactions.actions as actions
 
 # register all adminactions
 actions.add_to_site(site)
 
 
-# Serializers define the API representation.
-class ObservationSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    """User serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = User
+        fields = ('name', 'email')
+
+
+class MediaAttachmentSerializer(serializers.HyperlinkedModelSerializer):
+    """MediaAttachment serializer."""
+
+    observation = serializers.HyperlinkedRelatedField(
+        source='observation.pk', view_name='observation-detail', read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = MediaAttachment
+        fields = ('observation', 'media_type', 'title', 'attachment')
+
+
+class TagObservationSerializer(serializers.HyperlinkedModelSerializer):
+    """TagObservation serializer."""
+
+    observation = serializers.HyperlinkedRelatedField(
+        source='observation.pk', view_name='observation-detail', read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = TagObservation
+        fields = ('observation', 'type', 'status', 'name', 'comments')
+
+
+class ObservationSerializer(serializers.HyperlinkedModelSerializer):
     """Observation serializer."""
+
+    mediaattachment_set = serializers.HyperlinkedRelatedField(
+        many=True, view_name='mediaattachment-detail', read_only=True)
+    tagobservation_set = serializers.HyperlinkedRelatedField(
+        many=True, view_name='tagobservation-detail', read_only=True)
 
     class Meta:
         """Class options."""
 
         model = Observation
-        fields = ('wkt', 'when', 'who', )
+        fields = ('wkt', 'when', 'who',
+                  'mediaattachment_set', 'tagobservation_set')
 
+
+class StrandingObservationSerializer(serializers.HyperlinkedModelSerializer):
+    """StrandingObservation serializer."""
+
+    mediaattachment_set = serializers.HyperlinkedRelatedField(
+        many=True, view_name='mediaattachment-detail', read_only=True)
+    tagobservation_set = serializers.HyperlinkedRelatedField(
+        many=True, view_name='tagobservation-detail', read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = StrandingObservation
+        fields = ('wkt', 'when', 'who', 'species', 'health', 'behaviour',
+                  'mediaattachment_set', 'tagobservation_set',
+                  'management_actions', 'comments')
+
+
+class TurtleStrandingObservationSerializer(serializers.HyperlinkedModelSerializer):
+    """TurtleStrandingObservation serializer."""
+
+    mediaattachment_set = serializers.HyperlinkedRelatedField(
+        many=True, view_name='mediaattachment-detail', read_only=True)
+    tagobservation_set = serializers.HyperlinkedRelatedField(
+        many=True, view_name='tagobservation-detail', read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleStrandingObservation
+        fields = ('wkt', 'when', 'who', 'species', 'health', 'behaviour',
+                  'mediaattachment_set', 'tagobservation_set',
+                  'management_actions', 'comments', 'sex', 'maturity',
+                  'curved_carapace_length_mm', 'curved_carapace_length_accuracy',
+                  'curved_carapace_width_mm', 'curved_carapace_width_accuracy',
+                  'tail_length_mm', 'tail_length_accuracy',
+                  'maximum_head_width_mm', 'maximum_head_width_accuracy')
 
 # ViewSets define the view behavior.
+class UserViewSet(viewsets.ModelViewSet):
+    """User view set."""
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class MediaAttachmentViewSet(viewsets.ModelViewSet):
+    """MediaAttachment view set."""
+
+    queryset = MediaAttachment.objects.all()
+    serializer_class = MediaAttachmentSerializer
+
+
+class TagObservationViewSet(viewsets.ModelViewSet):
+    """TagObservation view set."""
+
+    queryset = TagObservation.objects.all()
+    serializer_class = TagObservationSerializer
+
+
 class ObservationViewSet(viewsets.ModelViewSet):
     """Observation view set."""
 
     queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
 
+
+class StrandingObservationViewSet(viewsets.ModelViewSet):
+    """StrandingObservation view set."""
+
+    queryset = StrandingObservation.objects.all()
+    serializer_class = StrandingObservationSerializer
+
+
+class TurtleStrandingObservationViewSet(viewsets.ModelViewSet):
+    """TurtleStrandingObservation view set."""
+
+    queryset = TurtleStrandingObservation.objects.all()
+    serializer_class = TurtleStrandingObservationSerializer
+
+
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
+router.register(r'media-attachments', MediaAttachmentViewSet)
+router.register(r'tag-observation', TagObservationViewSet)
 router.register(r'observations', ObservationViewSet)
+router.register(r'stranding-observations', StrandingObservationViewSet)
+router.register(r'turtle-stranding-observations', TurtleStrandingObservationViewSet)
 
 
 urlpatterns = [
