@@ -12,9 +12,12 @@ WA Stranding Database
 .. image:: https://coveralls.io/repos/github/florianm/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/florianm/wastd?branch=master
      :alt: Test coverage
+.. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
+     :target: http://wastd.readthedocs.io/?badge=latest
+     :alt: Documentation Status
 
 Note: A bug in the version of functools used by the continuous integration provider
-currenntly lets all automated remote tests fail. Local testing passes however.
+currently lets all automated remote tests fail. Local testing passes however.
 
 LICENSE: MIT
 

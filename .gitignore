@@ -64,3 +64,6 @@ tests/.hitch
 
 # Staticfiles
 staticfiles/
+
+# Sphix docs
+docs/_build/
