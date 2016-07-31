@@ -92,11 +92,17 @@ class Observation(PolymorphicModel, geo_models.Model):
         return self.where.wkt
 
     @property
+    def tag_html(self):
+        """An HTML string of associated TagObservations"""
+        return "".join(["<p>{0}</p>".format(t.__str__())
+                        for t in self.tagobservation_set.all()])
+
+    @property
     def popupContent(self):
         """HTML for a map popup."""
         return mark_safe(
-            "<h3>Observation</h3><p>{0} reported by {1}<p>".format(
-                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who))
+            "<h3>Observation</h3>{0}<p>{1} reported by {2}<p>".format(
+                self.tag_html, self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who))
 
 
 @python_2_unicode_compatible
@@ -182,9 +188,11 @@ class StrandingObservation(Observation):
     def popupContent(self):
         """HTML for a map popup."""
         return mark_safe(
-            "<h3>{0}</h3><p>{1}</p><p>seen on {2} reported by {3}<p>".format(
+            "<h3>{0}</h3><p>{1}</p>{2}<p>seen on {3} reported by {4}<p>".format(
                 self.get_species_display(), self.get_health_display(),
-                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who))
+                self.tag_html, self.when.strftime('%d/%m/%Y %H:%M:%S'),
+                self.who.name))
+
 
 @python_2_unicode_compatible
 class TurtleStrandingObservation(StrandingObservation):
@@ -284,10 +292,12 @@ class TurtleStrandingObservation(StrandingObservation):
     def popupContent(self):
         """HTML for a map popup."""
         return mark_safe(
-            "<h3>{0}</h3><p>{1} {4} {5}</p><p>seen on {2} reported by {3}<p>".format(
+            "<h3>{0}</h3><p>{1} {4} {5}</p>{6}<p>seen on {2} reported by {3}<p>".format(
                 self.get_species_display(), self.get_health_display(),
                 self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who,
-                self.get_maturity_display(), self.get_sex_display()))
+                self.get_maturity_display(), self.get_sex_display(),
+                self.tag_html))
+
 
 # -----------------------------------------------------------------------------#
 # Child models of Observations
