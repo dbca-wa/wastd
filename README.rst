@@ -15,7 +15,10 @@ WA Stranding Database
 .. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
      :target: http://wastd.readthedocs.io/?badge=latest
      :alt: Documentation Status
-
+ .. image:: https://requires.io/github/florianm/wastd/requirements.svg?branch=master
+      :target: https://requires.io/github/florianm/wastd/requirements/?branch=master
+      :alt: Requirements Status
+          
 Note: A bug in the version of functools used by the continuous integration provider
 currently lets all automated remote tests fail. Local testing passes however.
 

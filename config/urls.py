@@ -74,6 +74,7 @@ class ObservationSerializer(serializers.HyperlinkedModelSerializer):
         model = Observation
         fields = ('where', 'when', 'who',
                   'mediaattachment_set', 'tagobservation_set')
+        geo_field = "where"
 
 
 class StrandingObservationSerializer(serializers.HyperlinkedModelSerializer):
@@ -91,6 +92,7 @@ class StrandingObservationSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('where', 'when', 'who', 'species', 'health', 'behaviour',
                   'mediaattachment_set', 'tagobservation_set',
                   'management_actions', 'comments')
+        geo_field = "where"
 
 
 class TurtleStrandingObservationSerializer(serializers.HyperlinkedModelSerializer):
@@ -112,6 +114,7 @@ class TurtleStrandingObservationSerializer(serializers.HyperlinkedModelSerialize
                   'curved_carapace_width_mm', 'curved_carapace_width_accuracy',
                   'tail_length_mm', 'tail_length_accuracy',
                   'maximum_head_width_mm', 'maximum_head_width_accuracy')
+        geo_field = "where"
 
 
 # ViewSets define the view behavior.
