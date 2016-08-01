@@ -89,17 +89,32 @@ class Observation(PolymorphicModel, geo_models.Model):
         return self.where.wkt
 
     @property
+    def observer_html(self):
+        """An HTML string of associated TagObservations"""
+        return '<p><span class="glyphicon glyphicon-clock" aria-hidden="true">' +\
+            '</span>{0} UTC reported by {1}</p>'.format(
+                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who.name)
+
+    @property
     def tag_html(self):
         """An HTML string of associated TagObservations"""
-        return "".join(["<p>{0}</p>".format(t.__str__())
-                        for t in self.tagobservation_set.all()])
+        return "<h5>Tags</h5><ul>" + "".join(
+            ["<li>{0}</li>".format(t.__str__())
+             for t in self.tagobservation_set.all()]) + "</ul>"
+
+    @property
+    def media_html(self):
+        """An HTML string of associated TagObservations"""
+        return "<h5>Attachments</h5><ul>" + "".join(
+            ['<li><a href="{0}" target="_">{1}</a></li>'.format(
+                t.attachment, t.title)
+             for t in self.mediaattachment_set.all()]) + "</ul>"
 
     @property
     def popupContent(self):
         """HTML for a map popup."""
-        return mark_safe(
-            "<h3>Observation</h3>{0}<p>{1} reported by {2}<p>".format(
-                self.tag_html, self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who))
+        return mark_safe("<h4>Observation</h4>{0}{1}{2}{3}".format(
+            self.tag_html, self.media_html, self.observer_html))
 
 
 @python_2_unicode_compatible
@@ -179,16 +194,16 @@ class StrandingObservation(Observation):
     def __str__(self):
         """The unicode representation."""
         return "StrandingObs {0} on {1} by {2} of {3}".format(
-            self.pk, self.when, self.who, self.get_species_display())
+            self.pk, self.when.strftime('%d/%m/%Y %H:%M:%S'),
+            self.who.fullname, self.get_species_display())
 
     @property
     def popupContent(self):
         """HTML for a map popup."""
         return mark_safe(
-            "<h3>{0}</h3><p>{1}</p>{2}<p>seen on {3} reported by {4}<p>".format(
+            "<h4>{0}</h4><p>{1}</p>{2}{3}{4}".format(
                 self.get_species_display(), self.get_health_display(),
-                self.tag_html, self.when.strftime('%d/%m/%Y %H:%M:%S'),
-                self.who.name))
+                self.tag_html, self.media_html, self.observer_html))
 
 
 @python_2_unicode_compatible
@@ -286,14 +301,20 @@ class TurtleStrandingObservation(StrandingObservation):
             self.pk, self.when, self.who, self.get_species_display())
 
     @property
+    def animal_html(self):
+        """An HTML string representing the observed animal."""
+        return "<p>{0} {1} {2}</p>".format(
+            self.get_health_display(),
+            self.get_maturity_display(),
+            self.get_sex_display())
+
+    @property
     def popupContent(self):
         """HTML for a map popup."""
         return mark_safe(
-            "<h3>{0}</h3><p>{1} {4} {5}</p>{6}<p>seen on {2} reported by {3}<p>".format(
-                self.get_species_display(), self.get_health_display(),
-                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who,
-                self.get_maturity_display(), self.get_sex_display(),
-                self.tag_html))
+            "<h4>{0}</h4>{1}{2}{3}{4}".format(
+                self.get_species_display(), self.animal_html,
+                self.tag_html, self.media_html, self.observer_html))
 
 
 # Child models of Observations -----------------------------------------------#

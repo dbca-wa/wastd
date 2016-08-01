@@ -43,4 +43,5 @@ def test():
     local('coverage run --source="." manage.py test'
           ' --settings=config.settings.test --keepdb -v 2'
           ' && coverage report -m', shell='/bin/bash')
+    local('honcho run coveralls')
     print(green("Completed running tests."))

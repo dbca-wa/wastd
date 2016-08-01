@@ -11,11 +11,12 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
+from confy import env, database
+
 
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 APPS_DIR = ROOT_DIR.path('wastd')
 
-env = environ.Env()
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -79,7 +80,7 @@ MIGRATION_MODULES = {
 # DEBUG
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = env.bool('DJANGO_DEBUG', False)
+DEBUG = env('DJANGO_DEBUG', default=False)
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -92,6 +93,11 @@ FIXTURE_DIRS = (
 # ------------------------------------------------------------------------------
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
                     default='django.core.mail.backends.smtp.EmailBackend')
+
+# Email
+EMAIL_HOST = env('EMAIL_HOST', default='email.host')
+EMAIL_PORT = env('EMAIL_PORT', default=25)
+DEFAULT_FROM_EMAIL = '"WA Strandings DB" <strandings-noreply@dpaw.wa.gov.au>'
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -106,10 +112,7 @@ MANAGERS = ADMINS
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-    'default': env.db('DATABASE_URL', default='postgres:///wastd'),
-    }
+DATABASES = {'default': database.config()}
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 
@@ -221,7 +224,7 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
-ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
+ACCOUNT_ALLOW_REGISTRATION = env('DJANGO_ACCOUNT_ALLOW_REGISTRATION', default=True)
 ACCOUNT_ADAPTER = 'wastd.users.adapters.AccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'wastd.users.adapters.SocialAccountAdapter'
 

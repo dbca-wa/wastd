@@ -67,3 +67,6 @@ staticfiles/
 
 # Sphix docs
 docs/_build/
+
+# coveralls settings
+.coveralls.yml
