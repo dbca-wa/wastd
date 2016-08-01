@@ -33,6 +33,7 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     'django_extensions',        # shell_plus and others
     'crispy_forms',             # Form layouts
+    'django_select',            # Select2 dropdowns
     'allauth',                  # registration
     'allauth.account',          # registration
     'allauth.socialaccount',    # registration

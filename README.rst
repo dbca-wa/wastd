@@ -12,7 +12,7 @@ WA Stranding Database
 .. image:: https://coveralls.io/repos/github/florianm/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/florianm/wastd?branch=master
      :alt: Test coverage
-.. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
+     .. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
      :target: http://wastd.readthedocs.io/?badge=latest
      :alt: Documentation Status
  .. image:: https://requires.io/github/florianm/wastd/requirements.svg?branch=master
@@ -20,7 +20,7 @@ WA Stranding Database
       :alt: Requirements Status
       .. image:: https://badge.waffle.io/florianm/wastd.svg?label=ready&title=Ready
        :target: https://waffle.io/florianm/wastd
-       :alt: Open Issues      
+       :alt: Open Issues
 
 Note: A bug in the version of functools used by the continuous integration provider
 currently lets all automated remote tests fail. Local testing passes however.

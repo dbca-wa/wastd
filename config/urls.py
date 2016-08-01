@@ -197,6 +197,9 @@ urlpatterns = [
                                  geometry_field="where",),
         name='observation-geojson'),
 
+    # Select2 URLs
+    url(r'^select2/', include('django_select2.urls')),
+
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
     + staticfiles_urlpatterns()
 

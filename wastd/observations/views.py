@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, renderer_classes, permission_cla
 from rest_framework import response, schemas, permissions
 
 
+# Django-Rest-Swagger View ---------------------------------------------------#
 @api_view()
 @permission_classes((permissions.AllowAny,))
 @renderer_classes([SwaggerUIRenderer, OpenAPIRenderer])

@@ -12,9 +12,7 @@ from django.utils.safestring import mark_safe
 from wastd.users.models import User
 
 
-# -----------------------------------------------------------------------------#
-# Ancillary models
-#
+# Ancillary models -----------------------------------------------------------#
 @python_2_unicode_compatible
 class DistinguishingFeature(models.Model):
     """Distinguising Features.
@@ -49,9 +47,7 @@ class DistinguishingFeature(models.Model):
         return self.name
 
 
-# -----------------------------------------------------------------------------#
-# Observation models
-#
+# Observation models ---------------------------------------------------------#
 @python_2_unicode_compatible
 class Observation(PolymorphicModel, geo_models.Model):
     """The base Observation class knows when, where, who.
@@ -300,9 +296,7 @@ class TurtleStrandingObservation(StrandingObservation):
                 self.tag_html))
 
 
-# -----------------------------------------------------------------------------#
-# Child models of Observations
-#
+# Child models of Observations -----------------------------------------------#
 @python_2_unicode_compatible
 class MediaAttachment(models.Model):
     """A media attachment to an Observation."""
