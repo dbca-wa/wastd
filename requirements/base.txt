@@ -43,9 +43,11 @@ redis>=2.10.0
 
 # Map
 django-geojson
+django-leaflet
 
 # Static files
 django_compressor==2.0
+dj-static
 
 # Your custom requirements go here
 django-extensions==1.6.7

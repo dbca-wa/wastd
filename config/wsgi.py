@@ -15,7 +15,7 @@ framework.
 """
 import confy
 import os
-
+from dj_static import Cling, MediaCling
 from django.core.wsgi import get_wsgi_application
 
 confy.read_environment_file()
@@ -29,7 +29,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
-application = get_wsgi_application()
+application = Cling(MediaCling(get_wsgi_application()))
 
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication
