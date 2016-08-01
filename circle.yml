@@ -6,7 +6,7 @@ dependencies:
   pre:
     - mkdir -p /home/ubuntu/wastd/logs/
     - touch /home/ubuntu/wastd/logs/wastd.log
-    - pip install -r requirements/test.txt
+    - pip install -r requirements/local.txt
 
 database:
   post:
