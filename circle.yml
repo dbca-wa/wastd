@@ -16,7 +16,8 @@ database:
 
 test:
   override:
-    - python manage.py test --settings=config.settings.test
+      - cd docs && make html
+    #- python manage.py test --settings=config.settings.test
       #- coverage run --source="." manage.py test --settings=config.settings.test
       #- coverage html
       #post:
