@@ -123,14 +123,14 @@ class StrandingObservation(Observation):
     """
 
     HEALTH_CHOICES = (
-        ('alive', 'Alive, healthy'),
-        ('alive-injured', 'Alive, injured'),
-        ('alive-then-died', 'Initally alive, but died'),
-        ('dead-edible', 'Dead, carcass edible'),
-        ('dead-organs-intact', 'Dead, decomposed but organs intact'),
-        ('dead-advanced', 'Dead, advanced decomposition'),
-        ('dead-mummified', 'Dead, skin holding bones'),
-        ('dead-disarticulated', 'Dead, no soft tissue remaining'),
+        ('alive', 'Alive (healthy)'),
+        ('alive-injured', 'Alive (injured)'),
+        ('alive-then-died', 'Initally alive (but died)'),
+        ('dead-edible', 'Dead (carcass edible)'),
+        ('dead-organs-intact', 'Dead (decomposed but organs intact)'),
+        ('dead-advanced', 'Dead (advanced decomposition)'),
+        ('dead-mummified', 'Mummified (dead, skin holding bones)'),
+        ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
         ('other', 'Other'),)
 
     SPECIES_CHOICES = (
@@ -140,7 +140,7 @@ class StrandingObservation(Observation):
         ('Caretta caretta', 'Loggerhead turtle (Caretta caretta)'),
         ('Lepidochelys olivacea', 'Olive Ridley turtle (Lepidochelys olivacea)'),
         ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
-        ('unidentified', 'Unidentified'),)
+        ('unidentified', 'Unidentified Species'),)
 
     species = models.CharField(
         max_length=300,
@@ -210,13 +210,13 @@ class TurtleStrandingObservation(StrandingObservation):
     SEX_CHOICES = (
         ("male", "Male"),
         ("female", "Female"),
-        ("unknown", "Unknown"),)
+        ("unknown", "Unknown Sex"),)
 
     MATURITY_CHOICES = (
         ("hatchling", "Hatchling"),
         ("juvenile", "Juvenile"),
         ("adult", "Adult"),
-        ("unknown", "Unknown"),)
+        ("unknown", "Unknown Maturity"),)
 
     sex = models.CharField(
         max_length=300,
@@ -257,7 +257,7 @@ class TurtleStrandingObservation(StrandingObservation):
         help_text=_("The measurement type as indication of accuracy."),)
 
     tail_length_mm = models.PositiveIntegerField(
-        verbose_name=_("c (mm)"),
+        verbose_name=_("Tail Length (mm)"),
         blank=True, null=True,
         help_text=_("The Tail Length, measured from carapace in millimetres."),)
 
