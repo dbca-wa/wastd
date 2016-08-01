@@ -42,6 +42,7 @@ THIRD_PARTY_APPS = (
     'rest_framework_swagger',   # API docs
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
+    'django_wsgiserver',        # web server
     )
 
 # Apps specific for this project go here.

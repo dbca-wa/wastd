@@ -13,10 +13,12 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
+import confy
 import os
 
 from django.core.wsgi import get_wsgi_application
 
+confy.read_environment_file()
 
 # We defer to a DJANGO_SETTINGS_MODULE already in the environment. This breaks
 # if running multiple sites in the same mod_wsgi process. To fix this, use
