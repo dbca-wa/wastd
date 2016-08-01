@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 # from django import forms
 from django.contrib import admin
+from easy_select2 import select2_modelform
 from .models import (Observation,
                      StrandingObservation, TurtleStrandingObservation,
                      TagObservation,
