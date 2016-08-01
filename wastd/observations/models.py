@@ -64,7 +64,8 @@ class Observation(PolymorphicModel, geo_models.Model):
 
     when = models.DateTimeField(
         verbose_name=_("Observed on"),
-        help_text=_("The observation datetime"))
+        help_text=_("The observation datetime, shown here as local time, "
+                    "stored as UTC."))
     where = geo_models.PointField(
         srid=4326,
         verbose_name=_("Observed at"),
