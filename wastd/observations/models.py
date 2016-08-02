@@ -107,7 +107,7 @@ class Observation(PolymorphicModel, geo_models.Model):
         """An HTML string of associated TagObservations"""
         return "<h5>Attachments</h5><ul>" + "".join(
             ['<li><a href="{0}" target="_">{1}</a></li>'.format(
-                t.attachment, t.title)
+                t.attachment.url, t.title)
              for t in self.mediaattachment_set.all()]) + "</ul>"
 
     @property

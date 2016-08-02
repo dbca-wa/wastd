@@ -20,7 +20,9 @@
     {% if display_raw %}<p>{% trans "Draw point on map or enter coordinates below:" %}</p>{% endif %}
     <textarea id="{{ id }}" class="vSerializedField required" cols="70" rows="1" name="{{ name }}">{{ serialized }}</textarea>
     <script type="text/javascript">
-        {% block options %}var options = {
+        {% block options %}
+        var epsg4326 = new OpenLayers.Projection("EPSG:4326");
+        var options = {
             geom_name: '{{ geom_type }}',
             id: '{{ id }}',
             map_id: '{{ id }}_map',
