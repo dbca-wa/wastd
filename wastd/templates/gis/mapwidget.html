@@ -1,0 +1,37 @@
+{% load i18n l10n static %}
+<style type="text/css">{% block map_css %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+    #{{ id }}_map { width: {{ map_width }}px; height: {{ map_height }}px; }
+    #{{ id }}_map .aligned label { float: inherit; }
+    #{{ id }}_div_map { position: relative; vertical-align: top; float: {{ LANGUAGE_BIDI|yesno:"right,left" }}; }
+    {% if not display_raw %}#{{ id }} { display: none; }{% endif %}
+    .olControlEditingToolbar .olControlModifyFeatureItemActive {
+        background-image: url("{% static "admin/img/gis/move_vertex_on.svg" %}");
+        background-repeat: no-repeat;
+    }
+    .olControlEditingToolbar .olControlModifyFeatureItemInactive {
+        background-image: url("{% static "admin/img/gis/move_vertex_off.svg" %}");
+        background-repeat: no-repeat;
+    }{% endblock %}
+</style>
+
+<div id="{{ id }}_div_map">
+    <div id="{{ id }}_map"></div>
+    <span class="clear_features"><a href="javascript:{{ module }}.clearFeatures()">{% trans "Delete all Features" %}</a></span>
+    {% if display_raw %}<p>{% trans "Draw point on map or enter coordinates below:" %}</p>{% endif %}
+    <textarea id="{{ id }}" class="vSerializedField required" cols="70" rows="1" name="{{ name }}">{{ serialized }}</textarea>
+    <script type="text/javascript">
+        {% block options %}var options = {
+            geom_name: '{{ geom_type }}',
+            id: '{{ id }}',
+            map_id: '{{ id }}_map',
+            map_options: {},
+            map_srid: {{ map_srid }},
+            name: '{{ name }}',
+            default_lon: {{ default_lon }},
+            default_lat: {{ default_lat }},
+            mouse_position : '{{ mouse_position }}'
+        };
+        {% endblock %}
+        var {{ module }} = new MapWidget(options);
+    </script>
+</div>

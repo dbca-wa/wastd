@@ -3,6 +3,9 @@ from __future__ import absolute_import, unicode_literals
 
 # from django import forms
 from django.contrib import admin
+from django.contrib.gis import forms
+from wastd.widgets import MapWidget
+from django.contrib.gis.db import models as geo_models
 from easy_select2 import select2_modelform
 from .models import (Observation,
                      StrandingObservation, TurtleStrandingObservation,
@@ -32,10 +35,10 @@ class TagObservationInline(admin.TabularInline):
 @admin.register(Observation)
 class ObservationAdmin(admin.ModelAdmin):
     """Admin for Observation with inline for MediaAttachment."""
+
     date_hierarchy = 'when'
     list_filter = ('who', )
-    # form = MyUserChangeForm
-    # add_form = MyUserCreationForm
+    formfield_overrides = {geo_models.PointField: {'widget': forms.OSMWidget}}
     fieldsets = (
         ('Observation', {'fields': ('when', 'where', 'who')}),)
     inlines = [TagObservationInline, MediaAttachmentInline, ]
@@ -48,6 +51,10 @@ class StrandingObservationAdmin(admin.ModelAdmin):
     date_hierarchy = 'when'
     list_filter = ('who', 'species', 'health', )
     filter_horizontal = ['features', ]
+    formfield_overrides = {geo_models.PointField: {
+        'widget': forms.OpenLayersWidget(
+            attrs={'display_raw': True, 'mouse_position': True, }
+        )}}
     fieldsets = ObservationAdmin.fieldsets + (
         ('Animal', {'fields': ('species', 'health', 'behaviour', 'features')}),
         ('Actions', {'fields': ('management_actions', 'comments',)}),
@@ -68,6 +75,7 @@ class TurtleStrandingObservationAdmin(admin.ModelAdmin):
     date_hierarchy = 'when'
     list_filter = ('who', 'species', 'health', )
     filter_horizontal = ['features', ]
+    formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
     fieldsets = ObservationAdmin.fieldsets + (
         ('Animal', {'fields': (
             'species', 'health', 'behaviour', 'features', 'sex', 'maturity',

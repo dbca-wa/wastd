@@ -23,7 +23,7 @@ from djgeojson.views import GeoJSONLayerView
 # register all adminactions
 actions.add_to_site(site)
 
-
+# API config -----------------------------------------------------------------#
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     """User serializer."""
 
@@ -169,6 +169,7 @@ router.register(r'observations', ObservationViewSet)
 router.register(r'stranding-observations', StrandingObservationViewSet)
 router.register(r'turtle-stranding-observations', TurtleStrandingObservationViewSet)
 
+# End API config -------------------------------------------------------------#
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='pages/home.html'),
@@ -194,14 +195,14 @@ urlpatterns = [
     url(r'^observations.geojson$',
         GeoJSONLayerView.as_view(model=Observation,
                                  properties=('popupContent', ),
-                                 geometry_field="where",),
+                                 geometry_field="where"),
         name='observation-geojson'),
 
     # Select2 URLs
     url(r'^select2/', include('django_select2.urls')),
 
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
-    + staticfiles_urlpatterns()
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
+        staticfiles_urlpatterns()
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

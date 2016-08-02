@@ -346,7 +346,7 @@ class MediaAttachment(models.Model):
         help_text=_("Give the attachment a representative name"),)
 
     attachment = models.FileField(
-        upload_to='media/%Y/%m/%d/',
+        upload_to='attachments/%Y/%m/%d/',
         verbose_name=_("File attachment"),
         help_text=_("Upload the file"),)
 
