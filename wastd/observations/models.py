@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+"""
+    Opportunistic sighting of stranded/encountered dead or injured wildlife.
+
+    Species use a local name list, but should lookup a webservice.
+    This Observation is generic for all species. Other Models can FK this Model
+    to add species-specific measurements.
+
+    Observer name / address / phone / email is captured with observer as system
+    user.
+
+    The combination of species and health determines subsequent measurements
+    and actions:
+
+    * [turtle, dugong, cetacean] damage observation
+    * [turtle, dugong, cetacean] distinguished features
+    * [taxon] morphometrics
+    * tag observation
+
+"""
 from __future__ import unicode_literals, absolute_import
 
 # from django.core.urlresolvers import reverse
@@ -12,47 +31,12 @@ from django.utils.safestring import mark_safe
 from wastd.users.models import User
 
 
-# Ancillary models -----------------------------------------------------------#
+# Encounter models -----------------------------------------------------------#
 @python_2_unicode_compatible
-class DistinguishingFeature(models.Model):
-    """Distinguising Features.
-    FEATURES_CHOICES = (
-        ("damage-injury", "Obvious damage or injuries"),
-        ("missing-limbs", "Missing limbs"),
-        ("barnacles", "Barnacles"),
-        ("algal-epiphytes-carapace", "Algal growth on carapace"),
-        ("tagging-scars", "Tagging scars"),
-        ("propeller-damage", "Propeller strike damage"),
-        ("entanglement", "Entanglement in anthropogenic debris"),
-        ("see-photo", "See attached photos"),)
-    """
-    name = models.CharField(
-        max_length=300,
-        verbose_name=_("Name"),
-        help_text=_("A short name for the distinguising feature."),)
+class Encounter(PolymorphicModel, geo_models.Model):
+    """The base Encounter class knows when, where, who.
 
-    description = models.TextField(
-        verbose_name=_("Description"),
-        blank=True, null=True,
-        help_text=_("A description of the feature."),)
-
-    class Meta:
-        """Class options."""
-
-        verbose_name = "Distinguishing Feature"
-        verbose_name_plural = "Distinguishing Features"
-
-    def __str__(self):
-        """The unicode representation."""
-        return self.name
-
-
-# Observation models ---------------------------------------------------------#
-@python_2_unicode_compatible
-class Observation(PolymorphicModel, geo_models.Model):
-    """The base Observation class knows when, where, who.
-
-    When: Datetime of observation, stored in UTC, entered and displayed in local
+    When: Datetime of encounter, stored in UTC, entered and displayed in local
     timezome.
     Where: Point in WGS84.
     Who: The observer has to be a registered system user.
@@ -62,26 +46,38 @@ class Observation(PolymorphicModel, geo_models.Model):
         verbose_name=_("Observed on"),
         help_text=_("The observation datetime, shown here as local time, "
                     "stored as UTC."))
+
     where = geo_models.PointField(
         srid=4326,
         verbose_name=_("Observed at"),
         help_text=_("The observation location as point in WGS84"))
+
     who = models.ForeignKey(
         User,
         verbose_name=_("Observed by"),
         help_text=_("The observer has to be a registered system user"))
 
+    as_html = models.TextField(
+        verbose_name=_("HTML representation"),
+        blank=True, null=True, editable=False,
+        help_text=_("The cached HTML representation for display purposes."),)
+
     class Meta:
         """Class options."""
 
         ordering = ["when", "where"]
-        verbose_name = "Observation"
-        verbose_name_plural = "Observations"
+        verbose_name = "Encounter"
+        verbose_name_plural = "Encounters"
         get_latest_by = "when"
 
     def __str__(self):
         """The unicode representation."""
-        return "Obs {0} on {1} by {2}".format(self.pk, self.when, self.who)
+        return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.who)
+
+    def save(self, *args, **kwargs):
+        """Cache the HTML representation in `as_html`."""
+        self.as_html = self.make_html()
+        super(Encounter, self).save(*args, **kwargs)
 
     @property
     def wkt(self):
@@ -110,33 +106,17 @@ class Observation(PolymorphicModel, geo_models.Model):
                 t.attachment.url, t.title)
              for t in self.mediaattachment_set.all()]) + "</ul>"
 
-    @property
-    def popupContent(self):
-        """HTML for a map popup."""
-        return mark_safe("<h4>Observation</h4>{0}{1}{2}{3}".format(
+    def make_html(self):
+        """Create an HTML representation."""
+        return mark_safe("<h4>Encounter</h4>{0}{1}{2}{3}".format(
             self.tag_html, self.media_html, self.observer_html))
 
 
 @python_2_unicode_compatible
-class StrandingObservation(Observation):
-    """Opportunistic sighting of stranded/encountered dead or injured wildlife.
-
-    Species use a local name list, but should lookup a webservice.
-    This Observation is generic for all species. Other Models can FK this Model
-    to add species-specific measurements.
-
-    Observer name / address / phone / email is captured with observer as system
-    user.
-
-    The combination of species and health determines subsequent measurements
-    and actions:
-
-    * [turtle, dugong, cetacean] damage observation
-    * [turtle, dugong, cetacean] distinguished features
-    * [taxon] morphometrics
-    * tag observation
+class AnimalEncounter(Encounter):
+    """The encounter of an animal of a species in a certain state of health
+    and behaviour.
     """
-
     HEALTH_CHOICES = (
         ('alive', 'Alive (healthy)'),
         ('alive-injured', 'Alive (injured)'),
@@ -157,71 +137,6 @@ class StrandingObservation(Observation):
         ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
         ('unidentified', 'Unidentified Species'),)
 
-    species = models.CharField(
-        max_length=300,
-        verbose_name=_("Species"),
-        choices=SPECIES_CHOICES,
-        help_text=_("The species of the animal."),)
-
-    health = models.CharField(
-        max_length=300,
-        verbose_name=_("Health status"),
-        choices=HEALTH_CHOICES,
-        default="alive",
-        help_text=_("On a scale from the Fresh Prince of Bel Air to 80s Hair "
-                    "Metal: how dead and decomposed is the animal?"),)
-
-    behaviour = models.TextField(
-        verbose_name=_("Behaviour"),
-        blank=True, null=True,
-        help_text=_("Notes on condition or behaviour if alive."),)
-
-    features = models.ManyToManyField(
-        DistinguishingFeature,
-        blank=True,
-        help_text=_("Select any observed distinguishing features."),)
-
-    management_actions = models.TextField(
-        verbose_name=_("Management Actions"),
-        blank=True, null=True,
-        help_text=_("Managment actions taken. Keep updating as appropriate."),)
-
-    comments = models.TextField(
-        verbose_name=_("Comments"),
-        blank=True, null=True,
-        help_text=_("Any other comments or notes."),)
-
-    def __str__(self):
-        """The unicode representation."""
-        return "StrandingObs {0} on {1} by {2} of {3}".format(
-            self.pk, self.when.strftime('%d/%m/%Y %H:%M:%S'),
-            self.who.fullname, self.get_species_display())
-
-    @property
-    def popupContent(self):
-        """HTML for a map popup."""
-        return mark_safe(
-            "<h4>{0}</h4><p>{1}</p>{2}{3}{4}".format(
-                self.get_species_display(), self.get_health_display(),
-                self.tag_html, self.media_html, self.observer_html))
-
-
-@python_2_unicode_compatible
-class TurtleStrandingObservation(StrandingObservation):
-    """Opportunistic sighting of stranded/encountered dead or injured turtle.
-
-    Default stranding measurements, plus:
-
-    * Sex
-    * Maturity
-    * Morphometrics
-    """
-
-    ACCURACY_CHOICES = (
-        ("unknown", "Unknown"),
-        ("estimated", "Estimated"),
-        ("measured", "Measured"),)
-
     SEX_CHOICES = (
         ("male", "Male"),
         ("female", "Female"),
@@ -232,6 +147,13 @@ class TurtleStrandingObservation(StrandingObservation):
         ("juvenile", "Juvenile"),
         ("adult", "Adult"),
         ("unknown", "Unknown Maturity"),)
+
+    species = models.CharField(
+        max_length=300,
+        verbose_name=_("Species"),
+        choices=SPECIES_CHOICES,
+        default="unidentified",
+        help_text=_("The species of the animal."),)
 
     sex = models.CharField(
         max_length=300,
@@ -247,6 +169,226 @@ class TurtleStrandingObservation(StrandingObservation):
         choices=MATURITY_CHOICES,
         help_text=_("The animal's maturity."),)
 
+    health = models.CharField(
+        max_length=300,
+        verbose_name=_("Health status"),
+        choices=HEALTH_CHOICES,
+        default="alive",
+        help_text=_("On a scale from the Fresh Prince of Bel Air to 80s Hair "
+                    "Metal: how dead and decomposed is the animal?"),)
+
+    behaviour = models.TextField(
+        verbose_name=_("Behaviour"),
+        blank=True, null=True,
+        help_text=_("Notes on condition or behaviour if alive."),)
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["when", "where"]
+        verbose_name = "Animal Encounter"
+        verbose_name_plural = "Animal Encounters"
+        get_latest_by = "when"
+
+    def __str__(self):
+        """The unicode representation."""
+        return "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6}".format(
+            self.pk,
+            self.when.strftime('%d/%m/%Y %H:%M:%S'),
+            self.who.fullname,
+            self.get_species_display(),
+            self.get_health_display(),
+            self.get_maturity_display(),
+            self.get_sex_display())
+
+    def save(self, *args, **kwargs):
+        """Cache the HTML representation in `as_html`."""
+        self.as_html = self.make_html()
+        super(AnimalEncounter, self).save(*args, **kwargs)
+
+    def make_html(self):
+        """Create an HTML representation."""
+        return mark_safe("<h4>Animal Encounter</h4>{0}{1}{2}{3}".format(
+            self.tag_html, self.media_html, self.observer_html))
+
+# Lookup models --------------------------------------------------------------#
+# @python_2_unicode_compatible
+# class DistinguishingFeature(models.Model):
+#     """Distinguising Features.
+#     FEATURES_CHOICES = (
+#
+#     """
+#     name = models.CharField(
+#         max_length=300,
+#         verbose_name=_("Name"),
+#         help_text=_("A short name for the distinguising feature."),)
+#
+
+#
+#     class Meta:
+#         """Class options."""
+#
+#         verbose_name = "Distinguishing Feature"
+#         verbose_name_plural = "Distinguishing Features"
+#
+#     def __str__(self):
+#         """The unicode representation."""
+#         return self.name
+
+
+# Observation models ---------------------------------------------------------#
+@python_2_unicode_compatible
+class Observation(PolymorphicModel, models.Model):
+    """The Observation base class."""
+    encounter = models.ForeignKey(
+        Encounter,
+        blank=True, null=True,
+        verbose_name=_("Encounter"),
+        help_text=("The Encounter during which the observation was made"),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Obs {0} for {1}".format(self.pk, self.encounter.__str__())
+
+
+@python_2_unicode_compatible
+class MediaAttachment(Observation):
+    """A media attachment to an Encounter."""
+
+    MEDIA_TYPE_CHOICES = (
+        ('data_sheet', 'Original data sheet'),
+        ('photograph', 'Photograph'),
+        ('other', 'Other'),)
+
+    media_type = models.CharField(
+        max_length=300,
+        verbose_name=_("Attachment type"),
+        choices=MEDIA_TYPE_CHOICES,
+        default="other",
+        help_text=_("What is the attached file about?"),)
+
+    title = models.CharField(
+        max_length=300,
+        verbose_name=_("Attachment name"),
+        blank=True, null=True,
+        help_text=_("Give the attachment a representative name"),)
+
+    attachment = models.FileField(
+        upload_to='attachments/%Y/%m/%d/',
+        verbose_name=_("File attachment"),
+        help_text=_("Upload the file"),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Media {0} {1} for {2}".format(
+            self.pk, self.title, self.encounter.__str__())
+
+
+@python_2_unicode_compatible
+class DistinguishingFeatureObservation(Observation):
+    """DistinguishingFeature observation."""
+
+    OBSERVATION_CHOICES = (
+        ("na", "Not observed"),
+        ("absent", "Confirmed absent"),
+        ("present", "Confirmed present"),)
+
+    damage_injury = models.CharField(
+        max_length=300,
+        verbose_name=_("Obvious damage or injuries"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    missing_limbs = models.CharField(
+        max_length=300,
+        verbose_name=_("Missing limbs"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    barnacles = models.CharField(
+        max_length=300,
+        verbose_name=_("Barnacles"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    algal_growth = models.CharField(
+        max_length=300,
+        verbose_name=_("Algal growth on carapace"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    tagging_scars = models.CharField(
+        max_length=300,
+        verbose_name=_("Tagging scars"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    propeller_damage = models.CharField(
+        max_length=300,
+        verbose_name=_("Propeller strike damage"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    entanglement = models.CharField(
+        max_length=300,
+        verbose_name=_("Entanglement"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_("Entanglement in anthropogenic debris"),)
+
+    see-photo = models.CharField(
+        max_length=300,
+        verbose_name=_("See attached photos"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_("More relevant detail in attached photos"),)
+
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Further comments on distinguising features."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Distinguishing Features {0} of {1}".format(
+            self.pk, self.encounter.__str__())
+
+
+@python_2_unicode_compatible
+class DisposalObservation(Observation):
+    """Disposal of a dead animal."""
+
+    management_actions = models.TextField(
+        verbose_name=_("Management Actions"),
+        blank=True, null=True,
+        help_text=_("Managment actions taken. Keep updating as appropriate."),)
+
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Disposal {0} of {1}".format(
+            self.pk, self.encounter.__str__())
+
+
+@python_2_unicode_compatible
+class TurtleMorphometricObservation(StrandingObservation):
+    """Morphometric measurements of a turtle."""
+
+    ACCURACY_CHOICES = (
+        ("unknown", "Unknown"),
+        ("estimated", "Estimated"),
+        ("measured", "Measured"),)
+
     curved_carapace_length_mm = models.PositiveIntegerField(
         verbose_name=_("Curved Carapace Length (mm)"),
         blank=True, null=True,
@@ -256,6 +398,18 @@ class TurtleStrandingObservation(StrandingObservation):
         max_length=300,
         default="unknown",
         verbose_name=_("Curved Carapace Length Accuracy"),
+        choices=ACCURACY_CHOICES,
+        help_text=_("The measurement type as indication of accuracy."),)
+
+    curved_carapace_notch_mm = models.PositiveIntegerField(
+        verbose_name=_("Curved Carapace Notch (mm)"),
+        blank=True, null=True,
+        help_text=_("The Curved Carapace Notch in millimetres."),)
+
+    curved_carapace_notch_accuracy = models.CharField(
+        max_length=300,
+        default="unknown",
+        verbose_name=_("Curved Carapace Notch Accuracy"),
         choices=ACCURACY_CHOICES,
         help_text=_("The measurement type as indication of accuracy."),)
 
@@ -300,62 +454,17 @@ class TurtleStrandingObservation(StrandingObservation):
         return "TurtleStrandingObs {0} on {1} by {2} of {3}".format(
             self.pk, self.when, self.who, self.get_species_display())
 
-    @property
-    def animal_html(self):
-        """An HTML string representing the observed animal."""
-        return "<p>{0} {1} {2}</p>".format(
-            self.get_health_display(),
-            self.get_maturity_display(),
-            self.get_sex_display())
 
-    @property
-    def popupContent(self):
-        """HTML for a map popup."""
-        return mark_safe(
-            "<h4>{0}</h4>{1}{2}{3}{4}".format(
-                self.get_species_display(), self.animal_html,
-                self.tag_html, self.media_html, self.observer_html))
-
-
-# Child models of Observations -----------------------------------------------#
-@python_2_unicode_compatible
-class MediaAttachment(models.Model):
-    """A media attachment to an Observation."""
-
-    MEDIA_TYPE_CHOICES = (
-        ('data_sheet', 'Original data sheet'),
-        ('photograph', 'Photograph'),
-        ('other', 'Other'),)
-
-    observation = models.ForeignKey(
-        Observation,
-        verbose_name=_("Observation"),
-        help_text=("Which Observation does this attachment relate to?"),)
-
-    media_type = models.CharField(
-        max_length=300,
-        verbose_name=_("Attachment type"),
-        choices=MEDIA_TYPE_CHOICES,
-        default="other",
-        help_text=_("What is the attached file about?"),)
-
-    title = models.CharField(
-        max_length=300,
-        verbose_name=_("Attachment name"),
-        blank=True, null=True,
-        help_text=_("Give the attachment a representative name"),)
-
-    attachment = models.FileField(
-        upload_to='attachments/%Y/%m/%d/',
-        verbose_name=_("File attachment"),
-        help_text=_("Upload the file"),)
-
-    def __str__(self):
-        """The unicode representation."""
-        return self.title
+# NestObs
+# Turtle activity when tagged
+# EggsObs
+# Turtle damage obs - vs dist feat
+# Hatched Nest Obs
+# Nest obs Ningaloo
+# Track obs (false crawl) Ningaloo
 
 @python_2_unicode_compatible
-class TagObservation(models.Model):
+class TagObservation(Observation):
     """An Observation of an identifying tag on an observed entity.
 
     The identifying tag can be a flipper tag on a turtle, a PIT tag,
@@ -399,8 +508,8 @@ class TagObservation(models.Model):
         ('destroyed', 'Destroyed'),
         ('observed', 'Observed in any other context, see comments'),)
 
-    observation = models.ForeignKey(
-        Observation,
+    encounter = models.ForeignKey(
+        Encounter,
         blank=True, null=True,
         verbose_name=_("Observation"),
         help_text=("During which Observation was this tag encountered?"),)
