@@ -7,21 +7,9 @@ from django.contrib.gis import forms
 from wastd.widgets import MapWidget
 from django.contrib.gis.db import models as geo_models
 from easy_select2 import select2_modelform
-from .models import (Encounter, AnimalEncounter, Observation, MediaAttachment,
+from .models import (Encounter, AnimalEncounter, MediaAttachment,
                      TagObservation, DisposalObservation,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation)
-
-
-class DistinguishingFeaturesInline(admin.ModelAdmin):
-    """Admin for DistinguishingFeatures."""
-
-    model = DistinguishingFeatureObservation
-
-
-class TurtleMorphometricObservationInline(admin.ModelAdmin):
-    """Admin for TurtleMorphometricObservation."""
-
-    model = TurtleMorphometricObservation
 
 
 class MediaAttachmentInline(admin.TabularInline):
@@ -30,16 +18,32 @@ class MediaAttachmentInline(admin.TabularInline):
     model = MediaAttachment
 
 
-class TagObservationInline(admin.TabularInline):
-    """TabularInlineAdmin for TagObservation."""
+class DistinguishingFeaturesInline(admin.TabularInline):
+    """Admin for DistinguishingFeatures."""
 
-    model = TagObservation
+    extra = 1
+    model = DistinguishingFeatureObservation
+
+
+class TurtleMorphometricObservationInline(admin.TabularInline):
+    """Admin for TurtleMorphometricObservation."""
+
+    extra = 1
+    model = TurtleMorphometricObservation
 
 
 class DisposalObservationInline(admin.TabularInline):
     """TabularInlineAdmin for DisposalObservation."""
 
+    extra = 1
     model = DisposalObservation
+
+
+class TagObservationInline(admin.TabularInline):
+    """TabularInlineAdmin for TagObservation."""
+
+    extra = 4
+    model = TagObservation
 
 
 @admin.register(Encounter)
@@ -60,13 +64,9 @@ class AnimalEncounterAdmin(admin.ModelAdmin):
 
     date_hierarchy = 'when'
     list_filter = ('who', 'species', 'health', )
-    filter_horizontal = ['features', ]
-    formfield_overrides = {geo_models.PointField: {
-        'widget': forms.OpenLayersWidget(
-            attrs={'display_raw': True, 'mouse_position': True, })
-        }}
+    formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
     fieldsets = EncounterAdmin.fieldsets + (
-        ('Animal', {'fields': ('species', 'health', 'behaviour', 'features')}),
+        ('Animal', {'fields': ('species', 'health', 'behaviour', 'sex', 'maturity')}),
         )
     list_display = ('when', 'wkt', 'species', 'health_display')
     inlines = [DistinguishingFeaturesInline,

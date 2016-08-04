@@ -86,30 +86,20 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     @property
     def observer_html(self):
-        """An HTML string of associated TagObservations"""
+        """An HTML string of metadata"""
         return '<p><span class="glyphicon glyphicon-clock" aria-hidden="true">' +\
             '</span>{0} UTC reported by {1}</p>'.format(
                 self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who.name)
 
     @property
-    def tag_html(self):
-        """An HTML string of associated TagObservations"""
-        return "<h5>Tags</h5><ul>" + "".join(
-            ["<li>{0}</li>".format(t.__str__())
-             for t in self.tagobservation_set.all()]) + "</ul>"
-
-    @property
-    def media_html(self):
-        """An HTML string of associated TagObservations"""
-        return "<h5>Attachments</h5><ul>" + "".join(
-            ['<li><a href="{0}" target="_">{1}</a></li>'.format(
-                t.attachment.url, t.title)
-             for t in self.mediaattachment_set.all()]) + "</ul>"
+    def observation_html(self):
+        """An HTML string of Observations"""
+        return "".join([o.as_html for o in self.observation_set.all()])
 
     def make_html(self):
         """Create an HTML representation."""
-        return mark_safe("<h4>Encounter</h4>{0}{1}{2}{3}".format(
-            self.tag_html, self.media_html, self.observer_html))
+        return mark_safe("<h4>Encounter</h4>{0}{1}".format(
+            self.observer_html, self.observation_html))
 
 
 @python_2_unicode_compatible
@@ -195,7 +185,7 @@ class AnimalEncounter(Encounter):
         return "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6}".format(
             self.pk,
             self.when.strftime('%d/%m/%Y %H:%M:%S'),
-            self.who.fullname,
+            self.who.name,
             self.get_species_display(),
             self.get_health_display(),
             self.get_maturity_display(),
@@ -206,34 +196,19 @@ class AnimalEncounter(Encounter):
         self.as_html = self.make_html()
         super(AnimalEncounter, self).save(*args, **kwargs)
 
+    @property
+    def animal_html(self):
+        """An HTML string of Observations"""
+        return mark_safe('<h4 style="white-space: nowrap">{0}</h4>{1} {2} {3}'.format(
+            self.get_species_display(),
+            self.get_health_display(),
+            self.get_maturity_display(),
+            self.get_sex_display()))
+
     def make_html(self):
         """Create an HTML representation."""
-        return mark_safe("<h4>Animal Encounter</h4>{0}{1}{2}{3}".format(
-            self.tag_html, self.media_html, self.observer_html))
-
-# Lookup models --------------------------------------------------------------#
-# @python_2_unicode_compatible
-# class DistinguishingFeature(models.Model):
-#     """Distinguising Features.
-#     FEATURES_CHOICES = (
-#
-#     """
-#     name = models.CharField(
-#         max_length=300,
-#         verbose_name=_("Name"),
-#         help_text=_("A short name for the distinguising feature."),)
-#
-
-#
-#     class Meta:
-#         """Class options."""
-#
-#         verbose_name = "Distinguishing Feature"
-#         verbose_name_plural = "Distinguishing Features"
-#
-#     def __str__(self):
-#         """The unicode representation."""
-#         return self.name
+        return mark_safe("{0}{1}{2}".format(
+            self.animal_html, self.observer_html, self.observation_html))
 
 
 # Observation models ---------------------------------------------------------#
@@ -249,6 +224,11 @@ class Observation(PolymorphicModel, models.Model):
     def __str__(self):
         """The unicode representation."""
         return "Obs {0} for {1}".format(self.pk, self.encounter.__str__())
+
+    @property
+    def as_html(self):
+        """An HTML representation."""
+        return mark_safe('<div class="popup">{0}</div>'.format(self.__str__()))
 
 
 @python_2_unicode_compatible
@@ -282,6 +262,12 @@ class MediaAttachment(Observation):
         """The unicode representation."""
         return "Media {0} {1} for {2}".format(
             self.pk, self.title, self.encounter.__str__())
+
+    @property
+    def as_html(self):
+        """An HTML representation."""
+        return mark_safe('<div class="popup"><a href="{0}" target="_">{1}</a></div>'.format(
+            self.attachment.url, self.title))
 
 
 @python_2_unicode_compatible
@@ -342,7 +328,7 @@ class DistinguishingFeatureObservation(Observation):
         default="na",
         help_text=_("Entanglement in anthropogenic debris"),)
 
-    see-photo = models.CharField(
+    see_photo = models.CharField(
         max_length=300,
         verbose_name=_("See attached photos"),
         choices=OBSERVATION_CHOICES,
@@ -358,6 +344,11 @@ class DistinguishingFeatureObservation(Observation):
         """The unicode representation."""
         return "Distinguishing Features {0} of {1}".format(
             self.pk, self.encounter.__str__())
+
+    @property
+    def as_html(self):
+        """An HTML representation."""
+        return mark_safe('<div class="popup">Dummy HTML for Features</div>')
 
 
 @python_2_unicode_compatible
@@ -379,9 +370,16 @@ class DisposalObservation(Observation):
         return "Disposal {0} of {1}".format(
             self.pk, self.encounter.__str__())
 
+    @property
+    def as_html(self):
+        """An HTML representation."""
+        return mark_safe('<div class="popup">{0}</div>'
+                         '<div class="popup">{1}</div>'.format(
+                             self.management_actions, self.comments))
+
 
 @python_2_unicode_compatible
-class TurtleMorphometricObservation(StrandingObservation):
+class TurtleMorphometricObservation(Observation):
     """Morphometric measurements of a turtle."""
 
     ACCURACY_CHOICES = (
@@ -451,8 +449,13 @@ class TurtleMorphometricObservation(StrandingObservation):
 
     def __str__(self):
         """The unicode representation."""
-        return "TurtleStrandingObs {0} on {1} by {2} of {3}".format(
-            self.pk, self.when, self.who, self.get_species_display())
+        return "Turtle Morphometrics {0} for {1}".format(
+            self.pk, self.encounter)
+
+    @property
+    def as_html(self):
+        """An HTML representation."""
+        return mark_safe('<div class="popup">Dummy for TurtleMorph</div>')
 
 
 # NestObs
@@ -508,12 +511,6 @@ class TagObservation(Observation):
         ('destroyed', 'Destroyed'),
         ('observed', 'Observed in any other context, see comments'),)
 
-    encounter = models.ForeignKey(
-        Encounter,
-        blank=True, null=True,
-        verbose_name=_("Observation"),
-        help_text=("During which Observation was this tag encountered?"),)
-
     type = models.CharField(
         max_length=300,
         verbose_name=_("Tag type"),
@@ -541,3 +538,8 @@ class TagObservation(Observation):
     def __str__(self):
         """The unicode representation."""
         return "{0} ({1})".format(self.name, self.get_status_display())
+
+    @property
+    def as_html(self):
+        """An HTML representation."""
+        return mark_safe('<div class="popup">{0}</div>'.format(self.__str__()))
