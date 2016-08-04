@@ -11,6 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   overview
+   data_consumers
+   data_curators
    install
    deploy
    docker_ec2
