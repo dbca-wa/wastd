@@ -8,42 +8,43 @@ from wastd.widgets import MapWidget
 from django.contrib.gis.db import models as geo_models
 from easy_select2 import select2_modelform
 from .models import (Encounter, AnimalEncounter, MediaAttachment,
-                     TagObservation, DisposalObservation,
+                     FlipperTagObservation, DisposalObservation,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation)
 
 
 class MediaAttachmentInline(admin.TabularInline):
     """TabularInlineAdmin for MediaAttachment."""
 
+    extra = 0
     model = MediaAttachment
 
 
 class DistinguishingFeaturesInline(admin.TabularInline):
     """Admin for DistinguishingFeatures."""
 
-    extra = 1
+    extra = 0
     model = DistinguishingFeatureObservation
 
 
 class TurtleMorphometricObservationInline(admin.TabularInline):
     """Admin for TurtleMorphometricObservation."""
 
-    extra = 1
+    extra = 0
     model = TurtleMorphometricObservation
 
 
 class DisposalObservationInline(admin.TabularInline):
     """TabularInlineAdmin for DisposalObservation."""
 
-    extra = 1
+    extra = 0
     model = DisposalObservation
 
 
-class TagObservationInline(admin.TabularInline):
+class FlipperTagObservationInline(admin.TabularInline):
     """TabularInlineAdmin for TagObservation."""
 
-    extra = 4
-    model = TagObservation
+    extra = 0
+    model = FlipperTagObservation
 
 
 @admin.register(Encounter)
@@ -71,7 +72,7 @@ class AnimalEncounterAdmin(admin.ModelAdmin):
     list_display = ('when', 'wkt', 'species', 'health_display')
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
-               TagObservationInline,
+               FlipperTagObservationInline,
                DisposalObservationInline,
                MediaAttachmentInline, ]
 

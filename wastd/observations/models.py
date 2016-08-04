@@ -199,7 +199,7 @@ class AnimalEncounter(Encounter):
     @property
     def animal_html(self):
         """An HTML string of Observations"""
-        return mark_safe('<h4 style="white-space: nowrap">{0}</h4>{1} {2} {3}'.format(
+        return mark_safe('<h4>{0}</h4>{1} {2} {3}'.format(
             self.get_species_display(),
             self.get_health_display(),
             self.get_maturity_display(),
@@ -279,6 +279,10 @@ class DistinguishingFeatureObservation(Observation):
         ("absent", "Confirmed absent"),
         ("present", "Confirmed present"),)
 
+    PHOTO_CHOICES = (
+        ("na", "Not applicable"),
+        ("see photos", "See attached photos for details"),)
+
     damage_injury = models.CharField(
         max_length=300,
         verbose_name=_("Obvious damage or injuries"),
@@ -331,7 +335,7 @@ class DistinguishingFeatureObservation(Observation):
     see_photo = models.CharField(
         max_length=300,
         verbose_name=_("See attached photos"),
-        choices=OBSERVATION_CHOICES,
+        choices=PHOTO_CHOICES,
         default="na",
         help_text=_("More relevant detail in attached photos"),)
 
@@ -467,7 +471,7 @@ class TurtleMorphometricObservation(Observation):
 # Track obs (false crawl) Ningaloo
 
 @python_2_unicode_compatible
-class TagObservation(Observation):
+class FlipperTagObservation(Observation):
     """An Observation of an identifying tag on an observed entity.
 
     The identifying tag can be a flipper tag on a turtle, a PIT tag,
@@ -486,16 +490,16 @@ class TagObservation(Observation):
 
     As TagObservations can occur without an Observation of an animal, the
     FK to Observations is optional.
-    """
 
-    TYPE_CHOICES = (
-        ('flipper-tag', 'Flipper Tag'),
-        ('pit-tag', 'PIT Tag'),
-        ('satellite-tag', 'Satellite Tag'),
-        ('physical-sample', 'Physical Sample'),
-        ('genetic-fingerprint', 'Genetic Fingerprint'),
-        ('whisker-id', 'Whisker ID'),
-        ('other', 'Other'),)
+    # TYPE_CHOICES = (
+    #     ('flipper-tag', 'Flipper Tag'),
+    #     ('pit-tag', 'PIT Tag'),
+    #     ('satellite-tag', 'Satellite Tag'),
+    #     ('physical-sample', 'Physical Sample'),
+    #     ('genetic-fingerprint', 'Genetic Fingerprint'),
+    #     ('whisker-id', 'Whisker ID'),
+    #     ('other', 'Other'),)
+    """
 
     STATUS_CHOICES = (
         ('ordered', 'Ordered from manufacturer'),
@@ -511,12 +515,35 @@ class TagObservation(Observation):
         ('destroyed', 'Destroyed'),
         ('observed', 'Observed in any other context, see comments'),)
 
-    type = models.CharField(
+    SIDE_CHOICES = (
+        ("L", "Left"),
+        ("R", "Right"))
+
+    POSITION_CHOICES = (
+        ("1", "Flipper scale 1 (1st from body)"),
+        ("2", "Flipper scale 2 (2nd from body)"),
+        ("3", "Flipper scale 3 (3rd from body)"))
+
+
+    side = models.CharField(
         max_length=300,
-        verbose_name=_("Tag type"),
-        choices=TYPE_CHOICES,
-        default="flipper-tag",
-        help_text=_("The Tag type."),)
+        verbose_name=_("Tag side"),
+        choices=SIDE_CHOICES,
+        default="L",
+        help_text=_("Is the tag on the left or right front flipper?"),)
+
+    position = models.CharField(
+        max_length=300,
+        verbose_name=_("Tag position"),
+        choices=POSITION_CHOICES,
+        default="1",
+        help_text=_("Counting from inside, to which flipper scale is the "
+                    "tag attached?"),)
+
+    name = models.CharField(
+        max_length=1000,
+        verbose_name=_("Tag ID"),
+        help_text=_("The ID of a tag must be unique within the tag type."),)
 
     status = models.CharField(
         max_length=300,
@@ -524,11 +551,6 @@ class TagObservation(Observation):
         choices=STATUS_CHOICES,
         default="recaptured",
         help_text=_("The status this tag was seen in, or brought into."),)
-
-    name = models.CharField(
-        max_length=1000,
-        verbose_name=_("Tag ID"),
-        help_text=_("The ID of a tag must be unique within the tag type."),)
 
     comments = models.TextField(
         verbose_name=_("Comments"),

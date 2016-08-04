@@ -72,6 +72,13 @@ django-reversion
 # API
 djangorestframework
 djangorestframework-gis
+djangorestframework-csv
+djangorestframework-yaml
+djangorestframework-jsonp
+dynamic-rest
+rest-framework-latex
 markdown
 django-filter
 django-rest-swagger
+coreapi
+coreapi-cli

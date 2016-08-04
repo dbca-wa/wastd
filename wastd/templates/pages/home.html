@@ -33,7 +33,11 @@ var map = L.map('map', {
 // Observations
 $.getJSON("{% url 'observation-geojson' %}", function (data) {
     L.geoJson(data, {
-        style: function (feature) { return {}; },
+        style: function (feature) {
+            return {
+                //color: feature.properties.colour
+            };
+        },
         onEachFeature: function (feature, layer) {
             layer.bindPopup(feature.properties.as_html);
         }

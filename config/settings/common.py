@@ -43,6 +43,7 @@ THIRD_PARTY_APPS = (
     'rest_framework',           # API
     'rest_framework_gis',       # API spatial fields
     'rest_framework_swagger',   # API docs
+    'dynamic_rest',             # Parameterised API queries
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
     'django_wsgiserver',        # web server
@@ -258,5 +259,11 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-        ]
+        ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.BrowsableAPIRenderer',
+         'rest_framework_jsonp.renderers.JSONPRenderer',
+         'rest_framework_csv.renderers.CSVRenderer',
+         'rest_framework_latex.renderers.LatexRenderer',
+    )
     }
