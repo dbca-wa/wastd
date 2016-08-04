@@ -87,9 +87,11 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def observer_html(self):
         """An HTML string of metadata"""
-        return '<p><span class="glyphicon glyphicon-clock" aria-hidden="true">' +\
-            '</span>{0} UTC reported by {1}</p>'.format(
-                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who.name)
+        return mark_safe(
+            '<div class="popup">'
+            '<span class="fa fa-calendar"></span>&nbsp;{0}&nbsp;UTC&nbsp;'
+            '<span class="fa fa-user"></span>&nbsp;{1}</div>'.format(
+                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who.name))
 
     @property
     def observation_html(self):
@@ -125,18 +127,18 @@ class AnimalEncounter(Encounter):
         ('Caretta caretta', 'Loggerhead turtle (Caretta caretta)'),
         ('Lepidochelys olivacea', 'Olive Ridley turtle (Lepidochelys olivacea)'),
         ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
-        ('unidentified', 'Unidentified Species'),)
+        ('unidentified', 'Unidentified species'),)
 
     SEX_CHOICES = (
-        ("male", "Male"),
-        ("female", "Female"),
-        ("unknown", "Unknown Sex"),)
+        ("male", "male"),
+        ("female", "female"),
+        ("unknown", "unknown sex"),)
 
     MATURITY_CHOICES = (
-        ("hatchling", "Hatchling"),
-        ("juvenile", "Juvenile"),
-        ("adult", "Adult"),
-        ("unknown", "Unknown Maturity"),)
+        ("hatchling", "hatchling"),
+        ("juvenile", "juvenile"),
+        ("adult", "adult"),
+        ("unknown", "unknown maturity"),)
 
     species = models.CharField(
         max_length=300,
@@ -199,7 +201,7 @@ class AnimalEncounter(Encounter):
     @property
     def animal_html(self):
         """An HTML string of Observations"""
-        return mark_safe('<h4>{0}</h4>{1} {2} {3}'.format(
+        return mark_safe('<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3}'.format(
             self.get_species_display(),
             self.get_health_display(),
             self.get_maturity_display(),
@@ -266,8 +268,10 @@ class MediaAttachment(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe('<div class="popup"><a href="{0}" target="_">{1}</a></div>'.format(
-            self.attachment.url, self.title))
+        return mark_safe(
+            '<div class="popup"><span class="fa fa-film"></span>'
+            '&nbsp;<a href="{0}" target="_">{1}</a></div>'.format(
+                self.attachment.url, self.title))
 
 
 @python_2_unicode_compatible
@@ -352,7 +356,9 @@ class DistinguishingFeatureObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe('<div class="popup">Dummy HTML for Features</div>')
+        return mark_safe(
+            '<div class="popup"><span class="fa fa-eye"></span>&nbsp;'
+            'Featuresm placeholder</div>')
 
 
 @python_2_unicode_compatible
@@ -377,9 +383,9 @@ class DisposalObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe('<div class="popup">{0}</div>'
-                         '<div class="popup">{1}</div>'.format(
-                             self.management_actions, self.comments))
+        return mark_safe(
+            '<div class="popup"><span class="fa fa-trash"></span>&nbsp;'
+            '{0}</div>'.format(self.management_actions, self.comments))
 
 
 @python_2_unicode_compatible
@@ -459,7 +465,8 @@ class TurtleMorphometricObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe('<div class="popup">Dummy for TurtleMorph</div>')
+        return mark_safe('<div class="popup"><i class="fa fa-balance-scale">'
+                         '</i>&nbsp; Morphometrics placeholder</div>')
 
 
 # NestObs
@@ -502,28 +509,27 @@ class FlipperTagObservation(Observation):
     """
 
     STATUS_CHOICES = (
-        ('ordered', 'Ordered from manufacturer'),
-        ('produced', 'Produced by manufacturer'),
-        ('delivered', 'Delivered to HQ'),
-        ('allocated', 'Allocated to field team'),
-        ('attached', 'Attached to an animal'),
-        ('recaptured', 'Re-sighted as attached to animal'),
-        ('detached', 'Taken off an animal'),
-        ('found', 'Found detached'),
-        ('returned', 'Returned to HQ'),
-        ('decommissioned', 'Decommissioned from active tag pool'),
-        ('destroyed', 'Destroyed'),
-        ('observed', 'Observed in any other context, see comments'),)
+        ('ordered', 'ordered from manufacturer'),
+        ('produced', 'produced by manufacturer'),
+        ('delivered', 'delivered to HQ'),
+        ('allocated', 'allocated to field team'),
+        ('attached', 'attached new to an animal'),
+        ('recaptured', 're-sighted as attached to animal'),
+        ('detached', 'raken off an animal'),
+        ('found', 'found detached'),
+        ('returned', 'returned to HQ'),
+        ('decommissioned', 'decommissioned from active tag pool'),
+        ('destroyed', 'destroyed'),
+        ('observed', 'observed in any other context, see comments'),)
 
     SIDE_CHOICES = (
-        ("L", "Left"),
-        ("R", "Right"))
+        ("L", "left front flipper"),
+        ("R", "right front flipper"))
 
     POSITION_CHOICES = (
-        ("1", "Flipper scale 1 (1st from body)"),
-        ("2", "Flipper scale 2 (2nd from body)"),
-        ("3", "Flipper scale 3 (3rd from body)"))
-
+        ("1", "1st scale from body"),
+        ("2", "2nd scale from body"),
+        ("3", "3rd scale from body"))
 
     side = models.CharField(
         max_length=300,
@@ -559,9 +565,12 @@ class FlipperTagObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "{0} ({1})".format(self.name, self.get_status_display())
+        return "Flipper Tag {0} ({1}) on {2}, {3}".format(
+            self.name, self.get_status_display(),
+            self.get_side_display(), self.get_position_display())
 
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe('<div class="popup">{0}</div>'.format(self.__str__()))
+        return mark_safe('<div class="popup"><i class="fa fa-tag"></i>'
+                         '&nbsp;{0}</div>'.format(self.__str__()))
