@@ -13,9 +13,11 @@ from __future__ import absolute_import, unicode_literals
 import environ
 import confy
 from confy import env, database
+from unipath import Path
 
 confy.read_environment_file()
 
+BASE_DIR = Path(__file__).ancestor(2)
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 APPS_DIR = ROOT_DIR.path('wastd')
 

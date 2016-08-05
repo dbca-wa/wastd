@@ -8,6 +8,7 @@ django==1.9.8
 django-confy
 django-environ==0.4.0
 whitenoise==3.2
+unipath
 
 # admin
 django-adminactions
