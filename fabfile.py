@@ -8,6 +8,11 @@ from fabric.colors import green, yellow  # red
 
 env.hosts = ['localhost', ]
 
+def clean():
+        """Delete .pyc, temp and swap files."""
+        local("./manage.py clean_pyc")
+        local("find . -name \*~ -delete")
+        local("find . -name \*swp -delete")
 
 def pip():
     """Install python requirements."""
