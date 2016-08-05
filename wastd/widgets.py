@@ -26,8 +26,8 @@ class MapWidget(forms.BaseGeometryWidget):
 
     class Media:
         """JS resources for the MapWidget."""
-        js = ('http://static.dpaw.wa.gov.au/static/libs/openlayers/2.13.1/OpenLayers.js',
-              'http://www.openstreetmap.org/openlayers/OpenStreetMap.js',
+        js = ('//static.dpaw.wa.gov.au/static/libs/openlayers/2.13.1/OpenLayers.js',
+              '//www.openstreetmap.org/openlayers/OpenStreetMap.js',
               'js/MapWidget.js',)
 
     def __init__(self, attrs=None):
