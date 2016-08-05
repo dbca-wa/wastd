@@ -15,19 +15,19 @@ framework.
 """
 import confy
 import os
-# from dj_static import Cling, MediaCling
+from dj_static import Cling, MediaCling
 from django.core.wsgi import get_wsgi_application
-from whitenoise import WhiteNoise
-from config.settings.production import STATIC_ROOT
+# from whitenoise import WhiteNoise
+# from config.settings.production import STATIC_ROOT
 
 confy.read_environment_file()
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
-application = WhiteNoise(get_wsgi_application(), root=STATIC_ROOT)
+# application = WhiteNoise(get_wsgi_application(), root=STATIC_ROOT)
 # application.add_files('/path/to/more/static/files', prefix='more-files/')
 
 
-# application = Cling(MediaCling(get_wsgi_application()))
+application = Cling(MediaCling(get_wsgi_application()))
 
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication
