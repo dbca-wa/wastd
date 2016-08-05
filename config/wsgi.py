@@ -15,21 +15,19 @@ framework.
 """
 import confy
 import os
-from dj_static import Cling, MediaCling
+# from dj_static import Cling, MediaCling
 from django.core.wsgi import get_wsgi_application
+from whitenoise import WhiteNoise
+from config.settings.production import STATIC_ROOT
 
 confy.read_environment_file()
 
-# We defer to a DJANGO_SETTINGS_MODULE already in the environment. This breaks
-# if running multiple sites in the same mod_wsgi process. To fix this, use
-# mod_wsgi daemon mode with each site in its own daemon process, or use
-# os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.production"
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
+application = WhiteNoise(get_wsgi_application(), root=STATIC_ROOT)
+# application.add_files('/path/to/more/static/files', prefix='more-files/')
 
-# This application object is used by any WSGI server configured to use this
-# file. This includes Django's development server, if the WSGI_APPLICATION
-# setting points here.
-application = Cling(MediaCling(get_wsgi_application()))
+
+# application = Cling(MediaCling(get_wsgi_application()))
 
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication
