@@ -24,6 +24,7 @@ from __future__ import unicode_literals, absolute_import
 # from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.gis.db import models as geo_models
+from django.core.urlresolvers import reverse
 from polymorphic.models import PolymorphicModel
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -80,10 +81,23 @@ class Encounter(PolymorphicModel, geo_models.Model):
         self.as_html = self.make_html()
         super(Encounter, self).save(*args, **kwargs)
 
+
     @property
     def wkt(self):
         """Return the point coordinates as Well Known Text (WKT)."""
         return self.where.wkt
+
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+        self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    @property
+    def admin_url_html(self):
+        tpl = ('<div class="popup"><i class="fa fa-pencil"></i><a '
+               'href={0} target="_">Edit</a></div>')
+        return tpl.format(self.absolute_admin_url)
 
     @property
     def observer_html(self):
@@ -100,14 +114,18 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     def make_html(self):
         """Create an HTML representation."""
-        return mark_safe("<h4>Encounter</h4>{0}{1}".format(
-            self.observer_html, self.observation_html))
+        tpl = '<h4>Encounter</h4>{0}{1}{2}'
+        return mark_safe(tpl.format(self.observer_html, self.observation_html,
+                                    self.admin_url_html))
 
 
 @python_2_unicode_compatible
 class AnimalEncounter(Encounter):
     """The encounter of an animal of a species in a certain state of health
     and behaviour.
+
+    TODO: StrandNet activity.
+    TODO: StandNet carcass / health condition, freshness of injury > HEALTH_CHOICES
     """
     HEALTH_CHOICES = (
         ('alive', 'Alive (healthy)'),
@@ -132,11 +150,15 @@ class AnimalEncounter(Encounter):
     SEX_CHOICES = (
         ("male", "male"),
         ("female", "female"),
-        ("unknown", "unknown sex"),)
+        ("unknown", "sex not determined or not examined"),
+        ("intersex", "hermaphrodite or intersex")
+        )
 
     MATURITY_CHOICES = (
         ("hatchling", "hatchling"),
         ("juvenile", "juvenile"),
+        # ("unweaned", "unweaned immature juveninle"),
+        # ("weaned", "weaned immature juvenile"),
         ("adult", "adult"),
         ("unknown", "unknown maturity"),)
 
@@ -184,7 +206,8 @@ class AnimalEncounter(Encounter):
 
     def __str__(self):
         """The unicode representation."""
-        return "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6}".format(
+        tpl = "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6}"
+        return tpl.format(
             self.pk,
             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
             self.who.name,
@@ -201,16 +224,16 @@ class AnimalEncounter(Encounter):
     @property
     def animal_html(self):
         """An HTML string of Observations"""
-        return mark_safe('<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3}'.format(
-            self.get_species_display(),
-            self.get_health_display(),
-            self.get_maturity_display(),
-            self.get_sex_display()))
+        tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3}'
+        return mark_safe(
+            tpl.format(self.get_species_display(), self.get_health_display(),
+                       self.get_maturity_display(), self.get_sex_display()))
 
     def make_html(self):
         """Create an HTML representation."""
-        return mark_safe("{0}{1}{2}".format(
-            self.animal_html, self.observer_html, self.observation_html))
+        tpl = "{0}{1}{2}{3}"
+        return mark_safe(tpl.format(self.animal_html, self.observer_html,
+                                    self.observation_html, self.admin_url_html))
 
 
 # Observation models ---------------------------------------------------------#

@@ -248,7 +248,7 @@ COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_URL = STATIC_URL
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
-ADMIN_URL = r'^admin/'
+ADMIN_URL = "admin/"
 
 
 # Your common stuff: Below this line define 3rd party library settings

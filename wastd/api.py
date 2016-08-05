@@ -1,4 +1,4 @@
-from rest_framework import routers, serializers, viewsets
+from rest_framework import serializers, viewsets
 
 from wastd.observations.models import (
     Encounter, AnimalEncounter, MediaAttachment, Observation,
@@ -30,14 +30,13 @@ class ObservationSerializer(serializers.HyperlinkedModelSerializer):
         model = Observation
         fields = ('encounter', )
 
-    def to_representation(self, obj):
-        """
-        Because GalleryItem is Polymorphic
-        """
-        if isinstance(obj, FlipperTagObservation):
-            return FlipperTagObservationSerializer(obj, context=self.context).to_native(obj)
-
-        return super(ObservationSerializer, self).to_representation(obj)
+    # Taliban code goes BOOOOM
+    # def to_representation(self, obj):
+    #     if isinstance(obj, FlipperTagObservation):
+    #         return FlipperTagObservationSerializer(
+    #             obj, context=self.context).to_representation(obj)
+    #
+    #     return super(ObservationSerializer, self).to_representation(obj)
 
 
 class MediaAttachmentSerializer(ObservationSerializer):
@@ -90,11 +89,13 @@ class DisposalObservationSerializer(ObservationSerializer):
 class FlipperTagObservationSerializer(ObservationSerializer):
     """FlipperTagObservation serializer."""
 
+    encounter = serializers.StringRelatedField()
+
     class Meta:
         """Class options."""
 
         model = FlipperTagObservation
-        fields = ('encounter', 'type', 'status', 'name', 'comments')
+        fields = ('encounter', 'name', 'side', 'position', 'status', 'comments')
 
 
 class EncounterSerializer(serializers.HyperlinkedModelSerializer):
@@ -109,6 +110,14 @@ class EncounterSerializer(serializers.HyperlinkedModelSerializer):
         model = Encounter
         fields = ('where', 'when', 'who', 'observation_set',)
         geo_field = "where"
+
+    def create(self, validated_data):
+        """Make EncounterSerializer writeable."""
+        obs_data = validated_data.pop('observations')
+        encounter = Encounter.objects.create(**validated_data)
+        for obs in obs_data:
+            Observation.objects.create(encounter=encounter, **obs)
+        return encounter
 
 
 class AnimalEncounterSerializer(EncounterSerializer):
@@ -163,4 +172,4 @@ class FlipperTagObservationViewSet(viewsets.ModelViewSet):
     """TagObservation view set."""
 
     queryset = FlipperTagObservation.objects.all()
-    serializer_class = FlipperTagObservation
+    serializer_class = FlipperTagObservationSerializer

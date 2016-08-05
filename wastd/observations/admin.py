@@ -47,6 +47,21 @@ class FlipperTagObservationInline(admin.TabularInline):
     model = FlipperTagObservation
 
 
+@admin.register(FlipperTagObservation)
+class FlipperTagObservationAdmin(admin.ModelAdmin):
+    """Admin for FlipperTagObservation"""
+
+    save_on_top = True
+    list_display = ('name', 'side', 'position', 'status_display', 'comments')
+    list_filter = ('side', 'position', 'status')
+    search_fields = ('name', 'comments')
+
+    def status_display(self, obj):
+        """Make health status human readable."""
+        return obj.get_status_display()
+    status_display.short_description = 'Status'
+
+
 @admin.register(Encounter)
 class EncounterAdmin(admin.ModelAdmin):
     """Admin for Encounter with inline for MediaAttachment."""
