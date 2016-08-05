@@ -15,7 +15,8 @@
     * [turtle, dugong, cetacean] damage observation
     * [turtle, dugong, cetacean] distinguished features
     * [taxon] morphometrics
-    * tag observation
+    * [flipper, pit, sat] tag observation
+    * disposal actions
 
 """
 from __future__ import unicode_literals, absolute_import
@@ -87,11 +88,10 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def observer_html(self):
         """An HTML string of metadata"""
+        tpl = '<div class="popup"><i class="fa fa-{0}"></i>&nbsp;{1}</div>'
         return mark_safe(
-            '<div class="popup">'
-            '<span class="fa fa-calendar"></span>&nbsp;{0}&nbsp;UTC&nbsp;'
-            '<span class="fa fa-user"></span>&nbsp;{1}</div>'.format(
-                self.when.strftime('%d/%m/%Y %H:%M:%S'), self.who.name))
+            tpl.format("calendar", self.when.strftime('%d/%m/%Y %H:%M:%S %Z')) +
+            tpl.format("user", self.who.name))
 
     @property
     def observation_html(self):
@@ -186,7 +186,7 @@ class AnimalEncounter(Encounter):
         """The unicode representation."""
         return "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6}".format(
             self.pk,
-            self.when.strftime('%d/%m/%Y %H:%M:%S'),
+            self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
             self.who.name,
             self.get_species_display(),
             self.get_health_display(),
@@ -268,10 +268,9 @@ class MediaAttachment(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe(
-            '<div class="popup"><span class="fa fa-film"></span>'
-            '&nbsp;<a href="{0}" target="_">{1}</a></div>'.format(
-                self.attachment.url, self.title))
+        tpl = ('<div class="popup"><i class="fa fa-film"></i>'
+               '&nbsp;<a href="{0}" target="_">{1}</a></div>')
+        return mark_safe(tpl.format(self.attachment.url, self.title))
 
 
 @python_2_unicode_compatible
@@ -283,9 +282,18 @@ class DistinguishingFeatureObservation(Observation):
         ("absent", "Confirmed absent"),
         ("present", "Confirmed present"),)
 
+    OBSERVATION_ICONS = {
+        "na": "fa fa-question-circle-o",
+        "absent": "fa fa-times",
+        "present": "fa fa-check"}
+
     PHOTO_CHOICES = (
         ("na", "Not applicable"),
         ("see photos", "See attached photos for details"),)
+
+    PHOTO_ICONS = {
+        "na": "fa fa-question-circle-o",
+        "see photos": "fa fa-check"}
 
     damage_injury = models.CharField(
         max_length=300,
@@ -356,9 +364,17 @@ class DistinguishingFeatureObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
+        tpl = ('<div class="popup"><i class="fa fa-eye"></i>&nbsp;{0}'
+               '&nbsp<i class="{1}"></i></div>')
         return mark_safe(
-            '<div class="popup"><span class="fa fa-eye"></span>&nbsp;'
-            'Featuresm placeholder</div>')
+            tpl.format("Damage", self.OBSERVATION_ICONS[self.damage_injury]) +
+            tpl.format("Missing Limbs", self.OBSERVATION_ICONS[self.missing_limbs]) +
+            tpl.format("Barnacles", self.OBSERVATION_ICONS[self.barnacles]) +
+            tpl.format("Algal growth", self.OBSERVATION_ICONS[self.algal_growth]) +
+            tpl.format("Tagging scars", self.OBSERVATION_ICONS[self.tagging_scars]) +
+            tpl.format("Propeller damage", self.OBSERVATION_ICONS[self.propeller_damage]) +
+            tpl.format("Entanglement", self.OBSERVATION_ICONS[self.entanglement]) +
+            tpl.format("More in photos", self.PHOTO_ICONS[self.see_photo]))
 
 
 @python_2_unicode_compatible
@@ -383,9 +399,8 @@ class DisposalObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe(
-            '<div class="popup"><span class="fa fa-trash"></span>&nbsp;'
-            '{0}</div>'.format(self.management_actions, self.comments))
+        tpl = '<div class="popup"><i class="fa fa-trash"></i>&nbsp;{0}</div>'
+        return mark_safe(tpl.format(self.management_actions))
 
 
 @python_2_unicode_compatible
@@ -396,6 +411,12 @@ class TurtleMorphometricObservation(Observation):
         ("unknown", "Unknown"),
         ("estimated", "Estimated"),
         ("measured", "Measured"),)
+
+    ACCURACY_ICONS = {
+        "unknown": "fa fa-question-circle-o",
+        "estimated": "fa fa-comment-o",
+        "measured": "fa fa-balance-scale"
+    }
 
     curved_carapace_length_mm = models.PositiveIntegerField(
         verbose_name=_("Curved Carapace Length (mm)"),
@@ -465,17 +486,21 @@ class TurtleMorphometricObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe('<div class="popup"><i class="fa fa-balance-scale">'
-                         '</i>&nbsp; Morphometrics placeholder</div>')
+        tpl = ('<div class="popup"><i class="fa fa-bar-chart"></i>&nbsp;{0}'
+               '&nbsp;{1}&nbsp;mm&nbsp;<i class="{2}"></i></div>')
+        return mark_safe(
+            tpl.format("CCL", self.curved_carapace_length_mm,
+                       self.ACCURACY_ICONS[self.curved_carapace_length_accuracy]) +
+            tpl.format("CCN", self.curved_carapace_notch_mm,
+                       self.ACCURACY_ICONS[self.curved_carapace_notch_accuracy]) +
+            tpl.format("CCW", self.curved_carapace_width_mm,
+                       self.ACCURACY_ICONS[self.curved_carapace_width_accuracy]) +
+            tpl.format("TL", self.tail_length_mm,
+                       self.ACCURACY_ICONS[self.tail_length_accuracy]) +
+            tpl.format("HW", self.maximum_head_width_mm,
+                       self.ACCURACY_ICONS[self.maximum_head_width_accuracy])
+            )
 
-
-# NestObs
-# Turtle activity when tagged
-# EggsObs
-# Turtle damage obs - vs dist feat
-# Hatched Nest Obs
-# Nest obs Ningaloo
-# Track obs (false crawl) Ningaloo
 
 @python_2_unicode_compatible
 class FlipperTagObservation(Observation):
@@ -565,12 +590,21 @@ class FlipperTagObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Flipper Tag {0} ({1}) on {2}, {3}".format(
+        return "Flipper Tag {0} {1} on {2}, {3}".format(
             self.name, self.get_status_display(),
             self.get_side_display(), self.get_position_display())
 
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe('<div class="popup"><i class="fa fa-tag"></i>'
-                         '&nbsp;{0}</div>'.format(self.__str__()))
+        tpl = '<div class="popup"><i class="fa fa-tag"></i>&nbsp;{0}</div>'
+        return mark_safe(tpl.format(self.__str__()))
+
+
+# NestObs
+# Turtle activity when tagged
+# EggsObs
+# Turtle damage obs - vs dist feat
+# Hatched Nest Obs
+# Nest obs Ningaloo
+# Track obs (false crawl) Ningaloo

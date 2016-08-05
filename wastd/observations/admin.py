@@ -51,6 +51,7 @@ class FlipperTagObservationInline(admin.TabularInline):
 class EncounterAdmin(admin.ModelAdmin):
     """Admin for Encounter with inline for MediaAttachment."""
 
+    save_on_top = True
     date_hierarchy = 'when'
     list_filter = ('who', )
     formfield_overrides = {geo_models.PointField: {'widget': forms.OSMWidget}}
@@ -63,6 +64,7 @@ class EncounterAdmin(admin.ModelAdmin):
 class AnimalEncounterAdmin(admin.ModelAdmin):
     """Admin for AnimalEncounter with inlines for TurtleMorphometrics."""
 
+    save_on_top = True
     date_hierarchy = 'when'
     list_filter = ('who', 'species', 'health', )
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
