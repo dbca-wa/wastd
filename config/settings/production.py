@@ -111,12 +111,15 @@ EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[WAStD] ')
 SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
 
 # Anymail with Mailgun
-INSTALLED_APPS += ("anymail", )
-ANYMAIL = {
-    "MAILGUN_API_KEY": env('DJANGO_MAILGUN_API_KEY'),
-}
-EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"
-
+# INSTALLED_APPS += ("anymail", )
+# ANYMAIL = {
+#     "MAILGUN_API_KEY": env('DJANGO_MAILGUN_API_KEY'),
+# }
+# EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.corporateict.domain')
+EMAIL_PORT = env('EMAIL_PORT', default=25)
+EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
+                    default='django.core.mail.backends.smtp.EmailBackend')
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See:
