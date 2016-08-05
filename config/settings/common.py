@@ -46,7 +46,6 @@ THIRD_PARTY_APPS = (
     'dynamic_rest',             # Parameterised API queries
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
-    'django_wsgiserver',        # web server
     )
 
 # Apps specific for this project go here.
@@ -245,6 +244,8 @@ AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
 # ------------------------------------------------------------------------------
 INSTALLED_APPS += ("compressor", )
 STATICFILES_FINDERS += ("compressor.finders.CompressorFinder", )
+COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_URL = STATIC_URL
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = r'^admin/'
