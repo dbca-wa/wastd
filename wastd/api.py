@@ -1,5 +1,5 @@
 from rest_framework import serializers, viewsets
-from dynamic_rest import serializers as ds
+from dynamic_rest import serializers as ds, viewsets as dv
 
 from wastd.observations.models import (
     Encounter, AnimalEncounter, MediaAttachment, Observation,
@@ -159,42 +159,42 @@ class AnimalEncounterSerializer(EncounterSerializer):
 
 
 # ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(dv.DynamicModelViewSet):
     """User view set."""
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
-class EncounterViewSet(viewsets.ModelViewSet):
+class EncounterViewSet(dv.DynamicModelViewSet):
     """Encounter view set."""
 
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
 
 
-class AnimalEncounterViewSet(viewsets.ModelViewSet):
+class AnimalEncounterViewSet(dv.DynamicModelViewSet):
     """AnimalEncounter view set."""
 
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
 
 
-class ObservationViewSet(viewsets.ModelViewSet):
+class ObservationViewSet(dv.DynamicModelViewSet):
     """Observation view set."""
 
     queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
 
 
-class MediaAttachmentViewSet(viewsets.ModelViewSet):
+class MediaAttachmentViewSet(dv.DynamicModelViewSet):
     """MediaAttachment view set."""
 
     queryset = MediaAttachment.objects.all()
     serializer_class = MediaAttachmentSerializer
 
 
-class FlipperTagObservationViewSet(viewsets.ModelViewSet):
+class FlipperTagObservationViewSet(dv.DynamicModelViewSet):
     """TagObservation view set."""
 
     queryset = FlipperTagObservation.objects.all()

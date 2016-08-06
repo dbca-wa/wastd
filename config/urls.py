@@ -12,6 +12,7 @@ from django.views import defaults as default_views
 
 from adminactions import actions
 from rest_framework import routers
+from dynamic_rest import routers as dr
 from wastd.observations.models import Encounter
 from wastd.observations.views import schema_view
 from wastd.api import *
@@ -39,8 +40,6 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'),
         name='about'),
 
-    url(r'api-docs/1/', schema_view, name="api-docs"),
-
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, include(admin.site.urls)),
 
@@ -52,6 +51,7 @@ urlpatterns = [
     # API
     url(r'^api/1/', include(router.urls), name='api'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-docs/1/', schema_view, name="api-docs"),
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^observations.geojson$',
         GeoJSONLayerView.as_view(model=Encounter,

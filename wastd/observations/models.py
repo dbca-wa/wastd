@@ -149,7 +149,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
                          "requires proofreading."),
             notify=True,)
         )
-    def can_require_proofreading(self):
+    def require_proofreading(self):
         """Mark encounter as having typos, requiring more proofreading.
 
         Proofreading compares the attached data sheet with entered values.
