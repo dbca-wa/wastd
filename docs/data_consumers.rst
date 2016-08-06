@@ -37,3 +37,8 @@ First code example::
 This API call will download all AnimalEncounters as flat CSV file.
 Nested relationships (e.g. all Observation subgroups) are represented as prefix
 to column names.
+
+See the `Dynamic REST docs <http://dynamic-rest.readthedocs.io/en/latest/>`_ for
+help with the query syntax.
+
+Coming soon: working example of StrandNet style queries to the WAStD API.
