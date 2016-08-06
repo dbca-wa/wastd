@@ -1,4 +1,5 @@
 from rest_framework import serializers, viewsets
+from dynamic_rest import serializers as ds
 
 from wastd.observations.models import (
     Encounter, AnimalEncounter, MediaAttachment, Observation,
@@ -8,7 +9,7 @@ from wastd.users.models import User
 
 
 # Serializers ----------------------------------------------------------------#
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(ds.DynamicModelSerializer):
     """User serializer."""
 
     class Meta:
@@ -18,11 +19,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('username', 'name', 'email', 'first_name', 'last_name')
 
 
-class ObservationSerializer(serializers.HyperlinkedModelSerializer):
+class ObservationSerializer(ds.DynamicModelSerializer):
     """Observation serializer."""
 
-    encounter = serializers.HyperlinkedRelatedField(
-        source='encounter.pk', view_name='encounter-detail', read_only=True)
+    encounter = serializers.StringRelatedField()
 
     class Meta:
         """Class options."""
@@ -30,17 +30,31 @@ class ObservationSerializer(serializers.HyperlinkedModelSerializer):
         model = Observation
         fields = ('encounter', )
 
-    # Taliban code goes BOOOOM
-    # def to_representation(self, obj):
-    #     if isinstance(obj, FlipperTagObservation):
-    #         return FlipperTagObservationSerializer(
-    #             obj, context=self.context).to_representation(obj)
-    #
-    #     return super(ObservationSerializer, self).to_representation(obj)
+    def to_representation(self, obj):
+        """Resolve Observation to child class."""
+        if isinstance(obj, FlipperTagObservation):
+            return FlipperTagObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, MediaAttachment):
+            return MediaAttachmentSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, DistinguishingFeatureObservation):
+            return DistinguishingFeatureObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TurtleMorphometricObservation):
+            return TurtleMorphometricObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, DisposalObservation):
+            return DisposalObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+
+        return super(ObservationSerializer, self).to_representation(obj)
 
 
-class MediaAttachmentSerializer(ObservationSerializer):
+class MediaAttachmentSerializer(ds.DynamicModelSerializer):
     """MediaAttachment serializer."""
+
+    encounter = serializers.StringRelatedField()
 
     class Meta:
         """Class options."""
@@ -49,8 +63,10 @@ class MediaAttachmentSerializer(ObservationSerializer):
         fields = ('encounter', 'media_type', 'title', 'attachment')
 
 
-class DistinguishingFeatureObservationSerializer(ObservationSerializer):
+class DistinguishingFeatureObservationSerializer(ds.DynamicModelSerializer):
     """DistinguishingFeatureObservation serializer."""
+
+    encounter = serializers.StringRelatedField()
 
     class Meta:
         """Class options."""
@@ -61,8 +77,10 @@ class DistinguishingFeatureObservationSerializer(ObservationSerializer):
                   'entanglement', 'see_photo', 'comments')
 
 
-class TurtleMorphometricObservationSerializer(ObservationSerializer):
+class TurtleMorphometricObservationSerializer(ds.DynamicModelSerializer):
     """TurtleMorphometricObservation serializer."""
+
+    encounter = serializers.StringRelatedField()
 
     class Meta:
         """Class options."""
@@ -76,8 +94,10 @@ class TurtleMorphometricObservationSerializer(ObservationSerializer):
                   'maximum_head_width_mm', 'maximum_head_width_mm')
 
 
-class DisposalObservationSerializer(ObservationSerializer):
+class DisposalObservationSerializer(ds.DynamicModelSerializer):
     """DisposalObservation serializer."""
+
+    encounter = serializers.StringRelatedField()
 
     class Meta:
         """Class options."""
@@ -86,7 +106,7 @@ class DisposalObservationSerializer(ObservationSerializer):
         fields = ('encounter', 'management_actions', 'comments',)
 
 
-class FlipperTagObservationSerializer(ObservationSerializer):
+class FlipperTagObservationSerializer(ds.DynamicModelSerializer):
     """FlipperTagObservation serializer."""
 
     encounter = serializers.StringRelatedField()
@@ -98,16 +118,22 @@ class FlipperTagObservationSerializer(ObservationSerializer):
         fields = ('encounter', 'name', 'side', 'position', 'status', 'comments')
 
 
-class EncounterSerializer(serializers.HyperlinkedModelSerializer):
+class EncounterSerializer(ds.DynamicModelSerializer):
+    # serializers.HyperlinkedModelSerializer):
     """Encounter serializer."""
 
-    observation_set = serializers.HyperlinkedRelatedField(
-        many=True, view_name='observation-detail', read_only=True)
+    # observation_set = serializers.HyperlinkedRelatedField(
+    #     many=True, view_name='observation-detail', read_only=True)
+    # observation_set = serializers.StringRelatedField(many=True, read_only=True)
+    observation_set = ds.DynamicRelationField('ObservationSerializer', embed=True, many=True)
+    # who = serializers.StringRelatedField(read_only=True)
+    who = ds.DynamicRelationField('UserSerializer', embed=True)
 
     class Meta:
         """Class options."""
 
         model = Encounter
+        name = 'encounter'
         fields = ('where', 'when', 'who', 'observation_set',)
         geo_field = "where"
 
