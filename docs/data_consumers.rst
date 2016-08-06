@@ -29,3 +29,11 @@ Working examples:
 
 * Reading all Animal Observations into a data.frame in R
 * Uploading one Animal Observation from R and Python
+
+First code example::
+
+    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv
+
+This API call will download all AnimalEncounters as flat CSV file.
+Nested relationships (e.g. all Observation subgroups) are represented as prefix
+to column names.
