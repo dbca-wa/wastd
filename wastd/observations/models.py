@@ -129,26 +129,78 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """
         return
 
+    def can_curate(self):
+        """Return true if this document can be marked as curated."""
+        return True
+
+    @transition(
+        field=status,
+        source=STATUS_PROOFREAD,
+        target=STATUS_CURATED,
+        conditions=[can_curate],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Curate",
+            explanation=(""),
+            notify=True,)
+        )
+    def curate(self):
+        """Mark encounter as curated.
+
+        Curated data is deemed trustworthy by a subject matter expert.
+        """
+        return
+
+    def can_publish(self):
+        """Return true if this document can be published."""
+        return True
+
+    @transition(
+        field=status,
+        source=STATUS_CURATED,
+        target=STATUS_PUBLISHED,
+        conditions=[can_publish],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Publish",
+            explanation=(""),
+            notify=True,)
+        )
+    def publish(self):
+        """Mark encounter as ready to be published.
+
+        Published data has been deemed fit for release by the data owner.
+        """
+        return
+
     @property
     def wkt(self):
         """Return the point coordinates as Well Known Text (WKT)."""
         return self.where.wkt
 
     @property
+    def status_html(self):
+        """An HTML div indicating the QA status."""
+        tpl = '<div class="popup"><span class="tag tag-{0}">{1}</span></div>'
+        return tpl.format(Encounter.STATUS_LABELS[self.status],
+                          self.get_status_display())
+
+    @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
         return reverse('admin:{0}_{1}_change'.format(
-        self._meta.app_label, self._meta.model_name), args=[self.pk])
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     @property
     def admin_url_html(self):
-        tpl = ('<div class="popup"><i class="fa fa-pencil"></i><a '
-               'href={0} target="_">Edit</a></div>')
+        """An HTML div with a link to the admin change_view."""
+        tpl = ('<div class="popup"><i class="fa fa-pencil"></i>&nbsp;<button '
+               'href={0} target="_" class="btn btn-primary btn-sm">Edit</button></div>')
         return tpl.format(self.absolute_admin_url)
 
     @property
     def observer_html(self):
-        """An HTML string of metadata"""
+        """An HTML string of metadata."""
         tpl = '<div class="popup"><i class="fa fa-{0}"></i>&nbsp;{1}</div>'
         return mark_safe(
             tpl.format("calendar", self.when.strftime('%d/%m/%Y %H:%M:%S %Z')) +
@@ -161,9 +213,9 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = '<h4>Encounter</h4>{0}{1}{2}'
+        tpl = '<h4>Encounter</h4>{0}{1}{2}{4}'
         return mark_safe(tpl.format(self.observer_html, self.observation_html,
-                                    self.admin_url_html))
+                                    self.admin_url_html, self.status_html))
 
 
 @python_2_unicode_compatible
@@ -278,9 +330,10 @@ class AnimalEncounter(Encounter):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = "{0}{1}{2}{3}"
+        tpl = "{0}{1}{2}{3}{4}"
         return mark_safe(tpl.format(self.animal_html, self.observer_html,
-                                    self.observation_html, self.admin_url_html))
+                                    self.observation_html, self.admin_url_html,
+                                    self.status_html))
 
 
 # Observation models ---------------------------------------------------------#
