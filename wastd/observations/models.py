@@ -25,10 +25,12 @@ from __future__ import unicode_literals, absolute_import
 from django.db import models
 from django.contrib.gis.db import models as geo_models
 from django.core.urlresolvers import reverse
-from polymorphic.models import PolymorphicModel
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+
+from polymorphic.models import PolymorphicModel
+from django_fsm import FSMField, transition
 
 from wastd.users.models import User
 
@@ -43,6 +45,29 @@ class Encounter(PolymorphicModel, geo_models.Model):
     Where: Point in WGS84.
     Who: The observer has to be a registered system user.
     """
+    STATUS_NEW = 'new'
+    STATUS_PROOFREAD = 'proofread'
+    STATUS_CURATED = 'curated'
+    STATUS_PUBLISHED = 'published'
+
+    STATUS_CHOICES = (
+        (STATUS_NEW, _("New")),
+        (STATUS_PROOFREAD, _("Proofread")),
+        (STATUS_CURATED, _("Curated")),
+        (STATUS_PUBLISHED, _("Published"))
+        )
+
+    STATUS_LABELS = {
+        STATUS_NEW: "danger",
+        STATUS_PROOFREAD: "warning",
+        STATUS_CURATED: "info",
+        STATUS_PUBLISHED: "success"
+        }
+
+    status = FSMField(
+        default=STATUS_NEW,
+        choices=STATUS_CHOICES,
+        verbose_name=_("QA Status"))
 
     when = models.DateTimeField(
         verbose_name=_("Observed on"),
@@ -81,6 +106,28 @@ class Encounter(PolymorphicModel, geo_models.Model):
         self.as_html = self.make_html()
         super(Encounter, self).save(*args, **kwargs)
 
+    # FSM transitions --------------------------------------------------------#
+    def can_proofread(self):
+        """Return true if this document can be proofread."""
+        return True
+
+    @transition(
+        field=status,
+        source=STATUS_NEW,
+        target=STATUS_PROOFREAD,
+        conditions=[can_proofread],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Proofread",
+            explanation=(""),
+            notify=True,)
+        )
+    def proofread(self):
+        """Mark encounter as proof-read.
+
+        Proofreading compares the attached data sheet with entered values.
+        """
+        return
 
     @property
     def wkt(self):

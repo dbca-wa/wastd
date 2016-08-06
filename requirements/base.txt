@@ -70,6 +70,12 @@ Fabric
 # Revisions
 django-reversion
 
+# Transitions
+django-fsm
+django-fsm-log
+django-fsm-admin
+
+
 # API
 djangorestframework
 djangorestframework-gis

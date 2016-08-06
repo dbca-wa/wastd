@@ -48,6 +48,9 @@ THIRD_PARTY_APPS = (
     'dynamic_rest',             # Parameterised API queries
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
+    'django_fsm',               # Transitions
+    'django_fsm_log',            # Transition audit logs
+    'fsm_admin',                # Transitions in admin
     )
 
 # Apps specific for this project go here.
@@ -173,6 +176,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.request',
                 # Your stuff: custom template context processors go here
                 ],
             },
@@ -250,7 +254,7 @@ COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_URL = STATIC_URL
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
-ADMIN_URL = "admin/"
+ADMIN_URL = "^admin/"
 
 
 # Your common stuff: Below this line define 3rd party library settings

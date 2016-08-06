@@ -10,6 +10,7 @@ from easy_select2 import select2_modelform
 from .models import (Encounter, AnimalEncounter, MediaAttachment,
                      FlipperTagObservation, DisposalObservation,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation)
+from fsm_admin.mixins import FSMTransitionMixin
 
 
 class MediaAttachmentInline(admin.TabularInline):
@@ -52,7 +53,7 @@ class FlipperTagObservationAdmin(admin.ModelAdmin):
     """Admin for FlipperTagObservation"""
 
     save_on_top = True
-    list_display = ('name', 'side', 'position', 'status_display', 'comments')
+    list_display = ('name', 'side', 'position', 'status_display', 'encounter', 'comments')
     list_filter = ('side', 'position', 'status')
     search_fields = ('name', 'comments')
 
@@ -63,30 +64,42 @@ class FlipperTagObservationAdmin(admin.ModelAdmin):
 
 
 @admin.register(Encounter)
-class EncounterAdmin(admin.ModelAdmin):
+class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     """Admin for Encounter with inline for MediaAttachment."""
 
-    save_on_top = True
     date_hierarchy = 'when'
-    list_filter = ('who', )
-    formfield_overrides = {geo_models.PointField: {'widget': forms.OSMWidget}}
-    fieldsets = (
-        ('Encounter', {'fields': ('when', 'where', 'who')}),)
-    inlines = [MediaAttachmentInline, ]
+    formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
+    list_filter = ('status', 'who', )
+    list_display = ('when', 'wkt', 'who', 'status', )
+    list_select_related = True
+    save_on_top = True
+    search_fields = ('who', )
+    fsm_field = ['status', ]
+    fieldsets = (('Encounter', {'fields': ('when', 'where', 'who')}),)
+    inlines = [DistinguishingFeaturesInline,
+               TurtleMorphometricObservationInline,
+               FlipperTagObservationInline,
+               DisposalObservationInline,
+               MediaAttachmentInline, ]
 
 
 @admin.register(AnimalEncounter)
-class AnimalEncounterAdmin(admin.ModelAdmin):
+class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     """Admin for AnimalEncounter with inlines for TurtleMorphometrics."""
 
-    save_on_top = True
     date_hierarchy = 'when'
-    list_filter = ('who', 'species', 'health', )
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
+    list_display = ('when', 'wkt', 'who', 'species', 'health_display',
+                    'maturity_display', 'sex_display', 'behaviour', 'status', )
+    list_filter = ('status', 'who', 'species', 'health', 'maturity', 'sex', )
+    list_select_related = True
+    save_on_top = True
+    fsm_field = ['status', ]
+    search_fields = ('who__name', 'who__username', 'behaviour')
     fieldsets = EncounterAdmin.fieldsets + (
-        ('Animal', {'fields': ('species', 'health', 'behaviour', 'sex', 'maturity')}),
+        ('Animal',
+         {'fields': ('species', 'health', 'maturity', 'sex', 'behaviour', )}),
         )
-    list_display = ('when', 'wkt', 'species', 'health_display')
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
                FlipperTagObservationInline,
@@ -96,4 +109,14 @@ class AnimalEncounterAdmin(admin.ModelAdmin):
     def health_display(self, obj):
         """Make health status human readable."""
         return obj.get_health_display()
-    health_display.short_description = 'Health status'
+    health_display.short_description = 'Health'
+
+    def maturity_display(self, obj):
+        """Make maturity human readable."""
+        return obj.get_maturity_display()
+    maturity_display.short_description = 'Maturity'
+
+    def sex_display(self, obj):
+        """Make sex human readable."""
+        return obj.get_sex_display()
+    sex_display.short_description = 'Sex'
