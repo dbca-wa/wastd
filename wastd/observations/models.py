@@ -118,14 +118,42 @@ class Encounter(PolymorphicModel, geo_models.Model):
         conditions=[can_proofread],
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
-            verbose="Proofread",
-            explanation=(""),
+            verbose="Mark as proofread",
+            explanation=("This record is a faithful representation of the "
+                         "data sheet."),
             notify=True,)
         )
     def proofread(self):
         """Mark encounter as proof-read.
 
         Proofreading compares the attached data sheet with entered values.
+        Proofread data is deemed a faithful representation of original data
+        captured on a paper field data collection form, or stored in a legacy
+        system.
+        """
+        return
+
+    def can_require_proofreading(self):
+        """Return true if this document can be proofread."""
+        return True
+
+    @transition(
+        field=status,
+        source=STATUS_PROOFREAD,
+        target=STATUS_NEW,
+        conditions=[can_require_proofreading],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Require proofreading",
+            explanation=("This record deviates from the data source and "
+                         "requires proofreading."),
+            notify=True,)
+        )
+    def can_require_proofreading(self):
+        """Mark encounter as having typos, requiring more proofreading.
+
+        Proofreading compares the attached data sheet with entered values.
+        If a discrepancy to the data sheet is found, proofreading is required.
         """
         return
 
@@ -140,14 +168,38 @@ class Encounter(PolymorphicModel, geo_models.Model):
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
-            verbose="Curate",
-            explanation=(""),
+            verbose="Mark as trustworthy",
+            explanation=("This record is deemed trustworthy."),
             notify=True,)
         )
     def curate(self):
         """Mark encounter as curated.
 
         Curated data is deemed trustworthy by a subject matter expert.
+        """
+        return
+
+    def can_revoke_curated(self):
+        """Return true if curated status can be revoked."""
+        return True
+
+    @transition(
+        field=status,
+        source=STATUS_CURATED,
+        target=STATUS_PROOFREAD,
+        conditions=[can_revoke_curated],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Flag",
+            explanation=("This record cannot be true. This record requires"
+                         " review by a subject matter expert."),
+            notify=True,)
+        )
+    def flag(self):
+        """Flag as requiring changes to data.
+
+        Curated data is deemed trustworthy by a subject matter expert.
+        Revoking curation flags data for requiring changes by an expert.
         """
         return
 
@@ -163,13 +215,36 @@ class Encounter(PolymorphicModel, geo_models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Publish",
-            explanation=(""),
+            explanation=("This record is fit for release."),
             notify=True,)
         )
     def publish(self):
         """Mark encounter as ready to be published.
 
         Published data has been deemed fit for release by the data owner.
+        """
+        return
+
+    def can_embargo(self):
+        """Return true if encounter can be embargoed."""
+        return True
+
+    @transition(
+        field=status,
+        source=STATUS_PUBLISHED,
+        target=STATUS_CURATED,
+        conditions=[can_embargo],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Embargo",
+            explanation=("This record is not fit for release."),
+            notify=True,)
+        )
+    def embargo(self):
+        """Mark encounter as NOT ready to be published.
+
+        Published data has been deemed fit for release by the data owner.
+        Embargoed data is marked as curated, but not ready for release.
         """
         return
 
@@ -194,8 +269,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def admin_url_html(self):
         """An HTML div with a link to the admin change_view."""
-        tpl = ('<div class="popup"><i class="fa fa-pencil"></i>&nbsp;<button '
-               'href={0} target="_" class="btn btn-primary btn-sm">Edit</button></div>')
+        tpl = ('<div class="popup"><i class="fa fa-pencil"></i>&nbsp;<a '
+               'href={0} target="_" class="btn btn-sm">Edit</a></div>')
         return tpl.format(self.absolute_admin_url)
 
     @property
