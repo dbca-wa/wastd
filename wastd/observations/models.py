@@ -299,9 +299,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
 class AnimalEncounter(Encounter):
     """The encounter of an animal of a species in a certain state of health
     and behaviour.
-
-    TODO: StrandNet activity.
-    TODO: StandNet carcass / health condition, freshness of injury > HEALTH_CHOICES
     """
     HEALTH_CHOICES = (
         ('alive', 'Alive (healthy)'),
@@ -312,7 +309,7 @@ class AnimalEncounter(Encounter):
         ('dead-advanced', 'Dead (advanced decomposition)'),
         ('dead-mummified', 'Mummified (dead, skin holding bones)'),
         ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
-        ('other', 'Other'),)
+        ('other', 'Other'), )
 
     SPECIES_CHOICES = (
         ('Natator depressus', 'Flatback turtle (Natator depressus)'),
@@ -321,43 +318,52 @@ class AnimalEncounter(Encounter):
         ('Caretta caretta', 'Loggerhead turtle (Caretta caretta)'),
         ('Lepidochelys olivacea', 'Olive Ridley turtle (Lepidochelys olivacea)'),
         ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
-        ('unidentified', 'Unidentified species'),)
+        ('Corolla corolla', 'Hatchback turtle (Corolla corolla)'),
+        ('unidentified', 'Unidentified species'), )
 
     SEX_CHOICES = (
         ("male", "male"),
         ("female", "female"),
         ("unknown", "sex not determined or not examined"),
-        ("intersex", "hermaphrodite or intersex")
-        )
+        ("intersex", "hermaphrodite or intersex"), )
 
     MATURITY_CHOICES = (
-        ("hatchling", "hatchling"),
         ("juvenile", "juvenile"),
         # ("unweaned", "unweaned immature juvenile"),
         # ("weaned", "weaned immature juvenile"),
         ("adult", "adult"),
-        ("unknown", "unknown maturity"),)
+        ("unknown", "unknown maturity"), )
+
+    ACTIVITY_CHOICES = (
+        ("arriving", "arriving"),
+        ("digging-body-pit", "digging body pit"),
+        ("excavating-egg-chamber", "excavating egg chamber"),
+        ("laying-eggs", "laying eggs"),
+        ("filling-in-egg-chamber", "filling in egg chamber"),
+        ("returning-to-water", "returning to water"),
+        ("other", "other activity"),
+        ("unknown", "unknown activity"), )
 
     species = models.CharField(
         max_length=300,
         verbose_name=_("Species"),
         choices=SPECIES_CHOICES,
         default="unidentified",
-        help_text=_("The species of the animal."),)
+        help_text=_("The species of the animal."), )
 
     sex = models.CharField(
         max_length=300,
         default="unknown",
         verbose_name=_("Sex"),
         choices=SEX_CHOICES,
-        help_text=_("The animal's sex."),)
+        help_text=_("The animal's sex."), )
 
     maturity = models.CharField(
         max_length=300,
         default="unknown",
         verbose_name=_("Maturity"),
         choices=MATURITY_CHOICES,
-        help_text=_("The animal's maturity."),)
+        help_text=_("The animal's maturity."), )
 
     health = models.CharField(
         max_length=300,
@@ -365,12 +371,19 @@ class AnimalEncounter(Encounter):
         choices=HEALTH_CHOICES,
         default="alive",
         help_text=_("On a scale from the Fresh Prince of Bel Air to 80s Hair "
-                    "Metal: how dead and decomposed is the animal?"),)
+                    "Metal: how dead and decomposed is the animal?"), )
+
+    activity = models.CharField(
+        max_length=300,
+        default="unknown",
+        verbose_name=_("Activity"),
+        choices=ACTIVITY_CHOICES,
+        help_text=_("The animal's activity at the time of observation."), )
 
     behaviour = models.TextField(
         verbose_name=_("Behaviour"),
         blank=True, null=True,
-        help_text=_("Notes on condition or behaviour if alive."),)
+        help_text=_("Notes on condition or behaviour if alive."), )
 
     class Meta:
         """Class options."""
@@ -396,6 +409,98 @@ class AnimalEncounter(Encounter):
         """Cache the HTML representation in `as_html`."""
         self.as_html = self.make_html()
         super(AnimalEncounter, self).save(*args, **kwargs)
+
+    @property
+    def animal_html(self):
+        """An HTML string of Observations"""
+        tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3}'
+        return mark_safe(
+            tpl.format(self.get_species_display(), self.get_health_display(),
+                       self.get_maturity_display(), self.get_sex_display()))
+
+    def make_html(self):
+        """Create an HTML representation."""
+        tpl = "{0}{1}{2}{3}{4}"
+        return mark_safe(tpl.format(self.animal_html, self.observer_html,
+                                    self.observation_html, self.admin_url_html,
+                                    self.status_html))
+
+
+@python_2_unicode_compatible
+class TurtleEncounter(AnimalEncounter):
+    """The encounter of an animal of a species in a certain state of health
+    and behaviour.
+
+    TODO: StrandNet activity.
+    TODO: StandNet carcass / health condition, freshness of injury > HEALTH_CHOICES
+    """
+    HEALTH_CHOICES = (
+        ('alive', 'Alive (healthy)'),
+        ('alive-injured', 'Alive (injured)'),
+        ('alive-then-died', 'Initally alive (but died)'),
+        ('dead-edible', 'Dead (carcass edible)'),
+        ('dead-organs-intact', 'Dead (decomposed but organs intact)'),
+        ('dead-advanced', 'Dead (advanced decomposition)'),
+        ('dead-mummified', 'Mummified (dead, skin holding bones)'),
+        ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
+        ('other', 'Other'),)
+
+    SPECIES_CHOICES = (
+        ('Natator depressus', 'Flatback turtle (Natator depressus)'),
+        ('Chelonia mydas', 'Green turtle (Chelonia mydas)'),
+        ('Eretmochelys imbricata', 'Hawksbill turtle (Eretmochelys imbricata)'),
+        ('Caretta caretta', 'Loggerhead turtle (Caretta caretta)'),
+        ('Lepidochelys olivacea', 'Olive Ridley turtle (Lepidochelys olivacea)'),
+        ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
+        ('Corolla corolla', 'Hatchback turtle (Corolla corolla)'),
+        ('unidentified', 'Unidentified species'),)
+
+    SEX_CHOICES = (
+        ("male", "male"),
+        ("female", "female"),
+        ("unknown", "sex not determined or not examined"),
+        ("intersex", "hermaphrodite or intersex"), )
+
+    MATURITY_CHOICES = (
+        ("hatchling", "hatchling"),
+        ("juvenile", "juvenile"),
+        ("adult", "adult"),
+        ("unknown", "unknown maturity"), )
+
+    ACTIVITY_CHOICES = (
+        ("arriving", "arriving"),
+        ("digging-body-pit", "digging body pit"),
+        ("excavating-egg-chamber", "excavating egg chamber"),
+        ("laying-eggs", "laying eggs"),
+        ("filling-in-egg-chamber", "filling in egg chamber"),
+        ("returning-to-water", "returning to water"),
+        ("other", "other activity"),
+        ("unknown", "unknown activity"), )
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["when", "where"]
+        verbose_name = "Turtle Encounter"
+        verbose_name_plural = "Turtle Encounters"
+        get_latest_by = "when"
+
+    def __str__(self):
+        """The unicode representation."""
+        tpl = "TurtleEncounter {0} on {1} by {2} of {3}, {4} {5} {6}"
+        return tpl.format(
+            self.pk,
+            self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
+            self.who.name,
+            self.get_species_display(),
+            self.get_health_display(),
+            self.get_maturity_display(),
+            self.get_sex_display())
+
+    def save(self, *args, **kwargs):
+        """Cache the HTML representation in `as_html`."""
+        self.as_html = self.make_html()
+        super(TurtleEncounter, self).save(*args, **kwargs)
 
     @property
     def animal_html(self):
@@ -628,6 +733,13 @@ class DistinguishingFeatureObservation(Observation):
         default="na",
         help_text=_(""),)
 
+    scanned_for_pit_tags = models.CharField(
+        max_length=300,
+        verbose_name=_("Scanned for PIT tags"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
     missing_limbs = models.CharField(
         max_length=300,
         verbose_name=_("Missing limbs"),
@@ -694,6 +806,7 @@ class DistinguishingFeatureObservation(Observation):
                '&nbsp<i class="{1}"></i></div>')
         return mark_safe(
             tpl.format("Damage", self.OBSERVATION_ICONS[self.damage_injury]) +
+            tpl.format("PIT tags scanned", self.OBSERVATION_ICONS[self.scanned_for_pit_tags]) +
             tpl.format("Missing Limbs", self.OBSERVATION_ICONS[self.missing_limbs]) +
             tpl.format("Barnacles", self.OBSERVATION_ICONS[self.barnacles]) +
             tpl.format("Algal growth", self.OBSERVATION_ICONS[self.algal_growth]) +
@@ -826,6 +939,38 @@ class TurtleMorphometricObservation(Observation):
                        self.ACCURACY_ICONS[self.maximum_head_width_accuracy])
             )
 
+
+@python_2_unicode_compatible
+class TurtleNestingObservation(Observation):
+    """Nesting-related measurements of a turtle."""
+
+    BEACH_POSITION_CHOICES = (
+        ("below-hwm", "below high water mark"),
+        ("above-hw", "above high water mark, below dune"),
+        ("dune-edge", "edge of dune, beginning of spinifex"),
+        ("in-dune", "inside dune, spinifex"), )
+
+    nest_position = models.CharField(
+        max_length=300,
+        default="unknown",
+        verbose_name=_("Beach position"),
+        choices=BEACH_POSITION_CHOICES,
+        help_text=_("The position of the nest on the beach."),)
+
+    eggs_laid = models.BooleanField(
+        verbose_name=_("Did the turtle lay eggs?"),
+        default=False,
+        help_text=_("Did round, white objects leave the turtle's butt?"),)
+
+    egg_count = models.PositiveIntegerField(
+        verbose_name=_("Number of eggs laid"),
+        blank=True, null=True,
+        help_text=_("The number of eggs laid."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Turtle Nesting {0} for {1}".format(
+            self.pk, self.encounter)
 
 # NestObs
 # Turtle activity when tagged

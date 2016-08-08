@@ -7,9 +7,10 @@ from django.contrib.gis import forms
 from wastd.widgets import MapWidget
 from django.contrib.gis.db import models as geo_models
 from easy_select2 import select2_modelform
-from .models import (Encounter, AnimalEncounter, MediaAttachment,
-                     TagObservation, DisposalObservation,
-                     TurtleMorphometricObservation, DistinguishingFeatureObservation)
+from .models import (Encounter, AnimalEncounter, TurtleEncounter,
+                     MediaAttachment, TagObservation, DisposalObservation,
+                     TurtleMorphometricObservation, DistinguishingFeatureObservation,
+                     TurtleNestingObservation)
 from fsm_admin.mixins import FSMTransitionMixin
 
 
@@ -39,6 +40,13 @@ class DisposalObservationInline(admin.TabularInline):
 
     extra = 0
     model = DisposalObservation
+
+
+class TurtleNestingObservationInline(admin.TabularInline):
+    """Admin for TurtleNestingObservation."""
+
+    extra = 0
+    model = TurtleNestingObservation
 
 
 class TagObservationInline(admin.TabularInline):
@@ -96,12 +104,13 @@ class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
                TurtleMorphometricObservationInline,
                TagObservationInline,
                DisposalObservationInline,
+               TurtleNestingObservationInline,
                MediaAttachmentInline, ]
 
 
 @admin.register(AnimalEncounter)
 class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
-    """Admin for AnimalEncounter with inlines for TurtleMorphometrics."""
+    """Admin for AnimalEncounter."""
 
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
@@ -117,7 +126,6 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
          {'fields': ('species', 'health', 'maturity', 'sex', 'behaviour', )}),
         )
     inlines = [DistinguishingFeaturesInline,
-               TurtleMorphometricObservationInline,
                TagObservationInline,
                DisposalObservationInline,
                MediaAttachmentInline, ]
@@ -141,3 +149,14 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
         """Make health status human readable."""
         return obj.get_status_display()
     status_display.short_description = 'Status'
+
+
+@admin.register(TurtleEncounter)
+class TurtleEncounterAdmin(AnimalEncounterAdmin):
+    """Admin for TurtleEncounter."""
+    inlines = [DistinguishingFeaturesInline,
+               TurtleMorphometricObservationInline,
+               TagObservationInline,
+               DisposalObservationInline,
+               TurtleNestingObservationInline,
+               MediaAttachmentInline, ]

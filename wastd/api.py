@@ -1,10 +1,11 @@
 from rest_framework import serializers, viewsets
-from dynamic_rest import serializers as ds, viewsets as dv
+# from dynamic_rest import serializers as ds, viewsets as dv
 
 from wastd.observations.models import (
-    Encounter, AnimalEncounter, Observation, MediaAttachment, TagObservation,
+    Encounter, AnimalEncounter, TurtleEncounter,
+    Observation, MediaAttachment, TagObservation,
     DisposalObservation, TurtleMorphometricObservation,
-    DistinguishingFeatureObservation)
+    DistinguishingFeatureObservation, TurtleNestingObservation)
 from wastd.users.models import User
 
 
@@ -41,6 +42,9 @@ class ObservationSerializer(serializers.ModelSerializer):
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, DisposalObservation):
             return DisposalObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TurtleNestingObservation):
+            return TurtleNestingObservationSerializer(
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, TagObservation):
             return TagObservationSerializer(
@@ -114,6 +118,17 @@ class DisposalObservationSerializer(serializers.ModelSerializer):
                   'management_actions', 'comments',)
 
 
+class TurtleNestingObservationSerializer(serializers.ModelSerializer):
+    """TurtleNestingObservation serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleNestingObservation
+        fields = ('observation_name',
+                  'nest_position', 'eggs_laid', 'egg_count', )
+
+
 class EncounterSerializer(serializers.ModelSerializer):
     """Encounter serializer."""
 
@@ -150,7 +165,20 @@ class AnimalEncounterSerializer(EncounterSerializer):
 
         model = AnimalEncounter
         fields = ('where', 'when', 'who',
-                  'species', 'health', 'sex', 'behaviour', 'observation_set', )
+                  'species', 'health', 'sex', 'behaviour', 'activity',
+                  'observation_set', )
+
+
+class TurtleEncounterSerializer(EncounterSerializer):
+    """TurtleEncounter serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleEncounter
+        fields = ('where', 'when', 'who',
+                  'species', 'health', 'sex', 'behaviour', 'activity',
+                  'observation_set', )
 
 
 # ViewSets define the view behavior.
@@ -173,6 +201,13 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
+
+
+class TurtleEncounterViewSet(viewsets.ModelViewSet):
+    """TurtleEncounter view set."""
+
+    queryset = TurtleEncounter.objects.all()
+    serializer_class = TurtleEncounterSerializer
 
 
 class ObservationViewSet(viewsets.ModelViewSet):
