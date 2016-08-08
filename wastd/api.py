@@ -2,7 +2,7 @@ from rest_framework import serializers, viewsets
 # from dynamic_rest import serializers as ds, viewsets as dv
 
 from wastd.observations.models import (
-    Encounter, AnimalEncounter, TurtleEncounter,
+    Encounter, AnimalEncounter, TurtleEncounter, CetaceanEncounter,
     Observation, MediaAttachment, TagObservation,
     DisposalObservation, TurtleMorphometricObservation,
     DistinguishingFeatureObservation, TurtleNestingObservation)
@@ -180,6 +180,17 @@ class TurtleEncounterSerializer(EncounterSerializer):
                   'species', 'health', 'sex', 'behaviour', 'activity',
                   'observation_set', )
 
+class CetaceanEncounterSerializer(EncounterSerializer):
+    """CetaceanEncounter serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = CetaceanEncounter
+        fields = ('where', 'when', 'who',
+                  'species', 'health', 'sex', 'behaviour', 'activity',
+                  'observation_set', )
+
 
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
@@ -208,6 +219,13 @@ class TurtleEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = TurtleEncounter.objects.all()
     serializer_class = TurtleEncounterSerializer
+
+
+class CetaceanEncounterViewSet(viewsets.ModelViewSet):
+    """CetaceanEncounter view set."""
+
+    queryset = CetaceanEncounter.objects.all()
+    serializer_class = CetaceanEncounterSerializer
 
 
 class ObservationViewSet(viewsets.ModelViewSet):

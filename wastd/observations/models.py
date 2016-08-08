@@ -65,6 +65,13 @@ class Encounter(PolymorphicModel, geo_models.Model):
         STATUS_PUBLISHED: "success"
         }
 
+    # location accuracy
+    # <option value="4">Estimate to give latitudinal sorting only</option>
+    # <option value="1">GPS reading at exact location (+-10m)</option>
+    # <option value="2">GPS reading in general area (+-1km)</option>
+    # <option value="3">Map reference (+-1nm)</option>
+    # <option value="5">No known location</option></select>
+
     status = FSMField(
         default=STATUS_NEW,
         choices=STATUS_CHOICES,
@@ -310,6 +317,20 @@ class AnimalEncounter(Encounter):
         ('dead-mummified', 'Mummified (dead, skin holding bones)'),
         ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
         ('other', 'Other'), )
+        # <option value="9">? - DO NOT USE</option>
+        # <option value="14">D - Dead</option>
+        # <option value="3">D1 - Live but subsequently died; unsuccessful rescue</option>
+        # <option value="4">D2 - Dead, carcass in good condition; Fresh; suitable for pathology or resembling a carcass fresh enough for eating</option>
+        # <option value="5">D3 - Dead, carcass fair</option>
+        # <option value="6">D4 - Dead, carcass poor; Advanced decomposition with internal organs falling apart</option>
+        # <option value="7">D5 - Dead, mummified carcass with skin holding bones together</option>
+        # <option value="8">D6 - Dead, disarticulated bones with no soft tissue remaining</option>
+        # <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
+        # <option value="22">DK - Killed for research</option>
+        # <option value="1">DL - Alive and left to natural processes. Not rescued</option>
+        # <option value="23">DU - Live but subsequently euthanased</option>
+        # <option value="2">DZ - Alive and rescued</option></select>
+
 
     SPECIES_CHOICES = (
         ('Natator depressus', 'Flatback turtle (Natator depressus)'),
@@ -343,6 +364,63 @@ class AnimalEncounter(Encounter):
         ("returning-to-water", "returning to water"),
         ("other", "other activity"),
         ("unknown", "unknown activity"), )
+    # primary activity
+    # <select class="iceSelOneMnu" id="sightingForm:primaryActivity" name="sightingForm:primaryActivity" onblur="setFocus('');" onfocus="setFocus(this.id);" size="1" title="Indicates what the animal was doing when sighted."><option selected="selected" value="">--- Select ---</option>
+    # <option value="20">? - Unspecified</option>
+    # <option value="1">B - B - to be determined)</option>
+    # <option value="2">B? - B? - to be determined)</option>
+    # <option value="3">BE - BE - to be determined</option>
+    # <option value="4">BF - Floating (dead, sick, unable to dive, drifting in water)</option>
+    # <option value="5">BJ - Beach Jumped</option>
+    # <option value="7">BR - Carcass or butchered remains found removed from coast</option>
+    # <option value="6">BW - Beach washed (dead, sick or stranded on beach/coast)</option>
+    # <option value="8">C - Courting</option>
+    # <option value="21">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
+    # <option value="9">J - In captivity</option>
+    # <option value="10">N - Nesting and internesting</option>
+    # <option value="11">P - Predated (killed)</option>
+    # <option value="12">PC - Predated by crocodile (killed)</option>
+    # <option value="13">PD - Predated by dog or dingo (killed)</option>
+    # <option value="14">PF - Predated by fish (killed)</option>
+    # <option value="15">PR - Predated by raptor (killed)</option>
+    # <option value="16">PS - Predated by shark (killed)</option>
+    # <option value="17">R - Released</option>
+    # <option value="18">S - General non-breeding activity (swimming, sleeping, feeding, ...)</option>
+    # <option value="19">Z - Tag found not attached to animal</option></select>
+
+
+    # # secondary activity
+    # <select class="iceSelOneMnu" id="sightingForm:secondaryActivity" name="sightingForm:secondaryActivity" onblur="setFocus('');" onfocus="setFocus(this.id);" size="1" title="Contains capture information, if relevant. It will primarily apply to those animals caught in crab pots, fishing nets and lines etc."><option selected="selected" value="">--- Select ---</option>
+    # <option value="30">? - ? - to be determined</option>
+    # <option value="2">BJ - Non-Nesting: Beach jumped</option>
+    # <option value="3">BW - Non-Nesting: Beach washed</option>
+    # <option value="75">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
+    # <option value="31">F? - F? - to be determined</option>
+    # <option value="10">FC - Fisheries: Fishing - captured in arrowhead fish trap</option>
+    # <option value="11">FD - Fisheries: Sucked/picked up by dredge</option>
+    # <option value="36">FG - Fisheries: Captured with gaff from boat</option>
+    # <option value="35">FI - Fisheries: Crabbing - trapped inside a crab pot</option>
+    # <option value="12">FL - Fisheries: Fishing - hooked by fishing line; included SCP shark-hooks</option>
+    # <option value="13">FN - Fisheries: Fishing - captured by netting</option>
+    # <option value="14">FP - Fisheries: Tangled in float-line to crab-pot, anchor line, trace to shark-hook, etc</option>
+    # <option value="15">FS - Fisheries: Fishing - speared, or captured by a diver attaching a line to the animal</option>
+    # <option value="16">FT - Fisheries: Fishing - trawling</option>
+    # <option value="17">FZ - Fisheries: Trapped in ghost-net</option>
+    # <option value="32">L - L - to be determined</option>
+    # <option value="56">NJ - Non-Nesting: Rodeo - night time</option>
+    # <option value="55">NS - Non-Nesting: SCUBA/snorkelling - night time</option>
+    # <option value="6">P - Non-Nesting: Observed but not captured</option>
+    # <option value="57">PA - Non-Nesting: Observation from aerial survey</option>
+    # <option value="58">PI - Non-Nesting: Image recorded during underwater video monitoring</option>
+    # <option value="4">RJ - Non-Nesting: Rodeo - day time</option>
+    # <option value="5">S - Non-Nesting: SCUBA/snorkelling - day time</option>
+    # <option value="33">T - T - to be determined</option>
+    # <option value="20">TA - Trapped: Trapped by land reclaimation</option>
+    # <option value="21">TE - Trapped: Trapped in electricity power plant water intake system</option>
+    # <option value="59">TS - Non-Nesting: Located by satellite telemetry</option>
+    # <option value="22">TT - Trapped: Trapped in creek at low tide</option>
+    # <option value="34">X - X - to be determined</option>
+    # <option value="1">X* - Nesting: Laid</option></select>
 
     species = models.CharField(
         max_length=300,
@@ -444,6 +522,19 @@ class TurtleEncounter(AnimalEncounter):
         ('dead-mummified', 'Mummified (dead, skin holding bones)'),
         ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
         ('other', 'Other'),)
+        # <option value="9">? - DO NOT USE</option>
+        # <option value="14">D - Dead</option>
+        # <option value="3">D1 - Live but subsequently died; unsuccessful rescue</option>
+        # <option value="4">D2 - Dead, carcass in good condition; Fresh; suitable for pathology or resembling a carcass fresh enough for eating</option>
+        # <option value="5">D3 - Dead, carcass fair</option>
+        # <option value="6">D4 - Dead, carcass poor; Advanced decomposition with internal organs falling apart</option>
+        # <option value="7">D5 - Dead, mummified carcass with skin holding bones together</option>
+        # <option value="8">D6 - Dead, disarticulated bones with no soft tissue remaining</option>
+        # <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
+        # <option value="22">DK - Killed for research</option>
+        # <option value="1">DL - Alive and left to natural processes. Not rescued</option>
+        # <option value="23">DU - Live but subsequently euthanased</option>
+        # <option value="2">DZ - Alive and rescued</option></select>
 
     SPECIES_CHOICES = (
         ('Natator depressus', 'Flatback turtle (Natator depressus)'),
@@ -455,15 +546,34 @@ class TurtleEncounter(AnimalEncounter):
         ('Corolla corolla', 'Hatchback turtle (Corolla corolla)'),
         ('unidentified', 'Unidentified species'),)
 
+        # <select class="iceSelOneMnu" id="sightingForm:species" name="sightingForm:species" onblur="setFocus('');" onfocus="setFocus(this.id);" size="1">
+        # <option selected="selected" value="">--- Select ---</option>
+        # <option value="30">Caretta caretta (Loggerhead turtle)</option>
+        # <option value="37">Caretta caretta x Chelonia mydas (Hybrid turtle)</option>
+        # <option value="31">Chelonia mydas (Green turtle)</option>
+        # <option value="32">Chelonia mydas agassazzi (Black turtle or East Pacific Green)</option>
+        # <option value="261">Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)</option>
+        # <option value="33">Dermochelys coriacea (Leatherback turtle)</option>
+        # <option value="34">Eretmochelys imbricata (Hawksbill turtle)</option>
+        # <option value="35">Lepidochelys olivacea (Olive ridley turtle)</option>
+        # <option value="36">Natator depressus (Flatback turtle)</option>
+        # <option value="281">Natator depressus x Caretta caretta (Hybrid turtle)</option>
+        # <option value="38">Natator depressus x Chelonia mydas (Hybrid turtle)</option>
+        # <option value="39">Unknown (Unidentified turtle)</option></select>
+
     SEX_CHOICES = (
         ("male", "male"),
         ("female", "female"),
         ("unknown", "sex not determined or not examined"),
-        ("intersex", "hermaphrodite or intersex"), )
+        ("intersex", "hermaphrodite or intersex or neither male nor female"), )
 
     MATURITY_CHOICES = (
         ("hatchling", "hatchling"),
+        ("post-hatchling", "post-hatchling"),
         ("juvenile", "juvenile"),
+        ("pre-pubsecent-immature", "pre-pubsecent immature"),
+        ("pubsecent-immature", "pubsecent immature"),
+        ("adult-measured", "adult status determined from carapace and tail measurements"),
         ("adult", "adult"),
         ("unknown", "unknown maturity"), )
 
@@ -502,20 +612,203 @@ class TurtleEncounter(AnimalEncounter):
         self.as_html = self.make_html()
         super(TurtleEncounter, self).save(*args, **kwargs)
 
-    @property
-    def animal_html(self):
-        """An HTML string of Observations"""
-        tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3}'
-        return mark_safe(
-            tpl.format(self.get_species_display(), self.get_health_display(),
-                       self.get_maturity_display(), self.get_sex_display()))
 
-    def make_html(self):
-        """Create an HTML representation."""
-        tpl = "{0}{1}{2}{3}{4}"
-        return mark_safe(tpl.format(self.animal_html, self.observer_html,
-                                    self.observation_html, self.admin_url_html,
-                                    self.status_html))
+@python_2_unicode_compatible
+class CetaceanEncounter(AnimalEncounter):
+    """The encounter of an animal of a species in a certain state of health
+    and behaviour.
+    """
+    HEALTH_CHOICES = (
+        ('alive', 'Alive (healthy)'),
+        ('alive-injured', 'Alive (injured)'),
+        ('alive-then-died', 'Initally alive (but died)'),
+        ('dead-edible', 'Dead (carcass edible)'),
+        ('dead-organs-intact', 'Dead (decomposed but organs intact)'),
+        ('dead-advanced', 'Dead (advanced decomposition)'),
+        ('dead-mummified', 'Mummified (dead, skin holding bones)'),
+        ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
+        ('other', 'Other'),)
+        # <option value="9">? - DO NOT USE</option>
+        # <option value="14">D - Dead</option>
+        # <option value="3">D1 - Live but subsequently died; unsuccessful rescue</option>
+        # <option value="4">D2 - Dead, carcass in good condition; Fresh; suitable for pathology or resembling a carcass fresh enough for eating</option>
+        # <option value="5">D3 - Dead, carcass fair</option>
+        # <option value="6">D4 - Dead, carcass poor; Advanced decomposition with internal organs falling apart</option>
+        # <option value="7">D5 - Dead, mummified carcass with skin holding bones together</option>
+        # <option value="8">D6 - Dead, disarticulated bones with no soft tissue remaining</option>
+        # <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
+        # <option value="22">DK - Killed for research</option>
+        # <option value="1">DL - Alive and left to natural processes. Not rescued</option>
+        # <option value="23">DU - Live but subsequently euthanased</option>
+        # <option value="2">DZ - Alive and rescued</option></select>
+
+    SPECIES_CHOICES = (
+        ('Natator depressus', 'Flatback turtle (Natator depressus)'),
+        ('Chelonia mydas', 'Green turtle (Chelonia mydas)'),
+        ('Eretmochelys imbricata', 'Hawksbill turtle (Eretmochelys imbricata)'),
+        ('Caretta caretta', 'Loggerhead turtle (Caretta caretta)'),
+        ('Lepidochelys olivacea', 'Olive Ridley turtle (Lepidochelys olivacea)'),
+        ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
+        ('Corolla corolla', 'Hatchback turtle (Corolla corolla)'),
+        ('unidentified', 'Unidentified species'),)
+
+        # dolphins
+        # <option value="2">Delphinus delphis (Short-beaked common dolphin)</option>
+        # <option value="4">Grampus griseus (Risso's dolphin)</option>
+        # <option value="5">Lagenodelphis hosei (Fraser's dolphin)</option>
+        # <option value="6">Lagenorhynchus obscurus (Dusky dolphin)</option>
+        # <option value="8">Orcaella heinsohni (Australian snubfin dolphin)</option>
+        # <option value="9">Sousa sahulensis (Australian humpback dolphin)</option>
+        # <option value="10">Stenella attenuata (Pantropical spotted dolphin)</option>
+        # <option value="11">Stenella coeruleoalba (Striped dolphin)</option>
+        # <option value="12">Stenella longirostris (Spinner dolphin)</option>
+        # <option value="13">Stenella sp. (Unidentified spotted dolphin)</option>
+        # <option value="14">Steno bredanensis (Rough-toothed dolphin)</option>
+        # <option value="15">Tursiops aduncus (Indo-Pacific bottlenose dolphin)</option>
+        # <option value="16">Tursiops sp. (Unidentified bottlenose dolphin)</option>
+        # <option value="17">Tursiops truncatus (Offshore bottlenose dolphin)</option>
+        # <option value="18">Unknown (Unidentified dolphin)</option></select>
+        # whales
+        # <option value="60">Balaenoptera acutorostrata (Dwarf minke whale)</option>
+        # <option value="61">Balaenoptera bonaerensis (Antarctic minke whale)</option>
+        # <option value="62">Balaenoptera borealis (Sei whale)</option>
+        # <option value="63">Balaenoptera edeni (Bryde's whale)</option>
+        # <option value="64">Balaenoptera musculus (Blue whale)</option>
+        # <option value="65">Balaenoptera musculus brevicauda (Pygmy blue whale)</option>
+        # <option value="66">Balaenoptera physalus (Fin whale)</option>
+        # <option value="67">Balaenoptera sp. 1 (Unidentified minke whale)</option>
+        # <option value="68">Balaenoptera sp. 2 (Unidentified rorqual whale)</option>
+        # <option value="69">Eubalaena australis (Southern right whale)</option>
+        # <option value="70">Feresa attenuata (Pygmy killer whale)</option>
+        # <option value="71">Globicephala macrorhynchus (Short-finned pilot whale)</option>
+        # <option value="72">Globicephala melas (Long-finned pilot whale)</option>
+        # <option value="73">Globicephala sp. (Unidentified pilot whale)</option>
+        # <option value="74">Indopacetus pacificus (Longman's beaked whale)</option>
+        # <option value="75">Kogia breviceps (Pygmy sperm whale)</option>
+        # <option value="76">Kogia sima (Dwarf sperm whale)</option>
+        # <option value="77">Kogia sp. (Unidentified small sperm whale)</option>
+        # <option value="78">Megaptera novaeangliae (Humpback whale)</option>
+        # <option value="79">Mesoplodon densirostris (Blainville's beaked whale)</option>
+        # <option value="80">Mesoplodon layardii (Strap-toothed whale)</option>
+        # <option value="81">Mesoplodon sp. (Beaked whale)</option>
+        # <option value="82">Orcinus orca (Killer whale)</option>
+        # <option value="83">Peponocephala electra (Melon-headed whale)</option>
+        # <option value="84">Physeter macrocephalus (Sperm whale)</option>
+        # <option value="85">Pseudorca crassidens (False killer whale)</option>
+        # <option value="87">Unknown (Black fish)</option>
+        # <option value="88">Unknown2 (Unidentified whale)</option>
+        # <option value="86">Ziphius cavirostris (Cuvier's beaked whale)</option></select>
+
+    SEX_CHOICES = (
+        ("male", "male"),
+        ("female", "female"),
+        ("unknown", "sex not determined or not examined"),
+        ("intersex", "hermaphrodite or intersex or neither male nor female"), )
+
+    MATURITY_CHOICES = (
+        ("hatchling", "hatchling"),
+        ("post-hatchling", "post-hatchling"),
+        ("juvenile", "juvenile"),
+        ("pre-pubsecent-immature", "pre-pubsecent immature"),
+        ("pubsecent-immature", "pubsecent immature"),
+        ("adult-measured", "adult status determined from carapace and tail measurements"),
+        ("adult", "adult"),
+        ("unknown", "unknown maturity"), )
+        # <option value="1">A - Adult</option>
+        # <option value="2">A? - DO NOT USE</option>
+        # <option value="20">I - Weaned immature, independent of its mother</option>
+        # <option value="21">C - Unweaned immature, dependent on mother for milk</option>
+        # <option value="22">I? - DO NOT USE</option>
+        # <option value="23">C? - DO NOT USE</option></select>
+
+    ACTIVITY_CHOICES = (
+        ("arriving", "arriving"),
+        ("digging-body-pit", "digging body pit"),
+        ("excavating-egg-chamber", "excavating egg chamber"),
+        ("laying-eggs", "laying eggs"),
+        ("filling-in-egg-chamber", "filling in egg chamber"),
+        ("returning-to-water", "returning to water"),
+        ("other", "other activity"),
+        ("unknown", "unknown activity"), )
+        # <option value="20">? - Unspecified</option>
+        # <option value="1">B - B - to be determined)</option>
+        # <option value="2">B? - B? - to be determined)</option>
+        # <option value="3">BE - BE - to be determined</option>
+        # <option value="4">BF - Floating (dead, sick, unable to dive, drifting in water)</option>
+        # <option value="5">BJ - Beach Jumped</option>
+        # <option value="7">BR - Carcass or butchered remains found removed from coast</option>
+        # <option value="6">BW - Beach washed (dead, sick or stranded on beach/coast)</option>
+        # <option value="8">C - Courting</option>
+        # <option value="21">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
+        # <option value="9">J - In captivity</option>
+        # <option value="10">N - Nesting and internesting</option>
+        # <option value="11">P - Predated (killed)</option>
+        # <option value="12">PC - Predated by crocodile (killed)</option>
+        # <option value="13">PD - Predated by dog or dingo (killed)</option>
+        # <option value="14">PF - Predated by fish (killed)</option>
+        # <option value="15">PR - Predated by raptor (killed)</option>
+        # <option value="16">PS - Predated by shark (killed)</option>
+        # <option value="17">R - Released</option>
+        # <option value="18">S - General non-breeding activity (swimming, sleeping, feeding, ...)</option>
+        # <option value="19">Z - Tag found not attached to animal</option></select>
+
+
+        # secondary activity
+        # <option value="30">? - ? - to be determined</option>
+        # <option value="2">BJ - Non-Nesting: Beach jumped</option>
+        # <option value="3">BW - Non-Nesting: Beach washed</option>
+        # <option value="75">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
+        # <option value="31">F? - F? - to be determined</option>
+        # <option value="10">FC - Fisheries: Fishing - captured in arrowhead fish trap</option>
+        # <option value="11">FD - Fisheries: Sucked/picked up by dredge</option>
+        # <option value="36">FG - Fisheries: Captured with gaff from boat</option>
+        # <option value="35">FI - Fisheries: Crabbing - trapped inside a crab pot</option>
+        # <option value="12">FL - Fisheries: Fishing - hooked by fishing line; included SCP shark-hooks</option>
+        # <option value="13">FN - Fisheries: Fishing - captured by netting</option>
+        # <option value="14">FP - Fisheries: Tangled in float-line to crab-pot, anchor line, trace to shark-hook, etc</option>
+        # <option value="15">FS - Fisheries: Fishing - speared, or captured by a diver attaching a line to the animal</option>
+        # <option value="16">FT - Fisheries: Fishing - trawling</option>
+        # <option value="17">FZ - Fisheries: Trapped in ghost-net</option>
+        # <option value="32">L - L - to be determined</option>
+        # <option value="56">NJ - Non-Nesting: Rodeo - night time</option>
+        # <option value="55">NS - Non-Nesting: SCUBA/snorkelling - night time</option>
+        # <option value="6">P - Non-Nesting: Observed but not captured</option>
+        # <option value="57">PA - Non-Nesting: Observation from aerial survey</option>
+        # <option value="58">PI - Non-Nesting: Image recorded during underwater video monitoring</option>
+        # <option value="4">RJ - Non-Nesting: Rodeo - day time</option>
+        # <option value="5">S - Non-Nesting: SCUBA/snorkelling - day time</option>
+        # <option value="33">T - T - to be determined</option>
+        # <option value="20">TA - Trapped: Trapped by land reclaimation</option>
+        # <option value="21">TE - Trapped: Trapped in electricity power plant water intake system</option>
+        # <option value="59">TS - Non-Nesting: Located by satellite telemetry</option>
+        # <option value="22">TT - Trapped: Trapped in creek at low tide</option>
+        # <option value="34">X - X - to be determined</option>
+        # <option value="1">X* - Nesting: Laid</option></select>
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["when", "where"]
+        verbose_name = "Cetacean Encounter"
+        verbose_name_plural = "Cetacean Encounters"
+        get_latest_by = "when"
+
+    def __str__(self):
+        """The unicode representation."""
+        tpl = "CetaceanEncounter {0} on {1} by {2} of {3}, {4} {5} {6}"
+        return tpl.format(
+            self.pk,
+            self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
+            self.who.name,
+            self.get_species_display(),
+            self.get_health_display(),
+            self.get_maturity_display(),
+            self.get_sex_display())
+
+    def save(self, *args, **kwargs):
+        """Cache the HTML representation in `as_html`."""
+        self.as_html = self.make_html()
+        super(CetaceanEncounter, self).save(*args, **kwargs)
 
 
 # Observation models ---------------------------------------------------------#
@@ -950,6 +1243,34 @@ class TurtleNestingObservation(Observation):
         ("dune-edge", "edge of dune, beginning of spinifex"),
         ("in-dune", "inside dune, spinifex"), )
 
+    # <option value="27">' ' - No habitat information available</option>
+    # <option value="1">0 - 0 - to be determined</option>
+    # <option value="2">B - Beach: Below the vegetation line of the grass slope</option>
+    # <option value="3">BE - Bays, estuaries and other enclosed shallow soft sediments</option>
+    # <option value="4">BS - Bays, estuaries etc: intertidal and subtidal sea grass flats</option>
+    # <option value="5">D - Dune</option>
+    # <option value="6">DC - Dune: Constructed hard substrate (concrete slabs, timber floors, helipad)</option>
+    # <option value="7">DG - Dune: Grass area</option>
+    # <option value="8">DH - Dune: Hard compacted areas (road ways, paths)</option>
+    # <option value="24">DR - Dune: Rubble, usually coral</option>
+    # <option value="9">DS - Dune: Bare sand area</option>
+    # <option value="10">DT - Dune: Beneath tree or shrub</option>
+    # <option value="11">HW - Below the mean spring high water line or current level of inundation</option>
+    # <option value="12">LP - Lagoon: Patch reef</option>
+    # <option value="13">LS - Lagoon: Open sand areas, typically shallow</option>
+    # <option value="14">M - Mangroves</option>
+    # <option value="15">OW - Open water, including inter reefal areas</option>
+    # <option value="16">R - Reef: Coral reef</option>
+    # <option value="17">RC - Reef: Reef crest (dries at low water) and front reef slope areas</option>
+    # <option value="18">RF - Reef: Reef flat, dries at low tide</option>
+    # <option value="26">RG - Coral reef with seagrass flats</option>
+    # <option value="19">RR - Reef: Rocky reef, e.g. adjacent to mainland</option>
+    # <option value="20">S - Slope: Front slope of dune</option>
+    # <option value="21">SF - Sand flats (e.g. off Bountiful of Crab Islands)</option>
+    # <option value="22">SG - Slope: Grass area</option>
+    # <option value="25">SS - Slope: Bare sand area</option>
+    # <option value="23">ST - Slope: Beneath tree or shrub</option></select>
+
     nest_position = models.CharField(
         max_length=300,
         default="unknown",
@@ -972,10 +1293,11 @@ class TurtleNestingObservation(Observation):
         return "Turtle Nesting {0} for {1}".format(
             self.pk, self.encounter)
 
-# NestObs
-# Turtle activity when tagged
-# EggsObs
-# Turtle damage obs - vs dist feat
 # Hatched Nest Obs
 # Nest obs Ningaloo
 # Track obs (false crawl) Ningaloo
+
+# injury freshness
+# F - Very fresh, no healing evident
+# R - A recent wound, partly healed
+# H - Scar only, healed

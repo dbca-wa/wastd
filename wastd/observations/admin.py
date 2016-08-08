@@ -7,7 +7,7 @@ from django.contrib.gis import forms
 from wastd.widgets import MapWidget
 from django.contrib.gis.db import models as geo_models
 from easy_select2 import select2_modelform
-from .models import (Encounter, AnimalEncounter, TurtleEncounter,
+from .models import (Encounter, AnimalEncounter, TurtleEncounter, CetaceanEncounter,
                      MediaAttachment, TagObservation, DisposalObservation,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation,
                      TurtleNestingObservation)
@@ -159,4 +159,15 @@ class TurtleEncounterAdmin(AnimalEncounterAdmin):
                TagObservationInline,
                DisposalObservationInline,
                TurtleNestingObservationInline,
+               MediaAttachmentInline, ]
+
+
+@admin.register(CetaceanEncounter)
+class CetaceanEncounterAdmin(AnimalEncounterAdmin):
+    """Admin for CetaceanEncounter.
+    TODO add inlines for cetacean obs.
+    """
+    inlines = [DistinguishingFeaturesInline,
+               TagObservationInline,
+               DisposalObservationInline,
                MediaAttachmentInline, ]
