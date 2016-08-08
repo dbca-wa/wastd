@@ -269,8 +269,9 @@ REST_FRAMEWORK = {
         ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.BrowsableAPIRenderer',
-         'rest_framework_jsonp.renderers.JSONPRenderer',
-         'rest_framework_csv.renderers.CSVRenderer',
-         'rest_framework_latex.renderers.LatexRenderer',
-    )
+        'rest_framework_jsonp.renderers.JSONPRenderer',
+        'rest_framework_csv.renderers.CSVRenderer',
+        'rest_framework_latex.renderers.LatexRenderer',
+        ),
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
     }

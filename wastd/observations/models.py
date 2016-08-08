@@ -283,7 +283,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     @property
     def observation_html(self):
-        """An HTML string of Observations"""
+        """An HTML string of Observations."""
         return "".join([o.as_html for o in self.observation_set.all()])
 
     def make_html(self):
@@ -414,7 +414,8 @@ class AnimalEncounter(Encounter):
 # Observation models ---------------------------------------------------------#
 @python_2_unicode_compatible
 class Observation(PolymorphicModel, models.Model):
-    """The Observation base class."""
+    """The Observation base class for encounter observations."""
+
     encounter = models.ForeignKey(
         Encounter,
         blank=True, null=True,
@@ -429,6 +430,11 @@ class Observation(PolymorphicModel, models.Model):
     def as_html(self):
         """An HTML representation."""
         return mark_safe('<div class="popup">{0}</div>'.format(self.__str__()))
+
+    @property
+    def observation_name(self):
+        """Model name."""
+        return self.polymorphic_ctype.model
 
 
 @python_2_unicode_compatible
@@ -469,6 +475,118 @@ class MediaAttachment(Observation):
         tpl = ('<div class="popup"><i class="fa fa-film"></i>'
                '&nbsp;<a href="{0}" target="_">{1}</a></div>')
         return mark_safe(tpl.format(self.attachment.url, self.title))
+
+
+@python_2_unicode_compatible
+class TagObservation(Observation):
+    """An Observation of an identifying tag on an observed entity.
+
+    The identifying tag can be a flipper tag on a turtle, a PIT tag,
+    a satellite tag, a barcode on a sample taken off an animal, a whisker ID
+    from a picture of a pinniped, a genetic fingerprint or similar.
+
+    The tag has its own life cycle through stages of production, delivery,
+    affiliation with an animal, repeated sightings and disposal.
+
+    The life cycle stages will vary between tag types.
+
+    A TagObservation will find the tag in exactly one of the life cycle stages.
+
+    The life history of each tag can be reconstructed from the sum of all of its
+    TagObservations.
+
+    As TagObservations can sometimes occur without an Observation of an animal, the
+    FK to Observations is optional.
+    """
+
+    TYPE_CHOICES = (
+        ('flipper-tag', 'Flipper Tag'),
+        ('pit-tag', 'PIT Tag'),
+        ('satellite-tag', 'Satellite Tag'),
+        ('physical-sample', 'Physical Sample'),
+        ('biopsy-sample', 'Biopsy Sample'),
+        ('genetic-fingerprint', 'Genetic Fingerprint'),
+        ('whisker-id', 'Whisker ID'),
+        ('other', 'Other'),)
+
+    STATUS_CHOICES = (
+        ('ordered', 'ordered from manufacturer'),
+        ('produced', 'produced by manufacturer'),
+        ('delivered', 'delivered to HQ'),
+        ('allocated', 'allocated to field team'),
+        ('attached', 'attached new to an animal'),
+        ('recaptured', 're-sighted as attached to animal'),
+        ('detached', 'taken off an animal'),
+        ('found', 'found detached'),
+        ('returned', 'returned to HQ'),
+        ('decommissioned', 'decommissioned from active tag pool'),
+        ('destroyed', 'destroyed'),
+        ('observed', 'observed in any other context, see comments'), )
+
+    SIDE_CHOICES = (
+        ("L", "left front flipper"),
+        ("R", "right front flipper"),
+        ("C", "carapace"),
+        ("N", "neck"),
+        ("O", "other, see comments"), )
+
+    POSITION_CHOICES = (
+        ("1", "1st scale from body/head"),
+        ("2", "2nd scale from body/head"),
+        ("3", "3rd scale from body/head"),
+        ("O", "other, see comments"), )
+
+    tag_type = models.CharField(
+        max_length=300,
+        verbose_name=_("Tag type"),
+        choices=TYPE_CHOICES,
+        default="flipper-tag",
+        help_text=_("What kind of tag is it?"),)
+
+    side = models.CharField(
+        max_length=300,
+        verbose_name=_("Tag side"),
+        choices=SIDE_CHOICES,
+        default="L",
+        help_text=_("Is the tag on the left or right front flipper?"),)
+
+    position = models.CharField(
+        max_length=300,
+        verbose_name=_("Tag position"),
+        choices=POSITION_CHOICES,
+        default="1",
+        help_text=_("Counting from inside, to which flipper scale is the "
+                    "tag attached?"),)
+
+    name = models.CharField(
+        max_length=1000,
+        verbose_name=_("Tag ID"),
+        help_text=_("The ID of a tag must be unique within the tag type."),)
+
+    status = models.CharField(
+        max_length=300,
+        verbose_name=_("Tag status"),
+        choices=STATUS_CHOICES,
+        default="recaptured",
+        help_text=_("The status this tag was seen in, or brought into."),)
+
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "{0} {1} {2} on {3}, {4}".format(
+            self.get_tag_type_display(),
+            self.name, self.get_status_display(),
+            self.get_side_display(), self.get_position_display())
+
+    @property
+    def as_html(self):
+        """An HTML representation."""
+        tpl = '<div class="popup"><i class="fa fa-tag"></i>&nbsp;{0}</div>'
+        return mark_safe(tpl.format(self.__str__()))
 
 
 @python_2_unicode_compatible
@@ -613,8 +731,7 @@ class TurtleMorphometricObservation(Observation):
     ACCURACY_ICONS = {
         "unknown": "fa fa-question-circle-o",
         "estimated": "fa fa-comment-o",
-        "measured": "fa fa-balance-scale"
-    }
+        "measured": "fa fa-balance-scale"}
 
     curved_carapace_length_mm = models.PositiveIntegerField(
         verbose_name=_("Curved Carapace Length (mm)"),
@@ -698,105 +815,6 @@ class TurtleMorphometricObservation(Observation):
             tpl.format("HW", self.maximum_head_width_mm,
                        self.ACCURACY_ICONS[self.maximum_head_width_accuracy])
             )
-
-
-@python_2_unicode_compatible
-class FlipperTagObservation(Observation):
-    """An Observation of an identifying tag on an observed entity.
-
-    The identifying tag can be a flipper tag on a turtle, a PIT tag,
-    a satellite tag, a barcode on a sample taken off an animal, a whisker ID
-    from a picture of a pinniped, a genetic fingerprint or similar.
-
-    The tag has its own life cycle through stages of production, delivery,
-    affiliation with an animal, repeated sightings and disposal.
-
-    The life cycle stages will vary between tag types.
-
-    A TagObservation will find the tag in exactly one of the life cycle stages.
-
-    The life history of each tag can be reconstructed from the sum of all of its
-    TagObservations.
-
-    As TagObservations can occur without an Observation of an animal, the
-    FK to Observations is optional.
-
-    # TYPE_CHOICES = (
-    #     ('flipper-tag', 'Flipper Tag'),
-    #     ('pit-tag', 'PIT Tag'),
-    #     ('satellite-tag', 'Satellite Tag'),
-    #     ('physical-sample', 'Physical Sample'),
-    #     ('genetic-fingerprint', 'Genetic Fingerprint'),
-    #     ('whisker-id', 'Whisker ID'),
-    #     ('other', 'Other'),)
-    """
-
-    STATUS_CHOICES = (
-        ('ordered', 'ordered from manufacturer'),
-        ('produced', 'produced by manufacturer'),
-        ('delivered', 'delivered to HQ'),
-        ('allocated', 'allocated to field team'),
-        ('attached', 'attached new to an animal'),
-        ('recaptured', 're-sighted as attached to animal'),
-        ('detached', 'raken off an animal'),
-        ('found', 'found detached'),
-        ('returned', 'returned to HQ'),
-        ('decommissioned', 'decommissioned from active tag pool'),
-        ('destroyed', 'destroyed'),
-        ('observed', 'observed in any other context, see comments'),)
-
-    SIDE_CHOICES = (
-        ("L", "left front flipper"),
-        ("R", "right front flipper"))
-
-    POSITION_CHOICES = (
-        ("1", "1st scale from body"),
-        ("2", "2nd scale from body"),
-        ("3", "3rd scale from body"))
-
-    side = models.CharField(
-        max_length=300,
-        verbose_name=_("Tag side"),
-        choices=SIDE_CHOICES,
-        default="L",
-        help_text=_("Is the tag on the left or right front flipper?"),)
-
-    position = models.CharField(
-        max_length=300,
-        verbose_name=_("Tag position"),
-        choices=POSITION_CHOICES,
-        default="1",
-        help_text=_("Counting from inside, to which flipper scale is the "
-                    "tag attached?"),)
-
-    name = models.CharField(
-        max_length=1000,
-        verbose_name=_("Tag ID"),
-        help_text=_("The ID of a tag must be unique within the tag type."),)
-
-    status = models.CharField(
-        max_length=300,
-        verbose_name=_("Tag status"),
-        choices=STATUS_CHOICES,
-        default="recaptured",
-        help_text=_("The status this tag was seen in, or brought into."),)
-
-    comments = models.TextField(
-        verbose_name=_("Comments"),
-        blank=True, null=True,
-        help_text=_("Any other comments or notes."),)
-
-    def __str__(self):
-        """The unicode representation."""
-        return "Flipper Tag {0} {1} on {2}, {3}".format(
-            self.name, self.get_status_display(),
-            self.get_side_display(), self.get_position_display())
-
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        tpl = '<div class="popup"><i class="fa fa-tag"></i>&nbsp;{0}</div>'
-        return mark_safe(tpl.format(self.__str__()))
 
 
 # NestObs

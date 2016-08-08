@@ -8,7 +8,7 @@ from wastd.widgets import MapWidget
 from django.contrib.gis.db import models as geo_models
 from easy_select2 import select2_modelform
 from .models import (Encounter, AnimalEncounter, MediaAttachment,
-                     FlipperTagObservation, DisposalObservation,
+                     TagObservation, DisposalObservation,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation)
 from fsm_admin.mixins import FSMTransitionMixin
 
@@ -41,21 +41,37 @@ class DisposalObservationInline(admin.TabularInline):
     model = DisposalObservation
 
 
-class FlipperTagObservationInline(admin.TabularInline):
+class TagObservationInline(admin.TabularInline):
     """TabularInlineAdmin for TagObservation."""
 
     extra = 0
-    model = FlipperTagObservation
+    model = TagObservation
 
 
-@admin.register(FlipperTagObservation)
-class FlipperTagObservationAdmin(admin.ModelAdmin):
-    """Admin for FlipperTagObservation"""
+@admin.register(TagObservation)
+class TagObservationAdmin(admin.ModelAdmin):
+    """Admin for TagObservation"""
 
     save_on_top = True
-    list_display = ('name', 'side', 'position', 'status_display', 'encounter', 'comments')
+    list_display = ('type_display', 'name', 'side_display', 'position_display',
+                    'status_display', 'encounter', 'comments')
     list_filter = ('side', 'position', 'status')
     search_fields = ('name', 'comments')
+
+    def type_display(self, obj):
+        """Make tag type human readable."""
+        return obj.get_tag_type_display()
+    type_display.short_description = 'Tag Type'
+
+    def side_display(self, obj):
+        """Make tag side human readable."""
+        return obj.get_side_display()
+    side_display.short_description = 'Tag Side'
+
+    def position_display(self, obj):
+        """Make tag position human readable."""
+        return obj.get_position_display()
+    position_display.short_description = 'Tag Position'
 
     def status_display(self, obj):
         """Make health status human readable."""
@@ -78,7 +94,7 @@ class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     fieldsets = (('Encounter', {'fields': ('when', 'where', 'who')}),)
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
-               FlipperTagObservationInline,
+               TagObservationInline,
                DisposalObservationInline,
                MediaAttachmentInline, ]
 
@@ -90,7 +106,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
     list_display = ('when', 'wkt', 'who', 'species', 'health_display',
-                    'maturity_display', 'sex_display', 'behaviour', 'status', )
+                    'maturity_display', 'sex_display', 'behaviour', 'status_display', )
     list_filter = ('status', 'who', 'species', 'health', 'maturity', 'sex', )
     list_select_related = True
     save_on_top = True
@@ -102,7 +118,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
         )
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
-               FlipperTagObservationInline,
+               TagObservationInline,
                DisposalObservationInline,
                MediaAttachmentInline, ]
 
@@ -120,3 +136,8 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
         """Make sex human readable."""
         return obj.get_sex_display()
     sex_display.short_description = 'Sex'
+
+    def status_display(self, obj):
+        """Make health status human readable."""
+        return obj.get_status_display()
+    status_display.short_description = 'Status'

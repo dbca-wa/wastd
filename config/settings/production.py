@@ -114,23 +114,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # COMPRESS_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 COMPRESS_URL = STATIC_URL
 COMPRESS_ENABLED = env('COMPRESS_ENABLED', default=True)
+
 # EMAIL
 # ------------------------------------------------------------------------------
-DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL',
-                         default='WAStD <noreply@strandings.dpaw.wa.gov.au>')
-EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[WAStD] ')
-SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
-
-# Anymail with Mailgun
-# INSTALLED_APPS += ("anymail", )
-# ANYMAIL = {
-#     "MAILGUN_API_KEY": env('DJANGO_MAILGUN_API_KEY'),
-# }
-# EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.corporateict.domain')
 EMAIL_PORT = env('EMAIL_PORT', default=25)
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
-                    default='django.core.mail.backends.smtp.EmailBackend')
+DEFAULT_FROM_EMAIL = '"WA Strandings DB" <strandings-noreply@dpaw.wa.gov.au>'
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[WAStD] ')
+
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See:
@@ -138,8 +129,7 @@ EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
 TEMPLATES[0]['OPTIONS']['loaders'] = [
     ('django.template.loaders.cached.Loader', [
         'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader', ]),
-]
+        'django.template.loaders.app_directories.Loader', ]), ]
 
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------

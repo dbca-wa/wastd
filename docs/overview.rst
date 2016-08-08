@@ -4,8 +4,8 @@ Overview
 This chapter gives a quick overview of the WA Stranding Database WAStD.
 
 **Disclaimer** WAStD is currently in the proof of concept (POC) phase, and not a
-production system. This documentation will evlove along with the software
-and may pre-empt future development.
+production system. This documentation will evolve along with the software
+and may describe features that are not implemented.
 
 WAStD is a data clearinghouse for:
 
@@ -13,9 +13,9 @@ WAStD is a data clearinghouse for:
 
 WAStD is built scalable enough to accommodate other, related, data:
 
-* Cetacean and pinniped strandings
-* Turtle tagging observations, taken of nesting turtles
-* Turtle track observations, taken at sunrise after nesting (nests and false crawls)
+* Cetacean and pinniped strandings.
+* Turtle tagging observations, taken of nesting turtles.
+* Turtle track observations, taken at sunrise after nesting (nests and false crawls).
 
 WAStD offers as main functionalities:
 

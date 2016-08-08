@@ -18,8 +18,6 @@ from wastd.observations.views import schema_view
 from wastd.api import *
 from djgeojson.views import GeoJSONLayerView
 
-
-
 # register all adminactions
 actions.add_to_site(site)
 
@@ -30,7 +28,7 @@ router.register(r'encounters', EncounterViewSet)
 router.register(r'animal-encounters', AnimalEncounterViewSet)
 router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
-router.register(r'flippertag-observation', FlipperTagObservationViewSet)
+router.register(r'tag-observations', TagObservationViewSet)
 
 
 urlpatterns = [
@@ -53,17 +51,15 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-docs/1/', schema_view, name="api-docs"),
     url(r'^adminactions/', include('adminactions.urls')),
+    url(r'^select2/', include('django_select2.urls')),
     url(r'^observations.geojson$',
         GeoJSONLayerView.as_view(model=Encounter,
                                  properties=('as_html', ),
                                  geometry_field="where"),
         name='observation-geojson'),
-
-    # Select2 URLs
-    url(r'^select2/', include('django_select2.urls')),
-
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
-        staticfiles_urlpatterns()
+    ] +\
+    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
+    staticfiles_urlpatterns()
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
