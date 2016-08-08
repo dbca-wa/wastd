@@ -167,7 +167,6 @@ class CetaceanEncounterAdmin(AnimalEncounterAdmin):
     """Admin for CetaceanEncounter.
     TODO add inlines for cetacean obs.
     """
-    inlines = [DistinguishingFeaturesInline,
-               TagObservationInline,
+    inlines = [TagObservationInline,
                DisposalObservationInline,
                MediaAttachmentInline, ]
