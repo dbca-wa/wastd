@@ -31,6 +31,7 @@ from django.utils.safestring import mark_safe
 
 from polymorphic.models import PolymorphicModel
 from django_fsm import FSMField, transition
+import urllib
 
 from wastd.users.models import User
 
@@ -248,6 +249,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """
         return
 
+    # HTML display -----------------------------------------------------------#
     @property
     def wkt(self):
         """Return the point coordinates as Well Known Text (WKT)."""
@@ -269,8 +271,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def admin_url_html(self):
         """An HTML div with a link to the admin change_view."""
-        tpl = ('<div class="popup"><i class="fa fa-pencil"></i>&nbsp;<a '
-               'href={0} target="_" class="btn btn-sm">Edit</a></div>')
+        tpl = ('<div class="popup">&nbsp;<a href={0} target="_">'
+               '<i class="fa fa-pencil"></i></a></div>')
         return tpl.format(self.absolute_admin_url)
 
     @property
@@ -583,10 +585,18 @@ class TagObservation(Observation):
             self.get_side_display(), self.get_position_display())
 
     @property
+    def history_url(self):
+        """The list view of all observations of this tag."""
+        cl = reverse("admin:observations_tagobservation_changelist")
+        return "{0}?q={1}".format(cl, urllib.quote_plus(self.name))
+
+    @property
     def as_html(self):
         """An HTML representation."""
-        tpl = '<div class="popup"><i class="fa fa-tag"></i>&nbsp;{0}</div>'
-        return mark_safe(tpl.format(self.__str__()))
+        tpl = ('<div class="popup"><i class="fa fa-tag"></i>&nbsp;{0}&nbsp;'
+               '<a href={1} target="_" class="btn btn-sm">'
+               '<i class="fa fa-history"></i></a></div>')
+        return mark_safe(tpl.format(self.__str__(), self.history_url))
 
 
 @python_2_unicode_compatible
