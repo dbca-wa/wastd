@@ -68,7 +68,7 @@ INSTALLED_APPS += ('gunicorn', )
 # Uploaded Media Files
 # ------------------------
 # See: http://django-storages.readthedocs.io/en/latest/index.html
-# INSTALLED_APPS += ('storages', )
+INSTALLED_APPS += ('storages', )
 
 AWS_ACCESS_KEY_ID = env('DJANGO_AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env('DJANGO_AWS_SECRET_ACCESS_KEY')
@@ -76,9 +76,10 @@ AWS_STORAGE_BUCKET_NAME = env('DJANGO_AWS_STORAGE_BUCKET_NAME')
 
 AWS_AUTO_CREATE_BUCKET = False
 AWS_QUERYSTRING_AUTH = False
-# AWS_S3_CALLING_FORMAT = OrdinaryCallingFormat()
-AWS_S3_CALLING_FORMAT = "boto.s3.connection.OrdinaryCallingFormat"
-# MEDIA_URL = 'https://s3.amazonaws.com/%s/' % AWS_STORAGE_BUCKET_NAME # ordinary format
+#AWS_S3_CALLING_FORMAT = "boto.s3.connection.OrdinaryCallingFormat"
+#MEDIA_URL = 'https://s3.amazonaws.com/%s/' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_CALLING_FORMAT = "boto.s3.connection.SubdomainCallingFormat"
+MEDIA_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
 
 # AWS cache settings, don't change unless you know what you're doing:
 AWS_EXPIRY = 60 * 60 * 24 * 7
@@ -90,11 +91,8 @@ AWS_EXPIRY = 60 * 60 * 24 * 7
 AWS_HEADERS = {'Cache-Control': six.b(
     'max-age=%d, s-maxage=%d, must-revalidate' % (AWS_EXPIRY, AWS_EXPIRY))}
 
-# URL that handles the media served from MEDIA_ROOT, used for managing stored files.
-# AWS_S3_CALLING_FORMAT = "boto.s3.connection.SubdomainCallingFormat"
-# MEDIA_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME # subdomain format
 
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 #
 # STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 # STATIC_URL = MEDIA_URL
@@ -102,10 +100,10 @@ AWS_HEADERS = {'Cache-Control': six.b(
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = str(APPS_DIR('media'))
+# MEDIA_ROOT = str(APPS_DIR('media'))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
-MEDIA_URL = '/media/'
+# MEDIA_URL = '/media/'
 
 
 # Static Assets
