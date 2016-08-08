@@ -333,7 +333,7 @@ class AnimalEncounter(Encounter):
     MATURITY_CHOICES = (
         ("hatchling", "hatchling"),
         ("juvenile", "juvenile"),
-        # ("unweaned", "unweaned immature juveninle"),
+        # ("unweaned", "unweaned immature juvenile"),
         # ("weaned", "weaned immature juvenile"),
         ("adult", "adult"),
         ("unknown", "unknown maturity"),)

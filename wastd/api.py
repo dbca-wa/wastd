@@ -129,12 +129,16 @@ class EncounterSerializer(serializers.ModelSerializer):
         geo_field = "where"
 
     def create(self, validated_data):
-        """Make EncounterSerializer writeable."""
-        obs_data = validated_data.pop('observations')
+        """Make EncounterSerializer writeable.
+
+        The actual child model is looked up by "observation_name".
+        """
+        obs_data = validated_data.pop('observation_set')
         encounter = Encounter.objects.create(**validated_data)
-        # for obs in obs_data:
-        #      #determine observation child model from obs!
-        #     Observation.objects.create(encounter=encounter, **obs)
+        for obs in obs_data:
+            childmodel_name = obs.pop("observation_name")
+            childmodel = getattr(Observation, childmodel_name).related.related_model
+            childmodel.objects.create(encounter=encounter, **obs)
         return encounter
 
 
