@@ -3,14 +3,15 @@ from __future__ import absolute_import, unicode_literals
 
 # from django import forms
 from django.contrib import admin
-from django.contrib.gis import forms
+# from django.contrib.gis import forms
 from wastd.widgets import MapWidget
 from django.contrib.gis.db import models as geo_models
-from easy_select2 import select2_modelform
-from .models import (Encounter, AnimalEncounter, TurtleEncounter, CetaceanEncounter,
-                     MediaAttachment, TagObservation, DisposalObservation,
+# from easy_select2 import select2_modelform
+from .models import (Encounter, TurtleNestEncounter,
+                     AnimalEncounter, TurtleEncounter, CetaceanEncounter,
+                     MediaAttachment, TagObservation, ManagementAction,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation,
-                     TurtleNestingObservation)
+                     TurtleNestObservation, TurtleDamageObservation)
 from fsm_admin.mixins import FSMTransitionMixin
 
 
@@ -35,18 +36,25 @@ class TurtleMorphometricObservationInline(admin.TabularInline):
     model = TurtleMorphometricObservation
 
 
-class DisposalObservationInline(admin.TabularInline):
-    """TabularInlineAdmin for DisposalObservation."""
+class ManagementActionInline(admin.TabularInline):
+    """TabularInlineAdmin for ManagementAction."""
 
     extra = 0
-    model = DisposalObservation
+    model = ManagementAction
 
 
-class TurtleNestingObservationInline(admin.TabularInline):
-    """Admin for TurtleNestingObservation."""
+class TurtleNestObservationInline(admin.TabularInline):
+    """Admin for TurtleNestObservation."""
 
     extra = 0
-    model = TurtleNestingObservation
+    model = TurtleNestObservation
+
+
+class TurtleDamageObservationInline(admin.TabularInline):
+    """Admin for TurtleDamageObservation."""
+
+    extra = 0
+    model = TurtleDamageObservation
 
 
 class TagObservationInline(admin.TabularInline):
@@ -102,10 +110,42 @@ class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     fieldsets = (('Encounter', {'fields': ('when', 'where', 'who')}),)
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
+               TurtleNestObservationInline,
+               TurtleDamageObservationInline,
                TagObservationInline,
-               DisposalObservationInline,
-               TurtleNestingObservationInline,
+               ManagementActionInline,
                MediaAttachmentInline, ]
+
+
+@admin.register(TurtleNestEncounter)
+class TurtleNestEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
+    """Admin for TurtleNestEncounter."""
+
+    date_hierarchy = 'when'
+    formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
+    list_display = ('when', 'wkt', 'who', 'species', 'habitat_display', )
+    list_filter = ('status', 'who', 'species', 'habitat', )
+    list_select_related = True
+    save_on_top = True
+    fsm_field = ['status', ]
+    search_fields = ('who__name', 'who__username', )
+    fieldsets = EncounterAdmin.fieldsets + (
+        ('Nest',
+         {'fields': ('species', 'habitat', )}),
+        )
+    inlines = [TurtleNestObservationInline,
+               TagObservationInline,
+               MediaAttachmentInline, ]
+
+    def habitat_display(self, obj):
+        """Make habitat human readable."""
+        return obj.get_habitat_display()
+    habitat_display.short_description = 'Habitat'
+
+    def age_display(self, obj):
+        """Make nest age human readable."""
+        return obj.get_nest_age_display()
+    age_display.short_description = 'Nest age'
 
 
 @admin.register(AnimalEncounter)
@@ -116,7 +156,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
     list_display = ('when', 'wkt', 'who', 'species', 'health_display',
                     'maturity_display', 'sex_display', 'behaviour',
-                    'status_display', 'habitat_display', )
+                    'habitat_display', 'status_display', )
     list_filter = ('status', 'who', 'species', 'health', 'maturity', 'sex', 'habitat')
     list_select_related = True
     save_on_top = True
@@ -128,7 +168,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
         )
     inlines = [DistinguishingFeaturesInline,
                TagObservationInline,
-               DisposalObservationInline,
+               ManagementActionInline,
                MediaAttachmentInline, ]
 
     def health_display(self, obj):
@@ -160,11 +200,13 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
 @admin.register(TurtleEncounter)
 class TurtleEncounterAdmin(AnimalEncounterAdmin):
     """Admin for TurtleEncounter."""
+
     inlines = [DistinguishingFeaturesInline,
+               TurtleDamageObservationInline,
                TurtleMorphometricObservationInline,
+               TurtleNestObservationInline,
+               ManagementActionInline,
                TagObservationInline,
-               DisposalObservationInline,
-               TurtleNestingObservationInline,
                MediaAttachmentInline, ]
 
 
@@ -173,6 +215,7 @@ class CetaceanEncounterAdmin(AnimalEncounterAdmin):
     """Admin for CetaceanEncounter.
     TODO add inlines for cetacean obs.
     """
+
     inlines = [TagObservationInline,
-               DisposalObservationInline,
+               ManagementActionInline,
                MediaAttachmentInline, ]
