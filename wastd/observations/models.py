@@ -422,6 +422,34 @@ class AnimalEncounter(Encounter):
     # <option value="34">X - X - to be determined</option>
     # <option value="1">X* - Nesting: Laid</option></select>
 
+    HABITAT_CHOICES = (
+        ("na", "No habitat information available"),
+        ("beach", "B - Beach: Below the vegetation line of the grass slope"),
+        ("bays-estuaries", "BE - Bays, estuaries and other enclosed shallow soft sediments"),
+        ("dune", "D - Dune"),
+        ("dune-constructed-hard-substrate", "DC - Dune: Constructed hard substrate (concrete slabs, timber floors, helipad)"),
+        ("dune-grass-area", "DG - Dune: Grass area"),
+        ("dune-compacted-path", "DH - Dune: Hard compacted areas (road ways, paths)"),
+        ("dune-rubble", "DR - Dune: Rubble, usually coral"),
+        ("dune-bare-sand", "DS - Dune: Bare sand area"),
+        ("dune-beneath-vegetation", "DT - Dune: Beneath tree or shrub"),
+        ("slope-front-dune", "S - Slope: Front slope of dune"),
+        ("sand-flats", "SF - Sand flats"),
+        ("slope-grass", "SG - Slope: Grass area"),
+        ("slope-bare-sand", "SS - Slope: Bare sand area"),
+        ("slope-beneath-vegetation", "ST - Slope: Beneath tree or shrub"),
+        ("below-mean-spring-high-water-mark", "HW - Below the mean spring high water line or current level of inundation"),
+        ("lagoon-patch-reef", "LP - Lagoon: Patch reef"),
+        ("lagoon-open-sand", "LS - Lagoon: Open sand areas, typically shallow"),
+        ("mangroves", "M - Mangroves"),
+        ("reef-coral", "R - Reef: Coral reef"),
+        ("reef-crest-front-slope", "RC - Reef: Reef crest (dries at low water) and front reef slope areas"),
+        ("reef-flat", "RF - Reef: Reef flat, dries at low tide"),
+        ("reef-seagrass-flats", "RG - Coral reef with seagrass flats"),
+        ("reef-rocky", "RR - Reef: Rocky reef, e.g. adjacent to mainland"),
+        ("open-water", "OW - Open water, including inter reefal areas"),
+        )
+
     species = models.CharField(
         max_length=300,
         verbose_name=_("Species"),
@@ -463,6 +491,13 @@ class AnimalEncounter(Encounter):
         blank=True, null=True,
         help_text=_("Notes on condition or behaviour if alive."), )
 
+    habitat = models.CharField(
+        max_length=500,
+        verbose_name=_("Habitat"),
+        choices=HABITAT_CHOICES,
+        default="na",
+        help_text=_("The habitat on which the animal was encountered."), )
+
     class Meta:
         """Class options."""
 
@@ -473,7 +508,7 @@ class AnimalEncounter(Encounter):
 
     def __str__(self):
         """The unicode representation."""
-        tpl = "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6}"
+        tpl = "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
         return tpl.format(
             self.pk,
             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
@@ -481,7 +516,8 @@ class AnimalEncounter(Encounter):
             self.get_species_display(),
             self.get_health_display(),
             self.get_maturity_display(),
-            self.get_sex_display())
+            self.get_sex_display(),
+            self.get_habitat_display())
 
     def save(self, *args, **kwargs):
         """Cache the HTML representation in `as_html`."""
@@ -491,10 +527,11 @@ class AnimalEncounter(Encounter):
     @property
     def animal_html(self):
         """An HTML string of Observations"""
-        tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3}'
+        tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3} {4}'
         return mark_safe(
             tpl.format(self.get_species_display(), self.get_health_display(),
-                       self.get_maturity_display(), self.get_sex_display()))
+                       self.get_maturity_display(), self.get_sex_display(),
+                       self.get_habitat_display()))
 
     def make_html(self):
         """Create an HTML representation."""
@@ -597,7 +634,7 @@ class TurtleEncounter(AnimalEncounter):
 
     def __str__(self):
         """The unicode representation."""
-        tpl = "TurtleEncounter {0} on {1} by {2} of {3}, {4} {5} {6}"
+        tpl = "TurtleEncounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
         return tpl.format(
             self.pk,
             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
@@ -605,7 +642,8 @@ class TurtleEncounter(AnimalEncounter):
             self.get_species_display(),
             self.get_health_display(),
             self.get_maturity_display(),
-            self.get_sex_display())
+            self.get_sex_display(),
+            self.get_habitat_display())
 
     def save(self, *args, **kwargs):
         """Cache the HTML representation in `as_html`."""
@@ -795,7 +833,7 @@ class CetaceanEncounter(AnimalEncounter):
 
     def __str__(self):
         """The unicode representation."""
-        tpl = "CetaceanEncounter {0} on {1} by {2} of {3}, {4} {5} {6}"
+        tpl = "CetaceanEncounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
         return tpl.format(
             self.pk,
             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
@@ -803,7 +841,8 @@ class CetaceanEncounter(AnimalEncounter):
             self.get_species_display(),
             self.get_health_display(),
             self.get_maturity_display(),
-            self.get_sex_display())
+            self.get_sex_display(),
+            self.get_habitat_display())
 
     def save(self, *args, **kwargs):
         """Cache the HTML representation in `as_html`."""
@@ -1242,34 +1281,6 @@ class TurtleNestingObservation(Observation):
         ("above-hw", "above high water mark, below dune"),
         ("dune-edge", "edge of dune, beginning of spinifex"),
         ("in-dune", "inside dune, spinifex"), )
-
-    # <option value="27">' ' - No habitat information available</option>
-    # <option value="1">0 - 0 - to be determined</option>
-    # <option value="2">B - Beach: Below the vegetation line of the grass slope</option>
-    # <option value="3">BE - Bays, estuaries and other enclosed shallow soft sediments</option>
-    # <option value="4">BS - Bays, estuaries etc: intertidal and subtidal sea grass flats</option>
-    # <option value="5">D - Dune</option>
-    # <option value="6">DC - Dune: Constructed hard substrate (concrete slabs, timber floors, helipad)</option>
-    # <option value="7">DG - Dune: Grass area</option>
-    # <option value="8">DH - Dune: Hard compacted areas (road ways, paths)</option>
-    # <option value="24">DR - Dune: Rubble, usually coral</option>
-    # <option value="9">DS - Dune: Bare sand area</option>
-    # <option value="10">DT - Dune: Beneath tree or shrub</option>
-    # <option value="11">HW - Below the mean spring high water line or current level of inundation</option>
-    # <option value="12">LP - Lagoon: Patch reef</option>
-    # <option value="13">LS - Lagoon: Open sand areas, typically shallow</option>
-    # <option value="14">M - Mangroves</option>
-    # <option value="15">OW - Open water, including inter reefal areas</option>
-    # <option value="16">R - Reef: Coral reef</option>
-    # <option value="17">RC - Reef: Reef crest (dries at low water) and front reef slope areas</option>
-    # <option value="18">RF - Reef: Reef flat, dries at low tide</option>
-    # <option value="26">RG - Coral reef with seagrass flats</option>
-    # <option value="19">RR - Reef: Rocky reef, e.g. adjacent to mainland</option>
-    # <option value="20">S - Slope: Front slope of dune</option>
-    # <option value="21">SF - Sand flats (e.g. off Bountiful of Crab Islands)</option>
-    # <option value="22">SG - Slope: Grass area</option>
-    # <option value="25">SS - Slope: Bare sand area</option>
-    # <option value="23">ST - Slope: Beneath tree or shrub</option></select>
 
     nest_position = models.CharField(
         max_length=300,

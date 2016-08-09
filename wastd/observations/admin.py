@@ -115,15 +115,16 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
     list_display = ('when', 'wkt', 'who', 'species', 'health_display',
-                    'maturity_display', 'sex_display', 'behaviour', 'status_display', )
-    list_filter = ('status', 'who', 'species', 'health', 'maturity', 'sex', )
+                    'maturity_display', 'sex_display', 'behaviour',
+                    'status_display', 'habitat_display', )
+    list_filter = ('status', 'who', 'species', 'health', 'maturity', 'sex', 'habitat')
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]
     search_fields = ('who__name', 'who__username', 'behaviour')
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
-         {'fields': ('species', 'health', 'maturity', 'sex', 'behaviour', )}),
+         {'fields': ('species', 'health', 'maturity', 'sex', 'behaviour', 'habitat', )}),
         )
     inlines = [DistinguishingFeaturesInline,
                TagObservationInline,
@@ -149,6 +150,11 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
         """Make health status human readable."""
         return obj.get_status_display()
     status_display.short_description = 'Status'
+
+    def habitat_display(self, obj):
+        """Make habitat human readable."""
+        return obj.get_habitat_display()
+    habitat_display.short_description = 'Habitat'
 
 
 @admin.register(TurtleEncounter)

@@ -165,7 +165,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
 
         model = AnimalEncounter
         fields = ('where', 'when', 'who',
-                  'species', 'health', 'sex', 'behaviour', 'activity',
+                  'species', 'health', 'sex', 'behaviour', 'habitat', 'activity',
                   'observation_set', )
 
 
@@ -177,7 +177,7 @@ class TurtleEncounterSerializer(EncounterSerializer):
 
         model = TurtleEncounter
         fields = ('where', 'when', 'who',
-                  'species', 'health', 'sex', 'behaviour', 'activity',
+                  'species', 'health', 'sex', 'behaviour', 'habitat', 'activity',
                   'observation_set', )
 
 class CetaceanEncounterSerializer(EncounterSerializer):
@@ -188,7 +188,7 @@ class CetaceanEncounterSerializer(EncounterSerializer):
 
         model = CetaceanEncounter
         fields = ('where', 'when', 'who',
-                  'species', 'health', 'sex', 'behaviour', 'activity',
+                  'species', 'health', 'sex', 'behaviour', 'habitat', 'activity',
                   'observation_set', )
 
 
