@@ -65,12 +65,12 @@ class Encounter(PolymorphicModel, geo_models.Model):
         STATUS_PUBLISHED: "success"
         }
 
-    # location accuracy
-    # <option value="4">Estimate to give latitudinal sorting only</option>
-    # <option value="1">GPS reading at exact location (+-10m)</option>
-    # <option value="2">GPS reading in general area (+-1km)</option>
-    # <option value="3">Map reference (+-1nm)</option>
-    # <option value="5">No known location</option></select>
+    LOCATION_ACCURACY_CHOICES = (
+        ("10m", "GPS reading at exact location (+-10m)"),
+        ("1km", "GPS reading in general area (+-1km)"),
+        ("1nm", "Map reference (+-1nm)"),
+        ("online-map", "Drawn on online map"),
+        ("na", "Location not provided"), )
 
     status = FSMField(
         default=STATUS_NEW,
@@ -86,6 +86,13 @@ class Encounter(PolymorphicModel, geo_models.Model):
         srid=4326,
         verbose_name=_("Observed at"),
         help_text=_("The observation location as point in WGS84"))
+
+    location_accuracy = models.CharField(
+        max_length=300,
+        default="online-map",
+        verbose_name=_("Location accuracy"),
+        choices=LOCATION_ACCURACY_CHOICES,
+        help_text=_("The accuracy of the supplied location."), )
 
     who = models.ForeignKey(
         User,

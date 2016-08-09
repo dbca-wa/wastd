@@ -180,6 +180,7 @@ class TurtleEncounterSerializer(EncounterSerializer):
                   'species', 'health', 'sex', 'behaviour', 'habitat', 'activity',
                   'observation_set', )
 
+
 class CetaceanEncounterSerializer(EncounterSerializer):
     """CetaceanEncounter serializer."""
 
