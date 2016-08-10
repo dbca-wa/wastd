@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-# from django import forms
+from django import forms as django_forms
 from django.contrib import admin
-# from django.contrib.gis import forms
+from django.contrib.gis import forms
 from wastd.widgets import MapWidget
 from django.contrib.gis.db import models as geo_models
-# from easy_select2 import select2_modelform
+from easy_select2 import select2_modelform, select2_modelform_meta
+from easy_select2.widgets import Select2
 from .models import (Encounter, TurtleNestEncounter,
-                     AnimalEncounter, TurtleEncounter, CetaceanEncounter,
+                     AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
                      MediaAttachment, TagObservation, ManagementAction,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation,
                      TurtleNestObservation, TurtleDamageObservation)
 from fsm_admin.mixins import FSMTransitionMixin
+from wastd.users.models import User
 
 
 class MediaAttachmentInline(admin.TabularInline):
@@ -20,6 +22,7 @@ class MediaAttachmentInline(admin.TabularInline):
 
     extra = 0
     model = MediaAttachment
+    classes = ('grp-collapse grp-open',)
 
 
 class DistinguishingFeaturesInline(admin.TabularInline):
@@ -27,6 +30,7 @@ class DistinguishingFeaturesInline(admin.TabularInline):
 
     extra = 0
     model = DistinguishingFeatureObservation
+    classes = ('grp-collapse grp-open',)
 
 
 class TurtleMorphometricObservationInline(admin.TabularInline):
@@ -34,6 +38,7 @@ class TurtleMorphometricObservationInline(admin.TabularInline):
 
     extra = 0
     model = TurtleMorphometricObservation
+    classes = ('grp-collapse grp-open',)
 
 
 class ManagementActionInline(admin.TabularInline):
@@ -41,6 +46,7 @@ class ManagementActionInline(admin.TabularInline):
 
     extra = 0
     model = ManagementAction
+    classes = ('grp-collapse grp-open',)
 
 
 class TurtleNestObservationInline(admin.TabularInline):
@@ -48,6 +54,7 @@ class TurtleNestObservationInline(admin.TabularInline):
 
     extra = 0
     model = TurtleNestObservation
+    classes = ('grp-collapse grp-open',)
 
 
 class TurtleDamageObservationInline(admin.TabularInline):
@@ -55,6 +62,7 @@ class TurtleDamageObservationInline(admin.TabularInline):
 
     extra = 0
     model = TurtleDamageObservation
+    classes = ('grp-collapse grp-open',)
 
 
 class TagObservationInline(admin.TabularInline):
@@ -62,6 +70,7 @@ class TagObservationInline(admin.TabularInline):
 
     extra = 0
     model = TagObservation
+    classes = ('grp-collapse grp-open',)
 
 
 @admin.register(TagObservation)
@@ -95,9 +104,18 @@ class TagObservationAdmin(admin.ModelAdmin):
     status_display.short_description = 'Status'
 
 
+EncounterAdminForm = select2_modelform(Encounter)
+
 @admin.register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     """Admin for Encounter with inline for MediaAttachment."""
+
+    # Grappelli User lookup overrides select2 select widget
+    raw_id_fields = ('who', )
+    autocomplete_lookup_fields = {'fk': ['who'], }
+
+    # select2 widgets for searchable dropdowns
+    form = EncounterAdminForm
 
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
@@ -117,10 +135,16 @@ class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
                MediaAttachmentInline, ]
 
 
+TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter)
+
+
 @admin.register(TurtleNestEncounter)
 class TurtleNestEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     """Admin for TurtleNestEncounter."""
 
+    raw_id_fields = ('who', )
+    autocomplete_lookup_fields = {'fk': ['who'], }
+    form = TurtleNestEncounterAdminForm
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
     list_display = ('when', 'wkt', 'who', 'species', 'habitat_display', )
@@ -148,27 +172,38 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     age_display.short_description = 'Nest age'
 
 
+AnimalEncounterForm = select2_modelform(AnimalEncounter)
+
+
 @admin.register(AnimalEncounter)
 class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     """Admin for AnimalEncounter."""
 
+    raw_id_fields = ('who', )
+    autocomplete_lookup_fields = {'fk': ['who'], }
+    form = AnimalEncounterForm
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
     list_display = ('when', 'wkt', 'who', 'species', 'health_display',
                     'maturity_display', 'sex_display', 'behaviour',
                     'habitat_display', 'status_display', )
-    list_filter = ('status', 'who', 'species', 'health', 'maturity', 'sex', 'habitat')
+    list_filter = ('status', 'who', 'taxon', 'species', 'health', 'maturity',
+                   'sex', 'habitat')
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]
     search_fields = ('who__name', 'who__username', 'behaviour')
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
-         {'fields': ('species', 'health', 'maturity', 'sex', 'behaviour', 'habitat', )}),
+         {'fields': ('taxon', 'species', 'health', 'maturity', 'sex',
+                     'behaviour', 'habitat', )}),
         )
     inlines = [DistinguishingFeaturesInline,
-               TagObservationInline,
+               TurtleDamageObservationInline,
+               TurtleMorphometricObservationInline,
+               TurtleNestObservationInline,
                ManagementActionInline,
+               TagObservationInline,
                MediaAttachmentInline, ]
 
     def health_display(self, obj):
@@ -195,27 +230,3 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
         """Make habitat human readable."""
         return obj.get_habitat_display()
     habitat_display.short_description = 'Habitat'
-
-
-@admin.register(TurtleEncounter)
-class TurtleEncounterAdmin(AnimalEncounterAdmin):
-    """Admin for TurtleEncounter."""
-
-    inlines = [DistinguishingFeaturesInline,
-               TurtleDamageObservationInline,
-               TurtleMorphometricObservationInline,
-               TurtleNestObservationInline,
-               ManagementActionInline,
-               TagObservationInline,
-               MediaAttachmentInline, ]
-
-
-@admin.register(CetaceanEncounter)
-class CetaceanEncounterAdmin(AnimalEncounterAdmin):
-    """Admin for CetaceanEncounter.
-    TODO add inlines for cetacean obs.
-    """
-
-    inlines = [TagObservationInline,
-               ManagementActionInline,
-               MediaAttachmentInline, ]

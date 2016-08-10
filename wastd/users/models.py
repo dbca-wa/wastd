@@ -20,3 +20,7 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         return reverse('users:detail', kwargs={'username': self.username})
+
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("id__iexact", "name__icontains", )

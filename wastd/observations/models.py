@@ -314,59 +314,33 @@ class AnimalEncounter(Encounter):
     """The encounter of an animal of a species in a certain state of health
     and behaviour.
     """
-    HEALTH_CHOICES = (
-        ('alive', 'Alive (healthy)'),
-        ('alive-injured', 'Alive (injured)'),
-        ('alive-then-died', 'Initally alive (but died)'),
-        ('dead-edible', 'Dead (carcass edible)'),
-        ('dead-organs-intact', 'Dead (decomposed but organs intact)'),
-        ('dead-advanced', 'Dead (advanced decomposition)'),
-        ('dead-mummified', 'Mummified (dead, skin holding bones)'),
-        ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
-        ('other', 'Other'), )
 
-    # StrandNet: same as above
-    # some health status options are confused with management actions (
-    # disposal, rehab, euth), case of death
-    #
-    # <option value="9">? - DO NOT USE</option>
-    # <option value="14">D - Dead</option>
-    # <option value="3">D1 - Live but subsequently died; unsuccessful rescue</option>
-    # <option value="4">D2 - Dead, carcass in good condition; Fresh; suitable for
-    #  pathology or resembling a carcass fresh enough for eating</option>
-    # <option value="5">D3 - Dead, carcass fair</option>
-    # <option value="6">D4 - Dead, carcass poor; Advanced decomposition with internal organs falling apart</option>
-    # <option value="7">D5 - Dead, mummified carcass with skin holding bones together</option>
-    # <option value="8">D6 - Dead, disarticulated bones with no soft tissue remaining</option>
-    # <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
-    # <option value="22">DK - Killed for research</option>
-    # <option value="1">DL - Alive and left to natural processes. Not rescued</option>
-    # <option value="23">DU - Live but subsequently euthanased</option>
-    # <option value="2">DZ - Alive and rescued</option></select>
+    TAXON_CHOICES = (
+        ("Cheloniidae", "Marine turtles"),
+        ("Cetacea", "Whales and Dolphins"),
+        ("Pinnipedia", "Pinnipeds"),
+        ("Sirenia", "Dugongs"),
+        ("Elasmobranchii", "Sharks and Rays"),
+        ("na", "Unknown"), )
 
-    TURTLE_CHOICES = (
-        ('Natator depressus', 'Flatback turtle (Natator depressus)'),
-        ('Chelonia mydas', 'Green turtle (Chelonia mydas)'),
-        ('Eretmochelys imbricata', 'Hawksbill turtle (Eretmochelys imbricata)'),
-        ('Caretta caretta', 'Loggerhead turtle (Caretta caretta)'),
-        ('Lepidochelys olivacea', 'Olive Ridley turtle (Lepidochelys olivacea)'),
+    SPECIES_CHOICES = (
+        ("na", "not observed"),
+        # turtles
+        ('Natator depressus', 'Natator depressus (Flatback turtle)'),
+        ('Chelonia mydas', 'Chelonia mydas (Green turtle)'),
+        ('Eretmochelys imbricata', 'Eretmochelys imbricata (Hawksbill turtle)'),
+        ('Caretta caretta', 'Caretta caretta (Loggerhead turtle)'),
+        ('Lepidochelys olivacea', 'Lepidochelys olivacea (Olive ridley turtle)'),
         ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
-        ('Corolla corolla', 'Hatchback turtle (Corolla corolla)'),
-        ('unidentified', 'Unidentified species'), )
-    # <option value="30">Caretta caretta (Loggerhead turtle)</option>
-    # <option value="37">Caretta caretta x Chelonia mydas (Hybrid turtle)</option>
-    # <option value="31">Chelonia mydas (Green turtle)</option>
-    # <option value="32">Chelonia mydas agassazzi (Black turtle or East Pacific Green)</option>
-    # <option value="261">Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)</option>
-    # <option value="33">Dermochelys coriacea (Leatherback turtle)</option>
-    # <option value="34">Eretmochelys imbricata (Hawksbill turtle)</option>
-    # <option value="35">Lepidochelys olivacea (Olive ridley turtle)</option>
-    # <option value="36">Natator depressus (Flatback turtle)</option>
-    # <option value="281">Natator depressus x Caretta caretta (Hybrid turtle)</option>
-    # <option value="38">Natator depressus x Chelonia mydas (Hybrid turtle)</option>
-    # <option value="39">Unknown (Unidentified turtle)</option></select>
-
-    DOLPHIN_CHOICES = (
+        ('Chelonia mydas agassazzi', 'Chelonia mydas agassazzi (Black turtle or East Pacific Green)'),
+        ('Corolla corolla', 'Corolla corolla (Hatchback turtle)'),
+        ('unidentified-turtle', 'Unidentified turtle'),
+        # Caretta caretta x Chelonia mydas (Hybrid turtle)
+        # Chelonia mydas agassazzi (Black turtle or East Pacific Green)
+        # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
+        # Natator depressus x Caretta caretta (Hybrid turtle)
+        # Natator depressus x Chelonia mydas (Hybrid turtle)
+        # dolphins
         ("Delphinus delphis", "Delphinus delphis (Short-beaked common dolphin)"),
         ("Grampus griseus", "Grampus griseus (Risso's dolphin)"),
         ("Lagenodelphis hosei", "Lagenodelphis hosei (Fraser's dolphin)"),
@@ -381,9 +355,8 @@ class AnimalEncounter(Encounter):
         ("Tursiops aduncus", "Tursiops aduncus (Indo-Pacific bottlenose dolphin)"),
         ("Tursiops truncatus", "Tursiops truncatus (Offshore bottlenose dolphin)"),
         ("Tursiops sp.", "Tursiops sp. (Unidentified bottlenose dolphin)"),
-        ("unidentified", "Unidentified species"), )
-
-    WHALE_CHOICES = (
+        ("unidentified-dolphin", "Unidentified dolphin"),
+        # whales
         ("Balaenoptera acutorostrata", "Balaenoptera acutorostrata (Dwarf minke whale)"),
         ("Balaenoptera bonaerensis", "Balaenoptera bonaerensis (Antarctic minke whale)<"),
         ("Balaenoptera borealis", "Balaenoptera borealis (Sei whale)"),
@@ -409,44 +382,74 @@ class AnimalEncounter(Encounter):
         ("Peponocephala electra", "Peponocephala electra (Melon-headed whale)"),
         ("Physeter macrocephalus", "Physeter macrocephalus (Sperm whale)"),
         ("Pseudorca crassidens", "Pseudorca crassidens (False killer whale)"),
-        ("Ziphius cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"), )
-
-    SPECIES_CHOICES = TURTLE_CHOICES + DOLPHIN_CHOICES + WHALE_CHOICES
+        ("Ziphius cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"),
+        ("unidentified-whale", "Unidentified whale"), )
 
     SEX_CHOICES = (
+        ("na", "not observed"),
         ("male", "male"),
         ("female", "female"),
-        ("unknown", "sex not determined or not examined"),
+        ("na", "sex not determined or not examined"),
         ("intersex", "hermaphrodite or intersex"), )
 
     MATURITY_CHOICES = (
-        ("juvenile", "juvenile"),
-        # ("unweaned", "unweaned immature juvenile"),
-        # ("weaned", "weaned immature juvenile"),
-        ("adult", "adult"),
-        ("unknown", "unknown maturity"), )
+        ("na", "not observed"),
+        # turtle
+        ("turtle-hatchling", "hatchling turtle"),
+        ("turtle-post-hatchling", "post-hatchling turtle"),
+        ("turtle-juvenile", "juvenile turtle"),
+        ("turtle-pre-pubsecent-immature", "pre-pubsecent immature turtle"),
+        ("turtle-pubsecent-immature", "pubsecent immature turtle"),
+        ("turtle-adult-measured", "adult turtle (status determined from carapace and tail measurements)"),
+        ("turtle-adult", "adult turtle"),
+        ("turtle-unknown", "unknown maturity turtle"),
+        # mammal
+        ("mammal-unweaned", "unweaned immature mammal"),
+        ("mammal-weaned", "weaned immature mammal"),
+        ("mammal-adult", "adult mammal"),
+        ("mammal-unknown", "unknown maturity mammal"), )
 
-    NESTING_ACTIVITY_CHOICES = (
+    HEALTH_CHOICES = (
+        ("na", "not observed"),
+        ('alive', 'Alive (healthy)'),
+        ('alive-injured', 'Alive (injured)'),
+        ('alive-then-died', 'Initally alive (but died)'),
+        ('dead-edible', 'Dead (carcass edible)'),
+        ('dead-organs-intact', 'Dead (decomposed but organs intact)'),
+        ('dead-advanced', 'Dead (advanced decomposition)'),
+        ('dead-mummified', 'Mummified (dead, skin holding bones)'),
+        ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
+        ('other', 'Other'), )
+
+    # StrandNet: same as above
+    # some health status options are confused with management actions (
+    # disposal, rehab, euth), cause of death
+    #
+    # <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
+    # <option value="22">DK - Killed for research</option>
+    # <option value="1">DL - Alive and left to natural processes. Not rescued</option>
+    # <option value="23">DU - Live but subsequently euthanased</option>
+    # <option value="2">DZ - Alive and rescued</option></select>
+
+    ACTIVITY_CHOICES = (
+        ("na", "not observed"),
+        # nesting:
         ("arriving", "arriving on beach"),
         ("digging-body-pit", "digging body pit"),
         ("excavating-egg-chamber", "excavating egg chamber"),
         ("laying-eggs", "laying eggs"),
         ("filling-in-egg-chamber", "filling in egg chamber"),
-        ("returning-to-water", "returning to water"), )
-
-    STRANDING_ACTIVITY_CHOICES = (
+        ("returning-to-water", "returning to water"),
+        # stranding:
         ("floating", "Floating (dead, sick, unable to dive, drifting in water)"),
-        ("beached", "Beach washed (dead, sick or stranded on beach/coast)"),
+        ("beach-washed", "Beach washed (dead, sick or stranded on beach/coast)"),
+        ("beach-jumped", "Beach jumped"),
         ("carcass-tagged-released", "Carcass tagged and released"),
         ("carcass-inland", "Carcass or butchered remains found removed from coast"),
         ("captivity", "In captivity"),
         ("non-breeding", "General non-breeding activity (swimming, sleeping, feeding, etc.)"),
-        ("", ""),
-        ("", ""),
-        ("other", "other activity"),
-        ("unknown", "unknown activity"), )
+        ("other", "other activity"), )
 
-    ACTIVITY_CHOICES = NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
     # primary activity
     # <option value="20">? - Unspecified</option>
     # <option value="1">B - B - to be determined)</option>
@@ -502,7 +505,7 @@ class AnimalEncounter(Encounter):
     # <option value="1">X* - Nesting: Laid</option></select>
 
     HABITAT_CHOICES = (
-        ("na", "No habitat information available"),
+        ("na", "not observed"),
         ("beach", "B - Beach: Below the vegetation line of the grass slope"),
         ("bays-estuaries", "BE - Bays, estuaries and other enclosed shallow soft sediments"),
         ("dune", "D - Dune"),
@@ -526,8 +529,14 @@ class AnimalEncounter(Encounter):
         ("reef-flat", "RF - Reef: Reef flat, dries at low tide"),
         ("reef-seagrass-flats", "RG - Coral reef with seagrass flats"),
         ("reef-rocky", "RR - Reef: Rocky reef, e.g. adjacent to mainland"),
-        ("open-water", "OW - Open water, including inter reefal areas"),
-        )
+        ("open-water", "OW - Open water, including inter reefal areas"), )
+
+    taxon = models.CharField(
+        max_length=300,
+        verbose_name=_("Taxonomic group"),
+        choices=TAXON_CHOICES,
+        default="na",
+        help_text=_("The taxonomic group of the animal."), )
 
     species = models.CharField(
         max_length=300,
@@ -538,14 +547,14 @@ class AnimalEncounter(Encounter):
 
     sex = models.CharField(
         max_length=300,
-        default="unknown",
+        default="na",
         verbose_name=_("Sex"),
         choices=SEX_CHOICES,
         help_text=_("The animal's sex."), )
 
     maturity = models.CharField(
         max_length=300,
-        default="unknown",
+        default="na",
         verbose_name=_("Maturity"),
         choices=MATURITY_CHOICES,
         help_text=_("The animal's maturity."), )
@@ -554,13 +563,13 @@ class AnimalEncounter(Encounter):
         max_length=300,
         verbose_name=_("Health status"),
         choices=HEALTH_CHOICES,
-        default="alive",
+        default="na",
         help_text=_("On a scale from the Fresh Prince of Bel Air to 80s Hair "
                     "Metal: how dead and decomposed is the animal?"), )
 
     activity = models.CharField(
         max_length=300,
-        default="unknown",
+        default="na",
         verbose_name=_("Activity"),
         choices=ACTIVITY_CHOICES,
         help_text=_("The animal's activity at the time of observation."), )
@@ -605,7 +614,7 @@ class AnimalEncounter(Encounter):
 
     @property
     def animal_html(self):
-        """An HTML string of Observations"""
+        """An HTML string of Observations."""
         tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3} {4}'
         return mark_safe(
             tpl.format(self.get_species_display(), self.get_health_display(),
@@ -620,104 +629,76 @@ class AnimalEncounter(Encounter):
                                     self.status_html))
 
 
-@python_2_unicode_compatible
-class TurtleEncounter(AnimalEncounter):
-    """The encounter of a turtle in a certain state of health and activity.
-
-    TurtleEncounters include nesting/tagging and stranding encounters.
-    TurtleEncounters limit species choices to turtle species and maturity
-    choices to turtle-specific options.
-    """
-
-    SPECIES_CHOICES = AnimalEncounter.TURTLE_CHOICES
-
-    MATURITY_CHOICES = (
-        ("hatchling", "hatchling"),
-        ("post-hatchling", "post-hatchling"),
-        ("juvenile", "juvenile"),
-        ("pre-pubsecent-immature", "pre-pubsecent immature"),
-        ("pubsecent-immature", "pubsecent immature"),
-        ("adult-measured", "adult status determined from carapace and tail measurements"),
-        ("adult", "adult"),
-        ("unknown", "unknown maturity"), )
-
-    class Meta:
-        """Class options."""
-
-        ordering = ["when", "where"]
-        verbose_name = "Turtle Encounter"
-        verbose_name_plural = "Turtle Encounters"
-        get_latest_by = "when"
-
-    def __str__(self):
-        """The unicode representation."""
-        tpl = "Turtle Encounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
-        return tpl.format(
-            self.pk,
-            self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
-            self.who.name,
-            self.get_species_display(),
-            self.get_health_display(),
-            self.get_maturity_display(),
-            self.get_sex_display(),
-            self.get_habitat_display())
-
-    def save(self, *args, **kwargs):
-        """Cache the HTML representation in `as_html`."""
-        self.as_html = self.make_html()
-        super(TurtleEncounter, self).save(*args, **kwargs)
-
-
-@python_2_unicode_compatible
-class CetaceanEncounter(AnimalEncounter):
-    """The encounter of a cetacean in a certain state of health and activity.
-
-    CetaceanEncounters currently support strandings.
-    Species choices are limited to dolphins and whales; maturity choices are
-    limited to cetacean-specific options.
-    """
-
-    SPECIES_CHOICES = AnimalEncounter.DOLPHIN_CHOICES + AnimalEncounter.WHALE_CHOICES
-
-    SEX_CHOICES = (
-        ("male", "male"),
-        ("female", "female"),
-        ("unknown", "sex not determined or not examined"),
-        ("intersex", "hermaphrodite or intersex or neither male nor female"), )
-
-    MATURITY_CHOICES = (
-        ("unweaned-immature", "unweaned immature"),
-        ("weaned-immature", "weaned immature"),
-        ("adult", "adult"),
-        ("unknown", "unknown maturity"), )
-
-    ACTIVITY_CHOICES = AnimalEncounter.STRANDING_ACTIVITY_CHOICES
-
-    class Meta:
-        """Class options."""
-
-        ordering = ["when", "where"]
-        verbose_name = "Cetacean Encounter"
-        verbose_name_plural = "Cetacean Encounters"
-        get_latest_by = "when"
-
-    def __str__(self):
-        """The unicode representation."""
-        tpl = "Cetacean Encounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
-        return tpl.format(
-            self.pk,
-            self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
-            self.who.name,
-            self.get_species_display(),
-            self.get_health_display(),
-            self.get_maturity_display(),
-            self.get_sex_display(),
-            self.get_habitat_display())
-
-    def save(self, *args, **kwargs):
-        """Cache the HTML representation in `as_html`."""
-        self.as_html = self.make_html()
-        super(CetaceanEncounter, self).save(*args, **kwargs)
+# @python_2_unicode_compatible
+# class TurtleEncounter(AnimalEncounter):
+#     """The encounter of a turtle in a certain state of health and activity.
+#
+#     TurtleEncounters include nesting/tagging and stranding encounters.
+#     TurtleEncounters limit species choices to turtle species and maturity
+#     choices to turtle-specific options.
+#     """
+#
+#     class Meta:
+#         """Class options."""
+#
+#         ordering = ["when", "where"]
+#         verbose_name = "Turtle Encounter"
+#         verbose_name_plural = "Turtle Encounters"
+#         get_latest_by = "when"
+#
+#     def __str__(self):
+#         """The unicode representation."""
+#         tpl = "Turtle Encounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
+#         return tpl.format(
+#             self.pk,
+#             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
+#             self.who.name,
+#             self.get_species_display(),
+#             self.get_health_display(),
+#             self.get_maturity_display(),
+#             self.get_sex_display(),
+#             self.get_habitat_display())
+#
+#     def save(self, *args, **kwargs):
+#         """Cache the HTML representation in `as_html`."""
+#         self.as_html = self.make_html()
+#         super(TurtleEncounter, self).save(*args, **kwargs)
+#
+#
+# @python_2_unicode_compatible
+# class CetaceanEncounter(AnimalEncounter):
+#     """The encounter of a cetacean in a certain state of health and activity.
+#
+#     CetaceanEncounters currently support strandings.
+#     Species choices are limited to dolphins and whales; maturity choices are
+#     limited to cetacean-specific options.
+#     """
+#
+#     class Meta:
+#         """Class options."""
+#
+#         ordering = ["when", "where"]
+#         verbose_name = "Cetacean Encounter"
+#         verbose_name_plural = "Cetacean Encounters"
+#         get_latest_by = "when"
+#
+#     def __str__(self):
+#         """The unicode representation."""
+#         tpl = "Cetacean Encounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
+#         return tpl.format(
+#             self.pk,
+#             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
+#             self.who.name,
+#             self.get_species_display(),
+#             self.get_health_display(),
+#             self.get_maturity_display(),
+#             self.get_sex_display(),
+#             self.get_habitat_display())
+#
+#     def save(self, *args, **kwargs):
+#         """Cache the HTML representation in `as_html`."""
+#         self.as_html = self.make_html()
+#         super(CetaceanEncounter, self).save(*args, **kwargs)
 
 
 @python_2_unicode_compatible
@@ -1339,3 +1320,5 @@ class TurtleDamageObservation(Observation):
         """An HTML representation."""
         tpl = ('<div class="popup"><i class="fa fa-bolt"></i>&nbsp;{0}</div>')
         return mark_safe(tpl.format(self.__str__()))
+
+# TODO  add TrackTallyObservation, CecaceanMorphometricObservation

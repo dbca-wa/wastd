@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
-import confy
 from confy import env, database
 from unipath import Path
 
@@ -33,6 +32,7 @@ DJANGO_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'grappelli',
     'django.contrib.admin',
     )
 THIRD_PARTY_APPS = (
@@ -49,8 +49,9 @@ THIRD_PARTY_APPS = (
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
     'django_fsm',               # Transitions
-    'django_fsm_log',            # Transition audit logs
+    'django_fsm_log',           # Transition audit logs
     'fsm_admin',                # Transitions in admin
+    # 'leaflet',                  # Map widgets not mature enough
     )
 
 # Apps specific for this project go here.
@@ -176,7 +177,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                'django.core.context_processors.request',
+                # 'django.core.context_processors.request',
                 # Your stuff: custom template context processors go here
                 ],
             },
@@ -275,3 +276,7 @@ REST_FRAMEWORK = {
         ),
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
     }
+
+# Grappelli admin theme
+# ------------------------------------------------------------------------------
+GRAPPELLI_ADMIN_TITLE = "WAStD Data Entry and Curation Portal"

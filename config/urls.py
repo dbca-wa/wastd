@@ -27,8 +27,8 @@ router.register(r'users', UserViewSet)
 router.register(r'encounters', EncounterViewSet)
 router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
 router.register(r'animal-encounters', AnimalEncounterViewSet)
-router.register(r'turtle-encounters', TurtleEncounterViewSet)
-router.register(r'cetacean-encounters', CetaceanEncounterViewSet)
+# router.register(r'turtle-encounters', TurtleEncounterViewSet)
+# router.register(r'cetacean-encounters', CetaceanEncounterViewSet)
 router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
 router.register(r'tag-observations', TagObservationViewSet)
@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'),
         name='about'),
 
+    url(r'^grappelli/', include('grappelli.urls')),  # grappelli URLS
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, include(admin.site.urls)),
 

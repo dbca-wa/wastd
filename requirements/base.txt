@@ -12,6 +12,7 @@ unipath
 
 # admin
 django-adminactions
+django-grappelli
 
 # Forms
 django-braces==1.9.0
