@@ -1,20 +1,57 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from django import forms as django_forms
+# from django import forms as django_forms
 from django.contrib import admin
-from django.contrib.gis import forms
-from wastd.widgets import MapWidget
+# from django.contrib.gis import forms
 from django.contrib.gis.db import models as geo_models
-from easy_select2 import select2_modelform, select2_modelform_meta
-from easy_select2.widgets import Select2
+from django.contrib.admin import SimpleListFilter
+from django.utils.translation import ugettext_lazy as _
+from easy_select2 import select2_modelform  # select2_modelform_meta
+# from easy_select2.widgets import Select2
+from fsm_admin.mixins import FSMTransitionMixin
+
+from wastd.widgets import MapWidget
 from .models import (Encounter, TurtleNestEncounter,
                      AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
                      MediaAttachment, TagObservation, ManagementAction,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation,
                      TurtleNestObservation, TurtleDamageObservation)
-from fsm_admin.mixins import FSMTransitionMixin
-from wastd.users.models import User
+
+
+class ObservationTypeListFilter(SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = _('observation type')
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'observation_type'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        return (
+            ('stranding', _('stranding')),
+            ('nesting', _('nesting')),
+            )
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        # Compare the requested value (either '80s' or '90s')
+        # to decide how to filter the queryset.
+        if self.value() == 'stranding':
+            return queryset.exclude(health='alive')
+        if self.value() == 'nesting':
+            return queryset.filter(health='alive')
 
 
 class MediaAttachmentInline(admin.TabularInline):
@@ -104,7 +141,7 @@ class TagObservationAdmin(admin.ModelAdmin):
     status_display.short_description = 'Status'
 
 
-EncounterAdminForm = select2_modelform(Encounter)
+EncounterAdminForm = select2_modelform(Encounter, attrs={'width': '350px'})
 
 @admin.register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
@@ -125,7 +162,7 @@ class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     save_on_top = True
     search_fields = ('who', )
     fsm_field = ['status', ]
-    fieldsets = (('Encounter', {'fields': ('when', 'where', 'who')}),)
+    fieldsets = (('Encounter', {'fields': ('where', 'when', 'who')}),)
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
                TurtleNestObservationInline,
@@ -135,7 +172,8 @@ class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
                MediaAttachmentInline, ]
 
 
-TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter)
+TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter,
+                                                 attrs={'width': '350px'})
 
 
 @admin.register(TurtleNestEncounter)
@@ -172,7 +210,8 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     age_display.short_description = 'Nest age'
 
 
-AnimalEncounterForm = select2_modelform(AnimalEncounter)
+AnimalEncounterForm = select2_modelform(AnimalEncounter,
+                                        attrs={'width': '350px'})
 
 
 @admin.register(AnimalEncounter)
@@ -187,7 +226,8 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     list_display = ('when', 'wkt', 'who', 'species', 'health_display',
                     'maturity_display', 'sex_display', 'behaviour',
                     'habitat_display', 'status_display', )
-    list_filter = ('status', 'who', 'taxon', 'species', 'health', 'maturity',
+    list_filter = (ObservationTypeListFilter,
+                   'status', 'who', 'taxon', 'species', 'health', 'maturity',
                    'sex', 'habitat')
     list_select_related = True
     save_on_top = True
@@ -196,7 +236,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
          {'fields': ('taxon', 'species', 'health', 'maturity', 'sex',
-                     'behaviour', 'habitat', )}),
+                     'activity', 'behaviour', 'habitat', )}),
         )
     inlines = [DistinguishingFeaturesInline,
                TurtleDamageObservationInline,

@@ -1,0 +1,368 @@
+[
+{
+    "model": "observations.encounter",
+    "pk": 1,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "animalencounter"
+        ],
+        "status": "new",
+        "when": "2013-07-17T07:35:00Z",
+        "where": "SRID=4326;POINT (115.3263664245600069 -20.8798103332519993)",
+        "location_accuracy": "online-map",
+        "who": [
+            "PeterK"
+        ],
+        "as_html": "<h4>Chelonia mydas (Green turtle)</h4><i class=\"fa fa-heartbeat\"></i>&nbsp;Mummified (dead, skin holding bones) not observed sex not determined or not examined B - Beach: Below the vegetation line of the grass slope<div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;17/07/2013 15:35:00 AWST</div><div class=\"popup\"><i class=\"fa fa-user\"></i>&nbsp;Peter Kendrick</div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Damage&nbsp<i class=\"fa fa-times\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;PIT tags scanned&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Missing Limbs&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Barnacles&nbsp<i class=\"fa fa-times\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Algal growth&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Tagging scars&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Propeller damage&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Entanglement&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;More in photos&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCL&nbsp;907&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCN&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCW&nbsp;755&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;TL&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;HW&nbsp;121&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-arrrow-right\"></i>&nbsp;Left in situ. Painted.</div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/10/130717_L_Bandi_Bay_2_20.87496_115.32072_PK.pdf\" target=\"_\">data sheet with pictures</a></div><div class=\"popup\">&nbsp;<a href=/admin/observations/animalencounter/1/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
+    }
+},
+{
+    "model": "observations.encounter",
+    "pk": 2,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "animalencounter"
+        ],
+        "status": "new",
+        "when": "2015-08-07T15:55:00Z",
+        "where": "SRID=4326;POINT (128.4165199999999913 -14.7978100000000001)",
+        "location_accuracy": "online-map",
+        "who": [
+            "admin"
+        ],
+        "as_html": "<h4>Natator depressus (Flatback turtle)</h4><i class=\"fa fa-heartbeat\"></i>&nbsp;Alive (healthy) adult turtle female B - Beach: Below the vegetation line of the grass slope<div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;07/08/2015 23:55:00 AWST</div><div class=\"popup\"><i class=\"fa fa-user\"></i>&nbsp;Florian Mayer (Admin)</div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCL&nbsp;851&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCN&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCW&nbsp;722&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;TL&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;HW&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-home\"></i>&nbsp;Nest above high water mark, below dune with None eggs</div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Flipper Tag WA96394 attached new to an animal on left front flipper, 1st scale from body/head&nbsp;<a href=/admin/observations/tagobservation/?q=WA96394 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Flipper Tag WA96395 re-sighted as attached to animal on right front flipper, 1st scale from body/head&nbsp;<a href=/admin/observations/tagobservation/?q=WA96395 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;PIT Tag 900006000149793 attached new to an animal on neck, other, see comments&nbsp;<a href=/admin/observations/tagobservation/?q=900006000149793 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Satellite Tag 134553 attached new to an animal on carapace, other, see comments&nbsp;<a href=/admin/observations/tagobservation/?q=134553 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Biopsy Sample F5203 re-sighted as attached to animal on other, see comments, other, see comments&nbsp;<a href=/admin/observations/tagobservation/?q=F5203 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\">&nbsp;<a href=/admin/observations/animalencounter/2/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
+    }
+},
+{
+    "model": "observations.encounter",
+    "pk": 3,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "status": "new",
+        "when": "2016-08-10T07:52:00Z",
+        "where": "SRID=4326;POINT (122.1420999999999992 -17.5153999999999996)",
+        "location_accuracy": "online-map",
+        "who": [
+            "preston_manado"
+        ],
+        "as_html": "<h4><div class=\"popup\">Natator depressus (Flatback turtle) nest in DS - Dune: Bare sand area, new</div></h4><div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;10/08/2016 15:52:00 AWST</div><div class=\"popup\"><i class=\"fa fa-user\"></i>&nbsp;</div><div class=\"popup\"><i class=\"fa fa-home\"></i>&nbsp;Nest inside dune, spinifex with 56 eggs</div><div class=\"popup\">&nbsp;<a href=/admin/observations/turtlenestencounter/3/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
+    }
+},
+{
+    "model": "observations.animalencounter",
+    "pk": 1,
+    "fields": {
+        "taxon": "Cheloniidae",
+        "species": "Chelonia mydas",
+        "sex": "na",
+        "maturity": "na",
+        "health": "dead-mummified",
+        "activity": "na",
+        "behaviour": "",
+        "habitat": "beach"
+    }
+},
+{
+    "model": "observations.animalencounter",
+    "pk": 2,
+    "fields": {
+        "taxon": "Cheloniidae",
+        "species": "Natator depressus",
+        "sex": "female",
+        "maturity": "turtle-adult",
+        "health": "alive",
+        "activity": "returning-to-water",
+        "behaviour": "",
+        "habitat": "beach"
+    }
+},
+{
+    "model": "observations.turtlenestencounter",
+    "pk": 3,
+    "fields": {
+        "nest_age": "new",
+        "species": "Natator depressus",
+        "habitat": "dune-bare-sand"
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 1,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "encounter": 1
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 2,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "encounter": 1
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 3,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "managementaction"
+        ],
+        "encounter": 1
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 4,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "mediaattachment"
+        ],
+        "encounter": 1
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 5,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "encounter": 2
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 6,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "encounter": 2
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 7,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "tagobservation"
+        ],
+        "encounter": 2
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 8,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "tagobservation"
+        ],
+        "encounter": 2
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 9,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "tagobservation"
+        ],
+        "encounter": 2
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 10,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "tagobservation"
+        ],
+        "encounter": 2
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 11,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "tagobservation"
+        ],
+        "encounter": 2
+    }
+},
+{
+    "model": "observations.observation",
+    "pk": 12,
+    "fields": {
+        "polymorphic_ctype": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "encounter": 3
+    }
+},
+{
+    "model": "observations.mediaattachment",
+    "pk": 4,
+    "fields": {
+        "media_type": "data_sheet",
+        "title": "data sheet with pictures",
+        "attachment": "attachments/2016/08/10/130717_L_Bandi_Bay_2_20.87496_115.32072_PK.pdf"
+    }
+},
+{
+    "model": "observations.tagobservation",
+    "pk": 7,
+    "fields": {
+        "tag_type": "flipper-tag",
+        "side": "L",
+        "position": "1",
+        "name": "WA96394",
+        "status": "attached",
+        "comments": ""
+    }
+},
+{
+    "model": "observations.tagobservation",
+    "pk": 8,
+    "fields": {
+        "tag_type": "flipper-tag",
+        "side": "R",
+        "position": "1",
+        "name": "WA96395",
+        "status": "recaptured",
+        "comments": ""
+    }
+},
+{
+    "model": "observations.tagobservation",
+    "pk": 9,
+    "fields": {
+        "tag_type": "pit-tag",
+        "side": "N",
+        "position": "O",
+        "name": "900006000149793",
+        "status": "attached",
+        "comments": ""
+    }
+},
+{
+    "model": "observations.tagobservation",
+    "pk": 10,
+    "fields": {
+        "tag_type": "satellite-tag",
+        "side": "C",
+        "position": "O",
+        "name": "134553",
+        "status": "attached",
+        "comments": ""
+    }
+},
+{
+    "model": "observations.tagobservation",
+    "pk": 11,
+    "fields": {
+        "tag_type": "biopsy-sample",
+        "side": "O",
+        "position": "O",
+        "name": "F5203",
+        "status": "recaptured",
+        "comments": ""
+    }
+},
+{
+    "model": "observations.distinguishingfeatureobservation",
+    "pk": 1,
+    "fields": {
+        "damage_injury": "absent",
+        "scanned_for_pit_tags": "na",
+        "missing_limbs": "na",
+        "barnacles": "absent",
+        "algal_growth": "na",
+        "tagging_scars": "na",
+        "propeller_damage": "na",
+        "entanglement": "na",
+        "see_photo": "na",
+        "comments": ""
+    }
+},
+{
+    "model": "observations.managementaction",
+    "pk": 3,
+    "fields": {
+        "management_actions": "Left in situ. Painted.",
+        "comments": ""
+    }
+},
+{
+    "model": "observations.turtlemorphometricobservation",
+    "pk": 2,
+    "fields": {
+        "curved_carapace_length_mm": 907,
+        "curved_carapace_length_accuracy": "measured",
+        "curved_carapace_notch_mm": null,
+        "curved_carapace_notch_accuracy": "unknown",
+        "curved_carapace_width_mm": 755,
+        "curved_carapace_width_accuracy": "measured",
+        "tail_length_mm": null,
+        "tail_length_accuracy": "unknown",
+        "maximum_head_width_mm": 121,
+        "maximum_head_width_accuracy": "measured"
+    }
+},
+{
+    "model": "observations.turtlemorphometricobservation",
+    "pk": 5,
+    "fields": {
+        "curved_carapace_length_mm": 851,
+        "curved_carapace_length_accuracy": "measured",
+        "curved_carapace_notch_mm": null,
+        "curved_carapace_notch_accuracy": "unknown",
+        "curved_carapace_width_mm": 722,
+        "curved_carapace_width_accuracy": "measured",
+        "tail_length_mm": null,
+        "tail_length_accuracy": "unknown",
+        "maximum_head_width_mm": null,
+        "maximum_head_width_accuracy": "unknown"
+    }
+},
+{
+    "model": "observations.turtlenestobservation",
+    "pk": 6,
+    "fields": {
+        "nest_position": "above-hw",
+        "eggs_laid": true,
+        "egg_count": null
+    }
+},
+{
+    "model": "observations.turtlenestobservation",
+    "pk": 12,
+    "fields": {
+        "nest_position": "in-dune",
+        "eggs_laid": true,
+        "egg_count": 56
+    }
+}
+]

@@ -323,7 +323,7 @@ class AnimalEncounter(Encounter):
         ("Elasmobranchii", "Sharks and Rays"),
         ("na", "Unknown"), )
 
-    SPECIES_CHOICES = (
+    TURTLE_SPECIES_CHOICES = (
         ("na", "not observed"),
         # turtles
         ('Natator depressus', 'Natator depressus (Flatback turtle)'),
@@ -341,6 +341,8 @@ class AnimalEncounter(Encounter):
         # Natator depressus x Caretta caretta (Hybrid turtle)
         # Natator depressus x Chelonia mydas (Hybrid turtle)
         # dolphins
+        )
+    CETACEAN_SPECIES_CHOICES = (
         ("Delphinus delphis", "Delphinus delphis (Short-beaked common dolphin)"),
         ("Grampus griseus", "Grampus griseus (Risso's dolphin)"),
         ("Lagenodelphis hosei", "Lagenodelphis hosei (Fraser's dolphin)"),
@@ -384,6 +386,8 @@ class AnimalEncounter(Encounter):
         ("Pseudorca crassidens", "Pseudorca crassidens (False killer whale)"),
         ("Ziphius cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"),
         ("unidentified-whale", "Unidentified whale"), )
+
+    SPECIES_CHOICES = TURTLE_SPECIES_CHOICES + CETACEAN_SPECIES_CHOICES
 
     SEX_CHOICES = (
         ("na", "not observed"),
