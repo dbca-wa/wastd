@@ -68,8 +68,8 @@ INSTALLED_APPS += ('gunicorn', )
 # Uploaded Media Files
 # ------------------------
 # See: http://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
-INSTALLED_APPS += ('storages', )
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+#INSTALLED_APPS += ('storages', )
+#DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 AWS_CALLING_FORMAT = SubdomainCallingFormat
 AWS_ACCESS_KEY_ID = env('DJANGO_AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env('DJANGO_AWS_SECRET_ACCESS_KEY')
@@ -83,22 +83,22 @@ STORAGE_BASE_URL =  'https://{0}.s3.amazonaws.com/'.format(AWS_STORAGE_BUCKET_NA
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-# MEDIA_ROOT = str(APPS_DIR('media'))
+MEDIA_ROOT = str(APPS_DIR('media'))
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
-# MEDIA_URL = '/media/'
-MEDIA_URL = STORAGE_BASE_URL + 'media/'
+MEDIA_URL = '/media/'
+#MEDIA_URL = STORAGE_BASE_URL + 'media/'
 
 
 # Static Assets
 # ------------------------
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATIC_URL = STORAGE_BASE_URL + 'static/'
-STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATIC_URL = STORAGE_BASE_URL + 'static/'
+#STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 
 
 # COMPRESSOR
 # ------------------------------------------------------------------------------
-COMPRESS_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+#COMPRESS_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 COMPRESS_URL = STATIC_URL
 COMPRESS_ENABLED = env('COMPRESS_ENABLED', default=True)
 
