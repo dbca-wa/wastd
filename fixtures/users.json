@@ -1,0 +1,56 @@
+[
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$wihqyaywtyGT$WxlUF5y37SdwB5DtdEOlG6X+PMzNGQZFhiVkYcrFOAQ=",
+        "last_login": "2016-08-10T03:11:57.571Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "florian.wendelin.mayer@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2016-08-10T03:11:27.587Z",
+        "name": "Florian Mayer (Admin)",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$U7ofEvOS6y2X$X8d7qBdr+kc9Dw0o8vJLyQK5d+EjQ0McFaowUZffJXU=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "PeterK",
+        "first_name": "Peter",
+        "last_name": "Kendrick",
+        "email": "sro.bwi@dpaw.wa.gov.au",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2016-08-10T03:13:00Z",
+        "name": "Peter Kendrick",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$XhP5Bxv0fUBG$j3EDoPPXaN+o0L/7pcvQBvQiEzg2zBIv0+fGgyWBcSg=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "preston_manado",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2016-08-10T07:52:43.727Z",
+        "name": "",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
