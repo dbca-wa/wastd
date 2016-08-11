@@ -617,6 +617,13 @@ class AnimalEncounter(Encounter):
         super(AnimalEncounter, self).save(*args, **kwargs)
 
     @property
+    def is_standing(self):
+        """Hacky way of splitting AnimalEncounters into strandings (not alive
+        and healthy) and other (tagging) observations.
+        """
+        return self.health != 'alive'
+
+    @property
     def animal_html(self):
         """An HTML string of Observations."""
         tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3} {4}'

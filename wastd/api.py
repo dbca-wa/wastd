@@ -1,4 +1,5 @@
 from rest_framework import serializers, viewsets
+import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
 
 from wastd.observations.models import (
@@ -223,6 +224,39 @@ class AnimalEncounterSerializer(EncounterSerializer):
 #                   'observation_set', )
 
 
+# filters
+class UserFilter(filters.FilterSet):
+    name = filters.CharFilter(name='name')
+
+    class Meta:
+        model = User
+
+
+class EncounterFilter(filters.FilterSet):
+
+    class Meta:
+        model = Encounter
+        fields = ['where', 'location_accuracy', 'when', 'who', 'status']
+
+
+class AnimalEncounterFilter(filters.FilterSet):
+    # observation_type = filters.AllLookupsFilter(
+    #     'observations.admin.ObservationTypeListFilter')
+
+    class Meta:
+        model = AnimalEncounter
+        fields = ['where', 'location_accuracy', 'when', 'who', 'status',
+                  'species', 'health', 'sex', 'maturity', 'habitat',
+                  'behaviour', ]
+
+from url_filter.filtersets import ModelFilterSet
+
+class AnimalEncounterFilterSet(ModelFilterSet):
+
+    class Meta(object):
+        model = AnimalEncounter
+
+
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
     """User view set."""
@@ -236,6 +270,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
+    filter_fields = ['where', 'location_accuracy', 'when', 'who', 'status', ]
 
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
@@ -243,6 +278,10 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
+    filter_class = EncounterFilter
+    filter_fields = [
+        'where', 'location_accuracy', 'when', 'who', 'status',
+        'species', 'age', ]
 
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
@@ -250,6 +289,9 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
+    filter_fields = [
+        'where', 'location_accuracy', 'when', 'who', 'status',
+        'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour', ]
 
 
 # class TurtleEncounterViewSet(viewsets.ModelViewSet):

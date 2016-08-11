@@ -10,7 +10,7 @@
         "status": "new",
         "when": "2013-07-17T07:35:00Z",
         "where": "SRID=4326;POINT (115.3263664245600069 -20.8798103332519993)",
-        "location_accuracy": "online-map",
+        "location_accuracy": "10m",
         "who": [
             "PeterK"
         ],
@@ -28,7 +28,7 @@
         "status": "new",
         "when": "2015-08-07T15:55:00Z",
         "where": "SRID=4326;POINT (128.4165199999999913 -14.7978100000000001)",
-        "location_accuracy": "online-map",
+        "location_accuracy": "10m",
         "who": [
             "admin"
         ],
@@ -46,7 +46,7 @@
         "status": "new",
         "when": "2016-08-10T07:52:00Z",
         "where": "SRID=4326;POINT (122.1420999999999992 -17.5153999999999996)",
-        "location_accuracy": "online-map",
+        "location_accuracy": "1km",
         "who": [
             "preston_manado"
         ],

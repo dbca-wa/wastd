@@ -162,7 +162,8 @@ class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     save_on_top = True
     search_fields = ('who', )
     fsm_field = ['status', ]
-    fieldsets = (('Encounter', {'fields': ('where', 'when', 'who')}),)
+    fieldsets = (('Encounter', {'fields': ('where', 'location_accuracy',
+                                           'when', 'who')}),)
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
                TurtleNestObservationInline,

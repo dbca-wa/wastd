@@ -177,7 +177,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                # 'django.core.context_processors.request',
+                'django.core.context_processors.request',
                 # Your stuff: custom template context processors go here
                 ],
             },
@@ -274,7 +274,9 @@ REST_FRAMEWORK = {
         'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework_latex.renderers.LatexRenderer',
         ),
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+        ),
     }
 
 # Grappelli admin theme
