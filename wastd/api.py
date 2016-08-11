@@ -87,6 +87,16 @@ class TagObservationSerializer(serializers.ModelSerializer):
                   'tag_type', 'name', 'side',
                   'position', 'status', 'comments')
 
+class TagObservationEncounterSerializer(serializers.ModelSerializer):
+    """TagObservation serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = TagObservation
+        fields = ('encounter', 'observation_name',
+                  'tag_type', 'name', 'side',
+                  'position', 'status', 'comments')
 
 class DistinguishingFeatureObservationSerializer(serializers.ModelSerializer):
     """DistinguishingFeatureObservation serializer."""
@@ -326,4 +336,6 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     """TagObservation view set."""
 
     queryset = TagObservation.objects.all()
-    serializer_class = TagObservationSerializer
+    serializer_class = TagObservationEncounterSerializer
+    filter_fields = ['tag_type', 'side', 'position', 'name', 'status',
+                     'comments', ]

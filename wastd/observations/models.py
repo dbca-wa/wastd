@@ -617,7 +617,7 @@ class AnimalEncounter(Encounter):
         super(AnimalEncounter, self).save(*args, **kwargs)
 
     @property
-    def is_standing(self):
+    def is_stranding(self):
         """Hacky way of splitting AnimalEncounters into strandings (not alive
         and healthy) and other (tagging) observations.
         """
