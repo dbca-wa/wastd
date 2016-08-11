@@ -39,7 +39,7 @@ from wastd.users.models import User
 # Encounter models -----------------------------------------------------------#
 @python_2_unicode_compatible
 class Encounter(PolymorphicModel, geo_models.Model):
-    """The base Encounter class knows when, where, who.
+    """The base Encounter class knows when, where, observer, reporter.
 
     When: Datetime of encounter, stored in UTC, entered and displayed in local
     timezome.
@@ -94,10 +94,17 @@ class Encounter(PolymorphicModel, geo_models.Model):
         choices=LOCATION_ACCURACY_CHOICES,
         help_text=_("The accuracy of the supplied location."), )
 
-    who = models.ForeignKey(
+    observer = models.ForeignKey(
         User,
         verbose_name=_("Observed by"),
+        related_name="observer",
         help_text=_("The observer has to be a registered system user"))
+
+    reporter = models.ForeignKey(
+        User,
+        verbose_name=_("Reported by"),
+        related_name="reporter",
+        help_text=_("The reporter has to be a registered system user"))
 
     as_html = models.TextField(
         verbose_name=_("HTML representation"),
@@ -295,7 +302,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         tpl = '<div class="popup"><i class="fa fa-{0}"></i>&nbsp;{1}</div>'
         return mark_safe(
             tpl.format("calendar", self.when.strftime('%d/%m/%Y %H:%M:%S %Z')) +
-            tpl.format("user", self.who.name))
+            tpl.format("user", self.observer.name))
 
     @property
     def observation_html(self):
@@ -604,7 +611,7 @@ class AnimalEncounter(Encounter):
         return tpl.format(
             self.pk,
             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
-            self.who.name,
+            self.observer.name,
             self.get_species_display(),
             self.get_health_display(),
             self.get_maturity_display(),
@@ -663,7 +670,7 @@ class AnimalEncounter(Encounter):
 #         return tpl.format(
 #             self.pk,
 #             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
-#             self.who.name,
+#             self.observer.name,
 #             self.get_species_display(),
 #             self.get_health_display(),
 #             self.get_maturity_display(),
@@ -699,7 +706,7 @@ class AnimalEncounter(Encounter):
 #         return tpl.format(
 #             self.pk,
 #             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
-#             self.who.name,
+#             self.observer.name,
 #             self.get_species_display(),
 #             self.get_health_display(),
 #             self.get_maturity_display(),

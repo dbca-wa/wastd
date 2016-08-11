@@ -148,22 +148,23 @@ class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     """Admin for Encounter with inline for MediaAttachment."""
 
     # Grappelli User lookup overrides select2 select widget
-    raw_id_fields = ('who', )
-    autocomplete_lookup_fields = {'fk': ['who'], }
+    raw_id_fields = ('observer', 'reporter', )
+    autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
 
     # select2 widgets for searchable dropdowns
     form = EncounterAdminForm
 
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
-    list_filter = ('status', 'who', )
-    list_display = ('when', 'wkt', 'who', 'status', )
+    list_filter = ('status', 'observer', 'reporter', )
+    list_display = ('when', 'wkt', 'observer', 'reporter', 'status', )
     list_select_related = True
     save_on_top = True
-    search_fields = ('who', )
+    search_fields = ('observer__name', 'observer__username',
+                     'reporter__name', 'reporter__username', )
     fsm_field = ['status', ]
     fieldsets = (('Encounter', {'fields': ('where', 'location_accuracy',
-                                           'when', 'who')}),)
+                                           'when', 'observer', 'reporter',)}),)
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
                TurtleNestObservationInline,
@@ -181,17 +182,18 @@ TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter,
 class TurtleNestEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     """Admin for TurtleNestEncounter."""
 
-    raw_id_fields = ('who', )
-    autocomplete_lookup_fields = {'fk': ['who'], }
+    raw_id_fields = ('observer', 'reporter', )
+    autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
     form = TurtleNestEncounterAdminForm
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
-    list_display = ('when', 'wkt', 'who', 'species', 'habitat_display', )
-    list_filter = ('status', 'who', 'species', 'habitat', )
+    list_display = ('when', 'wkt', 'observer', 'reporter', 'species', 'habitat_display', )
+    list_filter = ('status', 'observer', 'reporter', 'species', 'habitat', )
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]
-    search_fields = ('who__name', 'who__username', )
+    search_fields = ('observer__name', 'observer__username',
+                     'reporter__name', 'reporter__username', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Nest',
          {'fields': ('species', 'habitat', )}),
@@ -219,21 +221,24 @@ AnimalEncounterForm = select2_modelform(AnimalEncounter,
 class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
     """Admin for AnimalEncounter."""
 
-    raw_id_fields = ('who', )
-    autocomplete_lookup_fields = {'fk': ['who'], }
+    raw_id_fields = ('observer', 'reporter', )
+    autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
     form = AnimalEncounterForm
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
-    list_display = ('when', 'wkt', 'who', 'species', 'health_display',
+    list_display = ('when', 'wkt', 'location_accuracy',
+                    'observer', 'reporter', 'species', 'health_display',
                     'maturity_display', 'sex_display', 'behaviour',
                     'habitat_display', 'status_display', )
     list_filter = (ObservationTypeListFilter,
-                   'status', 'who', 'taxon', 'species', 'health', 'maturity',
+                   'location_accuracy', 'status', 'observer', 'reporter',
+                   'taxon', 'species', 'health', 'maturity',
                    'sex', 'habitat')
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]
-    search_fields = ('who__name', 'who__username', 'behaviour')
+    search_fields = ('observer__name', 'observer__username',
+                     'reporter__name', 'reporter__username', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
          {'fields': ('taxon', 'species', 'health', 'maturity', 'sex',
