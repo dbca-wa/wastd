@@ -16,7 +16,23 @@ The following sections will
 
 Turtle Strandings
 -----------------
-So much documentation coming here really soon!
+For each data entry, first convert all files to PDF, images, or plain txt:
+
+* Emails saved as msg: open with Outlook, save as ".txt".
+* Paper forms: scan to PDF, make sure the quality is readable enough.
+* Images: jpg, png are preferred.
+* Photos embedded in MS Word documents: save as jpg or png.
+* MS Word documents: save as PDF.
+
+All formats must be non-proprietary.
+
+Then, `create a new AnimalEncounter <https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/add/>`_.
+
+* Observed at: if coordinates are given, click anywhere on map and enter given
+  coordinates into the text field underneath the map widget.
+* Observer, reporter: click on the search icon; add observer / reporter as new
+  user if they are not registered in the system. Update their details from the
+  user list with full names and email addresses, then re-save encounter.
 
 Cetacean Strandings
 -------------------

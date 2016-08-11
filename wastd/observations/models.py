@@ -302,7 +302,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
         tpl = '<div class="popup"><i class="fa fa-{0}"></i>&nbsp;{1}</div>'
         return mark_safe(
             tpl.format("calendar", self.when.strftime('%d/%m/%Y %H:%M:%S %Z')) +
-            tpl.format("user", self.observer.name))
+            tpl.format("eye", self.observer.name) +
+            tpl.format("pencil", self.reporter.name))
 
     @property
     def observation_html(self):

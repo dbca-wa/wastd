@@ -78,7 +78,7 @@ AWS_AUTO_CREATE_BUCKET = False
 AWS_QUERYSTRING_AUTH = False
 AWS_EXPIRY = 60 * 60 * 24 * 7
 AWS_HEADERS = {'Cache-Control': six.b('max-age={0}, s-maxage={0}, must-revalidate'.format(AWS_EXPIRY))}
-STORAGE_BASE_URL =  'https://{0}.s3.amazonaws.com/'.format(AWS_STORAGE_BUCKET_NAME)
+# STORAGE_BASE_URL =  'https://{0}.s3.amazonaws.com/'.format(AWS_STORAGE_BUCKET_NAME)
 
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
