@@ -16,23 +16,40 @@ The following sections will
 
 Turtle Strandings
 -----------------
-For each data entry, first convert all files to PDF, images, or plain txt:
+For each data entry, first convert all files to non-proprietary formats, such as
+PDF, images, or plain text.
 
-* Emails saved as msg: open with Outlook, save as ".txt".
+* Emails saved as Outlook msg: open with Outlook, save as plain text.
 * Paper forms: scan to PDF, make sure the quality is readable enough.
-* Images: jpg, png are preferred.
-* Photos embedded in MS Word documents: save as jpg or png.
+* Images: jpg, png are preferred. Insane resolutions (file sizes far above 2 MB) should be resized.
+* Photos embedded in MS Word documents: save separately as jpg or png.
 * MS Word documents: save as PDF.
 
-All formats must be non-proprietary.
+Create users if not existing for observer and reporter. Assign a dummy password
+(they will never login using the password, only via DPaW SSO), enter at least
+name and email.
 
 Then, `create a new AnimalEncounter <https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/add/>`_.
 
-* Observed at: if coordinates are given, click anywhere on map and enter given
+* Observed at: if written coordinates are supplied, click anywhere on map and enter given
   coordinates into the text field underneath the map widget.
-* Observer, reporter: click on the search icon; add observer / reporter as new
-  user if they are not registered in the system. Update their details from the
-  user list with full names and email addresses, then re-save encounter.
+  If locality names are supplied, look them up on Google Maps and pick an
+  approximate location on the location widget.
+* Location accuracy: give your best estimate for the accuracy.
+* Observer, reporter: users must exist in the system.
+
+Hit "Save and continue editing". This is the minimal Encounter record.
+
+Fill in, as supplied, the fields in the "Animal" section and save. This is the
+minimal useful stranding record.
+
+Add subsequent sections as available in the original data sheet or communication
+records.
+
+Attach all files - data sheet scan, communication records, stranding form - as
+Media Attachments preferrably in this order. Pick a descriptive, but short title
+for the files - the title will be displayed in map popups.
+
 
 Cetacean Strandings
 -------------------
