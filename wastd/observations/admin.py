@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform  # select2_modelform_meta
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
+from reversion.admin import VersionAdmin
 
 from wastd.widgets import MapWidget
 from .models import (Encounter, TurtleNestEncounter,
@@ -111,7 +112,7 @@ class TagObservationInline(admin.TabularInline):
 
 
 @admin.register(TagObservation)
-class TagObservationAdmin(admin.ModelAdmin):
+class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     """Admin for TagObservation"""
 
     save_on_top = True
@@ -144,7 +145,7 @@ class TagObservationAdmin(admin.ModelAdmin):
 EncounterAdminForm = select2_modelform(Encounter, attrs={'width': '350px'})
 
 @admin.register(Encounter)
-class EncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
+class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     """Admin for Encounter with inline for MediaAttachment."""
 
     # Grappelli User lookup overrides select2 select widget
@@ -179,7 +180,7 @@ TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter,
 
 
 @admin.register(TurtleNestEncounter)
-class TurtleNestEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
+class TurtleNestEncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     """Admin for TurtleNestEncounter."""
 
     raw_id_fields = ('observer', 'reporter', )
@@ -218,7 +219,7 @@ AnimalEncounterForm = select2_modelform(AnimalEncounter,
 
 
 @admin.register(AnimalEncounter)
-class AnimalEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
+class AnimalEncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     """Admin for AnimalEncounter."""
 
     raw_id_fields = ('observer', 'reporter', )

@@ -118,7 +118,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     def __str__(self):
         """The unicode representation."""
-        return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.who)
+        return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.observer)
 
     def save(self, *args, **kwargs):
         """Cache the HTML representation in `as_html`."""
