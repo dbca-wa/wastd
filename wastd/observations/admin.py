@@ -117,7 +117,7 @@ class TagObservationAdmin(admin.ModelAdmin):
     save_on_top = True
     list_display = ('type_display', 'name', 'side_display', 'position_display',
                     'status_display', 'encounter', 'comments')
-    list_filter = ('side', 'position', 'status')
+    list_filter = ('tag_type', 'side', 'position', 'status')
     search_fields = ('name', 'comments')
 
     def type_display(self, obj):
