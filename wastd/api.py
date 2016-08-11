@@ -145,7 +145,12 @@ class TurtleNestObservationSerializer(serializers.ModelSerializer):
 
         model = TurtleNestObservation
         fields = ('observation_name',
-                  'nest_position', 'eggs_laid', 'egg_count', )
+                  'nest_position', 'eggs_laid', 'egg_count', 'no_egg_shells',
+                  'no_live_hatchlings', 'no_dead_hatchlings', 'no_undeveloped_eggs',
+                  'no_dead_embryos', 'no_dead_full_term_embryos', 'no_depredated_eggs',
+                  'no_unfertilized', 'no_yolkless_eggs', 'nest_depth_top',
+                  'nest_depth_bottom', 'sand_temp', 'air_temp', 'water_temp',
+                  'egg_temp')
 
 
 class TurtleDamageObservationSerializer(serializers.ModelSerializer):

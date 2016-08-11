@@ -1226,10 +1226,10 @@ class TurtleNestObservation(Observation):
     """Turtle nest observations."""
 
     BEACH_POSITION_CHOICES = (
-        ("below-hwm", "below high water mark"),
-        ("above-hw", "above high water mark, below dune"),
-        ("dune-edge", "edge of dune, beginning of spinifex"),
-        ("in-dune", "inside dune, spinifex"), )
+        ("below-hwm", _("below high water mark")),
+        ("above-hw", _("above high water mark, below dune")),
+        ("dune-edge", _("edge of dune, beginning of spinifex")),
+        ("in-dune", _("inside dune, spinifex")), )
 
     nest_position = models.CharField(
         max_length=300,
@@ -1248,10 +1248,80 @@ class TurtleNestObservation(Observation):
         blank=True, null=True,
         help_text=_("The total number of eggs laid."), )
 
-    # add:
-    # nest_depth_top, nest_depth_bottom,
-    # nest contents (9)
-    # temperature (sand, air, water, egg)
+    no_egg_shells = models.PositiveIntegerField(
+        verbose_name=_("Egg shells"),
+        blank=True, null=True,
+        help_text=_("The number of egg shells in the nest."), )
+
+    no_live_hatchlings = models.PositiveIntegerField(
+        verbose_name=_("Live hatchlings"),
+        blank=True, null=True,
+        help_text=_("The number of in the nest."),)
+
+    no_dead_hatchlings = models.PositiveIntegerField(
+        verbose_name=_("Dead hatchlings"),
+        blank=True, null=True,
+        help_text=_("The number of dead hatchlings in the nest."),)
+
+    no_undeveloped_eggs = models.PositiveIntegerField(
+        verbose_name=_("Undeveloped eggs"),
+        blank=True, null=True,
+        help_text=_("The number of undeveloped eggs in the nest."),)
+
+    no_dead_embryos = models.PositiveIntegerField(
+        verbose_name=_("Dead embryos"),
+        blank=True, null=True,
+        help_text=_("The number of dead embryos in the nest."),)
+
+    no_dead_full_term_embryos = models.PositiveIntegerField(
+        verbose_name=_("Dead full term embryos"),
+        blank=True, null=True,
+        help_text=_("The number of dead full term embryos in the nest."),)
+
+    no_depredated_eggs = models.PositiveIntegerField(
+        verbose_name=_("Depredated eggs`"),
+        blank=True, null=True,
+        help_text=_("The number of depredated eggs in the nest."),)
+
+    no_unfertilized = models.PositiveIntegerField(
+        verbose_name=_("Unfertilized eggs"),
+        blank=True, null=True,
+        help_text=_("The number of unfertilized eggs in the nest."),)
+
+    no_yolkless_eggs = models.PositiveIntegerField(
+        verbose_name=_("Yolkless eggs"),
+        blank=True, null=True,
+        help_text=_("The number of yolkless eggs in the nest."),)
+
+    nest_depth_top = models.PositiveIntegerField(
+        verbose_name=_("Nest depth (top) mm"),
+        blank=True, null=True,
+        help_text=_("The depth of sand above the eggs in mm."),)
+
+    nest_depth_bottom = models.PositiveIntegerField(
+        verbose_name=_("Nest depth (bottom) mm"),
+        blank=True, null=True,
+        help_text=_("The depth of the lowest eggs in mm."),)
+
+    sand_temp = models.FloatField(
+        verbose_name=_("Sand temperature"),
+        blank=True, null=True,
+        help_text=_("The sand temperature in degree Celsius."),)
+
+    air_temp = models.FloatField(
+        verbose_name=_("Air temperature"),
+        blank=True, null=True,
+        help_text=_("The air temperature in degree Celsius."),)
+
+    water_temp = models.FloatField(
+        verbose_name=_("Water temperature"),
+        blank=True, null=True,
+        help_text=_("The water temperature in degree Celsius."),)
+
+    egg_temp = models.FloatField(
+        verbose_name=_("Egg temperature"),
+        blank=True, null=True,
+        help_text=_("The egg temperature in degree Celsius."),)
 
     def __str__(self):
         """The unicode representation."""

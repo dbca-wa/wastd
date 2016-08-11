@@ -62,7 +62,7 @@ class MediaAttachmentInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
-class DistinguishingFeaturesInline(admin.TabularInline):
+class DistinguishingFeaturesInline(admin.StackedInline):
     """Admin for DistinguishingFeatures."""
 
     extra = 0
@@ -70,7 +70,7 @@ class DistinguishingFeaturesInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
-class TurtleMorphometricObservationInline(admin.TabularInline):
+class TurtleMorphometricObservationInline(admin.StackedInline):
     """Admin for TurtleMorphometricObservation."""
 
     extra = 0
@@ -86,7 +86,7 @@ class ManagementActionInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
-class TurtleNestObservationInline(admin.TabularInline):
+class TurtleNestObservationInline(admin.StackedInline):
     """Admin for TurtleNestObservation."""
 
     extra = 0
