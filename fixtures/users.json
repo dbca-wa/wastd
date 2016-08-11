@@ -42,13 +42,133 @@
         "last_login": null,
         "is_superuser": false,
         "username": "preston_manado",
-        "first_name": "",
-        "last_name": "",
+        "first_name": "Preston",
+        "last_name": "Manado",
         "email": "",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2016-08-10T07:52:43.727Z",
-        "name": "",
+        "date_joined": "2016-08-10T07:52:43Z",
+        "name": "Preston Manado",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "",
+        "last_login": "2016-08-11T08:02:18.222Z",
+        "is_superuser": true,
+        "username": "FlorianM",
+        "first_name": "Florian",
+        "last_name": "Mayer",
+        "email": "Florian.Mayer@DPaW.wa.gov.au",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2016-08-10T08:10:42.443Z",
+        "name": "Florian Mayer",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "",
+        "last_login": "2016-08-11T06:47:19Z",
+        "is_superuser": false,
+        "username": "CorrineS",
+        "first_name": "Corrine",
+        "last_name": "Severin",
+        "email": "Corrine.Severin@dpaw.wa.gov.au",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2016-08-11T06:47:19Z",
+        "name": "Corrine Severin",
+        "groups": [
+            [
+                "data entry"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$wtBp7BM2mARR$4rpYFJ2MtgtVDPt58EgO3NNrslktTjekep3IDs0oHo4=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "RyanDou",
+        "first_name": "Ryan",
+        "last_name": "Douglas",
+        "email": "Ryan.Douglas@dpaw.wa.gov.au",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2016-08-11T07:37:09Z",
+        "name": "Ryan Douglas",
+        "groups": [
+            [
+                "data entry"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$SCcGXAZF7mQE$Nq4GY1gPJoS8ibBgpFnCMrsrnSsfWQeaaR9MjcUNMTM=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "rachael_marshall",
+        "first_name": "Rachael",
+        "last_name": "Marshall",
+        "email": "Rachael.Marshall@DPaW.wa.gov.au",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2016-08-11T08:09:22Z",
+        "name": "Rachael Marshall",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$9I0MImaFW3al$DSSEZlZ6nqXC3OoZoxDPHWSNfWAXocKmWxf+v2/+Gf8=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "BobP",
+        "first_name": "Robert Ivan Tyler",
+        "last_name": "Prince",
+        "email": "Bob.Prince@dpaw.wa.gov.au",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2016-08-11T08:21:23Z",
+        "name": "Bob Prince",
+        "groups": [
+            [
+                "data entry"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$lzYNRAiZFcKi$6vEJO9KN387RFRceyR5toOeWkNQHNrT5SBlIRueZbSI=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "amanda_gatt",
+        "first_name": "Amanda",
+        "last_name": "Gatt",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2016-08-11T08:29:05Z",
+        "name": "Amanda Gatt",
         "groups": [],
         "user_permissions": []
     }
