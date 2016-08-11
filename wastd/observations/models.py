@@ -55,22 +55,19 @@ class Encounter(PolymorphicModel, geo_models.Model):
         (STATUS_NEW, _("New")),
         (STATUS_PROOFREAD, _("Proofread")),
         (STATUS_CURATED, _("Curated")),
-        (STATUS_PUBLISHED, _("Published"))
-        )
+        (STATUS_PUBLISHED, _("Published")), )
 
     STATUS_LABELS = {
         STATUS_NEW: "danger",
         STATUS_PROOFREAD: "warning",
         STATUS_CURATED: "info",
-        STATUS_PUBLISHED: "success"
-        }
+        STATUS_PUBLISHED: "success", }
 
     LOCATION_ACCURACY_CHOICES = (
-        ("10m", "GPS reading at exact location (+-10m)"),
-        ("1km", "GPS reading in general area (+-1km)"),
-        ("1nm", "Map reference (+-1nm)"),
-        ("online-map", "Drawn on online map"),
-        ("na", "Location not provided"), )
+        ("10", _("GPS reading at exact location (10 m)")),
+        ("1000", _("Location name (1 km)")),
+        ("10000", _("Rough estimate (10 km)")),
+        ("online-map", _("Drawn on online map")), )
 
     status = FSMField(
         default=STATUS_NEW,
@@ -79,8 +76,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     when = models.DateTimeField(
         verbose_name=_("Observed on"),
-        help_text=_("The observation datetime, shown here as local time, "
-                    "stored as UTC."))
+        help_text=_("The observation datetime, shown as local time "
+                    "(no daylight savings), stored as UTC."))
 
     where = geo_models.PointField(
         srid=4326,
@@ -89,7 +86,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     location_accuracy = models.CharField(
         max_length=300,
-        default="online-map",
+        default="1000",
         verbose_name=_("Location accuracy"),
         choices=LOCATION_ACCURACY_CHOICES,
         help_text=_("The accuracy of the supplied location."), )
@@ -323,17 +320,16 @@ class AnimalEncounter(Encounter):
     and behaviour.
     """
 
-    TAXON_CHOICES = (
+    NA = (("na", "not observed"), )
+
+    TAXON_CHOICES = NA + (
         ("Cheloniidae", "Marine turtles"),
         ("Cetacea", "Whales and Dolphins"),
         ("Pinnipedia", "Pinnipeds"),
         ("Sirenia", "Dugongs"),
-        ("Elasmobranchii", "Sharks and Rays"),
-        ("na", "Unknown"), )
+        ("Elasmobranchii", "Sharks and Rays"), )
 
     TURTLE_SPECIES_CHOICES = (
-        ("na", "not observed"),
-        # turtles
         ('Natator depressus', 'Natator depressus (Flatback turtle)'),
         ('Chelonia mydas', 'Chelonia mydas (Green turtle)'),
         ('Eretmochelys imbricata', 'Eretmochelys imbricata (Hawksbill turtle)'),
@@ -351,6 +347,7 @@ class AnimalEncounter(Encounter):
         # dolphins
         )
     CETACEAN_SPECIES_CHOICES = (
+        # dolphins
         ("Delphinus delphis", "Delphinus delphis (Short-beaked common dolphin)"),
         ("Grampus griseus", "Grampus griseus (Risso's dolphin)"),
         ("Lagenodelphis hosei", "Lagenodelphis hosei (Fraser's dolphin)"),
@@ -395,31 +392,28 @@ class AnimalEncounter(Encounter):
         ("Ziphius cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"),
         ("unidentified-whale", "Unidentified whale"), )
 
-    SPECIES_CHOICES = TURTLE_SPECIES_CHOICES + CETACEAN_SPECIES_CHOICES
+    SPECIES_CHOICES = NA + TURTLE_SPECIES_CHOICES + CETACEAN_SPECIES_CHOICES
 
-    SEX_CHOICES = (
-        ("na", "not observed"),
+    SEX_CHOICES = NA + (
         ("male", "male"),
         ("female", "female"),
-        ("na", "sex not determined or not examined"),
         ("intersex", "hermaphrodite or intersex"), )
 
-    MATURITY_CHOICES = (
-        ("na", "not observed"),
-        # turtle
-        ("turtle-hatchling", "hatchling turtle"),
-        ("turtle-post-hatchling", "post-hatchling turtle"),
-        ("turtle-juvenile", "juvenile turtle"),
-        ("turtle-pre-pubsecent-immature", "pre-pubsecent immature turtle"),
-        ("turtle-pubsecent-immature", "pubsecent immature turtle"),
-        ("turtle-adult-measured", "adult turtle (status determined from carapace and tail measurements)"),
-        ("turtle-adult", "adult turtle"),
-        ("turtle-unknown", "unknown maturity turtle"),
-        # mammal
-        ("mammal-unweaned", "unweaned immature mammal"),
-        ("mammal-weaned", "weaned immature mammal"),
-        ("mammal-adult", "adult mammal"),
-        ("mammal-unknown", "unknown maturity mammal"), )
+    TURTLE_MATURITY_CHOICES = (
+        ("hatchling", "hatchling"),
+        ("post-hatchling", "post-hatchling"),
+        ("juvenile", "juvenile"),
+        ("pre-pubsecent-immature", "pre-pubsecent immature"),
+        ("pubsecent-immature", "pubsecent immature"),
+        ("adult-measured", "adult (status determined from carapace and tail measurements)"), )
+
+    MAMMAL_MATURITY_CHOICES = (
+        ("unweaned", "unweaned immature"),
+        ("weaned", "weaned immature"), )
+
+    MATURITY_CHOICES = NA + TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
+        (("adult", "adult"),
+         ("unknown", "unknown maturity"), )
 
     HEALTH_CHOICES = (
         ("na", "not observed"),
@@ -443,16 +437,15 @@ class AnimalEncounter(Encounter):
     # <option value="23">DU - Live but subsequently euthanased</option>
     # <option value="2">DZ - Alive and rescued</option></select>
 
-    ACTIVITY_CHOICES = (
-        ("na", "not observed"),
-        # nesting:
+    NESTING_ACTIVITY_CHOICES = (
         ("arriving", "arriving on beach"),
         ("digging-body-pit", "digging body pit"),
         ("excavating-egg-chamber", "excavating egg chamber"),
         ("laying-eggs", "laying eggs"),
         ("filling-in-egg-chamber", "filling in egg chamber"),
-        ("returning-to-water", "returning to water"),
-        # stranding:
+        ("returning-to-water", "returning to water"), )
+
+    STRANDING_ACTIVITY_CHOICES = (
         ("floating", "Floating (dead, sick, unable to dive, drifting in water)"),
         ("beach-washed", "Beach washed (dead, sick or stranded on beach/coast)"),
         ("beach-jumped", "Beach jumped"),
@@ -462,6 +455,7 @@ class AnimalEncounter(Encounter):
         ("non-breeding", "General non-breeding activity (swimming, sleeping, feeding, etc.)"),
         ("other", "other activity"), )
 
+    ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
     # primary activity
     # <option value="20">? - Unspecified</option>
     # <option value="1">B - B - to be determined)</option>
@@ -516,32 +510,31 @@ class AnimalEncounter(Encounter):
     # <option value="34">X - X - to be determined</option>
     # <option value="1">X* - Nesting: Laid</option></select>
 
-    HABITAT_CHOICES = (
-        ("na", "not observed"),
-        ("beach", "B - Beach: Below the vegetation line of the grass slope"),
-        ("bays-estuaries", "BE - Bays, estuaries and other enclosed shallow soft sediments"),
-        ("dune", "D - Dune"),
-        ("dune-constructed-hard-substrate", "DC - Dune: Constructed hard substrate (concrete slabs, timber floors, helipad)"),
-        ("dune-grass-area", "DG - Dune: Grass area"),
-        ("dune-compacted-path", "DH - Dune: Hard compacted areas (road ways, paths)"),
-        ("dune-rubble", "DR - Dune: Rubble, usually coral"),
-        ("dune-bare-sand", "DS - Dune: Bare sand area"),
-        ("dune-beneath-vegetation", "DT - Dune: Beneath tree or shrub"),
-        ("slope-front-dune", "S - Slope: Front slope of dune"),
-        ("sand-flats", "SF - Sand flats"),
-        ("slope-grass", "SG - Slope: Grass area"),
-        ("slope-bare-sand", "SS - Slope: Bare sand area"),
-        ("slope-beneath-vegetation", "ST - Slope: Beneath tree or shrub"),
-        ("below-mean-spring-high-water-mark", "HW - Below the mean spring high water line or current level of inundation"),
-        ("lagoon-patch-reef", "LP - Lagoon: Patch reef"),
-        ("lagoon-open-sand", "LS - Lagoon: Open sand areas, typically shallow"),
-        ("mangroves", "M - Mangroves"),
-        ("reef-coral", "R - Reef: Coral reef"),
-        ("reef-crest-front-slope", "RC - Reef: Reef crest (dries at low water) and front reef slope areas"),
-        ("reef-flat", "RF - Reef: Reef flat, dries at low tide"),
-        ("reef-seagrass-flats", "RG - Coral reef with seagrass flats"),
-        ("reef-rocky", "RR - Reef: Rocky reef, e.g. adjacent to mainland"),
-        ("open-water", "OW - Open water, including inter reefal areas"), )
+    HABITAT_CHOICES = NA + (
+        ("beach", "Beach: Below the vegetation line of the grass slope"),
+        ("bays-estuaries", "Bays, estuaries and other enclosed shallow soft sediments"),
+        ("dune", "Dune"),
+        ("dune-constructed-hard-substrate", "Dune: Constructed hard substrate (concrete slabs, timber floors, helipad)"),
+        ("dune-grass-area", "Dune: Grass area"),
+        ("dune-compacted-path", "Dune: Hard compacted areas (road ways, paths)"),
+        ("dune-rubble", "Dune: Rubble, usually coral"),
+        ("dune-bare-sand", "Dune: Bare sand area"),
+        ("dune-beneath-vegetation", "Dune: Beneath tree or shrub"),
+        ("slope-front-dune", "Slope: Front slope of dune"),
+        ("sand-flats", "Sand flats"),
+        ("slope-grass", "Slope: Grass area"),
+        ("slope-bare-sand", "Slope: Bare sand area"),
+        ("slope-beneath-vegetation", "Slope: Beneath tree or shrub"),
+        ("below-mean-spring-high-water-mark", "Below the mean spring high water line or current level of inundation"),
+        ("lagoon-patch-reef", "Lagoon: Patch reef"),
+        ("lagoon-open-sand", "Lagoon: Open sand areas, typically shallow"),
+        ("mangroves", "Mangroves"),
+        ("reef-coral", "Reef: Coral reef"),
+        ("reef-crest-front-slope", "Reef: Reef crest (dries at low water) and front reef slope areas"),
+        ("reef-flat", "Reef: Reef flat, dries at low tide"),
+        ("reef-seagrass-flats", "Coral reef with seagrass flats"),
+        ("reef-rocky", "Reef: Rocky reef, e.g. adjacent to mainland"),
+        ("open-water", "Open water, including inter reefal areas"), )
 
     taxon = models.CharField(
         max_length=300,
@@ -634,17 +627,21 @@ class AnimalEncounter(Encounter):
     @property
     def animal_html(self):
         """An HTML string of Observations."""
-        tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3} {4}'
+        tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3} on {4}'
         return mark_safe(
-            tpl.format(self.get_species_display(), self.get_health_display(),
-                       self.get_maturity_display(), self.get_sex_display(),
+            tpl.format(self.get_species_display(),
+                       self.get_health_display(),
+                       self.get_maturity_display(),
+                       self.get_sex_display(),
                        self.get_habitat_display()))
 
     def make_html(self):
         """Create an HTML representation."""
         tpl = "{0}{1}{2}{3}{4}"
-        return mark_safe(tpl.format(self.animal_html, self.observer_html,
-                                    self.observation_html, self.admin_url_html,
+        return mark_safe(tpl.format(self.animal_html,
+                                    self.observer_html,
+                                    self.observation_html,
+                                    self.admin_url_html,
                                     self.status_html))
 
 
@@ -828,15 +825,16 @@ class MediaAttachment(Observation):
     """A media attachment to an Encounter."""
 
     MEDIA_TYPE_CHOICES = (
-        ('data_sheet', 'Original data sheet'),
-        ('photograph', 'Photograph'),
-        ('other', 'Other'),)
+        ('data_sheet', _('Data sheet')),
+        ('communication', _('Communication record')),
+        ('photograph', _('Photograph')),
+        ('other', _('Other')), )
 
     media_type = models.CharField(
         max_length=300,
         verbose_name=_("Attachment type"),
         choices=MEDIA_TYPE_CHOICES,
-        default="other",
+        default="photograph",
         help_text=_("What is the attached file about?"),)
 
     title = models.CharField(
