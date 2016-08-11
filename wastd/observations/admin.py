@@ -196,7 +196,7 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin, admin.ModelAdmin):
                      'reporter__name', 'reporter__username', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Nest',
-         {'fields': ('species', 'habitat', )}),
+         {'fields': ('nest_age', 'species', 'habitat', )}),
         )
     inlines = [TurtleNestObservationInline,
                TagObservationInline,

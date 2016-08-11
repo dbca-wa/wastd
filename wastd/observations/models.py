@@ -731,11 +731,11 @@ class TurtleNestEncounter(Encounter):
     """
 
     NEST_AGE_CHOICES = (
-        ("false-crawl", "false crawl"),
-        ("nesting-turtle-present", "new nest, turtle present"),
-        ("fresh", "new nest, turtle absent"),
-        ("predated", "nest and eggs destroyed by predator"),
-        ("hatched", "hatched nest"), )
+        ("false-crawl", "False crawl"),
+        ("nesting-turtle-present", "New nest (turtle present)"),
+        ("fresh", "New nest (turtle absent)"),
+        ("predated", "Predated nest"),
+        ("hatched", "Hatched nest"), )
 
     nest_age = models.CharField(
         max_length=300,
@@ -768,10 +768,10 @@ class TurtleNestEncounter(Encounter):
 
     def __str__(self):
         """The unicode representation."""
-        return "{0} nest in {1}, {2}".format(
+        return "{0} of {1} in {2}".format(
+            self.get_nest_age_display(),
             self.get_species_display(),
-            self.get_habitat_display(),
-            self.get_nest_age_display(), )
+            self.get_habitat_display(), )
 
     @property
     def nest_html(self):

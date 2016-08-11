@@ -201,7 +201,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
 
         model = TurtleNestEncounter
         fields = ('where', 'when', 'observer', 'reporter',
-                  'species', 'habitat', 'observation_set', )
+                  'nest_age', 'species', 'habitat', 'observation_set', )
 
 
 class AnimalEncounterSerializer(EncounterSerializer):
@@ -241,40 +241,6 @@ class AnimalEncounterSerializer(EncounterSerializer):
 #                   'observation_set', )
 
 
-# filters
-class UserFilter(filters.FilterSet):
-    name = filters.CharFilter(name='name')
-
-    class Meta:
-        model = User
-
-
-class EncounterFilter(filters.FilterSet):
-
-    class Meta:
-        model = Encounter
-        fields = [
-            'where', 'location_accuracy', 'when', 'observer', 'reporter', 'status']
-
-
-class AnimalEncounterFilter(filters.FilterSet):
-    # observation_type = filters.AllLookupsFilter(
-    #     'observations.admin.ObservationTypeListFilter')
-
-    class Meta:
-        model = AnimalEncounter
-        fields = ['where', 'location_accuracy', 'when', 'observer', 'reporter',
-                  'status', 'species', 'health', 'sex', 'maturity', 'habitat',
-                  'behaviour', ]
-
-from url_filter.filtersets import ModelFilterSet
-
-class AnimalEncounterFilterSet(ModelFilterSet):
-
-    class Meta(object):
-        model = AnimalEncounter
-
-
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
     """User view set."""
@@ -297,10 +263,9 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
-    filter_class = EncounterFilter
     filter_fields = [
         'where', 'location_accuracy', 'when', 'observer', 'reporter',  'status',
-        'species', 'age', ]
+        'nest_age', 'species', 'habitat', ]
 
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
