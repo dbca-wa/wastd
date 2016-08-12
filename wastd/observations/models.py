@@ -31,6 +31,7 @@ from django.utils.safestring import mark_safe
 
 from polymorphic.models import PolymorphicModel
 from django_fsm import FSMField, transition
+from django_fsm_log.decorators import fsm_log_by
 import urllib
 
 from wastd.users.models import User
@@ -130,6 +131,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return true if this document can be proofread."""
         return True
 
+    @fsm_log_by
     @transition(
         field=status,
         source=STATUS_NEW,
@@ -142,7 +144,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
                          "data sheet."),
             notify=True,)
         )
-    def proofread(self):
+    def proofread(self, by=None):
         """Mark encounter as proof-read.
 
         Proofreading compares the attached data sheet with entered values.
@@ -156,6 +158,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return true if this document can be proofread."""
         return True
 
+    @fsm_log_by
     @transition(
         field=status,
         source=STATUS_PROOFREAD,
@@ -168,7 +171,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
                          "requires proofreading."),
             notify=True,)
         )
-    def require_proofreading(self):
+    def require_proofreading(self, by=None):
         """Mark encounter as having typos, requiring more proofreading.
 
         Proofreading compares the attached data sheet with entered values.
@@ -180,6 +183,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return true if this document can be marked as curated."""
         return True
 
+    @fsm_log_by
     @transition(
         field=status,
         source=STATUS_PROOFREAD,
@@ -191,7 +195,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             explanation=("This record is deemed trustworthy."),
             notify=True,)
         )
-    def curate(self):
+    def curate(self, by=None):
         """Mark encounter as curated.
 
         Curated data is deemed trustworthy by a subject matter expert.
@@ -202,6 +206,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return true if curated status can be revoked."""
         return True
 
+    @fsm_log_by
     @transition(
         field=status,
         source=STATUS_CURATED,
@@ -214,7 +219,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
                          " review by a subject matter expert."),
             notify=True,)
         )
-    def flag(self):
+    def flag(self, by=None):
         """Flag as requiring changes to data.
 
         Curated data is deemed trustworthy by a subject matter expert.
@@ -226,6 +231,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return true if this document can be published."""
         return True
 
+    @fsm_log_by
     @transition(
         field=status,
         source=STATUS_CURATED,
@@ -237,7 +243,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             explanation=("This record is fit for release."),
             notify=True,)
         )
-    def publish(self):
+    def publish(self, by=None):
         """Mark encounter as ready to be published.
 
         Published data has been deemed fit for release by the data owner.
@@ -248,6 +254,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return true if encounter can be embargoed."""
         return True
 
+    @fsm_log_by
     @transition(
         field=status,
         source=STATUS_PUBLISHED,
@@ -259,7 +266,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             explanation=("This record is not fit for release."),
             notify=True,)
         )
-    def embargo(self):
+    def embargo(self, by=None):
         """Mark encounter as NOT ready to be published.
 
         Published data has been deemed fit for release by the data owner.
