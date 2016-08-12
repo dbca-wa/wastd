@@ -297,13 +297,13 @@ class Encounter(PolymorphicModel, geo_models.Model):
     def admin_url_html(self):
         """An HTML div with a link to the admin change_view."""
         tpl = ('<div class="popup">&nbsp;<a href={0} target="_">'
-               '<i class="fa fa-pencil"></i></a></div>')
+               '<i class="fa fa-fw fa-pencil"></i></a></div>')
         return tpl.format(self.absolute_admin_url)
 
     @property
     def observer_html(self):
         """An HTML string of metadata."""
-        tpl = '<div class="popup"><i class="fa fa-{0}"></i>&nbsp;{1}</div>'
+        tpl = '<div class="popup"><i class="fa fa-fw fa-{0}"></i>&nbsp;{1}</div>'
         return mark_safe(
             tpl.format("calendar", self.when.strftime('%d/%m/%Y %H:%M:%S %Z')) +
             tpl.format("eye", self.observer.name) +
@@ -634,7 +634,7 @@ class AnimalEncounter(Encounter):
     @property
     def animal_html(self):
         """An HTML string of Observations."""
-        tpl = '<h4>{0}</h4><i class="fa fa-heartbeat"></i>&nbsp;{1} {2} {3} on {4}'
+        tpl = '<h4>{0}</h4><i class="fa fa-fw fa-heartbeat"></i>&nbsp;{1} {2} {3} on {4}'
         return mark_safe(
             tpl.format(self.get_species_display(),
                        self.get_health_display(),
@@ -863,7 +863,7 @@ class MediaAttachment(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-film"></i>'
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-film"></i>'
                '&nbsp;<a href="{0}" target="_">{1}</a></div>')
         return mark_safe(tpl.format(self.attachment.url, self.title))
 
@@ -982,9 +982,9 @@ class TagObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-tag"></i>&nbsp;{0}&nbsp;'
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-tag"></i>&nbsp;{0}&nbsp;'
                '<a href={1} target="_" class="btn btn-sm">'
-               '<i class="fa fa-history"></i></a></div>')
+               '<i class="fa fa-fw fa-history"></i></a></div>')
         return mark_safe(tpl.format(self.__str__(), self.history_url))
 
 
@@ -1086,7 +1086,7 @@ class DistinguishingFeatureObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-eye"></i>&nbsp;{0}'
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-eye"></i>&nbsp;{0}'
                '&nbsp<i class="{1}"></i></div>')
         return mark_safe(
             tpl.format("Damage", self.OBSERVATION_ICONS[self.damage_injury]) +
@@ -1126,7 +1126,7 @@ class ManagementAction(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = '<div class="popup"><i class="fa fa-arrrow-right"></i>&nbsp;{0}</div>'
+        tpl = '<div class="popup"><i class="fa fa-fw fa-arrrow-right"></i>&nbsp;{0}</div>'
         return mark_safe(tpl.format(self.management_actions))
 
 
@@ -1212,7 +1212,7 @@ class TurtleMorphometricObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-bar-chart"></i>&nbsp;{0}'
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-bar-chart"></i>&nbsp;{0}'
                '&nbsp;{1}&nbsp;mm&nbsp;<i class="{2}"></i></div>')
         return mark_safe(
             tpl.format("CCL", self.curved_carapace_length_mm,
@@ -1339,7 +1339,7 @@ class TurtleNestObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-home"></i>&nbsp;{0}</div>')
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-home"></i>&nbsp;{0}</div>')
         return mark_safe(tpl.format(self.__str__()))
 
 
@@ -1412,7 +1412,7 @@ class TurtleDamageObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-bolt"></i>&nbsp;{0}</div>')
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-bolt"></i>&nbsp;{0}</div>')
         return mark_safe(tpl.format(self.__str__()))
 
 # TODO  add TrackTallyObservation, CecaceanMorphometricObservation
