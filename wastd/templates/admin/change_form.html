@@ -1,0 +1,6 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls observations %}
+{% block messages %}
+    {{ block.super }}
+    {% tx_logs original %}
+{% endblock %}
