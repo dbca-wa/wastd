@@ -39,6 +39,7 @@ class ObservationTypeListFilter(SimpleListFilter):
         return (
             ('stranding', _('stranding')),
             ('nesting', _('nesting')),
+            ('in water', _('in water')),
             )
 
     def queryset(self, request, queryset):
@@ -50,9 +51,11 @@ class ObservationTypeListFilter(SimpleListFilter):
         # Compare the requested value (either '80s' or '90s')
         # to decide how to filter the queryset.
         if self.value() == 'stranding':
-            return queryset.exclude(health='alive')
+            return queryset.exclude(health__exact='alive')
         if self.value() == 'nesting':
-            return queryset.filter(health='alive')
+            return queryset.filter(health__exact='alive')
+        if self.value() == 'in water':
+            return queryset.filter(habitat__in=AnimalEncounter.HABITAT_WATER)
 
 
 class MediaAttachmentInline(admin.TabularInline):

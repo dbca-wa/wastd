@@ -556,6 +556,10 @@ class AnimalEncounter(Encounter):
         ("reef-rocky", "Reef: Rocky reef, e.g. adjacent to mainland"),
         ("open-water", "Open water, including inter reefal areas"), )
 
+    HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
+                     "reef-coral", "reef-crest-front-slope", "reef-flat",
+                     "reef-seagrass-flats", "reef-rocky", "open-water")
+
     taxon = models.CharField(
         max_length=300,
         verbose_name=_("Taxonomic group"),
