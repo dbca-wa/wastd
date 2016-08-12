@@ -116,8 +116,10 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     """Admin for TagObservation"""
 
     save_on_top = True
-    list_display = ('type_display', 'name', 'side_display', 'position_display',
-                    'status_display', 'encounter', 'comments')
+    # date_hierarchy = 'datetime'
+    list_display = ('datetime', 'latitude', 'longitude',
+                    'type_display', 'name', 'side_display', 'position_display',
+                    'status_display', 'encounter_link', 'comments')
     list_filter = ('tag_type', 'side', 'position', 'status')
     search_fields = ('name', 'comments')
 
@@ -140,6 +142,29 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
         """Make health status human readable."""
         return obj.get_status_display()
     status_display.short_description = 'Status'
+
+    # def latitude(self, obj):
+    #     """The encounter's latitude."""
+    #     return obj.encounter.where.get_y()
+    # latitude.short_description = 'Latitude (DD WGS 84)'
+    #
+    # def longitude(self, obj):
+    #     """The encounter's longitude."""
+    #     return obj.encounter.where.get_x()
+    # longitude.short_description = 'Longitude (DD WGS 84)'
+    #
+    # def datetime(self, obj):
+    #     """The encounter's timestamp."""
+    #     return obj.encounter.when
+    # datetime.short_description = 'Datetime'
+
+    def encounter_link(self, obj):
+        """A link to the encounter."""
+        return '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
+                                              obj.encounter.__str__())
+    encounter_link.short_description = 'Encounter'
+    encounter_link.allow_tags = True
+
 
 
 EncounterAdminForm = select2_modelform(Encounter, attrs={'width': '350px'})

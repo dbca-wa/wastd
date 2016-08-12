@@ -842,6 +842,20 @@ class Observation(PolymorphicModel, models.Model):
         """Model name."""
         return self.polymorphic_ctype.model
 
+    @property
+    def latitude(self):
+        """The encounter's latitude."""
+        return self.encounter.where.get_y() or ''
+
+    @property
+    def longitude(self):
+        """The encounter's longitude."""
+        return self.encounter.where.get_x() or ''
+
+    def datetime(self):
+        """The encounter's timestamp."""
+        return self.encounter.when or ''
+
 
 @python_2_unicode_compatible
 class MediaAttachment(Observation):
