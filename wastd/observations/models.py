@@ -281,6 +281,15 @@ class Encounter(PolymorphicModel, geo_models.Model):
         return self.where.wkt
 
     @property
+    def coordinate_html(self):
+        """An HTML div of coordinates and CRS."""
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-map-marker"></i>'
+               '&nbsp;Lat {0} Lon {1}  ({2})</div>')
+        return tpl.format(self.where.get_y(),
+                          self.where.get_x(),
+                          self.where.srs.name)
+
+    @property
     def status_html(self):
         """An HTML div indicating the QA status."""
         tpl = '<div class="popup"><span class="tag tag-{0}">{1}</span></div>'
@@ -316,9 +325,13 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = '<h4>Encounter</h4>{0}{1}{2}{3}'
-        return mark_safe(tpl.format(self.observer_html, self.observation_html,
-                                    self.admin_url_html, self.status_html))
+        tpl = '<h4>Encounter</h4>{0}{1}{2}{3}{4}'
+        return mark_safe(tpl.format(
+            self.coordinate_html,
+            self.observer_html,
+            self.observation_html,
+            self.admin_url_html,
+            self.status_html))
 
 
 @python_2_unicode_compatible
@@ -644,12 +657,14 @@ class AnimalEncounter(Encounter):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = "{0}{1}{2}{3}{4}"
-        return mark_safe(tpl.format(self.animal_html,
-                                    self.observer_html,
-                                    self.observation_html,
-                                    self.admin_url_html,
-                                    self.status_html))
+        tpl = "{0}{1}{2}{3}{4}{5}"
+        return mark_safe(tpl.format(
+            self.animal_html,
+            self.coordinate_html,
+            self.observer_html,
+            self.observation_html,
+            self.admin_url_html,
+            self.status_html))
 
 
 # @python_2_unicode_compatible
@@ -787,9 +802,10 @@ class TurtleNestEncounter(Encounter):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = '<h4>{0}</h4>{1}{2}{3}{4}'
+        tpl = '<h4>{0}</h4>{1}{2}{3}{4}{5}'
         return mark_safe(tpl.format(
             self.nest_html,
+            self.coordinate_html,
             self.observer_html,
             self.observation_html,
             self.admin_url_html,
@@ -982,9 +998,8 @@ class TagObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-fw fa-tag"></i>&nbsp;{0}&nbsp;'
-               '<a href={1} target="_" class="btn btn-sm">'
-               '<i class="fa fa-fw fa-history"></i></a></div>')
+        tpl = ('<div class="popup"><a href={1} target="_"">'
+               '<i class="fa fa-fw fa-tag"></i></a>&nbsp;{0}&nbsp;</div>')
         return mark_safe(tpl.format(self.__str__(), self.history_url))
 
 
