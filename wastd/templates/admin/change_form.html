@@ -2,7 +2,5 @@
 {% load i18n admin_urls observations %}
 {% block messages %}
     {{ block.super }}
-    {% if original %}
-    {% tx_logs original %}
-    {% endif %}
+    {% if original %}{% tx_logs original %}{% endif %}
 {% endblock %}

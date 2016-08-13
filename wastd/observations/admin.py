@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 # from django import forms as django_forms
+import floppyforms as floppyforms
 from django.contrib import admin
 # from django.contrib.gis import forms
 from django.contrib.gis.db import models as geo_models
@@ -58,12 +59,22 @@ class ObservationTypeListFilter(SimpleListFilter):
             return queryset.filter(habitat__in=AnimalEncounter.HABITAT_WATER)
 
 
+class ImageThumbnailFileInput(floppyforms.ClearableFileInput):
+    template_name = 'floppyforms/image_thumbnail.html'
+
+
+class PointWidget(floppyforms.gis.PointWidget,
+                  floppyforms.gis.BaseMetacartaWidget):
+    pass
+
+
 class MediaAttachmentInline(admin.TabularInline):
     """TabularInlineAdmin for MediaAttachment."""
 
     extra = 0
     model = MediaAttachment
     classes = ('grp-collapse grp-open',)
+    widgets = {'attachment': ImageThumbnailFileInput}  # seems inactive
 
 
 class DistinguishingFeaturesInline(admin.StackedInline):
@@ -146,21 +157,6 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
         return obj.get_status_display()
     status_display.short_description = 'Status'
 
-    # def latitude(self, obj):
-    #     """The encounter's latitude."""
-    #     return obj.encounter.where.get_y()
-    # latitude.short_description = 'Latitude (DD WGS 84)'
-    #
-    # def longitude(self, obj):
-    #     """The encounter's longitude."""
-    #     return obj.encounter.where.get_x()
-    # longitude.short_description = 'Longitude (DD WGS 84)'
-    #
-    # def datetime(self, obj):
-    #     """The encounter's timestamp."""
-    #     return obj.encounter.when
-    # datetime.short_description = 'Datetime'
-
     def encounter_link(self, obj):
         """A link to the encounter."""
         return '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
@@ -169,8 +165,8 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     encounter_link.allow_tags = True
 
 
-
 EncounterAdminForm = select2_modelform(Encounter, attrs={'width': '350px'})
+
 
 @admin.register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
@@ -201,6 +197,12 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                TagObservationInline,
                ManagementActionInline,
                MediaAttachmentInline, ]
+
+    # class Media:
+    #     js = (
+    #         '//openlayers.org/dev/OpenLayers.js',
+    #         'floppyforms/js/MapWidget.js',
+    #         )
 
 
 TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter,
