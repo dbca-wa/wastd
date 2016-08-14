@@ -198,12 +198,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                ManagementActionInline,
                MediaAttachmentInline, ]
 
-    # class Media:
-    #     js = (
-    #         '//openlayers.org/dev/OpenLayers.js',
-    #         'floppyforms/js/MapWidget.js',
-    #         )
-
 
 TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter,
                                                  attrs={'width': '350px'})
@@ -218,8 +212,10 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmi
     form = TurtleNestEncounterAdminForm
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
-    list_display = ('when', 'wkt', 'observer', 'reporter', 'species', 'habitat_display', )
-    list_filter = ('status', 'observer', 'reporter', 'species', 'habitat', )
+    list_display = ('when', 'wkt', 'observer', 'reporter',
+                    'species', 'age_display', 'habitat_display', )
+    list_filter = ('status', 'observer', 'reporter',
+                   'species', 'age', 'habitat', )
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]

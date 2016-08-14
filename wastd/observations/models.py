@@ -64,11 +64,32 @@ class Encounter(PolymorphicModel, geo_models.Model):
         STATUS_CURATED: "info",
         STATUS_PUBLISHED: "success", }
 
+    LOCATION_DEFAULT = "1000"
     LOCATION_ACCURACY_CHOICES = (
         ("10", _("GPS reading at exact location (10 m)")),
-        ("1000", _("Location name (1 km)")),
-        ("10000", _("Rough estimate (10 km)")),
-        ("online-map", _("Drawn on online map")), )
+        (LOCATION_DEFAULT, _("Site centroid or place name (1 km)")),
+        ("10000", _("Rough estimate (10 km)")), )
+
+    SOURCE_DEFAULT = "direct"
+    SOURCE_CHOICES = (
+        (SOURCE_DEFAULT, _("Direct entry")),
+        ("paper", _("Paper data sheet")),
+        ("wamtram", _("WAMTRAM 2 tagging DB")),
+        ("ntp-exmouth", _("NTP Access DB Exmouth")),
+        ("ntp-broome", _("NTP Access DB Broome")),)
+
+    source = models.CharField(
+        max_length=300,
+        verbose_name=_("Data Source"),
+        default=SOURCE_DEFAULT,
+        choices=SOURCE_CHOICES,
+        help_text=_("Where was this record captured initially?"), )
+
+    source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID"),
+        help_text=_("The ID of the record in the original source."), )
 
     status = FSMField(
         default=STATUS_NEW,
@@ -87,8 +108,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     location_accuracy = models.CharField(
         max_length=300,
-        default="1000",
         verbose_name=_("Location accuracy"),
+        default=LOCATION_DEFAULT,
         choices=LOCATION_ACCURACY_CHOICES,
         help_text=_("The accuracy of the supplied location."), )
 
@@ -113,6 +134,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Class options."""
 
         ordering = ["when", "where"]
+        unique_together = ("source", "source_id")
         verbose_name = "Encounter"
         verbose_name_plural = "Encounters"
         get_latest_by = "when"
@@ -824,11 +846,13 @@ class TurtleNestEncounter(Encounter):
 # Observation models ---------------------------------------------------------#
 @python_2_unicode_compatible
 class Observation(PolymorphicModel, models.Model):
-    """The Observation base class for encounter observations."""
+    """The Observation base class for encounter observations.
+    Everything happens somewhere, at a time, to someone, and someone records it.
+    Therefore, an Observation must happen during an Encounter.
+    """
 
     encounter = models.ForeignKey(
         Encounter,
-        blank=True, null=True,
         verbose_name=_("Encounter"),
         help_text=("The Encounter during which the observation was made"),)
 
