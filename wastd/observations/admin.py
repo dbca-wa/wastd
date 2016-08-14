@@ -182,14 +182,16 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     date_hierarchy = 'when'
     formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
     list_filter = ('status', 'observer', 'reporter', )
-    list_display = ('when', 'wkt', 'observer', 'reporter', 'status', )
+    list_display = ('when', 'wkt', 'observer', 'reporter', 'status',
+                    'source_display', 'source_id')
     list_select_related = True
     save_on_top = True
     search_fields = ('observer__name', 'observer__username',
-                     'reporter__name', 'reporter__username', )
+                     'reporter__name', 'reporter__username', 'source_id')
     fsm_field = ['status', ]
     fieldsets = (('Encounter', {'fields': ('where', 'location_accuracy',
-                                           'when', 'observer', 'reporter',)}),)
+                                           'when', 'observer', 'reporter',
+                                           'source', 'source_id', )}),)
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
                TurtleNestObservationInline,
@@ -197,6 +199,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                TagObservationInline,
                ManagementActionInline,
                MediaAttachmentInline, ]
+
+    def source_display(self, obj):
+        """Make data source readable."""
+        return obj.get_source_display()
+    source_display.short_description = 'Data Source'
 
 
 TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter,
@@ -215,7 +222,7 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmi
     list_display = ('when', 'wkt', 'observer', 'reporter',
                     'species', 'age_display', 'habitat_display', )
     list_filter = ('status', 'observer', 'reporter',
-                   'species', 'age', 'habitat', )
+                   'species', 'nest_age', 'habitat', )
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]
