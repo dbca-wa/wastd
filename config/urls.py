@@ -12,7 +12,7 @@ from django.views import defaults as default_views
 
 from adminactions import actions
 from rest_framework import routers
-from dynamic_rest import routers as dr
+# from dynamic_rest import routers as dr
 from wastd.observations.models import Encounter
 from wastd.observations.views import schema_view
 from wastd.api import *
