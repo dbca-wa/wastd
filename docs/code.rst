@@ -1,7 +1,5 @@
-=======================
 Developer documentation
 =======================
-
 
 This chapter is targetted at developers and those who would like to understand
 the underlying data model.
