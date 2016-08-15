@@ -1,5 +1,36 @@
+# -*- coding: utf-8 -*-
+"""The WAStD API moduleprovides command-line access to:
+
+* Encouter and subclasses: AnimalEncounter, TurtleNestEncounter
+* Encounter Inlines: Observation subclasses
+* Separate TagObservation serializer to retrieve a Tag history.
+
+This API outputs:
+
+* Interactive HTML API
+* CSV
+* JSONP
+* Latex (coming soon)
+
+This API is built using:
+
+* djangorestframework
+* `djangorestframework-gis <https://github.com/djangonauts/django-rest-framework-gis>`_
+* djangorestframework-csv
+* `djangorestframework-yaml <http://www.django-rest-framework.org/api-guide/renderers/#yaml>`_ (TODO support geo field)
+* djangorestframework-jsonp
+* djangorestframework-filters
+* django-url-filter
+* dynamic-rest (not used)
+* rest-framework-latex
+* markdown
+* django-filter
+* django-rest-swagger
+* coreapi
+* coreapi-cli (complementary CLI for coreapi)
+"""
 from rest_framework import serializers, viewsets
-import rest_framework_filters as filters
+# import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
 
 from wastd.observations.models import (
@@ -24,10 +55,20 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ObservationSerializer(serializers.ModelSerializer):
-    """Observation serializer."""
+    """The Observation serializer resolves its polymorphic subclasses.
 
-    # encounter = serializers.StringRelatedField()
-    # encounter = serializers.PrimaryKeyRelatedField(read_only=True)
+    Observations have polymorphic subclasses (TagObservation, MediaAttachment
+    etc.).
+    A plain DRF serializer would simply return the shared Observation fields,
+    but not the individual fields partial to its subclasses.
+
+    Overriding the `to_representation` method, this serializer tests the
+    object to display for its real instance, and calls the `to_representation`
+    from the subclasses serializer.
+
+    Credits: `http://stackoverflow.com/a/19976203/2813717`_
+    Author: `http://stackoverflow.com/users/1514427/michael-van-de-waeter`_
+    """
 
     class Meta:
         """Class options."""
@@ -36,7 +77,7 @@ class ObservationSerializer(serializers.ModelSerializer):
         fields = ('observation_name', )
 
     def to_representation(self, obj):
-        """Resolve Observation to child class."""
+        """Resolve the Observation instance to the child class's serializer."""
         if isinstance(obj, DistinguishingFeatureObservation):
             return DistinguishingFeatureObservationSerializer(
                 obj, context=self.context).to_representation(obj)
@@ -165,14 +206,34 @@ class TurtleDamageObservationSerializer(serializers.ModelSerializer):
 
 
 class EncounterSerializer(serializers.ModelSerializer):
-    """Encounter serializer."""
+    """Encounter serializer.
+
+    TODO: a writable version of the serializer will provide `create` and
+    `update` methods, which also create/update the inline Observations.
+
+    Since nested Observations are polymorphic, two steps have to be taken above
+    the plain nested writeable API:
+
+    * :ref:`wastd.observations.models.Observation.observation_name` is a property
+      method to return the child model's name
+    * :ref:`wastd.api.ObservationSerializer` includes the `observation_name` in
+      the API dict
+    * :ref:`wastd.api.EncounterSerializer.create` and `update` (coming) handle
+      both the Encounter and the nested Observations separately. Observations
+      use their included `observation_name` to figure out the actual model that
+      we want to `create` or `update`.
+    """
 
     observation_set = ObservationSerializer(many=True, read_only=False)
     observer = serializers.StringRelatedField(read_only=True)
     reporter = serializers.StringRelatedField(read_only=True)
 
     class Meta:
-        """Class options."""
+        """Class options.
+
+        The non-standard name `where` is declared as the geo field for the
+        GeoJSON serializer's benefit.
+        """
 
         model = Encounter
         name = 'encounter'
@@ -189,7 +250,8 @@ class EncounterSerializer(serializers.ModelSerializer):
         encounter = Encounter.objects.create(**validated_data)
         for obs in obs_data:
             childmodel_name = obs.pop("observation_name")
-            childmodel = getattr(Observation, childmodel_name).related.related_model
+            childmodel = getattr(Observation,
+                                 childmodel_name).related.related_model
             childmodel.objects.create(encounter=encounter, **obs)
         return encounter
 

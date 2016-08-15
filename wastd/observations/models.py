@@ -867,7 +867,15 @@ class Observation(PolymorphicModel, models.Model):
 
     @property
     def observation_name(self):
-        """Model name."""
+        """The concrete model name.
+
+        This method will inherit down the polymorphic chain, and always return
+        the actual child model's name.
+
+        `observation_name` can be included as field e.g. in API serializers,
+        so e.g. a writeable serializer would know which child model to `create`
+        or `update`.
+        """
         return self.polymorphic_ctype.model
 
     @property

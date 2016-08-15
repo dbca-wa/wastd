@@ -76,6 +76,8 @@ django-fsm
 django-fsm-log
 django-fsm-admin
 
+# Docs
+pydot
 
 # API
 djangorestframework
