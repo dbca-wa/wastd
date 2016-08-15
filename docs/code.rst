@@ -1,3 +1,4 @@
+=======================
 Developer documentation
 =======================
 
@@ -14,7 +15,7 @@ In this chapter, we will discuss:
 * remaining modules of the observations app
 
 Data model
-----------
+==========
 WAStD is designed to handle biological
 observations of any kind which happen during an encounter.
 
@@ -50,7 +51,12 @@ samples etc.).
 
 
 Admin
------
+=====
+We're using a nicely styled admin to let trained data entry operators and
+curators add and update data.
+
+Also, data analysts can search, filter, and export data from here.
+
 
 :mod:`wastd.observations.admin` Module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -71,7 +77,10 @@ Admin
 
 
 API
----
+===
+The API is intended for programmatic access to data, mainly to batch-import
+and batch-export.
+
 
 :mod:`wastd.api` Module
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -82,6 +91,10 @@ API
     :show-inheritance:
 
 
+The rest
+========
+This concludes the documentation of the key features.
+The following sections document the remaining modules for completeness' sake.
 
 :mod:`wastd.users` app
 ----------------------
