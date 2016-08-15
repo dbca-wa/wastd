@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+"""Admin module for wastd.observations.
+"""
 from __future__ import absolute_import, unicode_literals
 
 # from django import forms as django_forms
