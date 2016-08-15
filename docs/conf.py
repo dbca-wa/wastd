@@ -24,7 +24,7 @@ import django
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../'))  # must be top level of project
 os.environ['DJANGO_SETTINGS_MODULE'] = "config.settings.local"
-django.setup()
+# django.setup()
 
 # -- General configuration -----------------------------------------------------
 
