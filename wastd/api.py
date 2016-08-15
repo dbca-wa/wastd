@@ -66,8 +66,8 @@ class ObservationSerializer(serializers.ModelSerializer):
     object to display for its real instance, and calls the `to_representation`
     from the subclasses serializer.
 
-    Credits: `http://stackoverflow.com/a/19976203/2813717`_
-    Author: `http://stackoverflow.com/users/1514427/michael-van-de-waeter`_
+    `Credits <http://stackoverflow.com/a/19976203/2813717>`_
+    `Author <http://stackoverflow.com/users/1514427/michael-van-de-waeter>`_
     """
 
     class Meta:
@@ -214,11 +214,11 @@ class EncounterSerializer(serializers.ModelSerializer):
     Since nested Observations are polymorphic, two steps have to be taken above
     the plain nested writeable API:
 
-    * :ref:`wastd.observations.models.Observation.observation_name` is a property
+    * `wastd.observations.models.Observation.observation_name` is a property
       method to return the child model's name
-    * :ref:`wastd.api.ObservationSerializer` includes the `observation_name` in
+    * `wastd.api.ObservationSerializer` includes the `observation_name` in
       the API dict
-    * :ref:`wastd.api.EncounterSerializer.create` and `update` (coming) handle
+    * `wastd.api.EncounterSerializer.create` and `update` (coming) handle
       both the Encounter and the nested Observations separately. Observations
       use their included `observation_name` to figure out the actual model that
       we want to `create` or `update`.
