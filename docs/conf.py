@@ -14,16 +14,14 @@
 from __future__ import unicode_literals
 import os
 import sys
+from django.conf import settings
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../'))  # must be top level of project
 os.environ['DJANGO_SETTINGS_MODULE'] = "config.settings.local"
-
-## NOTE
-# No: confy, no django.setup()
-# Yes: whack the settings module directly into os.environ
+settings.configure()
 
 # -- General configuration -----------------------------------------------------
 
