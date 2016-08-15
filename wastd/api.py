@@ -214,11 +214,11 @@ class EncounterSerializer(serializers.ModelSerializer):
     Since nested Observations are polymorphic, two steps have to be taken above
     the plain nested writeable API:
 
-    * `wastd.observations.models.Observation.observation_name` is a property
+    * :mod:`wastd.observations.models.Observation.observation_name` is a property
       method to return the child model's name
-    * `wastd.api.ObservationSerializer` includes the `observation_name` in
+    * :mod:`wastd.api.ObservationSerializer` includes the `observation_name` in
       the API dict
-    * `wastd.api.EncounterSerializer.create` and `update` (coming) handle
+    * :mod:`wastd.api.EncounterSerializer.create` and `update` (coming) handle
       both the Encounter and the nested Observations separately. Observations
       use their included `observation_name` to figure out the actual model that
       we want to `create` or `update`.

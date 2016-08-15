@@ -1,3 +1,6 @@
+Developer documentation
+=======================
+
 
 This chapter is targetted at developers and those who would like to understand
 the underlying data model.
@@ -11,7 +14,7 @@ In this chapter, we will discuss:
 * remaining modules of the observations app
 
 Data model
-==========
+----------
 WAStD is designed to handle biological
 observations of any kind which happen during an encounter.
 
@@ -38,7 +41,7 @@ samples etc.).
      :alt: WAStD data model
 
 :mod:`wastd.observations.models` Module
----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.observations.models
  :members:
@@ -47,10 +50,10 @@ samples etc.).
 
 
 Admin
-=====
+-----
 
 :mod:`wastd.observations.admin` Module
---------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.observations.admin
     :members:
@@ -59,7 +62,7 @@ Admin
 
 
 :mod:`wastd.widgets` Module
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.widgets
     :members:
@@ -68,10 +71,10 @@ Admin
 
 
 API
-===
+---
 
 :mod:`wastd.api` Module
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.api
     :members:
@@ -81,11 +84,11 @@ API
 
 
 :mod:`wastd.users` app
-======================
+----------------------
 WAStD's custom user package, courtesy of pydanny's django project template.
 
 :mod:`wastd.users.admin` Module
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.users.admin
     :members:
@@ -93,7 +96,7 @@ WAStD's custom user package, courtesy of pydanny's django project template.
     :show-inheritance:
 
 :mod:`wastd.users.views` Module
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.users.views
     :members:
@@ -102,7 +105,7 @@ WAStD's custom user package, courtesy of pydanny's django project template.
 
 
 :mod:`wastd.users.tests` Module
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.users.tests
     :members:
@@ -111,11 +114,11 @@ WAStD's custom user package, courtesy of pydanny's django project template.
 
 
 :mod:`wastd.observations` app
-=============================
+-----------------------------
 Remaining modules of the observations package are documented here.
 
 :mod:`wastd.observations.views` Module
---------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.observations.views
     :members:
@@ -123,7 +126,7 @@ Remaining modules of the observations package are documented here.
     :show-inheritance:
 
 :mod:`wastd.observations.tests` Module
---------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: wastd.observations.tests
     :members:
