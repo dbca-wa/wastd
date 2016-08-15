@@ -1,10 +1,11 @@
-.. WAStD documentation master file, created by
-   sphinx-quickstart.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+WA Sea Turtle Data
+==================
 
-Welcome to WAStD's documentation!
-====================================================================
+"WA STD - now you've got it, too"
+
+If anyone were to build a data clearinghouse for Western Australian
+sea turtle data, it might look something like this. Or totally different.
+
 
 Contents:
 
@@ -18,7 +19,6 @@ Contents:
    deploy
    docker_ec2
    code
-
 
 
 Indices and tables

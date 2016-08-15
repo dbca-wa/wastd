@@ -16,8 +16,8 @@ import os
 import sys
 import django
 
-import confy
-confy.read_environment_file()
+# import confy
+# confy.read_environment_file()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
