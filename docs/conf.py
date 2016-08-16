@@ -17,7 +17,7 @@ import os
 import sys
 import django
 from django.conf import settings
-import confy
+# import confy
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -29,7 +29,6 @@ sys.path.insert(0, os.path.abspath('../'))
 os.environ['DJANGO_SETTINGS_MODULE'] = "config.settings.local"
 settings.configure()
 django.setup()
-
 
 
 # -- General configuration ------------------------------------------------
@@ -49,8 +48,8 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-]
+    # 'sphinx.ext.githubpages',
+    ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
