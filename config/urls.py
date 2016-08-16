@@ -16,7 +16,6 @@ from rest_framework import routers
 from wastd.observations.models import Encounter
 from wastd.observations.views import schema_view
 from wastd.api import *
-from django_select2 import urls
 from djgeojson.views import GeoJSONLayerView
 
 # register all adminactions
