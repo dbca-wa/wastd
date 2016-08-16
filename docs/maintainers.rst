@@ -66,14 +66,13 @@ Run the app::
 
 Deploying upgrades to production
 ================================
+To roll out upgrades to a production server, these steps should work in most
+cases::
 
-::
-
+    ssh production-server-name
     workon wastd
     git pull
-    fab pip
-    ./manage.py migrate
-    ./manage.py collectstatic --noinput
+    fab deploy
     sudo supervisorctl restart wastd
 
 Developing with Docker
@@ -89,7 +88,7 @@ Docker > 1.3 and `Docker compose`_ installed.
 .. _Docker compose: https://docs.docker.com/compose/
 
 Setting up
-^^^^^^^^^^
+----------
 
 Docker encourages running one container for each process. This might mean one
 container for your web server, one for Django application and a third for your
@@ -210,7 +209,7 @@ will discover it. You can now run `sudo docker-compose up` and browse to
 `localhost:8000` to see your application running.
 
 Deployment
-^^^^^^^^^^
+----------
 
 You'll need a webserver container for deployment. An example setup for `Nginx`_
 
@@ -262,17 +261,17 @@ Running `sudo docker-compose up` will now expose your application directly on
 `localhost` (no need to specify the port number).
 
 Building and running your app on EC2
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------
 
 All you now need to do to run your app in production is:
 
 * Create an empty EC2 Linux instance (any Linux machine should do).
 
 * Install your preferred source control solution, Docker and Docker compose on
-the news instance.
+  the news instance.
 
 * Pull in your code from source control. The root directory should be the one
-with your `docker-compose.yml` file in it.
+  with your `docker-compose.yml` file in it.
 
 * Run `sudo docker-compose build` and `sudo docker-compose up`.
 
@@ -287,7 +286,7 @@ one and then stop the machine you will incur charges while the machine is down
 (presumably because you're preventing them allocating the IP to someone else).
 
 Security advisory
-^^^^^^^^^^^^^^^^^
+-----------------
 
 The setup described in this instruction will get you up-and-running but it
 hasn't been audited for security. If you are running your own setup like this

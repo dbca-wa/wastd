@@ -14,16 +14,38 @@ def clean():
         local("find . -name \*~ -delete")
         local("find . -name \*swp -delete")
 
+
 def pip():
     """Install python requirements."""
     local("pip install -r requirements/all.txt")
 
 
-def migrate():
+def _removestaticlinks():
+    """Remove links to static files, prepare for collectstatic."""
+    local("find -L staticfiles/ -type l -delete")
+
+
+def _collectstatic():
+    """Link static files."""
+    local("python manage.py collectstatic --noinput -l "
+          "|| python manage.py collectstatic --clear --noinput -l")
+
+def _migrate():
     """Syncdb, update permissions, migrate all apps."""
     local("python manage.py migrate")
     local("python manage.py update_permissions")
 
+
+def deploy():
+    """Refresh application. Run after code update.
+
+    Installs dependencies, runs syncdb and migrations, re-links static files.
+    """
+    pip()
+    _removestaticlinks()
+    _collectstatic()
+    _migrate()
+    clean()
 
 def shell():
     """Open a shell_plus."""
@@ -64,5 +86,4 @@ def doc():
     """Compile docs, draw data models and transitions."""
     local('./manage.py graph_models --pygraphviz observations '
           'users -g -o docs/datamodel.png')
-
     local("cd docs && make html && cd ..")
