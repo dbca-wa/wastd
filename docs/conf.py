@@ -16,19 +16,20 @@ from __future__ import unicode_literals
 import os
 import sys
 import django
-from django.conf import settings
-import environ
+# from django.conf import settings
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-
-ROOT_DIR = str(environ.Path(__file__) - 2)  # wastd/docs/conf.py - 2 = wastd/
-# print("The Django project's manage.py lives in {0}".format(ROOT_DIR))
-sys.path.insert(0, ROOT_DIR)
+# -- Django configuration -------------------------------------------------
+# 1. Add Django ROOT_DIR to sys.path, so conf.py can discover django settings
+sys.path.insert(0, os.path.abspath('..'))
 # print("The Sphinx conf.py now also discovers python modules "
 #       "relative to the Django root dir {0}".format(sys.path[0]))
+
+# 2. Set env var pointing to our Django settings module, so django.setup() knows
+# which settings to use
+# IMPORTANT: use SINGLE quotes for the settings module
 os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.local'
+
+# 3. Setup the Django app, so that autodoc will find the modules this help references
 django.setup()
 # print("Now the Django settings are loaded, e.g. installed apps are:"
 #       "{0}".format(", ".join([app for app in settings.INSTALLED_APPS])))
