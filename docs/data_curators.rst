@@ -1,3 +1,4 @@
+==========
 Data entry
 ==========
 Current POC data model has the concept of an AnimalEncounter, during which
@@ -15,7 +16,7 @@ The following sections will
 
 
 Turtle Strandings
------------------
+=================
 For each data entry, first convert all files to non-proprietary formats, such as
 PDF, images, or plain text.
 
@@ -52,24 +53,32 @@ for the files - the title will be displayed in map popups.
 
 
 Cetacean Strandings
--------------------
+===================
 The data currently lives in another departmental Strandings database.
 
+AnimalEncounter + CetaceanMorphometricObservation + CetaceanDagameObservation etc.
+
 Turtle Tagging
---------------
+==============
 The data currently lives in WAMTRAM 2.
 
+AnimalEncounter + TagObservation + MediaAttachment (datasheet PDFs) + etc.
+
 Tag returns
------------
+===========
 When TOs harvest and eat a tagged turtle, they return the
 tags to the Department.
 
+Encounter + TagObservation.
+
 Turtle Tracks
--------------
+=============
 Track count is captured by the Ningaloo Turtle Program's
 Access database.
 
+Encounter + TrackTallyObservation
 
+=======
 Data QA
 =======
 Talking points:
@@ -77,7 +86,7 @@ Talking points:
 * Proofreading: compare data sheets to entered data
 * Subject matter experts: making sense of the data (and determining which data don't)
 
-
+============
 Data release
 ============
 Marking data as "publication ready"

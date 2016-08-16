@@ -1,3 +1,4 @@
+=======================
 Developer documentation
 =======================
 
@@ -40,7 +41,7 @@ samples etc.).
      :alt: WAStD data model
 
 :mod:`wastd.observations.models` Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.observations.models
  :members:
@@ -57,7 +58,7 @@ Also, data analysts can search, filter, and export data from here.
 
 
 :mod:`wastd.observations.admin` Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.observations.admin
     :members:
@@ -66,7 +67,7 @@ Also, data analysts can search, filter, and export data from here.
 
 
 :mod:`wastd.widgets` Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.widgets
     :members:
@@ -81,7 +82,7 @@ and batch-export.
 
 
 :mod:`wastd.api` Module
-^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.api
     :members:
@@ -99,7 +100,7 @@ The following sections document the remaining modules for completeness' sake.
 WAStD's custom user package, courtesy of pydanny's django project template.
 
 :mod:`wastd.users.admin` Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.users.admin
     :members:
@@ -107,7 +108,7 @@ WAStD's custom user package, courtesy of pydanny's django project template.
     :show-inheritance:
 
 :mod:`wastd.users.views` Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.users.views
     :members:
@@ -116,7 +117,7 @@ WAStD's custom user package, courtesy of pydanny's django project template.
 
 
 :mod:`wastd.users.tests` Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.users.tests
     :members:
@@ -129,7 +130,7 @@ WAStD's custom user package, courtesy of pydanny's django project template.
 Remaining modules of the observations package are documented here.
 
 :mod:`wastd.observations.views` Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.observations.views
     :members:
@@ -137,7 +138,7 @@ Remaining modules of the observations package are documented here.
     :show-inheritance:
 
 :mod:`wastd.observations.tests` Module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 .. automodule:: wastd.observations.tests
     :members:

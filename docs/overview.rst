@@ -1,3 +1,4 @@
+========
 Overview
 ========
 
@@ -5,7 +6,7 @@ This chapter gives a quick overview of the WA Stranding Database WAStD.
 
 **Disclaimer** WAStD is currently in the proof of concept (POC) phase, and not a
 production system. This documentation will evolve along with the software
-and may describe features that are not implemented.
+and may describe planned, but unimplemented features.
 
 WAStD is a data clearinghouse for:
 
