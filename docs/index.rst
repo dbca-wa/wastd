@@ -16,10 +16,8 @@ Contents:
    overview
    data_consumers
    data_curators
-   install
-   deploy
-   docker_ec2
-   code
+   maintainers
+   developers
 
 
 Indices and tables

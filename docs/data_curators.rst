@@ -1,7 +1,9 @@
-==========
-Data entry
-==========
-Current POC data model has the concept of an AnimalEncounter, during which
+==============
+Data curators
+==============
+This chapter addresses data curators, who enter and maintain the data.
+
+WAStD's data model has the concept of an AnimalEncounter, during which
 different kinds of observations are made. The kind of observations depend
 on the species and health/behaviour of the animal - e.g. "dead and not doing much else"
 is a Stranding Observation (morphometrics, tags, photos, damage, disposal, biopsy,
@@ -81,7 +83,7 @@ Encounter + TrackTallyObservation
 =======
 Data QA
 =======
-Talking points:
+This section addresses QA operators, who have two jobs:
 
 * Proofreading: compare data sheets to entered data
 * Subject matter experts: making sense of the data (and determining which data don't)
@@ -89,4 +91,5 @@ Talking points:
 ============
 Data release
 ============
-Marking data as "publication ready"
+This section addresses data publishers, who authorise data release (mark records
+as "publication ready") or embargo data (to prevent publication).

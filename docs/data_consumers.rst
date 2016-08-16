@@ -1,5 +1,5 @@
 ==================
-Accessing the data
+Data consumers
 ==================
 This chapter addresses data consumers.
 

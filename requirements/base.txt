@@ -78,6 +78,7 @@ django-fsm-admin
 
 # Docs
 pydot
+sphinx_rtd_theme
 
 # API
 djangorestframework
