@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.abspath('../'))
 # Django settings
 # confy.read_environment_file()
 os.environ['DJANGO_SETTINGS_MODULE'] = "config.settings.local"
-settings.configure()
+# settings.configure()
 django.setup()
 
 
