@@ -470,8 +470,8 @@ class AnimalEncounter(Encounter):
         ('other', 'Other'), )
 
     # StrandNet: same as above
-    # some health status options are confused with management actions (
-    # disposal, rehab, euth), cause of death
+    # some health status options are confused with management actions
+    # (disposal, rehab, euth), cause of death
     #
     # <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
     # <option value="22">DK - Killed for research</option>
@@ -553,30 +553,30 @@ class AnimalEncounter(Encounter):
     # <option value="1">X* - Nesting: Laid</option></select>
 
     HABITAT_CHOICES = NA + (
-        ("beach", "Beach: Below the vegetation line of the grass slope"),
+        ("beach", "Beach (below vegetation line)"),
         ("bays-estuaries", "Bays, estuaries and other enclosed shallow soft sediments"),
         ("dune", "Dune"),
-        ("dune-constructed-hard-substrate", "Dune: Constructed hard substrate (concrete slabs, timber floors, helipad)"),
-        ("dune-grass-area", "Dune: Grass area"),
-        ("dune-compacted-path", "Dune: Hard compacted areas (road ways, paths)"),
-        ("dune-rubble", "Dune: Rubble, usually coral"),
-        ("dune-bare-sand", "Dune: Bare sand area"),
-        ("dune-beneath-vegetation", "Dune: Beneath tree or shrub"),
-        ("slope-front-dune", "Slope: Front slope of dune"),
+        ("dune-constructed-hard-substrate", "Dune, constructed hard substrate (concrete slabs, timber floors, helipad)"),
+        ("dune-grass-area", "Dune, grass area"),
+        ("dune-compacted-path", "Dune, hard compacted areas (road ways, paths)"),
+        ("dune-rubble", "Dune, rubble, usually coral"),
+        ("dune-bare-sand", "Dune, bare sand area"),
+        ("dune-beneath-vegetation", "Dune, beneath tree or shrub"),
+        ("slope-front-dune", "Dune, front slope"),
         ("sand-flats", "Sand flats"),
-        ("slope-grass", "Slope: Grass area"),
-        ("slope-bare-sand", "Slope: Bare sand area"),
-        ("slope-beneath-vegetation", "Slope: Beneath tree or shrub"),
+        ("slope-grass", "Slope, grass area"),
+        ("slope-bare-sand", "Slope, bare sand area"),
+        ("slope-beneath-vegetation", "Slope, beneath tree or shrub"),
         ("below-mean-spring-high-water-mark", "Below the mean spring high water line or current level of inundation"),
-        ("lagoon-patch-reef", "Lagoon: Patch reef"),
-        ("lagoon-open-sand", "Lagoon: Open sand areas, typically shallow"),
+        ("lagoon-patch-reef", "Lagoon, patch reef"),
+        ("lagoon-open-sand", "Lagoon, open sand areas"),
         ("mangroves", "Mangroves"),
-        ("reef-coral", "Reef: Coral reef"),
-        ("reef-crest-front-slope", "Reef: Reef crest (dries at low water) and front reef slope areas"),
-        ("reef-flat", "Reef: Reef flat, dries at low tide"),
+        ("reef-coral", "Coral reef"),
+        ("reef-crest-front-slope", "Reef crest (dries at low water) and front reef slope areas"),
+        ("reef-flat", "Reef flat, dries at low tide"),
         ("reef-seagrass-flats", "Coral reef with seagrass flats"),
-        ("reef-rocky", "Reef: Rocky reef, e.g. adjacent to mainland"),
-        ("open-water", "Open water, including inter reefal areas"), )
+        ("reef-rocky", "Rocky reef"),
+        ("open-water", "Open water"), )
 
     HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                      "reef-coral", "reef-crest-front-slope", "reef-flat",
@@ -796,7 +796,7 @@ class TurtleNestEncounter(Encounter):
         max_length=300,
         verbose_name=_("Species"),
         choices=AnimalEncounter.SPECIES_CHOICES,
-        default="unidentified",
+        default="na",
         help_text=_("The species of the animal."), )
 
     habitat = models.CharField(
@@ -954,31 +954,66 @@ class TagObservation(Observation):
 
     As TagObservations can sometimes occur without an Observation of an animal, the
     FK to Observations is optional.
+
+    Flipper Tag Status as per WAMTRAM:
+
+      #    0L    A1    A2    ae    AE     M    M1     N    OO    OX     p     P
+    584     1 87048    10     1  1033    51    46   834   102    49     5 68160
+
+    P_ED   P_OK    PX     Q     R    RC    RQ  NA's
+     922  36341   746   185   310   107   598    25
+
+    * # = tag attached new, number NA, need to double-check number
+    * P, p: re-sighted as attached to animal, no actions taken or necessary
+    * do not use: 0L, A2, M, M1, N
+    * AE = A1
+    * P_ED = near flipper edge, might fall off soon
+    * PX = tag re-sighted, but operator could not read tag ID (e.g. turtle running off)
+    * RQ = tag re-sighted, tag was "insecure", but no action was recorded
+
+    Recaptured tags: Need to record state (open, closed, tip locked or not)
+    as feedback to taggers to improve their tagging technique.
+
+    PIT tag status:
+
+    * applied and did read OK
+    * applied and did not read (but still inside and might read later on)
+
+    Sample status:
+
+    * taken off animal
+    * handed to lab
+    * done science to it
+    * handed in report
+
     """
 
     TYPE_CHOICES = (
         ('flipper-tag', 'Flipper Tag'),
         ('pit-tag', 'PIT Tag'),
         ('satellite-tag', 'Satellite Tag'),
-        ('physical-sample', 'Physical Sample'),
+        ('blood-sample', 'Blood Sample'),
         ('biopsy-sample', 'Biopsy Sample'),
-        ('genetic-fingerprint', 'Genetic Fingerprint (DNA sample)'),
+        ('egg-sample', 'Egg Sample'),
+        ('physical-sample', 'Physical Sample'),
         ('whisker-id', 'Whisker ID'),
         ('other', 'Other'),)
 
-    STATUS_CHOICES = (
+    STATUS_CHOICES = (                                       # TRT_TAG_STATES
         ('ordered', 'ordered from manufacturer'),
         ('produced', 'produced by manufacturer'),
         ('delivered', 'delivered to HQ'),
         ('allocated', 'allocated to field team'),
-        ('attached', 'attached new to an animal'),
-        ('recaptured', 're-sighted as attached to animal'),
-        ('detached', 'taken off an animal'),
+        ('attached', 'attached new to an animal'),           # A1, AE
+        ('recaptured', 're-sighted as attached to animal'),  # OX, P, P_OK, RC, RQ, P_ED
+        ('removed', 'taken off an animal'),                  # OO, R
         ('found', 'found detached'),
         ('returned', 'returned to HQ'),
         ('decommissioned', 'decommissioned from active tag pool'),
         ('destroyed', 'destroyed'),
         ('observed', 'observed in any other context, see comments'), )
+
+    STATUS_ON_ANIMAL = ('attached', 'recaptured', 'detached', )
 
     SIDE_CHOICES = (
         ("L", "left front flipper"),
@@ -1295,7 +1330,14 @@ class TurtleMorphometricObservation(Observation):
 
 @python_2_unicode_compatible
 class TurtleNestObservation(Observation):
-    """Turtle nest observations."""
+    """Turtle nest observations.
+
+    This model supports data sheets for:
+
+    * Turtle nest observation during tagging
+    * Turtle nest excavation a few days after hatching
+
+    """
 
     BEACH_POSITION_CHOICES = (
         ("below-hwm", _("below high water mark")),

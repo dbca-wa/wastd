@@ -67,3 +67,39 @@ All of these filter queries (anything after the "?") also work through the data 
     https://strandings-test.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA96395
 
 Any filter combination, if found useful, can be bookmarked.
+
+Data Analysis
+=============
+
+Tag life cycle
+--------------
+The life cycle of one tag (e.g. a flipper tag) is captured through recorded
+encounters along its life cycle stages::
+
+    https://strandings-test.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA96394
+
+
+Animal life cycle
+-----------------
+An animal's identity can be reconstructed from overlapping sightings of a set of tags.
+The following table demonstrates the connection between encounters and tag
+observations. Tag orders, nesting / tagging encounters, stranding observations
+and tag returns (and possibly encounters from other occations) form the complete
+picture of one animal and all related identifying tags.
+
+As an important difference to the existing WAMTRAM tagging database, the life
+cycle of tags and animals is reconstructed from *reports of observations*.
+
+================== ========= ============== ============== ========================
+Encounters         Occasion  Tag WA001      Tag WA002      Tag WA003
+================== ========= ============== ============== ========================
+Encounter        7 order     ordered
+Encounter        8 order                    ordered
+Encounter        9 order                                   ordered
+AnimalEncounter 11 nesting   attached
+AnimalEncounter 12 nesting   recaptured     attached
+AnimalEncounter 13 nesting   tag scar       recaptured     attached
+AnimalEncounter 14 nesting   tag scar       not observed   recaptured
+AnimalEncounter 15 stranding tag scar       recaptured     removed from dead animal
+Encounter       16 return                                  returned
+================== ========= ============== ============== ========================

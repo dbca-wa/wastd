@@ -9,26 +9,19 @@
 <div id="map"></div>
 {% endblock map %}
 
-
 {% block javascript%}
 {{ block.super }}
 <script src="https://static.dpaw.wa.gov.au/static/libs/leaflet/1.0.0-beta.2.rc.2/leaflet.js"></script>
 <script src="https://static.dpaw.wa.gov.au/static/libs/leaflet-providers/1.0.29/leaflet-providers.min.js"></script>
 
 <script>
-
 // Base maps
 var esri_worldimagery = L.tileLayer.provider('Esri.WorldImagery'),
     osm_mapnik = L.tileLayer.provider('OpenStreetMap.Mapnik'),
     esri_ocean = L.tileLayer.provider('Esri.OceanBasemap'),
     modis_terra = L.tileLayer.provider('NASAGIBS.ModisTerraTrueColorCR');
 
-
-var map = L.map('map', {
-    center: [-25, 115],
-    zoom: 5,
-    layers: [esri_worldimagery]
-});
+var map = L.map('map', {center: [-25, 115], zoom: 5, layers: [esri_worldimagery]});
 
 // Observations
 $.getJSON("{% url 'observation-geojson' %}", function (data) {
@@ -53,6 +46,5 @@ var baseMaps = {
 
 // Layer controls
 L.control.layers(baseMaps).addTo(map);
-
 </script>
 {% endblock %}
