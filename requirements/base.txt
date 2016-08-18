@@ -1,8 +1,11 @@
-django==1.9.9 # rq.filter: >=1.9,<1.10
+# django==1.9.9 # rq.filter: >=1.9,<1.10
 
-# django==1.10
+django==1.10
 # breaking django-1.10:
 # https://github.com/django-polymorphic/django-polymorphic/issues/225
+
+# Model polymorphism
+django-polymorphic==1.0b1
 
 # Configuration
 django-confy
@@ -62,8 +65,6 @@ django-extensions==1.7.2
 # DPaW SSO
 https://static.dpaw.wa.gov.au/static/py/dpaw-utils/dist/dpaw-utils-0.3a11.tar.gz
 
-# Model polymorphism
-django-polymorphic
 
 
 # DevOps

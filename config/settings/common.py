@@ -53,7 +53,6 @@ THIRD_PARTY_APPS = (
     'django_fsm_log',           # Transition audit logs
     'fsm_admin',                # Transitions in admin
     'reversion',                # Version history
-    # 'leaflet',                  # Map widgets not mature enough
     )
 
 # Apps specific for this project go here.
