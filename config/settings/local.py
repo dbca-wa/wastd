@@ -16,7 +16,6 @@ from confy import env
 # DEBUG
 # ------------------------------------------------------------------------------
 DEBUG = env('DJANGO_DEBUG', default=True)
-TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -40,8 +39,8 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': ''
+        }
     }
-}
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
@@ -57,9 +56,9 @@ if os.environ.get('USE_DOCKER') == 'yes':
 DEBUG_TOOLBAR_CONFIG = {
     'DISABLE_PANELS': [
         'debug_toolbar.panels.redirects.RedirectsPanel',
-    ],
+        ],
     'SHOW_TEMPLATE_CONTEXT': True,
-}
+    }
 
 # django-extensions
 # ------------------------------------------------------------------------------

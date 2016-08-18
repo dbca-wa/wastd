@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
+import confy
+import os
 from confy import env, database
 from unipath import Path
 
-# confy.read_environment_file()
+confy.read_environment_file(os.path.abspath(".env"))
 
 BASE_DIR = Path(__file__).ancestor(2)
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
@@ -49,6 +51,7 @@ THIRD_PARTY_APPS = (
     'dynamic_rest',             # Parameterised API queries
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
+    # 'leaflet',                  # for djgeojson
     'django_fsm',               # Transitions
     'django_fsm_log',           # Transition audit logs
     'fsm_admin',                # Transitions in admin
@@ -156,9 +159,7 @@ TEMPLATES = [
         # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
-        'DIRS': [
-            str(APPS_DIR.path('templates')),
-            ],
+        'DIRS': [str(APPS_DIR.path('templates')), ],
         'OPTIONS': {
             # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
             'debug': DEBUG,
@@ -178,8 +179,6 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                'django.core.context_processors.request',
-                # Your stuff: custom template context processors go here
                 ],
             },
         },
