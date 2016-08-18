@@ -22,7 +22,7 @@ django-easy-select2==1.3.3
 django_select2
 
 # Models
-django-model-utils==2.5
+django-model-utils==2.5.2
 
 # Images
 Pillow==3.3.0
@@ -52,11 +52,11 @@ django-geojson
 django-leaflet
 
 # Static files
-django_compressor==2.0
+django_compressor==2.1
 
 
 # Your custom requirements go here
-django-extensions==1.6.7
+django-extensions==1.7.2
 
 
 # DPaW SSO
