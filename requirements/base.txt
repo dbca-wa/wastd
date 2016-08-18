@@ -1,4 +1,4 @@
-django==1.9.8
+django==1.9.8 # rq.filter: >=1.9,<1.10
 
 # django==1.10
 # breaking django-1.10:
@@ -7,7 +7,7 @@ django==1.9.8
 # Configuration
 django-confy
 django-environ==0.4.0
-whitenoise==3.2
+whitenoise==3.2.1
 unipath
 
 # admin
