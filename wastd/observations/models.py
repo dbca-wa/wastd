@@ -1020,23 +1020,21 @@ class TagObservation(Observation):
         ('whisker-id', 'Whisker ID'),
         ('other', 'Other'),)
 
-    FLIPPER_TAG_STATUS_CHOICES = (                           # TRT_TAG_STATES
+    STATUS_CHOICES = (                                        # TRT_TAG_STATES
         ('ordered', 'ordered from manufacturer'),
         ('produced', 'produced by manufacturer'),
         ('delivered', 'delivered to HQ'),
         ('allocated', 'allocated to field team'),
-        ('attached', 'attached new to an animal'),           # A1, AE
-        ('recaptured', 're-sighted as attached to animal'),  # OX, P, P_OK, RC, RQ, P_ED
-        ('removed', 'taken off an animal'),                  # OO, R
+        ('attached', 'first association with animal'),        # A1, AE
+        ('recaptured', 're-sighted associated with animal'),  # OX, P, P_OK, RC, RQ, P_ED
+        ('removed', 'taken off animal'),                      # OO, R
         ('found', 'found detached'),
         ('returned', 'returned to HQ'),
-        ('decommissioned', 'decommissioned from active tag pool'),
+        ('decommissioned', 'decommissioned'),
         ('destroyed', 'destroyed'),
         ('observed', 'observed in any other context, see comments'), )
 
     STATUS_ON_ANIMAL = ('attached', 'recaptured', 'detached', )
-
-    STATUS_CHOICES = FLIPPER_TAG_STATUS_CHOICES
 
     SIDE_CHOICES = (
         ("L", "left front flipper"),
