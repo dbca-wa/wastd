@@ -125,8 +125,9 @@ class TagObservationSerializer(serializers.ModelSerializer):
 
         model = TagObservation
         fields = ('observation_name',
-                  'tag_type', 'name', 'side',
-                  'position', 'status', 'comments')
+                  'tag_type', 'name', 'tag_location',
+                  'status', 'comments')
+
 
 class TagObservationEncounterSerializer(serializers.ModelSerializer):
     """TagObservation serializer."""
@@ -136,8 +137,9 @@ class TagObservationEncounterSerializer(serializers.ModelSerializer):
 
         model = TagObservation
         fields = ('encounter', 'observation_name',
-                  'tag_type', 'name', 'side',
-                  'position', 'status', 'comments')
+                  'tag_type', 'name', 'tag_location',
+                  'status', 'comments')
+
 
 class DistinguishingFeatureObservationSerializer(serializers.ModelSerializer):
     """DistinguishingFeatureObservation serializer."""

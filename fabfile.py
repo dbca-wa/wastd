@@ -17,7 +17,7 @@ def clean():
 
 def pip():
     """Install python requirements."""
-    local("pip install -r requirements/all.txt")
+    local("pip install -r requirements/dev.txt")
 
 
 def _removestaticlinks():
