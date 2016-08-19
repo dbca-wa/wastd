@@ -134,9 +134,9 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     save_on_top = True
     # date_hierarchy = 'datetime'
     list_display = ('datetime', 'latitude', 'longitude',
-                    'type_display', 'name', 'side_display', 'position_display',
+                    'type_display', 'name', 'tag_location_display',
                     'status_display', 'encounter_link', 'comments')
-    list_filter = ('tag_type', 'side', 'position', 'status')
+    list_filter = ('tag_type', 'tag_location', 'status')
     search_fields = ('name', 'comments')
 
     def type_display(self, obj):
@@ -144,15 +144,10 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
         return obj.get_tag_type_display()
     type_display.short_description = 'Tag Type'
 
-    def side_display(self, obj):
+    def tag_location_display(self, obj):
         """Make tag side human readable."""
-        return obj.get_side_display()
-    side_display.short_description = 'Tag Side'
-
-    def position_display(self, obj):
-        """Make tag position human readable."""
-        return obj.get_position_display()
-    position_display.short_description = 'Tag Position'
+        return obj.get_tag_location_display()
+    tag_location_display.short_description = 'Tag Location'
 
     def status_display(self, obj):
         """Make health status human readable."""
