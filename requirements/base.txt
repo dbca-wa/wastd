@@ -1,85 +1,87 @@
+# Django
+# ------------------------------------------------
 django==1.9.9 # rq.filter: >=1.9,<1.10
-
+django-extensions
 # django==1.10
 # breaking django-1.10:
 # https://github.com/django-polymorphic/django-polymorphic/issues/225
 
-# Model polymorphism
-django-polymorphic==1.0b1
+
+# Python-PostgreSQL Database Adapter
+# ------------------------------------------------
+psycopg2==2.6.2
+
 
 # Configuration
+# ------------------------------------------------
 django-confy
 django-environ==0.4.0
-whitenoise==3.2.1
 unipath
 
+
 # admin
+# ------------------------------------------------
 django-adminactions
 django-grappelli
 
+
 # Forms
+# ------------------------------------------------
 django-braces==1.9.0
 django-crispy-forms==1.6.0
 django-floppyforms
 django-easy-select2==1.3.3
 django_select2
 
+
 # Models
+# ------------------------------------------------
+django-polymorphic==1.0b1
 django-model-utils==2.5.2
+django-reversion
+django-fsm
+django-fsm-log
+django-fsm-admin
+
 
 # Images
+# ------------------------------------------------
 Pillow==3.3.0
 
-# For user registration, either via email or social
-# Well-built with regular release cycles!
-django-allauth==0.26.1
-
-
-# Python-PostgreSQL Database Adapter
-psycopg2==2.6.2
 
 # Unicode slugification
+# ------------------------------------------------
 unicode-slugify==0.1.3
 django-autoslug==1.9.3
 
+
 # Time zones support
+# ------------------------------------------------
 pytz==2016.6.1
 
+
 # Redis support
+# ------------------------------------------------
 django-redis==4.4.4
 redis>=2.10.0
 
 
 # Map
+# ------------------------------------------------
 django-geojson
 django-leaflet
 
-# Static files
-django_compressor==2.1
-
-
-# Your custom requirements go here
-django-extensions
-
-# DPaW SSO
-https://static.dpaw.wa.gov.au/static/py/dpaw-utils/dist/dpaw-utils-0.3a11.tar.gz
-
-# DevOps
-Fabric
-
-# Revisions
-django-reversion
-
-# Transitions
-django-fsm
-django-fsm-log
-django-fsm-admin
 
 # Docs
+# ------------------------------------------------
+Sphinx
+flake8
 pydot
 sphinx_rtd_theme
 
+
 # API
+# ------------------------------------------------
 djangorestframework
 djangorestframework-gis
 djangorestframework-csv
@@ -94,3 +96,34 @@ django-filter
 django-rest-swagger
 coreapi
 coreapi-cli
+
+
+# Static and Media Storage
+# ------------------------------------------------
+whitenoise==3.2.1
+django_compressor==2.1
+boto==2.42.0
+django-storages-redux==1.3.2
+
+
+# Auth
+# ------------------------------------------------
+django-allauth==0.26.1
+https://static.dpaw.wa.gov.au/static/py/dpaw-utils/dist/dpaw-utils-0.3a11.tar.gz
+
+
+# Email backends for Mailgun, Postmark, SendGrid and more
+# -------------------------------------------------------
+django-anymail==0.4.2
+
+
+# WSGI Handler
+# ------------------------------------------------
+gevent==1.1.2
+gunicorn==19.6.0
+honcho
+
+
+# DevOps
+# ------------------------------------------------
+Fabric
