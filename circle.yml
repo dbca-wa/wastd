@@ -6,19 +6,15 @@ dependencies:
   pre:
     - mkdir -p /home/ubuntu/wastd/logs/
     - touch /home/ubuntu/wastd/logs/wastd.log
-    - pip install -r requirements/base.txt
-    - pip install -r requirements/local.txt
-    - pip install -r requirements/production.txt
+    - pip install -r requirements/all.txt
 
 database:
   post:
     - psql -c "CREATE EXTENSION postgis;" -U ubuntu -d circle_test
 
-test:
-  override:
-    #   - cd docs && make html
-    - python manage.py test --settings=config.settings.test
-      #- coverage run --source="." manage.py test --settings=config.settings.test
-      #- coverage html
-      #post:
-      #- coveralls
+# test:
+#   override:
+#     - coverage run --source="." manage.py test --settings=config.settings.test
+#     - coverage html
+#   post:
+#     - coveralls
