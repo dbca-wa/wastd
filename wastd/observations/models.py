@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-"""
-    Opportunistic sighting of stranded/encountered dead or injured wildlife.
+"""Observation models.
 
-    Species use a local name list, but should lookup a webservice.
-    This Observation is generic for all species. Other Models can FK this Model
-    to add species-specific measurements.
+These models support opportunistic encounters with stranded, dead, injured,
+nesting turtles and possibly other wildlife, such as cetaceans and pinnipeds.
 
-    Observer name / address / phone / email is captured with observer as system
-    user.
+Species use a local name list, but should lookup a webservice.
+This Observation is generic for all species. Other Models can FK this Model
+to add species-specific measurements.
 
-    The combination of species and health determines subsequent measurements
-    and actions:
+Observer name / address / phone / email is captured through the observer being
+a system user.
 
-    * [turtle, dugong, cetacean] damage observation
-    * [turtle, dugong, cetacean] distinguished features
-    * [taxon] morphometrics
-    * [flipper, pit, sat] tag observation
-    * disposal actions
+The combination of species and health determines subsequent measurements and
+actions:
+
+* [turtle, dugong, cetacean] damage observation
+* [turtle, dugong, cetacean] distinguishing features
+* [taxon] morphometrics
+* [flipper, pit, sat] tag observation
+* disposal actions
 
 """
 from __future__ import unicode_literals, absolute_import
@@ -40,12 +42,34 @@ from wastd.users.models import User
 # Encounter models -----------------------------------------------------------#
 @python_2_unicode_compatible
 class Encounter(PolymorphicModel, geo_models.Model):
-    """The base Encounter class knows when, where, observer, reporter.
+    """The base Encounter class knows when, where, observer, reporter, location
+    accuracy, source and source id, plus QA status.
 
-    When: Datetime of encounter, stored in UTC, entered and displayed in local
+    * When: Datetime of encounter, stored in UTC, entered and displayed in local
     timezome.
-    Where: Point in WGS84.
-    Who: The observer has to be a registered system user.
+    * Where: Point in WGS84.
+    * Who: The observer has to be a registered system user.
+    * Source: The previous point of truth for the record.
+    * Source ID: The ID of the encounter at the previous point of truth. This
+      can be a corporate file number, a database primary key, and likely is
+      prefixed or post-fixed. Batch imports can (if they use the ID consistently)
+      use the ID to identify previously imported records and avoid duplication.
+
+    A suggested naming standard for paper records is:
+    <prefix><date><running-number>, with possible
+
+    * prefix indicates data type (stranding, tagging, nest obs etc)
+    * date is reversed Y-m-d
+    * a running number caters for multiple records of the same prefix and date
+
+    These Paper record IDs should be recorded on the original paper forms
+    (before scanning), used as file names for the PDF'd scans, and typed into
+    WAStD.
+
+    The QA status can only be changed through transition methods, not directly.
+    Changes to the QA status, as wells as versions of the data are logged to
+    preserve the data lineage.
+
     """
     STATUS_NEW = 'new'
     STATUS_PROOFREAD = 'proofread'
@@ -459,15 +483,15 @@ class AnimalEncounter(Encounter):
 
     HEALTH_CHOICES = (
         ("na", "not observed"),
-        ('alive', 'Alive (healthy)'),
-        ('alive-injured', 'Alive (injured)'),
-        ('alive-then-died', 'Initally alive (but died)'),
-        ('dead-edible', 'Dead (carcass edible)'),
-        ('dead-organs-intact', 'Dead (decomposed but organs intact)'),
-        ('dead-advanced', 'Dead (advanced decomposition)'),
-        ('dead-mummified', 'Mummified (dead, skin holding bones)'),
-        ('dead-disarticulated', 'Disarticulated (dead, no soft tissue remaining)'),
-        ('other', 'Other'), )
+        ('alive', 'alive (healthy)'),
+        ('alive-injured', 'alive (injured)'),
+        ('alive-then-died', 'initally alive (but died)'),
+        ('dead-edible', 'dead (carcass edible)'),
+        ('dead-organs-intact', 'dead (decomposed but organs intact)'),
+        ('dead-advanced', 'dead (organs decomposed)'),
+        ('dead-mummified', 'mummified (dead, skin holding bones)'),
+        ('dead-disarticulated', 'disarticulated (dead, no soft tissue remaining)'),
+        ('other', 'other'), )
 
     # StrandNet: same as above
     # some health status options are confused with management actions
@@ -488,13 +512,13 @@ class AnimalEncounter(Encounter):
         ("returning-to-water", "returning to water"), )
 
     STRANDING_ACTIVITY_CHOICES = (
-        ("floating", "Floating (dead, sick, unable to dive, drifting in water)"),
-        ("beach-washed", "Beach washed (dead, sick or stranded on beach/coast)"),
-        ("beach-jumped", "Beach jumped"),
-        ("carcass-tagged-released", "Carcass tagged and released"),
-        ("carcass-inland", "Carcass or butchered remains found removed from coast"),
-        ("captivity", "In captivity"),
-        ("non-breeding", "General non-breeding activity (swimming, sleeping, feeding, etc.)"),
+        ("floating", "floating (dead, sick, unable to dive, drifting in water)"),
+        ("beach-washed", "beach washed (dead, sick or stranded on beach/coast)"),
+        ("beach-jumped", "beach jumped"),
+        ("carcass-tagged-released", "carcass tagged and released"),
+        ("carcass-inland", "carcass or butchered remains found removed from coast"),
+        ("captivity", "in captivity"),
+        ("non-breeding", "general non-breeding activity (swimming, sleeping, feeding, etc.)"),
         ("other", "other activity"), )
 
     ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
@@ -553,30 +577,30 @@ class AnimalEncounter(Encounter):
     # <option value="1">X* - Nesting: Laid</option></select>
 
     HABITAT_CHOICES = NA + (
-        ("beach", "Beach (below vegetation line)"),
-        ("bays-estuaries", "Bays, estuaries and other enclosed shallow soft sediments"),
-        ("dune", "Dune"),
-        ("dune-constructed-hard-substrate", "Dune, constructed hard substrate (concrete slabs, timber floors, helipad)"),
-        ("dune-grass-area", "Dune, grass area"),
-        ("dune-compacted-path", "Dune, hard compacted areas (road ways, paths)"),
-        ("dune-rubble", "Dune, rubble, usually coral"),
-        ("dune-bare-sand", "Dune, bare sand area"),
-        ("dune-beneath-vegetation", "Dune, beneath tree or shrub"),
-        ("slope-front-dune", "Dune, front slope"),
-        ("sand-flats", "Sand flats"),
-        ("slope-grass", "Slope, grass area"),
-        ("slope-bare-sand", "Slope, bare sand area"),
-        ("slope-beneath-vegetation", "Slope, beneath tree or shrub"),
-        ("below-mean-spring-high-water-mark", "Below the mean spring high water line or current level of inundation"),
-        ("lagoon-patch-reef", "Lagoon, patch reef"),
-        ("lagoon-open-sand", "Lagoon, open sand areas"),
-        ("mangroves", "Mangroves"),
-        ("reef-coral", "Coral reef"),
-        ("reef-crest-front-slope", "Reef crest (dries at low water) and front reef slope areas"),
-        ("reef-flat", "Reef flat, dries at low tide"),
-        ("reef-seagrass-flats", "Coral reef with seagrass flats"),
-        ("reef-rocky", "Rocky reef"),
-        ("open-water", "Open water"), )
+        ("beach", "beach (below vegetation line)"),
+        ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
+        ("dune", "dune"),
+        ("dune-constructed-hard-substrate", "dune, constructed hard substrate (concrete slabs, timber floors, helipad)"),
+        ("dune-grass-area", "dune, grass area"),
+        ("dune-compacted-path", "dune, hard compacted areas (road ways, paths)"),
+        ("dune-rubble", "dune, rubble, usually coral"),
+        ("dune-bare-sand", "dune, bare sand area"),
+        ("dune-beneath-vegetation", "dune, beneath tree or shrub"),
+        ("slope-front-dune", "dune, front slope"),
+        ("sand-flats", "sand flats"),
+        ("slope-grass", "slope, grass area"),
+        ("slope-bare-sand", "slope, bare sand area"),
+        ("slope-beneath-vegetation", "slope, beneath tree or shrub"),
+        ("below-mean-spring-high-water-mark", "below the mean spring high water line or current level of inundation"),
+        ("lagoon-patch-reef", "lagoon, patch reef"),
+        ("lagoon-open-sand", "lagoon, open sand areas"),
+        ("mangroves", "mangroves"),
+        ("reef-coral", "coral reef"),
+        ("reef-crest-front-slope", "reef crest (dries at low water) and front reef slope areas"),
+        ("reef-flat", "reef flat, dries at low tide"),
+        ("reef-seagrass-flats", "coral reef with seagrass flats"),
+        ("reef-rocky", "rocky reef"),
+        ("open-water", "open water"), )
 
     HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                      "reef-coral", "reef-crest-front-slope", "reef-flat",
@@ -675,22 +699,24 @@ class AnimalEncounter(Encounter):
         """An HTML string of Observations."""
         tpl = '<h4>{0}</h4><i class="fa fa-fw fa-heartbeat"></i>&nbsp;{1} {2} {3} on {4}'
         return mark_safe(
-            tpl.format(self.get_species_display(),
-                       self.get_health_display(),
-                       self.get_maturity_display(),
-                       self.get_sex_display(),
-                       self.get_habitat_display()))
+            tpl.format(
+                self.get_species_display(),
+                self.get_health_display(),
+                self.get_maturity_display(),
+                self.get_sex_display(),
+                self.get_habitat_display()))
 
     def make_html(self):
         """Create an HTML representation."""
         tpl = "{0}{1}{2}{3}{4}{5}"
-        return mark_safe(tpl.format(
-            self.animal_html,
-            self.coordinate_html,
-            self.observer_html,
-            self.observation_html,
-            self.admin_url_html,
-            self.status_html))
+        return mark_safe(
+            tpl.format(
+                self.animal_html,
+                self.coordinate_html,
+                self.observer_html,
+                self.observation_html,
+                self.admin_url_html,
+                self.status_html))
 
 
 # @python_2_unicode_compatible
@@ -776,6 +802,7 @@ class TurtleNestEncounter(Encounter):
     * fresh (morning after, observed during trach count)
     * predated (nest and eggs destroyed by predator)
     * hatched (eggs hatched)
+
     """
 
     NEST_AGE_CHOICES = (
@@ -957,12 +984,6 @@ class TagObservation(Observation):
 
     Flipper Tag Status as per WAMTRAM:
 
-      #    0L    A1    A2    ae    AE     M    M1     N    OO    OX     p     P
-    584     1 87048    10     1  1033    51    46   834   102    49     5 68160
-
-    P_ED   P_OK    PX     Q     R    RC    RQ  NA's
-     922  36341   746   185   310   107   598    25
-
     * # = tag attached new, number NA, need to double-check number
     * P, p: re-sighted as attached to animal, no actions taken or necessary
     * do not use: 0L, A2, M, M1, N
@@ -999,7 +1020,7 @@ class TagObservation(Observation):
         ('whisker-id', 'Whisker ID'),
         ('other', 'Other'),)
 
-    STATUS_CHOICES = (                                       # TRT_TAG_STATES
+    FLIPPER_TAG_STATUS_CHOICES = (                                       # TRT_TAG_STATES
         ('ordered', 'ordered from manufacturer'),
         ('produced', 'produced by manufacturer'),
         ('delivered', 'delivered to HQ'),
@@ -1014,6 +1035,8 @@ class TagObservation(Observation):
         ('observed', 'observed in any other context, see comments'), )
 
     STATUS_ON_ANIMAL = ('attached', 'recaptured', 'detached', )
+
+    STATUS_CHOICES = FLIPPER_TAG_STATUS_CHOICES
 
     SIDE_CHOICES = (
         ("L", "left front flipper"),

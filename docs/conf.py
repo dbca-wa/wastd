@@ -13,9 +13,9 @@
 # serve to show the default.
 
 from __future__ import unicode_literals
+import django
 import os
 import sys
-import django
 # from django.conf import settings
 
 # -- Django configuration -------------------------------------------------

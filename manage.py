@@ -3,7 +3,7 @@ import confy
 import os
 import sys
 
-confy.read_environment_file(".env")
+confy.read_environment_file()
 
 if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
