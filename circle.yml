@@ -6,7 +6,7 @@ dependencies:
   pre:
     - mkdir -p /home/ubuntu/wastd/logs/
     - touch /home/ubuntu/wastd/logs/wastd.log
-    - pip install -r requirements/dev.txt
+    # - pip install -r requirements/dev.txt
 
 database:
   post:
@@ -16,8 +16,7 @@ test:
    override:
     - easy_install functools
     # - echo "https://regebro.wordpress.com/2010/12/13/python-implementing-rich-comparison-the-correct-way/"
-    # - python manage.py check
-    - coverage run --source="." manage.py test --settings=config.settings.test
+    - python manage.py check coverage run --source="." manage.py test --settings=config.settings.test
 #     - coverage html
 #   post:
 #     - coveralls
