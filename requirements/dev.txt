@@ -1,0 +1,19 @@
+# Local development dependencies go here
+# ------------------------------------------------
+-r base.txt
+
+# Testing
+# ------------------------------------------------
+coveralls
+coverage
+django-coverage-plugin
+django-test-plus
+factory_boy
+pytest-django
+pytest-sugar
+
+
+# Debug
+# ------------------------------------------------
+django-debug-toolbar
+ipdb
