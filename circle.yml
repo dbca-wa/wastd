@@ -4,10 +4,10 @@ machine:
 
 dependencies:
   pre:
+    - easy_install functools
     - mkdir -p /home/ubuntu/wastd/logs/
     - touch /home/ubuntu/wastd/logs/wastd.log
     - pip install -r requirements/dev.txt
-    - easy_install functools
 
 database:
   post:
