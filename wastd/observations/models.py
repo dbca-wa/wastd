@@ -39,6 +39,333 @@ import urllib
 from wastd.users.models import User
 
 
+# Lookups --------------------------------------------------------------------#
+
+BODY_PART_DEFAULT = "whole"
+
+TURTLE_BODY_PART_CHOICES = (
+    ("head", "head"),
+    ("plastron", "plastron"),
+    ("carapace", "carapace"),
+    ("tail", "tail"),
+    ("flipper-front-left-1", "front left flipper, 1st scale from body"),
+    ("flipper-front-left-2", "front left flipper, 2nd scale from body"),
+    ("flipper-front-left-3", "front left flipper, 3rd scale from body"),
+    ("flipper-front-left", "front left flipper"),
+    ("flipper-front-right-1", "front right flipper, 1st scale from body"),
+    ("flipper-front-right-2", "front right flipper, 2nd scale from body"),
+    ("flipper-front-right-3", "front right flipper, 3rd scale from body"),
+    ("flipper-front-right", "front right flipper"),
+    ("flipper-rear-left", "rear left flipper"),
+    ("flipper-rear-right", "rear right flipper"),
+    (BODY_PART_DEFAULT, "whole turtle"), )
+
+TAG_TYPE_CHOICES = (
+    ('flipper-tag', 'Flipper Tag'),
+    ('pit-tag', 'PIT Tag'),
+    ('satellite-tag', 'Satellite Tag'),
+    ('blood-sample', 'Blood Sample'),
+    ('biopsy-sample', 'Biopsy Sample'),
+    ('egg-sample', 'Egg Sample'),
+    ('physical-sample', 'Physical Sample'),
+    ('whisker-id', 'Whisker ID'),
+    ('other', 'Other'),)
+
+TAG_STATUS_CHOICES = (                                        # TRT_TAG_STATES
+    ('ordered', 'ordered from manufacturer'),
+    ('produced', 'produced by manufacturer'),
+    ('delivered', 'delivered to HQ'),
+    ('allocated', 'allocated to field team'),
+    ('attached', 'first association with animal'),        # A1, AE
+    ('recaptured', 're-sighted associated with animal'),  # OX, P, P_OK, RC, RQ, P_ED
+    ('removed', 'taken off animal'),                      # OO, R
+    ('found', 'found detached'),
+    ('returned', 'returned to HQ'),
+    ('decommissioned', 'decommissioned'),
+    ('destroyed', 'destroyed'),
+    ('observed', 'observed in any other context, see comments'), )
+
+TAG_STATUS_ON_ANIMAL = ('attached', 'recaptured', 'detached', )
+
+NA = (("na", "not observed"), )
+
+TAXON_CHOICES = NA + (
+    ("Cheloniidae", "Marine turtles"),
+    ("Cetacea", "Whales and Dolphins"),
+    ("Pinnipedia", "Pinnipeds"),
+    ("Sirenia", "Dugongs"),
+    ("Elasmobranchii", "Sharks and Rays"), )
+
+TURTLE_SPECIES_CHOICES = (
+    ('Natator depressus', 'Natator depressus (Flatback turtle)'),
+    ('Chelonia mydas', 'Chelonia mydas (Green turtle)'),
+    ('Eretmochelys imbricata', 'Eretmochelys imbricata (Hawksbill turtle)'),
+    ('Caretta caretta', 'Caretta caretta (Loggerhead turtle)'),
+    ('Lepidochelys olivacea', 'Lepidochelys olivacea (Olive ridley turtle)'),
+    ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
+    ('Chelonia mydas agassazzi', 'Chelonia mydas agassazzi (Black turtle or East Pacific Green)'),
+    ('Corolla corolla', 'Corolla corolla (Hatchback turtle)'),
+    ('unidentified-turtle', 'Unidentified turtle'),
+    # Caretta caretta x Chelonia mydas (Hybrid turtle)
+    # Chelonia mydas agassazzi (Black turtle or East Pacific Green)
+    # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
+    # Natator depressus x Caretta caretta (Hybrid turtle)
+    # Natator depressus x Chelonia mydas (Hybrid turtle)
+    # dolphins
+    )
+CETACEAN_SPECIES_CHOICES = (
+    # dolphins
+    ("Delphinus delphis", "Delphinus delphis (Short-beaked common dolphin)"),
+    ("Grampus griseus", "Grampus griseus (Risso's dolphin)"),
+    ("Lagenodelphis hosei", "Lagenodelphis hosei (Fraser's dolphin)"),
+    ("Lagenorhynchus obscurus", "Lagenorhynchus obscurus (Dusky dolphin)"),
+    ("Orcaella heinsohni", "Orcaella heinsohni (Australian snubfin dolphin)"),
+    ("Sousa sahulensis", "Sousa sahulensis (Australian humpback dolphin)"),
+    ("Stenella attenuata", "Stenella attenuata (Pantropical spotted dolphin)"),
+    ("Stenella coeruleoalba", "Stenella coeruleoalba (Striped dolphin)"),
+    ("Stenella longirostris", "Stenella longirostris (Spinner dolphin)"),
+    ("Stenella sp.", "Stenella sp. (Unidentified spotted dolphin)"),
+    ("Steno bredanensis", "Steno bredanensis (Rough-toothed dolphin)"),
+    ("Tursiops aduncus", "Tursiops aduncus (Indo-Pacific bottlenose dolphin)"),
+    ("Tursiops truncatus", "Tursiops truncatus (Offshore bottlenose dolphin)"),
+    ("Tursiops sp.", "Tursiops sp. (Unidentified bottlenose dolphin)"),
+    ("unidentified-dolphin", "Unidentified dolphin"),
+    # whales
+    ("Balaenoptera acutorostrata", "Balaenoptera acutorostrata (Dwarf minke whale)"),
+    ("Balaenoptera bonaerensis", "Balaenoptera bonaerensis (Antarctic minke whale)<"),
+    ("Balaenoptera borealis", "Balaenoptera borealis (Sei whale)"),
+    ("Balaenoptera edeni", "Balaenoptera edeni (Bryde's whale)"),
+    ("Balaenoptera musculus", "Balaenoptera musculus (Blue whale)"),
+    ("Balaenoptera musculus brevicauda", "Balaenoptera musculus brevicauda (Pygmy blue whale)"),
+    ("Balaenoptera physalus", "Balaenoptera physalus (Fin whale)"),
+    ("Balaenoptera sp.", "Balaenoptera sp. (Unidentified Balaenoptera)"),
+    ("Eubalaena australis", "Eubalaena australis (Southern right whale)"),
+    ("Feresa attenuata", "Feresa attenuata (Pygmy killer whale)"),
+    ("Globicephala macrorhynchus", "Globicephala macrorhynchus (Short-finned pilot whale)"),
+    ("Globicephala melas", "Globicephala melas (Long-finned pilot whale)"),
+    ("Globicephala sp.", "Globicephala sp. (Unidentified pilot whale)"),
+    ("Indopacetus pacificus", "Indopacetus pacificus (Longman's beaked whale)"),
+    ("Kogia breviceps", "Kogia breviceps (Pygmy sperm whale)"),
+    ("Kogia sima", "Kogia sima (Dwarf sperm whale)"),
+    ("Kogia sp.", "Kogia sp. (Unidentified small sperm whale)"),
+    ("Megaptera novaeangliae", "Megaptera novaeangliae (Humpback whale)"),
+    ("Mesoplodon densirostris", "Mesoplodon densirostris (Blainville's beaked whale)"),
+    ("Mesoplodon layardii", "Mesoplodon layardii (Strap-toothed whale)"),
+    ("Mesoplodon sp.", "Mesoplodon sp. (Beaked whale)"),
+    ("Orcinus orca", "Orcinus orca (Killer whale)"),
+    ("Peponocephala electra", "Peponocephala electra (Melon-headed whale)"),
+    ("Physeter macrocephalus", "Physeter macrocephalus (Sperm whale)"),
+    ("Pseudorca crassidens", "Pseudorca crassidens (False killer whale)"),
+    ("Ziphius cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"),
+    ("unidentified-whale", "Unidentified whale"), )
+
+SPECIES_CHOICES = NA + TURTLE_SPECIES_CHOICES + CETACEAN_SPECIES_CHOICES
+
+SEX_CHOICES = NA + (
+    ("male", "male"),
+    ("female", "female"),
+    ("intersex", "hermaphrodite or intersex"), )
+
+TURTLE_MATURITY_CHOICES = (
+    ("hatchling", "hatchling"),
+    ("post-hatchling", "post-hatchling"),
+    ("juvenile", "juvenile"),
+    ("pre-pubsecent-immature", "pre-pubsecent immature"),
+    ("pubsecent-immature", "pubsecent immature"),
+    ("adult-measured", "adult (status determined from carapace and tail measurements)"), )
+
+MAMMAL_MATURITY_CHOICES = (
+    ("unweaned", "unweaned immature"),
+    ("weaned", "weaned immature"), )
+
+MATURITY_CHOICES = NA + TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
+    (("adult", "adult"),
+     ("unknown", "unknown maturity"), )
+
+HEALTH_CHOICES = (
+    ("na", "not observed"),
+    ('alive', 'alive (healthy)'),
+    ('alive-injured', 'alive (injured)'),
+    ('alive-then-died', 'initally alive (but died)'),
+    ('dead-edible', 'dead (carcass edible)'),
+    ('dead-organs-intact', 'dead (decomposed but organs intact)'),
+    ('dead-advanced', 'dead (organs decomposed)'),
+    ('dead-mummified', 'mummified (dead, skin holding bones)'),
+    ('dead-disarticulated', 'disarticulated (dead, no soft tissue remaining)'),
+    ('other', 'other'), )
+
+# StrandNet: same as above
+# some health status options are confused with management actions
+# (disposal, rehab, euth), cause of death
+#
+# <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
+# <option value="22">DK - Killed for research</option>
+# <option value="1">DL - Alive and left to natural processes. Not rescued</option>
+# <option value="23">DU - Live but subsequently euthanased</option>
+# <option value="2">DZ - Alive and rescued</option></select>
+
+NESTING_ACTIVITY_CHOICES = (
+    ("arriving", "arriving on beach"),
+    ("digging-body-pit", "digging body pit"),
+    ("excavating-egg-chamber", "excavating egg chamber"),
+    ("laying-eggs", "laying eggs"),
+    ("filling-in-egg-chamber", "filling in egg chamber"),
+    ("returning-to-water", "returning to water"), )
+
+STRANDING_ACTIVITY_CHOICES = (
+    ("floating", "floating (dead, sick, unable to dive, drifting in water)"),
+    ("beach-washed", "beach washed (dead, sick or stranded on beach/coast)"),
+    ("beach-jumped", "beach jumped"),
+    ("carcass-tagged-released", "carcass tagged and released"),
+    ("carcass-inland", "carcass or butchered remains found removed from coast"),
+    ("captivity", "in captivity"),
+    ("non-breeding", "general non-breeding activity (swimming, sleeping, feeding, etc.)"),
+    ("other", "other activity"), )
+
+ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
+# primary activity
+# <option value="20">? - Unspecified</option>
+# <option value="1">B - B - to be determined)</option>
+# <option value="2">B? - B? - to be determined)</option>
+# <option value="3">BE - BE - to be determined</option>
+# <option value="4">BF - Floating (dead, sick, unable to dive, drifting in water)</option>
+# <option value="5">BJ - Beach Jumped</option>
+# <option value="7">BR - Carcass or butchered remains found removed from coast</option>
+# <option value="6">BW - Beach washed (dead, sick or stranded on beach/coast)</option>
+# <option value="8">C - Courting</option>
+# <option value="21">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
+# <option value="9">J - In captivity</option>
+# <option value="10">N - Nesting and internesting</option>
+# <option value="11">P - Predated (killed)</option>
+# <option value="12">PC - Predated by crocodile (killed)</option>
+# <option value="13">PD - Predated by dog or dingo (killed)</option>
+# <option value="14">PF - Predated by fish (killed)</option>
+# <option value="15">PR - Predated by raptor (killed)</option>
+# <option value="16">PS - Predated by shark (killed)</option>
+# <option value="17">R - Released</option>
+# <option value="18">S - General non-breeding activity (swimming, sleeping, feeding, ...)</option>
+# <option value="19">Z - Tag found not attached to animal</option></select>
+# # secondary activity
+# <option value="30">? - ? - to be determined</option>
+# <option value="2">BJ - Non-Nesting: Beach jumped</option>
+# <option value="3">BW - Non-Nesting: Beach washed</option>
+# <option value="75">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
+# <option value="31">F? - F? - to be determined</option>
+# <option value="10">FC - Fisheries: Fishing - captured in arrowhead fish trap</option>
+# <option value="11">FD - Fisheries: Sucked/picked up by dredge</option>
+# <option value="36">FG - Fisheries: Captured with gaff from boat</option>
+# <option value="35">FI - Fisheries: Crabbing - trapped inside a crab pot</option>
+# <option value="12">FL - Fisheries: Fishing - hooked by fishing line; included SCP shark-hooks</option>
+# <option value="13">FN - Fisheries: Fishing - captured by netting</option>
+# <option value="14">FP - Fisheries: Tangled in float-line to crab-pot, anchor line, trace to shark-hook, etc</option>
+# <option value="15">FS - Fisheries: Fishing - speared, or captured by a diver attaching a line to the animal</option>
+# <option value="16">FT - Fisheries: Fishing - trawling</option>
+# <option value="17">FZ - Fisheries: Trapped in ghost-net</option>
+# <option value="32">L - L - to be determined</option>
+# <option value="56">NJ - Non-Nesting: Rodeo - night time</option>
+# <option value="55">NS - Non-Nesting: SCUBA/snorkelling - night time</option>
+# <option value="6">P - Non-Nesting: Observed but not captured</option>
+# <option value="57">PA - Non-Nesting: Observation from aerial survey</option>
+# <option value="58">PI - Non-Nesting: Image recorded during underwater video monitoring</option>
+# <option value="4">RJ - Non-Nesting: Rodeo - day time</option>
+# <option value="5">S - Non-Nesting: SCUBA/snorkelling - day time</option>
+# <option value="33">T - T - to be determined</option>
+# <option value="20">TA - Trapped: Trapped by land reclaimation</option>
+# <option value="21">TE - Trapped: Trapped in electricity power plant water intake system</option>
+# <option value="59">TS - Non-Nesting: Located by satellite telemetry</option>
+# <option value="22">TT - Trapped: Trapped in creek at low tide</option>
+# <option value="34">X - X - to be determined</option>
+# <option value="1">X* - Nesting: Laid</option></select>
+
+HABITAT_CHOICES = NA + (
+    ("beach", "beach (below vegetation line)"),
+    ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
+    ("dune", "dune"),
+    ("dune-constructed-hard-substrate", "dune, constructed hard substrate (concrete slabs, timber floors, helipad)"),
+    ("dune-grass-area", "dune, grass area"),
+    ("dune-compacted-path", "dune, hard compacted areas (road ways, paths)"),
+    ("dune-rubble", "dune, rubble, usually coral"),
+    ("dune-bare-sand", "dune, bare sand area"),
+    ("dune-beneath-vegetation", "dune, beneath tree or shrub"),
+    ("slope-front-dune", "dune, front slope"),
+    ("sand-flats", "sand flats"),
+    ("slope-grass", "slope, grass area"),
+    ("slope-bare-sand", "slope, bare sand area"),
+    ("slope-beneath-vegetation", "slope, beneath tree or shrub"),
+    ("below-mean-spring-high-water-mark", "below the mean spring high water line or current level of inundation"),
+    ("lagoon-patch-reef", "lagoon, patch reef"),
+    ("lagoon-open-sand", "lagoon, open sand areas"),
+    ("mangroves", "mangroves"),
+    ("reef-coral", "coral reef"),
+    ("reef-crest-front-slope", "reef crest (dries at low water) and front reef slope areas"),
+    ("reef-flat", "reef flat, dries at low tide"),
+    ("reef-seagrass-flats", "coral reef with seagrass flats"),
+    ("reef-rocky", "rocky reef"),
+    ("open-water", "open water"), )
+
+HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
+                 "reef-coral", "reef-crest-front-slope", "reef-flat",
+                 "reef-seagrass-flats", "reef-rocky", "open-water")
+
+BEACH_POSITION_CHOICES = (
+    ("below-hwm", _("below high water mark")),
+    ("above-hw", _("above high water mark, below dune")),
+    ("dune-edge", _("edge of dune, beginning of spinifex")),
+    ("in-dune", _("inside dune, spinifex")), )
+
+NEST_AGE_CHOICES = (
+    ("false-crawl", "False crawl"),
+    ("nesting-turtle-present", "New nest (turtle present)"),
+    ("fresh", "New nest (turtle absent)"),
+    ("predated", "Predated nest"),
+    ("hatched", "Hatched nest"), )
+
+OBSERVATION_CHOICES = (
+    ("na", "Not observed"),
+    ("absent", "Confirmed absent"),
+    ("present", "Confirmed present"),)
+
+OBSERVATION_ICONS = {
+    "na": "fa fa-question-circle-o",
+    "absent": "fa fa-times",
+    "present": "fa fa-check"}
+
+PHOTO_CHOICES = (
+    ("na", "Not applicable"),
+    ("see photos", "See attached photos for details"),)
+
+PHOTO_ICONS = {
+    "na": "fa fa-question-circle-o",
+    "see photos": "fa fa-check"}
+
+ACCURACY_CHOICES = (
+    ("unknown", "Unknown"),
+    ("estimated", "Estimated"),
+    ("measured", "Measured"),)
+
+ACCURACY_ICONS = {
+    "unknown": "fa fa-question-circle-o",
+    "estimated": "fa fa-comment-o",
+    "measured": "fa fa-balance-scale"}
+
+DAMAGE_TYPE_CHOICES = (
+    ("minor-trauma", "minor trauma"),
+    ("major-trauma", "major trauma"),
+    ("tip-amputated", "tip amputation"),
+    ("amputated-from-nail", "amputation from nail"),
+    ("amputated-half", "half amputation"),
+    ("amputated-entirely", "entire amputation"),
+    ("cuts", "cuts"),
+    ("deformity", "deformity"),
+    ("propeller-strike", "propeller strike"),
+    ("entanglement", "entanglement"),
+    ("other", "other"), )
+
+DAMAGE_AGE_CHOICES = (
+    ("healed-entirely", "entirely healed"),
+    ("healed-partially", "partially healed"),
+    ("fresh", "fresh"), )
+
 # Encounter models -----------------------------------------------------------#
 @python_2_unicode_compatible
 class Encounter(PolymorphicModel, geo_models.Model):
@@ -386,226 +713,6 @@ class AnimalEncounter(Encounter):
     and behaviour.
     """
 
-    NA = (("na", "not observed"), )
-
-    TAXON_CHOICES = NA + (
-        ("Cheloniidae", "Marine turtles"),
-        ("Cetacea", "Whales and Dolphins"),
-        ("Pinnipedia", "Pinnipeds"),
-        ("Sirenia", "Dugongs"),
-        ("Elasmobranchii", "Sharks and Rays"), )
-
-    TURTLE_SPECIES_CHOICES = (
-        ('Natator depressus', 'Natator depressus (Flatback turtle)'),
-        ('Chelonia mydas', 'Chelonia mydas (Green turtle)'),
-        ('Eretmochelys imbricata', 'Eretmochelys imbricata (Hawksbill turtle)'),
-        ('Caretta caretta', 'Caretta caretta (Loggerhead turtle)'),
-        ('Lepidochelys olivacea', 'Lepidochelys olivacea (Olive ridley turtle)'),
-        ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
-        ('Chelonia mydas agassazzi', 'Chelonia mydas agassazzi (Black turtle or East Pacific Green)'),
-        ('Corolla corolla', 'Corolla corolla (Hatchback turtle)'),
-        ('unidentified-turtle', 'Unidentified turtle'),
-        # Caretta caretta x Chelonia mydas (Hybrid turtle)
-        # Chelonia mydas agassazzi (Black turtle or East Pacific Green)
-        # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
-        # Natator depressus x Caretta caretta (Hybrid turtle)
-        # Natator depressus x Chelonia mydas (Hybrid turtle)
-        # dolphins
-        )
-    CETACEAN_SPECIES_CHOICES = (
-        # dolphins
-        ("Delphinus delphis", "Delphinus delphis (Short-beaked common dolphin)"),
-        ("Grampus griseus", "Grampus griseus (Risso's dolphin)"),
-        ("Lagenodelphis hosei", "Lagenodelphis hosei (Fraser's dolphin)"),
-        ("Lagenorhynchus obscurus", "Lagenorhynchus obscurus (Dusky dolphin)"),
-        ("Orcaella heinsohni", "Orcaella heinsohni (Australian snubfin dolphin)"),
-        ("Sousa sahulensis", "Sousa sahulensis (Australian humpback dolphin)"),
-        ("Stenella attenuata", "Stenella attenuata (Pantropical spotted dolphin)"),
-        ("Stenella coeruleoalba", "Stenella coeruleoalba (Striped dolphin)"),
-        ("Stenella longirostris", "Stenella longirostris (Spinner dolphin)"),
-        ("Stenella sp.", "Stenella sp. (Unidentified spotted dolphin)"),
-        ("Steno bredanensis", "Steno bredanensis (Rough-toothed dolphin)"),
-        ("Tursiops aduncus", "Tursiops aduncus (Indo-Pacific bottlenose dolphin)"),
-        ("Tursiops truncatus", "Tursiops truncatus (Offshore bottlenose dolphin)"),
-        ("Tursiops sp.", "Tursiops sp. (Unidentified bottlenose dolphin)"),
-        ("unidentified-dolphin", "Unidentified dolphin"),
-        # whales
-        ("Balaenoptera acutorostrata", "Balaenoptera acutorostrata (Dwarf minke whale)"),
-        ("Balaenoptera bonaerensis", "Balaenoptera bonaerensis (Antarctic minke whale)<"),
-        ("Balaenoptera borealis", "Balaenoptera borealis (Sei whale)"),
-        ("Balaenoptera edeni", "Balaenoptera edeni (Bryde's whale)"),
-        ("Balaenoptera musculus", "Balaenoptera musculus (Blue whale)"),
-        ("Balaenoptera musculus brevicauda", "Balaenoptera musculus brevicauda (Pygmy blue whale)"),
-        ("Balaenoptera physalus", "Balaenoptera physalus (Fin whale)"),
-        ("Balaenoptera sp.", "Balaenoptera sp. (Unidentified Balaenoptera)"),
-        ("Eubalaena australis", "Eubalaena australis (Southern right whale)"),
-        ("Feresa attenuata", "Feresa attenuata (Pygmy killer whale)"),
-        ("Globicephala macrorhynchus", "Globicephala macrorhynchus (Short-finned pilot whale)"),
-        ("Globicephala melas", "Globicephala melas (Long-finned pilot whale)"),
-        ("Globicephala sp.", "Globicephala sp. (Unidentified pilot whale)"),
-        ("Indopacetus pacificus", "Indopacetus pacificus (Longman's beaked whale)"),
-        ("Kogia breviceps", "Kogia breviceps (Pygmy sperm whale)"),
-        ("Kogia sima", "Kogia sima (Dwarf sperm whale)"),
-        ("Kogia sp.", "Kogia sp. (Unidentified small sperm whale)"),
-        ("Megaptera novaeangliae", "Megaptera novaeangliae (Humpback whale)"),
-        ("Mesoplodon densirostris", "Mesoplodon densirostris (Blainville's beaked whale)"),
-        ("Mesoplodon layardii", "Mesoplodon layardii (Strap-toothed whale)"),
-        ("Mesoplodon sp.", "Mesoplodon sp. (Beaked whale)"),
-        ("Orcinus orca", "Orcinus orca (Killer whale)"),
-        ("Peponocephala electra", "Peponocephala electra (Melon-headed whale)"),
-        ("Physeter macrocephalus", "Physeter macrocephalus (Sperm whale)"),
-        ("Pseudorca crassidens", "Pseudorca crassidens (False killer whale)"),
-        ("Ziphius cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"),
-        ("unidentified-whale", "Unidentified whale"), )
-
-    SPECIES_CHOICES = NA + TURTLE_SPECIES_CHOICES + CETACEAN_SPECIES_CHOICES
-
-    SEX_CHOICES = NA + (
-        ("male", "male"),
-        ("female", "female"),
-        ("intersex", "hermaphrodite or intersex"), )
-
-    TURTLE_MATURITY_CHOICES = (
-        ("hatchling", "hatchling"),
-        ("post-hatchling", "post-hatchling"),
-        ("juvenile", "juvenile"),
-        ("pre-pubsecent-immature", "pre-pubsecent immature"),
-        ("pubsecent-immature", "pubsecent immature"),
-        ("adult-measured", "adult (status determined from carapace and tail measurements)"), )
-
-    MAMMAL_MATURITY_CHOICES = (
-        ("unweaned", "unweaned immature"),
-        ("weaned", "weaned immature"), )
-
-    MATURITY_CHOICES = NA + TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
-        (("adult", "adult"),
-         ("unknown", "unknown maturity"), )
-
-    HEALTH_CHOICES = (
-        ("na", "not observed"),
-        ('alive', 'alive (healthy)'),
-        ('alive-injured', 'alive (injured)'),
-        ('alive-then-died', 'initally alive (but died)'),
-        ('dead-edible', 'dead (carcass edible)'),
-        ('dead-organs-intact', 'dead (decomposed but organs intact)'),
-        ('dead-advanced', 'dead (organs decomposed)'),
-        ('dead-mummified', 'mummified (dead, skin holding bones)'),
-        ('dead-disarticulated', 'disarticulated (dead, no soft tissue remaining)'),
-        ('other', 'other'), )
-
-    # StrandNet: same as above
-    # some health status options are confused with management actions
-    # (disposal, rehab, euth), cause of death
-    #
-    # <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
-    # <option value="22">DK - Killed for research</option>
-    # <option value="1">DL - Alive and left to natural processes. Not rescued</option>
-    # <option value="23">DU - Live but subsequently euthanased</option>
-    # <option value="2">DZ - Alive and rescued</option></select>
-
-    NESTING_ACTIVITY_CHOICES = (
-        ("arriving", "arriving on beach"),
-        ("digging-body-pit", "digging body pit"),
-        ("excavating-egg-chamber", "excavating egg chamber"),
-        ("laying-eggs", "laying eggs"),
-        ("filling-in-egg-chamber", "filling in egg chamber"),
-        ("returning-to-water", "returning to water"), )
-
-    STRANDING_ACTIVITY_CHOICES = (
-        ("floating", "floating (dead, sick, unable to dive, drifting in water)"),
-        ("beach-washed", "beach washed (dead, sick or stranded on beach/coast)"),
-        ("beach-jumped", "beach jumped"),
-        ("carcass-tagged-released", "carcass tagged and released"),
-        ("carcass-inland", "carcass or butchered remains found removed from coast"),
-        ("captivity", "in captivity"),
-        ("non-breeding", "general non-breeding activity (swimming, sleeping, feeding, etc.)"),
-        ("other", "other activity"), )
-
-    ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
-    # primary activity
-    # <option value="20">? - Unspecified</option>
-    # <option value="1">B - B - to be determined)</option>
-    # <option value="2">B? - B? - to be determined)</option>
-    # <option value="3">BE - BE - to be determined</option>
-    # <option value="4">BF - Floating (dead, sick, unable to dive, drifting in water)</option>
-    # <option value="5">BJ - Beach Jumped</option>
-    # <option value="7">BR - Carcass or butchered remains found removed from coast</option>
-    # <option value="6">BW - Beach washed (dead, sick or stranded on beach/coast)</option>
-    # <option value="8">C - Courting</option>
-    # <option value="21">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
-    # <option value="9">J - In captivity</option>
-    # <option value="10">N - Nesting and internesting</option>
-    # <option value="11">P - Predated (killed)</option>
-    # <option value="12">PC - Predated by crocodile (killed)</option>
-    # <option value="13">PD - Predated by dog or dingo (killed)</option>
-    # <option value="14">PF - Predated by fish (killed)</option>
-    # <option value="15">PR - Predated by raptor (killed)</option>
-    # <option value="16">PS - Predated by shark (killed)</option>
-    # <option value="17">R - Released</option>
-    # <option value="18">S - General non-breeding activity (swimming, sleeping, feeding, ...)</option>
-    # <option value="19">Z - Tag found not attached to animal</option></select>
-    # # secondary activity
-    # <option value="30">? - ? - to be determined</option>
-    # <option value="2">BJ - Non-Nesting: Beach jumped</option>
-    # <option value="3">BW - Non-Nesting: Beach washed</option>
-    # <option value="75">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
-    # <option value="31">F? - F? - to be determined</option>
-    # <option value="10">FC - Fisheries: Fishing - captured in arrowhead fish trap</option>
-    # <option value="11">FD - Fisheries: Sucked/picked up by dredge</option>
-    # <option value="36">FG - Fisheries: Captured with gaff from boat</option>
-    # <option value="35">FI - Fisheries: Crabbing - trapped inside a crab pot</option>
-    # <option value="12">FL - Fisheries: Fishing - hooked by fishing line; included SCP shark-hooks</option>
-    # <option value="13">FN - Fisheries: Fishing - captured by netting</option>
-    # <option value="14">FP - Fisheries: Tangled in float-line to crab-pot, anchor line, trace to shark-hook, etc</option>
-    # <option value="15">FS - Fisheries: Fishing - speared, or captured by a diver attaching a line to the animal</option>
-    # <option value="16">FT - Fisheries: Fishing - trawling</option>
-    # <option value="17">FZ - Fisheries: Trapped in ghost-net</option>
-    # <option value="32">L - L - to be determined</option>
-    # <option value="56">NJ - Non-Nesting: Rodeo - night time</option>
-    # <option value="55">NS - Non-Nesting: SCUBA/snorkelling - night time</option>
-    # <option value="6">P - Non-Nesting: Observed but not captured</option>
-    # <option value="57">PA - Non-Nesting: Observation from aerial survey</option>
-    # <option value="58">PI - Non-Nesting: Image recorded during underwater video monitoring</option>
-    # <option value="4">RJ - Non-Nesting: Rodeo - day time</option>
-    # <option value="5">S - Non-Nesting: SCUBA/snorkelling - day time</option>
-    # <option value="33">T - T - to be determined</option>
-    # <option value="20">TA - Trapped: Trapped by land reclaimation</option>
-    # <option value="21">TE - Trapped: Trapped in electricity power plant water intake system</option>
-    # <option value="59">TS - Non-Nesting: Located by satellite telemetry</option>
-    # <option value="22">TT - Trapped: Trapped in creek at low tide</option>
-    # <option value="34">X - X - to be determined</option>
-    # <option value="1">X* - Nesting: Laid</option></select>
-
-    HABITAT_CHOICES = NA + (
-        ("beach", "beach (below vegetation line)"),
-        ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
-        ("dune", "dune"),
-        ("dune-constructed-hard-substrate", "dune, constructed hard substrate (concrete slabs, timber floors, helipad)"),
-        ("dune-grass-area", "dune, grass area"),
-        ("dune-compacted-path", "dune, hard compacted areas (road ways, paths)"),
-        ("dune-rubble", "dune, rubble, usually coral"),
-        ("dune-bare-sand", "dune, bare sand area"),
-        ("dune-beneath-vegetation", "dune, beneath tree or shrub"),
-        ("slope-front-dune", "dune, front slope"),
-        ("sand-flats", "sand flats"),
-        ("slope-grass", "slope, grass area"),
-        ("slope-bare-sand", "slope, bare sand area"),
-        ("slope-beneath-vegetation", "slope, beneath tree or shrub"),
-        ("below-mean-spring-high-water-mark", "below the mean spring high water line or current level of inundation"),
-        ("lagoon-patch-reef", "lagoon, patch reef"),
-        ("lagoon-open-sand", "lagoon, open sand areas"),
-        ("mangroves", "mangroves"),
-        ("reef-coral", "coral reef"),
-        ("reef-crest-front-slope", "reef crest (dries at low water) and front reef slope areas"),
-        ("reef-flat", "reef flat, dries at low tide"),
-        ("reef-seagrass-flats", "coral reef with seagrass flats"),
-        ("reef-rocky", "rocky reef"),
-        ("open-water", "open water"), )
-
-    HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
-                     "reef-coral", "reef-crest-front-slope", "reef-flat",
-                     "reef-seagrass-flats", "reef-rocky", "open-water")
-
     taxon = models.CharField(
         max_length=300,
         verbose_name=_("Taxonomic group"),
@@ -719,78 +826,6 @@ class AnimalEncounter(Encounter):
                 self.status_html))
 
 
-# @python_2_unicode_compatible
-# class TurtleEncounter(AnimalEncounter):
-#     """The encounter of a turtle in a certain state of health and activity.
-#
-#     TurtleEncounters include nesting/tagging and stranding encounters.
-#     TurtleEncounters limit species choices to turtle species and maturity
-#     choices to turtle-specific options.
-#     """
-#
-#     class Meta:
-#         """Class options."""
-#
-#         ordering = ["when", "where"]
-#         verbose_name = "Turtle Encounter"
-#         verbose_name_plural = "Turtle Encounters"
-#         get_latest_by = "when"
-#
-#     def __str__(self):
-#         """The unicode representation."""
-#         tpl = "Turtle Encounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
-#         return tpl.format(
-#             self.pk,
-#             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
-#             self.observer.name,
-#             self.get_species_display(),
-#             self.get_health_display(),
-#             self.get_maturity_display(),
-#             self.get_sex_display(),
-#             self.get_habitat_display())
-#
-#     def save(self, *args, **kwargs):
-#         """Cache the HTML representation in `as_html`."""
-#         self.as_html = self.make_html()
-#         super(TurtleEncounter, self).save(*args, **kwargs)
-#
-#
-# @python_2_unicode_compatible
-# class CetaceanEncounter(AnimalEncounter):
-#     """The encounter of a cetacean in a certain state of health and activity.
-#
-#     CetaceanEncounters currently support strandings.
-#     Species choices are limited to dolphins and whales; maturity choices are
-#     limited to cetacean-specific options.
-#     """
-#
-#     class Meta:
-#         """Class options."""
-#
-#         ordering = ["when", "where"]
-#         verbose_name = "Cetacean Encounter"
-#         verbose_name_plural = "Cetacean Encounters"
-#         get_latest_by = "when"
-#
-#     def __str__(self):
-#         """The unicode representation."""
-#         tpl = "Cetacean Encounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
-#         return tpl.format(
-#             self.pk,
-#             self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
-#             self.observer.name,
-#             self.get_species_display(),
-#             self.get_health_display(),
-#             self.get_maturity_display(),
-#             self.get_sex_display(),
-#             self.get_habitat_display())
-#
-#     def save(self, *args, **kwargs):
-#         """Cache the HTML representation in `as_html`."""
-#         self.as_html = self.make_html()
-#         super(CetaceanEncounter, self).save(*args, **kwargs)
-
-
 @python_2_unicode_compatible
 class TurtleNestEncounter(Encounter):
     """The encounter of turtle nest during its life cycle.
@@ -805,13 +840,6 @@ class TurtleNestEncounter(Encounter):
 
     """
 
-    NEST_AGE_CHOICES = (
-        ("false-crawl", "False crawl"),
-        ("nesting-turtle-present", "New nest (turtle present)"),
-        ("fresh", "New nest (turtle absent)"),
-        ("predated", "Predated nest"),
-        ("hatched", "Hatched nest"), )
-
     nest_age = models.CharField(
         max_length=300,
         default="new",
@@ -822,14 +850,14 @@ class TurtleNestEncounter(Encounter):
     species = models.CharField(
         max_length=300,
         verbose_name=_("Species"),
-        choices=AnimalEncounter.SPECIES_CHOICES,
+        choices=SPECIES_CHOICES,
         default="na",
         help_text=_("The species of the animal."), )
 
     habitat = models.CharField(
         max_length=500,
         verbose_name=_("Habitat"),
-        choices=AnimalEncounter.HABITAT_CHOICES,
+        choices=HABITAT_CHOICES,
         default="na",
         help_text=_("The habitat in which the nest was encountered."), )
 
@@ -1009,67 +1037,19 @@ class TagObservation(Observation):
 
     """
 
-    TYPE_CHOICES = (
-        ('flipper-tag', 'Flipper Tag'),
-        ('pit-tag', 'PIT Tag'),
-        ('satellite-tag', 'Satellite Tag'),
-        ('blood-sample', 'Blood Sample'),
-        ('biopsy-sample', 'Biopsy Sample'),
-        ('egg-sample', 'Egg Sample'),
-        ('physical-sample', 'Physical Sample'),
-        ('whisker-id', 'Whisker ID'),
-        ('other', 'Other'),)
-
-    STATUS_CHOICES = (                                        # TRT_TAG_STATES
-        ('ordered', 'ordered from manufacturer'),
-        ('produced', 'produced by manufacturer'),
-        ('delivered', 'delivered to HQ'),
-        ('allocated', 'allocated to field team'),
-        ('attached', 'first association with animal'),        # A1, AE
-        ('recaptured', 're-sighted associated with animal'),  # OX, P, P_OK, RC, RQ, P_ED
-        ('removed', 'taken off animal'),                      # OO, R
-        ('found', 'found detached'),
-        ('returned', 'returned to HQ'),
-        ('decommissioned', 'decommissioned'),
-        ('destroyed', 'destroyed'),
-        ('observed', 'observed in any other context, see comments'), )
-
-    STATUS_ON_ANIMAL = ('attached', 'recaptured', 'detached', )
-
-    SIDE_CHOICES = (
-        ("L", "left front flipper"),
-        ("R", "right front flipper"),
-        ("C", "carapace"),
-        ("N", "neck"),
-        ("O", "other, see comments"), )
-
-    POSITION_CHOICES = (
-        ("1", "1st scale from body/head"),
-        ("2", "2nd scale from body/head"),
-        ("3", "3rd scale from body/head"),
-        ("O", "other, see comments"), )
-
     tag_type = models.CharField(
         max_length=300,
         verbose_name=_("Tag type"),
-        choices=TYPE_CHOICES,
+        choices=TAG_TYPE_CHOICES,
         default="flipper-tag",
         help_text=_("What kind of tag is it?"),)
 
-    side = models.CharField(
-        max_length=300,
-        verbose_name=_("Tag side"),
-        choices=SIDE_CHOICES,
-        default="L",
-        help_text=_("Is the tag on the left or right front flipper?"),)
-
-    position = models.CharField(
+    tag_location = models.CharField(
         max_length=300,
         verbose_name=_("Tag position"),
-        choices=POSITION_CHOICES,
-        default="1",
-        help_text=_("Counting from inside, to which flipper scale is the "
-                    "tag attached?"),)
+        choices=TURTLE_BODY_PART_CHOICES,
+        default=BODY_PART_DEFAULT,
+        help_text=_("Where is the tag attached, or the sample taken from?"),)
 
     name = models.CharField(
         max_length=1000,
@@ -1079,7 +1059,7 @@ class TagObservation(Observation):
     status = models.CharField(
         max_length=300,
         verbose_name=_("Tag status"),
-        choices=STATUS_CHOICES,
+        choices=TAG_STATUS_CHOICES,
         default="recaptured",
         help_text=_("The status this tag was seen in, or brought into."),)
 
@@ -1112,24 +1092,6 @@ class TagObservation(Observation):
 @python_2_unicode_compatible
 class DistinguishingFeatureObservation(Observation):
     """DistinguishingFeature observation."""
-
-    OBSERVATION_CHOICES = (
-        ("na", "Not observed"),
-        ("absent", "Confirmed absent"),
-        ("present", "Confirmed present"),)
-
-    OBSERVATION_ICONS = {
-        "na": "fa fa-question-circle-o",
-        "absent": "fa fa-times",
-        "present": "fa fa-check"}
-
-    PHOTO_CHOICES = (
-        ("na", "Not applicable"),
-        ("see photos", "See attached photos for details"),)
-
-    PHOTO_ICONS = {
-        "na": "fa fa-question-circle-o",
-        "see photos": "fa fa-check"}
 
     damage_injury = models.CharField(
         max_length=300,
@@ -1255,16 +1217,6 @@ class ManagementAction(Observation):
 class TurtleMorphometricObservation(Observation):
     """Morphometric measurements of a turtle."""
 
-    ACCURACY_CHOICES = (
-        ("unknown", "Unknown"),
-        ("estimated", "Estimated"),
-        ("measured", "Measured"),)
-
-    ACCURACY_ICONS = {
-        "unknown": "fa fa-question-circle-o",
-        "estimated": "fa fa-comment-o",
-        "measured": "fa fa-balance-scale"}
-
     curved_carapace_length_mm = models.PositiveIntegerField(
         verbose_name=_("Curved Carapace Length (mm)"),
         blank=True, null=True,
@@ -1359,12 +1311,6 @@ class TurtleNestObservation(Observation):
     * Turtle nest excavation a few days after hatching
 
     """
-
-    BEACH_POSITION_CHOICES = (
-        ("below-hwm", _("below high water mark")),
-        ("above-hw", _("above high water mark, below dune")),
-        ("dune-edge", _("edge of dune, beginning of spinifex")),
-        ("in-dune", _("inside dune, spinifex")), )
 
     nest_position = models.CharField(
         max_length=300,
@@ -1475,40 +1421,11 @@ class TurtleNestObservation(Observation):
 class TurtleDamageObservation(Observation):
     """Observation of turtle damages or injuries."""
 
-    BODY_PART_CHOICES = (
-        ("head", "head"),
-        ("plastron", "plastron"),
-        ("carapace", "carapace"),
-        ("tail", "tail"),
-        ("flipper-front-left", "front left flipper"),
-        ("flipper-front-right", "front right flipper"),
-        ("flipper-rear-left", "rear left flipper"),
-        ("flipper-rear-right", "rear right flipper"),
-        ("whole-turtle", "whole turtle"), )
-
-    DAMAGE_TYPE_CHOICES = (
-        ("minor-trauma", "minor trauma"),
-        ("major-trauma", "major trauma"),
-        ("tip-amputated", "tip amputation"),
-        ("amputated-from-nail", "amputation from nail"),
-        ("amputated-half", "half amputation"),
-        ("amputated-entirely", "entire amputation"),
-        ("cuts", "cuts"),
-        ("deformity", "deformity"),
-        ("propeller-strike", "propeller strike"),
-        ("entanglement", "entanglement"),
-        ("other", "other"), )
-
-    DAMAGE_AGE_CHOICES = (
-        ("healed-entirely", "entirely healed"),
-        ("healed-partially", "partially healed"),
-        ("fresh", "fresh"), )
-
     body_part = models.CharField(
         max_length=300,
         default="whole-turtle",
         verbose_name=_("Affected body part"),
-        choices=BODY_PART_CHOICES,
+        choices=TURTLE_BODY_PART_CHOICES,
         help_text=_("The body part affected by the observed damage."), )
 
     damage_type = models.CharField(
