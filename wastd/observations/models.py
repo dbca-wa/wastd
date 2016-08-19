@@ -1020,7 +1020,7 @@ class TagObservation(Observation):
         ('whisker-id', 'Whisker ID'),
         ('other', 'Other'),)
 
-    FLIPPER_TAG_STATUS_CHOICES = (                                       # TRT_TAG_STATES
+    FLIPPER_TAG_STATUS_CHOICES = (                           # TRT_TAG_STATES
         ('ordered', 'ordered from manufacturer'),
         ('produced', 'produced by manufacturer'),
         ('delivered', 'delivered to HQ'),
