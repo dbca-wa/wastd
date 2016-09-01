@@ -29,9 +29,9 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Use Whitenoise to serve static files
 # See: https://whitenoise.readthedocs.io/
-WHITENOISE_MIDDLEWARE = ('whitenoise.middleware.WhiteNoiseMiddleware', )
-MIDDLEWARE_CLASSES = WHITENOISE_MIDDLEWARE + MIDDLEWARE_CLASSES
-
+# WHITENOISE_MIDDLEWARE = ('whitenoise.middleware.WhiteNoiseMiddleware', )
+# MIDDLEWARE_CLASSES = WHITENOISE_MIDDLEWARE + MIDDLEWARE_CLASSES
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # SECURITY CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -91,8 +91,8 @@ INSTALLED_APPS += ('gunicorn', )
 
 # Static Assets
 # ------------------------
-MIDDLEWARE_CLASSES += ('whitenoise.middleware.WhiteNoiseMiddleware', )
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# MIDDLEWARE_CLASSES += ('whitenoise.middleware.WhiteNoiseMiddleware', )
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 #STATIC_URL = STORAGE_BASE_URL + 'static/'
 #STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 

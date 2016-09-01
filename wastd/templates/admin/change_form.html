@@ -1,6 +1,17 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_urls observations %}
+{% load i18n admin_urls observations leaflet_tags %}
+
 {% block messages %}
     {{ block.super }}
     {% if original %}{% tx_logs original %}{% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+{{ block.super }}
+{% leaflet_css plugins="draw,forms" %}
+{% endblock %}
+
+{% block javascripts %}
+{{ block.super }}
+{% leaflet_js plugins="draw,forms" %}
 {% endblock %}

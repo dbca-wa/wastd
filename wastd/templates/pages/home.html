@@ -1,50 +1,42 @@
 {% extends "base.html" %}
-
+{% load leaflet_tags geojson_tags %}
 {% block css %}
 {{ block.super }}
-<link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.css" />
+{% leaflet_css %}
 {% endblock %}
 
 {% block map %}
-<div id="map"></div>
+    {% leaflet_map "wastdmap" callback="window.map_init" %}
 {% endblock map %}
 
 {% block javascript%}
 {{ block.super }}
-<script src="https://static.dpaw.wa.gov.au/static/libs/leaflet/1.0.0-beta.2.rc.2/leaflet.js"></script>
-<script src="https://static.dpaw.wa.gov.au/static/libs/leaflet-providers/1.0.29/leaflet-providers.min.js"></script>
+{% leaflet_js %}
+<script type="text/javascript">
+  // var collection = {{ qs_results|geojsonfeature|safe }};
+  function map_init(map, options) {
+    // L.geoJson(collection).addTo(map);
+    $.getJSON("{% url 'observation-geojson' %}", function (data) {
+        L.geoJson(data, {
+            style: function (feature) {
+                return {
+                    //color: feature.properties.colour
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(feature.properties.as_html);
+            }
+        }).addTo(map);
+    });
+  }
+</script>
 
-<script>
+<!-- <script>
 // Base maps
 var esri_worldimagery = L.tileLayer.provider('Esri.WorldImagery'),
     osm_mapnik = L.tileLayer.provider('OpenStreetMap.Mapnik'),
     esri_ocean = L.tileLayer.provider('Esri.OceanBasemap'),
     modis_terra = L.tileLayer.provider('NASAGIBS.ModisTerraTrueColorCR');
 
-var map = L.map('map', {center: [-25, 115], zoom: 5, layers: [esri_worldimagery]});
-
-// Observations
-$.getJSON("{% url 'observation-geojson' %}", function (data) {
-    L.geoJson(data, {
-        style: function (feature) {
-            return {
-                //color: feature.properties.colour
-            };
-        },
-        onEachFeature: function (feature, layer) {
-            layer.bindPopup(feature.properties.as_html);
-        }
-    }).addTo(map);
-});
-
-// Layer groups
-var baseMaps = {
-    "ESRI WorldImagery": esri_worldimagery,
-    "ESRI OceanBasemap": esri_ocean,
-    "OpenStreetMap": osm_mapnik,
-    "MODIS Terra": modis_terra};
-
-// Layer controls
-L.control.layers(baseMaps).addTo(map);
-</script>
+</script> -->
 {% endblock %}

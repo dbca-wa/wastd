@@ -44,7 +44,7 @@ THIRD_PARTY_APPS = (
     'dynamic_rest',             # Parameterised API queries
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
-    # 'leaflet',                  # for djgeojson
+    'leaflet',                  # for djgeojson
     'django_fsm',               # Transitions
     'django_fsm_log',           # Transition audit logs
     'fsm_admin',                # Transitions in admin
@@ -73,6 +73,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'dpaw_utils.middleware.SSOLoginMiddleware',
     )
 
@@ -192,12 +193,16 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     str(APPS_DIR.path('static')),
     )
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     )
+
 
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -279,3 +284,19 @@ REST_FRAMEWORK = {
 # Grappelli admin theme
 # ------------------------------------------------------------------------------
 GRAPPELLI_ADMIN_TITLE = "WAStD Data Entry and Curation Portal"
+
+# Leaflet maps
+# ------------------------------------------------------------------------------
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (-25, 115),
+    'DEFAULT_ZOOM': 5,
+    'SCALE': 'metric',
+    'MINIMAP': False,
+    'TILES': [
+
+        ('ESRI WorldImagery',
+         'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+         {'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'}),
+
+        ]
+    }

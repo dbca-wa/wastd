@@ -366,6 +366,10 @@ DAMAGE_AGE_CHOICES = (
     ("healed-partially", "partially healed"),
     ("fresh", "fresh"), )
 
+
+# End lookups ----------------------------------------------------------------#
+#
+#
 # Encounter models -----------------------------------------------------------#
 @python_2_unicode_compatible
 class Encounter(PolymorphicModel, geo_models.Model):
@@ -1172,15 +1176,15 @@ class DistinguishingFeatureObservation(Observation):
         tpl = ('<div class="popup"><i class="fa fa-fw fa-eye"></i>&nbsp;{0}'
                '&nbsp<i class="{1}"></i></div>')
         return mark_safe(
-            tpl.format("Damage", self.OBSERVATION_ICONS[self.damage_injury]) +
-            tpl.format("PIT tags scanned", self.OBSERVATION_ICONS[self.scanned_for_pit_tags]) +
-            tpl.format("Missing Limbs", self.OBSERVATION_ICONS[self.missing_limbs]) +
-            tpl.format("Barnacles", self.OBSERVATION_ICONS[self.barnacles]) +
-            tpl.format("Algal growth", self.OBSERVATION_ICONS[self.algal_growth]) +
-            tpl.format("Tagging scars", self.OBSERVATION_ICONS[self.tagging_scars]) +
-            tpl.format("Propeller damage", self.OBSERVATION_ICONS[self.propeller_damage]) +
-            tpl.format("Entanglement", self.OBSERVATION_ICONS[self.entanglement]) +
-            tpl.format("More in photos", self.PHOTO_ICONS[self.see_photo]))
+            tpl.format("Damage", OBSERVATION_ICONS[self.damage_injury]) +
+            tpl.format("PIT tags scanned", OBSERVATION_ICONS[self.scanned_for_pit_tags]) +
+            tpl.format("Missing Limbs", OBSERVATION_ICONS[self.missing_limbs]) +
+            tpl.format("Barnacles", OBSERVATION_ICONS[self.barnacles]) +
+            tpl.format("Algal growth", OBSERVATION_ICONS[self.algal_growth]) +
+            tpl.format("Tagging scars", OBSERVATION_ICONS[self.tagging_scars]) +
+            tpl.format("Propeller damage", OBSERVATION_ICONS[self.propeller_damage]) +
+            tpl.format("Entanglement", OBSERVATION_ICONS[self.entanglement]) +
+            tpl.format("More in photos", PHOTO_ICONS[self.see_photo]))
 
 
 @python_2_unicode_compatible
@@ -1289,15 +1293,15 @@ class TurtleMorphometricObservation(Observation):
                '&nbsp;{1}&nbsp;mm&nbsp;<i class="{2}"></i></div>')
         return mark_safe(
             tpl.format("CCL", self.curved_carapace_length_mm,
-                       self.ACCURACY_ICONS[self.curved_carapace_length_accuracy]) +
+                       ACCURACY_ICONS[self.curved_carapace_length_accuracy]) +
             tpl.format("CCN", self.curved_carapace_notch_mm,
-                       self.ACCURACY_ICONS[self.curved_carapace_notch_accuracy]) +
+                       ACCURACY_ICONS[self.curved_carapace_notch_accuracy]) +
             tpl.format("CCW", self.curved_carapace_width_mm,
-                       self.ACCURACY_ICONS[self.curved_carapace_width_accuracy]) +
+                       ACCURACY_ICONS[self.curved_carapace_width_accuracy]) +
             tpl.format("TL", self.tail_length_mm,
-                       self.ACCURACY_ICONS[self.tail_length_accuracy]) +
+                       ACCURACY_ICONS[self.tail_length_accuracy]) +
             tpl.format("HW", self.maximum_head_width_mm,
-                       self.ACCURACY_ICONS[self.maximum_head_width_accuracy])
+                       ACCURACY_ICONS[self.maximum_head_width_accuracy])
             )
 
 

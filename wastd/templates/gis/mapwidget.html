@@ -16,9 +16,19 @@
 
 <div id="{{ id }}_div_map">
     <div id="{{ id }}_map"></div>
-    <span class="clear_features"><a href="javascript:{{ module }}.clearFeatures()">{% trans "Delete all Features" %}</a></span>
-    {% if display_raw %}<p>{% trans "Draw point on map or enter coordinates below:" %}</p>{% endif %}
-    <textarea id="{{ id }}" class="vSerializedField required" cols="70" rows="1" name="{{ name }}">{{ serialized }}</textarea>
+
+    <span class="clear_features">
+        <a href="javascript:{{ module }}.clearFeatures()">
+            {% trans "Delete all Features" %}
+        </a>
+    </span>
+
+    {% if display_raw %}
+    <p>{% trans "Draw point on map or enter coordinates below:" %}</p>
+    {% endif %}
+
+    <textarea id="{{ id }}" class="vSerializedField required"
+        cols="70" rows="1" name="{{ name }}">{{ serialized }}</textarea>
     <script type="text/javascript">
         {% block options %}
         var epsg4326 = new OpenLayers.Projection("EPSG:4326");

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Admin module for wastd.observations.
-"""
+"""Admin module for wastd.observations."""
 from __future__ import absolute_import, unicode_literals
 
+from leaflet.admin import LeafletGeoAdmin
+from leaflet.forms.widgets import LeafletWidget
+
 # from django import forms as django_forms
-import floppyforms as floppyforms
+import floppyforms as ff
 from django.contrib import admin
 # from django.contrib.gis import forms
 from django.contrib.gis.db import models as geo_models
@@ -15,7 +17,6 @@ from easy_select2 import select2_modelform  # select2_modelform_meta
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
-from wastd.widgets import MapWidget
 from .models import (Encounter, TurtleNestEncounter,
                      AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
                      MediaAttachment, TagObservation, ManagementAction,
@@ -61,13 +62,8 @@ class ObservationTypeListFilter(SimpleListFilter):
             return queryset.filter(habitat__in=AnimalEncounter.HABITAT_WATER)
 
 
-class ImageThumbnailFileInput(floppyforms.ClearableFileInput):
+class ImageThumbnailFileInput(ff.ClearableFileInput):
     template_name = 'floppyforms/image_thumbnail.html'
-
-
-class PointWidget(floppyforms.gis.PointWidget,
-                  floppyforms.gis.BaseMetacartaWidget):
-    pass
 
 
 class MediaAttachmentInline(admin.TabularInline):
@@ -177,7 +173,16 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     form = EncounterAdminForm
 
     date_hierarchy = 'when'
-    formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
+    formfield_overrides = {
+        geo_models.PointField: {'widget': LeafletWidget(
+            attrs={
+                'map_height': '400px',
+                'map_width': '100%',
+                'display_raw': 'true',
+                'map_srid': 4326,
+                }
+            )},
+        }
     list_filter = ('status', 'observer', 'reporter', )
     list_display = ('when', 'wkt', 'observer', 'reporter', 'status',
                     'source_display', 'source_id')
@@ -203,19 +208,30 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     source_display.short_description = 'Data Source'
 
 
-TurtleNestEncounterAdminForm = select2_modelform(TurtleNestEncounter,
-                                                 attrs={'width': '350px'})
+TurtleNestEncounterAdminForm = select2_modelform(
+    TurtleNestEncounter, attrs={'width': '350px', })
 
 
 @admin.register(TurtleNestEncounter)
-class TurtleNestEncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
+class TurtleNestEncounterAdmin(FSMTransitionMixin,
+                               VersionAdmin,
+                               admin.ModelAdmin):
     """Admin for TurtleNestEncounter."""
 
     raw_id_fields = ('observer', 'reporter', )
     autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
     form = TurtleNestEncounterAdminForm
     date_hierarchy = 'when'
-    formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
+    formfield_overrides = {
+        geo_models.PointField: {'widget': LeafletWidget(
+            attrs={
+                'map_height': '400px',
+                'map_width': '100%',
+                'display_raw': 'true',
+                'map_srid': 4326,
+                }
+            )},
+        }
     list_display = ('when', 'wkt', 'observer', 'reporter',
                     'species', 'age_display', 'habitat_display', )
     list_filter = ('status', 'observer', 'reporter',
@@ -249,14 +265,25 @@ AnimalEncounterForm = select2_modelform(AnimalEncounter,
 
 
 @admin.register(AnimalEncounter)
-class AnimalEncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
+class AnimalEncounterAdmin(FSMTransitionMixin,
+                           VersionAdmin,
+                           admin.ModelAdmin):
     """Admin for AnimalEncounter."""
 
     raw_id_fields = ('observer', 'reporter', )
     autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
     form = AnimalEncounterForm
     date_hierarchy = 'when'
-    formfield_overrides = {geo_models.PointField: {'widget': MapWidget}}
+    formfield_overrides = {
+        geo_models.PointField: {'widget': LeafletWidget(
+            attrs={
+                'map_height': '400px',
+                'map_width': '100%',
+                'display_raw': 'true',
+                'map_srid': 4326,
+                }
+            )},
+        }
     list_display = ('when', 'wkt', 'location_accuracy',
                     'observer', 'reporter', 'species', 'health_display',
                     'maturity_display', 'sex_display', 'behaviour',
