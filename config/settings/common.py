@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 import environ
 from confy import env, database
+from unipath import Path
 
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
+BASE_DIR = Path(__file__).ancestor(3)
 APPS_DIR = ROOT_DIR.path('wastd')
 
 

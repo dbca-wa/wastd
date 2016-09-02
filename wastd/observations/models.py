@@ -23,6 +23,9 @@ actions:
 """
 from __future__ import unicode_literals, absolute_import
 
+import urllib
+import slugify
+
 # from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.gis.db import models as geo_models
@@ -34,10 +37,8 @@ from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
-import urllib
 
 from wastd.users.models import User
-
 
 # Lookups --------------------------------------------------------------------#
 
@@ -498,10 +499,43 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """The unicode representation."""
         return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.observer)
 
+    @property
+    def short_name(self):
+        """A short, often unique, human-readable representation of the encounter.
+
+        Slugified and dash-separated:
+
+        * Date of encounter as YYYY-mm-dd
+        * longitude in WGS 84 DD, rounded to 4 decimals (<10m),
+        * latitude in WGS 84 DD, rounded to 4 decimals (<10m), (missing sign!!)
+        * health,
+        * maturity,
+        * species.
+
+        The short_name could be non-unique for encounters of multiple stranded
+        animals of the same species and deadness.
+        """
+        return slugify.slugify("-".join([
+            self.when.strftime("%Y-%m-%d"),
+            str(round(self.where.get_x(), 4)).replace(".", "-"),
+            str(round(self.where.get_y(), 4)).replace(".", "-"),
+            self.health,
+            self.maturity,
+            self.species
+            ]))
+
     def save(self, *args, **kwargs):
-        """Cache the HTML representation in `as_html`."""
+        """Cache the HTML representation in `as_html` and set the source ID.
+
+        Source ID will be auto-generated from ``short_name`` but is not
+        guaranteed to be unique. The User will be prompted to provide a unique
+        source ID if necessary, e.g. by appending a running number.
+        """
         self.as_html = self.make_html()
+        if not self.source_id:
+            self.source_id = self.short_name
         super(Encounter, self).save(*args, **kwargs)
+
 
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):

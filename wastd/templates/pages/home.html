@@ -6,7 +6,9 @@
 {% endblock %}
 
 {% block map %}
+<div id="mapholder">
     {% leaflet_map "wastdmap" callback="window.map_init" %}
+</div>
 {% endblock map %}
 
 {% block javascript%}
