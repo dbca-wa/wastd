@@ -986,6 +986,13 @@ class Observation(PolymorphicModel, models.Model):
         return self.encounter.when or ''
 
 
+def encounter_media(instance, filename):
+    """Return an upload file path for an encounter media attachment."""
+    if not instance.encounter.id:
+        instance.encounter.save()
+    return 'encounter/{0}/{1}'.format(instance.encounter.source_id, filename)
+
+
 @python_2_unicode_compatible
 class MediaAttachment(Observation):
     """A media attachment to an Encounter."""
@@ -1010,7 +1017,7 @@ class MediaAttachment(Observation):
         help_text=_("Give the attachment a representative name"),)
 
     attachment = models.FileField(
-        upload_to='attachments/%Y/%m/%d/',
+        upload_to=encounter_media,
         verbose_name=_("File attachment"),
         help_text=_("Upload the file"),)
 

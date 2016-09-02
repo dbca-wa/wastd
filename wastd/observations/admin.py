@@ -183,9 +183,10 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                 }
             )},
         }
-    list_filter = ('status', 'observer', 'reporter', )
-    list_display = ('when', 'wkt', 'observer', 'reporter', 'status',
-                    'source_display', 'source_id')
+    list_filter = ('status', 'observer', 'reporter', 'location_accuracy', )
+    list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
+                    'observer', 'reporter',
+                    'status', 'source_display', 'source_id')
     list_select_related = True
     save_on_top = True
     search_fields = ('observer__name', 'observer__username',
@@ -206,6 +207,16 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         """Make data source readable."""
         return obj.get_source_display()
     source_display.short_description = 'Data Source'
+
+    def latitude(self, obj):
+        """Make data source readable."""
+        return obj.where.get_y()
+    latitude.short_description = 'Latitude'
+
+    def longitude(self, obj):
+        """Make data source readable."""
+        return obj.where.get_x()
+    longitude.short_description = 'Longitude'
 
 
 TurtleNestEncounterAdminForm = select2_modelform(
@@ -232,9 +243,11 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin,
                 }
             )},
         }
-    list_display = ('when', 'wkt', 'observer', 'reporter',
-                    'species', 'age_display', 'habitat_display', )
-    list_filter = ('status', 'observer', 'reporter',
+    list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
+                    'observer', 'reporter',
+                    'species', 'age_display', 'habitat_display',
+                    'status', 'source_display', 'source_id')
+    list_filter = ('status', 'observer', 'reporter', 'location_accuracy',
                    'species', 'nest_age', 'habitat', )
     list_select_related = True
     save_on_top = True
@@ -258,6 +271,21 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin,
         """Make nest age human readable."""
         return obj.get_nest_age_display()
     age_display.short_description = 'Nest age'
+
+    def source_display(self, obj):
+        """Make data source readable."""
+        return obj.get_source_display()
+    source_display.short_description = 'Data Source'
+
+    def latitude(self, obj):
+        """Make data source readable."""
+        return obj.where.get_y()
+    latitude.short_description = 'Latitude'
+
+    def longitude(self, obj):
+        """Make data source readable."""
+        return obj.where.get_x()
+    longitude.short_description = 'Longitude'
 
 
 AnimalEncounterForm = select2_modelform(AnimalEncounter,
@@ -284,12 +312,13 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
                 }
             )},
         }
-    list_display = ('when', 'wkt', 'location_accuracy',
+    list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
                     'observer', 'reporter', 'species', 'health_display',
                     'maturity_display', 'sex_display', 'behaviour',
-                    'habitat_display', 'status_display', )
+                    'habitat_display',
+                    'status', 'source_display', 'source_id', )
     list_filter = (ObservationTypeListFilter,
-                   'location_accuracy', 'status', 'observer', 'reporter',
+                   'status', 'observer', 'reporter', 'location_accuracy',
                    'taxon', 'species', 'health', 'maturity',
                    'sex', 'habitat')
     list_select_related = True
@@ -326,11 +355,26 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
     sex_display.short_description = 'Sex'
 
     def status_display(self, obj):
-        """Make health status human readable."""
+        """Make QA status human readable."""
         return obj.get_status_display()
-    status_display.short_description = 'Status'
+    status_display.short_description = 'QA Status'
 
     def habitat_display(self, obj):
         """Make habitat human readable."""
         return obj.get_habitat_display()
     habitat_display.short_description = 'Habitat'
+
+    def source_display(self, obj):
+        """Make data source readable."""
+        return obj.get_source_display()
+    source_display.short_description = 'Data Source'
+
+    def latitude(self, obj):
+        """Make data source readable."""
+        return obj.where.get_y()
+    latitude.short_description = 'Latitude'
+
+    def longitude(self, obj):
+        """Make data source readable."""
+        return obj.where.get_x()
+    longitude.short_description = 'Longitude'
