@@ -32,6 +32,7 @@ This API is built using:
 from rest_framework import serializers, viewsets
 # import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
+from drf_extra_fields.geo_fields import PointField
 
 from wastd.observations.models import (
     Encounter, TurtleNestEncounter,
@@ -229,6 +230,7 @@ class EncounterSerializer(serializers.ModelSerializer):
     observation_set = ObservationSerializer(many=True, read_only=False)
     observer = serializers.StringRelatedField(read_only=True)
     reporter = serializers.StringRelatedField(read_only=True)
+    where = PointField(required=True)
 
     class Meta:
         """Class options.
@@ -260,6 +262,7 @@ class EncounterSerializer(serializers.ModelSerializer):
 
 class TurtleNestEncounterSerializer(EncounterSerializer):
     """TurtleNestEncounter serializer."""
+    where = PointField(required=True)
 
     class Meta:
         """Class options."""
@@ -272,6 +275,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
 
 class AnimalEncounterSerializer(EncounterSerializer):
     """AnimalEncounter serializer."""
+    where = PointField(required=True)
 
     class Meta:
         """Class options."""
@@ -321,7 +325,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
     filter_fields = [
-        'where', 'location_accuracy', 'when', 'observer', 'reporter', 'status',
+        'location_accuracy', 'when', 'observer', 'reporter', 'status',
         'source', 'source_id', ]
 
 
@@ -331,7 +335,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
-        'where', 'location_accuracy', 'when', 'observer', 'reporter',  'status',
+        'location_accuracy', 'when', 'observer', 'reporter',  'status',
         'nest_age', 'species', 'habitat', 'source', 'source_id', ]
 
 
@@ -341,7 +345,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
-        'where', 'location_accuracy', 'when', 'observer', 'reporter', 'status',
+        'location_accuracy', 'when', 'observer', 'reporter', 'status',
         'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'source', 'source_id', ]
 

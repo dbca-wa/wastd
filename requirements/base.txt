@@ -42,7 +42,7 @@ django-reversion
 django-fsm
 django-fsm-log
 django-fsm-admin
-
+django-extra-fields
 
 # Images
 # ------------------------------------------------
