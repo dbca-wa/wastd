@@ -19,9 +19,7 @@
     $.getJSON("{% url 'observation-geojson' %}", function (data) {
         L.geoJson(data, {
             style: function (feature) {
-                return {
-                    //color: feature.properties.colour
-                };
+                return { /* color: feature.properties.colour */ };
             },
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(feature.properties.as_html);
@@ -30,13 +28,4 @@
     });
   }
 </script>
-
-<!-- <script>
-// Base maps
-var esri_worldimagery = L.tileLayer.provider('Esri.WorldImagery'),
-    osm_mapnik = L.tileLayer.provider('OpenStreetMap.Mapnik'),
-    esri_ocean = L.tileLayer.provider('Esri.OceanBasemap'),
-    modis_terra = L.tileLayer.provider('NASAGIBS.ModisTerraTrueColorCR');
-
-</script> -->
 {% endblock %}
