@@ -239,8 +239,8 @@ class EncounterSerializer(serializers.ModelSerializer):
 
         model = Encounter
         name = 'encounter'
-        fields = ('where', 'when', 'observer', 'reporter',
-                  'source', 'source_id', 'observation_set', )
+        fields = ('where', 'location_accuracy', 'when', 'observer', 'reporter',
+                  'status', 'source', 'source_id', 'observation_set', )
         geo_field = "where"
 
     def create(self, validated_data):
@@ -265,9 +265,9 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = TurtleNestEncounter
-        fields = ('where', 'when', 'observer', 'reporter',
+        fields = ('where', 'location_accuracy', 'when', 'observer', 'reporter',
                   'nest_age', 'species', 'habitat',
-                  'source', 'source_id', 'observation_set', )
+                  'status', 'source', 'source_id', 'observation_set', )
 
 
 class AnimalEncounterSerializer(EncounterSerializer):
@@ -277,10 +277,10 @@ class AnimalEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = AnimalEncounter
-        fields = ('where', 'when', 'observer', 'reporter',
+        fields = ('where', 'location_accuracy', 'when', 'observer', 'reporter',
                   'taxon', 'species', 'health', 'sex', 'behaviour',
                   'habitat', 'activity',
-                  'source', 'source_id', 'observation_set', )
+                  'status', 'source', 'source_id', 'observation_set', )
 
 
 # class TurtleEncounterSerializer(EncounterSerializer):
@@ -379,5 +379,5 @@ class TagObservationViewSet(viewsets.ModelViewSet):
 
     queryset = TagObservation.objects.all()
     serializer_class = TagObservationEncounterSerializer
-    filter_fields = ['tag_type', 'side', 'position', 'name',
+    filter_fields = ['tag_type', 'tag_location', 'name',
                      'status', 'comments']
