@@ -1074,10 +1074,11 @@ class TagObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "{0} {1} {2} on {3}, {4}".format(
+        return "{0} {1} {2} on {3}".format(
             self.get_tag_type_display(),
-            self.name, self.get_status_display(),
-            self.get_side_display(), self.get_position_display())
+            self.name,
+            self.get_status_display(),
+            self.get_tag_location_display())
 
     @property
     def history_url(self):
