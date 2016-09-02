@@ -32,7 +32,7 @@
   <body>
 
     <div class="m-b">
-      <nav class="navbar navbar-dark navbar-static-top bg-inverse">
+      <nav class="navbar navbar-dark navbar-fixed-top bg-inverse" id="navBar">
         <div class="container">
           <a class="navbar-brand" href="/">WA Strandings Database WAStD</a>
           <button type="button"
@@ -96,7 +96,9 @@
       </nav>
     </div>
 
-    {% block map %}{% endblock %}
+    <div id="mapholder">
+        {% block map %}{% endblock %}
+    </div>
 
     <div class="container">
 
