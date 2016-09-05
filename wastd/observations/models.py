@@ -1018,6 +1018,7 @@ class MediaAttachment(Observation):
 
     attachment = models.FileField(
         upload_to=encounter_media,
+        max_length=500,
         verbose_name=_("File attachment"),
         help_text=_("Upload the file"),)
 
