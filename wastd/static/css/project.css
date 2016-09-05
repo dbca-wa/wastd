@@ -39,3 +39,6 @@ body {padding-top: 54px;}
 /* Force fullscreen map */
 #mapholder {height:100%; width: 100%;}
 #wastdmap {width: auto; height: 100%;}
+
+/* Leaflet popup fixed width */
+ .popup { width:500px; }

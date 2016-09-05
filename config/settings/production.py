@@ -68,17 +68,17 @@ INSTALLED_APPS += ('gunicorn', )
 # Uploaded Media Files
 # ------------------------
 # See: http://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
-#INSTALLED_APPS += ('storages', )
-#DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+# INSTALLED_APPS += ('storages', )
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 # AWS_CALLING_FORMAT = SubdomainCallingFormat
 # AWS_ACCESS_KEY_ID = env('DJANGO_AWS_ACCESS_KEY_ID')
 # AWS_SECRET_ACCESS_KEY = env('DJANGO_AWS_SECRET_ACCESS_KEY')
 # AWS_STORAGE_BUCKET_NAME = env('DJANGO_AWS_STORAGE_BUCKET_NAME')
-# AWS_AUTO_CREATE_BUCKET = False
-# AWS_QUERYSTRING_AUTH = False
+# # AWS_AUTO_CREATE_BUCKET = False
+# # AWS_QUERYSTRING_AUTH = False
 # AWS_EXPIRY = 60 * 60 * 24 * 7
 # AWS_HEADERS = {'Cache-Control': six.b('max-age={0}, s-maxage={0}, must-revalidate'.format(AWS_EXPIRY))}
-# STORAGE_BASE_URL =  'https://{0}.s3.amazonaws.com/'.format(AWS_STORAGE_BUCKET_NAME)
+# STORAGE_BASE_URL = 'https://{0}.s3.amazonaws.com/'.format(AWS_STORAGE_BUCKET_NAME)
 
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -93,15 +93,15 @@ INSTALLED_APPS += ('gunicorn', )
 # ------------------------
 # MIDDLEWARE_CLASSES += ('whitenoise.middleware.WhiteNoiseMiddleware', )
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-#STATIC_URL = STORAGE_BASE_URL + 'static/'
-#STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
+# STATIC_URL = STORAGE_BASE_URL + 'static/'
+# STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 
 
 # COMPRESSOR
 # ------------------------------------------------------------------------------
-#COMPRESS_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-COMPRESS_URL = STATIC_URL
-COMPRESS_ENABLED = env('COMPRESS_ENABLED', default=True)
+# COMPRESS_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+# COMPRESS_URL = STATIC_URL
+# COMPRESS_ENABLED = env('COMPRESS_ENABLED', default=True)
 
 # EMAIL
 # ------------------------------------------------------------------------------

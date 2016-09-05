@@ -24,7 +24,9 @@
                 return { /* color: feature.properties.colour */ };
             },
             onEachFeature: function (feature, layer) {
-                layer.bindPopup(feature.properties.as_html);
+                layer.bindPopup(
+                    feature.properties.as_html,
+                    {minWidth: "350px", maxWidth: "450px"}); // ignored - why?
             }
         }).addTo(map);
     });

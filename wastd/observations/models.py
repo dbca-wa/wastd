@@ -716,7 +716,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def admin_url_html(self):
         """An HTML div with a link to the admin change_view."""
-        tpl = ('<div class="popup">&nbsp;<a href={0} target="_">'
+        tpl = ('<div class="popup"><a href={0} target="_" title="Edit in new tab">'
                '<i class="fa fa-fw fa-pencil"></i></a></div>')
         return tpl.format(self.absolute_admin_url)
 
@@ -1255,7 +1255,8 @@ class ManagementAction(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = '<div class="popup"><i class="fa fa-fw fa-arrrow-right"></i>&nbsp;{0}</div>'
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-arrow-right"></i>'
+               '&nbsp;{0}</div>')
         return mark_safe(tpl.format(self.management_actions))
 
 
