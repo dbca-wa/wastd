@@ -464,7 +464,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     location_accuracy = models.CharField(
         max_length=300,
-        verbose_name=_("Location accuracy"),
+        verbose_name=_("Location accuracy (m)"),
         default=LOCATION_DEFAULT,
         choices=LOCATION_ACCURACY_CHOICES,
         help_text=_("The accuracy of the supplied location."), )
