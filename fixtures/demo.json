@@ -1,1147 +1,5 @@
 [
 {
-    "model": "auth.group",
-    "fields": {
-        "name": "data entry",
-        "permissions": [
-            [
-                "add_emailaddress",
-                "account",
-                "emailaddress"
-            ],
-            [
-                "adminactions_byrowsupdate_emailaddress",
-                "account",
-                "emailaddress"
-            ],
-            [
-                "adminactions_chart_emailaddress",
-                "account",
-                "emailaddress"
-            ],
-            [
-                "adminactions_export_emailaddress",
-                "account",
-                "emailaddress"
-            ],
-            [
-                "adminactions_massupdate_emailaddress",
-                "account",
-                "emailaddress"
-            ],
-            [
-                "adminactions_merge_emailaddress",
-                "account",
-                "emailaddress"
-            ],
-            [
-                "change_emailaddress",
-                "account",
-                "emailaddress"
-            ],
-            [
-                "delete_emailaddress",
-                "account",
-                "emailaddress"
-            ],
-            [
-                "add_emailconfirmation",
-                "account",
-                "emailconfirmation"
-            ],
-            [
-                "adminactions_byrowsupdate_emailconfirmation",
-                "account",
-                "emailconfirmation"
-            ],
-            [
-                "adminactions_chart_emailconfirmation",
-                "account",
-                "emailconfirmation"
-            ],
-            [
-                "adminactions_export_emailconfirmation",
-                "account",
-                "emailconfirmation"
-            ],
-            [
-                "adminactions_massupdate_emailconfirmation",
-                "account",
-                "emailconfirmation"
-            ],
-            [
-                "adminactions_merge_emailconfirmation",
-                "account",
-                "emailconfirmation"
-            ],
-            [
-                "change_emailconfirmation",
-                "account",
-                "emailconfirmation"
-            ],
-            [
-                "delete_emailconfirmation",
-                "account",
-                "emailconfirmation"
-            ],
-            [
-                "add_logentry",
-                "admin",
-                "logentry"
-            ],
-            [
-                "adminactions_byrowsupdate_logentry",
-                "admin",
-                "logentry"
-            ],
-            [
-                "adminactions_chart_logentry",
-                "admin",
-                "logentry"
-            ],
-            [
-                "adminactions_export_logentry",
-                "admin",
-                "logentry"
-            ],
-            [
-                "adminactions_massupdate_logentry",
-                "admin",
-                "logentry"
-            ],
-            [
-                "adminactions_merge_logentry",
-                "admin",
-                "logentry"
-            ],
-            [
-                "change_logentry",
-                "admin",
-                "logentry"
-            ],
-            [
-                "delete_logentry",
-                "admin",
-                "logentry"
-            ],
-            [
-                "add_group",
-                "auth",
-                "group"
-            ],
-            [
-                "adminactions_byrowsupdate_group",
-                "auth",
-                "group"
-            ],
-            [
-                "adminactions_chart_group",
-                "auth",
-                "group"
-            ],
-            [
-                "adminactions_export_group",
-                "auth",
-                "group"
-            ],
-            [
-                "adminactions_massupdate_group",
-                "auth",
-                "group"
-            ],
-            [
-                "adminactions_merge_group",
-                "auth",
-                "group"
-            ],
-            [
-                "change_group",
-                "auth",
-                "group"
-            ],
-            [
-                "delete_group",
-                "auth",
-                "group"
-            ],
-            [
-                "add_permission",
-                "auth",
-                "permission"
-            ],
-            [
-                "adminactions_byrowsupdate_permission",
-                "auth",
-                "permission"
-            ],
-            [
-                "adminactions_chart_permission",
-                "auth",
-                "permission"
-            ],
-            [
-                "adminactions_export_permission",
-                "auth",
-                "permission"
-            ],
-            [
-                "adminactions_massupdate_permission",
-                "auth",
-                "permission"
-            ],
-            [
-                "adminactions_merge_permission",
-                "auth",
-                "permission"
-            ],
-            [
-                "change_permission",
-                "auth",
-                "permission"
-            ],
-            [
-                "delete_permission",
-                "auth",
-                "permission"
-            ],
-            [
-                "add_contenttype",
-                "contenttypes",
-                "contenttype"
-            ],
-            [
-                "adminactions_byrowsupdate_contenttype",
-                "contenttypes",
-                "contenttype"
-            ],
-            [
-                "adminactions_chart_contenttype",
-                "contenttypes",
-                "contenttype"
-            ],
-            [
-                "adminactions_export_contenttype",
-                "contenttypes",
-                "contenttype"
-            ],
-            [
-                "adminactions_massupdate_contenttype",
-                "contenttypes",
-                "contenttype"
-            ],
-            [
-                "adminactions_merge_contenttype",
-                "contenttypes",
-                "contenttype"
-            ],
-            [
-                "change_contenttype",
-                "contenttypes",
-                "contenttype"
-            ],
-            [
-                "delete_contenttype",
-                "contenttypes",
-                "contenttype"
-            ],
-            [
-                "add_statelog",
-                "django_fsm_log",
-                "statelog"
-            ],
-            [
-                "adminactions_byrowsupdate_statelog",
-                "django_fsm_log",
-                "statelog"
-            ],
-            [
-                "adminactions_chart_statelog",
-                "django_fsm_log",
-                "statelog"
-            ],
-            [
-                "adminactions_export_statelog",
-                "django_fsm_log",
-                "statelog"
-            ],
-            [
-                "adminactions_massupdate_statelog",
-                "django_fsm_log",
-                "statelog"
-            ],
-            [
-                "adminactions_merge_statelog",
-                "django_fsm_log",
-                "statelog"
-            ],
-            [
-                "change_statelog",
-                "django_fsm_log",
-                "statelog"
-            ],
-            [
-                "delete_statelog",
-                "django_fsm_log",
-                "statelog"
-            ],
-            [
-                "add_animalencounter",
-                "observations",
-                "animalencounter"
-            ],
-            [
-                "adminactions_byrowsupdate_animalencounter",
-                "observations",
-                "animalencounter"
-            ],
-            [
-                "adminactions_chart_animalencounter",
-                "observations",
-                "animalencounter"
-            ],
-            [
-                "adminactions_export_animalencounter",
-                "observations",
-                "animalencounter"
-            ],
-            [
-                "adminactions_massupdate_animalencounter",
-                "observations",
-                "animalencounter"
-            ],
-            [
-                "adminactions_merge_animalencounter",
-                "observations",
-                "animalencounter"
-            ],
-            [
-                "change_animalencounter",
-                "observations",
-                "animalencounter"
-            ],
-            [
-                "delete_animalencounter",
-                "observations",
-                "animalencounter"
-            ],
-            [
-                "add_distinguishingfeatureobservation",
-                "observations",
-                "distinguishingfeatureobservation"
-            ],
-            [
-                "adminactions_byrowsupdate_distinguishingfeatureobservation",
-                "observations",
-                "distinguishingfeatureobservation"
-            ],
-            [
-                "adminactions_chart_distinguishingfeatureobservation",
-                "observations",
-                "distinguishingfeatureobservation"
-            ],
-            [
-                "adminactions_export_distinguishingfeatureobservation",
-                "observations",
-                "distinguishingfeatureobservation"
-            ],
-            [
-                "adminactions_massupdate_distinguishingfeatureobservation",
-                "observations",
-                "distinguishingfeatureobservation"
-            ],
-            [
-                "adminactions_merge_distinguishingfeatureobservation",
-                "observations",
-                "distinguishingfeatureobservation"
-            ],
-            [
-                "change_distinguishingfeatureobservation",
-                "observations",
-                "distinguishingfeatureobservation"
-            ],
-            [
-                "delete_distinguishingfeatureobservation",
-                "observations",
-                "distinguishingfeatureobservation"
-            ],
-            [
-                "add_encounter",
-                "observations",
-                "encounter"
-            ],
-            [
-                "adminactions_byrowsupdate_encounter",
-                "observations",
-                "encounter"
-            ],
-            [
-                "adminactions_chart_encounter",
-                "observations",
-                "encounter"
-            ],
-            [
-                "adminactions_export_encounter",
-                "observations",
-                "encounter"
-            ],
-            [
-                "adminactions_massupdate_encounter",
-                "observations",
-                "encounter"
-            ],
-            [
-                "adminactions_merge_encounter",
-                "observations",
-                "encounter"
-            ],
-            [
-                "change_encounter",
-                "observations",
-                "encounter"
-            ],
-            [
-                "delete_encounter",
-                "observations",
-                "encounter"
-            ],
-            [
-                "add_managementaction",
-                "observations",
-                "managementaction"
-            ],
-            [
-                "adminactions_byrowsupdate_managementaction",
-                "observations",
-                "managementaction"
-            ],
-            [
-                "adminactions_chart_managementaction",
-                "observations",
-                "managementaction"
-            ],
-            [
-                "adminactions_export_managementaction",
-                "observations",
-                "managementaction"
-            ],
-            [
-                "adminactions_massupdate_managementaction",
-                "observations",
-                "managementaction"
-            ],
-            [
-                "adminactions_merge_managementaction",
-                "observations",
-                "managementaction"
-            ],
-            [
-                "change_managementaction",
-                "observations",
-                "managementaction"
-            ],
-            [
-                "delete_managementaction",
-                "observations",
-                "managementaction"
-            ],
-            [
-                "add_mediaattachment",
-                "observations",
-                "mediaattachment"
-            ],
-            [
-                "adminactions_byrowsupdate_mediaattachment",
-                "observations",
-                "mediaattachment"
-            ],
-            [
-                "adminactions_chart_mediaattachment",
-                "observations",
-                "mediaattachment"
-            ],
-            [
-                "adminactions_export_mediaattachment",
-                "observations",
-                "mediaattachment"
-            ],
-            [
-                "adminactions_massupdate_mediaattachment",
-                "observations",
-                "mediaattachment"
-            ],
-            [
-                "adminactions_merge_mediaattachment",
-                "observations",
-                "mediaattachment"
-            ],
-            [
-                "change_mediaattachment",
-                "observations",
-                "mediaattachment"
-            ],
-            [
-                "delete_mediaattachment",
-                "observations",
-                "mediaattachment"
-            ],
-            [
-                "add_observation",
-                "observations",
-                "observation"
-            ],
-            [
-                "adminactions_byrowsupdate_observation",
-                "observations",
-                "observation"
-            ],
-            [
-                "adminactions_chart_observation",
-                "observations",
-                "observation"
-            ],
-            [
-                "adminactions_export_observation",
-                "observations",
-                "observation"
-            ],
-            [
-                "adminactions_massupdate_observation",
-                "observations",
-                "observation"
-            ],
-            [
-                "adminactions_merge_observation",
-                "observations",
-                "observation"
-            ],
-            [
-                "change_observation",
-                "observations",
-                "observation"
-            ],
-            [
-                "delete_observation",
-                "observations",
-                "observation"
-            ],
-            [
-                "add_tagobservation",
-                "observations",
-                "tagobservation"
-            ],
-            [
-                "adminactions_byrowsupdate_tagobservation",
-                "observations",
-                "tagobservation"
-            ],
-            [
-                "adminactions_chart_tagobservation",
-                "observations",
-                "tagobservation"
-            ],
-            [
-                "adminactions_export_tagobservation",
-                "observations",
-                "tagobservation"
-            ],
-            [
-                "adminactions_massupdate_tagobservation",
-                "observations",
-                "tagobservation"
-            ],
-            [
-                "adminactions_merge_tagobservation",
-                "observations",
-                "tagobservation"
-            ],
-            [
-                "change_tagobservation",
-                "observations",
-                "tagobservation"
-            ],
-            [
-                "delete_tagobservation",
-                "observations",
-                "tagobservation"
-            ],
-            [
-                "add_turtledamageobservation",
-                "observations",
-                "turtledamageobservation"
-            ],
-            [
-                "adminactions_byrowsupdate_turtledamageobservation",
-                "observations",
-                "turtledamageobservation"
-            ],
-            [
-                "adminactions_chart_turtledamageobservation",
-                "observations",
-                "turtledamageobservation"
-            ],
-            [
-                "adminactions_export_turtledamageobservation",
-                "observations",
-                "turtledamageobservation"
-            ],
-            [
-                "adminactions_massupdate_turtledamageobservation",
-                "observations",
-                "turtledamageobservation"
-            ],
-            [
-                "adminactions_merge_turtledamageobservation",
-                "observations",
-                "turtledamageobservation"
-            ],
-            [
-                "change_turtledamageobservation",
-                "observations",
-                "turtledamageobservation"
-            ],
-            [
-                "delete_turtledamageobservation",
-                "observations",
-                "turtledamageobservation"
-            ],
-            [
-                "add_turtlemorphometricobservation",
-                "observations",
-                "turtlemorphometricobservation"
-            ],
-            [
-                "adminactions_byrowsupdate_turtlemorphometricobservation",
-                "observations",
-                "turtlemorphometricobservation"
-            ],
-            [
-                "adminactions_chart_turtlemorphometricobservation",
-                "observations",
-                "turtlemorphometricobservation"
-            ],
-            [
-                "adminactions_export_turtlemorphometricobservation",
-                "observations",
-                "turtlemorphometricobservation"
-            ],
-            [
-                "adminactions_massupdate_turtlemorphometricobservation",
-                "observations",
-                "turtlemorphometricobservation"
-            ],
-            [
-                "adminactions_merge_turtlemorphometricobservation",
-                "observations",
-                "turtlemorphometricobservation"
-            ],
-            [
-                "change_turtlemorphometricobservation",
-                "observations",
-                "turtlemorphometricobservation"
-            ],
-            [
-                "delete_turtlemorphometricobservation",
-                "observations",
-                "turtlemorphometricobservation"
-            ],
-            [
-                "add_turtlenestencounter",
-                "observations",
-                "turtlenestencounter"
-            ],
-            [
-                "adminactions_byrowsupdate_turtlenestencounter",
-                "observations",
-                "turtlenestencounter"
-            ],
-            [
-                "adminactions_chart_turtlenestencounter",
-                "observations",
-                "turtlenestencounter"
-            ],
-            [
-                "adminactions_export_turtlenestencounter",
-                "observations",
-                "turtlenestencounter"
-            ],
-            [
-                "adminactions_massupdate_turtlenestencounter",
-                "observations",
-                "turtlenestencounter"
-            ],
-            [
-                "adminactions_merge_turtlenestencounter",
-                "observations",
-                "turtlenestencounter"
-            ],
-            [
-                "change_turtlenestencounter",
-                "observations",
-                "turtlenestencounter"
-            ],
-            [
-                "delete_turtlenestencounter",
-                "observations",
-                "turtlenestencounter"
-            ],
-            [
-                "add_turtlenestobservation",
-                "observations",
-                "turtlenestobservation"
-            ],
-            [
-                "adminactions_byrowsupdate_turtlenestobservation",
-                "observations",
-                "turtlenestobservation"
-            ],
-            [
-                "adminactions_chart_turtlenestobservation",
-                "observations",
-                "turtlenestobservation"
-            ],
-            [
-                "adminactions_export_turtlenestobservation",
-                "observations",
-                "turtlenestobservation"
-            ],
-            [
-                "adminactions_massupdate_turtlenestobservation",
-                "observations",
-                "turtlenestobservation"
-            ],
-            [
-                "adminactions_merge_turtlenestobservation",
-                "observations",
-                "turtlenestobservation"
-            ],
-            [
-                "change_turtlenestobservation",
-                "observations",
-                "turtlenestobservation"
-            ],
-            [
-                "delete_turtlenestobservation",
-                "observations",
-                "turtlenestobservation"
-            ],
-            [
-                "add_session",
-                "sessions",
-                "session"
-            ],
-            [
-                "adminactions_byrowsupdate_session",
-                "sessions",
-                "session"
-            ],
-            [
-                "adminactions_chart_session",
-                "sessions",
-                "session"
-            ],
-            [
-                "adminactions_export_session",
-                "sessions",
-                "session"
-            ],
-            [
-                "adminactions_massupdate_session",
-                "sessions",
-                "session"
-            ],
-            [
-                "adminactions_merge_session",
-                "sessions",
-                "session"
-            ],
-            [
-                "change_session",
-                "sessions",
-                "session"
-            ],
-            [
-                "delete_session",
-                "sessions",
-                "session"
-            ],
-            [
-                "add_site",
-                "sites",
-                "site"
-            ],
-            [
-                "adminactions_byrowsupdate_site",
-                "sites",
-                "site"
-            ],
-            [
-                "adminactions_chart_site",
-                "sites",
-                "site"
-            ],
-            [
-                "adminactions_export_site",
-                "sites",
-                "site"
-            ],
-            [
-                "adminactions_massupdate_site",
-                "sites",
-                "site"
-            ],
-            [
-                "adminactions_merge_site",
-                "sites",
-                "site"
-            ],
-            [
-                "change_site",
-                "sites",
-                "site"
-            ],
-            [
-                "delete_site",
-                "sites",
-                "site"
-            ],
-            [
-                "add_socialaccount",
-                "socialaccount",
-                "socialaccount"
-            ],
-            [
-                "adminactions_byrowsupdate_socialaccount",
-                "socialaccount",
-                "socialaccount"
-            ],
-            [
-                "adminactions_chart_socialaccount",
-                "socialaccount",
-                "socialaccount"
-            ],
-            [
-                "adminactions_export_socialaccount",
-                "socialaccount",
-                "socialaccount"
-            ],
-            [
-                "adminactions_massupdate_socialaccount",
-                "socialaccount",
-                "socialaccount"
-            ],
-            [
-                "adminactions_merge_socialaccount",
-                "socialaccount",
-                "socialaccount"
-            ],
-            [
-                "change_socialaccount",
-                "socialaccount",
-                "socialaccount"
-            ],
-            [
-                "delete_socialaccount",
-                "socialaccount",
-                "socialaccount"
-            ],
-            [
-                "add_socialapp",
-                "socialaccount",
-                "socialapp"
-            ],
-            [
-                "adminactions_byrowsupdate_socialapp",
-                "socialaccount",
-                "socialapp"
-            ],
-            [
-                "adminactions_chart_socialapp",
-                "socialaccount",
-                "socialapp"
-            ],
-            [
-                "adminactions_export_socialapp",
-                "socialaccount",
-                "socialapp"
-            ],
-            [
-                "adminactions_massupdate_socialapp",
-                "socialaccount",
-                "socialapp"
-            ],
-            [
-                "adminactions_merge_socialapp",
-                "socialaccount",
-                "socialapp"
-            ],
-            [
-                "change_socialapp",
-                "socialaccount",
-                "socialapp"
-            ],
-            [
-                "delete_socialapp",
-                "socialaccount",
-                "socialapp"
-            ],
-            [
-                "add_socialtoken",
-                "socialaccount",
-                "socialtoken"
-            ],
-            [
-                "adminactions_byrowsupdate_socialtoken",
-                "socialaccount",
-                "socialtoken"
-            ],
-            [
-                "adminactions_chart_socialtoken",
-                "socialaccount",
-                "socialtoken"
-            ],
-            [
-                "adminactions_export_socialtoken",
-                "socialaccount",
-                "socialtoken"
-            ],
-            [
-                "adminactions_massupdate_socialtoken",
-                "socialaccount",
-                "socialtoken"
-            ],
-            [
-                "adminactions_merge_socialtoken",
-                "socialaccount",
-                "socialtoken"
-            ],
-            [
-                "change_socialtoken",
-                "socialaccount",
-                "socialtoken"
-            ],
-            [
-                "delete_socialtoken",
-                "socialaccount",
-                "socialtoken"
-            ],
-            [
-                "add_user",
-                "users",
-                "user"
-            ],
-            [
-                "adminactions_byrowsupdate_user",
-                "users",
-                "user"
-            ],
-            [
-                "adminactions_chart_user",
-                "users",
-                "user"
-            ],
-            [
-                "adminactions_export_user",
-                "users",
-                "user"
-            ],
-            [
-                "adminactions_massupdate_user",
-                "users",
-                "user"
-            ],
-            [
-                "adminactions_merge_user",
-                "users",
-                "user"
-            ],
-            [
-                "change_user",
-                "users",
-                "user"
-            ],
-            [
-                "delete_user",
-                "users",
-                "user"
-            ]
-        ]
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "pbkdf2_sha256$24000$wihqyaywtyGT$WxlUF5y37SdwB5DtdEOlG6X+PMzNGQZFhiVkYcrFOAQ=",
-        "last_login": "2016-08-10T03:11:57.571Z",
-        "is_superuser": true,
-        "username": "admin",
-        "first_name": "",
-        "last_name": "",
-        "email": "florian.wendelin.mayer@gmail.com",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2016-08-10T03:11:27.587Z",
-        "name": "Florian Mayer (Admin)",
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "pbkdf2_sha256$24000$U7ofEvOS6y2X$X8d7qBdr+kc9Dw0o8vJLyQK5d+EjQ0McFaowUZffJXU=",
-        "last_login": null,
-        "is_superuser": false,
-        "username": "PeterK",
-        "first_name": "Peter",
-        "last_name": "Kendrick",
-        "email": "sro.bwi@dpaw.wa.gov.au",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2016-08-10T03:13:00Z",
-        "name": "Peter Kendrick",
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "pbkdf2_sha256$24000$XhP5Bxv0fUBG$j3EDoPPXaN+o0L/7pcvQBvQiEzg2zBIv0+fGgyWBcSg=",
-        "last_login": null,
-        "is_superuser": false,
-        "username": "preston_manado",
-        "first_name": "Preston",
-        "last_name": "Manado",
-        "email": "",
-        "is_staff": false,
-        "is_active": true,
-        "date_joined": "2016-08-10T07:52:43Z",
-        "name": "Preston Manado",
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "",
-        "last_login": "2016-08-11T08:02:18.222Z",
-        "is_superuser": true,
-        "username": "FlorianM",
-        "first_name": "Florian",
-        "last_name": "Mayer",
-        "email": "Florian.Mayer@DPaW.wa.gov.au",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2016-08-10T08:10:42.443Z",
-        "name": "Florian Mayer",
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "",
-        "last_login": "2016-08-11T06:47:19Z",
-        "is_superuser": false,
-        "username": "CorrineS",
-        "first_name": "Corrine",
-        "last_name": "Severin",
-        "email": "Corrine.Severin@dpaw.wa.gov.au",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2016-08-11T06:47:19Z",
-        "name": "Corrine Severin",
-        "groups": [
-            [
-                "data entry"
-            ]
-        ],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "pbkdf2_sha256$24000$wtBp7BM2mARR$4rpYFJ2MtgtVDPt58EgO3NNrslktTjekep3IDs0oHo4=",
-        "last_login": null,
-        "is_superuser": false,
-        "username": "RyanDou",
-        "first_name": "Ryan",
-        "last_name": "Douglas",
-        "email": "Ryan.Douglas@dpaw.wa.gov.au",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2016-08-11T07:37:09Z",
-        "name": "Ryan Douglas",
-        "groups": [
-            [
-                "data entry"
-            ]
-        ],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "pbkdf2_sha256$24000$SCcGXAZF7mQE$Nq4GY1gPJoS8ibBgpFnCMrsrnSsfWQeaaR9MjcUNMTM=",
-        "last_login": null,
-        "is_superuser": false,
-        "username": "rachael_marshall",
-        "first_name": "Rachael",
-        "last_name": "Marshall",
-        "email": "Rachael.Marshall@DPaW.wa.gov.au",
-        "is_staff": false,
-        "is_active": true,
-        "date_joined": "2016-08-11T08:09:22Z",
-        "name": "Rachael Marshall",
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "pbkdf2_sha256$24000$9I0MImaFW3al$DSSEZlZ6nqXC3OoZoxDPHWSNfWAXocKmWxf+v2/+Gf8=",
-        "last_login": null,
-        "is_superuser": false,
-        "username": "BobP",
-        "first_name": "Robert Ivan Tyler",
-        "last_name": "Prince",
-        "email": "Bob.Prince@dpaw.wa.gov.au",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2016-08-11T08:21:23Z",
-        "name": "Bob Prince",
-        "groups": [
-            [
-                "data entry"
-            ]
-        ],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "fields": {
-        "password": "pbkdf2_sha256$24000$lzYNRAiZFcKi$6vEJO9KN387RFRceyR5toOeWkNQHNrT5SBlIRueZbSI=",
-        "last_login": null,
-        "is_superuser": false,
-        "username": "amanda_gatt",
-        "first_name": "Amanda",
-        "last_name": "Gatt",
-        "email": "",
-        "is_staff": false,
-        "is_active": true,
-        "date_joined": "2016-08-11T08:29:05Z",
-        "name": "Amanda Gatt",
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
     "model": "observations.encounter",
     "pk": 1,
     "fields": {
@@ -1149,17 +7,19 @@
             "observations",
             "animalencounter"
         ],
+        "source": "direct",
+        "source_id": "2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla",
         "status": "new",
-        "when": "2013-07-17T07:35:00Z",
-        "where": "SRID=4326;POINT (115.3263664245600069 -20.8798103332519993)",
-        "location_accuracy": "10m",
+        "when": "2016-09-02T05:30:00Z",
+        "where": "SRID=4326;POINT (113.7241999999999962 -22.4959999999999987)",
+        "location_accuracy": "10",
         "observer": [
-            "PeterK"
+            "FlorianM"
         ],
         "reporter": [
-            "PeterK"
+            "FlorianM"
         ],
-        "as_html": "<h4>Chelonia mydas (Green turtle)</h4><i class=\"fa fa-heartbeat\"></i>&nbsp;Mummified (dead, skin holding bones) not observed sex not determined or not examined B - Beach: Below the vegetation line of the grass slope<div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;17/07/2013 15:35:00 AWST</div><div class=\"popup\"><i class=\"fa fa-user\"></i>&nbsp;Peter Kendrick</div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Damage&nbsp<i class=\"fa fa-times\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;PIT tags scanned&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Missing Limbs&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Barnacles&nbsp<i class=\"fa fa-times\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Algal growth&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Tagging scars&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Propeller damage&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Entanglement&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;More in photos&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCL&nbsp;907&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCN&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCW&nbsp;755&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;TL&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;HW&nbsp;121&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-arrrow-right\"></i>&nbsp;Left in situ. Painted.</div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/10/130717_L_Bandi_Bay_2_20.87496_115.32072_PK.pdf\" target=\"_\">data sheet with pictures</a></div><div class=\"popup\">&nbsp;<a href=/admin/observations/animalencounter/1/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
+        "as_html": "<h4>Corolla corolla (Hatchback turtle)</h4><i class=\"fa fa-fw fa-heartbeat\"></i>&nbsp;dead (carcass edible) adult male on beach (below vegetation line)<div class=\"popup\"><i class=\"fa fa-fw fa-map-marker\"></i>&nbsp;Lat -22.496 Lon 113.7242  (WGS 84)</div><div class=\"popup\"><i class=\"fa fa-fw fa-calendar\"></i>&nbsp;02/09/2016 13:30:00 AWST</div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Florian Mayer</div><div class=\"popup\"><i class=\"fa fa-fw fa-pencil\"></i>&nbsp;Florian Mayer</div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Damage&nbsp<i class=\"fa fa-check\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;PIT tags scanned&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Missing Limbs&nbsp<i class=\"fa fa-check\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Barnacles&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Algal growth&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Tagging scars&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Propeller damage&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Entanglement&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;More in photos&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-bolt\"></i>&nbsp;front left flipper, 1st scale from body: fresh tip amputation</div><div class=\"popup\"><i class=\"fa fa-fw fa-bar-chart\"></i>&nbsp;CCL&nbsp;780&nbsp;mm&nbsp;<i class=\"fa fa-comment-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-bar-chart\"></i>&nbsp;CCN&nbsp;345&nbsp;mm&nbsp;<i class=\"fa fa-comment-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-bar-chart\"></i>&nbsp;CCW&nbsp;567&nbsp;mm&nbsp;<i class=\"fa fa-comment-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-bar-chart\"></i>&nbsp;TL&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-bar-chart\"></i>&nbsp;HW&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-fw fa-arrow-right\"></i>&nbsp;sacrificed to the gods</div><div class=\"popup\"><a href=/admin/observations/tagobservation/?q=WA1234 target=\"_\"\"><i class=\"fa fa-fw fa-tag\"></i></a>&nbsp;Flipper Tag WA1234 taken off animal on front left flipper, 1st scale from body&nbsp;</div><div class=\"popup\"><i class=\"fa fa-fw fa-film\"></i>&nbsp;<a href=\"/media/encounter/2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla/ckaaaan.jpg\" target=\"_\">photo</a></div><div class=\"popup\"><a href=/admin/observations/animalencounter/1/change/ target=\"_\" title=\"Edit in new tab\"><i class=\"fa fa-fw fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
     }
 },
 {
@@ -1170,180 +30,47 @@
             "observations",
             "animalencounter"
         ],
+        "source": "paper",
+        "source_id": "2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas",
         "status": "new",
-        "when": "2015-08-07T15:55:00Z",
-        "where": "SRID=4326;POINT (128.4165199999999913 -14.7978100000000001)",
-        "location_accuracy": "10m",
+        "when": "2015-01-21T00:00:00Z",
+        "where": "SRID=4326;POINT (117.1519700000000057 -20.6133699999999997)",
+        "location_accuracy": "10",
         "observer": [
-            "RyanDou"
+            "fiona_gordon"
         ],
         "reporter": [
-            "CorrineS"
+            "Carissa_Rowcliffe"
         ],
-        "as_html": "<h4>Natator depressus (Flatback turtle)</h4><i class=\"fa fa-heartbeat\"></i>&nbsp;Alive (healthy) adult turtle female B - Beach: Below the vegetation line of the grass slope<div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;07/08/2015 23:55:00 AWST</div><div class=\"popup\"><i class=\"fa fa-user\"></i>&nbsp;Ryan Douglas</div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCL&nbsp;851&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCN&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCW&nbsp;722&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;TL&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;HW&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-home\"></i>&nbsp;Nest above high water mark, below dune with None eggs</div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Flipper Tag WA96394 attached new to an animal on left front flipper, 1st scale from body/head&nbsp;<a href=/admin/observations/tagobservation/?q=WA96394 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Flipper Tag WA96395 re-sighted as attached to animal on right front flipper, 1st scale from body/head&nbsp;<a href=/admin/observations/tagobservation/?q=WA96395 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;PIT Tag 900006000149793 attached new to an animal on neck, other, see comments&nbsp;<a href=/admin/observations/tagobservation/?q=900006000149793 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Satellite Tag 134553 attached new to an animal on carapace, other, see comments&nbsp;<a href=/admin/observations/tagobservation/?q=134553 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Biopsy Sample F5203 re-sighted as attached to animal on other, see comments, other, see comments&nbsp;<a href=/admin/observations/tagobservation/?q=F5203 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\">&nbsp;<a href=/admin/observations/animalencounter/2/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
-    }
-},
-{
-    "model": "observations.encounter",
-    "pk": 3,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "turtlenestencounter"
-        ],
-        "status": "new",
-        "when": "2016-08-10T07:52:00Z",
-        "where": "SRID=4326;POINT (122.1420999999999992 -17.5153999999999996)",
-        "location_accuracy": "1km",
-        "observer": [
-            "preston_manado"
-        ],
-        "reporter": [
-            "preston_manado"
-        ],
-        "as_html": "<h4><div class=\"popup\">Natator depressus (Flatback turtle) nest in DS - Dune: Bare sand area, new</div></h4><div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;10/08/2016 15:52:00 AWST</div><div class=\"popup\"><i class=\"fa fa-user\"></i>&nbsp;</div><div class=\"popup\"><i class=\"fa fa-home\"></i>&nbsp;Nest inside dune, spinifex with 56 eggs</div><div class=\"popup\">&nbsp;<a href=/admin/observations/turtlenestencounter/3/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
-    }
-},
-{
-    "model": "observations.encounter",
-    "pk": 4,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "animalencounter"
-        ],
-        "status": "new",
-        "when": "2012-03-15T02:30:00Z",
-        "where": "SRID=4326;POINT (113.0030584335400050 -25.5161695480340001)",
-        "location_accuracy": "online-map",
-        "observer": [
-            "CorrineS"
-        ],
-        "reporter": [
-            "CorrineS"
-        ],
-        "as_html": "<h4>Caretta caretta (Loggerhead turtle)</h4><i class=\"fa fa-heartbeat\"></i>&nbsp;Disarticulated (dead, no soft tissue remaining) adult turtle female DS - Dune: Bare sand area<div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;15/03/2012 10:30:00 AWST</div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Corrine Severin</div><div class=\"popup\"><i class=\"fa fa-pencil\"></i>&nbsp;Corrine Severin</div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCL&nbsp;905&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCN&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCW&nbsp;830&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;TL&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;HW&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-tag\"></i>&nbsp;Flipper Tag WA49138 taken off an animal on left front flipper, 1st scale from body/head&nbsp;<a href=/admin/observations/tagobservation/?q=WA49138 target=\"_\" class=\"btn btn-sm\"><i class=\"fa fa-history\"></i></a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2010-05-26_P1000486.JPG\" target=\"_\">General photo</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2012-06-01_DSCN0348.JPG\" target=\"_\">Right of head photo</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2012-06-01_DSCN0349.JPG\" target=\"_\">Front of turtle</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2012-06-01_P1080504.JPG\" target=\"_\">Front of turtle with male person</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2012-06-01_P1080505.JPG\" target=\"_\">Front of turtle with female person</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5105.JPG\" target=\"_\">Front of turtle with male person 2</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5108.JPG\" target=\"_\">Front of turtle with female person 2</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5109.JPG\" target=\"_\">Front of turtle with female person 3</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5110.JPG\" target=\"_\">Flipper tag</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5111.JPG\" target=\"_\">Back of flipper tag</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5113.JPG\" target=\"_\">Side of turtle bones</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5114.JPG\" target=\"_\">Front of turtle</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5117.JPG\" target=\"_\">Front of turtle</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5118.JPG\" target=\"_\">Front right of turtle</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2013-06-12_DSCF5118_avkzIfq.JPG\" target=\"_\">Back of turtle</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2016-60-12_DSCF5112.JPG\" target=\"_\">General turtle photo</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/WA49138_reco.pdf\" target=\"_\">Information sheet</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/FW_Loggerhead_turtle_tag_-_dirk_hartog__WA49138.txt\" target=\"_\">Email 1</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/RE_Loggerhead_turtle_tag_-_dirk_hartog__WA49138_2.txt\" target=\"_\">Email 2</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/RE_Loggerhead_turtle_tag_-_dirk_hartog__WA49138.txt\" target=\"_\">Email 3</a></div><div class=\"popup\">&nbsp;<a href=/admin/observations/animalencounter/4/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
-    }
-},
-{
-    "model": "observations.encounter",
-    "pk": 5,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "animalencounter"
-        ],
-        "status": "new",
-        "when": "2005-01-18T19:29:00Z",
-        "where": "SRID=4326;POINT (113.7319755554199929 -22.4917106628419994)",
-        "location_accuracy": "1nm",
-        "observer": [
-            "BobP"
-        ],
-        "reporter": [
-            "BobP"
-        ],
-        "as_html": "<h4>Caretta caretta (Loggerhead turtle)</h4><i class=\"fa fa-heartbeat\"></i>&nbsp;Alive (healthy) adult turtle female not observed<div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;19/01/2005 03:29:00 AWST</div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Bob Prince</div><div class=\"popup\"><i class=\"fa fa-pencil\"></i>&nbsp;Bob Prince</div><div class=\"popup\">&nbsp;<a href=/admin/observations/animalencounter/None/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
-    }
-},
-{
-    "model": "observations.encounter",
-    "pk": 6,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "animalencounter"
-        ],
-        "status": "new",
-        "when": "2009-03-31T16:00:00Z",
-        "where": "SRID=4326;POINT (115.7477951049999945 -31.8560104370139996)",
-        "location_accuracy": "1nm",
-        "observer": [
-            "amanda_gatt"
-        ],
-        "reporter": [
-            "amanda_gatt"
-        ],
-        "as_html": "<h4>Chelonia mydas (Green turtle)</h4><i class=\"fa fa-heartbeat\"></i>&nbsp;Dead (decomposed but organs intact) not observed sex not determined or not examined B - Beach: Below the vegetation line of the grass slope<div class=\"popup\"><i class=\"fa fa-calendar\"></i>&nbsp;01/04/2009 00:00:00 AWST</div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Amanda Gatt</div><div class=\"popup\"><i class=\"fa fa-pencil\"></i>&nbsp;Amanda Gatt</div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Damage&nbsp<i class=\"fa fa-check\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;PIT tags scanned&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Missing Limbs&nbsp<i class=\"fa fa-check\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Barnacles&nbsp<i class=\"fa fa-times\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Algal growth&nbsp<i class=\"fa fa-times\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Tagging scars&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Propeller damage&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;Entanglement&nbsp<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-eye\"></i>&nbsp;More in photos&nbsp<i class=\"fa fa-check\"></i></div><div class=\"popup\"><i class=\"fa fa-bolt\"></i>&nbsp;head: fresh entire amputation</div><div class=\"popup\"><i class=\"fa fa-bolt\"></i>&nbsp;front left flipper: fresh entire amputation</div><div class=\"popup\"><i class=\"fa fa-bolt\"></i>&nbsp;front right flipper: fresh entire amputation</div><div class=\"popup\"><i class=\"fa fa-bolt\"></i>&nbsp;rear left flipper: fresh entire amputation</div><div class=\"popup\"><i class=\"fa fa-bolt\"></i>&nbsp;rear right flipper: fresh entire amputation</div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCL&nbsp;600&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCN&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;CCW&nbsp;500&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;TL&nbsp;30&nbsp;mm&nbsp;<i class=\"fa fa-balance-scale\"></i></div><div class=\"popup\"><i class=\"fa fa-bar-chart\"></i>&nbsp;HW&nbsp;None&nbsp;mm&nbsp;<i class=\"fa fa-question-circle-o\"></i></div><div class=\"popup\"><i class=\"fa fa-arrrow-right\"></i>&nbsp;Moved by ranger Amanda Gatt above high water mark to prevent it from washing further along the beach. Disposed of by Joondalup Council.</div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/Turtle_Report_form.jpg\" target=\"_\">data sheet</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_with_person.JPG\" target=\"_\">total with person</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_length_reference.JPG\" target=\"_\">total with length reference</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_missing_head_and_front_flippers.JPG\" target=\"_\">missing head and front flippers</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_missing_rear_flippers.JPG\" target=\"_\">missing rear flippers</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_tail_closeup.JPG\" target=\"_\">tail closeup 1</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_tail_closeup_2.JPG\" target=\"_\">tail closeup 2</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_tail_closeup_3.JPG\" target=\"_\">tail closeup 3</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_total.JPG\" target=\"_\">total</a></div><div class=\"popup\"><i class=\"fa fa-film\"></i>&nbsp;<a href=\"/media/attachments/2016/08/11/2009-04-01_total_right.JPG\" target=\"_\">total from right</a></div><div class=\"popup\">&nbsp;<a href=/admin/observations/animalencounter/6/change/ target=\"_\"><i class=\"fa fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
+        "as_html": "<h4>Chelonia mydas (Green turtle)</h4><i class=\"fa fa-fw fa-heartbeat\"></i>&nbsp;disarticulated (dead, no soft tissue remaining) not observed not observed on not observed<div class=\"popup\"><i class=\"fa fa-fw fa-map-marker\"></i>&nbsp;Lat -20.61337 Lon 117.15197  (WGS 84)</div><div class=\"popup\"><i class=\"fa fa-fw fa-calendar\"></i>&nbsp;21/01/2015 08:00:00 AWST</div><div class=\"popup\"><i class=\"fa fa-fw fa-eye\"></i>&nbsp;Fiona Gordon</div><div class=\"popup\"><i class=\"fa fa-fw fa-pencil\"></i>&nbsp;Carissa Rowcliffe</div><div class=\"popup\"><i class=\"fa fa-fw fa-film\"></i>&nbsp;<a href=\"/media/encounter/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas_datasheet.pdf\" target=\"_\">data sheet</a></div><div class=\"popup\"><i class=\"fa fa-fw fa-film\"></i>&nbsp;<a href=\"/media/encounter/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas/2015-01-21-11_l6TyPLy.txt\" target=\"_\">emails</a></div><div class=\"popup\"><i class=\"fa fa-fw fa-film\"></i>&nbsp;<a href=\"/media/encounter/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas/2015-01-21-11_KTzPUvW.JPG\" target=\"_\">total 1</a></div><div class=\"popup\"><i class=\"fa fa-fw fa-film\"></i>&nbsp;<a href=\"/media/encounter/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas/2015-01-21-11_eSI1Od2.JPG\" target=\"_\">total 2</a></div><div class=\"popup\"><i class=\"fa fa-fw fa-arrow-right\"></i>&nbsp;</div><div class=\"popup\"><a href=/admin/observations/animalencounter/2/change/ target=\"_\" title=\"Edit in new tab\"><i class=\"fa fa-fw fa-pencil\"></i></a></div><div class=\"popup\"><span class=\"tag tag-danger\">New</span></div>"
     }
 },
 {
     "model": "observations.animalencounter",
-    "pk": 5,
+    "pk": 2,
     "fields": {
         "taxon": "Cheloniidae",
-        "species": "Caretta caretta",
-        "sex": "female",
-        "maturity": "turtle-adult",
-        "health": "alive",
-        "activity": "digging-body-pit",
-        "behaviour": "nesting",
+        "species": "Chelonia mydas",
+        "sex": "na",
+        "maturity": "na",
+        "health": "dead-disarticulated",
+        "activity": "na",
+        "behaviour": "",
         "habitat": "na"
     }
 },
 {
     "model": "observations.animalencounter",
-    "pk": 6,
-    "fields": {
-        "taxon": "Cheloniidae",
-        "species": "Chelonia mydas",
-        "sex": "na",
-        "maturity": "na",
-        "health": "dead-organs-intact",
-        "activity": "na",
-        "behaviour": "",
-        "habitat": "beach"
-    }
-},
-{
-    "model": "observations.animalencounter",
-    "pk": 4,
-    "fields": {
-        "taxon": "Cheloniidae",
-        "species": "Caretta caretta",
-        "sex": "female",
-        "maturity": "turtle-adult",
-        "health": "dead-disarticulated",
-        "activity": "other",
-        "behaviour": "",
-        "habitat": "dune-bare-sand"
-    }
-},
-{
-    "model": "observations.animalencounter",
     "pk": 1,
     "fields": {
         "taxon": "Cheloniidae",
-        "species": "Chelonia mydas",
-        "sex": "na",
-        "maturity": "na",
-        "health": "dead-mummified",
+        "species": "Corolla corolla",
+        "sex": "male",
+        "maturity": "adult",
+        "health": "dead-edible",
         "activity": "na",
-        "behaviour": "",
+        "behaviour": "not doing much",
         "habitat": "beach"
-    }
-},
-{
-    "model": "observations.animalencounter",
-    "pk": 2,
-    "fields": {
-        "taxon": "Cheloniidae",
-        "species": "Natator depressus",
-        "sex": "female",
-        "maturity": "turtle-adult",
-        "health": "alive",
-        "activity": "returning-to-water",
-        "behaviour": "",
-        "habitat": "beach"
-    }
-},
-{
-    "model": "observations.turtlenestencounter",
-    "pk": 3,
-    "fields": {
-        "nest_age": "new",
-        "species": "Natator depressus",
-        "habitat": "dune-bare-sand"
     }
 },
 {
@@ -1363,7 +90,7 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "turtlemorphometricobservation"
+            "turtledamageobservation"
         ],
         "encounter": 1
     }
@@ -1374,7 +101,7 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "managementaction"
+            "turtlemorphometricobservation"
         ],
         "encounter": 1
     }
@@ -1385,7 +112,7 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "mediaattachment"
+            "managementaction"
         ],
         "encounter": 1
     }
@@ -1396,9 +123,9 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "turtlemorphometricobservation"
+            "tagobservation"
         ],
-        "encounter": 2
+        "encounter": 1
     }
 },
 {
@@ -1407,20 +134,9 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "turtlenestobservation"
+            "mediaattachment"
         ],
-        "encounter": 2
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 7,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "tagobservation"
-        ],
-        "encounter": 2
+        "encounter": 1
     }
 },
 {
@@ -1429,7 +145,7 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "tagobservation"
+            "mediaattachment"
         ],
         "encounter": 2
     }
@@ -1440,7 +156,7 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "tagobservation"
+            "mediaattachment"
         ],
         "encounter": 2
     }
@@ -1451,7 +167,7 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "tagobservation"
+            "mediaattachment"
         ],
         "encounter": 2
     }
@@ -1462,7 +178,7 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "tagobservation"
+            "mediaattachment"
         ],
         "encounter": 2
     }
@@ -1473,887 +189,75 @@
     "fields": {
         "polymorphic_ctype": [
             "observations",
-            "turtlenestobservation"
-        ],
-        "encounter": 3
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 13,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "turtlemorphometricobservation"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 14,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "tagobservation"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 15,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 16,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 17,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 18,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 19,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 20,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 21,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 22,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 23,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 24,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 25,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 26,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 27,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 28,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 29,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 30,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 31,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 32,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 33,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 34,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 35,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
             "managementaction"
         ],
-        "encounter": 4
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 36,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "tagobservation"
-        ],
-        "encounter": 5
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 37,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "tagobservation"
-        ],
-        "encounter": 5
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 38,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 5
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 39,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "distinguishingfeatureobservation"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 40,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "turtledamageobservation"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 41,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "turtledamageobservation"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 42,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "turtledamageobservation"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 43,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "turtledamageobservation"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 44,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "turtledamageobservation"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 45,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "turtlemorphometricobservation"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 46,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "managementaction"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 47,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 48,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 49,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 50,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 51,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 52,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 53,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 54,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 55,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
-    }
-},
-{
-    "model": "observations.observation",
-    "pk": 56,
-    "fields": {
-        "polymorphic_ctype": [
-            "observations",
-            "mediaattachment"
-        ],
-        "encounter": 6
+        "encounter": 2
     }
 },
 {
     "model": "observations.mediaattachment",
-    "pk": 4,
-    "fields": {
-        "media_type": "data_sheet",
-        "title": "data sheet with pictures",
-        "attachment": "attachments/2016/08/10/130717_L_Bandi_Bay_2_20.87496_115.32072_PK.pdf"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 15,
+    "pk": 6,
     "fields": {
         "media_type": "photograph",
-        "title": "General photo",
-        "attachment": "attachments/2016/08/11/2010-05-26_P1000486.JPG"
+        "title": "photo",
+        "attachment": "encounter/2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla/ckaaaan.jpg"
     }
 },
 {
     "model": "observations.mediaattachment",
-    "pk": 16,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Right of head photo",
-        "attachment": "attachments/2016/08/11/2012-06-01_DSCN0348.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 17,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front of turtle",
-        "attachment": "attachments/2016/08/11/2012-06-01_DSCN0349.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 18,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front of turtle with male person",
-        "attachment": "attachments/2016/08/11/2012-06-01_P1080504.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 19,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front of turtle with female person",
-        "attachment": "attachments/2016/08/11/2012-06-01_P1080505.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 20,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front of turtle with male person 2",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5105.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 21,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front of turtle with female person 2",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5108.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 22,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front of turtle with female person 3",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5109.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 23,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Flipper tag",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5110.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 24,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Back of flipper tag",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5111.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 25,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Side of turtle bones",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5113.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 26,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front of turtle",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5114.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 27,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front of turtle",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5117.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 28,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Front right of turtle",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5118.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 29,
-    "fields": {
-        "media_type": "photograph",
-        "title": "Back of turtle",
-        "attachment": "attachments/2016/08/11/2013-06-12_DSCF5118_avkzIfq.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 30,
-    "fields": {
-        "media_type": "photograph",
-        "title": "General turtle photo",
-        "attachment": "attachments/2016/08/11/2016-60-12_DSCF5112.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 31,
-    "fields": {
-        "media_type": "other",
-        "title": "Information sheet",
-        "attachment": "attachments/2016/08/11/WA49138_reco.pdf"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 32,
-    "fields": {
-        "media_type": "other",
-        "title": "Email 1",
-        "attachment": "attachments/2016/08/11/FW_Loggerhead_turtle_tag_-_dirk_hartog__WA49138.txt"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 33,
-    "fields": {
-        "media_type": "other",
-        "title": "Email 2",
-        "attachment": "attachments/2016/08/11/RE_Loggerhead_turtle_tag_-_dirk_hartog__WA49138_2.txt"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 34,
-    "fields": {
-        "media_type": "other",
-        "title": "Email 3",
-        "attachment": "attachments/2016/08/11/RE_Loggerhead_turtle_tag_-_dirk_hartog__WA49138.txt"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 38,
-    "fields": {
-        "media_type": "other",
-        "title": "WAMTRAM turtle information sheet",
-        "attachment": "attachments/2016/08/11/WA49138_reco_KuiRxf0.pdf"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 47,
+    "pk": 8,
     "fields": {
         "media_type": "data_sheet",
         "title": "data sheet",
-        "attachment": "attachments/2016/08/11/Turtle_Report_form.jpg"
+        "attachment": "encounter/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas_datasheet.pdf"
     }
 },
 {
     "model": "observations.mediaattachment",
-    "pk": 48,
-    "fields": {
-        "media_type": "photograph",
-        "title": "total with person",
-        "attachment": "attachments/2016/08/11/2009-04-01_with_person.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 49,
-    "fields": {
-        "media_type": "photograph",
-        "title": "total with length reference",
-        "attachment": "attachments/2016/08/11/2009-04-01_length_reference.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 50,
-    "fields": {
-        "media_type": "photograph",
-        "title": "missing head and front flippers",
-        "attachment": "attachments/2016/08/11/2009-04-01_missing_head_and_front_flippers.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 51,
-    "fields": {
-        "media_type": "photograph",
-        "title": "missing rear flippers",
-        "attachment": "attachments/2016/08/11/2009-04-01_missing_rear_flippers.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 52,
-    "fields": {
-        "media_type": "photograph",
-        "title": "tail closeup 1",
-        "attachment": "attachments/2016/08/11/2009-04-01_tail_closeup.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 53,
-    "fields": {
-        "media_type": "photograph",
-        "title": "tail closeup 2",
-        "attachment": "attachments/2016/08/11/2009-04-01_tail_closeup_2.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 54,
-    "fields": {
-        "media_type": "photograph",
-        "title": "tail closeup 3",
-        "attachment": "attachments/2016/08/11/2009-04-01_tail_closeup_3.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 55,
-    "fields": {
-        "media_type": "photograph",
-        "title": "total",
-        "attachment": "attachments/2016/08/11/2009-04-01_total.JPG"
-    }
-},
-{
-    "model": "observations.mediaattachment",
-    "pk": 56,
-    "fields": {
-        "media_type": "photograph",
-        "title": "total from right",
-        "attachment": "attachments/2016/08/11/2009-04-01_total_right.JPG"
-    }
-},
-{
-    "model": "observations.tagobservation",
-    "pk": 7,
-    "fields": {
-        "tag_type": "flipper-tag",
-        "side": "L",
-        "position": "1",
-        "name": "WA96394",
-        "status": "attached",
-        "comments": ""
-    }
-},
-{
-    "model": "observations.tagobservation",
-    "pk": 8,
-    "fields": {
-        "tag_type": "flipper-tag",
-        "side": "R",
-        "position": "1",
-        "name": "WA96395",
-        "status": "recaptured",
-        "comments": ""
-    }
-},
-{
-    "model": "observations.tagobservation",
     "pk": 9,
     "fields": {
-        "tag_type": "pit-tag",
-        "side": "N",
-        "position": "O",
-        "name": "900006000149793",
-        "status": "attached",
-        "comments": ""
+        "media_type": "communication",
+        "title": "emails",
+        "attachment": "encounter/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas_emails.txt"
     }
 },
 {
-    "model": "observations.tagobservation",
+    "model": "observations.mediaattachment",
     "pk": 10,
     "fields": {
-        "tag_type": "satellite-tag",
-        "side": "C",
-        "position": "O",
-        "name": "134553",
-        "status": "attached",
-        "comments": ""
+        "media_type": "photograph",
+        "title": "total 1",
+        "attachment": "encounter/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas_total1.JPG"
     }
 },
 {
-    "model": "observations.tagobservation",
+    "model": "observations.mediaattachment",
     "pk": 11,
     "fields": {
-        "tag_type": "biopsy-sample",
-        "side": "O",
-        "position": "O",
-        "name": "F5203",
-        "status": "recaptured",
-        "comments": ""
+        "media_type": "photograph",
+        "title": "total 2",
+        "attachment": "encounter/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas/2015-01-21-117-152-20-6134-dead-disarticulated-na-chelonia-mydas_total2.JPG"
     }
 },
 {
     "model": "observations.tagobservation",
-    "pk": 14,
+    "pk": 5,
     "fields": {
         "tag_type": "flipper-tag",
-        "side": "L",
-        "position": "1",
-        "name": "WA49138",
-        "status": "detached",
-        "comments": "Attached: WAMTRAM extract for tag WA49138."
-    }
-},
-{
-    "model": "observations.tagobservation",
-    "pk": 36,
-    "fields": {
-        "tag_type": "flipper-tag",
-        "side": "L",
-        "position": "1",
-        "name": "WA49138",
-        "status": "attached",
-        "comments": ""
-    }
-},
-{
-    "model": "observations.tagobservation",
-    "pk": 37,
-    "fields": {
-        "tag_type": "flipper-tag",
-        "side": "R",
-        "position": "1",
-        "name": "WA49139",
-        "status": "attached",
-        "comments": ""
+        "tag_location": "flipper-front-left-1",
+        "name": "WA1234",
+        "status": "removed",
+        "comments": "taken to HQ"
     }
 },
 {
     "model": "observations.distinguishingfeatureobservation",
     "pk": 1,
     "fields": {
-        "damage_injury": "absent",
+        "damage_injury": "present",
         "scanned_for_pit_tags": "na",
-        "missing_limbs": "na",
-        "barnacles": "absent",
+        "missing_limbs": "present",
+        "barnacles": "na",
         "algal_growth": "na",
         "tagging_scars": "na",
         "propeller_damage": "na",
@@ -2363,173 +267,43 @@
     }
 },
 {
-    "model": "observations.distinguishingfeatureobservation",
-    "pk": 39,
+    "model": "observations.managementaction",
+    "pk": 4,
     "fields": {
-        "damage_injury": "present",
-        "scanned_for_pit_tags": "na",
-        "missing_limbs": "present",
-        "barnacles": "absent",
-        "algal_growth": "absent",
-        "tagging_scars": "na",
-        "propeller_damage": "na",
-        "entanglement": "na",
-        "see_photo": "see photos",
+        "management_actions": "sacrificed to the gods",
         "comments": ""
     }
 },
 {
     "model": "observations.managementaction",
-    "pk": 3,
-    "fields": {
-        "management_actions": "Left in situ. Painted.",
-        "comments": ""
-    }
-},
-{
-    "model": "observations.managementaction",
-    "pk": 35,
-    "fields": {
-        "management_actions": "email trail attached",
-        "comments": "Bill Hope <bill@colong.com.au>: photos from 26 May 2010 are other remains, not this turtle. hence this turtle must have died between 26 May 2010 and 1 June 2012. Resighted on same, still very dead turtle 2013.\r\nBob: Bill's 2012 dated images suggest this tagged female loggerhead turtle may have wandered into that dune field and become lost some time in the preceding 2011 -12 nesting season.\r\nBob: Turtle was smaller than average size for WA nesting loggerheads"
-    }
-},
-{
-    "model": "observations.managementaction",
-    "pk": 46,
-    "fields": {
-        "management_actions": "Moved by ranger Amanda Gatt above high water mark to prevent it from washing further along the beach. Disposed of by Joondalup Council.",
-        "comments": ""
-    }
-},
-{
-    "model": "observations.turtlemorphometricobservation",
-    "pk": 2,
-    "fields": {
-        "curved_carapace_length_mm": 907,
-        "curved_carapace_length_accuracy": "measured",
-        "curved_carapace_notch_mm": null,
-        "curved_carapace_notch_accuracy": "unknown",
-        "curved_carapace_width_mm": 755,
-        "curved_carapace_width_accuracy": "measured",
-        "tail_length_mm": null,
-        "tail_length_accuracy": "unknown",
-        "maximum_head_width_mm": 121,
-        "maximum_head_width_accuracy": "measured"
-    }
-},
-{
-    "model": "observations.turtlemorphometricobservation",
-    "pk": 5,
-    "fields": {
-        "curved_carapace_length_mm": 851,
-        "curved_carapace_length_accuracy": "measured",
-        "curved_carapace_notch_mm": null,
-        "curved_carapace_notch_accuracy": "unknown",
-        "curved_carapace_width_mm": 722,
-        "curved_carapace_width_accuracy": "measured",
-        "tail_length_mm": null,
-        "tail_length_accuracy": "unknown",
-        "maximum_head_width_mm": null,
-        "maximum_head_width_accuracy": "unknown"
-    }
-},
-{
-    "model": "observations.turtlemorphometricobservation",
-    "pk": 13,
-    "fields": {
-        "curved_carapace_length_mm": 905,
-        "curved_carapace_length_accuracy": "measured",
-        "curved_carapace_notch_mm": null,
-        "curved_carapace_notch_accuracy": "unknown",
-        "curved_carapace_width_mm": 830,
-        "curved_carapace_width_accuracy": "measured",
-        "tail_length_mm": null,
-        "tail_length_accuracy": "unknown",
-        "maximum_head_width_mm": null,
-        "maximum_head_width_accuracy": "unknown"
-    }
-},
-{
-    "model": "observations.turtlemorphometricobservation",
-    "pk": 45,
-    "fields": {
-        "curved_carapace_length_mm": 600,
-        "curved_carapace_length_accuracy": "measured",
-        "curved_carapace_notch_mm": null,
-        "curved_carapace_notch_accuracy": "unknown",
-        "curved_carapace_width_mm": 500,
-        "curved_carapace_width_accuracy": "measured",
-        "tail_length_mm": 30,
-        "tail_length_accuracy": "measured",
-        "maximum_head_width_mm": null,
-        "maximum_head_width_accuracy": "unknown"
-    }
-},
-{
-    "model": "observations.turtlenestobservation",
-    "pk": 6,
-    "fields": {
-        "nest_position": "above-hw",
-        "eggs_laid": true,
-        "egg_count": null
-    }
-},
-{
-    "model": "observations.turtlenestobservation",
     "pk": 12,
     "fields": {
-        "nest_position": "in-dune",
-        "eggs_laid": true,
-        "egg_count": 56
+        "management_actions": "",
+        "comments": "Tony Tucker, email, Monday, 30 March 2015 11:54 AM:\r\n\"The photos are good to update the species ID as a juvenile green turtle rather than a flatback, even without the skull which would have extra diagnostic features.\r\nA flatback carapace would be nearly as wide as long, and the dried skin doesn\u2019t have the same appearance as the horny keratinized scutes of a green turtle.\r\nJuvenile greens of that size have an oval outline, and the scutes sometimes have a sunray appearance, although tough to see that in this image.\""
+    }
+},
+{
+    "model": "observations.turtlemorphometricobservation",
+    "pk": 3,
+    "fields": {
+        "curved_carapace_length_mm": 780,
+        "curved_carapace_length_accuracy": "estimated",
+        "curved_carapace_notch_mm": 345,
+        "curved_carapace_notch_accuracy": "estimated",
+        "curved_carapace_width_mm": 567,
+        "curved_carapace_width_accuracy": "estimated",
+        "tail_length_mm": null,
+        "tail_length_accuracy": "unknown",
+        "maximum_head_width_mm": null,
+        "maximum_head_width_accuracy": "unknown"
     }
 },
 {
     "model": "observations.turtledamageobservation",
-    "pk": 40,
+    "pk": 2,
     "fields": {
-        "body_part": "head",
-        "damage_type": "amputated-entirely",
-        "damage_age": "fresh",
-        "description": ""
-    }
-},
-{
-    "model": "observations.turtledamageobservation",
-    "pk": 41,
-    "fields": {
-        "body_part": "flipper-front-left",
-        "damage_type": "amputated-entirely",
-        "damage_age": "fresh",
-        "description": ""
-    }
-},
-{
-    "model": "observations.turtledamageobservation",
-    "pk": 42,
-    "fields": {
-        "body_part": "flipper-front-right",
-        "damage_type": "amputated-entirely",
-        "damage_age": "fresh",
-        "description": ""
-    }
-},
-{
-    "model": "observations.turtledamageobservation",
-    "pk": 43,
-    "fields": {
-        "body_part": "flipper-rear-left",
-        "damage_type": "amputated-entirely",
-        "damage_age": "fresh",
-        "description": ""
-    }
-},
-{
-    "model": "observations.turtledamageobservation",
-    "pk": 44,
-    "fields": {
-        "body_part": "flipper-rear-right",
-        "damage_type": "amputated-entirely",
+        "body_part": "flipper-front-left-1",
+        "damage_type": "tip-amputated",
         "damage_age": "fresh",
         "description": ""
     }

@@ -1,9 +1,3265 @@
 [
 {
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export permission (adminactions)",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "adminactions_export_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate permission (adminactions)",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "adminactions_massupdate_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge permission (adminactions)",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "adminactions_merge_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart permission (adminactions)",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "adminactions_chart_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate permission (adminactions)",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "adminactions_byrowsupdate_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export group (adminactions)",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "adminactions_export_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate group (adminactions)",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "adminactions_massupdate_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge group (adminactions)",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "adminactions_merge_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart group (adminactions)",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "adminactions_chart_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate group (adminactions)",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "adminactions_byrowsupdate_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "add_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "change_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "delete_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "add_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "change_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "delete_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export content type (adminactions)",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "adminactions_export_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate content type (adminactions)",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "adminactions_massupdate_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge content type (adminactions)",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "adminactions_merge_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart content type (adminactions)",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "adminactions_chart_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate content type (adminactions)",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "adminactions_byrowsupdate_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "add_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "change_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "delete_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export session (adminactions)",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "adminactions_export_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate session (adminactions)",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "adminactions_massupdate_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge session (adminactions)",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "adminactions_merge_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart session (adminactions)",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "adminactions_chart_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate session (adminactions)",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "adminactions_byrowsupdate_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "add_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "change_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "delete_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export site (adminactions)",
+        "content_type": [
+            "sites",
+            "site"
+        ],
+        "codename": "adminactions_export_site"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate site (adminactions)",
+        "content_type": [
+            "sites",
+            "site"
+        ],
+        "codename": "adminactions_massupdate_site"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge site (adminactions)",
+        "content_type": [
+            "sites",
+            "site"
+        ],
+        "codename": "adminactions_merge_site"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart site (adminactions)",
+        "content_type": [
+            "sites",
+            "site"
+        ],
+        "codename": "adminactions_chart_site"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate site (adminactions)",
+        "content_type": [
+            "sites",
+            "site"
+        ],
+        "codename": "adminactions_byrowsupdate_site"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add site",
+        "content_type": [
+            "sites",
+            "site"
+        ],
+        "codename": "add_site"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change site",
+        "content_type": [
+            "sites",
+            "site"
+        ],
+        "codename": "change_site"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete site",
+        "content_type": [
+            "sites",
+            "site"
+        ],
+        "codename": "delete_site"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export log entry (adminactions)",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "adminactions_export_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate log entry (adminactions)",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "adminactions_massupdate_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge log entry (adminactions)",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "adminactions_merge_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart log entry (adminactions)",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "adminactions_chart_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate log entry (adminactions)",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "adminactions_byrowsupdate_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "add_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "change_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "delete_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export email address (adminactions)",
+        "content_type": [
+            "account",
+            "emailaddress"
+        ],
+        "codename": "adminactions_export_emailaddress"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate email address (adminactions)",
+        "content_type": [
+            "account",
+            "emailaddress"
+        ],
+        "codename": "adminactions_massupdate_emailaddress"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge email address (adminactions)",
+        "content_type": [
+            "account",
+            "emailaddress"
+        ],
+        "codename": "adminactions_merge_emailaddress"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart email address (adminactions)",
+        "content_type": [
+            "account",
+            "emailaddress"
+        ],
+        "codename": "adminactions_chart_emailaddress"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate email address (adminactions)",
+        "content_type": [
+            "account",
+            "emailaddress"
+        ],
+        "codename": "adminactions_byrowsupdate_emailaddress"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export email confirmation (adminactions)",
+        "content_type": [
+            "account",
+            "emailconfirmation"
+        ],
+        "codename": "adminactions_export_emailconfirmation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate email confirmation (adminactions)",
+        "content_type": [
+            "account",
+            "emailconfirmation"
+        ],
+        "codename": "adminactions_massupdate_emailconfirmation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge email confirmation (adminactions)",
+        "content_type": [
+            "account",
+            "emailconfirmation"
+        ],
+        "codename": "adminactions_merge_emailconfirmation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart email confirmation (adminactions)",
+        "content_type": [
+            "account",
+            "emailconfirmation"
+        ],
+        "codename": "adminactions_chart_emailconfirmation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate email confirmation (adminactions)",
+        "content_type": [
+            "account",
+            "emailconfirmation"
+        ],
+        "codename": "adminactions_byrowsupdate_emailconfirmation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add email address",
+        "content_type": [
+            "account",
+            "emailaddress"
+        ],
+        "codename": "add_emailaddress"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change email address",
+        "content_type": [
+            "account",
+            "emailaddress"
+        ],
+        "codename": "change_emailaddress"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete email address",
+        "content_type": [
+            "account",
+            "emailaddress"
+        ],
+        "codename": "delete_emailaddress"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add email confirmation",
+        "content_type": [
+            "account",
+            "emailconfirmation"
+        ],
+        "codename": "add_emailconfirmation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change email confirmation",
+        "content_type": [
+            "account",
+            "emailconfirmation"
+        ],
+        "codename": "change_emailconfirmation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete email confirmation",
+        "content_type": [
+            "account",
+            "emailconfirmation"
+        ],
+        "codename": "delete_emailconfirmation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export social application (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialapp"
+        ],
+        "codename": "adminactions_export_socialapp"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate social application (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialapp"
+        ],
+        "codename": "adminactions_massupdate_socialapp"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge social application (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialapp"
+        ],
+        "codename": "adminactions_merge_socialapp"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart social application (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialapp"
+        ],
+        "codename": "adminactions_chart_socialapp"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate social application (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialapp"
+        ],
+        "codename": "adminactions_byrowsupdate_socialapp"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export social account (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialaccount"
+        ],
+        "codename": "adminactions_export_socialaccount"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate social account (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialaccount"
+        ],
+        "codename": "adminactions_massupdate_socialaccount"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge social account (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialaccount"
+        ],
+        "codename": "adminactions_merge_socialaccount"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart social account (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialaccount"
+        ],
+        "codename": "adminactions_chart_socialaccount"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate social account (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialaccount"
+        ],
+        "codename": "adminactions_byrowsupdate_socialaccount"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export social application token (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialtoken"
+        ],
+        "codename": "adminactions_export_socialtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate social application token (adminacti",
+        "content_type": [
+            "socialaccount",
+            "socialtoken"
+        ],
+        "codename": "adminactions_massupdate_socialtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge social application token (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialtoken"
+        ],
+        "codename": "adminactions_merge_socialtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart social application token (adminactions)",
+        "content_type": [
+            "socialaccount",
+            "socialtoken"
+        ],
+        "codename": "adminactions_chart_socialtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate social application token (adminac",
+        "content_type": [
+            "socialaccount",
+            "socialtoken"
+        ],
+        "codename": "adminactions_byrowsupdate_socialtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add social application",
+        "content_type": [
+            "socialaccount",
+            "socialapp"
+        ],
+        "codename": "add_socialapp"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change social application",
+        "content_type": [
+            "socialaccount",
+            "socialapp"
+        ],
+        "codename": "change_socialapp"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete social application",
+        "content_type": [
+            "socialaccount",
+            "socialapp"
+        ],
+        "codename": "delete_socialapp"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add social account",
+        "content_type": [
+            "socialaccount",
+            "socialaccount"
+        ],
+        "codename": "add_socialaccount"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change social account",
+        "content_type": [
+            "socialaccount",
+            "socialaccount"
+        ],
+        "codename": "change_socialaccount"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete social account",
+        "content_type": [
+            "socialaccount",
+            "socialaccount"
+        ],
+        "codename": "delete_socialaccount"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add social application token",
+        "content_type": [
+            "socialaccount",
+            "socialtoken"
+        ],
+        "codename": "add_socialtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change social application token",
+        "content_type": [
+            "socialaccount",
+            "socialtoken"
+        ],
+        "codename": "change_socialtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete social application token",
+        "content_type": [
+            "socialaccount",
+            "socialtoken"
+        ],
+        "codename": "delete_socialtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export state log (adminactions)",
+        "content_type": [
+            "django_fsm_log",
+            "statelog"
+        ],
+        "codename": "adminactions_export_statelog"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate state log (adminactions)",
+        "content_type": [
+            "django_fsm_log",
+            "statelog"
+        ],
+        "codename": "adminactions_massupdate_statelog"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge state log (adminactions)",
+        "content_type": [
+            "django_fsm_log",
+            "statelog"
+        ],
+        "codename": "adminactions_merge_statelog"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart state log (adminactions)",
+        "content_type": [
+            "django_fsm_log",
+            "statelog"
+        ],
+        "codename": "adminactions_chart_statelog"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate state log (adminactions)",
+        "content_type": [
+            "django_fsm_log",
+            "statelog"
+        ],
+        "codename": "adminactions_byrowsupdate_statelog"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add state log",
+        "content_type": [
+            "django_fsm_log",
+            "statelog"
+        ],
+        "codename": "add_statelog"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change state log",
+        "content_type": [
+            "django_fsm_log",
+            "statelog"
+        ],
+        "codename": "change_statelog"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete state log",
+        "content_type": [
+            "django_fsm_log",
+            "statelog"
+        ],
+        "codename": "delete_statelog"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export revision (adminactions)",
+        "content_type": [
+            "reversion",
+            "revision"
+        ],
+        "codename": "adminactions_export_revision"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate revision (adminactions)",
+        "content_type": [
+            "reversion",
+            "revision"
+        ],
+        "codename": "adminactions_massupdate_revision"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge revision (adminactions)",
+        "content_type": [
+            "reversion",
+            "revision"
+        ],
+        "codename": "adminactions_merge_revision"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart revision (adminactions)",
+        "content_type": [
+            "reversion",
+            "revision"
+        ],
+        "codename": "adminactions_chart_revision"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate revision (adminactions)",
+        "content_type": [
+            "reversion",
+            "revision"
+        ],
+        "codename": "adminactions_byrowsupdate_revision"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export version (adminactions)",
+        "content_type": [
+            "reversion",
+            "version"
+        ],
+        "codename": "adminactions_export_version"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate version (adminactions)",
+        "content_type": [
+            "reversion",
+            "version"
+        ],
+        "codename": "adminactions_massupdate_version"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge version (adminactions)",
+        "content_type": [
+            "reversion",
+            "version"
+        ],
+        "codename": "adminactions_merge_version"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart version (adminactions)",
+        "content_type": [
+            "reversion",
+            "version"
+        ],
+        "codename": "adminactions_chart_version"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate version (adminactions)",
+        "content_type": [
+            "reversion",
+            "version"
+        ],
+        "codename": "adminactions_byrowsupdate_version"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add revision",
+        "content_type": [
+            "reversion",
+            "revision"
+        ],
+        "codename": "add_revision"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change revision",
+        "content_type": [
+            "reversion",
+            "revision"
+        ],
+        "codename": "change_revision"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete revision",
+        "content_type": [
+            "reversion",
+            "revision"
+        ],
+        "codename": "delete_revision"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add version",
+        "content_type": [
+            "reversion",
+            "version"
+        ],
+        "codename": "add_version"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change version",
+        "content_type": [
+            "reversion",
+            "version"
+        ],
+        "codename": "change_version"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete version",
+        "content_type": [
+            "reversion",
+            "version"
+        ],
+        "codename": "delete_version"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export user (adminactions)",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "adminactions_export_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate user (adminactions)",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "adminactions_massupdate_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge user (adminactions)",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "adminactions_merge_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart user (adminactions)",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "adminactions_chart_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate user (adminactions)",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "adminactions_byrowsupdate_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "add_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "change_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "delete_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "encounter"
+        ],
+        "codename": "adminactions_export_encounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "encounter"
+        ],
+        "codename": "adminactions_massupdate_encounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "encounter"
+        ],
+        "codename": "adminactions_merge_encounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "encounter"
+        ],
+        "codename": "adminactions_chart_encounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "encounter"
+        ],
+        "codename": "adminactions_byrowsupdate_encounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export Animal Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "animalencounter"
+        ],
+        "codename": "adminactions_export_animalencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate Animal Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "animalencounter"
+        ],
+        "codename": "adminactions_massupdate_animalencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge Animal Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "animalencounter"
+        ],
+        "codename": "adminactions_merge_animalencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart Animal Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "animalencounter"
+        ],
+        "codename": "adminactions_chart_animalencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate Animal Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "animalencounter"
+        ],
+        "codename": "adminactions_byrowsupdate_animalencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export Turtle Nest Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "codename": "adminactions_export_turtlenestencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate Turtle Nest Encounter (adminactions",
+        "content_type": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "codename": "adminactions_massupdate_turtlenestencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge Turtle Nest Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "codename": "adminactions_merge_turtlenestencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart Turtle Nest Encounter (adminactions)",
+        "content_type": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "codename": "adminactions_chart_turtlenestencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate Turtle Nest Encounter (adminactio",
+        "content_type": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "codename": "adminactions_byrowsupdate_turtlenestencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export observation (adminactions)",
+        "content_type": [
+            "observations",
+            "observation"
+        ],
+        "codename": "adminactions_export_observation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate observation (adminactions)",
+        "content_type": [
+            "observations",
+            "observation"
+        ],
+        "codename": "adminactions_massupdate_observation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge observation (adminactions)",
+        "content_type": [
+            "observations",
+            "observation"
+        ],
+        "codename": "adminactions_merge_observation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart observation (adminactions)",
+        "content_type": [
+            "observations",
+            "observation"
+        ],
+        "codename": "adminactions_chart_observation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate observation (adminactions)",
+        "content_type": [
+            "observations",
+            "observation"
+        ],
+        "codename": "adminactions_byrowsupdate_observation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export media attachment (adminactions)",
+        "content_type": [
+            "observations",
+            "mediaattachment"
+        ],
+        "codename": "adminactions_export_mediaattachment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate media attachment (adminactions)",
+        "content_type": [
+            "observations",
+            "mediaattachment"
+        ],
+        "codename": "adminactions_massupdate_mediaattachment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge media attachment (adminactions)",
+        "content_type": [
+            "observations",
+            "mediaattachment"
+        ],
+        "codename": "adminactions_merge_mediaattachment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart media attachment (adminactions)",
+        "content_type": [
+            "observations",
+            "mediaattachment"
+        ],
+        "codename": "adminactions_chart_mediaattachment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate media attachment (adminactions)",
+        "content_type": [
+            "observations",
+            "mediaattachment"
+        ],
+        "codename": "adminactions_byrowsupdate_mediaattachment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export tag observation (adminactions)",
+        "content_type": [
+            "observations",
+            "tagobservation"
+        ],
+        "codename": "adminactions_export_tagobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate tag observation (adminactions)",
+        "content_type": [
+            "observations",
+            "tagobservation"
+        ],
+        "codename": "adminactions_massupdate_tagobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge tag observation (adminactions)",
+        "content_type": [
+            "observations",
+            "tagobservation"
+        ],
+        "codename": "adminactions_merge_tagobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart tag observation (adminactions)",
+        "content_type": [
+            "observations",
+            "tagobservation"
+        ],
+        "codename": "adminactions_chart_tagobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate tag observation (adminactions)",
+        "content_type": [
+            "observations",
+            "tagobservation"
+        ],
+        "codename": "adminactions_byrowsupdate_tagobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export distinguishing feature observation (adm",
+        "content_type": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "codename": "adminactions_export_distinguishingfeatureobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate distinguishing feature observation ",
+        "content_type": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "codename": "adminactions_massupdate_distinguishingfeatureobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge distinguishing feature observation (admi",
+        "content_type": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "codename": "adminactions_merge_distinguishingfeatureobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart distinguishing feature observation (admi",
+        "content_type": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "codename": "adminactions_chart_distinguishingfeatureobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate distinguishing feature observatio",
+        "content_type": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "codename": "adminactions_byrowsupdate_distinguishingfeatureobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export management action (adminactions)",
+        "content_type": [
+            "observations",
+            "managementaction"
+        ],
+        "codename": "adminactions_export_managementaction"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate management action (adminactions)",
+        "content_type": [
+            "observations",
+            "managementaction"
+        ],
+        "codename": "adminactions_massupdate_managementaction"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge management action (adminactions)",
+        "content_type": [
+            "observations",
+            "managementaction"
+        ],
+        "codename": "adminactions_merge_managementaction"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart management action (adminactions)",
+        "content_type": [
+            "observations",
+            "managementaction"
+        ],
+        "codename": "adminactions_chart_managementaction"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate management action (adminactions)",
+        "content_type": [
+            "observations",
+            "managementaction"
+        ],
+        "codename": "adminactions_byrowsupdate_managementaction"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export turtle morphometric observation (admina",
+        "content_type": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "codename": "adminactions_export_turtlemorphometricobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate turtle morphometric observation (ad",
+        "content_type": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "codename": "adminactions_massupdate_turtlemorphometricobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge turtle morphometric observation (adminac",
+        "content_type": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "codename": "adminactions_merge_turtlemorphometricobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart turtle morphometric observation (adminac",
+        "content_type": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "codename": "adminactions_chart_turtlemorphometricobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate turtle morphometric observation (",
+        "content_type": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "codename": "adminactions_byrowsupdate_turtlemorphometricobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export turtle nest observation (adminactions)",
+        "content_type": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "codename": "adminactions_export_turtlenestobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate turtle nest observation (adminactio",
+        "content_type": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "codename": "adminactions_massupdate_turtlenestobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge turtle nest observation (adminactions)",
+        "content_type": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "codename": "adminactions_merge_turtlenestobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart turtle nest observation (adminactions)",
+        "content_type": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "codename": "adminactions_chart_turtlenestobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate turtle nest observation (adminact",
+        "content_type": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "codename": "adminactions_byrowsupdate_turtlenestobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can export turtle damage observation (adminactions",
+        "content_type": [
+            "observations",
+            "turtledamageobservation"
+        ],
+        "codename": "adminactions_export_turtledamageobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can massupdate turtle damage observation (adminact",
+        "content_type": [
+            "observations",
+            "turtledamageobservation"
+        ],
+        "codename": "adminactions_massupdate_turtledamageobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can merge turtle damage observation (adminactions)",
+        "content_type": [
+            "observations",
+            "turtledamageobservation"
+        ],
+        "codename": "adminactions_merge_turtledamageobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can chart turtle damage observation (adminactions)",
+        "content_type": [
+            "observations",
+            "turtledamageobservation"
+        ],
+        "codename": "adminactions_chart_turtledamageobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can byrowsupdate turtle damage observation (admina",
+        "content_type": [
+            "observations",
+            "turtledamageobservation"
+        ],
+        "codename": "adminactions_byrowsupdate_turtledamageobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add Encounter",
+        "content_type": [
+            "observations",
+            "encounter"
+        ],
+        "codename": "add_encounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change Encounter",
+        "content_type": [
+            "observations",
+            "encounter"
+        ],
+        "codename": "change_encounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete Encounter",
+        "content_type": [
+            "observations",
+            "encounter"
+        ],
+        "codename": "delete_encounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add Animal Encounter",
+        "content_type": [
+            "observations",
+            "animalencounter"
+        ],
+        "codename": "add_animalencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change Animal Encounter",
+        "content_type": [
+            "observations",
+            "animalencounter"
+        ],
+        "codename": "change_animalencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete Animal Encounter",
+        "content_type": [
+            "observations",
+            "animalencounter"
+        ],
+        "codename": "delete_animalencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add Turtle Nest Encounter",
+        "content_type": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "codename": "add_turtlenestencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change Turtle Nest Encounter",
+        "content_type": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "codename": "change_turtlenestencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete Turtle Nest Encounter",
+        "content_type": [
+            "observations",
+            "turtlenestencounter"
+        ],
+        "codename": "delete_turtlenestencounter"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add observation",
+        "content_type": [
+            "observations",
+            "observation"
+        ],
+        "codename": "add_observation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change observation",
+        "content_type": [
+            "observations",
+            "observation"
+        ],
+        "codename": "change_observation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete observation",
+        "content_type": [
+            "observations",
+            "observation"
+        ],
+        "codename": "delete_observation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add media attachment",
+        "content_type": [
+            "observations",
+            "mediaattachment"
+        ],
+        "codename": "add_mediaattachment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change media attachment",
+        "content_type": [
+            "observations",
+            "mediaattachment"
+        ],
+        "codename": "change_mediaattachment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete media attachment",
+        "content_type": [
+            "observations",
+            "mediaattachment"
+        ],
+        "codename": "delete_mediaattachment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add tag observation",
+        "content_type": [
+            "observations",
+            "tagobservation"
+        ],
+        "codename": "add_tagobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change tag observation",
+        "content_type": [
+            "observations",
+            "tagobservation"
+        ],
+        "codename": "change_tagobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete tag observation",
+        "content_type": [
+            "observations",
+            "tagobservation"
+        ],
+        "codename": "delete_tagobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add distinguishing feature observation",
+        "content_type": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "codename": "add_distinguishingfeatureobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change distinguishing feature observation",
+        "content_type": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "codename": "change_distinguishingfeatureobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete distinguishing feature observation",
+        "content_type": [
+            "observations",
+            "distinguishingfeatureobservation"
+        ],
+        "codename": "delete_distinguishingfeatureobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add management action",
+        "content_type": [
+            "observations",
+            "managementaction"
+        ],
+        "codename": "add_managementaction"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change management action",
+        "content_type": [
+            "observations",
+            "managementaction"
+        ],
+        "codename": "change_managementaction"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete management action",
+        "content_type": [
+            "observations",
+            "managementaction"
+        ],
+        "codename": "delete_managementaction"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add turtle morphometric observation",
+        "content_type": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "codename": "add_turtlemorphometricobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change turtle morphometric observation",
+        "content_type": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "codename": "change_turtlemorphometricobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete turtle morphometric observation",
+        "content_type": [
+            "observations",
+            "turtlemorphometricobservation"
+        ],
+        "codename": "delete_turtlemorphometricobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add turtle nest observation",
+        "content_type": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "codename": "add_turtlenestobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change turtle nest observation",
+        "content_type": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "codename": "change_turtlenestobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete turtle nest observation",
+        "content_type": [
+            "observations",
+            "turtlenestobservation"
+        ],
+        "codename": "delete_turtlenestobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add turtle damage observation",
+        "content_type": [
+            "observations",
+            "turtledamageobservation"
+        ],
+        "codename": "add_turtledamageobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change turtle damage observation",
+        "content_type": [
+            "observations",
+            "turtledamageobservation"
+        ],
+        "codename": "change_turtledamageobservation"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete turtle damage observation",
+        "content_type": [
+            "observations",
+            "turtledamageobservation"
+        ],
+        "codename": "delete_turtledamageobservation"
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "data entry",
+        "permissions": [
+            [
+                "add_emailaddress",
+                "account",
+                "emailaddress"
+            ],
+            [
+                "adminactions_byrowsupdate_emailaddress",
+                "account",
+                "emailaddress"
+            ],
+            [
+                "adminactions_chart_emailaddress",
+                "account",
+                "emailaddress"
+            ],
+            [
+                "adminactions_export_emailaddress",
+                "account",
+                "emailaddress"
+            ],
+            [
+                "adminactions_massupdate_emailaddress",
+                "account",
+                "emailaddress"
+            ],
+            [
+                "adminactions_merge_emailaddress",
+                "account",
+                "emailaddress"
+            ],
+            [
+                "change_emailaddress",
+                "account",
+                "emailaddress"
+            ],
+            [
+                "delete_emailaddress",
+                "account",
+                "emailaddress"
+            ],
+            [
+                "add_emailconfirmation",
+                "account",
+                "emailconfirmation"
+            ],
+            [
+                "adminactions_byrowsupdate_emailconfirmation",
+                "account",
+                "emailconfirmation"
+            ],
+            [
+                "adminactions_chart_emailconfirmation",
+                "account",
+                "emailconfirmation"
+            ],
+            [
+                "adminactions_export_emailconfirmation",
+                "account",
+                "emailconfirmation"
+            ],
+            [
+                "adminactions_massupdate_emailconfirmation",
+                "account",
+                "emailconfirmation"
+            ],
+            [
+                "adminactions_merge_emailconfirmation",
+                "account",
+                "emailconfirmation"
+            ],
+            [
+                "change_emailconfirmation",
+                "account",
+                "emailconfirmation"
+            ],
+            [
+                "delete_emailconfirmation",
+                "account",
+                "emailconfirmation"
+            ],
+            [
+                "add_logentry",
+                "admin",
+                "logentry"
+            ],
+            [
+                "adminactions_byrowsupdate_logentry",
+                "admin",
+                "logentry"
+            ],
+            [
+                "adminactions_chart_logentry",
+                "admin",
+                "logentry"
+            ],
+            [
+                "adminactions_export_logentry",
+                "admin",
+                "logentry"
+            ],
+            [
+                "adminactions_massupdate_logentry",
+                "admin",
+                "logentry"
+            ],
+            [
+                "adminactions_merge_logentry",
+                "admin",
+                "logentry"
+            ],
+            [
+                "change_logentry",
+                "admin",
+                "logentry"
+            ],
+            [
+                "delete_logentry",
+                "admin",
+                "logentry"
+            ],
+            [
+                "add_group",
+                "auth",
+                "group"
+            ],
+            [
+                "adminactions_byrowsupdate_group",
+                "auth",
+                "group"
+            ],
+            [
+                "adminactions_chart_group",
+                "auth",
+                "group"
+            ],
+            [
+                "adminactions_export_group",
+                "auth",
+                "group"
+            ],
+            [
+                "adminactions_massupdate_group",
+                "auth",
+                "group"
+            ],
+            [
+                "adminactions_merge_group",
+                "auth",
+                "group"
+            ],
+            [
+                "change_group",
+                "auth",
+                "group"
+            ],
+            [
+                "delete_group",
+                "auth",
+                "group"
+            ],
+            [
+                "add_permission",
+                "auth",
+                "permission"
+            ],
+            [
+                "adminactions_byrowsupdate_permission",
+                "auth",
+                "permission"
+            ],
+            [
+                "adminactions_chart_permission",
+                "auth",
+                "permission"
+            ],
+            [
+                "adminactions_export_permission",
+                "auth",
+                "permission"
+            ],
+            [
+                "adminactions_massupdate_permission",
+                "auth",
+                "permission"
+            ],
+            [
+                "adminactions_merge_permission",
+                "auth",
+                "permission"
+            ],
+            [
+                "change_permission",
+                "auth",
+                "permission"
+            ],
+            [
+                "delete_permission",
+                "auth",
+                "permission"
+            ],
+            [
+                "add_contenttype",
+                "contenttypes",
+                "contenttype"
+            ],
+            [
+                "adminactions_byrowsupdate_contenttype",
+                "contenttypes",
+                "contenttype"
+            ],
+            [
+                "adminactions_chart_contenttype",
+                "contenttypes",
+                "contenttype"
+            ],
+            [
+                "adminactions_export_contenttype",
+                "contenttypes",
+                "contenttype"
+            ],
+            [
+                "adminactions_massupdate_contenttype",
+                "contenttypes",
+                "contenttype"
+            ],
+            [
+                "adminactions_merge_contenttype",
+                "contenttypes",
+                "contenttype"
+            ],
+            [
+                "change_contenttype",
+                "contenttypes",
+                "contenttype"
+            ],
+            [
+                "delete_contenttype",
+                "contenttypes",
+                "contenttype"
+            ],
+            [
+                "add_statelog",
+                "django_fsm_log",
+                "statelog"
+            ],
+            [
+                "adminactions_byrowsupdate_statelog",
+                "django_fsm_log",
+                "statelog"
+            ],
+            [
+                "adminactions_chart_statelog",
+                "django_fsm_log",
+                "statelog"
+            ],
+            [
+                "adminactions_export_statelog",
+                "django_fsm_log",
+                "statelog"
+            ],
+            [
+                "adminactions_massupdate_statelog",
+                "django_fsm_log",
+                "statelog"
+            ],
+            [
+                "adminactions_merge_statelog",
+                "django_fsm_log",
+                "statelog"
+            ],
+            [
+                "change_statelog",
+                "django_fsm_log",
+                "statelog"
+            ],
+            [
+                "delete_statelog",
+                "django_fsm_log",
+                "statelog"
+            ],
+            [
+                "add_animalencounter",
+                "observations",
+                "animalencounter"
+            ],
+            [
+                "adminactions_byrowsupdate_animalencounter",
+                "observations",
+                "animalencounter"
+            ],
+            [
+                "adminactions_chart_animalencounter",
+                "observations",
+                "animalencounter"
+            ],
+            [
+                "adminactions_export_animalencounter",
+                "observations",
+                "animalencounter"
+            ],
+            [
+                "adminactions_massupdate_animalencounter",
+                "observations",
+                "animalencounter"
+            ],
+            [
+                "adminactions_merge_animalencounter",
+                "observations",
+                "animalencounter"
+            ],
+            [
+                "change_animalencounter",
+                "observations",
+                "animalencounter"
+            ],
+            [
+                "delete_animalencounter",
+                "observations",
+                "animalencounter"
+            ],
+            [
+                "add_distinguishingfeatureobservation",
+                "observations",
+                "distinguishingfeatureobservation"
+            ],
+            [
+                "adminactions_byrowsupdate_distinguishingfeatureobservation",
+                "observations",
+                "distinguishingfeatureobservation"
+            ],
+            [
+                "adminactions_chart_distinguishingfeatureobservation",
+                "observations",
+                "distinguishingfeatureobservation"
+            ],
+            [
+                "adminactions_export_distinguishingfeatureobservation",
+                "observations",
+                "distinguishingfeatureobservation"
+            ],
+            [
+                "adminactions_massupdate_distinguishingfeatureobservation",
+                "observations",
+                "distinguishingfeatureobservation"
+            ],
+            [
+                "adminactions_merge_distinguishingfeatureobservation",
+                "observations",
+                "distinguishingfeatureobservation"
+            ],
+            [
+                "change_distinguishingfeatureobservation",
+                "observations",
+                "distinguishingfeatureobservation"
+            ],
+            [
+                "delete_distinguishingfeatureobservation",
+                "observations",
+                "distinguishingfeatureobservation"
+            ],
+            [
+                "add_encounter",
+                "observations",
+                "encounter"
+            ],
+            [
+                "adminactions_byrowsupdate_encounter",
+                "observations",
+                "encounter"
+            ],
+            [
+                "adminactions_chart_encounter",
+                "observations",
+                "encounter"
+            ],
+            [
+                "adminactions_export_encounter",
+                "observations",
+                "encounter"
+            ],
+            [
+                "adminactions_massupdate_encounter",
+                "observations",
+                "encounter"
+            ],
+            [
+                "adminactions_merge_encounter",
+                "observations",
+                "encounter"
+            ],
+            [
+                "change_encounter",
+                "observations",
+                "encounter"
+            ],
+            [
+                "delete_encounter",
+                "observations",
+                "encounter"
+            ],
+            [
+                "add_managementaction",
+                "observations",
+                "managementaction"
+            ],
+            [
+                "adminactions_byrowsupdate_managementaction",
+                "observations",
+                "managementaction"
+            ],
+            [
+                "adminactions_chart_managementaction",
+                "observations",
+                "managementaction"
+            ],
+            [
+                "adminactions_export_managementaction",
+                "observations",
+                "managementaction"
+            ],
+            [
+                "adminactions_massupdate_managementaction",
+                "observations",
+                "managementaction"
+            ],
+            [
+                "adminactions_merge_managementaction",
+                "observations",
+                "managementaction"
+            ],
+            [
+                "change_managementaction",
+                "observations",
+                "managementaction"
+            ],
+            [
+                "delete_managementaction",
+                "observations",
+                "managementaction"
+            ],
+            [
+                "add_mediaattachment",
+                "observations",
+                "mediaattachment"
+            ],
+            [
+                "adminactions_byrowsupdate_mediaattachment",
+                "observations",
+                "mediaattachment"
+            ],
+            [
+                "adminactions_chart_mediaattachment",
+                "observations",
+                "mediaattachment"
+            ],
+            [
+                "adminactions_export_mediaattachment",
+                "observations",
+                "mediaattachment"
+            ],
+            [
+                "adminactions_massupdate_mediaattachment",
+                "observations",
+                "mediaattachment"
+            ],
+            [
+                "adminactions_merge_mediaattachment",
+                "observations",
+                "mediaattachment"
+            ],
+            [
+                "change_mediaattachment",
+                "observations",
+                "mediaattachment"
+            ],
+            [
+                "delete_mediaattachment",
+                "observations",
+                "mediaattachment"
+            ],
+            [
+                "add_observation",
+                "observations",
+                "observation"
+            ],
+            [
+                "adminactions_byrowsupdate_observation",
+                "observations",
+                "observation"
+            ],
+            [
+                "adminactions_chart_observation",
+                "observations",
+                "observation"
+            ],
+            [
+                "adminactions_export_observation",
+                "observations",
+                "observation"
+            ],
+            [
+                "adminactions_massupdate_observation",
+                "observations",
+                "observation"
+            ],
+            [
+                "adminactions_merge_observation",
+                "observations",
+                "observation"
+            ],
+            [
+                "change_observation",
+                "observations",
+                "observation"
+            ],
+            [
+                "delete_observation",
+                "observations",
+                "observation"
+            ],
+            [
+                "add_tagobservation",
+                "observations",
+                "tagobservation"
+            ],
+            [
+                "adminactions_byrowsupdate_tagobservation",
+                "observations",
+                "tagobservation"
+            ],
+            [
+                "adminactions_chart_tagobservation",
+                "observations",
+                "tagobservation"
+            ],
+            [
+                "adminactions_export_tagobservation",
+                "observations",
+                "tagobservation"
+            ],
+            [
+                "adminactions_massupdate_tagobservation",
+                "observations",
+                "tagobservation"
+            ],
+            [
+                "adminactions_merge_tagobservation",
+                "observations",
+                "tagobservation"
+            ],
+            [
+                "change_tagobservation",
+                "observations",
+                "tagobservation"
+            ],
+            [
+                "delete_tagobservation",
+                "observations",
+                "tagobservation"
+            ],
+            [
+                "add_turtledamageobservation",
+                "observations",
+                "turtledamageobservation"
+            ],
+            [
+                "adminactions_byrowsupdate_turtledamageobservation",
+                "observations",
+                "turtledamageobservation"
+            ],
+            [
+                "adminactions_chart_turtledamageobservation",
+                "observations",
+                "turtledamageobservation"
+            ],
+            [
+                "adminactions_export_turtledamageobservation",
+                "observations",
+                "turtledamageobservation"
+            ],
+            [
+                "adminactions_massupdate_turtledamageobservation",
+                "observations",
+                "turtledamageobservation"
+            ],
+            [
+                "adminactions_merge_turtledamageobservation",
+                "observations",
+                "turtledamageobservation"
+            ],
+            [
+                "change_turtledamageobservation",
+                "observations",
+                "turtledamageobservation"
+            ],
+            [
+                "delete_turtledamageobservation",
+                "observations",
+                "turtledamageobservation"
+            ],
+            [
+                "add_turtlemorphometricobservation",
+                "observations",
+                "turtlemorphometricobservation"
+            ],
+            [
+                "adminactions_byrowsupdate_turtlemorphometricobservation",
+                "observations",
+                "turtlemorphometricobservation"
+            ],
+            [
+                "adminactions_chart_turtlemorphometricobservation",
+                "observations",
+                "turtlemorphometricobservation"
+            ],
+            [
+                "adminactions_export_turtlemorphometricobservation",
+                "observations",
+                "turtlemorphometricobservation"
+            ],
+            [
+                "adminactions_massupdate_turtlemorphometricobservation",
+                "observations",
+                "turtlemorphometricobservation"
+            ],
+            [
+                "adminactions_merge_turtlemorphometricobservation",
+                "observations",
+                "turtlemorphometricobservation"
+            ],
+            [
+                "change_turtlemorphometricobservation",
+                "observations",
+                "turtlemorphometricobservation"
+            ],
+            [
+                "delete_turtlemorphometricobservation",
+                "observations",
+                "turtlemorphometricobservation"
+            ],
+            [
+                "add_turtlenestencounter",
+                "observations",
+                "turtlenestencounter"
+            ],
+            [
+                "adminactions_byrowsupdate_turtlenestencounter",
+                "observations",
+                "turtlenestencounter"
+            ],
+            [
+                "adminactions_chart_turtlenestencounter",
+                "observations",
+                "turtlenestencounter"
+            ],
+            [
+                "adminactions_export_turtlenestencounter",
+                "observations",
+                "turtlenestencounter"
+            ],
+            [
+                "adminactions_massupdate_turtlenestencounter",
+                "observations",
+                "turtlenestencounter"
+            ],
+            [
+                "adminactions_merge_turtlenestencounter",
+                "observations",
+                "turtlenestencounter"
+            ],
+            [
+                "change_turtlenestencounter",
+                "observations",
+                "turtlenestencounter"
+            ],
+            [
+                "delete_turtlenestencounter",
+                "observations",
+                "turtlenestencounter"
+            ],
+            [
+                "add_turtlenestobservation",
+                "observations",
+                "turtlenestobservation"
+            ],
+            [
+                "adminactions_byrowsupdate_turtlenestobservation",
+                "observations",
+                "turtlenestobservation"
+            ],
+            [
+                "adminactions_chart_turtlenestobservation",
+                "observations",
+                "turtlenestobservation"
+            ],
+            [
+                "adminactions_export_turtlenestobservation",
+                "observations",
+                "turtlenestobservation"
+            ],
+            [
+                "adminactions_massupdate_turtlenestobservation",
+                "observations",
+                "turtlenestobservation"
+            ],
+            [
+                "adminactions_merge_turtlenestobservation",
+                "observations",
+                "turtlenestobservation"
+            ],
+            [
+                "change_turtlenestobservation",
+                "observations",
+                "turtlenestobservation"
+            ],
+            [
+                "delete_turtlenestobservation",
+                "observations",
+                "turtlenestobservation"
+            ],
+            [
+                "add_session",
+                "sessions",
+                "session"
+            ],
+            [
+                "adminactions_byrowsupdate_session",
+                "sessions",
+                "session"
+            ],
+            [
+                "adminactions_chart_session",
+                "sessions",
+                "session"
+            ],
+            [
+                "adminactions_export_session",
+                "sessions",
+                "session"
+            ],
+            [
+                "adminactions_massupdate_session",
+                "sessions",
+                "session"
+            ],
+            [
+                "adminactions_merge_session",
+                "sessions",
+                "session"
+            ],
+            [
+                "change_session",
+                "sessions",
+                "session"
+            ],
+            [
+                "delete_session",
+                "sessions",
+                "session"
+            ],
+            [
+                "add_site",
+                "sites",
+                "site"
+            ],
+            [
+                "adminactions_byrowsupdate_site",
+                "sites",
+                "site"
+            ],
+            [
+                "adminactions_chart_site",
+                "sites",
+                "site"
+            ],
+            [
+                "adminactions_export_site",
+                "sites",
+                "site"
+            ],
+            [
+                "adminactions_massupdate_site",
+                "sites",
+                "site"
+            ],
+            [
+                "adminactions_merge_site",
+                "sites",
+                "site"
+            ],
+            [
+                "change_site",
+                "sites",
+                "site"
+            ],
+            [
+                "delete_site",
+                "sites",
+                "site"
+            ],
+            [
+                "add_socialaccount",
+                "socialaccount",
+                "socialaccount"
+            ],
+            [
+                "adminactions_byrowsupdate_socialaccount",
+                "socialaccount",
+                "socialaccount"
+            ],
+            [
+                "adminactions_chart_socialaccount",
+                "socialaccount",
+                "socialaccount"
+            ],
+            [
+                "adminactions_export_socialaccount",
+                "socialaccount",
+                "socialaccount"
+            ],
+            [
+                "adminactions_massupdate_socialaccount",
+                "socialaccount",
+                "socialaccount"
+            ],
+            [
+                "adminactions_merge_socialaccount",
+                "socialaccount",
+                "socialaccount"
+            ],
+            [
+                "change_socialaccount",
+                "socialaccount",
+                "socialaccount"
+            ],
+            [
+                "delete_socialaccount",
+                "socialaccount",
+                "socialaccount"
+            ],
+            [
+                "add_socialapp",
+                "socialaccount",
+                "socialapp"
+            ],
+            [
+                "adminactions_byrowsupdate_socialapp",
+                "socialaccount",
+                "socialapp"
+            ],
+            [
+                "adminactions_chart_socialapp",
+                "socialaccount",
+                "socialapp"
+            ],
+            [
+                "adminactions_export_socialapp",
+                "socialaccount",
+                "socialapp"
+            ],
+            [
+                "adminactions_massupdate_socialapp",
+                "socialaccount",
+                "socialapp"
+            ],
+            [
+                "adminactions_merge_socialapp",
+                "socialaccount",
+                "socialapp"
+            ],
+            [
+                "change_socialapp",
+                "socialaccount",
+                "socialapp"
+            ],
+            [
+                "delete_socialapp",
+                "socialaccount",
+                "socialapp"
+            ],
+            [
+                "add_socialtoken",
+                "socialaccount",
+                "socialtoken"
+            ],
+            [
+                "adminactions_byrowsupdate_socialtoken",
+                "socialaccount",
+                "socialtoken"
+            ],
+            [
+                "adminactions_chart_socialtoken",
+                "socialaccount",
+                "socialtoken"
+            ],
+            [
+                "adminactions_export_socialtoken",
+                "socialaccount",
+                "socialtoken"
+            ],
+            [
+                "adminactions_massupdate_socialtoken",
+                "socialaccount",
+                "socialtoken"
+            ],
+            [
+                "adminactions_merge_socialtoken",
+                "socialaccount",
+                "socialtoken"
+            ],
+            [
+                "change_socialtoken",
+                "socialaccount",
+                "socialtoken"
+            ],
+            [
+                "delete_socialtoken",
+                "socialaccount",
+                "socialtoken"
+            ],
+            [
+                "add_user",
+                "users",
+                "user"
+            ],
+            [
+                "adminactions_byrowsupdate_user",
+                "users",
+                "user"
+            ],
+            [
+                "adminactions_chart_user",
+                "users",
+                "user"
+            ],
+            [
+                "adminactions_export_user",
+                "users",
+                "user"
+            ],
+            [
+                "adminactions_massupdate_user",
+                "users",
+                "user"
+            ],
+            [
+                "adminactions_merge_user",
+                "users",
+                "user"
+            ],
+            [
+                "change_user",
+                "users",
+                "user"
+            ],
+            [
+                "delete_user",
+                "users",
+                "user"
+            ]
+        ]
+    }
+},
+{
     "model": "users.user",
     "fields": {
         "password": "pbkdf2_sha256$24000$wihqyaywtyGT$WxlUF5y37SdwB5DtdEOlG6X+PMzNGQZFhiVkYcrFOAQ=",
-        "last_login": "2016-08-10T03:11:57.571Z",
+        "last_login": "2016-09-02T10:51:43.326Z",
         "is_superuser": true,
         "username": "admin",
         "first_name": "",
@@ -169,6 +3425,42 @@
         "is_active": true,
         "date_joined": "2016-08-11T08:29:05Z",
         "name": "Amanda Gatt",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$UVWp85msoLfG$M0d8kI1iF4D6wa5PCoC3rMsCKtfajB5pbj3ftoHT3Ng=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "fiona_gordon",
+        "first_name": "Fiona",
+        "last_name": "Gordon",
+        "email": "fgordon68@bigpond.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2016-09-05T11:25:47Z",
+        "name": "Fiona Gordon",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$24000$4USMSkXiFSkE$yfDvcno+Gr+dmoRl5jmWBpYHuNaX4AQrK+sV1FW5RYQ=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "Carissa_Rowcliffe",
+        "first_name": "Carissa",
+        "last_name": "Rowcliffe",
+        "email": "wptp@DPaW.wa.gov.au",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2016-09-05T11:27:17Z",
+        "name": "Carissa Rowcliffe",
         "groups": [],
         "user_permissions": []
     }
