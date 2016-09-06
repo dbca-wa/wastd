@@ -2,7 +2,7 @@
 """Admin module for wastd.observations."""
 from __future__ import absolute_import, unicode_literals
 
-from leaflet.admin import LeafletGeoAdmin
+# from leaflet.admin import LeafletGeoAdmin
 from leaflet.forms.widgets import LeafletWidget
 
 # from django import forms as django_forms
@@ -21,7 +21,8 @@ from .models import (Encounter, TurtleNestEncounter,
                      AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
                      MediaAttachment, TagObservation, ManagementAction,
                      TurtleMorphometricObservation, DistinguishingFeatureObservation,
-                     TurtleNestObservation, TurtleDamageObservation)
+                     TurtleNestObservation, TurtleDamageObservation,
+                     TrackTallyObservation)
 
 
 class ObservationTypeListFilter(SimpleListFilter):
@@ -115,6 +116,14 @@ class TurtleDamageObservationInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
+class TrackTallyObservationInline(admin.TabularInline):
+    """Admin for TrackTallyObservation."""
+
+    extra = 0
+    model = TrackTallyObservation
+    classes = ('grp-collapse grp-open',)
+
+
 class TagObservationInline(admin.TabularInline):
     """TabularInlineAdmin for TagObservation."""
 
@@ -199,6 +208,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                TurtleMorphometricObservationInline,
                TurtleNestObservationInline,
                TurtleDamageObservationInline,
+               TrackTallyObservationInline,
                TagObservationInline,
                ManagementActionInline,
                MediaAttachmentInline, ]

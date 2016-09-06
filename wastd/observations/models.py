@@ -43,7 +43,6 @@ from wastd.users.models import User
 # Lookups --------------------------------------------------------------------#
 
 BODY_PART_DEFAULT = "whole"
-
 TURTLE_BODY_PART_CHOICES = (
     ("head", "head"),
     ("plastron", "plastron"),
@@ -61,8 +60,9 @@ TURTLE_BODY_PART_CHOICES = (
     ("flipper-rear-right", "rear right flipper"),
     (BODY_PART_DEFAULT, "whole turtle"), )
 
+TAG_TYPE_DEFAULT = 'flipper-tag'
 TAG_TYPE_CHOICES = (
-    ('flipper-tag', 'Flipper Tag'),
+    (TAG_TYPE_DEFAULT, 'Flipper Tag'),
     ('pit-tag', 'PIT Tag'),
     ('satellite-tag', 'Satellite Tag'),
     ('blood-sample', 'Blood Sample'),
@@ -1510,4 +1510,118 @@ class TurtleDamageObservation(Observation):
         tpl = ('<div class="popup"><i class="fa fa-fw fa-bolt"></i>&nbsp;{0}</div>')
         return mark_safe(tpl.format(self.__str__()))
 
-# TODO  add TrackTallyObservation, CecaceanMorphometricObservation
+
+@python_2_unicode_compatible
+class TrackTallyObservation(Observation):
+    """Observation of turtle track tallies and signs of predation."""
+
+    false_crawls_caretta_caretta = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Loggerhead"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of Caretta caretta (Loggerhead turtle)."),)
+
+    false_crawls_chelonia_mydas = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Green"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of "
+                    "Chelonia mydas (Green turtle)."),)
+
+    false_crawls_eretmochelys_imbricata = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Hawksbill"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of "
+                    "Eretmochelys imbricata (Hawksbill turtle)."),)
+
+    false_crawls_natator_depressus = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Flatback"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of "
+                    "Natator depressus (Flatback turtle)."),)
+
+    false_crawls_lepidochelys_olivacea = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Olive ridley"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of "
+                    "Lepidochelys olivacea (Olive ridley turtle)."),)
+
+    false_crawls_na = models.PositiveIntegerField(
+        verbose_name=_("False Crawls of unknown species"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of unknown species."),)
+
+    fox_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Fox predation"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    dog_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Dog predation"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    dingo_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Dingo predation"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    croc_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Crocodile predation"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    goanna_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Goanna predation"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    bird_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Bird predation"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    def __str__(self):
+        """The unicode representation."""
+        t1 = ('TrackTally: {0} LH, {1} GN, {2} HB, {3} FB, {4} NA')
+        return t1.format(
+            self.false_crawls_caretta_caretta,
+            self.false_crawls_chelonia_mydas,
+            self.false_crawls_eretmochelys_imbricata,
+            self.false_crawls_natator_depressus,
+            self.false_crawls_na,
+            )
+
+    @property
+    def as_html(self):
+        """An HTML representation."""
+        t1 = ('<div class="popup"><i class="fa fa-fw fa-list-ol"></i>&nbsp;'
+              'TrackTally: {0} LH, {1} GN, {2} HB, {3} FB, {4} NA</div>')
+        tpl = ('<div class="popup"><i class="fa fa-fw fa-cutlery"></i>&nbsp;{0}'
+               '&nbsp<i class="{1}"></i></div>')
+        return mark_safe(
+            t1.format(
+                self.false_crawls_caretta_caretta,
+                self.false_crawls_chelonia_mydas,
+                self.false_crawls_eretmochelys_imbricata,
+                self.false_crawls_natator_depressus,
+                self.false_crawls_na,
+                ) +
+            tpl.format("Fox predation", OBSERVATION_ICONS[self.fox_predation]) +
+            tpl.format("Dog predation", OBSERVATION_ICONS[self.dog_predation]) +
+            tpl.format("Dingo predation", OBSERVATION_ICONS[self.dingo_predation]) +
+            tpl.format("Goanna predation", OBSERVATION_ICONS[self.goanna_predation]) +
+            tpl.format("Bird predation", OBSERVATION_ICONS[self.bird_predation]))
+
+
+# TODO add CecaceanMorphometricObservation for cetacean strandings

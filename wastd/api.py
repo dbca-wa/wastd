@@ -40,7 +40,7 @@ from wastd.observations.models import (
     Observation, MediaAttachment, TagObservation,
     ManagementAction, TurtleMorphometricObservation,
     DistinguishingFeatureObservation, TurtleNestObservation,
-    TurtleDamageObservation)
+    TurtleDamageObservation, TrackTallyObservation)
 from wastd.users.models import User
 
 
@@ -96,6 +96,9 @@ class ObservationSerializer(serializers.ModelSerializer):
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, TurtleNestObservation):
             return TurtleNestObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TrackTallyObservation):
+            return TrackTallyObservationSerializer(
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, TagObservation):
             return TagObservationSerializer(
@@ -206,6 +209,28 @@ class TurtleDamageObservationSerializer(serializers.ModelSerializer):
         model = TurtleDamageObservation
         fields = ('observation_name',
                   'body_part', 'damage_type', 'damage_age', 'description', )
+
+
+class TrackTallyObservationSerializer(serializers.ModelSerializer):
+    """TrackTallyObservation serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = TrackTallyObservation
+        fields = ('observation_name',
+                  'false_crawls_caretta_caretta',
+                  'false_crawls_chelonia_mydas',
+                  'false_crawls_eretmochelys_imbricata',
+                  'false_crawls_natator_depressus',
+                  'false_crawls_lepidochelys_olivacea',
+                  'false_crawls_na',
+                  'fox_predation',
+                  'dog_predation',
+                  'dingo_predation',
+                  'goanna_predation',
+                  'bird_predation',
+                  )
 
 
 class EncounterSerializer(serializers.ModelSerializer):

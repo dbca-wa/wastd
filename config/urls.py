@@ -15,7 +15,10 @@ from rest_framework import routers
 # from dynamic_rest import routers as dr
 from wastd.observations.models import Encounter
 from wastd.observations.views import schema_view
-from wastd.api import *
+from wastd.api import (
+    UserViewSet, EncounterViewSet, TurtleNestEncounterViewSet,
+    AnimalEncounterViewSet, ObservationViewSet, MediaAttachmentViewSet,
+    TagObservationViewSet)
 from djgeojson.views import GeoJSONLayerView
 
 # register all adminactions
