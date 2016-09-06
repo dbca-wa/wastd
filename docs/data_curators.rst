@@ -140,6 +140,10 @@ data sheet or communication records:
 * Management Actions
 * Tag Observations
 
+Turtle Damage Observations also cater for tag scars and tags that were seen,
+but not identified (e.g. the animal had to leave before the operator could read
+the tag).
+
 Tag Observations support the following identifying tags or "things with an ID":
 
 * Flipper Tag
