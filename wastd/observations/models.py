@@ -72,13 +72,14 @@ TAG_TYPE_CHOICES = (
     ('whisker-id', 'Whisker ID'),
     ('other', 'Other'),)
 
+TAG_STATUS_DEFAULT = 'recaptured'
 TAG_STATUS_CHOICES = (                                        # TRT_TAG_STATES
     ('ordered', 'ordered from manufacturer'),
     ('produced', 'produced by manufacturer'),
     ('delivered', 'delivered to HQ'),
     ('allocated', 'allocated to field team'),
     ('attached', 'first association with animal'),        # A1, AE
-    ('recaptured', 're-sighted associated with animal'),  # OX, P, P_OK, RC, RQ, P_ED
+    (TAG_STATUS_DEFAULT, 're-sighted associated with animal'),  # OX, P, P_OK, RC, RQ, P_ED
     ('removed', 'taken off animal'),                      # OO, R
     ('found', 'found detached'),
     ('returned', 'returned to HQ'),
@@ -183,8 +184,7 @@ MATURITY_CHOICES = NA + TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
     (("adult", "adult"),
      ("unknown", "unknown maturity"), )
 
-HEALTH_CHOICES = (
-    ("na", "not observed"),
+HEALTH_CHOICES = NA + (
     ('alive', 'alive (healthy)'),
     ('alive-injured', 'alive (injured)'),
     ('alive-then-died', 'initally alive (but died)'),
@@ -356,6 +356,8 @@ DAMAGE_TYPE_CHOICES = (
     ("amputated-from-nail", "amputation from nail"),
     ("amputated-half", "half amputation"),
     ("amputated-entirely", "entire amputation"),
+    ("tag-scar", "tag scar"),
+    ("tag-seen", "tag seen but not identified"),
     ("cuts", "cuts"),
     ("deformity", "deformity"),
     ("propeller-strike", "propeller strike"),
