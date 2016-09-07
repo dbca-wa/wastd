@@ -1354,8 +1354,7 @@ class TurtleMorphometricObservation(Observation):
                        ACCURACY_ICONS[self.tail_length_accuracy]) +
             tpl.format("HW", self.maximum_head_width_mm,
                        ACCURACY_ICONS[self.maximum_head_width_accuracy]) +
-            t2
-            )
+            t2)
 
 
 @python_2_unicode_compatible
