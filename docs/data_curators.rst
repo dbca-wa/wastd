@@ -156,6 +156,12 @@ Tag Observations support the following identifying tags or "things with an ID":
 * Whister ID
 * Other
 
+Tab Observations and Turtle Morphometric Observations have optional fields to
+capture the "handler" and the "recorder", where the handler is the person
+physically handling the tag or conducting the measurements, and the recorder
+the person who writes the data sheet. Both activities bring their own source of
+errors, which are often linked to the person's respective training or handwriting.
+
 After adding these data to the Encounter, save the Encounter and refresh WAStD's
 home page to see a summary as popup on the Encounter's place marker.
 

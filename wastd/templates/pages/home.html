@@ -1,9 +1,5 @@
 {% extends "base.html" %}
 {% load leaflet_tags geojson_tags %}
-{% block css %}
-{{ block.super }}
-{% leaflet_css %}
-{% endblock %}
 
 {% block map %}
 <div id="mapholder">
@@ -13,7 +9,6 @@
 
 {% block javascript%}
 {{ block.super }}
-{% leaflet_js %}
 <script type="text/javascript">
   // var collection = {{ qs_results|geojsonfeature|safe }};
   function map_init(map, options) {

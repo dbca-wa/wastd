@@ -45,8 +45,12 @@ from wastd.users.models import User
 BODY_PART_DEFAULT = "whole"
 TURTLE_BODY_PART_CHOICES = (
     ("head", "head"),
+    ("eyes", "eyes"),
+    ("neck", "neck"),
     ("plastron", "plastron"),
     ("carapace", "carapace"),
+    ("internals", "internals"),
+    ("cloaca", "cloaca"),
     ("tail", "tail"),
     ("flipper-front-left-1", "front left flipper, 1st scale from body"),
     ("flipper-front-left-2", "front left flipper, 2nd scale from body"),
@@ -58,28 +62,33 @@ TURTLE_BODY_PART_CHOICES = (
     ("flipper-front-right", "front right flipper"),
     ("flipper-rear-left", "rear left flipper"),
     ("flipper-rear-right", "rear right flipper"),
-    (BODY_PART_DEFAULT, "whole turtle"), )
+    ("shoulder-left", "left shoulder"),
+    ("shoulder-right", "right shoulder"),
+    (BODY_PART_DEFAULT, "whole turtle"),
+    ('other', 'Other'), )
 
 TAG_TYPE_DEFAULT = 'flipper-tag'
 TAG_TYPE_CHOICES = (
     (TAG_TYPE_DEFAULT, 'Flipper Tag'),
     ('pit-tag', 'PIT Tag'),
     ('satellite-tag', 'Satellite Tag'),
+    ('data-logger', 'Data Logger'),
     ('blood-sample', 'Blood Sample'),
     ('biopsy-sample', 'Biopsy Sample'),
-    ('egg-sample', 'Egg Sample'),
+    ('stomach-content-sample', 'Stomach Content Sample'),
     ('physical-sample', 'Physical Sample'),
-    ('whisker-id', 'Whisker ID'),
+    ('egg-sample', 'Egg Sample'),
     ('other', 'Other'),)
 
-TAG_STATUS_DEFAULT = 'recaptured'
+TAG_STATUS_DEFAULT = 'resighted'
 TAG_STATUS_CHOICES = (                                        # TRT_TAG_STATES
     ('ordered', 'ordered from manufacturer'),
     ('produced', 'produced by manufacturer'),
     ('delivered', 'delivered to HQ'),
     ('allocated', 'allocated to field team'),
-    ('attached', 'first association with animal'),        # A1, AE
-    (TAG_STATUS_DEFAULT, 're-sighted associated with animal'),  # OX, P, P_OK, RC, RQ, P_ED
+    ('applied-new', 'applied new, first association with animal'),        # A1, AE
+    (TAG_STATUS_DEFAULT, 're-sighted associated with animal'),  # OX, P, P_OK, RQ, P_ED
+    ('reclinched', 're-sighted and reclinced on animal'),  # RC
     ('removed', 'taken off animal'),                      # OO, R
     ('found', 'found detached'),
     ('returned', 'returned to HQ'),
@@ -279,6 +288,11 @@ ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 # <option value="1">X* - Nesting: Laid</option></select>
 
 HABITAT_CHOICES = NA + (
+    ("beach-below-high-water", "beach (below high water line)"),
+    ("beach-above-high-water", "beach (above high water line)"),
+    ("beach-edge-spinifex", "beach (edge of spinifex)"),
+    ("dune-spinifex", "dune (inside spinifex)"),
+
     ("beach", "beach (below vegetation line)"),
     ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
     ("dune", "dune"),
@@ -473,15 +487,17 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     observer = models.ForeignKey(
         User,
-        verbose_name=_("Observed by"),
+        verbose_name=_("Measured by"),
         related_name="observer",
-        help_text=_("The observer has to be a registered system user"))
+        help_text=_("The person who executes the measurements, "
+                    "source of measurement bias"))
 
     reporter = models.ForeignKey(
         User,
-        verbose_name=_("Reported by"),
+        verbose_name=_("Recorded by"),
         related_name="reporter",
-        help_text=_("The reporter has to be a registered system user"))
+        help_text=_("The person who writes the data sheet in the field, "
+                    "source of handwriting and spelling errors"))
 
     as_html = models.TextField(
         verbose_name=_("HTML representation"),
@@ -518,7 +534,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         animals of the same species and deadness.
         """
         return slugify.slugify("-".join([
-            self.when.strftime("%Y-%m-%d"),
+            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-"),
             self.health,
@@ -1111,6 +1127,20 @@ class TagObservation(Observation):
         default="recaptured",
         help_text=_("The status this tag was seen in, or brought into."),)
 
+    handler = models.ForeignKey(
+        User,
+        blank=True, null=True,
+        verbose_name=_("Handled by"),
+        related_name="tag_handler",
+        help_text=_("The person in physical contact with the tag or sample"))
+
+    recorder = models.ForeignKey(
+        User,
+        blank=True, null=True,
+        verbose_name=_("Recorded by"),
+        related_name="tag_recorder",
+        help_text=_("The person who records the tag observation"))
+
     comments = models.TextField(
         verbose_name=_("Comments"),
         blank=True, null=True,
@@ -1284,7 +1314,7 @@ class TurtleMorphometricObservation(Observation):
         help_text=_("The measurement type as indication of accuracy."),)
 
     curved_carapace_notch_mm = models.PositiveIntegerField(
-        verbose_name=_("Curved Carapace Notch (mm)"),
+        verbose_name=_("Curved Carapace Length to notch (mm)"),
         blank=True, null=True,
         help_text=_("The Curved Carapace Notch in millimetres."),)
 
@@ -1330,6 +1360,20 @@ class TurtleMorphometricObservation(Observation):
         verbose_name=_("Maximum Head Width Accuracy"),
         choices=ACCURACY_CHOICES,
         help_text=_("The measurement type as indication of accuracy."),)
+
+    handler = models.ForeignKey(
+        User,
+        blank=True, null=True,
+        verbose_name=_("Handled by"),
+        related_name="morphometric_handler",
+        help_text=_("The person conducting the measurements"))
+
+    recorder = models.ForeignKey(
+        User,
+        blank=True, null=True,
+        verbose_name=_("Recorded by"),
+        related_name="morphometric_recorder",
+        help_text=_("The person recording the measurements"))
 
     def __str__(self):
         """The unicode representation."""
@@ -1487,7 +1531,7 @@ class TurtleDamageObservation(Observation):
     damage_type = models.CharField(
         max_length=300,
         default="minor-trauma",
-        verbose_name=_("Damage age"),
+        verbose_name=_("Damage type"),
         choices=DAMAGE_TYPE_CHOICES,
         help_text=_("The type of the damage."), )
 

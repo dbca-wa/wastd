@@ -30,6 +30,7 @@ def _collectstatic():
     local("python manage.py collectstatic --noinput -l "
           "|| python manage.py collectstatic --clear --noinput -l")
 
+
 def _migrate():
     """Syncdb, update permissions, migrate all apps."""
     local("python manage.py migrate")
