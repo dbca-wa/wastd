@@ -23,7 +23,7 @@ and share one primary key, while allowing for different fields for child models.
 
 E.g., AnimalEncounters are Encounters (where, when, observed by, recorded by)
 with an Animal (species, sex, maturity, health). The combination of Animal
-attributes determine which subsequent Observations are required.
+attributes can determine which subsequent Observations are required.
 
 Following this "mix&match" approach, e.g. an AnimalEncounter with a dead turtle
 will be a "Turtle Stranding" encounter, requiring TurtleMorphometricObesrvations,
@@ -61,15 +61,6 @@ Also, data analysts can search, filter, and export data from here.
 ---------------------------------------
 
 .. automodule:: wastd.observations.admin
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-:mod:`wastd.widgets` Module
----------------------------------------
-
-.. automodule:: wastd.widgets
     :members:
     :undoc-members:
     :show-inheritance:

@@ -14,9 +14,9 @@ WAStD is a data clearinghouse for:
 
 WAStD is built scalable enough to accommodate other, related, data:
 
-* Cetacean and pinniped strandings.
 * Turtle tagging observations, taken of nesting turtles.
 * Turtle track observations, taken at sunrise after nesting (nests and false crawls).
+* Cetacean and pinniped strandings.
 
 WAStD offers as main functionalities:
 
@@ -36,3 +36,76 @@ WAStD will integrate in the Departmental information landscape as follows:
   monitoring reports, ministerial inquries, conservation planning decisions) can be
   built right now consuming the WAStD API, and later refactored to consume data from
   departmental data warehouses, once these become the point of truth for the data.
+
+=========
+Data flow
+=========
+
+.. image:: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
+     :alt: WAStD data flow
+
+Turtle Tagging
+==============
+To be expanded later.
+
+Legacy system: WAMTRAM 2
+------------------------
+
+* `Documentation (access restricted to Turtle team) <https://confluence.dpaw.wa.gov.au/display/sd/MSP%20Turtle%20Tagging%20DB>`_
+* Data backend is an MS SQL Server 2012 database on kens-mssql-001-prod
+* Curator Bob Prince administrates data through an MS Access admin front-end
+* For each field team, Bob uses the admin frontend to export the
+  entire current database into a data collection database
+* Field teams receive a data collection database backend (MS Access
+  mdb) plus data collection frontend (MS Access mde) which allows data entry,
+  does rudimentary data validation, and allows looking up existing data (e.g.
+  tag history, turtle history)
+* Field teams return the data collection backend, which Bob imports into WAMTRAM 2
+* If WAMTRAM 2 reports import errors, Bob changes field data using his subject
+  matter expertise and scans of original data sheets (if available) to resolve
+  typos and incorrectly entered data
+* Once import validation passes, WAMTRAM ingests the new data batch
+
+Interim solution: ETL to WAStD
+------------------------------
+The task of extraction, transformation and loading (ETL) of tagging data is
+automated and documented in an RMarkdown workbook
+`Tagging ETL <https://github.com/parksandwildlife/ningaloo-turtle-etl/blob/master/tagging-etl.Rmd>`_.
+The workbook is under version control in the repository `Ningaloo Turtle ETL <https://github.com/parksandwildlife/ningaloo-turtle-etl/>`_
+
+Based on WAMTRAM 1 developer Simon Woodman's technical documentation, the
+workbook aims:
+
+* to document WAMTRAM 2 data model and business logic,
+* to extract data into CSV snapshots, and upload them to Parks and Wildlife's
+  internal data catalogue, and
+* to transform and load data into WAStD using WAStD's API
+
+Loading data into WAStD assumes:
+
+* WAMTRAM 2 remains point of truth and curation interface for data until data
+  are collected/entered directly into WAStD;
+* Loading data into WAStD is repeatable without creating duplicates;
+* WAStD will contain a full representation of WAMTRAM's data and will be able to
+  deliver the same insight.
+
+Long term solution: New data entry tool
+---------------------------------------
+To retire WAMTRAM 2, the following is required:
+
+* WAMTRAM to WAStD ETL complete and correct
+* A new electronic data entry tool (cybertracker or similar)
+* A new desktop data entry tool to digitise data sheets (= WAStD offline)
+* WAStD to implement all sanity checks and QA operations of WAMTRAM 2
+
+Insight from tagging data
+-------------------------
+It is important to create insight from the raw data early on in the process of
+understanding, extracting and cleaning WAMTRAM 2 data.
+
+This helps to update and complete the data model based on analytical requirements,
+as well as delivering insight in incremental steps, rather than at the end of the
+process.
+
+Insight can be generated initially from WAMTRAM 2's CSV snapshots, and later on
+source the data from the WAStD API.

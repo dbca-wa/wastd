@@ -86,7 +86,7 @@ TAG_STATUS_CHOICES = (                                        # TRT_TAG_STATES
     ('produced', 'produced by manufacturer'),
     ('delivered', 'delivered to HQ'),
     ('allocated', 'allocated to field team'),
-    ('applied-new', 'applied new, first association with animal'),        # A1, AE
+    ('applied-new', 'applied new'),        # A1, AE
     (TAG_STATUS_DEFAULT, 're-sighted associated with animal'),  # OX, P, P_OK, RQ, P_ED
     ('reclinched', 're-sighted and reclinced on animal'),  # RC
     ('removed', 'taken off animal'),                      # OO, R
@@ -390,11 +390,10 @@ DAMAGE_AGE_CHOICES = (
 # Encounter models -----------------------------------------------------------#
 @python_2_unicode_compatible
 class Encounter(PolymorphicModel, geo_models.Model):
-    """The base Encounter class knows when, where, observer, reporter, location
-    accuracy, source and source id, plus QA status.
+    """The base Encounter class.
 
     * When: Datetime of encounter, stored in UTC, entered and displayed in local
-    timezome.
+      timezome.
     * Where: Point in WGS84.
     * Who: The observer has to be a registered system user.
     * Source: The previous point of truth for the record.
@@ -403,8 +402,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
       prefixed or post-fixed. Batch imports can (if they use the ID consistently)
       use the ID to identify previously imported records and avoid duplication.
 
-    A suggested naming standard for paper records is:
-    <prefix><date><running-number>, with possible
+    A suggested naming standard for paper records is
+    ``<prefix><date><running-number>``, with possible
 
     * prefix indicates data type (stranding, tagging, nest obs etc)
     * date is reversed Y-m-d
@@ -417,8 +416,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
     The QA status can only be changed through transition methods, not directly.
     Changes to the QA status, as wells as versions of the data are logged to
     preserve the data lineage.
-
     """
+
     STATUS_NEW = 'new'
     STATUS_PROOFREAD = 'proofread'
     STATUS_CURATED = 'curated'
@@ -553,7 +552,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         if not self.source_id:
             self.source_id = self.short_name
         super(Encounter, self).save(*args, **kwargs)
-
 
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
@@ -765,8 +763,18 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
 @python_2_unicode_compatible
 class AnimalEncounter(Encounter):
-    """The encounter of an animal of a species in a certain state of health
-    and behaviour.
+    """The encounter of an animal of a species.
+
+    Extends the base Encounter class with:
+
+    * taxonomic group (choices), can be used to filter remaining form choices
+    * species (choices)
+    * sex (choices)
+    * maturity (choices)
+    * health (choices)
+    * activity (choices)
+    * behaviour (free text)
+    * habitat (choices)
     """
 
     taxon = models.CharField(
@@ -852,8 +860,10 @@ class AnimalEncounter(Encounter):
 
     @property
     def is_stranding(self):
-        """Hacky way of splitting AnimalEncounters into strandings (not alive
-        and healthy) and other (tagging) observations.
+        """Return whether the Encounters is stranding or tagging.
+
+        If the animal is not "alive", it's a stranding encounter, else it's a
+        tagging encounter.
         """
         return self.health != 'alive'
 
@@ -934,6 +944,7 @@ class TurtleNestEncounter(Encounter):
 
     @property
     def nest_html(self):
+        """The HTML representation."""
         tpl = '<div class="popup">{0}</div>'
         return mark_safe(tpl.format(self.__str__()))
 
@@ -958,6 +969,7 @@ class TurtleNestEncounter(Encounter):
 @python_2_unicode_compatible
 class Observation(PolymorphicModel, models.Model):
     """The Observation base class for encounter observations.
+
     Everything happens somewhere, at a time, to someone, and someone records it.
     Therefore, an Observation must happen during an Encounter.
     """
@@ -1124,7 +1136,7 @@ class TagObservation(Observation):
         max_length=300,
         verbose_name=_("Tag status"),
         choices=TAG_STATUS_CHOICES,
-        default="recaptured",
+        default=TAG_STATUS_DEFAULT,
         help_text=_("The status this tag was seen in, or brought into."),)
 
     handler = models.ForeignKey(

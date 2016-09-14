@@ -341,8 +341,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'WAStD', u'WAStD Documentation',
-     author, 'WAStD', 'One line description of project.',
-     'Miscellaneous'),
+     author, 'WAStD', 'WA Sea Turtle Database',
+     'Survey database'),
 ]
 
 # Documents to append as an appendix to all manuals.
