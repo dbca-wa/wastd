@@ -46,7 +46,6 @@ Data flow
 
 Turtle Tagging
 ==============
-To be expanded later.
 
 Legacy system: WAMTRAM 2
 ------------------------
@@ -71,7 +70,8 @@ Interim solution: ETL to WAStD
 The task of extraction, transformation and loading (ETL) of tagging data is
 automated and documented in an RMarkdown workbook
 `Tagging ETL <https://github.com/parksandwildlife/ningaloo-turtle-etl/blob/master/tagging-etl.Rmd>`_.
-The workbook is under version control in the repository `Ningaloo Turtle ETL <https://github.com/parksandwildlife/ningaloo-turtle-etl/>`_
+The workbook is under version control in the repository
+`Ningaloo Turtle ETL <https://github.com/parksandwildlife/ningaloo-turtle-etl/>`_.
 
 Based on WAMTRAM 1 developer Simon Woodman's technical documentation, the
 workbook aims:
@@ -109,3 +109,52 @@ process.
 
 Insight can be generated initially from WAMTRAM 2's CSV snapshots, and later on
 source the data from the WAStD API.
+
+
+Turtle Tracks
+=============
+
+Legacy system: Ningaloo Track count database
+--------------------------------------------
+Links:
+
+* Ningaloo Turtle Program
+  `data <internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data>`_
+  on the internal data catalogue
+* Ningaloo Turtle Program `homepage <http://www.ningalooturtles.org.au/>`_
+* `Code repository <https://github.com/parksandwildlife/ningaloo-turtle-etl/>`_
+
+**Note** Data sheets and field guide are being updated at the moment.
+
+The Ningaloo Turtle Program (NTP) database consists of an MS Access database
+and frontend. Volunteers conduct track count surveys, enter data, and curate
+the database.
+
+Interim solution: ETL to WAStD
+------------------------------
+The Ningaloo ETL RMarkdown workbook
+(`source <https://github.com/parksandwildlife/ningaloo-turtle-etl/blob/master/ningaloo-etl.Rmd>`_)
+extracts data from the NTP database snapshot on the internal data catalogue into
+CSV and GeoJSON files, and uploads them to the NTP
+`dataset <internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data>`_.
+
+The workbook can be extended to also upload the data into WAStD's API.
+
+Long term solution: Direct entry to WAStD
+-----------------------------------------
+As on now, a trained and trusted data entry operator can digitise NTP field
+datasheets using the WAStD "Backstage" area.
+
+It is possible to develop a customised, streamlined data entry form that allows
+non-admin data entry operators to safely and comfortably enter data into WAStD.
+
+This would allow the NTP database to be retired, and data to flow from paper forms
+(or Cybertracker forms) directly into WAStD.
+
+Insight
+-------
+The RMarkdown workbook
+`Ningaloo spatial modelling <internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data/resource/422c91ca-7673-432f-911a-449d3dc2e35a>`_,
+runs a few exemplary analyses on the NTP data snapshots as extracted by the
+Ningaloo ETL workbook. It can be expanded to include any desired analysis or
+summary of the NTP data.
