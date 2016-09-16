@@ -81,12 +81,13 @@ TAG_TYPE_CHOICES = (
     ('other', 'Other'),)
 
 TAG_STATUS_DEFAULT = 'resighted'
+TAG_STATUS_APPLIED_NEW = 'applied-new'
 TAG_STATUS_CHOICES = (                                        # TRT_TAG_STATES
     ('ordered', 'ordered from manufacturer'),
     ('produced', 'produced by manufacturer'),
     ('delivered', 'delivered to HQ'),
     ('allocated', 'allocated to field team'),
-    ('applied-new', 'applied new'),        # A1, AE
+    (TAG_STATUS_APPLIED_NEW, 'applied new'),        # A1, AE
     (TAG_STATUS_DEFAULT, 're-sighted associated with animal'),  # OX, P, P_OK, RQ, P_ED
     ('reclinched', 're-sighted and reclinced on animal'),  # RC
     ('removed', 'taken off animal'),                      # OO, R
@@ -96,7 +97,8 @@ TAG_STATUS_CHOICES = (                                        # TRT_TAG_STATES
     ('destroyed', 'destroyed'),
     ('observed', 'observed in any other context, see comments'), )
 
-TAG_STATUS_ON_ANIMAL = ('attached', 'recaptured', 'detached', )
+TAG_STATUS_RESIGHTED = ('resighted', 'reclinched', 'removed')
+TAG_STATUS_ON_ANIMAL = (TAG_STATUS_APPLIED_NEW, TAG_STATUS_RESIGHTED)
 
 NA = (("na", "not observed"), )
 
@@ -868,6 +870,33 @@ class AnimalEncounter(Encounter):
         return self.health != 'alive'
 
     @property
+    def is_new_capture(self):
+        """Return whether this AnimalEncounter is a new capture.
+
+        New captures are named after their primary flipper tag.
+        An AnimalEncounter is a new capture if there are:
+
+        * no associated TagObservations of ``is_recapture`` status
+        * at least one associated TabObservation of ``is_new`` status
+        """
+        new_tagobs = set([x for x in self.flipper_tags if x.is_new])
+        old_tagobs = set([x for x in self.flipper_tags if x.is_recapture])
+        has_new_tagobs = len(new_tagobs) > 0
+        has_old_tagobs = len(old_tagobs) > 0
+        return (has_new_tagobs and not has_old_tagobs)
+
+    @property
+    def flipper_tags(self):
+        """Return a queryset of Flipper Tag Observations."""
+        return self.observation_set.instance_of(TagObservation).filter(
+            tagobservation__tag_type='flipper-tag')
+
+    @property
+    def primary_flipper_tag(self):
+        """Return the TagObservation of the primary flipper tag."""
+        return self.flipper_tags.order_by('tagobservation__tag_location').first()
+
+    @property
     def animal_html(self):
         """An HTML string of Observations."""
         tpl = '<h4>{0}</h4><i class="fa fa-fw fa-heartbeat"></i>&nbsp;{1} {2} {3} on {4}'
@@ -1178,6 +1207,16 @@ class TagObservation(Observation):
             self.get_tag_location_display())
 
     @property
+    def is_new(self):
+        """Return wheter the TagObservation is the first association with the anima."""
+        return self.status == TAG_STATUS_APPLIED_NEW
+
+    @property
+    def is_recapture(self):
+        """Return whether the TabObservation is a recapture."""
+        return self.status in TAG_STATUS_RESIGHTED
+
+    @property
     def history_url(self):
         """The list view of all observations of this tag."""
         cl = reverse("admin:observations_tagobservation_changelist")
@@ -1197,6 +1236,9 @@ def harvest_animal_names():
     Primary Flipper Tag IDs are the tag IDs of flipper tags which were the first
     ever associated flipper tags on an animal.
     """
+    animalenc_with_new_flippertags = list(
+        set([t.encounter for t in TagObservation.objects.filter(status='applied-new')]))
+
     new_tags = TagObservation.objects.filter(
         tag_type="flipper-tag", status='applied-new')
     # TODO weed out encounters with other tag observations with higher status
