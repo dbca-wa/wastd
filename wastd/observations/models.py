@@ -1111,6 +1111,10 @@ class TagObservation(Observation):
     * done science to it
     * handed in report
 
+    Animal Name:
+    All TagObservations of one animal are linked by shared encounters or
+    shared tag names. The earliest associated flipper tag name is used as the
+    animal's name, and transferred onto all related TagObservations.
     """
 
     tag_type = models.CharField(
@@ -1138,6 +1142,13 @@ class TagObservation(Observation):
         choices=TAG_STATUS_CHOICES,
         default=TAG_STATUS_DEFAULT,
         help_text=_("The status this tag was seen in, or brought into."),)
+
+    animal_name = models.CharField(
+        max_length=1000,
+        editable=False,
+        blank=True, null=True,
+        verbose_name=_("Animal Name"),
+        help_text=_("The animal's earliest associated flipper tag ID."),)
 
     handler = models.ForeignKey(
         User,
@@ -1178,6 +1189,24 @@ class TagObservation(Observation):
         tpl = ('<div class="popup"><a href={1} target="_"">'
                '<i class="fa fa-fw fa-tag"></i></a>&nbsp;{0}&nbsp;</div>')
         return mark_safe(tpl.format(self.__str__(), self.history_url))
+
+
+def harvest_animal_names():
+    """Harvest a list of primary Flipper Tag IDs.
+
+    Primary Flipper Tag IDs are the tag IDs of flipper tags which were the first
+    ever associated flipper tags on an animal.
+    """
+    new_tags = TagObservation.objects.filter(
+        tag_type="flipper-tag", status='applied-new')
+    # TODO weed out encounters with other tag observations with higher status
+    return list(new_tags)
+
+
+def allocate_animal_names():
+    """Set all harvested animal name to their related TagObservations."""
+    names = harvest_animal_names()
+    return True
 
 
 @python_2_unicode_compatible

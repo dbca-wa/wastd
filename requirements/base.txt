@@ -4,8 +4,8 @@ django==1.9.9 # rq.filter: >=1.9,<1.10
 django-extensions
 # django==1.10
 # breaking django-1.10:
-# https://github.com/django-polymorphic/django-polymorphic/issues/225
-
+# https://github.com/django-polymorphic/django-polymorphic/issues/225 - closed
+# https://github.com/makinacorpus/django-geojson/issues/82
 
 # Python-PostgreSQL Database Adapter
 # ------------------------------------------------
@@ -36,7 +36,7 @@ django_select2
 
 # Models
 # ------------------------------------------------
-django-polymorphic==1.0b1
+django-polymorphic==1.0.1
 django-model-utils==2.5.2
 django-reversion
 django-fsm
