@@ -23,6 +23,7 @@ actions:
 """
 from __future__ import unicode_literals, absolute_import
 
+import itertools
 import urllib
 import slugify
 
@@ -834,6 +835,13 @@ class AnimalEncounter(Encounter):
         default="na",
         help_text=_("The habitat in which the animal was encountered."), )
 
+    name = models.CharField(
+        max_length=1000,
+        editable=False,
+        blank=True, null=True,
+        verbose_name=_("Animal Name"),
+        help_text=_("The animal's earliest associated flipper tag ID."),)
+
     class Meta:
         """Class options."""
 
@@ -859,6 +867,47 @@ class AnimalEncounter(Encounter):
         """Cache the HTML representation in `as_html`."""
         self.as_html = self.make_html()
         super(AnimalEncounter, self).save(*args, **kwargs)
+
+    def set_name(self, name):
+        """Set the animal name to a given value."""
+        self.name = name
+        self.save()
+        print("{0} name set to {1}".format(self.__str__(), name))
+
+    def set_name_in_related_animalencounters(self, name):
+        """Set the animal name in all related AnimalEncounters."""
+        [a.set_name(name) for a in self.related_animalencounters]
+
+    def set_name_and_propagate(self, name):
+        """Set the animal name in this and all related AnimalEncounters."""
+        self.set_name(name)
+        self.set_name_in_related_animalencounters(name)
+
+    @property
+    def related_animalencounters(self):
+        """Return all AnimalEncounters with the same Animal.
+
+        This should traverse recursively TagObservations and their AnimalEncounters,
+        then their TagObservations, then their AnimalEncounters and so on.
+
+        Currently, this traverses the AnimalEncounters' TagObservations' AnimalEncounter history.
+        The algorithm should keep going until the deduplicated result list doesn't
+        grow any more (maybe there's a cleverer way of knowing when to stop).
+        """
+
+        # Round 1
+        tags = self.flipper_tags
+        round1 = retrieve_encounter_history_from_tagobservations(tags)
+
+        # round2 = [retrieve_encounter_history_from_tagobservations(tagobs.name)
+        #           for tagobs in [enc.flipper_tags for enc in round1]
+        #           if tagobs not in tags]
+        # list(set(list(itertools.chain.from_iterable(round2))))
+        # known_encounters = list(set(round1, round2))
+        # repeat if there were new encounters
+
+        known_encounters = round1
+        return list(set(known_encounters))
 
     @property
     def is_stranding(self):
@@ -1172,13 +1221,6 @@ class TagObservation(Observation):
         default=TAG_STATUS_DEFAULT,
         help_text=_("The status this tag was seen in, or brought into."),)
 
-    animal_name = models.CharField(
-        max_length=1000,
-        editable=False,
-        blank=True, null=True,
-        verbose_name=_("Animal Name"),
-        help_text=_("The animal's earliest associated flipper tag ID."),)
-
     handler = models.ForeignKey(
         User,
         blank=True, null=True,
@@ -1206,9 +1248,14 @@ class TagObservation(Observation):
             self.get_status_display(),
             self.get_tag_location_display())
 
+    @classmethod
+    def encounter_history(cls, name):
+        """Return the related encounters of all TagObservations of a given name."""
+        return list(set([t.encounter for t in cls.objects.filter(name=name)]))
+
     @property
     def is_new(self):
-        """Return wheter the TagObservation is the first association with the anima."""
+        """Return wheter the TagObservation is the first association with the animal."""
         return self.status == TAG_STATUS_APPLIED_NEW
 
     @property
@@ -1230,25 +1277,21 @@ class TagObservation(Observation):
         return mark_safe(tpl.format(self.__str__(), self.history_url))
 
 
-def harvest_animal_names():
-    """Harvest a list of primary Flipper Tag IDs.
+def allocate_animal_names():
+    """Harvest a list of AnimalEncounters and their primary Flipper Tag IDs.
 
     Primary Flipper Tag IDs are the tag IDs of flipper tags which were the first
     ever associated flipper tags on an animal.
     """
-    animalenc_with_new_flippertags = list(
-        set([t.encounter for t in TagObservation.objects.filter(status='applied-new')]))
-
-    new_tags = TagObservation.objects.filter(
-        tag_type="flipper-tag", status='applied-new')
-    # TODO weed out encounters with other tag observations with higher status
-    return list(new_tags)
+    return [a.set_name_and_propagate(a.primary_flipper_tag.name) for a
+            in AnimalEncounter.objects.all() if a.is_new_capture]
 
 
-def allocate_animal_names():
-    """Set all harvested animal name to their related TagObservations."""
-    names = harvest_animal_names()
-    return True
+def retrieve_encounter_history_from_tagobservations(tagobs_list):
+    """Return a deduplicated Encounter history for a list of TagObservations."""
+    enclist = [TagObservation.encounter_history(x.name) for x in tagobs_list]
+    # Flatten list of lists into one list:
+    return list(set(list(itertools.chain.from_iterable(enclist))))
 
 
 @python_2_unicode_compatible
