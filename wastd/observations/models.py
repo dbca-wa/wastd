@@ -887,27 +887,39 @@ class AnimalEncounter(Encounter):
     def related_animalencounters(self):
         """Return all AnimalEncounters with the same Animal.
 
-        This should traverse recursively TagObservations and their AnimalEncounters,
-        then their TagObservations, then their AnimalEncounters and so on.
+        The algorithm starts with the AnimalEncounter (``self``) as initial
+        known Encounter (``known_enc``), and ``self.tags`` as both initial known
+        (``known_tags``) and new TagObs (``new_tags`).
+        While there are new TagObs, a "while" loop harvests new encounters:
 
-        Currently, this traverses the AnimalEncounters' TagObservations' AnimalEncounter history.
-        The algorithm should keep going until the deduplicated result list doesn't
-        grow any more (maybe there's a cleverer way of knowing when to stop).
+        * For each tag in ``new_tags``, retrieve the encounter history.
+        * Combine and deduplicate the encounter histories
+        * Remove known encounters and call this set of encounters ``new_enc``.
+        * Add ``new_enc`` to ``known_enc``.
+        * Combine and deduplicate all tags of all encounters in ``new_enc`` and
+          call this set of TabObservations ``new_tags``.
+        * Add ``new_tags`` to ``known_tags``.
+        * Repeat the loop if the list of new tags is not empty.
+
+        Finally, deduplicate and return ``known_enc``. These are all encounters
+        that concern the same animal as this (self) encounter, as proven through
+        the shared presence of TagObservations.
         """
+        known_enc = [self, ]
+        # known_tags = self.tags
+        # new_enc = []
+        # new_tags = self.tags
+        # show_must_go_on = True
 
-        # Round 1
-        tags = self.flipper_tags
-        round1 = retrieve_encounter_history_from_tagobservations(tags)
+        # TODO: flesh out this pseudocode
+        # while show_must_go_on:
+        #     new_enc = set([t.encounter_history for t in new_tags]) - known_enc
+        #     known_enc += new_enc
+        #     new_tags = set([e.tags for e in new_enc]) - known_tags
+        #     known_tags += new_tags
+        #     show_must_go_on = len(new_tags) > 0
 
-        # round2 = [retrieve_encounter_history_from_tagobservations(tagobs.name)
-        #           for tagobs in [enc.flipper_tags for enc in round1]
-        #           if tagobs not in tags]
-        # list(set(list(itertools.chain.from_iterable(round2))))
-        # known_encounters = list(set(round1, round2))
-        # repeat if there were new encounters
-
-        known_encounters = round1
-        return list(set(known_encounters))
+        return known_enc
 
     @property
     def is_stranding(self):
@@ -939,6 +951,11 @@ class AnimalEncounter(Encounter):
         """Return a queryset of Flipper Tag Observations."""
         return self.observation_set.instance_of(TagObservation).filter(
             tagobservation__tag_type='flipper-tag')
+
+    @property
+    def tags(self):
+        """Return a queryset of TagObservations."""
+        return self.observation_set.instance_of(TagObservation)
 
     @property
     def primary_flipper_tag(self):
