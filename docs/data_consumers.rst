@@ -60,6 +60,9 @@ The known history of a flipper tag::
 
     https://strandings-test.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA96394
 
+All encounters with one animal ("WA96394")::
+
+    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA96394
 
 All of these filter queries (anything after the "?") also work through the data curation portal::
 
@@ -67,6 +70,7 @@ All of these filter queries (anything after the "?") also work through the data 
     https://strandings-test.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA96395
 
 Any filter combination, if found useful, can be bookmarked.
+
 
 Data Analysis
 =============

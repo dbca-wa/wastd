@@ -159,6 +159,11 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
         return obj.get_status_display()
     status_display.short_description = 'Status'
 
+    def animal_name(self, obj):
+        """Animal name."""
+        return obj.encounter.name
+    animal_name.short_description = 'Animal Name'
+
     def encounter_link(self, obj):
         """A link to the encounter."""
         return '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
@@ -194,16 +199,16 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         }
     list_filter = ('status', 'observer', 'reporter', 'location_accuracy', )
     list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
-                    'observer', 'reporter',
+                    'name', 'observer', 'reporter',
                     'status', 'source_display', 'source_id')
     list_select_related = True
     save_on_top = True
-    search_fields = ('observer__name', 'observer__username',
-                     'reporter__name', 'reporter__username', 'source_id')
+    search_fields = ('observer__name', 'observer__username', 'name',
+                     'reporter__name', 'reporter__username', 'source_id',)
     fsm_field = ['status', ]
-    fieldsets = (('Encounter', {'fields': ('where', 'location_accuracy',
-                                           'when', 'observer', 'reporter',
-                                           'source', 'source_id', )}),)
+    fieldsets = (('Encounter', {'fields': (
+        'where', 'location_accuracy', 'when',
+        'observer', 'reporter', 'source', 'source_id', )}),)
     inlines = [DistinguishingFeaturesInline,
                TurtleMorphometricObservationInline,
                TurtleNestObservationInline,
@@ -254,7 +259,7 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin,
             )},
         }
     list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
-                    'observer', 'reporter',
+                    'name', 'observer', 'reporter',
                     'species', 'age_display', 'habitat_display',
                     'status', 'source_display', 'source_id')
     list_filter = ('status', 'observer', 'reporter', 'location_accuracy',
@@ -263,7 +268,7 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin,
     save_on_top = True
     fsm_field = ['status', ]
     search_fields = ('observer__name', 'observer__username',
-                     'reporter__name', 'reporter__username', )
+                     'reporter__name', 'reporter__username', 'name', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Nest',
          {'fields': ('nest_age', 'species', 'habitat', )}),
@@ -323,6 +328,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
             )},
         }
     list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
+                    'name',
                     'observer', 'reporter', 'species', 'health_display',
                     'maturity_display', 'sex_display', 'behaviour',
                     'habitat_display',
@@ -335,7 +341,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
     save_on_top = True
     fsm_field = ['status', ]
     search_fields = ('observer__name', 'observer__username',
-                     'reporter__name', 'reporter__username', )
+                     'reporter__name', 'reporter__username', 'name', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
          {'fields': ('taxon', 'species', 'health', 'maturity', 'sex',

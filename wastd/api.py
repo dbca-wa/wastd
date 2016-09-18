@@ -266,7 +266,8 @@ class EncounterSerializer(serializers.ModelSerializer):
 
         model = Encounter
         name = 'encounter'
-        fields = ('where', 'location_accuracy', 'when', 'observer', 'reporter',
+        fields = ('where', 'location_accuracy', 'when', 'name',
+                  'observer', 'reporter',
                   'status', 'source', 'source_id', 'observation_set', )
         geo_field = "where"
 
@@ -293,7 +294,8 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = TurtleNestEncounter
-        fields = ('where', 'location_accuracy', 'when', 'observer', 'reporter',
+        fields = ('where', 'location_accuracy', 'when', 'name',
+                  'observer', 'reporter',
                   'nest_age', 'species', 'habitat',
                   'status', 'source', 'source_id', 'observation_set', )
 
@@ -306,7 +308,8 @@ class AnimalEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = AnimalEncounter
-        fields = ('where', 'location_accuracy', 'when', 'observer', 'reporter',
+        fields = ('where', 'location_accuracy', 'when', 'name',
+                  'observer', 'reporter',
                   'taxon', 'species', 'health', 'sex', 'behaviour',
                   'habitat', 'activity',
                   'status', 'source', 'source_id', 'observation_set', )
@@ -350,7 +353,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'observer', 'reporter', 'status',
+        'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'source', 'source_id', ]
 
 
@@ -360,7 +363,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'observer', 'reporter',  'status',
+        'location_accuracy', 'when', 'name', 'observer', 'reporter',  'status',
         'nest_age', 'species', 'habitat', 'source', 'source_id', ]
 
 
@@ -370,7 +373,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'observer', 'reporter', 'status',
+        'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'source', 'source_id', ]
 
@@ -408,5 +411,4 @@ class TagObservationViewSet(viewsets.ModelViewSet):
 
     queryset = TagObservation.objects.all()
     serializer_class = TagObservationEncounterSerializer
-    filter_fields = ['tag_type', 'tag_location', 'name',
-                     'status', 'comments']
+    filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']

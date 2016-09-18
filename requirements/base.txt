@@ -36,8 +36,8 @@ django_select2
 
 # Models
 # ------------------------------------------------
-django-polymorphic==1.0.1
-django-model-utils==2.5.2
+django-polymorphic
+django-model-utils
 django-reversion
 django-fsm
 django-fsm-log

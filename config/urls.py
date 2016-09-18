@@ -54,7 +54,8 @@ urlpatterns = [
     # Your stuff: custom urls includes go here
     # API
     url(r'^api/1/', include(router.urls), name='api'),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-auth/',
+        include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-docs/1/', schema_view, name="api-docs"),
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^select2/', include('django_select2.urls')),
