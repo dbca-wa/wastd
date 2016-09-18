@@ -617,7 +617,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             show_must_go_on = len(new_tags) > 0
 
         return list(set(known_enc))
-        
+
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
         """Return true if this document can be proofread."""
@@ -802,6 +802,23 @@ class Encounter(PolymorphicModel, geo_models.Model):
         return tpl.format(self.absolute_admin_url)
 
     @property
+    def absolute_history_url(self):
+        """The list view of all observations of this tag."""
+        cl = reverse("admin:observations_encounter_changelist")
+        return "{0}?name={1}".format(cl, urllib.quote_plus(self.name))
+
+    @property
+    def history_url_html(self):
+        """An HTML div with a link to the animal history."""
+        tpl = ('<div class="popup"><a href={0} target="_" title="View in new tab">'
+               '<i class="fa fa-fw fa-pencil"></i>Animal {1} history</a></div>')
+        if self.name:
+            html = tpl.format(self.absolute_history_url, self.name)
+        else:
+            html = ""
+        return html
+
+    @property
     def observer_html(self):
         """An HTML string of metadata."""
         tpl = '<div class="popup"><i class="fa fa-fw fa-{0}"></i>&nbsp;{1}</div>'
@@ -817,13 +834,16 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = '<h4>Encounter</h4>{0}{1}{2}{3}{4}'
+        tpl = '<h4>Encounter {0}</h4>{1}{2}{3}{4}{5}{6}'
         return mark_safe(tpl.format(
+            self.name,
             self.coordinate_html,
             self.observer_html,
             self.observation_html,
             self.admin_url_html,
-            self.status_html))
+            self.history_url_html,
+            self.status_html,
+            ))
 
 
 @python_2_unicode_compatible
@@ -978,7 +998,7 @@ class AnimalEncounter(Encounter):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = "{0}{1}{2}{3}{4}{5}"
+        tpl = "{0}{1}{2}{3}{4}{5}{6}"
         return mark_safe(
             tpl.format(
                 self.animal_html,
@@ -986,6 +1006,7 @@ class AnimalEncounter(Encounter):
                 self.observer_html,
                 self.observation_html,
                 self.admin_url_html,
+                self.history_url_html,
                 self.status_html))
 
 
@@ -1047,13 +1068,14 @@ class TurtleNestEncounter(Encounter):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = '<h4>{0}</h4>{1}{2}{3}{4}{5}'
+        tpl = '<h4>{0}</h4>{1}{2}{3}{4}{5}{6}'
         return mark_safe(tpl.format(
             self.nest_html,
             self.coordinate_html,
             self.observer_html,
             self.observation_html,
             self.admin_url_html,
+            self.history_url_html,
             self.status_html, ))
 
     def save(self, *args, **kwargs):
