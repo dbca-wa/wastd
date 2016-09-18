@@ -487,6 +487,13 @@ class Encounter(PolymorphicModel, geo_models.Model):
         choices=LOCATION_ACCURACY_CHOICES,
         help_text=_("The accuracy of the supplied location."), )
 
+    name = models.CharField(
+        max_length=1000,
+        editable=False,
+        blank=True, null=True,
+        verbose_name=_("Animal Name"),
+        help_text=_("The animal's earliest associated flipper tag ID."),)
+
     observer = models.ForeignKey(
         User,
         verbose_name=_("Measured by"),
@@ -556,6 +563,61 @@ class Encounter(PolymorphicModel, geo_models.Model):
             self.source_id = self.short_name
         super(Encounter, self).save(*args, **kwargs)
 
+    # Name -------------------------------------------------------------------#
+    def set_name(self, name):
+        """Set the animal name to a given value."""
+        self.name = name
+        self.save()
+        print("{0} name set to {1}".format(self.__str__(), name))
+
+    def set_name_in_related_encounters(self, name):
+        """Set the animal name in all related AnimalEncounters."""
+        [a.set_name(name) for a in self.related_encounters]
+
+    def set_name_and_propagate(self, name):
+        """Set the animal name in this and all related Encounters."""
+        self.set_name(name)
+        self.set_name_in_related_encounters(name)
+
+    @property
+    def related_encounters(self):
+        """Return all Encounters with the same Animal.
+
+        The algorithm starts with the Encounter (``self``) as initial
+        known Encounter (``known_enc``), and ``self.tags`` as both initial known
+        (``known_tags``) and new TagObs (``new_tags`).
+        While there are new TagObs, a "while" loop harvests new encounters:
+
+        * For each tag in ``new_tags``, retrieve the encounter history.
+        * Combine and deduplicate the encounter histories
+        * Remove known encounters and call this set of encounters ``new_enc``.
+        * Add ``new_enc`` to ``known_enc``.
+        * Combine and deduplicate all tags of all encounters in ``new_enc`` and
+          call this set of TabObservations ``new_tags``.
+        * Add ``new_tags`` to ``known_tags``.
+        * Repeat the loop if the list of new tags is not empty.
+
+        Finally, deduplicate and return ``known_enc``. These are all encounters
+        that concern the same animal as this (self) encounter, as proven through
+        the shared presence of TagObservations.
+        """
+        known_enc = [self, ]
+        known_tags = list(self.tags)
+        new_enc = []
+        new_tags = self.tags
+        show_must_go_on = True
+
+        while show_must_go_on:
+            new_enc = [t.encounter for t in new_tags
+                       if t.encounter not in known_enc]
+            known_enc += new_enc
+            new_tags = list(set(itertools.chain.from_iterable(
+                [e.tags for e in new_enc])))
+            known_tags += new_tags
+            show_must_go_on = len(new_tags) > 0
+
+        return list(set(known_enc))
+        
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
         """Return true if this document can be proofread."""
@@ -835,13 +897,6 @@ class AnimalEncounter(Encounter):
         default="na",
         help_text=_("The habitat in which the animal was encountered."), )
 
-    name = models.CharField(
-        max_length=1000,
-        editable=False,
-        blank=True, null=True,
-        verbose_name=_("Animal Name"),
-        help_text=_("The animal's earliest associated flipper tag ID."),)
-
     class Meta:
         """Class options."""
 
@@ -867,59 +922,6 @@ class AnimalEncounter(Encounter):
         """Cache the HTML representation in `as_html`."""
         self.as_html = self.make_html()
         super(AnimalEncounter, self).save(*args, **kwargs)
-
-    def set_name(self, name):
-        """Set the animal name to a given value."""
-        self.name = name
-        self.save()
-        print("{0} name set to {1}".format(self.__str__(), name))
-
-    def set_name_in_related_animalencounters(self, name):
-        """Set the animal name in all related AnimalEncounters."""
-        [a.set_name(name) for a in self.related_animalencounters]
-
-    def set_name_and_propagate(self, name):
-        """Set the animal name in this and all related AnimalEncounters."""
-        self.set_name(name)
-        self.set_name_in_related_animalencounters(name)
-
-    @property
-    def related_animalencounters(self):
-        """Return all AnimalEncounters with the same Animal.
-
-        The algorithm starts with the AnimalEncounter (``self``) as initial
-        known Encounter (``known_enc``), and ``self.tags`` as both initial known
-        (``known_tags``) and new TagObs (``new_tags`).
-        While there are new TagObs, a "while" loop harvests new encounters:
-
-        * For each tag in ``new_tags``, retrieve the encounter history.
-        * Combine and deduplicate the encounter histories
-        * Remove known encounters and call this set of encounters ``new_enc``.
-        * Add ``new_enc`` to ``known_enc``.
-        * Combine and deduplicate all tags of all encounters in ``new_enc`` and
-          call this set of TabObservations ``new_tags``.
-        * Add ``new_tags`` to ``known_tags``.
-        * Repeat the loop if the list of new tags is not empty.
-
-        Finally, deduplicate and return ``known_enc``. These are all encounters
-        that concern the same animal as this (self) encounter, as proven through
-        the shared presence of TagObservations.
-        """
-        known_enc = [self, ]
-        # known_tags = self.tags
-        # new_enc = []
-        # new_tags = self.tags
-        # show_must_go_on = True
-
-        # TODO: flesh out this pseudocode
-        # while show_must_go_on:
-        #     new_enc = set([t.encounter_history for t in new_tags]) - known_enc
-        #     known_enc += new_enc
-        #     new_tags = set([e.tags for e in new_enc]) - known_tags
-        #     known_tags += new_tags
-        #     show_must_go_on = len(new_tags) > 0
-
-        return known_enc
 
     @property
     def is_stranding(self):
@@ -1292,23 +1294,6 @@ class TagObservation(Observation):
         tpl = ('<div class="popup"><a href={1} target="_"">'
                '<i class="fa fa-fw fa-tag"></i></a>&nbsp;{0}&nbsp;</div>')
         return mark_safe(tpl.format(self.__str__(), self.history_url))
-
-
-def allocate_animal_names():
-    """Harvest a list of AnimalEncounters and their primary Flipper Tag IDs.
-
-    Primary Flipper Tag IDs are the tag IDs of flipper tags which were the first
-    ever associated flipper tags on an animal.
-    """
-    return [a.set_name_and_propagate(a.primary_flipper_tag.name) for a
-            in AnimalEncounter.objects.all() if a.is_new_capture]
-
-
-def retrieve_encounter_history_from_tagobservations(tagobs_list):
-    """Return a deduplicated Encounter history for a list of TagObservations."""
-    enclist = [TagObservation.encounter_history(x.name) for x in tagobs_list]
-    # Flatten list of lists into one list:
-    return list(set(list(itertools.chain.from_iterable(enclist))))
 
 
 @python_2_unicode_compatible
