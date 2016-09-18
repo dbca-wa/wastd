@@ -10,21 +10,40 @@
 {% block javascript%}
 {{ block.super }}
 <script type="text/javascript">
-  // var collection = {{ qs_results|geojsonfeature|safe }};
+var style = {
+        "clickable": true,
+        "color": "#00D",
+        "fillColor": "#00D",
+        "weight": 1.0,
+        "opacity": 0.3,
+        "fillOpacity": 0.2
+    };
+
   function map_init(map, options) {
-    // L.geoJson(collection).addTo(map);
-    $.getJSON("{% url 'observation-geojson' %}", function (data) {
-        L.geoJson(data, {
-            style: function (feature) {
-                return { /* color: feature.properties.colour */ };
-            },
-            onEachFeature: function (feature, layer) {
-                layer.bindPopup(
-                    feature.properties.as_html,
-                    {minWidth: "350px", maxWidth: "450px"}); // ignored - why?
+    // L.geoJson({{ qs_results|geojsonfeature|safe }}).addTo(map);
+
+    // $.getJSON("{% url 'observation-geojson' %}", function (data) {
+    //     L.geoJson(data, {
+    //         style: function (feature) {return {};},
+    //         onEachFeature: function (feature, layer) {
+    //             layer.bindPopup(feature.properties.as_html)
+    //         }
+    //     }).addTo(map);
+    //});
+
+    var geojsonTileLayer = new L.TileLayer.GeoJSON(
+        'data/{z}/{x}/{y}.geojson',{
+            clipTiles: true,
+            unique: function (feature) {
+                return feature.id;
             }
-        }).addTo(map);
-    });
+        }, {
+            style: style,
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(feature.properties.as_html)
+            }
+        }
+    ).addTo(map);
   }
 </script>
 {% endblock %}

@@ -19,7 +19,7 @@ from wastd.api import (
     UserViewSet, EncounterViewSet, TurtleNestEncounterViewSet,
     AnimalEncounterViewSet, ObservationViewSet, MediaAttachmentViewSet,
     TagObservationViewSet)
-from djgeojson.views import GeoJSONLayerView
+from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 
 # register all adminactions
 actions.add_to_site(site)
@@ -59,11 +59,21 @@ urlpatterns = [
     url(r'^api-docs/1/', schema_view, name="api-docs"),
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^select2/', include('django_select2.urls')),
+
+    # Djgeojson
     url(r'^observations.geojson$',
         GeoJSONLayerView.as_view(model=Encounter,
                                  properties=('as_html', ),
                                  geometry_field="where"),
         name='observation-geojson'),
+
+    # Encounter as tiled GeoJSON
+    url(r'^data/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
+        TiledGeoJSONLayerView.as_view(
+            model=Encounter,
+            properties=('as_html', ),
+            geometry_field="where"),
+        name='encounter-tiled-geojson'),
     ] +\
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
     staticfiles_urlpatterns()

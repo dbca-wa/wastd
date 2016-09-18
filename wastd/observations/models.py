@@ -798,7 +798,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
     def admin_url_html(self):
         """An HTML div with a link to the admin change_view."""
         tpl = ('<div class="popup"><a href={0} target="_" title="Edit in new tab">'
-               '<i class="fa fa-fw fa-pencil"></i></a></div>')
+               '<i class="fa fa-fw fa-pencil"></i>Edit Encounter</a></div>')
         return tpl.format(self.absolute_admin_url)
 
     @property

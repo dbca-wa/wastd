@@ -296,6 +296,14 @@ LEAFLET_CONFIG = {
     'DEFAULT_ZOOM': 5,
     'SCALE': 'metric',
     'MINIMAP': False,
+    'PLUGINS': {
+        'leaflet-tilelayer-geojson': {
+            'css': [],
+            'js': '//static.dpaw.wa.gov.au/static/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.min.js',
+            'auto-include': True,
+            },
+        },
+
     'TILES': [
         ('Esri WorldImagery',
          'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
