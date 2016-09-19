@@ -54,7 +54,10 @@ X_FRAME_OPTIONS = 'DENY'
 # ------------------------------------------------------------------------------
 # Hosts/domain names that are valid for this site
 # See https://docs.djangoproject.com/en/1.6/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['localhost', 'dpaw.wa.gov.au', ] # env('DJANGO_ALLOWED_HOSTS')
+ALLOWED_HOSTS = ['localhost',
+                 'strandings-test.dpaw.wa.gov.au',
+                 'strandings.dpaw.wa.gov.au', ]
+# env('DJANGO_ALLOWED_HOSTS')
 # END SITE CONFIGURATION
 
 INSTALLED_APPS += ('gunicorn', )
