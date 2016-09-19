@@ -122,4 +122,4 @@ Pressing "Update Names" will reconstruct names for all animals.
 Three simple lines of R code will consume Animal Encounters from the WAStD API
 and transform them into the format required for e.g. program MARK.
 A working example is published
-`here <https://github.com/parksandwildlife/ningaloo-turtle-etl/blob/master/wastd-api.Rmd>`.
+`here <https://github.com/parksandwildlife/ningaloo-turtle-etl/blob/master/wastd-api.Rmd>`_.
