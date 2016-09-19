@@ -300,7 +300,7 @@ LEAFLET_CONFIG = {
     'PLUGINS': {
         'leaflet-tilelayer-geojson': {
             'css': [],
-            'js': '/static/js/TileLayer.GeoJSON.min.js',
+            'js': '//static.dpaw.wa.gov.au/static/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.js',
             'auto-include': True,
             },
         },
@@ -331,7 +331,7 @@ LEAFLET_CONFIG = {
          'http://map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
          {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
-    	  'minZoom': 1,
+          'minZoom': 1,
           'maxZoom': 9,
           'format': 'jpg',
           'time': '',
@@ -341,7 +341,7 @@ LEAFLET_CONFIG = {
          'http://map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_Bands367/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
          {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
-     	  'minZoom': 1,
+          'minZoom': 1,
           'maxZoom': 9,
           'format': 'jpg',
           'time': '',

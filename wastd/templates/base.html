@@ -131,9 +131,10 @@
           integrity="sha384-ux8v3A6CPtOTqOzMKiuo3d/DomGaaClxFYdCu2HPMBEkf6x2xiDyJ7gkXU0MWwaD"
           crossorigin="anonymous"></script>
       {% compress js %}
-      {% leaflet_js %}
       <script src="{% static 'js/project.js' %}"></script>
       {% endcompress %}
+
+      {% leaflet_js %} {# cannot be compressed, plugins refer to hosted JS #}
 
     {% endblock javascript %}
   </body>
