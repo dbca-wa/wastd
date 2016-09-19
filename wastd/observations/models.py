@@ -608,15 +608,24 @@ class Encounter(PolymorphicModel, geo_models.Model):
         show_must_go_on = True
 
         while show_must_go_on:
-            new_enc = [t.encounter for t in new_tags
-                       if t.encounter not in known_enc]
-            known_enc += new_enc
-            new_tags = list(set(itertools.chain.from_iterable(
-                [e.tags for e in new_enc])))
+            new_enc = TagObservation.encounter_histories(
+                new_tags, exclude_encounters=known_enc)
+            known_enc.extend(new_enc)
+            new_tags = Encounter.tag_lists(new_enc)
             known_tags += new_tags
             show_must_go_on = len(new_tags) > 0
 
         return list(set(known_enc))
+
+    @classmethod
+    def tag_lists(cls, encounter_list):
+        """Return the related tags of list of encounters.
+
+        TODO double-check performance
+        """
+        return list(set(itertools.chain.from_iterable(
+            [e.tags for e in encounter_list])))
+
 
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
@@ -797,8 +806,10 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def admin_url_html(self):
         """An HTML div with a link to the admin change_view."""
-        tpl = ('<div class="popup"><a href={0} target="_" title="Edit in new tab">'
-               '<i class="fa fa-fw fa-pencil"></i>Edit Encounter</a></div>')
+        tpl = ('<div class="popup">'
+               '<a href={0} target="_" title="Edit in new tab">'
+               '<i class="fa fa-fw fa-pencil"></i>'
+               '&nbsp;Edit Encounter</a></div>')
         return tpl.format(self.absolute_admin_url)
 
     @property
@@ -810,8 +821,10 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def history_url_html(self):
         """An HTML div with a link to the animal history."""
-        tpl = ('<div class="popup"><a href={0} target="_" title="View in new tab">'
-               '<i class="fa fa-fw fa-clock-o"></i>Animal {1} history</a></div>')
+        tpl = ('<div class="popup">'
+               '<a href={0} target="_" title="View in new tab">'
+               '<i class="fa fa-fw fa-clock-o"></i>'
+               '&nbsp;Animal {1} history</a></div>')
         if self.name:
             html = tpl.format(self.absolute_history_url, self.name)
         else:
@@ -1294,9 +1307,19 @@ class TagObservation(Observation):
             self.get_tag_location_display())
 
     @classmethod
-    def encounter_history(cls, name):
-        """Return the related encounters of all TagObservations of a given name."""
-        return list(set([t.encounter for t in cls.objects.filter(name=name)]))
+    def encounter_history(cls, tagname):
+        """Return the related encounters of all TagObservations of a given tag name."""
+        return list(set([t.encounter for t in cls.objects.filter(name=tagname)]))
+
+    @classmethod
+    def encounter_histories(cls, tagname_list, exclude_encounters=[]):
+        """Return the related encounters of all tag names.
+
+        TODO double-check performance
+        """
+        return [encounter for encounter in list(set(itertools.chain.from_iterable(
+            [TagObservation.encounter_history(t.name) for t in tagname_list])))
+                if encounter not in exclude_encounters]
 
     @property
     def is_new(self):
