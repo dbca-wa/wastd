@@ -300,7 +300,7 @@ LEAFLET_CONFIG = {
     'PLUGINS': {
         'leaflet-tilelayer-geojson': {
             'css': [],
-            'js': '//static.dpaw.wa.gov.au/static/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.min.js',
+            'js': '/static/js/TileLayer.GeoJSON.min.js',
             'auto-include': True,
             },
         },
