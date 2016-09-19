@@ -44,54 +44,55 @@
 
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-toggleable-xs" id="bs-navbar-collapse-1">
-            <ul class="nav navbar-nav">
+              <ul class="nav navbar-nav">
 
-                {% if request.user.is_staff %}
-                 <li class="nav-item">
-                   <a class="nav-link" href="{% url 'admin:index' %}" target="_">
-                       <i class="fa fa-table"></i>&nbsp;Backstage
-                   </a>
-                 </li>
-                 {% endif %}
-                 <li class="nav-item">
-                   <a class="nav-link" href="/api/1/" target="_">
-                       <i class="fa fa-database"></i>&nbsp;API
-                   </a>
-                 </li>
-                 <!-- <li class="nav-item">
-                   <a class="nav-link" href="{% url 'api-docs' %}" target="_">
-                       <i class="fa fa-info"></i>&nbsp;API docs
-                   </a>
-                 </li> -->
-                 <li class="nav-item">
-                   <a class="nav-link" href="http://wastd.readthedocs.io/" target="_">
-                       <i class="fa fa-book"></i>&nbsp;Manual
-                   </a>
-                 </li>
+                  {% if request.user.is_staff %}
+                   <li class="nav-item">
+                     <a class="nav-link" href="{% url 'admin:index' %}" target="_">
+                         <i class="fa fa-table"></i>&nbsp;Backstage
+                     </a>
+                   </li>
+                   {% endif %}
+                   <li class="nav-item">
+                     <a class="nav-link" href="/api/1/" target="_">
+                         <i class="fa fa-database"></i>&nbsp;API
+                     </a>
+                   </li>
+                   <!-- <li class="nav-item">
+                     <a class="nav-link" href="{% url 'api-docs' %}" target="_">
+                         <i class="fa fa-info"></i>&nbsp;API docs
+                     </a>
+                   </li> -->
+                   <li class="nav-item">
+                     <a class="nav-link" href="http://wastd.readthedocs.io/" target="_">
+                         <i class="fa fa-book"></i>&nbsp;Manual
+                     </a>
+                   </li>
 
-            </ul>
+              </ul>
 
-            <ul class="nav navbar-nav pull-xs-right">
-              {% if request.user.is_authenticated %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">
-                      <i class="fa fa-user"></i>&nbsp;{% trans "My Profile" %}
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'account_logout' %}">
-                      <i class="fa fa-sign-out"></i>&nbsp;{% trans "Sign out" %}
-                  </a>
-                </li>
-              {% else %}
-                <li class="nav-item">
-                  <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
-                </li>
-                <li class="nav-item">
-                  <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
-                </li>
-              {% endif %}
-            </ul>
+              <ul class="nav navbar-nav pull-xs-right">
+                {% if request.user.is_authenticated %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">
+                        <i class="fa fa-user"></i>&nbsp;{% trans "My Profile" %}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'account_logout' %}">
+                        <i class="fa fa-sign-out"></i>&nbsp;{% trans "Sign out" %}
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="nav-item">
+                    <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
+                  </li>
+                {% endif %}
+              </ul>
+
           </div>
         </div>
       </nav>

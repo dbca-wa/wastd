@@ -811,7 +811,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
     def history_url_html(self):
         """An HTML div with a link to the animal history."""
         tpl = ('<div class="popup"><a href={0} target="_" title="View in new tab">'
-               '<i class="fa fa-fw fa-pencil"></i>Animal {1} history</a></div>')
+               '<i class="fa fa-fw fa-clock-o"></i>Animal {1} history</a></div>')
         if self.name:
             html = tpl.format(self.absolute_history_url, self.name)
         else:
@@ -987,14 +987,16 @@ class AnimalEncounter(Encounter):
     @property
     def animal_html(self):
         """An HTML string of Observations."""
-        tpl = '<h4>{0}</h4><i class="fa fa-fw fa-heartbeat"></i>&nbsp;{1} {2} {3} on {4}'
+        tpl = ('<h4>{0} {5}</h4><i class="fa fa-fw fa-heartbeat"></i>&nbsp;'
+               '{1} {2} {3} on {4}')
         return mark_safe(
             tpl.format(
                 self.get_species_display(),
                 self.get_health_display(),
                 self.get_maturity_display(),
                 self.get_sex_display(),
-                self.get_habitat_display()))
+                self.get_habitat_display(),
+                self.name))
 
     def make_html(self):
         """Create an HTML representation."""

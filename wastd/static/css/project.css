@@ -41,4 +41,6 @@ body {padding-top: 54px;}
 #wastdmap {width: auto; height: 100%;}
 
 /* Leaflet popup fixed width */
- .popup, .leaflet-popup { width:500px; }
+
+ .leaflet-popup { width:540px; }
+ .popup { width:500px; display:block;}
