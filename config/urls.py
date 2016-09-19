@@ -14,7 +14,7 @@ from adminactions import actions
 from rest_framework import routers
 # from dynamic_rest import routers as dr
 from wastd.observations.models import Encounter
-from wastd.observations.views import schema_view
+from wastd.observations.views import schema_view, update_names
 from wastd.api import (
     UserViewSet, EncounterViewSet, TurtleNestEncounterViewSet,
     AnimalEncounterViewSet, ObservationViewSet, MediaAttachmentViewSet,
@@ -74,6 +74,10 @@ urlpatterns = [
             properties=('as_html', ),
             geometry_field="where"),
         name='encounter-tiled-geojson'),
+
+    # Update animal names for all Encounters
+    url(r'^action/update-names/$', update_names, name="update-names"),
+
     ] +\
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
     staticfiles_urlpatterns()
