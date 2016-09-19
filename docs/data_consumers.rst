@@ -94,6 +94,8 @@ picture of one animal and all related identifying tags.
 As an important difference to the existing WAMTRAM tagging database, the life
 cycle of tags and animals is reconstructed from *reports of observations*.
 
+Thus, all data about one animal could look like this:
+
 ================== ========= ============== ============== ========================
 Encounters         Occasion  Tag WA001      Tag WA002      Tag WA003
 ================== ========= ============== ============== ========================
@@ -107,3 +109,17 @@ AnimalEncounter 14 nesting   tag scar       not observed   recaptured
 AnimalEncounter 15 stranding tag scar       recaptured     removed from dead animal
 Encounter       16 return                                  returned
 ================== ========= ============== ============== ========================
+
+WAStD will reconstruct the fact that these encounters happened with the same
+animal from shared tags (following rows) and their tag history (following columns).
+
+The first ever applied flipper tag name will be used as the animal's name, and
+saved on each encounter. This allows to quickly retrieve or search encounters
+of a particular animal.
+
+Pressing "Update Names" will reconstruct names for all animals.
+
+Three simple lines of R code will consume Animal Encounters from the WAStD API
+and transform them into the format required for e.g. program MARK.
+A working example is published
+`here <https://github.com/parksandwildlife/ningaloo-turtle-etl/blob/master/wastd-api.Rmd>`.
