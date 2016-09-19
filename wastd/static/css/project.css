@@ -43,4 +43,4 @@ body {padding-top: 54px;}
 /* Leaflet popup fixed width */
 
  .leaflet-popup { width:540px; }
- .popup { width:500px; display:block;}
+ .popup { width:500px; }

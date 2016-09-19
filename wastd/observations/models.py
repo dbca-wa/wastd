@@ -834,7 +834,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = '<h4>Encounter {0}</h4>{1}{2}{3}{4}{5}{6}'
+        tpl = ('<div class="popup"><h4>Encounter {0}</h4></div>'
+               '{1}{2}{3}{4}{5}{6}')
         return mark_safe(tpl.format(
             self.name,
             self.coordinate_html,
@@ -987,8 +988,9 @@ class AnimalEncounter(Encounter):
     @property
     def animal_html(self):
         """An HTML string of Observations."""
-        tpl = ('<h4>{0} {5}</h4><i class="fa fa-fw fa-heartbeat"></i>&nbsp;'
-               '{1} {2} {3} on {4}')
+        tpl = ('<div class="popup"><h4>{0} {5}</h4></div>'
+               '<div class="popup"><i class="fa fa-fw fa-heartbeat"></i>&nbsp;'
+               '{1} {2} {3} on {4}</div>')
         return mark_safe(
             tpl.format(
                 self.get_species_display(),
