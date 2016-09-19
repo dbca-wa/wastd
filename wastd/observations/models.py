@@ -1072,7 +1072,7 @@ class TurtleNestEncounter(Encounter):
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = '<h4>{0}</h4>{1}{2}{3}{4}{5}{6}'
+        tpl = '<div class="popup"><h4>{0}</h4></div>{1}{2}{3}{4}{5}{6}'
         return mark_safe(tpl.format(
             self.nest_html,
             self.coordinate_html,
