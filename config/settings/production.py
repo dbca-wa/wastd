@@ -177,7 +177,7 @@ LOGGING = {
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
-            'level': 'ERROR',
+            'level': 'WARN',
             'propagate': True
         },
         'django.security.DisallowedHost': {

@@ -566,8 +566,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
         self.as_html = self.make_html()
         if not self.source_id:
             self.source_id = self.short_name
-        if not self.name:
-            self.name = self.inferred_name
+        #if not self.name and self.inferred_name:
+        #    self.name = self.inferred_name
         super(Encounter, self).save(*args, **kwargs)
 
     # Name -------------------------------------------------------------------#
@@ -580,8 +580,11 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def inferred_name(self):
         """Return the inferred name from related new capture if existing."""
-        return [enc.name for enc in self.related_encounters
-                if enc.is_new_capture][0] or None
+        new_cap = [enc.name for enc in self.related_encounters if enc.is_new_capture]
+        if len(new_cap) > 0:
+            return new_cap[0]
+        else:
+            return None
 
     def set_name_in_related_encounters(self, name):
         """Set the animal name in all related AnimalEncounters."""
