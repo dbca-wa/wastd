@@ -79,6 +79,7 @@ TAG_TYPE_CHOICES = (
     ('stomach-content-sample', 'Stomach Content Sample'),
     ('physical-sample', 'Physical Sample'),
     ('egg-sample', 'Egg Sample'),
+    ('temperature-logger', 'Temperature Logger'),
     ('other', 'Other'),)
 
 TAG_STATUS_DEFAULT = 'resighted'
@@ -290,12 +291,13 @@ ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 # <option value="34">X - X - to be determined</option>
 # <option value="1">X* - Nesting: Laid</option></select>
 
-HABITAT_CHOICES = NA + (
-    ("beach-below-high-water", "beach (below high water line)"),
-    ("beach-above-high-water", "beach (above high water line)"),
-    ("beach-edge-spinifex", "beach (edge of spinifex)"),
-    ("dune-spinifex", "dune (inside spinifex)"),
+BEACH_POSITION_CHOICES = (
+    ("beach-below-high-water", _("below high water mark")),
+    ("beach-above-high-water", _("above high water mark, below dune")),
+    ("beach-edge-of-vegetation", _("edge of dune and vegetation")),
+    ("in-dune-vegetation", _("inside dune and vegetation")), )
 
+HABITAT_CHOICES = NA + BEACH_POSITION_CHOICES + (
     ("beach", "beach (below vegetation line)"),
     ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
     ("dune", "dune"),
@@ -325,11 +327,7 @@ HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                  "reef-coral", "reef-crest-front-slope", "reef-flat",
                  "reef-seagrass-flats", "reef-rocky", "open-water")
 
-BEACH_POSITION_CHOICES = (
-    ("below-hwm", _("below high water mark")),
-    ("above-hw", _("above high water mark, below dune")),
-    ("dune-edge", _("edge of dune, beginning of spinifex")),
-    ("in-dune", _("inside dune, spinifex")), )
+
 
 NEST_AGE_CHOICES = (
     ("false-crawl", "False crawl"),
@@ -367,18 +365,30 @@ ACCURACY_ICONS = {
     "measured": "fa fa-balance-scale"}
 
 DAMAGE_TYPE_CHOICES = (
-    ("minor-trauma", "minor trauma"),
-    ("major-trauma", "major trauma"),
+    # Amputations
     ("tip-amputated", "tip amputation"),
     ("amputated-from-nail", "amputation from nail"),
     ("amputated-half", "half amputation"),
     ("amputated-entirely", "entire amputation"),
+
+    # Epiphytes and gross things
+    ("barnacles", "barnacles"),
+    ("algal-growth", "algal growth"),
+    ("tumor", "tumor"),
+
+    # Tags
     ("tag-scar", "tag scar"),
     ("tag-seen", "tag seen but not identified"),
+
+    # Injuries
     ("cuts", "cuts"),
-    ("deformity", "deformity"),
-    ("propeller-strike", "propeller strike"),
+    ("boat-strike", "boat or propeller strike"),
     ("entanglement", "entanglement"),
+
+    # Morphologic aberrations
+    ("deformity", "deformity"),
+
+    # Catch-all
     ("other", "other"), )
 
 DAMAGE_AGE_CHOICES = (
@@ -546,9 +556,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
             self.when.strftime("%Y-%m-%d-%H-%M-%S"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-"),
-            self.health,
-            self.maturity,
-            self.species
             ]))
 
     def save(self, *args, **kwargs):
@@ -616,6 +623,23 @@ class Encounter(PolymorphicModel, geo_models.Model):
             show_must_go_on = len(new_tags) > 0
 
         return list(set(known_enc))
+
+    @property
+    def tags(self):
+        """Return a queryset of TagObservations."""
+        return self.observation_set.instance_of(TagObservation)
+
+    @property
+    def flipper_tags(self):
+        """Return a queryset of Flipper Tag Observations."""
+        return self.observation_set.instance_of(TagObservation).filter(
+            tagobservation__tag_type='flipper-tag')
+
+    @property
+    def primary_flipper_tag(self):
+        """Return the TagObservation of the primary flipper tag."""
+        return self.flipper_tags.order_by('tagobservation__tag_location').first()
+
 
     @classmethod
     def tag_lists(cls, encounter_list):
@@ -845,19 +869,23 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """An HTML string of Observations."""
         return "".join([o.as_html for o in self.observation_set.all()])
 
+    @property
+    def encounter_html(self):
+        """An HTML representation of the Encounter."""
+        tpl = '<div class="popup"><h4>Encounter {0}</h4></div>'
+        return mark_safe(tpl.format(self.name or ""))
+
     def make_html(self):
         """Create an HTML representation."""
-        tpl = ('<div class="popup"><h4>Encounter {0}</h4></div>'
-               '{1}{2}{3}{4}{5}{6}')
-        return mark_safe(tpl.format(
-            self.name,
+        return mark_safe("".join([
+            self.encounter_html,
             self.coordinate_html,
             self.observer_html,
             self.observation_html,
             self.admin_url_html,
             self.history_url_html,
             self.status_html,
-            ))
+            ]))
 
 
 @python_2_unicode_compatible
@@ -931,6 +959,27 @@ class AnimalEncounter(Encounter):
         default="na",
         help_text=_("The habitat in which the animal was encountered."), )
 
+    checked_for_injuries = models.CharField(
+        max_length=300,
+        verbose_name=_("Checked for injuries"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    scanned_for_pit_tags = models.CharField(
+        max_length=300,
+        verbose_name=_("Scanned for PIT tags"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
+    checked_for_flipper_tags = models.CharField(
+        max_length=300,
+        verbose_name=_("Checked for flipper tags"),
+        choices=OBSERVATION_CHOICES,
+        default="na",
+        help_text=_(""),)
+
     class Meta:
         """Class options."""
 
@@ -983,48 +1032,45 @@ class AnimalEncounter(Encounter):
         return (has_new_tagobs and not has_old_tagobs)
 
     @property
-    def flipper_tags(self):
-        """Return a queryset of Flipper Tag Observations."""
-        return self.observation_set.instance_of(TagObservation).filter(
-            tagobservation__tag_type='flipper-tag')
-
-    @property
-    def tags(self):
-        """Return a queryset of TagObservations."""
-        return self.observation_set.instance_of(TagObservation)
-
-    @property
-    def primary_flipper_tag(self):
-        """Return the TagObservation of the primary flipper tag."""
-        return self.flipper_tags.order_by('tagobservation__tag_location').first()
+    def checked_html(self):
+        """HTML for the three checked fields."""
+        tpl = '{0}&nbsp<i class="{1}"></i> '
+        return mark_safe(
+            '<div class="popup"><i class="fa fa-fw fa-eye"></i>&nbsp;Checked:&nbsp;' +
+            tpl.format("Damage", OBSERVATION_ICONS[self.checked_for_injuries]) +
+            tpl.format("PIT tags", OBSERVATION_ICONS[self.scanned_for_pit_tags]) +
+            tpl.format("Flipper tags", OBSERVATION_ICONS[self.checked_for_flipper_tags]) +
+            '</div>'
+            )
 
     @property
     def animal_html(self):
         """An HTML string of Observations."""
-        tpl = ('<div class="popup"><h4>{0} {5}</h4></div>'
+        tpl = ('<div class="popup"><h4>{0} {1}</h4></div>'
                '<div class="popup"><i class="fa fa-fw fa-heartbeat"></i>&nbsp;'
-               '{1} {2} {3} on {4}</div>')
+               '{2} {3} {4} on {5}</div>')
         return mark_safe(
             tpl.format(
                 self.get_species_display(),
+                self.name or "",
                 self.get_health_display(),
                 self.get_maturity_display(),
                 self.get_sex_display(),
                 self.get_habitat_display(),
-                self.name))
+                ))
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = "{0}{1}{2}{3}{4}{5}{6}"
-        return mark_safe(
-            tpl.format(
+        return mark_safe("".join([
                 self.animal_html,
                 self.coordinate_html,
                 self.observer_html,
+                self.checked_html,
                 self.observation_html,
                 self.admin_url_html,
                 self.history_url_html,
-                self.status_html))
+                self.status_html,
+                ]))
 
 
 @python_2_unicode_compatible
@@ -1080,20 +1126,21 @@ class TurtleNestEncounter(Encounter):
     @property
     def nest_html(self):
         """The HTML representation."""
-        tpl = '<div class="popup">{0}</div>'
+        tpl = '<div class="popup"><h4>{0}</h4></div>'
         return mark_safe(tpl.format(self.__str__()))
 
     def make_html(self):
         """Create an HTML representation."""
-        tpl = '<div class="popup"><h4>{0}</h4></div>{1}{2}{3}{4}{5}{6}'
-        return mark_safe(tpl.format(
+        return mark_safe("".join([
             self.nest_html,
             self.coordinate_html,
             self.observer_html,
             self.observation_html,
             self.admin_url_html,
             self.history_url_html,
-            self.status_html, ))
+            self.status_html,
+            ]))
+
 
     def save(self, *args, **kwargs):
         """Cache the HTML representation in `as_html`."""
@@ -1343,104 +1390,6 @@ class TagObservation(Observation):
         tpl = ('<div class="popup"><a href={1} target="_"">'
                '<i class="fa fa-fw fa-tag"></i></a>&nbsp;{0}&nbsp;</div>')
         return mark_safe(tpl.format(self.__str__(), self.history_url))
-
-
-@python_2_unicode_compatible
-class DistinguishingFeatureObservation(Observation):
-    """DistinguishingFeature observation."""
-
-    damage_injury = models.CharField(
-        max_length=300,
-        verbose_name=_("Obvious damage or injuries"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    scanned_for_pit_tags = models.CharField(
-        max_length=300,
-        verbose_name=_("Scanned for PIT tags"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    missing_limbs = models.CharField(
-        max_length=300,
-        verbose_name=_("Missing limbs"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    barnacles = models.CharField(
-        max_length=300,
-        verbose_name=_("Barnacles"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    algal_growth = models.CharField(
-        max_length=300,
-        verbose_name=_("Algal growth on carapace"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    tagging_scars = models.CharField(
-        max_length=300,
-        verbose_name=_("Tagging scars"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    propeller_damage = models.CharField(
-        max_length=300,
-        verbose_name=_("Propeller strike damage"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    entanglement = models.CharField(
-        max_length=300,
-        verbose_name=_("Entanglement"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_("Entanglement in anthropogenic debris"),)
-
-    see_photo = models.CharField(
-        max_length=300,
-        verbose_name=_("See attached photos"),
-        choices=PHOTO_CHOICES,
-        default="na",
-        help_text=_("More relevant detail in attached photos"),)
-
-    comments = models.TextField(
-        verbose_name=_("Comments"),
-        blank=True, null=True,
-        help_text=_("Further comments on distinguising features."),)
-
-    def __str__(self):
-        """The unicode representation."""
-        return "Distinguishing Features {0} of {1}".format(
-            self.pk, self.encounter.__str__())
-
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        t1 = '<div class="popup"><i class="fa fa-fw fa-eye"></i>&nbsp;'
-        tpl = '{0}&nbsp<i class="{1}"></i> '
-        t2 = '</div>'
-        return mark_safe(
-            t1 +
-            tpl.format("Damage", OBSERVATION_ICONS[self.damage_injury]) +
-            tpl.format("Scanned for PIT tags", OBSERVATION_ICONS[self.scanned_for_pit_tags]) +
-            tpl.format("Missing Limbs", OBSERVATION_ICONS[self.missing_limbs]) +
-            tpl.format("Barnacles", OBSERVATION_ICONS[self.barnacles]) +
-            tpl.format("Algal growth", OBSERVATION_ICONS[self.algal_growth]) +
-            tpl.format("Tagging scars", OBSERVATION_ICONS[self.tagging_scars]) +
-            tpl.format("Propeller damage", OBSERVATION_ICONS[self.propeller_damage]) +
-            tpl.format("Entanglement", OBSERVATION_ICONS[self.entanglement]) +
-            tpl.format("More in photos", PHOTO_ICONS[self.see_photo]) +
-            t2
-            )
 
 
 @python_2_unicode_compatible

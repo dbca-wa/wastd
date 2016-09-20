@@ -38,8 +38,7 @@ from wastd.observations.models import (
     Encounter, TurtleNestEncounter,
     AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
     Observation, MediaAttachment, TagObservation,
-    ManagementAction, TurtleMorphometricObservation,
-    DistinguishingFeatureObservation, TurtleNestObservation,
+    ManagementAction, TurtleMorphometricObservation, TurtleNestObservation,
     TurtleDamageObservation, TrackTallyObservation)
 from wastd.users.models import User
 
@@ -79,9 +78,6 @@ class ObservationSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         """Resolve the Observation instance to the child class's serializer."""
-        if isinstance(obj, DistinguishingFeatureObservation):
-            return DistinguishingFeatureObservationSerializer(
-                obj, context=self.context).to_representation(obj)
         if isinstance(obj, TurtleMorphometricObservation):
             return TurtleMorphometricObservationSerializer(
                 obj, context=self.context).to_representation(obj)
@@ -143,20 +139,6 @@ class TagObservationEncounterSerializer(serializers.ModelSerializer):
         fields = ('encounter', 'observation_name',
                   'tag_type', 'name', 'tag_location',
                   'status', 'comments')
-
-
-class DistinguishingFeatureObservationSerializer(serializers.ModelSerializer):
-    """DistinguishingFeatureObservation serializer."""
-
-    class Meta:
-        """Class options."""
-
-        model = DistinguishingFeatureObservation
-        fields = ('observation_name',
-                  'damage_injury', 'missing_limbs', 'barnacles',
-                  'algal_growth', 'tagging_scars', 'propeller_damage',
-                  'entanglement', 'see_photo', 'comments')
-
 
 class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
     """TurtleMorphometricObservation serializer."""
@@ -311,7 +293,9 @@ class AnimalEncounterSerializer(EncounterSerializer):
         fields = ('where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
                   'taxon', 'species', 'health', 'sex', 'behaviour',
-                  'habitat', 'activity',
+                  'habitat', 'activity', 'checked_for_injuries',
+                  'scanned_for_pit_tags',
+                  'checked_for_flipper_tags',
                   'status', 'source', 'source_id', 'observation_set', )
 
 
@@ -375,6 +359,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
+        'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
         'source', 'source_id', ]
 
 

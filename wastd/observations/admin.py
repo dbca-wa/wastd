@@ -20,7 +20,7 @@ from reversion.admin import VersionAdmin
 from .models import (Encounter, TurtleNestEncounter,
                      AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
                      MediaAttachment, TagObservation, ManagementAction,
-                     TurtleMorphometricObservation, DistinguishingFeatureObservation,
+                     TurtleMorphometricObservation,
                      TurtleNestObservation, TurtleDamageObservation,
                      TrackTallyObservation)
 
@@ -74,14 +74,6 @@ class MediaAttachmentInline(admin.TabularInline):
     model = MediaAttachment
     classes = ('grp-collapse grp-open',)
     widgets = {'attachment': ImageThumbnailFileInput}  # seems inactive
-
-
-class DistinguishingFeaturesInline(admin.StackedInline):
-    """Admin for DistinguishingFeatures."""
-
-    extra = 0
-    model = DistinguishingFeatureObservation
-    classes = ('grp-collapse grp-open',)
 
 
 class TurtleMorphometricObservationInline(admin.StackedInline):
@@ -209,14 +201,15 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     fieldsets = (('Encounter', {'fields': (
         'where', 'location_accuracy', 'when',
         'observer', 'reporter', 'source', 'source_id', )}),)
-    inlines = [DistinguishingFeaturesInline,
-               TurtleMorphometricObservationInline,
-               TurtleNestObservationInline,
-               TurtleDamageObservationInline,
-               TrackTallyObservationInline,
-               TagObservationInline,
-               ManagementActionInline,
-               MediaAttachmentInline, ]
+    inlines = [
+        MediaAttachmentInline,
+        TagObservationInline,
+        TurtleDamageObservationInline,
+        TurtleMorphometricObservationInline,
+        TurtleNestObservationInline,
+        TrackTallyObservationInline,
+        ManagementActionInline,
+        ]
 
     def source_display(self, obj):
         """Make data source readable."""
@@ -273,9 +266,11 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin,
         ('Nest',
          {'fields': ('nest_age', 'species', 'habitat', )}),
         )
-    inlines = [TurtleNestObservationInline,
-               TagObservationInline,
-               MediaAttachmentInline, ]
+    inlines = [
+        MediaAttachmentInline,
+        TagObservationInline,
+        TurtleNestObservationInline,
+        ]
 
     def habitat_display(self, obj):
         """Make habitat human readable."""
@@ -327,16 +322,21 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
                 }
             )},
         }
+
     list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
                     'name',
                     'observer', 'reporter', 'species', 'health_display',
                     'maturity_display', 'sex_display', 'behaviour',
                     'habitat_display',
+                    'checked_for_injuries',
+                    'scanned_for_pit_tags',
+                    'checked_for_flipper_tags',
                     'status', 'source_display', 'source_id', )
     list_filter = (ObservationTypeListFilter,
                    'status', 'observer', 'reporter', 'location_accuracy',
                    'taxon', 'species', 'health', 'maturity',
-                   'sex', 'habitat')
+                   'sex', 'habitat', 'checked_for_injuries',
+                   'scanned_for_pit_tags', 'checked_for_flipper_tags', )
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]
@@ -345,15 +345,17 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
          {'fields': ('taxon', 'species', 'health', 'maturity', 'sex',
-                     'activity', 'behaviour', 'habitat', )}),
+                     'activity', 'behaviour', 'habitat', 'checked_for_injuries',
+                     'scanned_for_pit_tags', 'checked_for_flipper_tags',)}),
         )
-    inlines = [DistinguishingFeaturesInline,
-               TurtleDamageObservationInline,
-               TurtleMorphometricObservationInline,
-               TurtleNestObservationInline,
-               ManagementActionInline,
-               TagObservationInline,
-               MediaAttachmentInline, ]
+    inlines = [
+        MediaAttachmentInline,
+        TagObservationInline,
+        TurtleDamageObservationInline,
+        TurtleMorphometricObservationInline,
+        TurtleNestObservationInline,
+        ManagementActionInline,
+        ]
 
     def health_display(self, obj):
         """Make health status human readable."""
