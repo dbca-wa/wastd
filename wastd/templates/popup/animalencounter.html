@@ -1,0 +1,26 @@
+{% extends 'popup/encounter.html' %}
+{% with original as o %}
+
+{% block title %}
+{{ o.get_species_display }}
+{% endblock %}
+
+{% block headlines %}
+<!-- Animal overview -->
+<div class="row"><i class="fa fa-fw fa-heartbeat"></i>
+    {{ o.get_health_display }} {{ o.get_maturity_display }}
+    {{ o.get_sex_display }} on {{ o.get_habitat_display }}
+</div>
+{% endblock %}
+
+{% block encounterdetails %}
+<!-- Checked for... -->
+<div class="row">
+    <i class="fa fa-fw fa-eye"></i>
+    Damage <i class="{{ o.injury_icons }}"></i>
+    PIT tags <i class="{{ o.pittag_icons }}"></i>
+    Flipper tags <i class="{{ o.flippertag_icons }}"></i>
+</div>
+{% endblock %}
+
+{% endwith %}

@@ -31,6 +31,7 @@ import slugify
 from django.db import models
 from django.contrib.gis.db import models as geo_models
 from django.core.urlresolvers import reverse
+from django.template import Context, loader
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
@@ -198,14 +199,14 @@ MATURITY_CHOICES = NA + TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
      ("unknown", "unknown maturity"), )
 
 HEALTH_CHOICES = NA + (
-    ('alive', 'alive (healthy)'),
-    ('alive-injured', 'alive (injured)'),
-    ('alive-then-died', 'initally alive (but died)'),
-    ('dead-edible', 'dead (carcass edible)'),
-    ('dead-organs-intact', 'dead (decomposed but organs intact)'),
-    ('dead-advanced', 'dead (organs decomposed)'),
-    ('dead-mummified', 'mummified (dead, skin holding bones)'),
-    ('dead-disarticulated', 'disarticulated (dead, no soft tissue remaining)'),
+    ('alive', 'alive, healthy'),
+    ('alive-injured', 'alive, injured'),
+    ('alive-then-died', 'alive, then died'),
+    ('dead-edible', 'dead, fresh'),
+    ('dead-organs-intact', 'dead, organs intact'),
+    ('dead-advanced', 'dead, organs decomposed'),
+    ('dead-mummified', 'dead, mummified'),
+    ('dead-disarticulated', 'dead, disarticulated'),
     ('other', 'other'), )
 
 # StrandNet: same as above
@@ -530,6 +531,11 @@ class Encounter(PolymorphicModel, geo_models.Model):
         verbose_name_plural = "Encounters"
         get_latest_by = "when"
 
+    @property
+    def opts(self):
+        """Make _meta accessible from templates."""
+        return self._meta
+
     def __str__(self):
         """The unicode representation."""
         return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.observer)
@@ -563,12 +569,57 @@ class Encounter(PolymorphicModel, geo_models.Model):
         guaranteed to be unique. The User will be prompted to provide a unique
         source ID if necessary, e.g. by appending a running number.
         """
-        self.as_html = self.make_html()
+        self.as_html = self.get_popup()
         if not self.source_id:
             self.source_id = self.short_name
         if not self.name and self.inferred_name:
             self.name = self.inferred_name
         super(Encounter, self).save(*args, **kwargs)
+
+    # HTML popup -------------------------------------------------------------#
+    def get_popup(self):
+        """Generate HTML popup content."""
+        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        c = Context({"original": self})
+        return mark_safe(t.render(c))
+
+    @property
+    def observations(self):
+        """Return Observations as list."""
+        return self.observation_set.all()
+
+    @property
+    def latitude(self):
+        """Return the WGS 84 DD latitude."""
+        return self.where.get_y()
+
+    @property
+    def longitude(self):
+        """Return the WGS 84 DD longitude."""
+        return self.where.get_x()
+
+    @property
+    def crs(self):
+        """Return the location CRS."""
+        return self.where.srs.name
+
+    @property
+    def status_label(self):
+        """Return the boostrap tag-* CSS label flavour for the QA status."""
+        return Encounter.STATUS_LABELS[self.status]
+
+    @property
+    def image_url(self):
+        """Return the URL of the first attached photograph or none."""
+        try:
+            return self.observation_set.instance_of(
+                MediaAttachment
+                ).filter(
+                    mediaattachment__media_type="photograph"
+                ).first().attachment.url
+        except:
+            return None
+
 
     # Name -------------------------------------------------------------------#
     def set_name(self, name):
@@ -664,8 +715,9 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     @property
     def is_new_capture(self):
-        """Encounters can involve tags, but are never new captures.
+        """Return whether the Encounter is a new capture (hint: never).
 
+        Encounters can involve tags, but are never new captures.
         AnimalEncounters override this property, as they can be new captures.
         """
         return False
@@ -824,88 +876,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return the point coordinates as Well Known Text (WKT)."""
         return self.where.wkt
 
-    @property
-    def coordinate_html(self):
-        """An HTML div of coordinates and CRS."""
-        tpl = ('<div class="popup"><i class="fa fa-fw fa-map-marker"></i>'
-               '&nbsp;Lat {0} Lon {1}  ({2})</div>')
-        return tpl.format(self.where.get_y(),
-                          self.where.get_x(),
-                          self.where.srs.name)
-
-    @property
-    def status_html(self):
-        """An HTML div indicating the QA status."""
-        tpl = '<div class="popup"><span class="tag tag-{0}">{1}</span></div>'
-        return tpl.format(Encounter.STATUS_LABELS[self.status],
-                          self.get_status_display())
-
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
-    @property
-    def admin_url_html(self):
-        """An HTML div with a link to the admin change_view."""
-        tpl = ('<div class="popup">'
-               '<a href={0} target="_" title="Edit in new tab">'
-               '<i class="fa fa-fw fa-pencil"></i>'
-               '&nbsp;Edit Encounter</a></div>')
-        return tpl.format(self.absolute_admin_url)
-
-    @property
-    def absolute_history_url(self):
-        """The list view of all observations of this tag."""
-        cl = reverse("admin:observations_encounter_changelist")
-        return "{0}?name={1}".format(cl, urllib.quote_plus(self.name))
-
-    @property
-    def history_url_html(self):
-        """An HTML div with a link to the animal history."""
-        tpl = ('<div class="popup">'
-               '<a href={0} target="_" title="View in new tab">'
-               '<i class="fa fa-fw fa-clock-o"></i>'
-               '&nbsp;Animal {1} history</a></div>')
-        if self.name:
-            html = tpl.format(self.absolute_history_url, self.name)
-        else:
-            html = ""
-        return html
-
-    @property
-    def observer_html(self):
-        """An HTML string of metadata."""
-        tpl = '<div class="popup"><i class="fa fa-fw fa-{0}"></i>&nbsp;{1}</div>'
-        return mark_safe(
-            tpl.format("calendar", self.when.strftime('%d/%m/%Y %H:%M:%S %Z')) +
-            tpl.format("eye", self.observer.name) +
-            tpl.format("pencil", self.reporter.name))
-
-    @property
-    def observation_html(self):
-        """An HTML string of Observations."""
-        return "".join([o.as_html for o in self.observation_set.all()])
-
-    @property
-    def encounter_html(self):
-        """An HTML representation of the Encounter."""
-        tpl = '<div class="popup"><h4>Encounter {0}</h4></div>'
-        return mark_safe(tpl.format(self.name or ""))
-
-    def make_html(self):
-        """Create an HTML representation."""
-        return mark_safe("".join([
-            self.encounter_html,
-            self.coordinate_html,
-            self.observer_html,
-            self.observation_html,
-            self.admin_url_html,
-            self.history_url_html,
-            self.status_html,
-            ]))
-
 
 @python_2_unicode_compatible
 class AnimalEncounter(Encounter):
@@ -1022,7 +992,7 @@ class AnimalEncounter(Encounter):
 
     def save(self, *args, **kwargs):
         """Cache the HTML representation in `as_html`."""
-        self.as_html = self.make_html()
+        self.as_html = self.get_popup()
         super(AnimalEncounter, self).save(*args, **kwargs)
 
     @property
@@ -1080,46 +1050,21 @@ class AnimalEncounter(Encounter):
         has_old_tagobs = len(old_tagobs) > 0
         return (has_new_tagobs and not has_old_tagobs)
 
+    # HTML popup -------------------------------------------------------------#
     @property
-    def checked_html(self):
-        """HTML for the three checked fields."""
-        tpl = '{0}&nbsp<i class="{1}"></i> '
-        return mark_safe(
-            '<div class="popup"><i class="fa fa-fw fa-eye"></i>&nbsp;Checked:&nbsp;' +
-            tpl.format("Damage", OBSERVATION_ICONS[self.checked_for_injuries]) +
-            tpl.format("PIT tags", OBSERVATION_ICONS[self.scanned_for_pit_tags]) +
-            tpl.format("Flipper tags", OBSERVATION_ICONS[self.checked_for_flipper_tags]) +
-            '</div>'
-            )
+    def injury_icons(self):
+        """Return the fontawesome icon CSS class for "checked for injury"."""
+        return OBSERVATION_ICONS[self.checked_for_injuries]
 
     @property
-    def animal_html(self):
-        """An HTML string of Observations."""
-        tpl = ('<div class="popup"><h4>{0} {1}</h4></div>'
-               '<div class="popup"><i class="fa fa-fw fa-heartbeat"></i>&nbsp;'
-               '{2} {3} {4} on {5}</div>')
-        return mark_safe(
-            tpl.format(
-                self.get_species_display(),
-                self.name or "",
-                self.get_health_display(),
-                self.get_maturity_display(),
-                self.get_sex_display(),
-                self.get_habitat_display(),
-                ))
+    def pittag_icons(self):
+        """Return the fontawesome icon CSS class for "checked for PIT tags"."""
+        return OBSERVATION_ICONS[self.scanned_for_pit_tags]
 
-    def make_html(self):
-        """Create an HTML representation."""
-        return mark_safe("".join([
-                self.animal_html,
-                self.coordinate_html,
-                self.observer_html,
-                self.checked_html,
-                self.observation_html,
-                self.admin_url_html,
-                self.history_url_html,
-                self.status_html,
-                ]))
+    @property
+    def flippertag_icons(self):
+        """Return the fontawesome icon CSS class for "checked for flipper tags"."""
+        return OBSERVATION_ICONS[self.checked_for_flipper_tags]
 
 
 @python_2_unicode_compatible
@@ -1133,7 +1078,6 @@ class TurtleNestEncounter(Encounter):
     * fresh (morning after, observed during trach count)
     * predated (nest and eggs destroyed by predator)
     * hatched (eggs hatched)
-
     """
 
     nest_age = models.CharField(
@@ -1172,28 +1116,9 @@ class TurtleNestEncounter(Encounter):
             self.get_species_display(),
             self.get_habitat_display(), )
 
-    @property
-    def nest_html(self):
-        """The HTML representation."""
-        tpl = '<div class="popup"><h4>{0}</h4></div>'
-        return mark_safe(tpl.format(self.__str__()))
-
-    def make_html(self):
-        """Create an HTML representation."""
-        return mark_safe("".join([
-            self.nest_html,
-            self.coordinate_html,
-            self.observer_html,
-            self.observation_html,
-            self.admin_url_html,
-            self.history_url_html,
-            self.status_html,
-            ]))
-
-
     def save(self, *args, **kwargs):
         """Cache the HTML representation in `as_html`."""
-        self.as_html = self.make_html()
+        self.as_html = self.get_popup()
         super(TurtleNestEncounter, self).save(*args, **kwargs)
 
 
@@ -1218,7 +1143,9 @@ class Observation(PolymorphicModel, models.Model):
     @property
     def as_html(self):
         """An HTML representation."""
-        return mark_safe('<div class="popup">{0}</div>'.format(self.__str__()))
+        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        c = Context({"original": self})
+        return mark_safe(t.render(c))
 
     @property
     def observation_name(self):
@@ -1288,13 +1215,6 @@ class MediaAttachment(Observation):
         """The unicode representation."""
         return "Media {0} {1} for {2}".format(
             self.pk, self.title, self.encounter.__str__())
-
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-fw fa-film"></i>'
-               '&nbsp;<a href="{0}" target="_">{1}</a></div>')
-        return mark_safe(tpl.format(self.attachment.url, self.title))
 
 
 @python_2_unicode_compatible
@@ -1433,13 +1353,6 @@ class TagObservation(Observation):
         cl = reverse("admin:observations_tagobservation_changelist")
         return "{0}?q={1}".format(cl, urllib.quote_plus(self.name))
 
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        tpl = ('<div class="popup"><a href={1} target="_"">'
-               '<i class="fa fa-fw fa-tag"></i></a>&nbsp;{0}&nbsp;</div>')
-        return mark_safe(tpl.format(self.__str__(), self.history_url))
-
 
 @python_2_unicode_compatible
 class ManagementAction(Observation):
@@ -1463,13 +1376,6 @@ class ManagementAction(Observation):
         """The unicode representation."""
         return "Management Action {0} of {1}".format(
             self.pk, self.encounter.__str__())
-
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-fw fa-arrow-right"></i>'
-               '&nbsp;{0}</div>')
-        return mark_safe(tpl.format(self.management_actions))
 
 
 @python_2_unicode_compatible
@@ -1558,7 +1464,7 @@ class TurtleMorphometricObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        t1 = '<div class="popup"><i class="fa fa-fw fa-bar-chart"></i>&nbsp;'
+        t1 = '<div class="row"><i class="fa fa-fw fa-bar-chart"></i>&nbsp;'
         tpl = '{0}&nbsp;{1}&nbsp;mm&nbsp;<i class="{2}"></i>  '
         t2 = '</div>'
         return mark_safe(
@@ -1688,7 +1594,7 @@ class TurtleNestObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-fw fa-home"></i>&nbsp;{0}</div>')
+        tpl = ('<div class="row"><i class="fa fa-fw fa-home"></i>&nbsp;{0}</div>')
         return mark_safe(tpl.format(self.__str__()))
 
 
@@ -1732,7 +1638,7 @@ class TurtleDamageObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-fw fa-bolt"></i>&nbsp;{0}</div>')
+        tpl = ('<div class="row"><i class="fa fa-fw fa-bolt"></i>&nbsp;{0}</div>')
         return mark_safe(tpl.format(self.__str__()))
 
 
@@ -1830,9 +1736,9 @@ class TrackTallyObservation(Observation):
     @property
     def as_html(self):
         """An HTML representation."""
-        tpl = ('<div class="popup"><i class="fa fa-fw fa-list-ol"></i>&nbsp;'
+        tpl = ('<div class="row"><i class="fa fa-fw fa-list-ol"></i>&nbsp;'
                'TrackTally: {0} LH, {1} GN, {2} HB, {3} FB, {4} NA</div>'
-               '<div class="popup"><i class="fa fa-fw fa-cutlery"></i>&nbsp;'
+               '<div class="row"><i class="fa fa-fw fa-cutlery"></i>&nbsp;'
                'Predation: Fox&nbsp;<i class="{5}"></i>  '
                'Dog&nbsp;<i class="{6}"></i>  '
                'Dingo&nbsp;<i class="{7}"></i>  '

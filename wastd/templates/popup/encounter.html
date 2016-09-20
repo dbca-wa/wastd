@@ -1,0 +1,65 @@
+{% with original as o %}
+
+<!-- Heading -->
+<div class="row">
+    <h4>{% block title %}Encounter{% endblock %}{% if o.name %} {{ o.name }}{% endif%}</h4>
+</div>
+
+<!-- Optional image column -->
+{% if o.image_url %}
+<div class="row margin-top-15">
+    <div class="col-md-5">
+        <img src="{{ o.image_url }}" width="100%" alt="Encounter logo"/>
+    </div>
+    <div class="col-md-7">
+{% endif %}
+
+{% block headlines %}{% endblock %}
+
+<!-- Location & time -->
+<div class="row">
+    <i class="fa fa-fw fa-map-marker"></i>
+    Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
+    ({{ o.crs }}) &plusmn; {{ o.location_accuracy }} m
+    <i class="fa fa-fw fa-calendar"></i>
+    {{ o.when|date:"r" }}
+</div>
+
+<!-- Observer -->
+<div class="row">
+    <i class="fa fa-fw fa-eye"></i>
+    <a href="mailto:{{ o.observer.email }}">{{ o.observer.name }}</a>
+
+    <i class="fa fa-fw fa-pencil"></i>
+    <a href="mailto:{{ o.reporter.email }}">{{ o.reporter.name }}</a>
+</div>
+
+<!--  Observations -->
+{% block encounterdetails %}{% endblock %}
+{% for obs in o.observations %}
+    {{ obs.as_html|safe }}
+{% endfor %}
+
+<!-- QA status -->
+<div class="row">
+    <span class="tag tag-{{ o.status_label }}">{{ o.get_status_display }}</span>
+
+    <!-- URL to change_view -->
+    <i class="fa fa-fw fa-pencil"></i>
+    <a href="{% url 'admin:observations_encounter_change' o.pk %}"
+        target="_" title="Open in new tab">Edit Encounter</a>
+
+    <!-- URL to change_list of encounter history for encounter name -->
+    {% if o.name %}
+    <i class="fa fa-fw fa-history"></i>
+    <a href="{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}"
+        target="_" title="Open in new tab">Browse history of {{ o.name }}</a>
+    {% endif %}
+</div>
+
+{% if o.image_url %}
+</div><!-- /.col-md-7 -->
+</div><!-- /.row -->
+{% endif %}
+
+{% endwith %}
