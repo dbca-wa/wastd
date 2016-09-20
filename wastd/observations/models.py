@@ -1025,6 +1025,36 @@ class AnimalEncounter(Encounter):
         super(AnimalEncounter, self).save(*args, **kwargs)
 
     @property
+    def short_name(self):
+        """A short, often unique, human-readable representation of the encounter.
+
+        Slugified and dash-separated:
+
+        * Date of encounter as YYYY-mm-dd
+        * longitude in WGS 84 DD, rounded to 4 decimals (<10m),
+        * latitude in WGS 84 DD, rounded to 4 decimals (<10m), (missing sign!!)
+        * health,
+        * maturity,
+        * species,
+        * name if available (requires "update names" and tag obs)
+
+        The short_name could be non-unique for encounters of multiple stranded
+        animals of the same species and deadness.
+        """
+        nameparts = [
+            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
+            str(round(self.where.get_x(), 4)).replace(".", "-"),
+            str(round(self.where.get_y(), 4)).replace(".", "-"),
+            self.health,
+            self.maturity,
+            self.sex,
+            self.species,
+            ]
+        if self.name is not None:
+            nameparts.append(self.name)
+        return slugify.slugify("-".join(nameparts))
+
+    @property
     def is_stranding(self):
         """Return whether the Encounters is stranding or tagging.
 
