@@ -327,8 +327,6 @@ HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                  "reef-coral", "reef-crest-front-slope", "reef-flat",
                  "reef-seagrass-flats", "reef-rocky", "open-water")
 
-
-
 NEST_AGE_CHOICES = (
     ("false-crawl", "False crawl"),
     ("nesting-turtle-present", "New nest (turtle present)"),
@@ -568,6 +566,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
         self.as_html = self.make_html()
         if not self.source_id:
             self.source_id = self.short_name
+        if not self.name:
+            self.name = self.inferred_name
         super(Encounter, self).save(*args, **kwargs)
 
     # Name -------------------------------------------------------------------#
@@ -577,22 +577,31 @@ class Encounter(PolymorphicModel, geo_models.Model):
         self.save()
         print("{0} name set to {1}".format(self.__str__(), name))
 
+    @property
+    def inferred_name(self):
+        """Return the inferred name from related new capture if existing."""
+        return [enc.name for enc in self.related_encounters
+                if enc.is_new_capture][0] or None
+
     def set_name_in_related_encounters(self, name):
         """Set the animal name in all related AnimalEncounters."""
         [a.set_name(name) for a in self.related_encounters]
 
     def set_name_and_propagate(self, name):
         """Set the animal name in this and all related Encounters."""
-        self.set_name(name)
+        # self.set_name(name)  # already contained in next line
         self.set_name_in_related_encounters(name)
 
     @property
     def related_encounters(self):
         """Return all Encounters with the same Animal.
 
+        This algorithm collects all Encounters with the same animal by
+        traversing an Encounter's TagObservations and their encounter histories.
+
         The algorithm starts with the Encounter (``self``) as initial
         known Encounter (``known_enc``), and ``self.tags`` as both initial known
-        (``known_tags``) and new TagObs (``new_tags`).
+        (``known_tags``) and new TagObs (``new_tags``).
         While there are new TagObs, a "while" loop harvests new encounters:
 
         * For each tag in ``new_tags``, retrieve the encounter history.
@@ -640,7 +649,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return the TagObservation of the primary flipper tag."""
         return self.flipper_tags.order_by('tagobservation__tag_location').first()
 
-
     @classmethod
     def tag_lists(cls, encounter_list):
         """Return the related tags of list of encounters.
@@ -650,6 +658,13 @@ class Encounter(PolymorphicModel, geo_models.Model):
         return list(set(itertools.chain.from_iterable(
             [e.tags for e in encounter_list])))
 
+    @property
+    def is_new_capture(self):
+        """Encounters can involve tags, but are never new captures.
+
+        AnimalEncounters override this property, as they can be new captures.
+        """
+        return False
 
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
@@ -1017,10 +1032,10 @@ class AnimalEncounter(Encounter):
 
     @property
     def is_new_capture(self):
-        """Return whether this AnimalEncounter is a new capture.
+        """Return whether this Encounter is a new capture.
 
         New captures are named after their primary flipper tag.
-        An AnimalEncounter is a new capture if there are:
+        An Encounter is a new capture if there are:
 
         * no associated TagObservations of ``is_recapture`` status
         * at least one associated TabObservation of ``is_new`` status
