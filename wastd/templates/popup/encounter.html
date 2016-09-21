@@ -1,5 +1,5 @@
+{% load observations %}
 {% with original as o %}
-
 <!-- Heading -->
 <div class="row">
     <h4>{% block title %}Encounter{% endblock %}{% if o.name %} {{ o.name }}{% endif%}</h4>
@@ -42,7 +42,7 @@
 
 <!-- QA status -->
 <div class="row">
-    <span class="tag tag-{{ o.status_label }}">{{ o.get_status_display }}</span>
+    <span class="{{ o.status|tb_status_icon }}">{{ o.get_status_display }}</span>
 
     <!-- URL to change_view -->
     <i class="fa fa-fw fa-pencil"></i>

@@ -359,9 +359,9 @@ ACCURACY_CHOICES = (
     ("measured", "Measured"),)
 
 ACCURACY_ICONS = {
-    "unknown": "fa fa-question-circle-o",
-    "estimated": "fa fa-comment-o",
-    "measured": "fa fa-balance-scale"}
+    "unknown": "fa fw fa-question-circle-o",
+    "estimated": "fa fw fa-comment-o",
+    "measured": "fa fw fa-balance-scale"}
 
 DAMAGE_TYPE_CHOICES = (
     # Amputations
@@ -620,6 +620,11 @@ class Encounter(PolymorphicModel, geo_models.Model):
         except:
             return None
 
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     # Name -------------------------------------------------------------------#
     def set_name(self, name):
@@ -1050,22 +1055,6 @@ class AnimalEncounter(Encounter):
         has_old_tagobs = len(old_tagobs) > 0
         return (has_new_tagobs and not has_old_tagobs)
 
-    # HTML popup -------------------------------------------------------------#
-    @property
-    def injury_icons(self):
-        """Return the fontawesome icon CSS class for "checked for injury"."""
-        return OBSERVATION_ICONS[self.checked_for_injuries]
-
-    @property
-    def pittag_icons(self):
-        """Return the fontawesome icon CSS class for "checked for PIT tags"."""
-        return OBSERVATION_ICONS[self.scanned_for_pit_tags]
-
-    @property
-    def flippertag_icons(self):
-        """Return the fontawesome icon CSS class for "checked for flipper tags"."""
-        return OBSERVATION_ICONS[self.checked_for_flipper_tags]
-
 
 @python_2_unicode_compatible
 class TurtleNestEncounter(Encounter):
@@ -1461,26 +1450,6 @@ class TurtleMorphometricObservation(Observation):
         return "Turtle Morphometrics {0} for {1}".format(
             self.pk, self.encounter)
 
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        t1 = '<div class="row"><i class="fa fa-fw fa-bar-chart"></i>&nbsp;'
-        tpl = '{0}&nbsp;{1}&nbsp;mm&nbsp;<i class="{2}"></i>  '
-        t2 = '</div>'
-        return mark_safe(
-            t1 +
-            tpl.format("CCL", self.curved_carapace_length_mm,
-                       ACCURACY_ICONS[self.curved_carapace_length_accuracy]) +
-            tpl.format("CCN", self.curved_carapace_notch_mm,
-                       ACCURACY_ICONS[self.curved_carapace_notch_accuracy]) +
-            tpl.format("CCW", self.curved_carapace_width_mm,
-                       ACCURACY_ICONS[self.curved_carapace_width_accuracy]) +
-            tpl.format("TL", self.tail_length_mm,
-                       ACCURACY_ICONS[self.tail_length_accuracy]) +
-            tpl.format("HW", self.maximum_head_width_mm,
-                       ACCURACY_ICONS[self.maximum_head_width_accuracy]) +
-            t2)
-
 
 @python_2_unicode_compatible
 class TurtleNestObservation(Observation):
@@ -1591,12 +1560,6 @@ class TurtleNestObservation(Observation):
             self.get_nest_position_display(),
             self.egg_count)
 
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        tpl = ('<div class="row"><i class="fa fa-fw fa-home"></i>&nbsp;{0}</div>')
-        return mark_safe(tpl.format(self.__str__()))
-
 
 @python_2_unicode_compatible
 class TurtleDamageObservation(Observation):
@@ -1634,12 +1597,6 @@ class TurtleDamageObservation(Observation):
             self.get_body_part_display(),
             self.get_damage_age_display(),
             self.get_damage_type_display(), )
-
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        tpl = ('<div class="row"><i class="fa fa-fw fa-bolt"></i>&nbsp;{0}</div>')
-        return mark_safe(tpl.format(self.__str__()))
 
 
 @python_2_unicode_compatible
@@ -1732,30 +1689,5 @@ class TrackTallyObservation(Observation):
             self.false_crawls_natator_depressus,
             self.false_crawls_na,
             )
-
-    @property
-    def as_html(self):
-        """An HTML representation."""
-        tpl = ('<div class="row"><i class="fa fa-fw fa-list-ol"></i>&nbsp;'
-               'TrackTally: {0} LH, {1} GN, {2} HB, {3} FB, {4} NA</div>'
-               '<div class="row"><i class="fa fa-fw fa-cutlery"></i>&nbsp;'
-               'Predation: Fox&nbsp;<i class="{5}"></i>  '
-               'Dog&nbsp;<i class="{6}"></i>  '
-               'Dingo&nbsp;<i class="{7}"></i>  '
-               'Goanna&nbsp;<i class="{8}"></i>  '
-               'Bird&nbsp;<i class="{9}"></i></div>')
-        return mark_safe(
-            tpl.format(
-                self.false_crawls_caretta_caretta,
-                self.false_crawls_chelonia_mydas,
-                self.false_crawls_eretmochelys_imbricata,
-                self.false_crawls_natator_depressus,
-                self.false_crawls_na,
-                OBSERVATION_ICONS[self.fox_predation],
-                OBSERVATION_ICONS[self.dog_predation],
-                OBSERVATION_ICONS[self.dingo_predation],
-                OBSERVATION_ICONS[self.goanna_predation],
-                OBSERVATION_ICONS[self.bird_predation]))
-
 
 # TODO add CecaceanMorphometricObservation for cetacean strandings

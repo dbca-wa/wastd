@@ -1,4 +1,5 @@
 {% extends 'popup/encounter.html' %}
+{% load observations %}
 {% with original as o %}
 
 {% block title %}
@@ -17,9 +18,9 @@
 <!-- Checked for... -->
 <div class="row">
     <i class="fa fa-fw fa-eye"></i>
-    Damage <i class="{{ o.injury_icons }}"></i>
-    PIT tags <i class="{{ o.pittag_icons }}"></i>
-    Flipper tags <i class="{{ o.flippertag_icons }}"></i>
+    Damage <i class="{{ o.checked_for_injuries|fa_observation_icon }}"></i>
+    PIT tags <i class="{{ o.scanned_for_pit_tags|fa_observation_icon }}"></i>
+    Flipper tags <i class="{{ o.checked_for_flipper_tags|fa_observation_icon }}"></i>
 </div>
 {% endblock %}
 

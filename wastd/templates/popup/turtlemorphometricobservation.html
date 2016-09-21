@@ -1,0 +1,30 @@
+{% load observations %}
+{% with original as o %}
+<div class="row">
+    <i class="fa fa-fw fa-bar-chart"></i>
+    {% if o.curved_carapace_length_mm %}
+    CCL {{ o.curved_carapace_length_mm }} mm
+    <i class="{{ o.curved_carapace_length_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+
+    {% if o.curved_carapace_notch_mm %}
+    CCN {{ o.curved_carapace_notch_mm }} mm
+    <i class="{{ o.curved_carapace_notch_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+
+    {% if o.curved_carapace_width_mm %}
+    CCW {{ o.curved_carapace_width_mm }} mm
+    <i class="{{ o.curved_carapace_width_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+
+    {% if o.tail_length_mm %}
+    TL {{ o.tail_length_mm }} mm
+    <i class="{{ o.tail_length_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+
+    {% if o.maximum_head_width_mm %}
+    HW {{ o.maximum_head_width_mm }} mm
+    <i class="{{ o.maximum_head_width_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+</div>
+{% endwith %}
