@@ -43,3 +43,6 @@ body {padding-top: 54px;}
 /* Leaflet popup fixed width */
 .leaflet-popup-content { min-width: 540px; padding: 10px;}
 .margin-top-15 {margin-top: 15px;}
+
+/* Link colour in leaflet popups */
+.leaflet-container a {color: #0a4077;}
