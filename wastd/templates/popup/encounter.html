@@ -8,7 +8,7 @@
 <!-- Optional image carousel -->
 {% if o.photographs %}
 <div class="row margin-top-15">
-    <div class="col-md-5">
+    <div class="col-md-6">
         <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
           {% if o.photographs|length > 1 %}
           <ol class="carousel-indicators">
@@ -40,7 +40,7 @@
           {% endif %}
         </div>
     </div>
-    <div class="col-md-7">
+    <div class="col-md-6">
 {% endif %}
 
 {% block headlines %}{% endblock %}
@@ -71,15 +71,16 @@
     {{ obs.as_html|safe }}
 {% endfor %}
 
-<!-- QA status -->
 <div class="row">
+    <!-- QA status -->
     <span class="{{ o.status|tb_status_icon }}">{{ o.get_status_display }}</span>
 
     <!-- URL to change_view -->
     <i class="fa fa-fw fa-pencil"></i>
     <a href="{% url 'admin:observations_encounter_change' o.pk %}"
         target="_" title="Open in new tab">Edit Encounter</a>
-
+</div>
+<div class="row">
     <!-- URL to change_list of encounter history for encounter name -->
     {% if o.name %}
     <i class="fa fa-fw fa-history"></i>
@@ -88,8 +89,8 @@
     {% endif %}
 </div>
 
-{% if o.image_url %}
-</div><!-- /.col-md-7 -->
+{% if o.photographs %}
+</div><!-- /.col-md-6 -->
 </div><!-- /.row -->
 {% endif %}
 

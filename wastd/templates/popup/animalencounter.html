@@ -3,7 +3,11 @@
 {% with original as o %}
 
 {% block title %}
+{% if o.species != "na" %}
 {{ o.get_species_display }}
+{% else %}
+Animal Encounter
+{% endif %}
 {% endblock %}
 
 {% block headlines %}
