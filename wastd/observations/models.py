@@ -297,8 +297,8 @@ ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 # <option value="1">X* - Nesting: Laid</option></select>
 
 BEACH_POSITION_CHOICES = (
-    ("beach-below-high-water", _("below high water mark")),
-    ("beach-above-high-water", _("above high water mark, below dune")),
+    ("beach-below-high-water", _("beach below high water mark")),
+    ("beach-above-high-water", _("beach between high water mark and dune")),
     ("beach-edge-of-vegetation", _("edge of dune and vegetation")),
     ("in-dune-vegetation", _("inside dune and vegetation")), )
 
