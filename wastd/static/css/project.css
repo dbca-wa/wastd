@@ -46,3 +46,6 @@ body {padding-top: 54px;}
 
 /* Link colour in leaflet popups */
 .leaflet-container a {color: #0a4077;}
+
+/* Map popup image carousel: push indicators 10px further downwards */
+.carousel-indicators {bottom: -10px;}

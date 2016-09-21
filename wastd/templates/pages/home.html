@@ -20,7 +20,6 @@ var style = {
         "fillOpacity": 0.2
     };
 
-
   function map_init(map, options) {
     // L.geoJson({{ qs_results|geojsonfeature|safe }}).addTo(map);
 
@@ -32,7 +31,6 @@ var style = {
     //         }
     //     }).addTo(map);
     //});
-
 
     var geojsonTileLayer = new L.TileLayer.GeoJSON(
         'data/{z}/{x}/{y}.geojson',{

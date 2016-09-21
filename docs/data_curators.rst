@@ -52,6 +52,11 @@ or plain text, separating duplicate information into a subfolder "duplicates".
 * Photos embedded in MS Word documents: save separately as jpg or png.
 * MS Word documents: save as PDF.
 
+Shrink images in Ubuntu: open terminal in folder and run on **copies** of the
+large images::
+
+    mogrify -resize 30% *.jpg
+
 After this process, there should be present:
 
 * One PDF of the strandings data sheet,
