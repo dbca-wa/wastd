@@ -612,14 +612,13 @@ class Encounter(PolymorphicModel, geo_models.Model):
         return Encounter.STATUS_LABELS[self.status]
 
     @property
-    def image_url(self):
-        """Return the URL of the first attached photograph or none."""
+    def photographs(self):
+        """Return the URLs of all attached photograph or none."""
         try:
-            return self.observation_set.instance_of(
-                MediaAttachment
-                ).filter(
-                    mediaattachment__media_type="photograph"
-                ).first().attachment.url
+            return list(
+                self.observation_set.instance_of(
+                    MediaAttachment).filter(
+                        mediaattachment__media_type="photograph"))
         except:
             return None
 

@@ -5,11 +5,40 @@
     <h4>{% block title %}Encounter{% endblock %}{% if o.name %} {{ o.name }}{% endif%}</h4>
 </div>
 
-<!-- Optional image column -->
-{% if o.image_url %}
+<!-- Optional image carousel -->
+{% if o.photographs %}
 <div class="row margin-top-15">
     <div class="col-md-5">
-        <img src="{{ o.image_url }}" width="100%" alt="Encounter logo"/>
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+          {% if o.photographs|length > 1 %}
+          <ol class="carousel-indicators">
+            {% for p in o.photographs %}
+            <li data-target="#carousel-example-generic"
+                data-slide-to="{{ forloop.counter }}"
+                {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
+          </ol>
+          {% endif %}
+          <div class="carousel-inner" role="listbox">
+              {% for p in o.photographs %}
+            <div class="carousel-item{% if forloop.first %} active{% endif %}">
+              <img src="{{ p.attachment.url }}" width="100%" alt="{{ p.title }}"/>
+            </div>
+            {% endfor %}
+          </div>
+          {% if o.photographs|length > 1 %}
+          <a class="left carousel-control" href="#carousel-example-generic"
+             role="button" data-slide="prev">
+            <span class="icon-prev" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="right carousel-control" href="#carousel-example-generic"
+             role="button" data-slide="next">
+            <span class="icon-next" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+          {% endif %}
+        </div>
     </div>
     <div class="col-md-7">
 {% endif %}
@@ -21,6 +50,8 @@
     <i class="fa fa-fw fa-map-marker"></i>
     Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
     ({{ o.crs }}) &plusmn; {{ o.location_accuracy }} m
+</div>
+<div class="row">
     <i class="fa fa-fw fa-calendar"></i>
     {{ o.when|date:"r" }}
 </div>
