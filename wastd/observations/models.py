@@ -197,8 +197,7 @@ MAMMAL_MATURITY_CHOICES = (
     ("unweaned", "unweaned immature"),
     ("weaned", "weaned immature"), )
 
-MATURITY_CHOICES = (NA_VALUE, "unknown maturity") +\
-    TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
+MATURITY_CHOICES = TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
     (("adult", "adult"),
      ("unknown", "unknown maturity"), )
 
@@ -350,14 +349,13 @@ OBSERVATION_ICONS = {
     "absent": "fa fa-times",
     "present": "fa fa-check"}
 
-PHOTO_CHOICES = NA + (
-    ("see photos", "See attached photos for details"),)
+PHOTO_CHOICES = NA + (("see photos", "See attached photos for details"),)
 
 PHOTO_ICONS = {
     NA_VALUE: "fa fa-question-circle-o",
     "see photos": "fa fa-check"}
 
-ACCURACY_CHOICES = NA + (
+ACCURACY_CHOICES = (
     ("unknown", "Unknown"),
     ("estimated", "Estimated"),
     ("measured", "Measured"),)
