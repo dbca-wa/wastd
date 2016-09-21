@@ -165,6 +165,29 @@ errors, which are often linked to the person's respective training or handwritin
 After adding these data to the Encounter, save the Encounter and refresh WAStD's
 home page to see a summary as popup on the Encounter's place marker.
 
+Updating an existing stranding record
+-------------------------------------
+Place the new files into the new case folders (named after WAStD's source ID for
+that record) following above defined file standards. Prefix the filenames with
+the source ID, then upload them to the corresponding record in WAStD.
+
+Extract new information from the new files into WAStD, updating the AnimalEncounter
+and related Observations as required.
+
+If the inputs for the source ID change, delete the source ID, save the AnimalEncounter
+to generate a new, correct source ID, then update the case folder name with
+the new source ID. Lastly, rename and reupload all files to propagate the new source ID
+into filenames and file URLs. If we don't do this, things will get tricky beyond
+repair in the future.
+
+Outcome
+-------
+* **Point of truth** is the record in WAStD, which is the most comprehensive and most
+  accessible source of information related to a stranding.
+* All information in WAStD that came from files requires these files to be
+  in standard formats, following the source ID naming convention, and be uploaded
+  precicely in the same version that is in the case folder.
+
 
 Cetacean Strandings
 ===================
