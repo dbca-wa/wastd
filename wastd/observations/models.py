@@ -103,10 +103,12 @@ TAG_STATUS_CHOICES = (                                        # TRT_TAG_STATES
 TAG_STATUS_RESIGHTED = ('resighted', 'reclinched', 'removed')
 TAG_STATUS_ON_ANIMAL = (TAG_STATUS_APPLIED_NEW, TAG_STATUS_RESIGHTED)
 
-NA = (("na", "not observed"), )
+NA_VALUE = "na"
+NA = ((NA_VALUE, "not observed"), )
 
+TAXON_CHOICES_DEFAULT = "Cheloniidae"
 TAXON_CHOICES = NA + (
-    ("Cheloniidae", "Marine turtles"),
+    (TAXON_CHOICES_DEFAULT, "Marine turtles"),
     ("Cetacea", "Whales and Dolphins"),
     ("Pinnipedia", "Pinnipeds"),
     ("Sirenia", "Dugongs"),
@@ -177,7 +179,8 @@ CETACEAN_SPECIES_CHOICES = (
 
 SPECIES_CHOICES = NA + TURTLE_SPECIES_CHOICES + CETACEAN_SPECIES_CHOICES
 
-SEX_CHOICES = NA + (
+SEX_CHOICES = (
+    (NA_VALUE, "unknown sex"),
     ("male", "male"),
     ("female", "female"),
     ("intersex", "hermaphrodite or intersex"), )
@@ -194,11 +197,13 @@ MAMMAL_MATURITY_CHOICES = (
     ("unweaned", "unweaned immature"),
     ("weaned", "weaned immature"), )
 
-MATURITY_CHOICES = NA + TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
+MATURITY_CHOICES = (NA_VALUE, "unknown maturity") +\
+    TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
     (("adult", "adult"),
      ("unknown", "unknown maturity"), )
 
-HEALTH_CHOICES = NA + (
+HEALTH_CHOICES = (
+    (NA_VALUE, "unknown health"),
     ('alive', 'alive, healthy'),
     ('alive-injured', 'alive, injured'),
     ('alive-then-died', 'alive, then died'),
@@ -336,29 +341,29 @@ NEST_AGE_CHOICES = (
     ("hatched", "Hatched nest"), )
 
 OBSERVATION_CHOICES = (
-    ("na", "Not observed"),
+    (NA_VALUE, "NA"),
     ("absent", "Confirmed absent"),
     ("present", "Confirmed present"),)
 
 OBSERVATION_ICONS = {
-    "na": "fa fa-question-circle-o",
+    NA_VALUE: "fa fa-question-circle-o",
     "absent": "fa fa-times",
     "present": "fa fa-check"}
 
-PHOTO_CHOICES = (
-    ("na", "Not applicable"),
+PHOTO_CHOICES = NA + (
     ("see photos", "See attached photos for details"),)
 
 PHOTO_ICONS = {
-    "na": "fa fa-question-circle-o",
+    NA_VALUE: "fa fa-question-circle-o",
     "see photos": "fa fa-check"}
 
-ACCURACY_CHOICES = (
+ACCURACY_CHOICES = NA + (
     ("unknown", "Unknown"),
     ("estimated", "Estimated"),
     ("measured", "Measured"),)
 
 ACCURACY_ICONS = {
+    NA_VALUE: "fa fw fa-question-circle-o",
     "unknown": "fa fw fa-question-circle-o",
     "estimated": "fa fw fa-comment-o",
     "measured": "fa fw fa-balance-scale"}
@@ -902,7 +907,7 @@ class AnimalEncounter(Encounter):
         max_length=300,
         verbose_name=_("Taxonomic group"),
         choices=TAXON_CHOICES,
-        default="na",
+        default=TAXON_CHOICES_DEFAULT,
         help_text=_("The taxonomic group of the animal."), )
 
     species = models.CharField(
