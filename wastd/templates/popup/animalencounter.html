@@ -26,7 +26,7 @@ Animal Encounter
     PIT tags <i class="{{ o.scanned_for_pit_tags|fa_observation_icon }}"></i>
     Flipper tags <i class="{{ o.checked_for_flipper_tags|fa_observation_icon }}"></i>
 </div>
-{% if o.cause_of_death %}
+{% if o.cause_of_death != "na" %}
 <div class="row">
     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
     {{ o.get_cause_of_death_display }} ({{ o.get_cause_of_death_confidence_display }})
