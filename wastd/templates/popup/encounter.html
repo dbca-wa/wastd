@@ -7,13 +7,14 @@
     {% if o.name %}
     <a href="{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}"
         class="btn btn-primary btn-sm"
-        target="_" title="Browse history of animal {{ o.name }}">
+        target="_" title="Browse history of animal {{ o.name }} in new tab">
         <i class="fa fa-fw fa-history"></i>
         {{ o.name }}
     </a>
     {% endif%}
-    <a class="btn btn-{{ o.status|tb_status_icon }} btn-sm"
-        href="{{ o.absolute_admin_url }}">
+    <a href="{{ o.absolute_admin_url }}"
+        class="btn btn-{{ o.status|tb_status_icon }} btn-sm"
+        target="_" titile="Edit Encounter in new tab">
         <i class="fa fa-fw fa-pencil"></i>
         {{ o.get_status_display }}
     </a>
