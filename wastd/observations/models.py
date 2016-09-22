@@ -225,18 +225,27 @@ HEALTH_CHOICES = (
 # <option value="2">DZ - Alive and rescued</option></select>
 
 CAUSE_OF_DEATH_CHOICES = NA + (
-    ("natural", "Natural death"),
-    ("predation", "Natural predation"),
-    ("harvest", "Harvested"),
-    ("drowned-entangled", "Drowned entangled"),
+    ("indeterminate-decomposed", "Indeterminate due to decomposition"),
     ("boat-strike", "Boat strike"),
+    ("drowned-entangled-fisheries", "Drowned entangled in fisheries equipment"),
+    ("drowned-entangled-infrastructure", "Drowned entangled in infrastructure"),
+    ("drowned-entangled-debris", "Drowned entangled in debris"),
+    ("drowned-entangled", "Drowned entangled"),
+    ("drowned-other", "Drowned"),
+    ("fishery-bycatch", "Fishery bycatch"),
+    ("handling-accident", "Handling accident"),
     ("car-collision", "Car collision"),
     ("ingested-debris", "Ingested debris"),
+    ("harvest", "Harvested for human consumption"),
     ("poisoned", "Poisoned"),
+    ("misorientation", "Misorientation on beach"),
+    ("natural", "Natural death"),
+    ("predation", "Predation"),
     )
+
 CONFIDENCE_CHOICES = NA + (
     ("guess", "Guess based on insuffient evidence"),
-    ("expert-opinion", "Expert opinion based on evidence"),
+    ("expert-opinion", "Expert opinion based on available evidence"),
     ("validated", "Validated by authoritative source"),
     )
 
