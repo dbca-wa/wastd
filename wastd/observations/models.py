@@ -229,8 +229,9 @@ CAUSE_OF_DEATH_CHOICES = NA + (
     ("predation", "Natural predation"),
     ("harvest", "Harvested"),
     ("drowned-entangled", "Drowned entangled"),
-    ("boat-strike", "Died after boat strike"),
-    ("ingested-debris", "Died of ingested debris"),
+    ("boat-strike", "Boat strike"),
+    ("car-strike", "Car collision"),
+    ("ingested-debris", "Ingested debris"),
     ("poisoned", "Poisoned"),
     )
 CONFIDENCE_CHOICES = NA + (
