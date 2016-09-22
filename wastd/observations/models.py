@@ -230,7 +230,7 @@ CAUSE_OF_DEATH_CHOICES = NA + (
     ("harvest", "Harvested"),
     ("drowned-entangled", "Drowned entangled"),
     ("boat-strike", "Boat strike"),
-    ("car-strike", "Car collision"),
+    ("car-collision", "Car collision"),
     ("ingested-debris", "Ingested debris"),
     ("poisoned", "Poisoned"),
     )
