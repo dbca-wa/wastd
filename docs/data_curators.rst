@@ -43,17 +43,35 @@ include:
 Convert all original files to non-proprietary formats, such as PDF, images,
 or plain text, separating duplicate information into a subfolder "duplicates".
 
+Emails
+^^^^^^
 * Emails saved as Outlook *.msg*: open with Outlook (requires Windows OS),
   save attachments (data sheet, images) separately, then save email as plain text.
 * Multiple emails: merge messages chronologically into one text file.
-* Paper forms: scan to PDF, make sure the quality is readable enough.
-* Images: jpg, png are preferred. Insane resolutions (file sizes far above 2 MB)
-  should be resized to below 1 MB per image.
-* Photos embedded in MS Word documents: save separately as jpg or png.
-* MS Word documents: save as PDF.
+* Delete footers unless they contain contact information
+* Delete clearly off topic and personal sentences. If in doubt, do not delete.
+* Delete blank lines, only insert three blank lines between emails.
 
-Shrink images in Ubuntu: open terminal in folder and run on **copies** of the
-large images::
+Printed documents
+^^^^^^^^^^^^^^^^^
+* Paper forms: scan to PDF, make sure the quality is readable enough.
+* Printed photos: scan to jpg, one file per photo.
+
+Electronic documents
+^^^^^^^^^^^^^^^^^^^^
+* All documents need to be saved as txt (if plain text is sufficient) or PDF (if
+  formatting is important).
+* Save photos embedded in MS Word documents separately as jpg.
+
+Photographs
+^^^^^^^^^^^
+* Switch on geotagging before taking phone pictures to include a GPS stamp in the
+  image file metadata.
+* Images: jpg are preferred.
+* Resolution: Files larger than 1 MB should be resized to below 1 MB per image.
+
+**Geek tip** To shrink images in Ubuntu, open terminal in folder and run on
+**copies** of the large images with appropriate values for ``resize``::
 
     mogrify -resize 30% *.jpg
 
@@ -90,7 +108,7 @@ encounter date, lon, lat, animal health, maturity, and species) and populate
 the *source ID* field with it. This ID will be the link between paper forms,
 digital files and WAStD records.
 
-Example record ID: ``2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla``
+Example record ID: ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234``
 
 In the edge case of multiple strandings of animals of the same species, maturity
 and health, this auto-generated source ID will not be unique, and WAStD will
@@ -106,13 +124,13 @@ in a new folder in a backed up location using WAStD's auto-generated source ID
 to facilitate discoverability across storage media.
 Rename each file with the source ID a prefix, plus a simple descriptive title, e.g.:
 
-* ``M:/turtles/strandings/2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla/``,
+* ``M:/turtles/strandings/2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234/``,
   containing:
-* ``2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla_datasheet.pdf``
-* ``2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla_emails.txt``
-* ``2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla_photo_total_side.txt``
-* ``2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla_photo_total_top.txt``
-* ``2016-09-02-113-7242-22-496-dead-edible-adult-corolla-corolla_photo_head_side.txt``
+* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_datasheet.pdf``
+* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_emails.txt``
+* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_total_lateral.txt``
+* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_total_dorsal.txt``
+* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_head.txt``
 
 This naming convention will ensure that each file can be associated with the
 corresponding record in WAStD even without the context of being attached to a
@@ -139,11 +157,11 @@ Information extraction
 Add subsequent sections if relevant information is given in the original
 data sheet or communication records:
 
-* Distinguishing Feature Observation
-* Turtle Damage Observation
-* Turtle Morphometric Observations
-* Management Actions
 * Tag Observations
+* Turtle Morphometric Observations
+* Turtle Damage Observation
+* Management Actions
+
 
 Turtle Damage Observations also cater for tag scars and tags that were seen,
 but not identified (e.g. the animal had to leave before the operator could read
@@ -154,11 +172,12 @@ Tag Observations support the following identifying tags or "things with an ID":
 * Flipper Tag
 * PIT Tag
 * Satellite Tag
+* Data logger
+* Temperature logger
 * Blood Sample
 * Biopsy Sample
 * Egg Sample
 * Physical Sample
-* Whister ID
 * Other
 
 Tab Observations and Turtle Morphometric Observations have optional fields to
@@ -222,13 +241,15 @@ Turtle Tagging data:
 
 Tag returns
 ===========
-When TOs harvest and eat a tagged turtle, they return the
-tags to the Department.
+When TOs harvest and eat a tagged turtle, they return the tags to the Department.
 
 Tag Return data:
 
 * Encounter
 * TagObservation
+
+If the person returning the tag is not a departmental staff member, send them
+a "thank you" email including the known history of
 
 Turtle Tracks
 =============

@@ -26,7 +26,8 @@ body {padding-top: 54px;}
 
 /* Leaflet popup fixed width */
 .leaflet-popup-content {min-width: 540px; padding: 10px;}
-.margin-top-15 {margin-top: 15px;}
+.popupimage {margin-top: 15px; margin-bottom: 15px;}
+.fullwidth {width: 100%;}
 
 /* Leaflet popup link colour */
 .leaflet-container a {color: #0a4077;}

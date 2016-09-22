@@ -321,7 +321,8 @@ BEACH_POSITION_CHOICES = (
     ("beach-edge-of-vegetation", _("edge of dune and vegetation")),
     ("in-dune-vegetation", _("inside dune and vegetation")), )
 
-HABITAT_CHOICES = NA + BEACH_POSITION_CHOICES + (
+HABITAT_CHOICES = ((NA_VALUE, "unknown habitat"), ) +\
+    BEACH_POSITION_CHOICES + (
     ("beach", "beach (below vegetation line)"),
     ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
     ("dune", "dune"),

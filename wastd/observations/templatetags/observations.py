@@ -20,12 +20,12 @@ def tb_status_icon(status_value):
 
     Uses ``Encounter.STATUS_LABELS`` to resolve values for:
 
-    * new
-    * proofread
-    * curated
-    * published
+    * new = red
+    * proofread = orange
+    * curated = blue
+    * published = green
     """
-    return "tag tag-{0}".format(Encounter.STATUS_LABELS[status_value])
+    return Encounter.STATUS_LABELS[status_value]
 
 
 @register.filter
