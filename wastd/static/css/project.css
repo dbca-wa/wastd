@@ -15,7 +15,9 @@
 */
 [hidden][style="display: block;"] {display: block !important;}
 
-html, body {height: 100%; width: 100%; overflow: hidden;}
+html, body {height: 100%; width: 100%;
+    /*overflow: hidden;*/
+}
 
 /* body is padded-top with navbar height */
 body {padding-top: 54px;}
