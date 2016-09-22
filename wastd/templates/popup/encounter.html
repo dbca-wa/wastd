@@ -5,18 +5,18 @@
     <h5>{% block title %}Encounter{% endblock %}
     <span class="pull-xs-right">
     {% if o.name %}
-    <button href="{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}"
+    <a href="{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}"
         class="btn btn-primary btn-sm"
         target="_" title="Browse history of animal {{ o.name }}">
         <i class="fa fa-fw fa-history"></i>
         {{ o.name }}
-    </button>
+    </a>
     {% endif%}
-    <button class="btn btn-{{ o.status|tb_status_icon }} btn-sm"
+    <a class="btn btn-{{ o.status|tb_status_icon }} btn-sm"
         href="{{ o.absolute_admin_url }}">
         <i class="fa fa-fw fa-pencil"></i>
         {{ o.get_status_display }}
-    </button>
+    </a>
     </span>
     </h5>
 </div>
