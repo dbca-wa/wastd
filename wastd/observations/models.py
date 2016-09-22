@@ -197,9 +197,9 @@ MAMMAL_MATURITY_CHOICES = (
     ("unweaned", "unweaned immature"),
     ("weaned", "weaned immature"), )
 
-MATURITY_CHOICES = TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
-    (("adult", "adult"),
-     ("unknown", "unknown maturity"), )
+MATURITY_CHOICES = ((NA_VALUE, "unknown maturity"), ) +\
+    TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
+    (("adult", "adult"), )
 
 HEALTH_CHOICES = (
     (NA_VALUE, "unknown health"),
@@ -211,7 +211,8 @@ HEALTH_CHOICES = (
     ('dead-advanced', 'dead, organs decomposed'),
     ('dead-mummified', 'dead, mummified'),
     ('dead-disarticulated', 'dead, disarticulated'),
-    ('other', 'other'), )
+    ('other', 'other'),
+    )
 
 # StrandNet: same as above
 # some health status options are confused with management actions
@@ -223,13 +224,29 @@ HEALTH_CHOICES = (
 # <option value="23">DU - Live but subsequently euthanased</option>
 # <option value="2">DZ - Alive and rescued</option></select>
 
+CAUSE_OF_DEATH_CHOICES = NA + (
+    ("natural", "Natural death"),
+    ("predation", "Natural predation"),
+    ("harvest", "Harvested"),
+    ("drowned-entangled", "Drowned entangled"),
+    ("boat-strike", "Died after boat strike"),
+    ("ingested-debris", "Died of ingested debris"),
+    ("poisoned", "Poisoned"),
+    )
+CONFIDENCE_CHOICES = NA + (
+    ("guess", "Guess based on insuffient evidence"),
+    ("expert-opinion", "Expert opinion based on evidence"),
+    ("validated", "Validated by authoritative source"),
+    )
+
 NESTING_ACTIVITY_CHOICES = (
     ("arriving", "arriving on beach"),
     ("digging-body-pit", "digging body pit"),
     ("excavating-egg-chamber", "excavating egg chamber"),
     ("laying-eggs", "laying eggs"),
     ("filling-in-egg-chamber", "filling in egg chamber"),
-    ("returning-to-water", "returning to water"), )
+    ("returning-to-water", "returning to water"),
+    )
 
 STRANDING_ACTIVITY_CHOICES = (
     ("floating", "floating (dead, sick, unable to dive, drifting in water)"),
@@ -239,7 +256,8 @@ STRANDING_ACTIVITY_CHOICES = (
     ("carcass-inland", "carcass or butchered remains found removed from coast"),
     ("captivity", "in captivity"),
     ("non-breeding", "general non-breeding activity (swimming, sleeping, feeding, etc.)"),
-    ("other", "other activity"), )
+    ("other", "other activity"),
+    )
 
 ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 # primary activity
@@ -579,55 +597,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
             self.name = self.inferred_name
         super(Encounter, self).save(*args, **kwargs)
 
-    # HTML popup -------------------------------------------------------------#
-    def get_popup(self):
-        """Generate HTML popup content."""
-        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
-        c = Context({"original": self})
-        return mark_safe(t.render(c))
-
-    @property
-    def observations(self):
-        """Return Observations as list."""
-        return self.observation_set.all()
-
-    @property
-    def latitude(self):
-        """Return the WGS 84 DD latitude."""
-        return self.where.get_y()
-
-    @property
-    def longitude(self):
-        """Return the WGS 84 DD longitude."""
-        return self.where.get_x()
-
-    @property
-    def crs(self):
-        """Return the location CRS."""
-        return self.where.srs.name
-
-    @property
-    def status_label(self):
-        """Return the boostrap tag-* CSS label flavour for the QA status."""
-        return Encounter.STATUS_LABELS[self.status]
-
-    @property
-    def photographs(self):
-        """Return the URLs of all attached photograph or none."""
-        try:
-            return list(
-                self.observation_set.instance_of(
-                    MediaAttachment).filter(
-                        mediaattachment__media_type="photograph"))
-        except:
-            return None
-
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
     # Name -------------------------------------------------------------------#
     def set_name(self, name):
         """Set the animal name to a given value."""
@@ -728,6 +697,66 @@ class Encounter(PolymorphicModel, geo_models.Model):
         AnimalEncounters override this property, as they can be new captures.
         """
         return False
+
+    # HTML popup -------------------------------------------------------------#
+    @property
+    def wkt(self):
+        """Return the point coordinates as Well Known Text (WKT)."""
+        return self.where.wkt
+
+    def get_popup(self):
+        """Generate HTML popup content."""
+        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        c = Context({"original": self})
+        return mark_safe(t.render(c))
+
+    def get_report(self):
+        """Generate an HTML report of the Encounter."""
+        t = loader.get_template("reports/{0}.html".format(self._meta.model_name))
+        c = Context({"original": self})
+        return mark_safe(t.render(c))
+
+    @property
+    def observations(self):
+        """Return Observations as list."""
+        return self.observation_set.all()
+
+    @property
+    def latitude(self):
+        """Return the WGS 84 DD latitude."""
+        return self.where.get_y()
+
+    @property
+    def longitude(self):
+        """Return the WGS 84 DD longitude."""
+        return self.where.get_x()
+
+    @property
+    def crs(self):
+        """Return the location CRS."""
+        return self.where.srs.name
+
+    @property
+    def status_label(self):
+        """Return the boostrap tag-* CSS label flavour for the QA status."""
+        return Encounter.STATUS_LABELS[self.status]
+
+    @property
+    def photographs(self):
+        """Return the URLs of all attached photograph or none."""
+        try:
+            return list(
+                self.observation_set.instance_of(
+                    MediaAttachment).filter(
+                        mediaattachment__media_type="photograph"))
+        except:
+            return None
+
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
@@ -877,12 +906,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """
         return
 
-    # HTML display -----------------------------------------------------------#
-    @property
-    def wkt(self):
-        """Return the point coordinates as Well Known Text (WKT)."""
-        return self.where.wkt
-
 
 @python_2_unicode_compatible
 class AnimalEncounter(Encounter):
@@ -916,14 +939,14 @@ class AnimalEncounter(Encounter):
 
     sex = models.CharField(
         max_length=300,
-        default="na",
+        default=NA_VALUE,
         verbose_name=_("Sex"),
         choices=SEX_CHOICES,
         help_text=_("The animal's sex."), )
 
     maturity = models.CharField(
         max_length=300,
-        default="na",
+        default="unknown",
         verbose_name=_("Maturity"),
         choices=MATURITY_CHOICES,
         help_text=_("The animal's maturity."), )
@@ -932,49 +955,63 @@ class AnimalEncounter(Encounter):
         max_length=300,
         verbose_name=_("Health status"),
         choices=HEALTH_CHOICES,
-        default="na",
+        default=NA_VALUE,
         help_text=_("On a scale from the Fresh Prince of Bel Air to 80s Hair "
                     "Metal: how dead and decomposed is the animal?"), )
 
     activity = models.CharField(
         max_length=300,
-        default="na",
+        default=NA_VALUE,
         verbose_name=_("Activity"),
         choices=ACTIVITY_CHOICES,
         help_text=_("The animal's activity at the time of observation."), )
 
     behaviour = models.TextField(
-        verbose_name=_("Behaviour"),
+        verbose_name=_("Condition and behaviour"),
         blank=True, null=True,
-        help_text=_("Notes on condition or behaviour if alive."), )
+        help_text=_("Notes on condition or behaviour."), )
 
     habitat = models.CharField(
         max_length=500,
         verbose_name=_("Habitat"),
         choices=HABITAT_CHOICES,
-        default="na",
+        default=NA_VALUE,
         help_text=_("The habitat in which the animal was encountered."), )
 
     checked_for_injuries = models.CharField(
         max_length=300,
         verbose_name=_("Checked for injuries"),
         choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
+        default=NA_VALUE,
+        help_text=_("Was the animal checked for injuries, were any found?"),)
 
     scanned_for_pit_tags = models.CharField(
         max_length=300,
         verbose_name=_("Scanned for PIT tags"),
         choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
+        default=NA_VALUE,
+        help_text=_("Was the animal scanned for PIT tags, were any found?"),)
 
     checked_for_flipper_tags = models.CharField(
         max_length=300,
         verbose_name=_("Checked for flipper tags"),
         choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
+        default=NA_VALUE,
+        help_text=_("Was the animal checked for flipper tags, were any found?"),)
+
+    cause_of_death = models.CharField(
+        max_length=300,
+        verbose_name=_("Cause of death"),
+        choices=CAUSE_OF_DEATH_CHOICES,
+        default=NA_VALUE,
+        help_text=_("If dead, is the case of death known?"),)
+
+    cause_of_death_confidence = models.CharField(
+        max_length=300,
+        verbose_name=_("Cause of death confidence"),
+        choices=CONFIDENCE_CHOICES,
+        default=NA_VALUE,
+        help_text=_("What is the cause of death, if known, based on?"),)
 
     class Meta:
         """Class options."""
@@ -1691,5 +1728,6 @@ class TrackTallyObservation(Observation):
             self.false_crawls_natator_depressus,
             self.false_crawls_na,
             )
+
 
 # TODO add CecaceanMorphometricObservation for cetacean strandings

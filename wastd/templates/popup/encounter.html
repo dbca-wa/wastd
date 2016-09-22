@@ -9,9 +9,9 @@
 {% if o.photographs %}
 <div class="row margin-top-15">
     <div class="col-md-6">
-        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+        <div id="slideshow-bob" class="carousel slide" data-ride="carousel">
           {% if o.photographs|length > 1 %}
-          <ol class="carousel-indicators">
+          <ol id="popup-image-indicators" class="carousel-indicators">
             {% for p in o.photographs %}
             <li data-target="#carousel-example-generic"
                 data-slide-to="{{ forloop.counter }}"
@@ -27,12 +27,12 @@
             {% endfor %}
           </div>
           {% if o.photographs|length > 1 %}
-          <a class="left carousel-control" href="#carousel-example-generic"
+          <a class="left carousel-control" href="#slideshow-bob"
              role="button" data-slide="prev">
             <span class="icon-prev" aria-hidden="true"></span>
             <span class="sr-only">Previous</span>
           </a>
-          <a class="right carousel-control" href="#carousel-example-generic"
+          <a class="right carousel-control" href="#slideshow-bob"
              role="button" data-slide="next">
             <span class="icon-next" aria-hidden="true"></span>
             <span class="sr-only">Next</span>
@@ -77,8 +77,9 @@
 
     <!-- URL to change_view -->
     <i class="fa fa-fw fa-pencil"></i>
-    <a href="{% url 'admin:observations_encounter_change' o.pk %}"
-        target="_" title="Open in new tab">Edit Encounter</a>
+    <a href="{{ o.absolute_admin_url }}" target="_" title="Open in new tab">
+        Edit Encounter
+    </a>
 </div>
 <div class="row">
     <!-- URL to change_list of encounter history for encounter name -->

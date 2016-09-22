@@ -1,35 +1,19 @@
 /* These styles are generated from project.scss. */
-
-.alert-debug {
-  color: black;
-  background-color: white;
-  border-color: #d6e9c6;
-}
-
-.alert-error {
-  color: #b94a48;
-  background-color: #f2dede;
-  border-color: #eed3d7;
-}
+.alert-debug {color: black; background-color: white; border-color: #d6e9c6; }
+.alert-error {color: #b94a48; background-color: #f2dede; border-color: #eed3d7;}
 
 /* This is a fix for the bootstrap4 alpha release */
 @media (max-width: 47.9em) {
-  .navbar-nav .nav-item {
-    float: none;
-    width: 100%;
-    display: inline-block;
-  }
-
-  .navbar-nav .nav-item + .nav-item { margin-left: 0; }
-
-  .nav.navbar-nav.pull-xs-right { float: none !important; }
+  .navbar-nav .nav-item {float: none; width: 100%; display: inline-block;}
+  .navbar-nav .nav-item + .nav-item {margin-left: 0;}
+  .nav.navbar-nav.pull-xs-right {float: none !important;}
 }
 
 /* Display django-debug-toolbar.
    See https://github.com/django-debug-toolbar/django-debug-toolbar/issues/742
    and https://github.com/pydanny/cookiecutter-django/issues/317
 */
-[hidden][style="display: block;"] { display: block !important; }
+[hidden][style="display: block;"] {display: block !important;}
 
 html, body {height: 100%; width: 100%; overflow: hidden;}
 
@@ -41,11 +25,11 @@ body {padding-top: 54px;}
 #wastdmap {width: auto; height: 100%;}
 
 /* Leaflet popup fixed width */
-.leaflet-popup-content { min-width: 540px; padding: 10px;}
+.leaflet-popup-content {min-width: 540px; padding: 10px;}
 .margin-top-15 {margin-top: 15px;}
 
-/* Link colour in leaflet popups */
+/* Leaflet popup link colour */
 .leaflet-container a {color: #0a4077;}
 
-/* Map popup image carousel: push indicators 10px further downwards */
-.carousel-indicators {bottom: -10px;}
+/* Leaflet popup twitter-bootstrap image carousel: lower indicators 10px */
+#popup-image-indicators {bottom: -10px;}

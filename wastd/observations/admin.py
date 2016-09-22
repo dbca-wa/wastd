@@ -26,6 +26,7 @@ from .models import (Encounter, TurtleNestEncounter,
 
 
 class ObservationTypeListFilter(SimpleListFilter):
+    """A custom ListFilter to filter Encounters by observation type."""
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
     title = _('observation type')
@@ -76,6 +77,14 @@ class MediaAttachmentInline(admin.TabularInline):
     widgets = {'attachment': ImageThumbnailFileInput}  # seems inactive
 
 
+class TagObservationInline(admin.TabularInline):
+    """TabularInlineAdmin for TagObservation."""
+
+    extra = 0
+    model = TagObservation
+    classes = ('grp-collapse grp-open',)
+
+
 class TurtleMorphometricObservationInline(admin.StackedInline):
     """Admin for TurtleMorphometricObservation."""
 
@@ -116,14 +125,6 @@ class TrackTallyObservationInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
-class TagObservationInline(admin.TabularInline):
-    """TabularInlineAdmin for TagObservation."""
-
-    extra = 0
-    model = TagObservation
-    classes = ('grp-collapse grp-open',)
-
-
 @admin.register(TagObservation)
 class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     """Admin for TagObservation"""
@@ -135,6 +136,7 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
                     'status_display', 'encounter_link', 'comments')
     list_filter = ('tag_type', 'tag_location', 'status')
     search_fields = ('name', 'comments')
+    autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
 
     def type_display(self, obj):
         """Make tag type human readable."""
@@ -326,6 +328,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
     list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
                     'name',
                     'observer', 'reporter', 'species', 'health_display',
+                    'cause_of_death', 'cause_of_death_confidence',
                     'maturity_display', 'sex_display', 'behaviour',
                     'habitat_display',
                     'checked_for_injuries',
@@ -334,8 +337,9 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
                     'status', 'source_display', 'source_id', )
     list_filter = (ObservationTypeListFilter,
                    'status', 'observer', 'reporter', 'location_accuracy',
-                   'taxon', 'species', 'health', 'maturity',
-                   'sex', 'habitat', 'checked_for_injuries',
+                   'taxon', 'species',
+                   'health', 'cause_of_death', 'cause_of_death_confidence',
+                   'maturity', 'sex', 'habitat', 'checked_for_injuries',
                    'scanned_for_pit_tags', 'checked_for_flipper_tags', )
     list_select_related = True
     save_on_top = True
@@ -344,8 +348,10 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
                      'reporter__name', 'reporter__username', 'name', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
-         {'fields': ('taxon', 'species', 'health', 'maturity', 'sex',
-                     'activity', 'behaviour', 'habitat', 'checked_for_injuries',
+         {'fields': ('taxon', 'species', 'maturity', 'sex',
+                     'activity', 'behaviour', 'habitat',
+                     'health', 'cause_of_death', 'cause_of_death_confidence',
+                     'checked_for_injuries',
                      'scanned_for_pit_tags', 'checked_for_flipper_tags',)}),
         )
     inlines = [
