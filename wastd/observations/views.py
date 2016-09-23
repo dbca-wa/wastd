@@ -5,7 +5,7 @@ from rest_framework import response, schemas, permissions
 from django_tables2 import RequestConfig, SingleTableMixin, SingleTableView, tables
 import django_filters
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit
+from crispy_forms.layout import Layout, ButtonHolder, Submit, Fieldset, MultiField, Div
 
 from django import forms
 from django.contrib import messages
@@ -25,7 +25,7 @@ class EncounterTable(tables.Table):
     class Meta:
         model = Encounter
         exclude = ["as_html", "polymorphic_ctype", ]
-        attrs = {'class': 'table table-hover table-inverse'}
+        attrs = {'class': 'table table-hover table-inverse table-sm'}
 
 
 class EncounterFilter(django_filters.FilterSet):
@@ -33,25 +33,39 @@ class EncounterFilter(django_filters.FilterSet):
 
     https://django-filter.readthedocs.io/en/latest/usage.html
     """
+    encounter_year = django_filters.NumberFilter(name='when', lookup_expr='year')
+    encounter_year__gt = django_filters.NumberFilter(name='when', lookup_expr='year__gt')
+    encounter_year__lt = django_filters.NumberFilter(name='when', lookup_expr='year__lt')
+
+    source_id = django_filters.CharFilter(lookup_expr='icontains')
+    name = django_filters.CharFilter(lookup_expr='icontains')
+
     class Meta:
         """Options for EncounterFilter."""
 
         model = Encounter
-        # fields = {
+        #fields = ['source_id', 'name']
+
         #     # 'latitude': ['lt', 'gt'],
         #     # 'longitude': ['lt', 'gt'],
-        #     'when': ['year__gt', 'year__lt'],
-        #     'source_id': ['exact', ],
-        #     }
+            # 'when': ['year__gt', 'year__lt'],
+            # 'source_id': ['exact', 'contains'],
+            # 'name': ['exact', 'contains'],
+            #  }
 
 
 class EncounterListFormHelper(FormHelper):
     model = Encounter
     form_tag = False
     # Adding a Filter Button
-    layout = Layout('name', ButtonHolder(
-        Submit('submit', 'Filter', css_class='button white right')
-    ))
+    layout = Layout(
+        'name',
+        'source_id',
+        'encounter_year',
+        'encounter_year__gt',
+        'encounter_year__lt',
+        ButtonHolder(Submit('submit', 'Filter', css_class='button white right')),
+    )
 
 
 class PagedFilteredTableView(SingleTableView):
@@ -85,7 +99,7 @@ class PagedFilteredTableView(SingleTableView):
 class EncounterTableView(PagedFilteredTableView):
     model = Encounter
     table_class = EncounterTable
-    paginate_by = 30
+    paginate_by = 5
     filter_class = EncounterFilter
     formhelper_class = EncounterListFormHelper
 
