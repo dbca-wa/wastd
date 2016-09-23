@@ -53,13 +53,13 @@
                   {% if request.user.is_staff %}
                    <li class="nav-item">
                      <a class="nav-link" href="{% url 'admin:index' %}" target="_">
-                         <i class="fa fa-table"></i>&nbsp;Backstage
+                         <i class="fa fa-cog"></i>&nbsp;Backstage
                      </a>
                    </li>
 
                    <li class="nav-item">
                      <a class="nav-link" href="{% url 'update-names' %}">
-                         <i class="fa fa-refresh"></i>&nbsp;Update Names
+                         <i class="fa fa-refresh"></i>&nbsp;Update
                      </a>
                    </li>
                    {% endif %}
@@ -105,24 +105,26 @@
 
           </div>
         </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
       </nav>
     </div>
     <div class="container">
     {% block content %}{% endblock content %}
     </div>
-
+    {% block fullwidthcontent %}{% endblock %}
     {% block map %}{% endblock %}
 
     <div class="container">
-
       {% if messages %}
           {% for message in messages %}
               <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
           {% endfor %}
       {% endif %}
-
-
-
     </div> <!-- /container -->
 
     {% block modal %}{% endblock modal %}

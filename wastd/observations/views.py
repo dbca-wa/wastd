@@ -5,27 +5,27 @@ from rest_framework import response, schemas, permissions
 from django_tables2 import RequestConfig, SingleTableMixin, SingleTableView, tables
 import django_filters
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, ButtonHolder, Submit
 
+from django import forms
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, TemplateView
 from django.http import HttpResponseRedirect
+
+
 
 from wastd.observations.models import Encounter
 
 
 # Encounters -----------------------------------------------------------------#
 # https://kuttler.eu/en/post/using-django-tables2-filters-crispy-forms-together/
-
+# http://stackoverflow.com/questions/25256239/how-do-i-filter-tables-with-django-generic-views
 class EncounterTable(tables.Table):
     class Meta:
         model = Encounter
         exclude = ["as_html", "polymorphic_ctype", ]
-
-
-# class EncounterList(SingleTableView):
-#     model = Encounter
-#     table_class = EncounterTable
+        attrs = {'class': 'table table-hover table-inverse'}
 
 
 class EncounterFilter(django_filters.FilterSet):
@@ -34,31 +34,60 @@ class EncounterFilter(django_filters.FilterSet):
     https://django-filter.readthedocs.io/en/latest/usage.html
     """
     class Meta:
+        """Options for EncounterFilter."""
+
         model = Encounter
-        fields = {
-            # 'latitude': ['lt', 'gt'],
-            # 'longitude': ['lt', 'gt'],
-            'when': ['exact', 'year__gt', 'year__lt'],
-            'source_id': ['exact', ],
-            }
+        # fields = {
+        #     # 'latitude': ['lt', 'gt'],
+        #     # 'longitude': ['lt', 'gt'],
+        #     'when': ['year__gt', 'year__lt'],
+        #     'source_id': ['exact', ],
+        #     }
 
 
-class EncounterTableView(TemplateView):
-    template_name = 'observations/encounter_list.html'
+class EncounterListFormHelper(FormHelper):
+    model = Encounter
+    form_tag = False
+    # Adding a Filter Button
+    layout = Layout('name', ButtonHolder(
+        Submit('submit', 'Filter', css_class='button white right')
+    ))
+
+
+class PagedFilteredTableView(SingleTableView):
+    """
+    Generic class from http://kuttler.eu/post/using-django-tables2-filters-crispy-forms-together/
+    which should probably be in a utility file
+    """
+    filter_class = None
+    formhelper_class = None
+    context_filter_name = 'filter'
 
     def get_queryset(self, **kwargs):
-        return Encounter.objects.all()
+        qs = super(PagedFilteredTableView, self).get_queryset()
+        self.filter = self.filter_class(self.request.GET, queryset=qs)
+        self.filter.form.helper = self.formhelper_class()
+        return self.filter.qs
+
+    def get_table(self, **kwargs):
+        table = super(PagedFilteredTableView, self).get_table()
+        RequestConfig(
+            self.request,
+            paginate={'page': self.kwargs['page'] if 'page' in self.kwargs else 1,
+                      "per_page": self.paginate_by}).configure(table)
+        return table
 
     def get_context_data(self, **kwargs):
-        context = super(EncounterTableView, self).get_context_data(**kwargs)
-        filter = EncounterFilter(self.request.GET, queryset=self.get_queryset(**kwargs))
-        filter.form.helper = FormHelper()
-        table = EncounterTable(filter.qs)
-        RequestConfig(self.request).configure(table)
-        context['filter'] = filter
-        context['table'] = table
+        context = super(PagedFilteredTableView, self).get_context_data()
+        context[self.context_filter_name] = self.filter
         return context
 
+class EncounterTableView(PagedFilteredTableView):
+    model = Encounter
+    table_class = EncounterTable
+    paginate_by = 30
+    filter_class = EncounterFilter
+    formhelper_class = EncounterListFormHelper
 
 # Django-Rest-Swagger View ---------------------------------------------------#
 @api_view()

@@ -53,7 +53,9 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
 
     # Encounters
-    url(r'^encounters/$', EncounterTableView.as_view(), name="encounter_list"),
+    url(r'^encounters/$',
+        EncounterTableView.as_view(),
+        name="encounter_list"),
 
     # API
     url(r'^api/1/', include(router.urls), name='api'),

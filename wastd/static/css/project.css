@@ -36,3 +36,7 @@ body {padding-top: 54px;}
 
 /* Leaflet popup twitter-bootstrap image carousel: lower indicators 10px */
 #popup-image-indicators {bottom: -10px;}
+
+
+/* Table width */
+.table {width:100%;}
