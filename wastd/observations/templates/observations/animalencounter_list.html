@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load django_tables2 crispy_forms_tags %}
+
+{% block content %}
+<div class="popupimage">
+<div id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="searchpanel">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion"
+            href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Search
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel"
+        aria-labelledby="searchpanel">
+        <form action="" method="get">
+            {% crispy filter.form filter.form.helper %}
+        </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block fullwidthcontent %}
+{% render_table table %}
+{% endblock %}

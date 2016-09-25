@@ -2,20 +2,25 @@
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
 from rest_framework import response, schemas, permissions
+
+# Tables
 from django_tables2 import RequestConfig, SingleTableMixin, SingleTableView, tables
+
+# Filters
 import django_filters
+from django_filters import filters, widgets
+from leaflet.forms.widgets import LeafletWidget
+
+# Forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, ButtonHolder, Submit, Fieldset, MultiField, Div
 
-from django import forms
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, TemplateView
 from django.http import HttpResponseRedirect
 
-
-
-from wastd.observations.models import Encounter
+from wastd.observations.models import Encounter, AnimalEncounter
 
 
 # Encounters -----------------------------------------------------------------#
@@ -28,44 +33,63 @@ class EncounterTable(tables.Table):
         attrs = {'class': 'table table-hover table-inverse table-sm'}
 
 
+class AnimalEncounterTable(tables.Table):
+    class Meta:
+        model = AnimalEncounter
+        exclude = ["as_html", "polymorphic_ctype", "encounter_ptr"]
+        attrs = {'class': 'table table-hover table-inverse table-sm'}
+
+
 class EncounterFilter(django_filters.FilterSet):
     """Encounter Filter.
 
     https://django-filter.readthedocs.io/en/latest/usage.html
     """
-    encounter_year = django_filters.NumberFilter(name='when', lookup_expr='year')
-    encounter_year__gt = django_filters.NumberFilter(name='when', lookup_expr='year__gt')
-    encounter_year__lt = django_filters.NumberFilter(name='when', lookup_expr='year__lt')
-
-    source_id = django_filters.CharFilter(lookup_expr='icontains')
-    name = django_filters.CharFilter(lookup_expr='icontains')
+    name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        help_text=("Name supports partial match, e.g. searching for "
+                   "WA12 will return encounters with WA123 and WA124."))
+    source_id = django_filters.CharFilter(
+        lookup_expr='icontains',
+        help_text="Source ID supports partial match.")
+    when = filters.DateFromToRangeFilter(
+        help_text="Date format: YYYY-mm-dd, e.g. 2015-12-31",
+        widget=widgets.RangeWidget(attrs={'placeholder': 'YYYY-mm-dd'}))
+    where = django_filters.CharFilter(
+        widget=LeafletWidget(attrs={
+            'map_height': '400px',
+            'map_width': '100%',
+            'display_raw': 'False',
+            'map_srid': 4326,
+            }))
 
     class Meta:
         """Options for EncounterFilter."""
 
         model = Encounter
-        #fields = ['source_id', 'name']
 
-        #     # 'latitude': ['lt', 'gt'],
-        #     # 'longitude': ['lt', 'gt'],
-            # 'when': ['year__gt', 'year__lt'],
-            # 'source_id': ['exact', 'contains'],
-            # 'name': ['exact', 'contains'],
-            #  }
+
+class AnimalEncounterFilter(EncounterFilter):
+    class Meta:
+        model = AnimalEncounter
 
 
 class EncounterListFormHelper(FormHelper):
     model = Encounter
     form_tag = False
-    # Adding a Filter Button
+    form_class = 'form-horizontal'    # Adding a Filter Button
+    form_show_labels = True
     layout = Layout(
         'name',
         'source_id',
-        'encounter_year',
-        'encounter_year__gt',
-        'encounter_year__lt',
+        'when',
+        'where',
         ButtonHolder(Submit('submit', 'Filter', css_class='button white right')),
-    )
+        )
+
+
+class AnimalEncounterListFormHelper(EncounterListFormHelper):
+    model = AnimalEncounter
 
 
 class PagedFilteredTableView(SingleTableView):
@@ -96,6 +120,7 @@ class PagedFilteredTableView(SingleTableView):
         context[self.context_filter_name] = self.filter
         return context
 
+
 class EncounterTableView(PagedFilteredTableView):
     model = Encounter
     table_class = EncounterTable
@@ -103,12 +128,22 @@ class EncounterTableView(PagedFilteredTableView):
     filter_class = EncounterFilter
     formhelper_class = EncounterListFormHelper
 
+
+class AnimalEncounterTableView(EncounterTableView):
+    model = AnimalEncounter
+    table_class = AnimalEncounterTable
+    paginate_by = 5
+    filter_class = AnimalEncounterFilter
+    formhelper_class = AnimalEncounterListFormHelper
+    template = "observations/encounter.html"
+
+
 # Django-Rest-Swagger View ---------------------------------------------------#
 @api_view()
 @permission_classes((permissions.AllowAny,))
 @renderer_classes([SwaggerUIRenderer, OpenAPIRenderer])
 def schema_view(request):
-
+    """Swagger API docs."""
     generator = schemas.SchemaGenerator(title='WAStD API')
     return response.Response(generator.get_schema(request=request))
 
@@ -119,6 +154,7 @@ def update_names(request):
     from wastd.observations.utils import allocate_animal_names
     no_names = allocate_animal_names()
     messages.success(
-        request, "Animal names inferred for {0} encounters".format(no_names))
+        request,
+        "{0} animal names reconstructed".format(len(no_names)))
 
     return HttpResponseRedirect("/")

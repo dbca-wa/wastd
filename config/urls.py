@@ -15,7 +15,7 @@ from rest_framework import routers
 # from dynamic_rest import routers as dr
 from wastd.observations.models import Encounter
 from wastd.observations.views import (
-    schema_view, update_names, EncounterTableView)
+    schema_view, update_names, EncounterTableView, AnimalEncounterTableView)
 from wastd.api import (
     UserViewSet, EncounterViewSet, TurtleNestEncounterViewSet,
     AnimalEncounterViewSet, ObservationViewSet, MediaAttachmentViewSet,
@@ -56,6 +56,10 @@ urlpatterns = [
     url(r'^encounters/$',
         EncounterTableView.as_view(),
         name="encounter_list"),
+
+    url(r'^animal-encounters/$',
+        AnimalEncounterTableView.as_view(),
+        name="animalencounter_list"),
 
     # API
     url(r'^api/1/', include(router.urls), name='api'),
