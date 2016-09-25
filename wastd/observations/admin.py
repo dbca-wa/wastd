@@ -10,58 +10,20 @@ import floppyforms as ff
 from django.contrib import admin
 # from django.contrib.gis import forms
 from django.contrib.gis.db import models as geo_models
-from django.contrib.admin import SimpleListFilter
+
 from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform  # select2_modelform_meta
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
-from .models import (Encounter, TurtleNestEncounter,
-                     AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
-                     MediaAttachment, TagObservation, ManagementAction,
-                     TurtleMorphometricObservation,
-                     TurtleNestObservation, TurtleDamageObservation,
-                     TrackTallyObservation)
+from wastd.observations.models import (
+    Encounter, TurtleNestEncounter, AnimalEncounter,
+    MediaAttachment, TagObservation, ManagementAction, TrackTallyObservation,
+    TurtleMorphometricObservation, TurtleNestObservation,
+    TurtleDamageObservation, )
 
-
-class ObservationTypeListFilter(SimpleListFilter):
-    """A custom ListFilter to filter Encounters by observation type."""
-    # Human-readable title which will be displayed in the
-    # right admin sidebar just above the filter options.
-    title = _('observation type')
-
-    # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'observation_type'
-
-    def lookups(self, request, model_admin):
-        """
-        Returns a list of tuples. The first element in each
-        tuple is the coded value for the option that will
-        appear in the URL query. The second element is the
-        human-readable name for the option that will appear
-        in the right sidebar.
-        """
-        return (
-            ('stranding', _('stranding')),
-            ('nesting', _('nesting')),
-            ('in water', _('in water')),
-            )
-
-    def queryset(self, request, queryset):
-        """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
-        `self.value()`.
-        """
-        # Compare the requested value (either '80s' or '90s')
-        # to decide how to filter the queryset.
-        if self.value() == 'stranding':
-            return queryset.exclude(health__exact='alive')
-        if self.value() == 'nesting':
-            return queryset.filter(health__exact='alive')
-        if self.value() == 'in water':
-            return queryset.filter(habitat__in=AnimalEncounter.HABITAT_WATER)
+from wastd.observations.filters import ObservationTypeListFilter
 
 
 class ImageThumbnailFileInput(ff.ClearableFileInput):

@@ -6,10 +6,6 @@ from rest_framework import response, schemas, permissions
 # Tables
 from django_tables2 import RequestConfig, SingleTableMixin, SingleTableView, tables
 
-# Filters
-import django_filters
-from django_filters import filters, widgets
-from leaflet.forms.widgets import LeafletWidget
 
 # Forms
 from crispy_forms.helper import FormHelper
@@ -17,10 +13,12 @@ from crispy_forms.layout import Layout, ButtonHolder, Submit, Fieldset, MultiFie
 
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, TemplateView
+# from django.views.generic import ListView, TemplateView
 from django.http import HttpResponseRedirect
 
 from wastd.observations.models import Encounter, AnimalEncounter
+from wastd.observations.filters import (
+    ObservationTypeListFilter, EncounterFilter, AnimalEncounterFilter)
 
 
 # Encounters -----------------------------------------------------------------#
@@ -38,40 +36,6 @@ class AnimalEncounterTable(tables.Table):
         model = AnimalEncounter
         exclude = ["as_html", "polymorphic_ctype", "encounter_ptr"]
         attrs = {'class': 'table table-hover table-inverse table-sm'}
-
-
-class EncounterFilter(django_filters.FilterSet):
-    """Encounter Filter.
-
-    https://django-filter.readthedocs.io/en/latest/usage.html
-    """
-    name = django_filters.CharFilter(
-        lookup_expr='icontains',
-        help_text=("Name supports partial match, e.g. searching for "
-                   "WA12 will return encounters with WA123 and WA124."))
-    source_id = django_filters.CharFilter(
-        lookup_expr='icontains',
-        help_text="Source ID supports partial match.")
-    when = filters.DateFromToRangeFilter(
-        help_text="Date format: YYYY-mm-dd, e.g. 2015-12-31",
-        widget=widgets.RangeWidget(attrs={'placeholder': 'YYYY-mm-dd'}))
-    where = django_filters.CharFilter(
-        widget=LeafletWidget(attrs={
-            'map_height': '400px',
-            'map_width': '100%',
-            'display_raw': 'False',
-            'map_srid': 4326,
-            }))
-
-    class Meta:
-        """Options for EncounterFilter."""
-
-        model = Encounter
-
-
-class AnimalEncounterFilter(EncounterFilter):
-    class Meta:
-        model = AnimalEncounter
 
 
 class EncounterListFormHelper(FormHelper):
