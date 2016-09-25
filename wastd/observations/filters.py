@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 import django_filters
 from django_filters import filters, widgets
-from leaflet.forms.widgets import LeafletWidget
+# from leaflet.forms.widgets import LeafletWidget
 
 from wastd.observations.models import Encounter, AnimalEncounter
 
@@ -54,24 +54,28 @@ class EncounterFilter(django_filters.FilterSet):
     """Encounter Filter.
 
     https://django-filter.readthedocs.io/en/latest/usage.html
+
+    TODO https://django-filter.readthedocs.io/en/latest/ref/filters.html#method
+         is_tagging / is_stranding / is_open_water
     """
     name = django_filters.CharFilter(
         lookup_expr='icontains',
-        help_text=("Name supports partial match, e.g. searching for "
-                   "WA12 will return encounters with WA123 and WA124."))
+        help_text=_("Name supports partial match, e.g. searching for "
+                    "WA12 will return encounters with WA123 and WA124."))
     source_id = django_filters.CharFilter(
         lookup_expr='icontains',
-        help_text="Source ID supports partial match.")
+        # help_text=_("Source ID supports partial match.")
+        )
     when = filters.DateFromToRangeFilter(
         help_text="Date format: YYYY-mm-dd, e.g. 2015-12-31",
         widget=widgets.RangeWidget(attrs={'placeholder': 'YYYY-mm-dd'}))
-    where = django_filters.CharFilter(
-        widget=LeafletWidget(attrs={
-            'map_height': '400px',
-            'map_width': '100%',
-            'display_raw': 'False',
-            'map_srid': 4326,
-            }))
+    # where = django_filters.CharFilter(
+    #     widget=LeafletWidget(attrs={
+    #         'map_height': '400px',
+    #         'map_width': '100%',
+    #         'display_raw': 'False',
+    #         'map_srid': 4326,
+    #         }))
 
     class Meta:
         """Options for EncounterFilter."""

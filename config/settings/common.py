@@ -292,6 +292,12 @@ REST_FRAMEWORK = {
 # ------------------------------------------------------------------------------
 GRAPPELLI_ADMIN_TITLE = "WAStD Data Entry and Curation Portal"
 
+# Django-filters
+# ------------------------------------------------------------------------------
+# Exclude help text unless specifically given
+# FILTERS_HELP_TEXT_EXCLUDE = True
+# FILTERS_HELP_TEXT_FILTER = False
+
 # Leaflet maps
 # ------------------------------------------------------------------------------
 LEAFLET_CONFIG = {
