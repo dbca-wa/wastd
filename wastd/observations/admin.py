@@ -154,9 +154,10 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
             )},
         }
     list_filter = ('status', 'observer', 'reporter', 'location_accuracy', )
-    list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
+    list_display = ('source_display', 'source_id',
+                    'when', 'latitude', 'longitude', 'location_accuracy',
                     'name', 'observer', 'reporter',
-                    'status', 'source_display', 'source_id')
+                    'status', )
     list_select_related = True
     save_on_top = True
     search_fields = ('observer__name', 'observer__username', 'name',
@@ -215,9 +216,10 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin,
                 }
             )},
         }
-    list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
+    list_display = ('source_display', 'source_id',
+                    'when', 'latitude', 'longitude', 'location_accuracy',
                     'name', 'species', 'age_display', 'habitat_display',
-                    'status', 'source_display', 'source_id', 'observer', 'reporter',)
+                    'status', 'observer', 'reporter',)
     list_filter = ('species', 'nest_age', 'habitat', 'status',
                    'observer', 'reporter', 'location_accuracy', )
     list_select_related = True
@@ -286,7 +288,8 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
             )},
         }
 
-    list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
+    list_display = ('source_display', 'source_id',
+                    'when', 'latitude', 'longitude', 'location_accuracy',
                     'name',
                     'species', 'health_display',
                     'cause_of_death', 'cause_of_death_confidence',
@@ -295,7 +298,7 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
                     'checked_for_injuries',
                     'scanned_for_pit_tags',
                     'checked_for_flipper_tags',
-                    'status', 'source_display', 'source_id', 'observer', 'reporter', )
+                    'status', 'observer', 'reporter', )
     list_filter = (ObservationTypeListFilter,
                    'taxon', 'species',
                    'health', 'cause_of_death', 'cause_of_death_confidence',
