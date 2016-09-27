@@ -12,7 +12,7 @@ from django.contrib import admin
 from django.contrib.gis.db import models as geo_models
 
 from django.utils.translation import ugettext_lazy as _
-from easy_select2 import select2_modelform  # select2_modelform_meta
+from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
@@ -128,12 +128,19 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     encounter_link.allow_tags = True
 
 
-EncounterAdminForm = select2_modelform(Encounter, attrs={'width': '350px'})
+# Select2Widget forms
+S2ATTRS = {'width': '350px'}
+EncounterAdminForm = s2form(Encounter, attrs=S2ATTRS)
+TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
+AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
 
 
 @admin.register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
-    """Admin for Encounter with inline for MediaAttachment."""
+    """Admin for Encounter with inlines for all Observations.
+
+    This admin can be extended by other Encounter Admin classes.
+    """
 
     # Grappelli User lookup overrides select2 select widget
     raw_id_fields = ('observer', 'reporter', )
@@ -142,30 +149,46 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     # select2 widgets for searchable dropdowns
     form = EncounterAdminForm
 
+    # Date filter widget
     date_hierarchy = 'when'
+
+    # Leaflet geolocation widget
     formfield_overrides = {
-        geo_models.PointField: {'widget': LeafletWidget(
-            attrs={
-                'map_height': '400px',
-                'map_width': '100%',
-                'display_raw': 'true',
-                'map_srid': 4326,
-                }
-            )},
+        geo_models.PointField: {'widget': LeafletWidget(attrs={
+            'map_height': '400px',
+            'map_width': '100%',
+            'display_raw': 'true',
+            'map_srid': 4326, })},
         }
+
+    # Filters for change_list
     list_filter = ('status', 'observer', 'reporter', 'location_accuracy', )
-    list_display = ('source_display', 'source_id',
-                    'when', 'latitude', 'longitude', 'location_accuracy',
-                    'name', 'observer', 'reporter',
-                    'status', )
+
+    # Columns for change_list, allow re-use and inserting fields
+    FIRST_COLS = ('when', 'latitude', 'longitude', 'location_accuracy', 'name')
+    LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id', 'status')
+    list_display = FIRST_COLS + LAST_COLS
+
+    # Performance
+    # https://docs.djangoproject.com/en/1.10/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_select_related
     list_select_related = True
-    save_on_top = True
+
+    # Layout: save buttons also on top - overridden by Grapelli admin skin
+    # save_on_top = True
+
+    # Change_list fulltext search fields
     search_fields = ('observer__name', 'observer__username', 'name',
                      'reporter__name', 'reporter__username', 'source_id',)
+
+    # Django-fsm transitions config
     fsm_field = ['status', ]
+
+    # Change_view form layout
     fieldsets = (('Encounter', {'fields': (
         'where', 'location_accuracy', 'when',
         'observer', 'reporter', 'source', 'source_id', )}),)
+
+    # Change_view inlines
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
@@ -192,50 +215,24 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     longitude.short_description = 'Longitude'
 
 
-TurtleNestEncounterAdminForm = select2_modelform(
-    TurtleNestEncounter, attrs={'width': '350px', })
-
-
 @admin.register(TurtleNestEncounter)
-class TurtleNestEncounterAdmin(FSMTransitionMixin,
-                               VersionAdmin,
-                               admin.ModelAdmin):
+class TurtleNestEncounterAdmin(EncounterAdmin):
     """Admin for TurtleNestEncounter."""
 
-    raw_id_fields = ('observer', 'reporter', )
-    autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
     form = TurtleNestEncounterAdminForm
-    date_hierarchy = 'when'
-    formfield_overrides = {
-        geo_models.PointField: {'widget': LeafletWidget(
-            attrs={
-                'map_height': '400px',
-                'map_width': '100%',
-                'display_raw': 'true',
-                'map_srid': 4326,
-                }
-            )},
-        }
-    list_display = ('source_display', 'source_id',
-                    'when', 'latitude', 'longitude', 'location_accuracy',
-                    'name', 'species', 'age_display', 'habitat_display',
-                    'status', 'observer', 'reporter',)
-    list_filter = ('species', 'nest_age', 'habitat', 'status',
-                   'observer', 'reporter', 'location_accuracy', )
-    list_select_related = True
-    save_on_top = True
-    fsm_field = ['status', ]
-    search_fields = ('observer__name', 'observer__username',
-                     'reporter__name', 'reporter__username', 'name', )
+    list_display = EncounterAdmin.FIRST_COLS + (
+        'species', 'age_display', 'habitat_display',
+        ) + EncounterAdmin.LAST_COLS
+    list_filter = EncounterAdmin.list_filter + (
+        'nest_age', 'species', 'habitat', )
     fieldsets = EncounterAdmin.fieldsets + (
-        ('Nest',
-         {'fields': ('nest_age', 'species', 'habitat', )}),
-        )
+        ('Nest', {'fields': ('nest_age', 'species', 'habitat', )}), )
+
+    # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
-        TurtleNestObservationInline,
-        ]
+        TurtleNestObservationInline, ]
 
     def habitat_display(self, obj):
         """Make habitat human readable."""
@@ -247,86 +244,46 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin,
         return obj.get_nest_age_display()
     age_display.short_description = 'Nest age'
 
-    def source_display(self, obj):
-        """Make data source readable."""
-        return obj.get_source_display()
-    source_display.short_description = 'Data Source'
-
-    def latitude(self, obj):
-        """Make data source readable."""
-        return obj.where.get_y()
-    latitude.short_description = 'Latitude'
-
-    def longitude(self, obj):
-        """Make data source readable."""
-        return obj.where.get_x()
-    longitude.short_description = 'Longitude'
-
-
-AnimalEncounterForm = select2_modelform(AnimalEncounter,
-                                        attrs={'width': '350px'})
-
 
 @admin.register(AnimalEncounter)
-class AnimalEncounterAdmin(FSMTransitionMixin,
-                           VersionAdmin,
-                           admin.ModelAdmin):
+class AnimalEncounterAdmin(EncounterAdmin):
     """Admin for AnimalEncounter."""
 
-    raw_id_fields = ('observer', 'reporter', )
-    autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
     form = AnimalEncounterForm
-    date_hierarchy = 'when'
-    formfield_overrides = {
-        geo_models.PointField: {'widget': LeafletWidget(
-            attrs={
-                'map_height': '400px',
-                'map_width': '100%',
-                'display_raw': 'true',
-                'map_srid': 4326,
-                }
-            )},
-        }
-
-    list_display = ('source_display', 'source_id',
-                    'when', 'latitude', 'longitude', 'location_accuracy',
-                    'name',
-                    'species', 'health_display',
-                    'cause_of_death', 'cause_of_death_confidence',
-                    'maturity_display', 'sex_display', 'behaviour',
-                    'habitat_display',
-                    'checked_for_injuries',
-                    'scanned_for_pit_tags',
-                    'checked_for_flipper_tags',
-                    'status', 'observer', 'reporter', )
-    list_filter = (ObservationTypeListFilter,
-                   'taxon', 'species',
-                   'health', 'cause_of_death', 'cause_of_death_confidence',
-                   'maturity', 'sex', 'habitat', 'checked_for_injuries',
-                   'scanned_for_pit_tags', 'checked_for_flipper_tags',
-                   'status', 'location_accuracy',
-                   'observer', 'reporter', )
-    list_select_related = True
-    save_on_top = True
-    fsm_field = ['status', ]
-    search_fields = ('observer__name', 'observer__username',
-                     'reporter__name', 'reporter__username', 'name', )
+    list_display = EncounterAdmin.FIRST_COLS + (
+        'species', 'health_display',
+        'cause_of_death', 'cause_of_death_confidence',
+        'maturity_display', 'sex_display', 'behaviour',
+        'habitat_display',
+        'checked_for_injuries',
+        'scanned_for_pit_tags',
+        'checked_for_flipper_tags',
+        ) + EncounterAdmin.LAST_COLS
+    list_filter = EncounterAdmin.list_filter + (
+        ObservationTypeListFilter,
+        'taxon', 'species',
+        'health', 'cause_of_death', 'cause_of_death_confidence',
+        'maturity', 'sex', 'habitat',
+        'checked_for_injuries',
+        'scanned_for_pit_tags',
+        'checked_for_flipper_tags', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
          {'fields': ('taxon', 'species', 'maturity', 'sex',
                      'activity', 'behaviour', 'habitat',
                      'health', 'cause_of_death', 'cause_of_death_confidence',
                      'checked_for_injuries',
-                     'scanned_for_pit_tags', 'checked_for_flipper_tags',)}),
-        )
+                     'scanned_for_pit_tags',
+                     'checked_for_flipper_tags',)}), )
+
+    # Custom set of inlines excludes some Encounter inlines
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
         TurtleDamageObservationInline,
         TurtleMorphometricObservationInline,
         TurtleNestObservationInline,
-        ManagementActionInline,
-        ]
+        ManagementActionInline, ]
 
     def health_display(self, obj):
         """Make health status human readable."""
@@ -352,18 +309,3 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
         """Make habitat human readable."""
         return obj.get_habitat_display()
     habitat_display.short_description = 'Habitat'
-
-    def source_display(self, obj):
-        """Make data source readable."""
-        return obj.get_source_display()
-    source_display.short_description = 'Data Source'
-
-    def latitude(self, obj):
-        """Make data source readable."""
-        return obj.where.get_y()
-    latitude.short_description = 'Latitude'
-
-    def longitude(self, obj):
-        """Make data source readable."""
-        return obj.where.get_x()
-    longitude.short_description = 'Longitude'

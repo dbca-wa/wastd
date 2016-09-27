@@ -48,6 +48,7 @@ def deploy():
     _migrate()
     clean()
 
+
 def shell():
     """Open a shell_plus."""
     local('python manage.py shell_plus')
