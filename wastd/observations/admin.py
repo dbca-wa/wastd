@@ -216,11 +216,10 @@ class TurtleNestEncounterAdmin(FSMTransitionMixin,
             )},
         }
     list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
-                    'name', 'observer', 'reporter',
-                    'species', 'age_display', 'habitat_display',
-                    'status', 'source_display', 'source_id')
-    list_filter = ('status', 'observer', 'reporter', 'location_accuracy',
-                   'species', 'nest_age', 'habitat', )
+                    'name', 'species', 'age_display', 'habitat_display',
+                    'status', 'source_display', 'source_id', 'observer', 'reporter',)
+    list_filter = ('species', 'nest_age', 'habitat', 'status',
+                   'observer', 'reporter', 'location_accuracy', )
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]
@@ -289,20 +288,21 @@ class AnimalEncounterAdmin(FSMTransitionMixin,
 
     list_display = ('when', 'latitude', 'longitude', 'location_accuracy',
                     'name',
-                    'observer', 'reporter', 'species', 'health_display',
+                    'species', 'health_display',
                     'cause_of_death', 'cause_of_death_confidence',
                     'maturity_display', 'sex_display', 'behaviour',
                     'habitat_display',
                     'checked_for_injuries',
                     'scanned_for_pit_tags',
                     'checked_for_flipper_tags',
-                    'status', 'source_display', 'source_id', )
+                    'status', 'source_display', 'source_id', 'observer', 'reporter', )
     list_filter = (ObservationTypeListFilter,
-                   'status', 'observer', 'reporter', 'location_accuracy',
                    'taxon', 'species',
                    'health', 'cause_of_death', 'cause_of_death_confidence',
                    'maturity', 'sex', 'habitat', 'checked_for_injuries',
-                   'scanned_for_pit_tags', 'checked_for_flipper_tags', )
+                   'scanned_for_pit_tags', 'checked_for_flipper_tags',
+                   'status', 'location_accuracy',
+                   'observer', 'reporter', )
     list_select_related = True
     save_on_top = True
     fsm_field = ['status', ]
