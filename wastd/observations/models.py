@@ -73,7 +73,7 @@ TAG_TYPE_DEFAULT = 'flipper-tag'
 TAG_TYPE_CHOICES = (
     (TAG_TYPE_DEFAULT, 'Flipper Tag'),
     ('pit-tag', 'PIT Tag'),
-    ('satellite-tag', 'Satellite Tag'),
+    ('sat-tag', 'Satellite Relay Data Logger'),  # SRDL
     ('data-logger', 'Data Logger'),
     ('blood-sample', 'Blood Sample'),
     ('biopsy-sample', 'Biopsy Sample'),
@@ -81,6 +81,20 @@ TAG_TYPE_CHOICES = (
     ('physical-sample', 'Physical Sample'),
     ('egg-sample', 'Egg Sample'),
     ('temperature-logger', 'Temperature Logger'),
+    ('qld-monel-a-flipper-tag', 'QLD Monel Series A flipper tag'),         # TRT_IDENTIFICATION_TYPES A
+    ('qld-titanium-k-flipper-tag', 'QLD Titanium Series K flipper tag'),         # TRT_IDENTIFICATION_TYPES K
+    ('qld-titanium-t-flipper-tag', 'QLD Titanium Series T flipper tag'),         # TRT_IDENTIFICATION_TYPES T
+    ('acoustic-tag', 'Acoustic tag'),                           # Acoustic
+    ('commonwealth-titanium-flipper-tag', 'Commonwealth titanium flipper tag'),      # CA
+    ('cayman-juvenile-tag', 'Cayman juvenile tag'),   # CT
+    ('ctd-data-logger', 'Conductivity, Temperature, Depth SR data logger'),  # CTD
+    ('hawaii-inconel-flipper-tag', 'Hawaii Inst Mar Biol Inconel tag'),  # I
+    ('ptt', 'Platform Transmitter Terminal (PTT)'),  # PTT
+    ('rototag', 'RotoTag'),  # SFU/FIU
+    ('narangebub-nickname', 'Narangebup rehab informal name'),  # RREC
+    ('aqwa-nickname', 'AQWA informal name'),  # UWW, from former name UnderWater World
+    ('atlantis-nickname', 'Atlantis informal name'),  # ATLANTIS
+    ('wa-museum-reptile-registration-number', 'WA Museum Natural History Reptiles Catalogue Registration Number'),  # WAMusR
     ('other', 'Other'),)
 
 TAG_STATUS_DEFAULT = 'resighted'
