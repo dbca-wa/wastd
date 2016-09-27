@@ -64,7 +64,7 @@ class EncounterFilter(django_filters.FilterSet):
                     "WA12 will return encounters with WA123 and WA124."))
     source_id = django_filters.CharFilter(
         lookup_expr='icontains',
-        # help_text=_("Source ID supports partial match.")
+        help_text=_("Source ID supports partial match.")
         )
     when = filters.DateFromToRangeFilter(
         help_text="Date format: YYYY-mm-dd, e.g. 2015-12-31",
@@ -84,5 +84,8 @@ class EncounterFilter(django_filters.FilterSet):
 
 
 class AnimalEncounterFilter(EncounterFilter):
+    """AnimalEncounter Filter."""
+
     class Meta:
+        """Options for AnimalEncounterFilter."""
         model = AnimalEncounter

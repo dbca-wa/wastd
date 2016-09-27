@@ -6,6 +6,7 @@ from crispy_forms.layout import (
 
 from wastd.observations.models import Encounter, AnimalEncounter
 
+
 class EncounterListFormHelper(FormHelper):
     """django-crispy-forms FormHelper for Encounter."""
 
