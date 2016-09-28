@@ -5,10 +5,86 @@ This chapter addresses data consumers.
 
 For humans: GUI
 ===============
-This section will document the graphical user interface (GUI).
+This section documents the graphical user interface (GUI).
 
 The GUI aims to give easy to digest insight to managers with
 defined questions, and to allow the query and export of data.
+
+There are four ways of viewing data: on a map, as a data table, (only with special
+privileges:) through the admin interface ("backstage"), and through the API preview.
+
+Map
+---
+**Getting there** https://strandings-test.dpaw.wa.gov.au/
+or click on "WA Strandings Database WAStD"
+
+**Accessible to** all Parks & Wildlife staff
+
+WAStD's homepage displays (currently all) records on a map.
+
+Encounters of any kind are displayed as place markers.
+Click on any record to see a popup with a summary and links to view- more details.
+
+The "edit" button indicates the record's QA status and allows data entry operators
+to view and update details.
+
+Named animals displayed a link (e.g. ``WA1234``) to their known life history,
+which consists of all recorded encounters with this animal.
+
+Furthermore, each tag on the animal features a link to a list to the full tag
+history.
+
+Data
+----
+**Getting there** https://strandings-test.dpaw.wa.gov.au/animal-encounters/ or click on "Data"
+
+**Accessible to** all Parks & Wildlife staff
+
+The "Data" tab offers the capacity to filter and view data.
+Currently, this part is in devlopment and does not offer all commodities yet.
+
+Backstage
+---------
+**Getting there** https://strandings-test.dpaw.wa.gov.au/admin/ or click on "Backstage"
+
+**Accessible to** authorised Parks & Wildlife staff of group "data entry"
+
+Authorised users belonging to WAStD's "data entry" group can access the admin
+interface under the "backstage" tab.
+
+Strandings and tagging encounters are located under
+`Animal Encounters <https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/>`_.
+
+Many questions can be answered with a simple combination of filter criteria, e.g.:
+
+* How many strandings were there in 2015? Select year 2015 in the date facet (top
+  left), and "Observation type" stranding in the Filter dropdown (top right).
+  https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/?observation_type=stranding&when__year=2015
+* How many strandings were suspected boat strikes?
+  https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike
+* How many Flatback turtles were stranded in 2016?
+  https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/?observation_type=stranding&species__exact=Natator+depressus&when__year=2016
+
+The result of any combination of filter criteria is a list of Animal Encounters,
+which can be exported to XLS or CSV:
+
+* Select all (checkbox in table header)
+* Admin actions (bottom left): Export to XLS / CSV (choose) > Go
+* Options: header (includes header row), use display (uses human-readable labels
+  instead of terse yet legible database values), columns (deselect the voluminous
+  HTML representation) > Export > XLS / CSV is downloaded.
+
+API preview
+-----------
+**Getting there** https://strandings-test.dpaw.wa.gov.au/api/1/ or click on "API"
+
+**Accessible to** all Parks & Wildlife staff
+
+Data analysts will likely want to cut out the manual filter and download process described
+above, and consume (filtered) data programmatically. This can be done with the API.
+WAStD's API features a human-readable preview with the same filters as the "backstage"
+admin interface. This facilitates a user-friendly, trial-and-error way of quickly
+building the desired API query. To learn more about the API, read on.
 
 
 For machines: API
