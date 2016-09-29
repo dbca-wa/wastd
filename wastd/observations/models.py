@@ -126,7 +126,8 @@ TAXON_CHOICES = NA + (
     ("Cetacea", "Whales and Dolphins"),
     ("Pinnipedia", "Pinnipeds"),
     ("Sirenia", "Dugongs"),
-    ("Elasmobranchii", "Sharks and Rays"), )
+    ("Elasmobranchii", "Sharks and Rays"),
+    ("Hydrophiinae", "Sea snakes and kraits"), )
 
 TURTLE_SPECIES_CHOICES = (
     ('Natator depressus', 'Natator depressus (Flatback turtle)'),
