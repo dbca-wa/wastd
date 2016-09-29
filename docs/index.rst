@@ -36,6 +36,7 @@ Contents:
    data_consumers
    data_curators
    data_collectors
+   specification
    maintainers
    developers
 

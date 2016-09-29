@@ -13,8 +13,8 @@ environments (UAT, PROD).
 
 Virtualenv
 ----------
+Activate the virtualenv::
 
-::
     pip install virtualenvwrapper
     mkproject wastd
 
@@ -24,8 +24,8 @@ Create a PostgreSQL database with PostGIS.
 
 Code
 ----
+Install dependencies::
 
-::
     workon wastd
     git clone git@github.com:florianm/wastd.git .
     pip install Fabric
@@ -162,9 +162,7 @@ in the `docker-compose.yml` file, but an example configuration might look like t
             - webapp
 
 We'll ignore the webserver for now (you'll want to comment that part out while we do).
-A working Dockerfile to run your cookiecutter application might look like this:
-
-::
+A working Dockerfile to run your cookiecutter application might look like this::
 
     FROM ubuntu:14.04
     ENV REFRESHED_AT 2015-01-13
@@ -213,11 +211,7 @@ Deployment
 
 You'll need a webserver container for deployment. An example setup for `Nginx`_
 
-might look like this:
-
-.. _Nginx: http://wiki.nginx.org/Main
-
-::
+might look like this::
 
     FROM ubuntu:14.04
     ENV REFRESHED_AT 2015-02-11
@@ -240,11 +234,11 @@ might look like this:
     #start the server
     CMD ["nginx", "-g", "daemon off;"]
 
+.. _Nginx: http://wiki.nginx.org/Main
+
 That Dockerfile assumes you have an Nginx conf file named `site.conf` in the same
 directory as the webserver Dockerfile. A very basic example, which forwards
-traffic onto the development server or gunicorn for processing, would look like this:
-
-::
+traffic onto the development server or gunicorn for processing, would look like this::
 
     # see http://serverfault.com/questions/577370/how-can-i-use-environment-variables-in-nginx-conf#comment730384_577370
     upstream localhost {
