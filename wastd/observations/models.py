@@ -191,7 +191,31 @@ CETACEAN_SPECIES_CHOICES = (
     ("Ziphius cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"),
     ("unidentified-whale", "Unidentified whale"), )
 
-SPECIES_CHOICES = NA + TURTLE_SPECIES_CHOICES + CETACEAN_SPECIES_CHOICES
+SEASNAKE_SPECIES_CHOICES = (
+    ("hydrophiinae-subfam", "Hydrophiinae subfam. (Sea snakes and kraits)"),
+    ("acalyptophis-sp", "Acalyptophis sp. (Horned sea snake)"),
+    ("aipysurus-sp", "Aipysurus sp. (Olive sea snake)"),
+    ("astrotia-sp", "Astrotia sp. (Stokes' sea snake)"),
+    ("emydocephalus-sp", "Emydocephalus sp. (Turtlehead sea snake)"),
+    ("enhydrina-sp", "Enhydrina sp. (Beaked sea snake)"),
+    ("ephalophis-sp", "Ephalophis sp. (Grey's mudsnake)"),
+    ("hydrelaps-sp", "Hydrelaps sp. (Port Darwin mudsnake)"),
+    ("hydrophis-sp", "Hydrophis sp. (sea snake)"),
+    ("kerilia-sp", "Kerilia sp. (Jerdon's sea snake)"),
+    ("kolpophis-sp", "Kolpophis sp. (bighead sea snake)"),
+    ("lapemis-sp", "Lapemis sp. (Shaw's sea snake)"),
+    ("laticauda-sp", "Laticauda sp. (Sea krait)"),
+    ("parahydrophis-sp", "Parahydrophis (Northern mangrove sea snake)"),
+    ("parapistocalamus-sp", "Parapistocalamus sp. (Hediger's snake)"),
+    ("pelamis-sp", "Pelamis sp. (Yellow-bellied sea snake)"),
+    ("praescutata-sp", "Praescutata sp. (Sea snake)"),
+    ("thalassophis-sp", "Thalassophis sp. (Sea snake)"),
+    )
+
+SPECIES_CHOICES = NA +\
+ TURTLE_SPECIES_CHOICES +\
+ CETACEAN_SPECIES_CHOICES +\
+ SEASNAKE_SPECIES_CHOICES
 
 SEX_CHOICES = (
     (NA_VALUE, "unknown sex"),
