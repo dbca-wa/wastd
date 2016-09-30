@@ -1461,78 +1461,117 @@ class TurtleMorphometricObservation(Observation):
     """Morphometric measurements of a turtle."""
 
     curved_carapace_length_mm = models.PositiveIntegerField(
-        verbose_name=_("Curved Carapace Length (mm)"),
+        verbose_name=_("Curved carapace length (mm)"),
         blank=True, null=True,
-        help_text=_("The Curved Carapace Length in millimetres."),)
+        help_text=_("The curved carapace length in millimetres."),)
 
     curved_carapace_length_accuracy = models.CharField(
         max_length=300,
-        default="unknown",
-        verbose_name=_("Curved Carapace Length Accuracy"),
+        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
+        verbose_name=_("Curved carapace length accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
 
-    curved_carapace_notch_mm = models.PositiveIntegerField(
-        verbose_name=_("Curved Carapace Length to notch (mm)"),
+    straight_carapace_length_mm = models.PositiveIntegerField(
         blank=True, null=True,
-        help_text=_("The Curved Carapace Notch in millimetres."),)
+        verbose_name=_("Straight carapace length (mm)"),
+        help_text=_("The straight carapace length in millimetres."),)
 
-    curved_carapace_notch_accuracy = models.CharField(
+    straight_carapace_length_accuracy = models.CharField(
         max_length=300,
-        default="unknown",
-        verbose_name=_("Curved Carapace Notch Accuracy"),
+        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
+        verbose_name=_("Straight carapace length accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
 
     curved_carapace_width_mm = models.PositiveIntegerField(
-        verbose_name=_("Curved Carapace Width (mm)"),
         blank=True, null=True,
-        help_text=_("Curved Carapace Width in millimetres."),)
+        verbose_name=_("Curved Carapace Width (mm)"),
+        help_text=_("Curved carapace width in millimetres."),)
 
     curved_carapace_width_accuracy = models.CharField(
         max_length=300,
-        default="unknown",
-        verbose_name=_("Curved Carapace Width Accuracy"),
+        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
+        verbose_name=_("Curved carapace width accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
 
-    tail_length_mm = models.PositiveIntegerField(
-        verbose_name=_("Tail Length (mm)"),
+    tail_length_carapace_mm = models.PositiveIntegerField(
         blank=True, null=True,
-        help_text=_("The Tail Length, measured from carapace in millimetres."),)
+        verbose_name=_("Tail length from carapace (mm)"),
+        help_text=_("The tail length in millimetres, "
+                    "measured from carapace to tip."),)
 
-    tail_length_accuracy = models.CharField(
+    tail_length_carapace_accuracy = models.CharField(
         max_length=300,
-        default="unknown",
-        verbose_name=_("Tail Length Accuracy"),
+        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
+        verbose_name=_("Tail length from carapace accuracy"),
+        help_text=_("The measurement type as indication of accuracy."),)
+
+    tail_length_vent_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Tail length from vent (mm)"),
+        help_text=_("The tail length in millimetres, "
+                    "measured from vent to tip."),)
+
+    tail_length_vent_accuracy = models.CharField(
+        max_length=300,
+        default=NA_VALUE,
+        choices=ACCURACY_CHOICES,
+        verbose_name=_("Tail Length Accuracy"),
+        help_text=_("The measurement type as indication of accuracy."),)
+
+    tail_length_plastron_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Tail length from plastron (mm)"),
+        help_text=_("The tail length in millimetres, "
+                    "measured from plastron to tip."),)
+
+    tail_length_plastron_accuracy = models.CharField(
+        max_length=300,
+        default=NA_VALUE,
+        choices=ACCURACY_CHOICES,
+        verbose_name=_("Tail length from plastron accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
 
     maximum_head_width_mm = models.PositiveIntegerField(
-        verbose_name=_("Maximum Head Width (mm)"),
         blank=True, null=True,
-        help_text=_("The Maximum Head Width in millimetres."),)
+        verbose_name=_("Maximum head width (mm)"),
+        help_text=_("The maximum head width in millimetres."),)
 
     maximum_head_width_accuracy = models.CharField(
         max_length=300,
-        default="unknown",
-        verbose_name=_("Maximum Head Width Accuracy"),
+        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
+        verbose_name=_("Maximum head width accuracy"),
+        help_text=_("The measurement type as indication of accuracy."),)
+
+    maximum_head_length_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Maximum head length (mm)"),
+        help_text=_("The maximum head length in millimetres."),)
+
+    maximum_head_length_accuracy = models.CharField(
+        max_length=300,
+        default=NA_VALUE,
+        choices=ACCURACY_CHOICES,
+        verbose_name=_("Maximum head length accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
 
     handler = models.ForeignKey(
         User,
         blank=True, null=True,
-        verbose_name=_("Handled by"),
         related_name="morphometric_handler",
-        help_text=_("The person conducting the measurements"))
+        verbose_name=_("Measured by"),
+        help_text=_("The person conducting the measurements."))
 
     recorder = models.ForeignKey(
         User,
         blank=True, null=True,
-        verbose_name=_("Recorded by"),
         related_name="morphometric_recorder",
-        help_text=_("The person recording the measurements"))
+        verbose_name=_("Recorded by"),
+        help_text=_("The person recording the measurements."))
 
     def __str__(self):
         """The unicode representation."""

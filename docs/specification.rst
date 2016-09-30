@@ -7,6 +7,39 @@ This chapter contains the specification for WAStD.
 
 High level business requirements
 ================================
+Scope
+-----
+Wishlist to be refined into MH, NTH, OOS:
+
+Supported data
+^^^^^^^^^^^^^^
+* Turtle Strandings
+* Turtle Tagging
+* Turtle Track count and nest observations
+* Other Strandings (Sea Snakes, Cetaceans, Pinnipeds, Dugongs)
+* Ability to add other encounter types (species groups) and observations later on
+* Hatched nest surveys
+* Turtle nesting success: follow each turtle coming ashore to see whether it nests or not
+
+Data entry, collection, ingestion
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Data entry by trained and trusted admins through "backstage" admin forms
+* Data entry (strandings) by less trained regional staff (Rangers), web based (not offline), through streamlined forms
+* Data entry (tagging) by field operators online through stramlined forms
+* Data ingestion from mobile data collection devices (existing Cybertracker fleet)
+
+Offline
+^^^^^^^
+* Data entry (tagging) by field operators through standalone, offline, desktop capture tool
+* Mobile app, read-only, with a browseable data snapshot "have I seen this turtle before?"
+
+Data access
+^^^^^^^^^^^
+* GUI for admins
+* API for authorised analysts
+* External data owners access (only) their data
+
+
 Framework maturity
 ------------------
 R: The application must be written in an industrial-strength, mature framework.

@@ -7,9 +7,9 @@
     <i class="{{ o.curved_carapace_length_accuracy|fa_accuracy_icon }}"></i>
     {% endif %}
 
-    {% if o.curved_carapace_notch_mm %}
-    CCN {{ o.curved_carapace_notch_mm }} mm
-    <i class="{{ o.curved_carapace_notch_accuracy|fa_accuracy_icon }}"></i>
+    {% if o.straight_carapace_length_mm %}
+    SCL {{ o.straight_carapace_length_mm }} mm
+    <i class="{{ o.straight_carapace_length_accuracy|fa_accuracy_icon }}"></i>
     {% endif %}
 
     {% if o.curved_carapace_width_mm %}
@@ -17,14 +17,39 @@
     <i class="{{ o.curved_carapace_width_accuracy|fa_accuracy_icon }}"></i>
     {% endif %}
 
-    {% if o.tail_length_mm %}
-    TL {{ o.tail_length_mm }} mm
-    <i class="{{ o.tail_length_accuracy|fa_accuracy_icon }}"></i>
+    {% if o.tail_length_carapace_mm %}
+    TLC {{ o.tail_length_carapace_mm }} mm
+    <i class="{{ o.tail_length_carapace_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+
+    {% if o.tail_length_vent_mm %}
+    TLV {{ o.tail_length_vent_mm }} mm
+    <i class="{{ o.tail_length_vent_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+
+    {% if o.tail_length_plastron_mm %}
+    TLP {{ o.tail_length_plastron_mm }} mm
+    <i class="{{ o.tail_length_plastron_accuracy|fa_accuracy_icon }}"></i>
     {% endif %}
 
     {% if o.maximum_head_width_mm %}
     HW {{ o.maximum_head_width_mm }} mm
     <i class="{{ o.maximum_head_width_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+
+    {% if o.maximum_head_length_mm %}
+    HL {{ o.maximum_head_length_mm }} mm
+    <i class="{{ o.maximum_head_length_accuracy|fa_accuracy_icon }}"></i>
+    {% endif %}
+
+    {% if o.handler %}
+    <i class="fa fa-fw fa-eye"></i>
+    <a href="mailto:{{ o.observer.email }}">{{ o.handler.name }}</a>
+    {% endif %}
+
+    {% if o.recorder %}
+    <i class="fa fa-fw fa-pencil"></i>
+    <a href="mailto:{{ o.reporter.email }}">{{ o.recorder.name }}</a>
     {% endif %}
 </div>
 {% endwith %}

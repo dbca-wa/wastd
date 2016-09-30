@@ -140,6 +140,7 @@ class TagObservationEncounterSerializer(serializers.ModelSerializer):
                   'tag_type', 'name', 'tag_location',
                   'status', 'comments')
 
+
 class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
     """TurtleMorphometricObservation serializer."""
 
@@ -149,10 +150,15 @@ class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
         model = TurtleMorphometricObservation
         fields = ('observation_name',
                   'curved_carapace_length_mm', 'curved_carapace_length_accuracy',
-                  'curved_carapace_notch_mm', 'curved_carapace_notch_accuracy',
+                  'straight_carapace_length_mm', 'straight_carapace_length_accuracy',
                   'curved_carapace_width_mm', 'curved_carapace_width_accuracy',
-                  'tail_length_mm', 'tail_length_accuracy',
-                  'maximum_head_width_mm', 'maximum_head_width_mm')
+                  'tail_length_carapace_mm', 'tail_length_carapace_accuracy',
+                  'tail_length_vent_mm', 'tail_length_vent_accuracy',
+                  'tail_length_plastron_mm', 'tail_length_plastron_accuracy',
+                  'maximum_head_width_mm', 'maximum_head_width_accuracy',
+                  'maximum_head_length_mm', 'maximum_head_length_accuracy',
+                  'handler', 'recorder',
+                  )
 
 
 class ManagementActionSerializer(serializers.ModelSerializer):
