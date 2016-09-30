@@ -1473,9 +1473,10 @@ class TurtleMorphometricObservation(Observation):
 
     curved_carapace_length_accuracy = models.CharField(
         max_length=300,
+        blank=True, null=True,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Curved carapace length accuracy"),
-        help_text=_("The measurement type as indication of accuracy."),)
+        help_text=_("The expected measurement accuracy."),)
 
     straight_carapace_length_mm = models.PositiveIntegerField(
         blank=True, null=True,
@@ -1484,9 +1485,10 @@ class TurtleMorphometricObservation(Observation):
 
     straight_carapace_length_accuracy = models.CharField(
         max_length=300,
+        blank=True, null=True,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Straight carapace length accuracy"),
-        help_text=_("The measurement type as indication of accuracy."),)
+        help_text=_("The expected measurement accuracy."),)
 
     curved_carapace_width_mm = models.PositiveIntegerField(
         blank=True, null=True,
@@ -1495,9 +1497,10 @@ class TurtleMorphometricObservation(Observation):
 
     curved_carapace_width_accuracy = models.CharField(
         max_length=300,
+        blank=True, null=True,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Curved carapace width accuracy"),
-        help_text=_("The measurement type as indication of accuracy."),)
+        help_text=_("The expected measurement accuracy."),)
 
     tail_length_carapace_mm = models.PositiveIntegerField(
         blank=True, null=True,
@@ -1507,9 +1510,10 @@ class TurtleMorphometricObservation(Observation):
 
     tail_length_carapace_accuracy = models.CharField(
         max_length=300,
+        blank=True, null=True,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Tail length from carapace accuracy"),
-        help_text=_("The measurement type as indication of accuracy."),)
+        help_text=_("The expected measurement accuracy."),)
 
     tail_length_vent_mm = models.PositiveIntegerField(
         blank=True, null=True,
@@ -1519,9 +1523,10 @@ class TurtleMorphometricObservation(Observation):
 
     tail_length_vent_accuracy = models.CharField(
         max_length=300,
+        blank=True, null=True,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Tail Length Accuracy"),
-        help_text=_("The measurement type as indication of accuracy."),)
+        help_text=_("The expected measurement accuracy."),)
 
     tail_length_plastron_mm = models.PositiveIntegerField(
         blank=True, null=True,
@@ -1531,9 +1536,10 @@ class TurtleMorphometricObservation(Observation):
 
     tail_length_plastron_accuracy = models.CharField(
         max_length=300,
+        blank=True, null=True,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Tail length from plastron accuracy"),
-        help_text=_("The measurement type as indication of accuracy."),)
+        help_text=_("The expected measurement accuracy."),)
 
     maximum_head_width_mm = models.PositiveIntegerField(
         blank=True, null=True,
@@ -1542,9 +1548,10 @@ class TurtleMorphometricObservation(Observation):
 
     maximum_head_width_accuracy = models.CharField(
         max_length=300,
+        blank=True, null=True,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Maximum head width accuracy"),
-        help_text=_("The measurement type as indication of accuracy."),)
+        help_text=_("The expected measurement accuracy."),)
 
     maximum_head_length_mm = models.PositiveIntegerField(
         blank=True, null=True,
@@ -1553,9 +1560,34 @@ class TurtleMorphometricObservation(Observation):
 
     maximum_head_length_accuracy = models.CharField(
         max_length=300,
+        blank=True, null=True,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Maximum head length accuracy"),
-        help_text=_("The measurement type as indication of accuracy."),)
+        help_text=_("The expected measurement accuracy."),)
+
+    body_depth_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Body depth (mm)"),
+        help_text=_("The body depth, plastron to carapace, in millimetres."),)
+
+    body_depth_accuracy = models.CharField(
+        max_length=300,
+        blank=True, null=True,
+        choices=ACCURACY_CHOICES,
+        verbose_name=_("Body depth accuracy"),
+        help_text=_("The expected measurement accuracy."),)
+
+    body_weight_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Body weight (g)"),
+        help_text=_("The body weight in grams (1000 g = 1kg)."),)
+
+    body_weight_accuracy = models.CharField(
+        max_length=300,
+        blank=True, null=True,
+        choices=ACCURACY_CHOICES,
+        verbose_name=_("Body weight accuracy"),
+        help_text=_("The expected measurement accuracy."),)
 
     handler = models.ForeignKey(
         User,

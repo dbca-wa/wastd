@@ -157,6 +157,8 @@ class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
                   'tail_length_plastron_mm', 'tail_length_plastron_accuracy',
                   'maximum_head_width_mm', 'maximum_head_width_accuracy',
                   'maximum_head_length_mm', 'maximum_head_length_accuracy',
+                  'body_depth_mm', 'body_depth_accuracy',
+                  'body_weight_mm', 'body_weight_accuracy',
                   'handler', 'recorder',
                   )
 
