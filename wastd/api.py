@@ -304,7 +304,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         model = TurtleNestEncounter
         fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
-                  'nest_age', 'species', 'habitat',
+                  'nest_age', 'species', 'habitat', 'disturbance',
                   'status', 'source', 'source_id', 'observation_set', )
 
 
