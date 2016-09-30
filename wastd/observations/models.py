@@ -426,7 +426,13 @@ PHOTO_ICONS = {
 ACCURACY_CHOICES = (
     ("unknown", "Unknown"),
     ("estimated", "Estimated"),
-    ("measured", "Measured"),)
+    ("measured", "Measured"),
+    ("1", "To nearest mm"),
+    ("10", "To nearest 1 cm"),
+    ("100", "To nearest 10 cm"),
+    ("1000", "To nearest 1 m or kg"),
+    ("10000", "To nearest 10 m or kg"),
+    )
 
 ACCURACY_ICONS = {
     NA_VALUE: "fa fw fa-question-circle-o",
@@ -1467,7 +1473,6 @@ class TurtleMorphometricObservation(Observation):
 
     curved_carapace_length_accuracy = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Curved carapace length accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
@@ -1479,7 +1484,6 @@ class TurtleMorphometricObservation(Observation):
 
     straight_carapace_length_accuracy = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Straight carapace length accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
@@ -1491,7 +1495,6 @@ class TurtleMorphometricObservation(Observation):
 
     curved_carapace_width_accuracy = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Curved carapace width accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
@@ -1504,7 +1507,6 @@ class TurtleMorphometricObservation(Observation):
 
     tail_length_carapace_accuracy = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Tail length from carapace accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
@@ -1517,7 +1519,6 @@ class TurtleMorphometricObservation(Observation):
 
     tail_length_vent_accuracy = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Tail Length Accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
@@ -1530,7 +1531,6 @@ class TurtleMorphometricObservation(Observation):
 
     tail_length_plastron_accuracy = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Tail length from plastron accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
@@ -1542,7 +1542,6 @@ class TurtleMorphometricObservation(Observation):
 
     maximum_head_width_accuracy = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Maximum head width accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
@@ -1554,7 +1553,6 @@ class TurtleMorphometricObservation(Observation):
 
     maximum_head_length_accuracy = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         choices=ACCURACY_CHOICES,
         verbose_name=_("Maximum head length accuracy"),
         help_text=_("The measurement type as indication of accuracy."),)
