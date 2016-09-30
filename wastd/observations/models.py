@@ -290,10 +290,12 @@ CONFIDENCE_CHOICES = NA + (
 
 NESTING_ACTIVITY_CHOICES = (
     ("arriving", "arriving on beach"),
+    ("approaching", "approaching nesting site"),
     ("digging-body-pit", "digging body pit"),
     ("excavating-egg-chamber", "excavating egg chamber"),
     ("laying-eggs", "laying eggs"),
     ("filling-in-egg-chamber", "filling in egg chamber"),
+    ("camouflaging-egg-chamber", "camouflaging egg chamber"),
     ("returning-to-water", "returning to water"),
     )
 
