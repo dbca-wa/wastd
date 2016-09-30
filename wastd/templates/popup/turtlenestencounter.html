@@ -2,13 +2,14 @@
 {% with original as o %}
 
 {% block title %}
-Turtle Nest
+{{ o.get_species_display }} Nest
 {% endblock %}
 
 {% block encounterdetails %}
 <!-- Nest overview -->
 <div class="row"><i class="fa fa-fw fa-home"></i>
-    {{ o.get_nest_age_display }} nest of {{ o.get_maturity_display }}
+    {{ o.get_nest_age_display }}
+    of {{ o.get_species_display }}
     on {{ o.get_habitat_display }}
 </div>
 {% endblock %}

@@ -1609,6 +1609,10 @@ class TurtleNestObservation(Observation):
     * Turtle nest observation during tagging
     * Turtle nest excavation a few days after hatching
 
+    Egg count is done as total, plus categories of nest contents following
+    "Determining Clutch Size and Hatching Success, Jeffrey D. Miller,
+    Research and Management Techniques for the Conservation of Sea Turtles,
+    IUCN Marine Turtle Specialist Group, 1999.
     """
 
     nest_position = models.CharField(
@@ -1628,51 +1632,55 @@ class TurtleNestObservation(Observation):
         blank=True, null=True,
         help_text=_("The total number of eggs laid."), )
 
-    no_egg_shells = models.PositiveIntegerField(
-        verbose_name=_("Egg shells"),
+    # start Miller fields
+    no_emerged = models.PositiveIntegerField(
+        verbose_name=_("Emerged (E)"),
         blank=True, null=True,
-        help_text=_("The number of egg shells in the nest."), )
+        help_text=_("The number of hatchlings leaving or departed from nest."), )
+
+    no_egg_shells = models.PositiveIntegerField(
+        verbose_name=_("Egg shells (S)"),
+        blank=True, null=True,
+        help_text=_("The number of empty shells counted which were "
+                    "more than 50 percent complete."), )
 
     no_live_hatchlings = models.PositiveIntegerField(
-        verbose_name=_("Live hatchlings"),
+        verbose_name=_("Live hatchlings (L)"),
         blank=True, null=True,
-        help_text=_("The number of in the nest."),)
+        help_text=_("The number of live hatchlings left among shells "
+                    "excluding those in neck of nest."),)
 
     no_dead_hatchlings = models.PositiveIntegerField(
-        verbose_name=_("Dead hatchlings"),
+        verbose_name=_("Dead hatchlings (D)"),
         blank=True, null=True,
-        help_text=_("The number of dead hatchlings in the nest."),)
+        help_text=_("The number of dead hatchlings that have left"
+                    " their shells."),)
 
     no_undeveloped_eggs = models.PositiveIntegerField(
-        verbose_name=_("Undeveloped eggs"),
+        verbose_name=_("Undeveloped eggs (UD)"),
         blank=True, null=True,
-        help_text=_("The number of undeveloped eggs in the nest."),)
+        help_text=_("The number of unhatched eggs with no obvious embryo."),)
 
-    no_dead_embryos = models.PositiveIntegerField(
-        verbose_name=_("Dead embryos"),
+    no_unhatched_eggs = models.PositiveIntegerField(
+        verbose_name=_("Unhatched eggs (UH)"),
         blank=True, null=True,
-        help_text=_("The number of dead embryos in the nest."),)
+        help_text=_("The number of unhatched eggs with obvious, "
+                    "not yet full term, embryo."),)
 
-    no_dead_full_term_embryos = models.PositiveIntegerField(
-        verbose_name=_("Dead full term embryos"),
+    no_unhatched_term = models.PositiveIntegerField(
+        verbose_name=_("Unhatched term (UHT)"),
         blank=True, null=True,
-        help_text=_("The number of dead full term embryos in the nest."),)
+        help_text=_("The number of unhatched, apparently full term, embryo"
+                    " in egg or pipped with small amount of external"
+                    " yolk material."),)
 
     no_depredated_eggs = models.PositiveIntegerField(
-        verbose_name=_("Depredated eggs`"),
+        verbose_name=_("Depredated eggs (P)"),
         blank=True, null=True,
-        help_text=_("The number of depredated eggs in the nest."),)
+        help_text=_("The number of open, nearly complete shells containing "
+                    "egg residue."),)
 
-    no_unfertilized = models.PositiveIntegerField(
-        verbose_name=_("Unfertilized eggs"),
-        blank=True, null=True,
-        help_text=_("The number of unfertilized eggs in the nest."),)
-
-    no_yolkless_eggs = models.PositiveIntegerField(
-        verbose_name=_("Yolkless eggs"),
-        blank=True, null=True,
-        help_text=_("The number of yolkless eggs in the nest."),)
-
+    # end Miller fields
     nest_depth_top = models.PositiveIntegerField(
         verbose_name=_("Nest depth (top) mm"),
         blank=True, null=True,
@@ -1708,6 +1716,49 @@ class TurtleNestObservation(Observation):
         return "Nest {0} with {1} eggs".format(
             self.get_nest_position_display(),
             self.egg_count)
+
+    @property
+    def hatching_success(self):
+        """Return the hatching success as percentage [0..100].
+
+        Formula after Miller 1999::
+
+            Hatching success = 100 * no_egg_shells / (
+                no_egg_shells + no_undeveloped_eggs + no_unhatched_eggs +
+                no_unhatched_term + no_depredated_eggs)
+        """
+        return 100 * (
+                (self.no_egg_shells or 0)
+            ) / (
+                (self.no_egg_shells or 0) +
+                (self.no_undeveloped_eggs or 0) +
+                (self.no_unhatched_eggs or 0) +
+                (self.no_unhatched_term or 0) +
+                (self.no_depredated_eggs or 0)
+            )
+
+    @property
+    def emergence_success(self):
+        """Return the emergence success as percentage [0..100].
+
+        Formula after Miller 1999::
+
+            Hatching success = 100 *
+                (no_egg_shells - no_live_hatchlings - no_dead_hatchlings) / (
+                no_egg_shells + no_undeveloped_eggs + no_unhatched_eggs +
+                no_unhatched_term + no_depredated_eggs)
+        """
+        return 100 * (
+                (self.no_egg_shells or 0) -
+                (self.no_live_hatchlings or 0) -
+                (self.no_dead_hatchlings or 0)
+            ) / (
+                (self.no_egg_shells or 0) +
+                (self.no_undeveloped_eggs or 0) +
+                (self.no_unhatched_eggs or 0) +
+                (self.no_unhatched_term or 0) +
+                (self.no_depredated_eggs or 0)
+            )
 
 
 @python_2_unicode_compatible
