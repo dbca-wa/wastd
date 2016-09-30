@@ -1,0 +1,7 @@
+{% with original as o %}
+<div class="row">
+    <i class="fa fa-fw fa-bolt"></i>
+    {{ o.get_disturbance_cause_display }} ({{ o.get_disturbance_cause_confidence_display }})
+    {{ o.get_disturbance_severity_display }} {{ o.comments }}
+</div>
+{% endwith %}

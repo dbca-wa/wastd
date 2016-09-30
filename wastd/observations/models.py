@@ -425,8 +425,9 @@ PHOTO_ICONS = {
 
 ACCURACY_CHOICES = (
     ("1", "To nearest 1 mm"),
-    ("10", "To nearest 1 cm"),
-    ("100", "To nearest 10 cm"),
+    ("5", "To nearest 5 mm"),
+    ("10", "To nearest 1 cm"),              # Default for stranding "measured"
+    ("100", "To nearest 10 cm"),            # Default for stranding "estimated"
     ("1000", "To nearest 1 m or 1 kg"),
     ("10000", "To nearest 10 m or 10 kg"),
     )
@@ -1173,6 +1174,13 @@ class TurtleNestEncounter(Encounter):
         default="na",
         help_text=_("The habitat in which the nest was encountered."), )
 
+    predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Evidence of predation"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
+
     class Meta:
         """Class options."""
 
@@ -1619,6 +1627,136 @@ class TurtleMorphometricObservation(Observation):
 
 
 @python_2_unicode_compatible
+class TurtleDamageObservation(Observation):
+    """Observation of turtle damages or injuries."""
+
+    body_part = models.CharField(
+        max_length=300,
+        default="whole-turtle",
+        verbose_name=_("Affected body part"),
+        choices=TURTLE_BODY_PART_CHOICES,
+        help_text=_("The body part affected by the observed damage."), )
+
+    damage_type = models.CharField(
+        max_length=300,
+        default="minor-trauma",
+        verbose_name=_("Damage type"),
+        choices=DAMAGE_TYPE_CHOICES,
+        help_text=_("The type of the damage."), )
+
+    damage_age = models.CharField(
+        max_length=300,
+        default="healed-entirely",
+        verbose_name=_("Damage age"),
+        choices=DAMAGE_AGE_CHOICES,
+        help_text=_("The age of the damage."), )
+
+    description = models.TextField(
+        verbose_name=_("Description"),
+        blank=True, null=True,
+        help_text=_("A description of the damage."), )
+
+    def __str__(self):
+        """The unicode representation."""
+        return "{0}: {1} {2}".format(
+            self.get_body_part_display(),
+            self.get_damage_age_display(),
+            self.get_damage_type_display(), )
+
+
+@python_2_unicode_compatible
+class TrackTallyObservation(Observation):
+    """Observation of turtle track tallies and signs of predation."""
+
+    false_crawls_caretta_caretta = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Loggerhead"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of Caretta caretta (Loggerhead turtle)."),)
+
+    false_crawls_chelonia_mydas = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Green"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of "
+                    "Chelonia mydas (Green turtle)."),)
+
+    false_crawls_eretmochelys_imbricata = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Hawksbill"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of "
+                    "Eretmochelys imbricata (Hawksbill turtle)."),)
+
+    false_crawls_natator_depressus = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Flatback"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of "
+                    "Natator depressus (Flatback turtle)."),)
+
+    false_crawls_lepidochelys_olivacea = models.PositiveIntegerField(
+        verbose_name=_("False Crawls Olive ridley"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of "
+                    "Lepidochelys olivacea (Olive ridley turtle)."),)
+
+    false_crawls_na = models.PositiveIntegerField(
+        verbose_name=_("False Crawls of unknown species"),
+        blank=True, null=True,
+        help_text=_("The tally of false crawls of unknown species."),)
+
+    fox_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Fox predation"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
+
+    dog_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Dog predation"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
+
+    dingo_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Dingo predation"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
+
+    croc_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Crocodile predation"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
+
+    goanna_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Goanna predation"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
+
+    bird_predation = models.CharField(
+        max_length=300,
+        verbose_name=_("Bird predation"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
+
+    def __str__(self):
+        """The unicode representation."""
+        t1 = ('TrackTally: {0} LH, {1} GN, {2} HB, {3} FB, {4} NA')
+        return t1.format(
+            self.false_crawls_caretta_caretta,
+            self.false_crawls_chelonia_mydas,
+            self.false_crawls_eretmochelys_imbricata,
+            self.false_crawls_natator_depressus,
+            self.false_crawls_na,
+            )
+
+
+@python_2_unicode_compatible
 class TurtleNestObservation(Observation):
     """Turtle nest observations.
 
@@ -1663,7 +1801,7 @@ class TurtleNestObservation(Observation):
                     "more than 50 percent complete."), )
 
     no_live_hatchlings = models.PositiveIntegerField(
-        verbose_name=_("Live hatchlings (L)"),
+        verbose_name=_("Live hatchlings in nest (L)"),
         blank=True, null=True,
         help_text=_("The number of live hatchlings left among shells "
                     "excluding those in neck of nest."),)
@@ -1779,133 +1917,67 @@ class TurtleNestObservation(Observation):
 
 
 @python_2_unicode_compatible
-class TurtleDamageObservation(Observation):
-    """Observation of turtle damages or injuries."""
+class TurtleNestDisturbanceObservation(Observation):
+    """Turtle nest disturbance observations.
 
-    body_part = models.CharField(
+    Disturbance can be a result of:
+
+    * Predation
+    * Disturbance by other turtles
+    * Environmental disturbance (cyclones, tides)
+    * Anthropogenic disturbance (vehicle damage, poaching, research, harvest)
+    """
+
+    NEST_DAMAGE_CHOICES = (
+        ("fox-predation", "Fox predation"),
+        ("dingo-predation", "Dingo predation"),
+        ("dog-predation", "Dog predation"),
+        ("goanna-predation", "Goanna predation"),
+        ("croc-predation", "Croc predation"),
+        ("bird-predation", "Bird predation"),
+        ("crab-predation", "Crab predation"),
+        ("turtle-disturbance", "Turtle disturbance"),
+        ("cyclone-disturbance", "Cyclone disturbance"),
+        ("tidal-disturbance", "Tidal disturbance"),
+        ("vehicle-damage", "Vehicle damage"),
+        ("harvest", "Harvest"),
+        ("research", "Research"),
+        ("poaching", "Poaching"),
+        ("other", "Other (see comments)"),
+        )
+
+    NEST_VIABILITY_CHOICES = (
+        ("nest-left-viable", "Nest left viable"),
+        ("nest-destroyed", "Nest destroyed"),
+        )
+
+    disturbance_cause = models.CharField(
         max_length=300,
-        default="whole-turtle",
-        verbose_name=_("Affected body part"),
-        choices=TURTLE_BODY_PART_CHOICES,
-        help_text=_("The body part affected by the observed damage."), )
+        verbose_name=_("Disturbance cause"),
+        choices=NEST_DAMAGE_CHOICES,
+        help_text=_("The cause of the disturbance."), )
 
-    damage_type = models.CharField(
+    disturbance_cause_confidence = models.CharField(
         max_length=300,
-        default="minor-trauma",
-        verbose_name=_("Damage type"),
-        choices=DAMAGE_TYPE_CHOICES,
-        help_text=_("The type of the damage."), )
+        verbose_name=_("Disturbance cause choice confidence"),
+        choices=CONFIDENCE_CHOICES,
+        default=NA_VALUE,
+        help_text=_("What is the choice of disturbance cause based on?"),)
 
-    damage_age = models.CharField(
+    disturbance_severity = models.CharField(
         max_length=300,
-        default="healed-entirely",
-        verbose_name=_("Damage age"),
-        choices=DAMAGE_AGE_CHOICES,
-        help_text=_("The age of the damage."), )
+        verbose_name=_("Disturbance severity"),
+        choices=NEST_VIABILITY_CHOICES,
+        help_text=_("The impact of the disturbance on nest viability."), )
 
-    description = models.TextField(
-        verbose_name=_("Description"),
+    comments = models.TextField(
+        verbose_name=_("Comments"),
         blank=True, null=True,
-        help_text=_("A description of the damage."), )
+        help_text=_("Any other comments or notes."),)
 
     def __str__(self):
         """The unicode representation."""
-        return "{0}: {1} {2}".format(
-            self.get_body_part_display(),
-            self.get_damage_age_display(),
-            self.get_damage_type_display(), )
-
-
-@python_2_unicode_compatible
-class TrackTallyObservation(Observation):
-    """Observation of turtle track tallies and signs of predation."""
-
-    false_crawls_caretta_caretta = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Loggerhead"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of Caretta caretta (Loggerhead turtle)."),)
-
-    false_crawls_chelonia_mydas = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Green"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of "
-                    "Chelonia mydas (Green turtle)."),)
-
-    false_crawls_eretmochelys_imbricata = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Hawksbill"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of "
-                    "Eretmochelys imbricata (Hawksbill turtle)."),)
-
-    false_crawls_natator_depressus = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Flatback"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of "
-                    "Natator depressus (Flatback turtle)."),)
-
-    false_crawls_lepidochelys_olivacea = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Olive ridley"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of "
-                    "Lepidochelys olivacea (Olive ridley turtle)."),)
-
-    false_crawls_na = models.PositiveIntegerField(
-        verbose_name=_("False Crawls of unknown species"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of unknown species."),)
-
-    fox_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Fox predation"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    dog_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Dog predation"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    dingo_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Dingo predation"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    croc_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Crocodile predation"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    goanna_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Goanna predation"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    bird_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Bird predation"),
-        choices=OBSERVATION_CHOICES,
-        default="na",
-        help_text=_(""),)
-
-    def __str__(self):
-        """The unicode representation."""
-        t1 = ('TrackTally: {0} LH, {1} GN, {2} HB, {3} FB, {4} NA')
-        return t1.format(
-            self.false_crawls_caretta_caretta,
-            self.false_crawls_chelonia_mydas,
-            self.false_crawls_eretmochelys_imbricata,
-            self.false_crawls_natator_depressus,
-            self.false_crawls_na,
-            )
-
+        return "Nest Disturbance {0} {1}".format(
+            self.disturbance_cause, self.disturbance_severity)
 
 # TODO add CecaceanMorphometricObservation for cetacean strandings

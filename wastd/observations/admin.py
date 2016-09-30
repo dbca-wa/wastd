@@ -20,8 +20,8 @@ from reversion.admin import VersionAdmin
 from wastd.observations.models import (
     Encounter, TurtleNestEncounter, AnimalEncounter,
     MediaAttachment, TagObservation, ManagementAction, TrackTallyObservation,
-    TurtleMorphometricObservation, TurtleNestObservation,
-    TurtleDamageObservation, )
+    TurtleMorphometricObservation, TurtleDamageObservation,
+    TurtleNestObservation, TurtleNestDisturbanceObservation)
 
 from wastd.observations.filters import ObservationTypeListFilter
 
@@ -63,14 +63,6 @@ class ManagementActionInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
-class TurtleNestObservationInline(admin.StackedInline):
-    """Admin for TurtleNestObservation."""
-
-    extra = 0
-    model = TurtleNestObservation
-    classes = ('grp-collapse grp-open',)
-
-
 class TurtleDamageObservationInline(admin.TabularInline):
     """Admin for TurtleDamageObservation."""
 
@@ -85,6 +77,23 @@ class TrackTallyObservationInline(admin.TabularInline):
     extra = 0
     model = TrackTallyObservation
     classes = ('grp-collapse grp-open',)
+
+
+class TurtleNestObservationInline(admin.StackedInline):
+    """Admin for TurtleNestObservation."""
+
+    extra = 0
+    model = TurtleNestObservation
+    classes = ('grp-collapse grp-open',)
+
+
+class TurtleNestDisturbanceObservationInline(admin.TabularInline):
+    """Admin for TurtleNestDisturbanceObservation."""
+
+    extra = 0
+    model = TurtleNestDisturbanceObservation
+    classes = ('grp-collapse grp-open',)
+
 
 
 @admin.register(TagObservation)
@@ -194,9 +203,10 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         TagObservationInline,
         TurtleDamageObservationInline,
         TurtleMorphometricObservationInline,
-        TurtleNestObservationInline,
         TrackTallyObservationInline,
         ManagementActionInline,
+        TurtleNestObservationInline,
+        TurtleNestDisturbanceObservationInline,
         ]
 
     def source_display(self, obj):
@@ -221,18 +231,19 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
 
     form = TurtleNestEncounterAdminForm
     list_display = EncounterAdmin.FIRST_COLS + (
-        'species', 'age_display', 'habitat_display',
+        'species', 'age_display', 'habitat_display', 'predation'
         ) + EncounterAdmin.LAST_COLS
     list_filter = EncounterAdmin.list_filter + (
-        'nest_age', 'species', 'habitat', )
+        'nest_age', 'species', 'habitat', 'predation')
     fieldsets = EncounterAdmin.fieldsets + (
-        ('Nest', {'fields': ('nest_age', 'species', 'habitat', )}), )
+        ('Nest', {'fields': ('nest_age', 'species', 'habitat', 'predation')}), )
 
     # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
-        TurtleNestObservationInline, ]
+        TurtleNestObservationInline,
+        TurtleNestDisturbanceObservationInline]
 
     def habitat_display(self, obj):
         """Make habitat human readable."""

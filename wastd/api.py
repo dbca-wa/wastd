@@ -38,7 +38,8 @@ from wastd.observations.models import (
     Encounter, TurtleNestEncounter,
     AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
     Observation, MediaAttachment, TagObservation,
-    ManagementAction, TurtleMorphometricObservation, TurtleNestObservation,
+    ManagementAction, TurtleMorphometricObservation,
+    TurtleNestObservation, TurtleNestDisturbanceObservation,
     TurtleDamageObservation, TrackTallyObservation)
 from wastd.users.models import User
 
@@ -92,6 +93,9 @@ class ObservationSerializer(serializers.ModelSerializer):
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, TurtleNestObservation):
             return TurtleNestObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TurtleNestDisturbanceObservation):
+            return TurtleNestDisturbanceObservationSerializer(
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, TrackTallyObservation):
             return TrackTallyObservationSerializer(
@@ -190,6 +194,18 @@ class TurtleNestObservationSerializer(serializers.ModelSerializer):
                   'nest_depth_top', 'nest_depth_bottom',
                   'sand_temp', 'air_temp', 'water_temp', 'egg_temp',
                   'hatching_success', 'emergence_success', )
+
+
+class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
+    """TurtleNestDisturbanceObservation serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleNestDisturbanceObservation
+        fields = ('observation_name',
+                  'disturbance_cause', 'disturbance_cause_confidence',
+                  'disturbance_severity', 'comments',)
 
 
 class TurtleDamageObservationSerializer(serializers.ModelSerializer):
