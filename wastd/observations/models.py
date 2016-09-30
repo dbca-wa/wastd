@@ -540,7 +540,9 @@ class Encounter(PolymorphicModel, geo_models.Model):
         max_length=1000,
         blank=True, null=True,
         verbose_name=_("Source ID"),
-        help_text=_("The ID of the record in the original source."), )
+        help_text=_("The ID of the record in the original source, or "
+                    "a newly allocated ID if left blank. Delete and save "
+                    "to regenerate this ID."), )
 
     status = FSMField(
         default=STATUS_NEW,
@@ -1081,11 +1083,6 @@ class AnimalEncounter(Encounter):
             self.get_sex_display(),
             self.get_habitat_display())
 
-    def save(self, *args, **kwargs):
-        """Cache the HTML representation in `as_html`."""
-        self.as_html = self.get_popup()
-        super(AnimalEncounter, self).save(*args, **kwargs)
-
     @property
     def short_name(self):
         """A short, often unique, human-readable representation of the encounter.
@@ -1191,10 +1188,31 @@ class TurtleNestEncounter(Encounter):
             self.get_species_display(),
             self.get_habitat_display(), )
 
-    def save(self, *args, **kwargs):
-        """Cache the HTML representation in `as_html`."""
-        self.as_html = self.get_popup()
-        super(TurtleNestEncounter, self).save(*args, **kwargs)
+    @property
+    def short_name(self):
+        """A short, often unique, human-readable representation of the encounter.
+
+        Slugified and dash-separated:
+
+        * Date of encounter as YYYY-mm-dd
+        * longitude in WGS 84 DD, rounded to 4 decimals (<10m),
+        * latitude in WGS 84 DD, rounded to 4 decimals (<10m), (missing sign!!)
+        * nest age (type),
+        * species,
+        * name if available (requires "update names" and tag obs)
+
+        The short_name could be non-unique.
+        """
+        nameparts = [
+            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
+            str(round(self.where.get_x(), 4)).replace(".", "-"),
+            str(round(self.where.get_y(), 4)).replace(".", "-"),
+            self.nest_age,
+            self.species,
+            ]
+        if self.name is not None:
+            nameparts.append(self.name)
+        return slugify.slugify("-".join(nameparts))
 
 
 # Observation models ---------------------------------------------------------#
