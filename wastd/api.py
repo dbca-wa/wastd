@@ -374,7 +374,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter',  'status',
-        'nest_age', 'species', 'habitat', 'source', 'source_id', ]
+        'nest_age', 'species', 'habitat', 'disturbance', 'source', 'source_id', ]
 
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):

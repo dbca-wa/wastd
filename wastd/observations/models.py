@@ -1174,12 +1174,12 @@ class TurtleNestEncounter(Encounter):
         default="na",
         help_text=_("The habitat in which the nest was encountered."), )
 
-    predation = models.CharField(
+    disturbance = models.CharField(
         max_length=300,
-        verbose_name=_("Evidence of predation"),
+        verbose_name=_("Evidence of predation or disturbance"),
         choices=OBSERVATION_CHOICES,
         default=NA_VALUE,
-        help_text=_(""),)
+        help_text=_("Is there evidence of predation or other disturbance?"),)
 
     class Meta:
         """Class options."""
