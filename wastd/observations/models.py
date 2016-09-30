@@ -1731,9 +1731,8 @@ class TurtleNestObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Nest {0} with {1} eggs".format(
-            self.get_nest_position_display(),
-            self.egg_count)
+        return "Nest Obs {0} eggs, hatching succ {1}, emerg succ {2}".format(
+            self.egg_count, self.hatching_success, self.emergence_success)
 
     @property
     def hatching_success(self):
