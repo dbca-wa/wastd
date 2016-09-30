@@ -2,10 +2,11 @@ from django import template
 
 from django_fsm_log.models import StateLog
 from django.template.defaultfilters import stringfilter, register
-from wastd.observations.models import (
-    Encounter, ACCURACY_ICONS, OBSERVATION_ICONS)
+from wastd.observations.models import Encounter, OBSERVATION_ICONS
+
 
 register = template.Library()
+
 
 @register.inclusion_tag('tx_logs.html', takes_context=False)
 def tx_logs(obj):
@@ -26,20 +27,6 @@ def tb_status_icon(status_value):
     * published = green
     """
     return Encounter.STATUS_LABELS[status_value]
-
-
-@register.filter
-@stringfilter
-def fa_accuracy_icon(accuracy_value):
-    """Turn a given accuracy value into a complete fontawesome icon class.
-
-    Uses ``wastd.observations.ACCURACY_ICONS`` to resolve values for:
-
-    * measured
-    * estimated
-    * unknown
-    """
-    return ACCURACY_ICONS[accuracy_value]
 
 
 @register.filter

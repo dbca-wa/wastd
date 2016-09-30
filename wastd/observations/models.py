@@ -424,21 +424,12 @@ PHOTO_ICONS = {
     "see photos": "fa fa-check"}
 
 ACCURACY_CHOICES = (
-    ("unknown", "Unknown"),
-    ("estimated", "Estimated"),
-    ("measured", "Measured"),
-    ("1", "To nearest mm"),
+    ("1", "To nearest 1 mm"),
     ("10", "To nearest 1 cm"),
     ("100", "To nearest 10 cm"),
-    ("1000", "To nearest 1 m or kg"),
-    ("10000", "To nearest 10 m or kg"),
+    ("1000", "To nearest 1 m or 1 kg"),
+    ("10000", "To nearest 10 m or 10 kg"),
     )
-
-ACCURACY_ICONS = {
-    NA_VALUE: "fa fw fa-question-circle-o",
-    "unknown": "fa fw fa-question-circle-o",
-    "estimated": "fa fw fa-comment-o",
-    "measured": "fa fw fa-balance-scale"}
 
 DAMAGE_TYPE_CHOICES = (
     # Amputations
