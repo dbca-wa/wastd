@@ -22,6 +22,7 @@
     <!-- Your stuff: Third-party css libraries go here -->
     {% compress css %}
     {% leaflet_css %}
+    <link rel="stylesheet" href="static/leaflet-awesome-markers/leaflet.awesome-markers.css">
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
     {% endcompress %}
     {% endblock %}
@@ -156,6 +157,7 @@
       {% endcompress %}
 
       {% leaflet_js %} {# cannot be compressed, plugins refer to hosted JS #}
+      <script src="static/leaflet-awesome-markers/leaflet.awesome-markers.js"></script>
 
     {% endblock javascript %}
   </body>

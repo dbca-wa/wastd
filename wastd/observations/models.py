@@ -614,6 +614,11 @@ class Encounter(PolymorphicModel, geo_models.Model):
         return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.observer)
 
     @property
+    def leaflet_title(self):
+        """A string for Leaflet map marker titles. Cache me as field."""
+        return "{0} {1}".format(self.when.year, self.name)
+
+    @property
     def short_name(self):
         """A short, often unique, human-readable representation of the encounter.
 
