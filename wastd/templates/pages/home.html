@@ -18,51 +18,35 @@ function map_init(map, options) {
 
     /* Helper functions */
 
-    /* TODO resolve a colour based on text values */
-    function getColor(d) {
-        return d > 1000 ? '#800026' :
-               d > 500  ? '#BD0026' :
-               d > 200  ? '#E31A1C' :
-               d > 100  ? '#FC4E2A' :
-               d > 50   ? '#FD8D3C' :
-               d > 20   ? '#FEB24C' :
-               d > 10   ? '#FED976' :
-                          '#FFEDA0';
-    }
-
-    /* Calculate a style dict from a feature */
-    function style(feature) {
-        return {
-            //fillColor: getColor(feature.properties.name),
-            "clickable": true,
-            "fillColor": "#800026",
-            "weight": 10.0,
-            "opacity": 0.3,
-            "fillOpacity": 0.2
-        };
+    var style = {
+        "clickable": true
     }
 
     /* Map a feature to an icon class */
     function getIcon(feature){
-        return 'exclamation-triangle'
-        /* TODO switch on observation_type */
+        if (feature.properties.leaflet_icon_class){
+            return feature.properties.leaflet_icon_class
+        } else {
+            return "exclamation-triangle"
+        }
     }
 
     /* Map a feature to an marker colour */
     function getMarkerColor(feature){
-        return "red"
-
-        /* TODO switch on observation_type */
+        if (feature.properties.leaflet_marker_colour){
+            return feature.properties.leaflet_marker_colour
+        } else {
+            return "red"
+        }
     }
 
     /* Use FontAwesome icons for Leafet.awesome-markers */
     L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
 
+    /* Return a grouping variable - using feature.id disables grouping */
+    function getUnique(feature){return feature.id}
 
-    function getUnique(feature){
-        return feature.id
-    }
-
+    /* Override default Marker, set colour, symbol; add mouse hover title */
     function ptl(feature, latlng) {
         /* https://github.com/lvoogdt/Leaflet.awesome-markers */
         var icon = new L.AwesomeMarkers.icon({
@@ -74,14 +58,13 @@ function map_init(map, options) {
         });
 
         return L.marker(
-            latlng, {
-            zIndexOffset: 1000,
-            title: feature.properties.leaflet_title,
-            icon: icon,
-        });
+            latlng,
+            {title: feature.properties.leaflet_title, icon: icon}
+        );
 
     }
 
+    function oef (feature, layer) {layer.bindPopup(feature.properties.as_html);}
 
 
     /* Data loading */
@@ -111,22 +94,14 @@ function map_init(map, options) {
      * Option 3: Tiled GeoJSON because we can, baby
      * Most performant solution, needs filters or clustering
      * https://github.com/glenrobertson/leaflet-tilelayer-geojson/
-     * The heavy lifting is outsourced to functions getUnique, style, onEachFeature
+     * getUnique returns grouping variable (using feature.id disables grouping)
+     * ptl overrides default marker with AwesomeMarker
+     * oef binds popup to marker
      */
     var geojsonTileLayer = new L.TileLayer.GeoJSON(
         'data/{z}/{x}/{y}.geojson',
         {clipTiles: true, unique: getUnique},
-        {
-            style: {},
-
-            /* Override default marker with AwesomeMarker */
-            pointToLayer: ptl,
-            
-            /* bind popup */
-            onEachFeature: function (feature, layer) {
-                layer.bindPopup(feature.properties.as_html);
-            }
-        }
+        {style: style, pointToLayer: ptl, onEachFeature: oef}
     ).addTo(map);
 
 }
