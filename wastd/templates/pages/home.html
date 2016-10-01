@@ -24,17 +24,17 @@ function map_init(map, options) {
 
     /* Map a feature to an icon class */
     function getIcon(feature){
-        if (feature.properties.leaflet_icon_class){
-            return feature.properties.leaflet_icon_class
+        if (feature.properties.leaflet_icon){
+            return feature.properties.leaflet_icon
         } else {
-            return "exclamation-triangle"
+            return "question-circle-o"
         }
     }
 
     /* Map a feature to an marker colour */
     function getMarkerColor(feature){
-        if (feature.properties.leaflet_marker_colour){
-            return feature.properties.leaflet_marker_colour
+        if (feature.properties.leaflet_colour){
+            return feature.properties.leaflet_colour
         } else {
             return "red"
         }

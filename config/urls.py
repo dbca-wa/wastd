@@ -80,7 +80,7 @@ urlpatterns = [
     url(r'^data/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
         TiledGeoJSONLayerView.as_view(
             model=Encounter,
-            properties=('as_html', 'leaflet_title'),
+            properties=('as_html', 'leaflet_title', 'leaflet_icon', 'leaflet_colour'),
             geometry_field="where"),
         name='encounter-tiled-geojson'),
 

@@ -466,7 +466,6 @@ DAMAGE_AGE_CHOICES = (
     ("healed-partially", "partially healed"),
     ("fresh", "fresh"), )
 
-
 # End lookups ----------------------------------------------------------------#
 #
 #
@@ -532,6 +531,40 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ("ntp-exmouth", _("NTP Access DB Exmouth")),
         ("ntp-broome", _("NTP Access DB Broome")),)
 
+    ENCOUNTER_STRANDING = 'stranding'
+    ENCOUNTER_TAGGING = 'tagging'
+    ENCOUNTER_NEST = 'nest'
+    ENCOUNTER_TRACKS = 'tracks'
+    ENCOUNTER_TAG = 'tag-management'
+    ENCOUNTER_OTHER = 'other'
+
+    ENCOUNTER_TYPES = (
+        (ENCOUNTER_STRANDING, "Stranding"),
+        (ENCOUNTER_TAGGING, "Tagging"),
+        (ENCOUNTER_NEST, "Nest"),
+        (ENCOUNTER_TRACKS, "Tracks"),
+        (ENCOUNTER_TAG, "Tag Management"),
+        (ENCOUNTER_OTHER, "Other")
+        )
+
+    LEAFLET_ICON = {
+        ENCOUNTER_STRANDING: "exclamation-circle",
+        ENCOUNTER_TAGGING: "tags",
+        ENCOUNTER_NEST: "home",
+        ENCOUNTER_TRACKS: "truck",
+        ENCOUNTER_TAG: "cog",
+        ENCOUNTER_OTHER: "question-circle"
+        }
+
+    LEAFLET_COLOUR = {
+        ENCOUNTER_STRANDING: 'darkred',
+        ENCOUNTER_TAGGING: 'blue',
+        ENCOUNTER_NEST: 'green',
+        ENCOUNTER_TRACKS: 'cadetblue',
+        ENCOUNTER_TAG: 'darkpuple',
+        ENCOUNTER_OTHER: 'purple'
+        }
+
     source = models.CharField(
         max_length=300,
         verbose_name=_("Data Source"),
@@ -595,6 +628,14 @@ class Encounter(PolymorphicModel, geo_models.Model):
         blank=True, null=True, editable=False,
         help_text=_("The cached HTML representation for display purposes."),)
 
+    encounter_type = models.CharField(
+        max_length=300,
+        blank=True, null=True, editable=False,
+        verbose_name=_("Encounter type"),
+        default=ENCOUNTER_STRANDING,
+        choices=ENCOUNTER_TYPES,
+        help_text=_("The primary concern of this encounter."), )
+
     class Meta:
         """Class options."""
 
@@ -616,7 +657,35 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
-        return "{0} {1}".format(self.when.year, self.name)
+        return "{0} {1} {2}".format(
+            self.when.year, self.get_encounter_type_display(), self.name or '')
+
+    @property
+    def leaflet_icon(self):
+        """Return the Fontawesome icon class for the encounter type."""
+        return(Encounter.LEAFLET_ICON[self.encounter_type])
+
+    @property
+    def leaflet_colour(self):
+        """Return the Leaflet.awesome-markers colour for the encounter type."""
+        return (Encounter.LEAFLET_COLOUR[self.encounter_type])
+
+    @property
+    def get_encounter_type(self):
+        """Infer the encounter type.
+
+        "Track" encounters have a TrackTallyObservation, those who don't have
+        one but involve a TagObservation are tag management encounters (tag
+        orders, distribution, returns, decommissioning).
+        Lastly, the catch-all is "other" but complete records should not end up
+        as such.
+        """
+        if self.observation_set.instance_of(TrackTallyObservation).exists():
+            return self.ENCOUNTER_TRACKS
+        elif self.observation_set.instance_of(TagObservation).exists():
+            return self.ENCOUNTER_TAG
+        else:
+            return self.ENCOUNTER_OTHER
 
     @property
     def short_name(self):
@@ -641,13 +710,25 @@ class Encounter(PolymorphicModel, geo_models.Model):
             ]))
 
     def save(self, *args, **kwargs):
-        """Cache the HTML representation in `as_html` and set the source ID.
+        """Cache popup, encounter type and source ID.
 
-        Source ID will be auto-generated from ``short_name`` but is not
-        guaranteed to be unique. The User will be prompted to provide a unique
-        source ID if necessary, e.g. by appending a running number.
+        The popup content changes when fields change, and is expensive to build.
+        As it is required ofen and under performance-critical circumstances -
+        populating the home screen with lots of popups - is is re-calculated
+        whenever the contents change (on save) rather when it is required for
+        display.
+
+        The source ID will be auto-generated from ``short_name`` (if not set)
+        but is not guaranteed to be unique.
+        The User will be prompted to provide a unique source ID if necessary,
+        e.g. by appending a running number.
+        The source ID can be re-created by deleting it and re-saving the object.
+
+        The encounter type is inferred from the type of attached Observations.
+        This logic is overridden in subclasses.
         """
         self.as_html = self.get_popup()
+        self.encounter_type = self.get_encounter_type
         if not self.source_id:
             self.source_id = self.short_name
         if not self.name and self.inferred_name:
@@ -1092,6 +1173,23 @@ class AnimalEncounter(Encounter):
             self.get_habitat_display())
 
     @property
+    def get_encounter_type(self):
+        """Infer the encounter type.
+
+        AnimalEncounters are either in water, tagging or stranding encounters.
+        In water captures happen if the habitat is in the list of aquatic habitats.
+        For the remaining encountesr, the value of ``health`` is an exact
+        delineation between strandings and taggings - strandings are all
+        but ``alive``.
+        """
+        if self.habitat in HABITAT_WATER:
+            return Encounter.ENCOUNTER_INWATER
+        elif self.health == 'alive':
+            return Encounter.ENCOUNTER_TAGGING
+        else:
+            return Encounter.ENCOUNTER_STRANDING
+
+    @property
     def short_name(self):
         """A short, often unique, human-readable representation of the encounter.
 
@@ -1202,6 +1300,14 @@ class TurtleNestEncounter(Encounter):
             self.get_nest_age_display(),
             self.get_species_display(),
             self.get_habitat_display(), )
+
+    @property
+    def get_encounter_type(self):
+        """Infer the encounter type.
+
+        TurtleNestEncounters are always nest encounters. Would you have guessed?
+        """
+        return Encounter.ENCOUNTER_NEST
 
     @property
     def short_name(self):

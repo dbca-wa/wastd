@@ -23,9 +23,6 @@ from wastd.observations.models import (
     TurtleMorphometricObservation, TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation)
 
-from wastd.observations.filters import ObservationTypeListFilter
-
-
 class ImageThumbnailFileInput(ff.ClearableFileInput):
     template_name = 'floppyforms/image_thumbnail.html'
 
@@ -171,11 +168,13 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         }
 
     # Filters for change_list
-    list_filter = ('status', 'observer', 'reporter', 'location_accuracy', )
+    list_filter = ('status', 'observer', 'reporter',
+                   'location_accuracy', 'encounter_type')
 
     # Columns for change_list, allow re-use and inserting fields
     FIRST_COLS = ('when', 'latitude', 'longitude', 'location_accuracy', 'name')
-    LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id', 'status')
+    LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
+                 'status', 'encounter_type')
     list_display = FIRST_COLS + LAST_COLS
 
     # Performance
@@ -224,6 +223,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         return obj.where.get_x()
     longitude.short_description = 'Longitude'
 
+    def encounter_type_display(self, obj):
+        """Make encounter type readable."""
+        return obj.get_encounter_type_display()
+    encounter_type_display.short_description = 'Encounter Type'
+
 
 @admin.register(TurtleNestEncounter)
 class TurtleNestEncounterAdmin(EncounterAdmin):
@@ -271,7 +275,6 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'checked_for_flipper_tags',
         ) + EncounterAdmin.LAST_COLS
     list_filter = EncounterAdmin.list_filter + (
-        ObservationTypeListFilter,
         'taxon', 'species',
         'health', 'cause_of_death', 'cause_of_death_confidence',
         'maturity', 'sex', 'habitat',

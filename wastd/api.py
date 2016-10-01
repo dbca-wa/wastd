@@ -276,7 +276,8 @@ class EncounterSerializer(serializers.ModelSerializer):
         name = 'encounter'
         fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
-                  'status', 'source', 'source_id', 'observation_set', )
+                  'status', 'source', 'source_id', 'encounter_type',
+                  'observation_set', )
         geo_field = "where"
 
     def create(self, validated_data):
@@ -305,7 +306,8 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
                   'nest_age', 'species', 'habitat', 'disturbance',
-                  'status', 'source', 'source_id', 'observation_set', )
+                  'status', 'source', 'source_id','encounter_type',
+                  'observation_set', )
 
 
 class AnimalEncounterSerializer(EncounterSerializer):
@@ -322,7 +324,8 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'habitat', 'activity', 'checked_for_injuries',
                   'scanned_for_pit_tags',
                   'checked_for_flipper_tags',
-                  'status', 'source', 'source_id', 'observation_set', )
+                  'status', 'source', 'source_id', 'encounter_type',
+                  'observation_set', )
 
 
 # class TurtleEncounterSerializer(EncounterSerializer):
@@ -364,7 +367,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     serializer_class = EncounterSerializer
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
-        'source', 'source_id', ]
+        'source', 'source_id', 'encounter_type']
 
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
@@ -374,7 +377,8 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter',  'status',
-        'nest_age', 'species', 'habitat', 'disturbance', 'source', 'source_id', ]
+        'nest_age', 'species', 'habitat', 'disturbance', 'source', 'source_id',
+        'encounter_type']
 
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
@@ -386,7 +390,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
-        'source', 'source_id', ]
+        'source', 'source_id', 'encounter_type' ]
 
 
 # class TurtleEncounterViewSet(viewsets.ModelViewSet):
