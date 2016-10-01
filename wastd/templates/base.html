@@ -157,7 +157,7 @@
       {% endcompress %}
 
       {% leaflet_js %} {# cannot be compressed, plugins refer to hosted JS #}
-      <script src="{% static 'js/leaflet.awesome-markers.js' %}"></script>
+      <script src="{% static 'js/leaflet.awesome-markers.min.js' %}"></script>
 
     {% endblock javascript %}
   </body>
