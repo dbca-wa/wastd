@@ -70,3 +70,6 @@ docs/_build/
 
 # coveralls settings
 .coveralls.yml
+
+# uwsgi config
+config/wastd_uwsgi.ini

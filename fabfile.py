@@ -20,18 +20,14 @@ def pip():
     local("pip install -r requirements/dev.txt")
 
 
-def _removestaticlinks():
-    """Remove links to static files, prepare for collectstatic."""
-    local("find -L staticfiles/ -type l -delete")
-
-
-def _collectstatic():
+def static():
     """Link static files."""
+    local("find -L staticfiles/ -type l -delete")
     local("python manage.py collectstatic --noinput -l "
           "|| python manage.py collectstatic --clear --noinput -l")
 
 
-def _migrate():
+def migrate():
     """Syncdb, update permissions, migrate all apps."""
     local("python manage.py migrate")
     local("python manage.py update_permissions")
@@ -43,9 +39,8 @@ def deploy():
     Installs dependencies, runs syncdb and migrations, re-links static files.
     """
     pip()
-    _removestaticlinks()
-    _collectstatic()
-    _migrate()
+    static()
+    migrate()
     clean()
 
 
@@ -56,16 +51,20 @@ def shell():
 
 def go():
     """Run the app with local settings and runserver (dev)."""
-    local('python manage.py collectstatic --noinput && '
-          'python manage.py runserver '
-          '--settings=config.settings.local 0.0.0.0:8220')
+    static()
+    local('python manage.py runserver --settings=config.settings.local 0.0.0.0:8220')
 
 
 def pro():
     """Run the app with local settings and runserver (dev)."""
-    local('python manage.py collectstatic --noinput && '
-          'python manage.py runserver '
-          '--settings=config.settings.production 0.0.0.0:8220')
+    static()
+    local('python manage.py runserver --settings=config.settings.production 0.0.0.0:8220')
+
+
+def wsgi():
+    """Serve with uwsgi"""
+    static()
+    local('honcho run uwsgi --http 0.0.0.0:8220 --wsgi-file config/wsgi.py')
 
 
 def pep():

@@ -18,6 +18,9 @@
     {% block css %}
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css"
     integrity="sha384-MIwDKRSSImVFAZCVLtU0LMDdON6KVCrZHyVQQj6e8wIEJkW4tvwqXrbMIya1vriY" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="//unpkg.com/leaflet@1.0.1/dist/leaflet.css" /> -->
+    <!-- <link rel="stylesheet" href="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.css" /> -->
+    <!-- <link rel="stylesheet" href="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.Default.css" /> -->
 
     <!-- Your stuff: Third-party css libraries go here -->
     {% compress css %}
@@ -26,9 +29,6 @@
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
     {% endcompress %}
     {% endblock %}
-
-    <!-- Fontawesome: icons -->
-    <script src="//use.fontawesome.com/f8f5501a45.js"></script>
   </head>
 
   <body>
@@ -152,13 +152,21 @@
       <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/js/bootstrap.min.js"
           integrity="sha384-ux8v3A6CPtOTqOzMKiuo3d/DomGaaClxFYdCu2HPMBEkf6x2xiDyJ7gkXU0MWwaD"
           crossorigin="anonymous"></script>
+
+      <!-- Fontawesome: icons -->
+      <!-- <script src="//use.fontawesome.com/f8f5501a45.js"></script> -->
+
+      <!-- <script src="//static.dpaw.wa.gov.au/static/libs/leaflet/1.0.1/leaflet.js"></script> -->
+      <!-- <script src="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/leaflet.markercluster.js"></script> -->
+
       {% compress js %}
+      {% leaflet_js %} <!-- django-leaflet = Leaflet-0.7.7 plus django integration -->
+      <script src="{% static 'js/leaflet.awesome-markers.min.js' %}"></script>
+      <script src="{% static 'js/fontawesome.js' %}"></script>
       <script src="{% static 'js/project.js' %}"></script>
       {% endcompress %}
 
-      {% leaflet_js %} {# cannot be compressed, plugins refer to hosted JS #}
-      <script src="{% static 'js/leaflet.awesome-markers.min.js' %}"></script>
-
+      <script src="//static.dpaw.wa.gov.au/static/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.js"></script>
     {% endblock javascript %}
   </body>
 </html>

@@ -21,11 +21,11 @@ WA Sea Turtle Data
      :target: https://waffle.io/florianm/wastd
      :alt: Open Issues
 
-"WA STD - now you've got it, too"
+.. "WA STD - now you've got it, too"
+"Strandings are red, tagged ones are blue, nests are green and tracks are there, too"
 
 If anyone were to build a data clearinghouse for Western Australian
 sea turtle data, it might look something like this. Or totally different.
-
 
 Contents:
 

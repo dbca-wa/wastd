@@ -199,7 +199,9 @@ STATICFILES_DIRS = (
     )
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = (
@@ -207,6 +209,12 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder'
     )
+
+# django-compressor
+# ------------------------------------------------------------------------------
+INSTALLED_APPS += ("compressor", )
+COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_URL = STATIC_URL
 
 
 # MEDIA CONFIGURATION
@@ -250,15 +258,6 @@ LOGIN_URL = 'account_login'
 AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
 
 
-# django-compressor
-# ------------------------------------------------------------------------------
-INSTALLED_APPS += ("compressor", )
-STATICFILES_FINDERS += (
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'django.contrib.staticfiles.finders.FileSystemFinder', )
-COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_URL = STATIC_URL
-
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = "^admin/"
 
@@ -281,8 +280,8 @@ REST_FRAMEWORK = {
         # 'rest_framework_latex.renderers.LatexRenderer',
         ),
     # 'DEFAULT_PARSER_CLASSES': (
-        # 'rest_framework_yaml.parsers.YAMLParser',
-        # ),
+    # 'rest_framework_yaml.parsers.YAMLParser',
+    # ),
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.DjangoFilterBackend',
         ),
@@ -306,18 +305,18 @@ LEAFLET_CONFIG = {
     'SCALE': 'metric',
     'MINIMAP': False,
     'PLUGINS': {
-        'leaflet-tilelayer-geojson': {
-            'css': [],
-            'js': '//static.dpaw.wa.gov.au/static/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.js',
-            'auto-include': True,
-            },
-        'leaflet-markercluster': {
-            'css': [
-                '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.css',
-                '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.Default.css', ],
-            'js': '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/leaflet.markercluster.js',
-            'auto-include': False,
-            },
+        # 'leaflet-tilelayer-geojson': {
+        #     'css': [],
+        #     'js': '//static.dpaw.wa.gov.au/static/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.js',
+        #     'auto-include': True,
+        #     },
+        # 'leaflet-markercluster': {
+        #     'css': [
+        #         '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.css',
+        #         '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.Default.css', ],
+        #     'js': '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/leaflet.markercluster.js',
+        #     'auto-include': False,
+        #     },
         },
 
     'TILES': [
