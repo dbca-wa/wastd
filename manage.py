@@ -2,6 +2,7 @@
 import confy
 import os
 import sys
+from confy import env
 
 try:
     confy.read_environment_file()
