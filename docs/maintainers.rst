@@ -13,9 +13,18 @@ environments (UAT, PROD).
 
 Virtualenv
 ----------
-Activate the virtualenv::
+Install virtualenv::
 
-    pip install virtualenvwrapper
+    sudo pip install virtualenvwrapper
+
+Set virtualenv paths by adding these lines to your ~/.bashrc::
+
+    export WORKON_HOME=/path/to/virtualenvs     # e.g. /home/USERNAME/.venvs
+    export PROJECT_HOME=/path/to/projects       # e.g. /var/www/
+    source /usr/local/bin/virtualenvwrapper.sh
+    export PIP_VIRTUALENV_BASE=WORKON_HOME
+
+Activate the virtualenv::
     mkproject wastd
 
 Database

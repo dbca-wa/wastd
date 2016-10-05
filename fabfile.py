@@ -62,7 +62,7 @@ def pro():
 
 
 def wsgi():
-    """Serve with uwsgi"""
+    """Serve with uwsgi."""
     static()
     local('honcho run uwsgi --http 0.0.0.0:8220 --wsgi-file config/wsgi.py')
 
