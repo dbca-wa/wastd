@@ -122,13 +122,6 @@ https://static.dpaw.wa.gov.au/static/py/dpaw-utils/dist/dpaw-utils-0.3a11.tar.gz
 django-anymail==0.5
 
 
-# WSGI Handler
-# ------------------------------------------------
-gevent==1.1.2
-gunicorn==19.6.0
-honcho
-uwsgi
-
 # DevOps
 # ------------------------------------------------
 Fabric

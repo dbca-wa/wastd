@@ -118,6 +118,10 @@ Run the app::
 
 Production server 2: uwsgi
 --------------------------
+Install uwsgi system-wide::
+
+    sudo pip install uwsgi
+
 Create folders and set ownership::
     (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/spool/uwsgi/spooler
     (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/spool/uwsgi/sockets
@@ -125,8 +129,38 @@ Create folders and set ownership::
     (wastd)me@PROD:/mnt/projects/wastd$ sudo touch /var/log/uwsgi/emperor.log
     (wastd)me@PROD:/mnt/projects/wastd$ sudo chown -R www-data:www-data /var/spool/uwsgi/
     (wastd)me@PROD:/mnt/projects/wastd$ sudo chown -R www-data:www-data /var/log/uwsgi/
+    (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /etc/uwsgi/vassals/
+    (wastd)me@PROD:/mnt/projects/wastd$ cp config/wastd_uwsgi.ini.template config/wastd_uwsgi.ini
+    (wastd)me@PROD:/mnt/projects/wastd$ vim config/wastd_uwsgi.ini # set your paths
+    (wastd)me@PROD:/mnt/projects/wastd$ ln -s config/wastd_uwsgi.ini /etc/uwsgi/vassals/wastd_uwsgi.ini
 
+Create a file /etc/init/uwsgi.conf with these contents::
+    # Emperor uWSGI script
 
+    description "uWSGI Emperor"
+    start on runlevel [2345]
+    stop on runlevel [06]
+
+    respawn
+
+    exec /usr/local/bin/uwsgi --vassals-include-before /etc/uwsgi/defaults.ini --emperor "/etc/uwsgi/vassals/*.ini" --emperor-stats /var/spool/uwsgi/sockets/stats_emperor.sock --logto /var/log/uwsgi/emperor.log --spooler "/var/spool/uwsgi/spooler" --uid www-data --gid www-data
+
+Create a file ``/etc/uwsgi/defaults.ini``::
+
+    [uwsgi]
+    # sensible defaults for an uWSGI application, can be overridden in the local config file
+    processes       = 4
+    gevent          = 100
+    gevent-early-monkey-patch = true
+    max-requests    = 1000
+    buffer-size     = 32768
+    cache2          = name=default,bitmap=1,items=10000,blocksize=1000,blocks=200000
+    vacuum          = true
+    memory-report   = true
+    auto-procname   = true
+    logdate         = %%Y/%%m/%%d %%H:%%M:%%S
+
+Then start the uwsgi service with ``sudo service uwsgi start``.
 
 Deploying upgrades to production
 ================================
@@ -137,7 +171,12 @@ cases::
     workon wastd
     git pull
     fab deploy
+
+    # If supervisord:
     sudo supervisorctl restart wastd
+
+    # If uwsgi (with your PORT):
+    sudo pkill -f PORT
 
 Developing with Docker
 ======================
