@@ -17,8 +17,9 @@ from wastd.observations.models import Encounter
 from wastd.observations.views import (
     schema_view, update_names, EncounterTableView, AnimalEncounterTableView)
 from wastd.api import (
-    UserViewSet, EncounterViewSet, TurtleNestEncounterViewSet,
-    AnimalEncounterViewSet, ObservationViewSet, MediaAttachmentViewSet,
+    UserViewSet, EncounterViewSet, AnimalEncounterViewSet,
+    LoggerEncounterViewSet, TurtleNestEncounterViewSet,
+    ObservationViewSet, MediaAttachmentViewSet,
     TagObservationViewSet)
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 
@@ -29,10 +30,9 @@ actions.add_to_site(site)
 router = routers.DefaultRouter(schema_title='WAStD API')
 router.register(r'users', UserViewSet)
 router.register(r'encounters', EncounterViewSet)
-router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
 router.register(r'animal-encounters', AnimalEncounterViewSet)
-# router.register(r'turtle-encounters', TurtleEncounterViewSet)
-# router.register(r'cetacean-encounters', CetaceanEncounterViewSet)
+router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
+router.register(r'logger-encounters', LoggerEncounterViewSet)
 router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
 router.register(r'tag-observations', TagObservationViewSet)

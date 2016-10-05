@@ -35,12 +35,11 @@ from rest_framework import serializers, viewsets
 from drf_extra_fields.geo_fields import PointField
 
 from wastd.observations.models import (
-    Encounter, TurtleNestEncounter,
-    AnimalEncounter,  # TurtleEncounter, CetaceanEncounter,
+    Encounter, AnimalEncounter, TurtleNestEncounter, LoggerEncounter,
     Observation, MediaAttachment, TagObservation,
-    ManagementAction, TurtleMorphometricObservation,
+    TurtleMorphometricObservation, TurtleDamageObservation, ManagementAction,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
-    TurtleDamageObservation, TrackTallyObservation)
+    TrackTallyObservation)
 from wastd.users.models import User
 
 
@@ -295,21 +294,6 @@ class EncounterSerializer(serializers.ModelSerializer):
         return encounter
 
 
-class TurtleNestEncounterSerializer(EncounterSerializer):
-    """TurtleNestEncounter serializer."""
-    where = PointField(required=True)
-
-    class Meta:
-        """Class options."""
-
-        model = TurtleNestEncounter
-        fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
-                  'observer', 'reporter',
-                  'nest_age', 'species', 'habitat', 'disturbance',
-                  'status', 'source', 'source_id','encounter_type',
-                  'observation_set', )
-
-
 class AnimalEncounterSerializer(EncounterSerializer):
     """AnimalEncounter serializer."""
     where = PointField(required=True)
@@ -328,28 +312,33 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'observation_set', )
 
 
-# class TurtleEncounterSerializer(EncounterSerializer):
-#     """TurtleEncounter serializer."""
-#
-#     class Meta:
-#         """Class options."""
-#
-#         model = TurtleEncounter
-#         fields = ('where', 'when', 'who',
-#                   'species', 'health', 'sex', 'behaviour', 'habitat', 'activity',
-#                   'observation_set', )
-#
-#
-# class CetaceanEncounterSerializer(EncounterSerializer):
-#     """CetaceanEncounter serializer."""
-#
-#     class Meta:
-#         """Class options."""
-#
-#         model = CetaceanEncounter
-#         fields = ('where', 'when', 'who',
-#                   'species', 'health', 'sex', 'behaviour', 'habitat', 'activity',
-#                   'observation_set', )
+class TurtleNestEncounterSerializer(EncounterSerializer):
+    """TurtleNestEncounter serializer."""
+    where = PointField(required=True)
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleNestEncounter
+        fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
+                  'observer', 'reporter',
+                  'nest_age', 'species', 'habitat', 'disturbance',
+                  'status', 'source', 'source_id', 'encounter_type',
+                  'observation_set', )
+
+
+class LoggerEncounterSerializer(EncounterSerializer):
+    """LoggerEncounter serializer."""
+    where = PointField(required=True)
+
+    class Meta:
+        """Class options."""
+
+        model = LoggerEncounter
+        fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
+                  'observer', 'reporter',
+                  'deployment_status', 'comments',
+                  'observation_set', )
 
 
 # ViewSets define the view behavior.
@@ -367,7 +356,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     serializer_class = EncounterSerializer
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
-        'source', 'source_id', 'encounter_type']
+        'source', 'source_id', 'encounter_type', ]
 
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
@@ -378,7 +367,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter',  'status',
         'nest_age', 'species', 'habitat', 'disturbance', 'source', 'source_id',
-        'encounter_type']
+        'encounter_type', ]
 
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
@@ -390,21 +379,18 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
-        'source', 'source_id', 'encounter_type' ]
+        'source', 'source_id', 'encounter_type', ]
 
 
-# class TurtleEncounterViewSet(viewsets.ModelViewSet):
-#     """TurtleEncounter view set."""
-#
-#     queryset = TurtleEncounter.objects.all()
-#     serializer_class = TurtleEncounterSerializer
-#
-#
-# class CetaceanEncounterViewSet(viewsets.ModelViewSet):
-#     """CetaceanEncounter view set."""
-#
-#     queryset = CetaceanEncounter.objects.all()
-#     serializer_class = CetaceanEncounterSerializer
+class LoggerEncounterViewSet(viewsets.ModelViewSet):
+    """LoggerEncounter view set."""
+
+    queryset = LoggerEncounter.objects.all()
+    serializer_class = LoggerEncounterSerializer
+    filter_fields = [
+        'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
+        'deployment_status', 'comments',
+        'source', 'source_id', 'encounter_type', ]
 
 
 class ObservationViewSet(viewsets.ModelViewSet):

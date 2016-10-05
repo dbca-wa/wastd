@@ -1304,7 +1304,6 @@ class TurtleNestEncounter(Encounter):
             self.get_species_display(),
             self.get_habitat_display(), )
 
-
     @property
     def get_encounter_type(self):
         """Infer the encounter type.
