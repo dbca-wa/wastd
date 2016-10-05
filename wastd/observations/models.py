@@ -734,7 +734,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         self.encounter_type = self.get_encounter_type
         if not self.source_id:
             self.source_id = self.short_name
-        if not self.name and self.inferred_name:
+        if (not self.name) and self.inferred_name:
             self.name = self.inferred_name
         super(Encounter, self).save(*args, **kwargs)
 
@@ -750,7 +750,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return the inferred name from related new capture if existing."""
         # TODO less dirty
         try:
-            return [enc.name for enc in self.related_encounters
+            return [enc.name
+                    for enc in self.related_encounters
                     if enc.is_new_capture][0]
         except:
             return None
@@ -797,7 +798,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
         while show_must_go_on:
             new_enc = TagObservation.encounter_histories(
-                new_tags, exclude_encounters=known_enc)
+                new_tags, without=known_enc)
             known_enc.extend(new_enc)
             new_tags = Encounter.tag_lists(new_enc)
             known_tags += new_tags
@@ -1356,8 +1357,9 @@ class LoggerEncounter(Encounter):
     and deployed again in situ.
     """
     LOGGER_STATUS_DEFAULT = 'resighted'
+    LOGGER_STATUS_NEW = "programmed"
     LOGGER_STATUS_CHOICES = (
-        ("programmed", "Programmed"),
+        (LOGGER_STATUS_NEW, "Programmed"),
         ("posted", "Posted to field team"),
         ("deployed", "Deployed in situ"),
         ("resighted", "Resighted in situ"),
@@ -1395,7 +1397,7 @@ class LoggerEncounter(Encounter):
     def __str__(self):
         """The unicode representation."""
         return "Logger {0} ({1})".format(
-            self.name,
+            self.name or '',
             self.get_deployment_status_display(),)
 
     @property
@@ -1431,6 +1433,32 @@ class LoggerEncounter(Encounter):
         if self.name is not None:
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
+
+    @property
+    def loggers(self):
+        """Return a queryset of Logger Tag Observations."""
+        return self.observation_set.instance_of(TagObservation).filter(
+            tagobservation__tag_type='temperature-logger')
+
+    @property
+    def primary_flipper_tag(self):
+        """Return the TagObservation of the primary logger.
+
+        TODO refactor the function name here and in utils.
+        """
+        return self.loggers.order_by('tagobservation__tag_location').first()
+
+    @property
+    def is_new_capture(self):
+        """Return whether this Encounter is a new capture.
+
+        New captures are named after their primary flipper tag.
+        An Encounter is a new capture if there are:
+
+        * no associated TagObservations of ``is_recapture`` status
+        * at least one associated TabObservation of ``is_new`` status
+        """
+        return self.deployment_status == LoggerEncounter.LOGGER_STATUS_NEW
 
 
 # Observation models ---------------------------------------------------------#
@@ -1639,14 +1667,16 @@ class TagObservation(Observation):
         return list(set([t.encounter for t in cls.objects.filter(name=tagname)]))
 
     @classmethod
-    def encounter_histories(cls, tagname_list, exclude_encounters=[]):
+    def encounter_histories(cls, tagname_list, without=[]):
         """Return the related encounters of all tag names.
 
         TODO double-check performance
         """
-        return [encounter for encounter in list(set(itertools.chain.from_iterable(
-            [TagObservation.encounter_history(t.name) for t in tagname_list])))
-                if encounter not in exclude_encounters]
+        return [encounter
+                for encounter
+                in list(set(itertools.chain.from_iterable(
+                    [TagObservation.encounter_history(t.name) for t in tagname_list])))
+                if encounter not in without]
 
     @property
     def is_new(self):
