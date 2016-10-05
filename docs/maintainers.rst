@@ -29,7 +29,18 @@ Activate the virtualenv::
 
 Database
 --------
-Create a PostgreSQL database with PostGIS.
+Create a PostgreSQL database with PostGIS, psql into an existing database
+on an existing cluster::
+
+    some_db=# create database wastd_8220 owner DBUSER;
+    some_db=# \c wastd_8220 ;
+    wastd_8220=# create extension postgis;
+    wastd_8220=# \q
+
+The database connection string will be in the format::
+
+    DATABASE_URL="postgis://DBUSER:DBPASS@DBHOST:DBPORT/DBNAME"
+
 
 Code
 ----
@@ -39,12 +50,43 @@ Install dependencies::
     git clone git@github.com:florianm/wastd.git .
     pip install Fabric
     fab pip
-    cp env.template .env
+    cp env.example .env
 
-Edit ``.env`` and enter your settings, particularly the database URL, then let
-Django setup the database::
+Edit ``.env`` and enter your settings, particularly the database URL
+
+Permissions
+-----------
+* Your local user shall be part of group www-data.
+* Code and virtualenv shall be chowned by www-data:www-data with permissions
+  775 (folders) and 664 (files).
+* The production web server shall run under the www-data account.
+
+Create folders, set permissions (files 0644, folders 0755)::
+    mkdir staticfiles
+    sudo chown -R www-data:www-data .
+    find . -type f -exec sudo chmod 0664 {} \;
+    find . -type d -exec sudo chmod 0755 {} \;
+    sudo chmod +x manage.py
+
+Same for virtualenv (paths depend on your virtualenv in .bashrc)::
+
+    sudo chown -R YOUR_USER:www-data $WORKON_HOME/wastd/
+    find $WORKON_HOME/wastd/ -type f -exec sudo chmod 0664 {} \;
+    find $WORKON_HOME/wastd/ -type d -exec sudo chmod 0775 {} \;
+    sudo chmod -R +x $WORKON_HOME/wastd/bin/*
+
+Setup the database::
 
     ./manage.py migrate
+
+Sync data and files::
+    (wastd)me@UAT:~/projects/wastd$ rsync -Pavvr wastd/media/ me@PROD:/mnt/projects/wastd/wastd/media/
+    (wastd)me@UAT:~/projects/wastd$ ./manage.py dumpdata --natural-primary --natural-foreign --indent 4 > data.dump
+    (wastd)me@UAT:~/projects/wastd$ rsync -Pavvr data.json me@PROD:/mnt/projects/wastd/
+    (wastd)me@PROD:/mnt/projects/wastd$ ./manage.py loaddata data.json
+
+Run ``fab static`` and ``fab go`` to see WAStD running in dev.
+
 
 Useful commands
 ---------------
@@ -52,10 +94,11 @@ Useful commands
 * ``fab go``: run development server with local settings on .env's PORT
 * ``fab pro``: run development server with production settings on .env's PORT
 * ``fab shell``: run shell_plus
+* ``fab static``: delete, then collect (link) staticfiles
+* ``fab -l``: see all available commands
 
-
-Production server
------------------
+Production server 1: Supervisord
+--------------------------------
 Install supervisor with ``sudo apt-get install supervisor``.
 Create `/etc/supervisor/conf.d/wastd.conf`::
 
@@ -72,6 +115,18 @@ Run the app::
 
     ./manage.py collectstatic --noinput
     sudo supervisorctl restart wastd
+
+Production server 2: uwsgi
+--------------------------
+Create folders and set ownership::
+    (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/spool/uwsgi/spooler
+    (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/spool/uwsgi/sockets
+    (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/log/uwsgi/
+    (wastd)me@PROD:/mnt/projects/wastd$ sudo touch /var/log/uwsgi/emperor.log
+    (wastd)me@PROD:/mnt/projects/wastd$ sudo chown -R www-data:www-data /var/spool/uwsgi/
+    (wastd)me@PROD:/mnt/projects/wastd$ sudo chown -R www-data:www-data /var/log/uwsgi/
+
+
 
 Deploying upgrades to production
 ================================

@@ -2,12 +2,12 @@
 
 [uwsgi]
 ## Django-related settings
-# CHANGEME path to wastd git repo, trailing /
-chdir           = /home/florianm/projects/dpaw/wastd/
+chdir           = /home/CORPORATEICT/florianm/projects/wastd/
 
 # CHANGEME path to wastd virtualenv
-home            = /home/florianm/virtualenvs/wastd/
-module          = config.wsgi
+home            = /home/CORPORATEICT/florianm/.virtualenvs/wastd/
+module          = config.wsgi:application
+#env = DJANGO_SETTINGS_MODULE=config.settings.production                                            
 
 ## Process-related settings
 auto-procname   = true
@@ -15,22 +15,13 @@ hook-pre-app    = exec:venv/bin/python manage.py collectstatic --clear --noinput
 static-map      = /static=%(chdir)staticfiles
 static-map      = /media=%(chdir)wastd/media
 static-cache-paths = 30
-http            = :8220
+static-safe     = %(chdir)
 die-on-term     = true
-# master
-master          = true
-# maximum number of worker processes
-processes       = 10
-# the socket (use the full path to be safe
-# socket          = /path/to/your/project/mysite.sock
-# ... with appropriate permissions - may be needed
-# chmod-socket    = 664
-# clear environment on exit
-vacuum          = true
-
+socket          = :8220
 
 ## Required to be in the app config file for %n to work
 procname-prefix = %n/
 touch-reload    = %d%n.ini
 stats           = /var/spool/uwsgi/sockets/stats_%n.sock
 logto           = /var/log/uwsgi/%n.log
+disable-logging = true
