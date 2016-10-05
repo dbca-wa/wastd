@@ -16,7 +16,7 @@ from unipath import Path
 import confy
 
 try:
-    confy.read_environment_file("../.env")
+    confy.read_environment_file(".env")
 except:
     pass
 
