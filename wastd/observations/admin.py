@@ -18,7 +18,7 @@ from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
 from wastd.observations.models import (
-    Encounter, TurtleNestEncounter, AnimalEncounter,
+    Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     MediaAttachment, TagObservation, ManagementAction, TrackTallyObservation,
     TurtleMorphometricObservation, TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation)
@@ -137,8 +137,9 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
 # Select2Widget forms
 S2ATTRS = {'width': '350px'}
 EncounterAdminForm = s2form(Encounter, attrs=S2ATTRS)
-TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
 AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
+TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
+LoggerEncounterAdminForm = s2form(LoggerEncounter, attrs=S2ATTRS)
 
 
 @admin.register(Encounter)
@@ -258,6 +259,30 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         """Make nest age human readable."""
         return obj.get_nest_age_display()
     age_display.short_description = 'Nest age'
+
+
+@admin.register(LoggerEncounter)
+class LoggerEncounterAdmin(EncounterAdmin):
+    """Admin for LoggerEncounter."""
+
+    form = LoggerEncounterAdminForm
+    list_display = EncounterAdmin.FIRST_COLS + (
+        'deployment_status_display', 'comments',
+        ) + EncounterAdmin.LAST_COLS
+    list_filter = EncounterAdmin.list_filter + ('deployment_status',)
+    fieldsets = EncounterAdmin.fieldsets + (
+        ('Logger', {'fields': ('deployment_status', 'comments',)}), )
+
+    # Exclude some EncounterAdmin inlines
+    inlines = [
+        MediaAttachmentInline,
+        TagObservationInline,
+        ]
+
+    def deployment_status_display(self, obj):
+        """Make habitat human readable."""
+        return obj.get_deployment_status_display()
+    deployment_status_display.short_description = 'Deployment Status'
 
 
 @admin.register(AnimalEncounter)

@@ -536,6 +536,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
     ENCOUNTER_NEST = 'nest'
     ENCOUNTER_TRACKS = 'tracks'
     ENCOUNTER_TAG = 'tag-management'
+    ENCOUNTER_LOGGER = 'logger'
     ENCOUNTER_OTHER = 'other'
 
     ENCOUNTER_TYPES = (
@@ -553,6 +554,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ENCOUNTER_NEST: "home",
         ENCOUNTER_TRACKS: "truck",
         ENCOUNTER_TAG: "cog",
+        ENCOUNTER_LOGGER: "tablet",
         ENCOUNTER_OTHER: "question-circle"
         }
 
@@ -562,6 +564,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ENCOUNTER_NEST: 'green',
         ENCOUNTER_TRACKS: 'cadetblue',
         ENCOUNTER_TAG: 'darkpuple',
+        ENCOUNTER_LOGGER: 'orange',
         ENCOUNTER_OTHER: 'purple'
         }
 
@@ -1301,6 +1304,7 @@ class TurtleNestEncounter(Encounter):
             self.get_species_display(),
             self.get_habitat_display(), )
 
+
     @property
     def get_encounter_type(self):
         """Infer the encounter type.
@@ -1330,6 +1334,100 @@ class TurtleNestEncounter(Encounter):
             str(round(self.where.get_y(), 4)).replace(".", "-"),
             self.nest_age,
             self.species,
+            ]
+        if self.name is not None:
+            nameparts.append(self.name)
+        return slugify.slugify("-".join(nameparts))
+
+
+@python_2_unicode_compatible
+class LoggerEncounter(Encounter):
+    """The encounter of an electronic logger during its life cycle.
+
+    Stages:
+
+    * programmed (in office)
+    * posted to field team (in mail)
+    * deployed (in situ)
+    * resighted (in situ)
+    * retrieved (in situ)
+    * downloaded (in office)
+
+    The life cycle can be repeated. The logger can be downloaded, reprogrammed
+    and deployed again in situ.
+    """
+    LOGGER_STATUS_DEFAULT = 'resighted'
+    LOGGER_STATUS_CHOICES = (
+        ("programmed", "Programmed"),
+        ("posted", "Posted to field team"),
+        ("deployed", "Deployed in situ"),
+        ("resighted", "Resighted in situ"),
+        ("retrieved", "Retrieved in situ"),
+        ("downloaded", "Downloaded"),
+        )
+
+    deployment_status = models.CharField(
+        max_length=300,
+        default=LOGGER_STATUS_DEFAULT,
+        verbose_name=_("Status"),
+        choices=LOGGER_STATUS_CHOICES,
+        help_text=_("The logger life cycle status."), )
+
+    comments = models.TextField(
+        verbose_name=_("Comment"),
+        blank=True, null=True,
+        help_text=_("Comments"), )
+    #
+    # habitat = models.CharField(
+    #     max_length=500,
+    #     verbose_name=_("Habitat"),
+    #     choices=HABITAT_CHOICES,
+    #     default="na",
+    #     help_text=_("The habitat in which the nest was encountered."), )
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["when", "where"]
+        verbose_name = "Logger Encounter"
+        verbose_name_plural = "Logger Encounters"
+        get_latest_by = "when"
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Logger {0} ({1})".format(
+            self.name,
+            self.get_deployment_status_display(),)
+
+    @property
+    def get_encounter_type(self):
+        """Infer the encounter type.
+
+        TurtleNestEncounters are always nest encounters. Would you have guessed?
+        """
+        return Encounter.ENCOUNTER_LOGGER
+
+    @property
+    def short_name(self):
+        """A short, often unique, human-readable representation of the encounter.
+
+        Slugified and dash-separated:
+
+        * Date of encounter as YYYY-mm-dd
+        * longitude in WGS 84 DD, rounded to 4 decimals (<10m),
+        * latitude in WGS 84 DD, rounded to 4 decimals (<10m), (missing sign!!)
+        * nest age (type),
+        * species,
+        * name if available (requires "update names" and tag obs)
+
+        The short_name could be non-unique.
+        """
+        nameparts = [
+            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
+            str(round(self.where.get_x(), 4)).replace(".", "-"),
+            str(round(self.where.get_y(), 4)).replace(".", "-"),
+            'logger',
+            self.deployment_status,
             ]
         if self.name is not None:
             nameparts.append(self.name)
