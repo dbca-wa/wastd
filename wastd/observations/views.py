@@ -109,9 +109,8 @@ def schema_view(request):
 def update_names(request):
     """Update cached names on Encounters."""
     from wastd.observations.utils import allocate_animal_names
-    no_names = allocate_animal_names()
-    messages.success(
-        request,
-        "{0} animal names reconstructed".format(len(no_names)))
-
+    no_names, no_loggers = allocate_animal_names()
+    msg = "{0} animal names reconstructed, {1} logger names set".format(
+        len(no_names), len(no_loggers))
+    messages.success(request, msg)
     return HttpResponseRedirect("/")

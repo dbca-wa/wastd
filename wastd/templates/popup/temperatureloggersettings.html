@@ -1,0 +1,6 @@
+{% with original as o %}
+<div class="row">
+    <i class="fa fa-fw fa-bar-chart"></i>
+    Recording every {{ o.logging_interval }} from {{ o.recording_start_date|date:"d/m/Y" }}
+</div>
+{% endwith %}

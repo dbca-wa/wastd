@@ -20,6 +20,5 @@ def allocate_animal_names():
     """
     ae = [a.set_name_and_propagate(a.primary_flipper_tag.name)
           for a in AnimalEncounter.objects.all() if a.is_new_capture]
-    le = [a.set_name_and_propagate(a.primary_flipper_tag.name)
-          for a in LoggerEncounter.objects.all() if a.is_new_capture]
-    return ae + le
+    le = [a.save() for a in LoggerEncounter.objects.all()]
+    return [ae, le]

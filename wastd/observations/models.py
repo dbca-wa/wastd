@@ -36,9 +36,10 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-from polymorphic.models import PolymorphicModel
+from durationfield.db.models.fields.duration import DurationField
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
+from polymorphic.models import PolymorphicModel
 
 from wastd.users.models import User
 
@@ -74,20 +75,17 @@ TAG_TYPE_CHOICES = (
     (TAG_TYPE_DEFAULT, 'Flipper Tag'),
     ('pit-tag', 'PIT Tag'),
     ('sat-tag', 'Satellite Relay Data Logger'),  # SRDL
-    ('data-logger', 'Data Logger'),
     ('blood-sample', 'Blood Sample'),
     ('biopsy-sample', 'Biopsy Sample'),
     ('stomach-content-sample', 'Stomach Content Sample'),
     ('physical-sample', 'Physical Sample'),
     ('egg-sample', 'Egg Sample'),
-    ('temperature-logger', 'Temperature Logger'),
     ('qld-monel-a-flipper-tag', 'QLD Monel Series A flipper tag'),         # TRT_IDENTIFICATION_TYPES A
     ('qld-titanium-k-flipper-tag', 'QLD Titanium Series K flipper tag'),         # TRT_IDENTIFICATION_TYPES K
     ('qld-titanium-t-flipper-tag', 'QLD Titanium Series T flipper tag'),         # TRT_IDENTIFICATION_TYPES T
     ('acoustic-tag', 'Acoustic tag'),                           # Acoustic
     ('commonwealth-titanium-flipper-tag', 'Commonwealth titanium flipper tag'),      # CA
     ('cayman-juvenile-tag', 'Cayman juvenile tag'),   # CT
-    ('ctd-data-logger', 'Conductivity, Temperature, Depth SR data logger'),  # CTD
     ('hawaii-inconel-flipper-tag', 'Hawaii Inst Mar Biol Inconel tag'),  # I
     ('ptt', 'Platform Transmitter Terminal (PTT)'),  # PTT
     ('rototag', 'RotoTag'),  # SFU/FIU
@@ -96,6 +94,7 @@ TAG_TYPE_CHOICES = (
     ('atlantis-nickname', 'Atlantis informal name'),  # ATLANTIS
     ('wa-museum-reptile-registration-number', 'WA Museum Natural History Reptiles Catalogue Registration Number'),  # WAMusR
     ('other', 'Other'),)
+
 
 TAG_STATUS_DEFAULT = 'resighted'
 TAG_STATUS_APPLIED_NEW = 'applied-new'
@@ -545,6 +544,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         (ENCOUNTER_NEST, "Nest"),
         (ENCOUNTER_TRACKS, "Tracks"),
         (ENCOUNTER_TAG, "Tag Management"),
+        (ENCOUNTER_LOGGER, "Logger"),
         (ENCOUNTER_OTHER, "Other")
         )
 
@@ -1356,16 +1356,30 @@ class LoggerEncounter(Encounter):
     The life cycle can be repeated. The logger can be downloaded, reprogrammed
     and deployed again in situ.
     """
+    LOGGER_TYPE_DEFAULT = 'temperature-logger'
+    LOGGER_TYPE_CHOICES = (
+        (LOGGER_TYPE_DEFAULT, 'Temperature Logger'),
+        ('data-logger', 'Data Logger'),
+        ('ctd-data-logger', 'Conductivity, Temperature, Depth SR data logger'),  # CTD
+        )
+
     LOGGER_STATUS_DEFAULT = 'resighted'
     LOGGER_STATUS_NEW = "programmed"
     LOGGER_STATUS_CHOICES = (
-        (LOGGER_STATUS_NEW, "Programmed"),
-        ("posted", "Posted to field team"),
-        ("deployed", "Deployed in situ"),
-        ("resighted", "Resighted in situ"),
-        ("retrieved", "Retrieved in situ"),
-        ("downloaded", "Downloaded"),
+        (LOGGER_STATUS_NEW, "programmed"),
+        ("posted", "posted to field team"),
+        ("deployed", "deployed in situ"),
+        ("resighted", "resighted in situ"),
+        ("retrieved", "retrieved in situ"),
+        ("downloaded", "downloaded"),
         )
+
+    logger_type = models.CharField(
+        max_length=300,
+        default=LOGGER_TYPE_DEFAULT,
+        verbose_name=_("Type"),
+        choices=LOGGER_TYPE_CHOICES,
+        help_text=_("The logger type."), )
 
     deployment_status = models.CharField(
         max_length=300,
@@ -1373,6 +1387,12 @@ class LoggerEncounter(Encounter):
         verbose_name=_("Status"),
         choices=LOGGER_STATUS_CHOICES,
         help_text=_("The logger life cycle status."), )
+
+    logger_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Logger ID"),
+        help_text=_("The ID of a logger must be unique within the tag type."),)
 
     comments = models.TextField(
         verbose_name=_("Comment"),
@@ -1396,15 +1416,17 @@ class LoggerEncounter(Encounter):
 
     def __str__(self):
         """The unicode representation."""
-        return "Logger {0} ({1})".format(
+        return "{0} {1} {2}".format(
+            self.get_logger_type_display(),
             self.name or '',
-            self.get_deployment_status_display(),)
+            self.get_deployment_status_display(),
+            )
 
     @property
     def get_encounter_type(self):
         """Infer the encounter type.
 
-        TurtleNestEncounters are always nest encounters. Would you have guessed?
+        LoggerEncounters are always logger encounters. Would you have guessed?
         """
         return Encounter.ENCOUNTER_LOGGER
 
@@ -1427,7 +1449,7 @@ class LoggerEncounter(Encounter):
             self.when.strftime("%Y-%m-%d-%H-%M-%S"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-"),
-            'logger',
+            self.logger_type,
             self.deployment_status,
             ]
         if self.name is not None:
@@ -1435,30 +1457,9 @@ class LoggerEncounter(Encounter):
         return slugify.slugify("-".join(nameparts))
 
     @property
-    def loggers(self):
-        """Return a queryset of Logger Tag Observations."""
-        return self.observation_set.instance_of(TagObservation).filter(
-            tagobservation__tag_type='temperature-logger')
-
-    @property
-    def primary_flipper_tag(self):
-        """Return the TagObservation of the primary logger.
-
-        TODO refactor the function name here and in utils.
-        """
-        return self.loggers.order_by('tagobservation__tag_location').first()
-
-    @property
-    def is_new_capture(self):
-        """Return whether this Encounter is a new capture.
-
-        New captures are named after their primary flipper tag.
-        An Encounter is a new capture if there are:
-
-        * no associated TagObservations of ``is_recapture`` status
-        * at least one associated TabObservation of ``is_new`` status
-        """
-        return self.deployment_status == LoggerEncounter.LOGGER_STATUS_NEW
+    def inferred_name(self):
+        """Set the encounter name from logger ID."""
+        return self.logger_id
 
 
 # Observation models ---------------------------------------------------------#
@@ -2221,3 +2222,84 @@ class TurtleNestDisturbanceObservation(Observation):
             self.disturbance_cause, self.disturbance_severity)
 
 # TODO add CecaceanMorphometricObservation for cetacean strandings
+
+
+# Logger Observation models --------------------------------------------------#
+@python_2_unicode_compatible
+class TemperatureLoggerSettings(Observation):
+    """Temperature Logger Settings."""
+
+    logging_interval = DurationField(
+        verbose_name=_("Logging interval"),
+        blank=True, null=True,
+        help_text=_("The time between individual readings."),
+        )
+    recording_start_date = models.DateField(
+        verbose_name=_("Recording start date"),
+        blank=True, null=True,
+        help_text=_("The preset first day of recording, stored as UTC and "
+                    "shown in local time."))
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Sampling starting on {0} with rate {1}".format(
+            self.recording_start_date, self.logging_interval)
+
+
+@python_2_unicode_compatible
+class DispatchRecord(Observation):
+    """A record of dispatching the subject of the encounter."""
+
+    sent_to = models.ForeignKey(
+        User,
+        verbose_name=_("Sent to"),
+        related_name="receiver",
+        blank=True, null=True,
+        help_text=_("The receiver of the dispatch."))
+
+    # sent_on = models.DateField(
+    #     verbose_name=_("Sent on"),
+    #     blank=True, null=True,
+    #     help_text=_("The date of dispatch."))
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Sent on {0} to {1}".format(self.encounter.when, self.sent_to)
+
+
+@python_2_unicode_compatible
+class TemperatureLoggerDeployment(Observation):
+    """A record of deploying a temperature logger."""
+
+    depth_mm = models.PositiveIntegerField(
+        verbose_name=_("Logger depth (mm)"),
+        blank=True, null=True,
+        help_text=_("The depth of the buried logger in mm."),)
+
+    marker1_present = models.CharField(
+        max_length=300,
+        verbose_name=_("Marker 1 present"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Is the first marker in place?"),)
+
+    distance_to_marker1_mm = models.PositiveIntegerField(
+        verbose_name=_("Distance to marker 1 (mm)"),
+        blank=True, null=True,
+        help_text=_("The distance to the first marker in mm."),)
+
+    marker2_present = models.CharField(
+        max_length=300,
+        verbose_name=_("Marker 2 present"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Is the second marker in place?"),)
+
+    distance_to_marker2_mm = models.PositiveIntegerField(
+        verbose_name=_("Distance to marker 2 (mm)"),
+        blank=True, null=True,
+        help_text=_("The distance to the second marker in mm."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Logger at {0} mm depth".format(self.depth_mm)

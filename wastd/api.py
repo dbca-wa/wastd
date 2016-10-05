@@ -39,7 +39,8 @@ from wastd.observations.models import (
     Observation, MediaAttachment, TagObservation,
     TurtleMorphometricObservation, TurtleDamageObservation, ManagementAction,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
-    TrackTallyObservation)
+    TrackTallyObservation, TemperatureLoggerSettings, DispatchRecord,
+    TemperatureLoggerDeployment)
 from wastd.users.models import User
 
 
@@ -105,6 +106,15 @@ class ObservationSerializer(serializers.ModelSerializer):
         if isinstance(obj, MediaAttachment):
             return MediaAttachmentSerializer(
                 obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TemperatureLoggerSettings):
+            return TemperatureLoggerSettingsSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, DispatchRecord):
+            return DispatchRecordSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TemperatureLoggerDeployment):
+            return TemperatureLoggerDeploymentSerializer(
+                obj, context=self.context).to_representation(obj)
 
         return super(ObservationSerializer, self).to_representation(obj)
 
@@ -129,11 +139,11 @@ class TagObservationSerializer(serializers.ModelSerializer):
         model = TagObservation
         fields = ('observation_name',
                   'tag_type', 'name', 'tag_location',
-                  'status', 'comments')
+                  'status', 'comments', )
 
 
 class TagObservationEncounterSerializer(serializers.ModelSerializer):
-    """TagObservation serializer."""
+    """TagObservation serializer including encounter for standalone viewset."""
 
     class Meta:
         """Class options."""
@@ -141,7 +151,7 @@ class TagObservationEncounterSerializer(serializers.ModelSerializer):
         model = TagObservation
         fields = ('encounter', 'observation_name',
                   'tag_type', 'name', 'tag_location',
-                  'status', 'comments')
+                  'status', 'comments', )
 
 
 class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
@@ -162,8 +172,7 @@ class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
                   'maximum_head_length_mm', 'maximum_head_length_accuracy',
                   'body_depth_mm', 'body_depth_accuracy',
                   'body_weight_mm', 'body_weight_accuracy',
-                  'handler', 'recorder',
-                  )
+                  'handler', 'recorder', )
 
 
 class ManagementActionSerializer(serializers.ModelSerializer):
@@ -174,7 +183,7 @@ class ManagementActionSerializer(serializers.ModelSerializer):
 
         model = ManagementAction
         fields = ('observation_name',
-                  'management_actions', 'comments',)
+                  'management_actions', 'comments', )
 
 
 class TurtleNestObservationSerializer(serializers.ModelSerializer):
@@ -204,7 +213,7 @@ class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
         model = TurtleNestDisturbanceObservation
         fields = ('observation_name',
                   'disturbance_cause', 'disturbance_cause_confidence',
-                  'disturbance_severity', 'comments',)
+                  'disturbance_severity', 'comments', )
 
 
 class TurtleDamageObservationSerializer(serializers.ModelSerializer):
@@ -236,7 +245,41 @@ class TrackTallyObservationSerializer(serializers.ModelSerializer):
                   'dog_predation',
                   'dingo_predation',
                   'goanna_predation',
-                  'bird_predation',
+                  'bird_predation', )
+
+
+class TemperatureLoggerSettingsSerializer(serializers.ModelSerializer):
+    """TemperatureLoggerSettings serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = TemperatureLoggerSettings
+        fields = ('logging_interval', 'recording_start_date', )
+
+
+class DispatchRecordSerializer(serializers.ModelSerializer):
+    """DispatchRecord serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = DispatchRecord
+        fields = ('sent_to',)
+
+
+class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
+    """TemperatureLoggerDeployment serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = TemperatureLoggerDeployment
+        fields = ('depth_mm',
+                  'marker1_present',
+                  'distance_to_marker1_mm',
+                  'marker2_present',
+                  'distance_to_marker2_mm',
                   )
 
 

@@ -43,6 +43,7 @@ django-fsm
 django-fsm-log
 django-fsm-admin
 django-extra-fields
+django-durationfield
 
 # Views
 # ------------------------------------------------

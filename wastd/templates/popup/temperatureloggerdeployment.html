@@ -1,0 +1,9 @@
+{% load observations %}
+{% with original as o %}
+<div class="row">
+    <i class="fa fa-fw fa-bar-chart"></i>
+    Depth {{ o.depth_mm }} mm,
+    {% if o.distance_to_marker1_mm %}{{ o.distance_to_marker1_mm }} mm to {% endif %}marker 1 <i class="{{o.marker1_present|fa_observation_icon}}"></i>
+    {% if o.distance_to_marker2_mm %}{{ o.distance_to_marker2_mm }} mm to {% endif %}marker 2 <i class="{{o.marker2_present|fa_observation_icon}}"></i>
+</div>
+{% endwith %}

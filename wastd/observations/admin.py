@@ -21,7 +21,9 @@ from wastd.observations.models import (
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     MediaAttachment, TagObservation, ManagementAction, TrackTallyObservation,
     TurtleMorphometricObservation, TurtleDamageObservation,
-    TurtleNestObservation, TurtleNestDisturbanceObservation)
+    TurtleNestObservation, TurtleNestDisturbanceObservation,
+    TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
+
 
 class ImageThumbnailFileInput(ff.ClearableFileInput):
     template_name = 'floppyforms/image_thumbnail.html'
@@ -91,6 +93,29 @@ class TurtleNestDisturbanceObservationInline(admin.TabularInline):
     model = TurtleNestDisturbanceObservation
     classes = ('grp-collapse grp-open',)
 
+
+class TemperatureLoggerSettingsInline(admin.TabularInline):
+    """Admin for TemperatureLoggerSettings."""
+
+    extra = 0
+    model = TemperatureLoggerSettings
+    classes = ('grp-collapse grp-open',)
+
+
+class DispatchRecordInline(admin.TabularInline):
+    """Admin for DispatchRecord."""
+
+    extra = 0
+    model = DispatchRecord
+    classes = ('grp-collapse grp-open',)
+
+
+class TemperatureLoggerDeploymentInline(admin.TabularInline):
+    """Admin for TemperatureLoggerDeployment."""
+
+    extra = 0
+    model = TemperatureLoggerDeployment
+    classes = ('grp-collapse grp-open',)
 
 
 @admin.register(TagObservation)
@@ -230,61 +255,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     encounter_type_display.short_description = 'Encounter Type'
 
 
-@admin.register(TurtleNestEncounter)
-class TurtleNestEncounterAdmin(EncounterAdmin):
-    """Admin for TurtleNestEncounter."""
-
-    form = TurtleNestEncounterAdminForm
-    list_display = EncounterAdmin.FIRST_COLS + (
-        'species', 'age_display', 'habitat_display', 'disturbance'
-        ) + EncounterAdmin.LAST_COLS
-    list_filter = EncounterAdmin.list_filter + (
-        'nest_age', 'species', 'habitat', 'disturbance')
-    fieldsets = EncounterAdmin.fieldsets + (
-        ('Nest', {'fields': ('nest_age', 'species', 'habitat', 'disturbance')}), )
-
-    # Exclude some EncounterAdmin inlines
-    inlines = [
-        MediaAttachmentInline,
-        TagObservationInline,
-        TurtleNestObservationInline,
-        TurtleNestDisturbanceObservationInline]
-
-    def habitat_display(self, obj):
-        """Make habitat human readable."""
-        return obj.get_habitat_display()
-    habitat_display.short_description = 'Habitat'
-
-    def age_display(self, obj):
-        """Make nest age human readable."""
-        return obj.get_nest_age_display()
-    age_display.short_description = 'Nest age'
-
-
-@admin.register(LoggerEncounter)
-class LoggerEncounterAdmin(EncounterAdmin):
-    """Admin for LoggerEncounter."""
-
-    form = LoggerEncounterAdminForm
-    list_display = EncounterAdmin.FIRST_COLS + (
-        'deployment_status_display', 'comments',
-        ) + EncounterAdmin.LAST_COLS
-    list_filter = EncounterAdmin.list_filter + ('deployment_status',)
-    fieldsets = EncounterAdmin.fieldsets + (
-        ('Logger', {'fields': ('deployment_status', 'comments',)}), )
-
-    # Exclude some EncounterAdmin inlines
-    inlines = [
-        MediaAttachmentInline,
-        TagObservationInline,
-        ]
-
-    def deployment_status_display(self, obj):
-        """Make habitat human readable."""
-        return obj.get_deployment_status_display()
-    deployment_status_display.short_description = 'Deployment Status'
-
-
 @admin.register(AnimalEncounter)
 class AnimalEncounterAdmin(EncounterAdmin):
     """Admin for AnimalEncounter."""
@@ -348,3 +318,67 @@ class AnimalEncounterAdmin(EncounterAdmin):
         """Make habitat human readable."""
         return obj.get_habitat_display()
     habitat_display.short_description = 'Habitat'
+
+
+@admin.register(TurtleNestEncounter)
+class TurtleNestEncounterAdmin(EncounterAdmin):
+    """Admin for TurtleNestEncounter."""
+
+    form = TurtleNestEncounterAdminForm
+    list_display = EncounterAdmin.FIRST_COLS + (
+        'species', 'age_display', 'habitat_display', 'disturbance'
+        ) + EncounterAdmin.LAST_COLS
+    list_filter = EncounterAdmin.list_filter + (
+        'nest_age', 'species', 'habitat', 'disturbance')
+    fieldsets = EncounterAdmin.fieldsets + (
+        ('Nest', {'fields': ('nest_age', 'species', 'habitat', 'disturbance')}), )
+
+    # Exclude some EncounterAdmin inlines
+    inlines = [
+        MediaAttachmentInline,
+        TagObservationInline,
+        TurtleNestObservationInline,
+        TurtleNestDisturbanceObservationInline, ]
+
+    def habitat_display(self, obj):
+        """Make habitat human readable."""
+        return obj.get_habitat_display()
+    habitat_display.short_description = 'Habitat'
+
+    def age_display(self, obj):
+        """Make nest age human readable."""
+        return obj.get_nest_age_display()
+    age_display.short_description = 'Nest age'
+
+
+@admin.register(LoggerEncounter)
+class LoggerEncounterAdmin(EncounterAdmin):
+    """Admin for LoggerEncounter."""
+
+    form = LoggerEncounterAdminForm
+    list_display = EncounterAdmin.FIRST_COLS + (
+        'logger_type_display', 'deployment_status_display',
+        'logger_id', 'comments',
+        ) + EncounterAdmin.LAST_COLS
+    list_filter = EncounterAdmin.list_filter + ('logger_type', 'deployment_status',)
+    search_fields = ('logger_id', 'source_id')
+    fieldsets = EncounterAdmin.fieldsets + (
+        ('Logger', {'fields': (
+            'logger_type', 'deployment_status', 'logger_id', 'comments',)}), )
+
+    # Exclude some EncounterAdmin inlines
+    inlines = [
+        MediaAttachmentInline,
+        TemperatureLoggerSettingsInline,
+        DispatchRecordInline,
+        TemperatureLoggerDeploymentInline, ]
+
+    def logger_type_display(self, obj):
+        """Make habitat human readable."""
+        return obj.get_logger_type_display()
+    logger_type_display.short_description = 'Logger Type'
+
+    def deployment_status_display(self, obj):
+        """Make habitat human readable."""
+        return obj.get_deployment_status_display()
+    deployment_status_display.short_description = 'Deployment Status'

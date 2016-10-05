@@ -13,12 +13,12 @@ import environ
 from confy import env, database
 from unipath import Path
 
-import confy
-
-try:
-    confy.read_environment_file(".env")
-except:
-    pass
+# import confy
+#
+# try:
+#     confy.read_environment_file("../.env")
+# except:
+#     pass
 
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 BASE_DIR = Path(__file__).ancestor(3)
@@ -39,6 +39,7 @@ DJANGO_APPS = (
     'grappelli',
     'django.contrib.admin',
     )
+
 THIRD_PARTY_APPS = (
     'django_extensions',        # shell_plus and others
     'crispy_forms',             # Form layouts
