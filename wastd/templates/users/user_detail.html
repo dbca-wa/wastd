@@ -36,7 +36,7 @@
       <h3>Code example in R</h3>
       <pre>
         require(httr); require(jsonlite); require(DT)
-        url = "http://localhost:8220/api/1/animal-encounters/"
+        url = "{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/"
         j = httr::GET(paste0(url, "?format=json"),
             add_headers(Authorization="Token{{ request.user.apitoken }}")) %>%
             content("text") %>% fromJSON
@@ -50,7 +50,7 @@
       <h3>Code example in Python</h3>
       <pre>
           import requests
-          url = 'http://localhost:8220/api/1/animal-encounters/'
+          url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
           headers = {"Authorization": "Token {{ request.user.apitoken }}"}
           j = requests.get(url + "?format=json", headers=headers).json()
           d = requests.get(url + "?format=csv", headers=headers).content

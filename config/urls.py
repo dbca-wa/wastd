@@ -29,7 +29,7 @@ actions.add_to_site(site)
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter(schema_title='WAStD API')
-router.register(r'users', UserViewSet)
+# router.register(r'users', UserViewSet)
 router.register(r'encounters', EncounterViewSet)
 router.register(r'animal-encounters', AnimalEncounterViewSet)
 router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
