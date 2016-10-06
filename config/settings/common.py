@@ -51,6 +51,7 @@ THIRD_PARTY_APPS = (
     'allauth.account',          # registration
     'allauth.socialaccount',    # registration
     'rest_framework',           # API
+    'rest_framework.authtoken', # API auth via token
     'rest_framework_gis',       # API spatial fields
     'rest_framework_swagger',   # API docs
     'dynamic_rest',             # Parameterised API queries
@@ -282,6 +283,7 @@ REST_FRAMEWORK = {
         ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
         'rest_framework_jsonp.renderers.JSONPRenderer',
         'rest_framework_csv.renderers.CSVRenderer',
         # 'rest_framework_yaml.renderers.YAMLRenderer',

@@ -34,6 +34,9 @@ from rest_framework import serializers, viewsets
 # from dynamic_rest import serializers as ds, viewsets as dv
 from drf_extra_fields.geo_fields import PointField
 
+from rest_framework.authentication import (
+    SessionAuthentication, BasicAuthentication, TokenAuthentication)
+
 from wastd.observations.models import (
     Encounter, AnimalEncounter, TurtleNestEncounter, LoggerEncounter,
     Observation, MediaAttachment, TagObservation,
@@ -416,6 +419,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
     """AnimalEncounter view set."""
 
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [

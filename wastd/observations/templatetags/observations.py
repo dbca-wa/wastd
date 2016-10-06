@@ -3,9 +3,14 @@ from django import template
 from django_fsm_log.models import StateLog
 from django.template.defaultfilters import stringfilter, register
 from wastd.observations.models import Encounter, OBSERVATION_ICONS
-
+from rest_framework.authtoken.models import Token
 
 register = template.Library()
+
+
+@register.tag()
+def apitoken(user, **kwargs):
+    return Token.objects.get_or_create(user=user)[0].key
 
 
 @register.inclusion_tag('tx_logs.html', takes_context=False)

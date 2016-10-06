@@ -12,6 +12,7 @@ from django.views import defaults as default_views
 
 from adminactions import actions
 from rest_framework import routers
+from rest_framework.authtoken import views as drf_authviews
 # from dynamic_rest import routers as dr
 from wastd.observations.models import Encounter
 from wastd.observations.views import (
@@ -65,6 +66,7 @@ urlpatterns = [
     url(r'^api/1/', include(router.urls), name='api'),
     url(r'^api-auth/',
         include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-token-auth/', drf_authviews.obtain_auth_token),
     url(r'^api-docs/1/', schema_view, name="api-docs"),
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^select2/', include('django_select2.urls')),

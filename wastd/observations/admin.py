@@ -24,6 +24,10 @@ from wastd.observations.models import (
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
 
+from rest_framework.authtoken.admin import TokenAdmin
+
+TokenAdmin.raw_id_fields = ('user',)
+
 
 class ImageThumbnailFileInput(ff.ClearableFileInput):
     template_name = 'floppyforms/image_thumbnail.html'
