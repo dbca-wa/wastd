@@ -21,6 +21,24 @@ def tx_logs(obj):
 
 @register.filter
 @stringfilter
+def mm_as_cm(mm_value):
+    """Turn a given mm value into a cm value."""
+    if mm_value == 'None':
+        return None
+    return float(mm_value) / 10
+
+
+@register.filter
+@stringfilter
+def mm_as_m(mm_value):
+    """Turn a given mm value into a m value."""
+    if mm_value == 'None':
+        return None
+    return float(mm_value) / 1000
+
+
+@register.filter
+@stringfilter
 def tb_status_icon(status_value):
     """Turn a given status value into a complete twitter-boootstrap v4 CSS class.
 

@@ -3,11 +3,7 @@
 {% with original as o %}
 
 {% block title %}
-{% if o.species != "na" %}
-{{ o.get_species_display }}
-{% else %}
-Animal Encounter
-{% endif %}
+{% if o.species != "na" %}{{ o.get_species_display }}{% else %}Animal Encounter{% endif %}
 {% endblock %}
 
 {% block headlines %}
@@ -22,9 +18,9 @@ Animal Encounter
 <!-- Checked for... -->
 <div class="row">
     <i class="fa fa-fw fa-eye"></i>
-    Damage <i class="{{ o.checked_for_injuries|fa_observation_icon }}"></i>
-    PIT tags <i class="{{ o.scanned_for_pit_tags|fa_observation_icon }}"></i>
-    Flipper tags <i class="{{ o.checked_for_flipper_tags|fa_observation_icon }}"></i>
+    Damage  {{ o.checked_for_injuries}} <i class="{{ o.checked_for_injuries|fa_observation_icon }}"></i>
+    PIT tags {{ o.scanned_for_pit_tags }} <i class="{{ o.scanned_for_pit_tags|fa_observation_icon }}"></i>
+    Flipper tags {{ o.checked_for_flipper_tags }} <i class="{{ o.checked_for_flipper_tags|fa_observation_icon }}"></i>
 </div>
 
 {% if o.behaviour %}

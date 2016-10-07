@@ -28,7 +28,7 @@
     {{ o.when|date:"r" }}
     <i class="fa fa-fw fa-map-marker"></i>
         Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
-        ({{ o.crs }}) &plusmn; {{ o.location_accuracy }} m
+        ({{ o.crs }}) &plusmn; {{ o.location_accuracy }} m WGS 84
 </div>
 
 <!-- Observer -->

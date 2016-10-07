@@ -283,6 +283,8 @@ class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
                   'distance_to_marker1_mm',
                   'marker2_present',
                   'distance_to_marker2_mm',
+                  'habitat',
+                  'distance_to_vegetation_mm',
                   )
 
 

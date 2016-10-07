@@ -1398,13 +1398,6 @@ class LoggerEncounter(Encounter):
         verbose_name=_("Comment"),
         blank=True, null=True,
         help_text=_("Comments"), )
-    #
-    # habitat = models.CharField(
-    #     max_length=500,
-    #     verbose_name=_("Habitat"),
-    #     choices=HABITAT_CHOICES,
-    #     default="na",
-    #     help_text=_("The habitat in which the nest was encountered."), )
 
     class Meta:
         """Class options."""
@@ -2299,6 +2292,20 @@ class TemperatureLoggerDeployment(Observation):
         verbose_name=_("Distance to marker 2 (mm)"),
         blank=True, null=True,
         help_text=_("The distance to the second marker in mm."),)
+
+    habitat = models.CharField(
+        max_length=500,
+        verbose_name=_("Habitat"),
+        choices=HABITAT_CHOICES,
+        default="na",
+        help_text=_("The habitat in which the nest was encountered."), )
+
+    distance_to_vegetation_mm = models.PositiveIntegerField(
+        verbose_name=_("Distance to vegetation (mm)"),
+        blank=True, null=True,
+        help_text=_("The distance to the beach-vegetation border in mm. "
+                    "Positive values if logger is located on beach, "
+                    "negative values if in vegetation."),)
 
     def __str__(self):
         """The unicode representation."""
