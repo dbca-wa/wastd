@@ -261,6 +261,29 @@ Turtle Track data:
 * Encounter
 * TrackTallyObservation (TODO)
 
+
+Temperature Loggers
+===================
+The following life cycle stages are supported for Hobo Temperature Loggers:
+
+* programmed (with settings "start date" and "logging interval")
+* dispatched (sent to a recipient)
+* deployed, resighted, or retrieved (following datasheet)
+* downloaded (with attached data files)
+
+Create a `new LoggerEncounter <https://strandings.dpaw.wa.gov.au/admin/observations/loggerencounter/add/>`_:
+
+* Observed at: location of encounter, even if programmed, dispatched or downloaded.
+* Source ID: keep empty, will auto-generate on save.
+* Type: Temperature Logger.
+* Status: the life cycle status as per list above.
+* Logger ID: serial number as per sticker on logger.
+* If logger was programmed, add one "Temperature logger settings" section.
+* If logger was dispatched, add one "Dispatch record" section.
+* If logger was deployed, resighted, or retrieved, add one "Temperature logger deployment" section.
+* If logger was downloaded, add one Media attachment for each downloaded file and attach the file.
+
+
 =======
 Data QA
 =======

@@ -59,7 +59,7 @@
       <div class="carousel-inner" role="listbox">
           {% for p in o.photographs %}
         <div class="carousel-item{% if forloop.first %} active{% endif %} img-rounded">
-          <img src="{{ p.attachment.url }}" class="fullwidth img-rounded" alt="{{ p.title }}">
+          <img src="{{ p.attachment.url }}" class="img-rounded" alt="{{ p.title }}">
         </div>
         {% endfor %}
       </div>
