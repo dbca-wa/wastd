@@ -48,13 +48,13 @@ from wastd.users.models import User
 
 from synctool.routing import Route as SynctoolRoute
 
-# Synctools
-# http://django-synctool.readthedocs.io/
-sync_route = SynctoolRoute()
-
-
-@sync_route.app("users", "users")
-@sync_route.app("observations", "observations")
+# # Synctools
+# # http://django-synctool.readthedocs.io/
+# sync_route = SynctoolRoute()
+#
+#
+# @sync_route.app("users", "users")
+# @sync_route.app("observations", "observations")
 
 
 # Serializers ----------------------------------------------------------------#

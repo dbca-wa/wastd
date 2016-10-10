@@ -20,7 +20,7 @@ from wastd.observations.views import (
 
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 
-from wastd.api import sync_route, router
+from wastd.api import router  # , sync_route
 
 # register all adminactions
 actions.add_to_site(site)
@@ -57,7 +57,7 @@ urlpatterns = [
     url(r'^api-docs/1/', schema_view, name="api-docs"),
 
     # Synctools
-    url("^api/sync/", include(sync_route.urlpatterns)),
+    # url("^api/sync/", include(sync_route.urlpatterns)),
 
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^select2/', include('django_select2.urls')),

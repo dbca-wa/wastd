@@ -84,6 +84,7 @@ Sphinx
 flake8
 pydot
 sphinx_rtd_theme
+pygraphviz
 
 
 # API
