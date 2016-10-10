@@ -37,6 +37,9 @@ WAStD will integrate in the Departmental information landscape as follows:
   built right now consuming the WAStD API, and later refactored to consume data from
   departmental data warehouses, once these become the point of truth for the data.
 
+Our design philosophy follows
+`The Basics of Unix Philosophy <http://www.catb.org/esr/writings/taoup/html/ch01s06.html#id2877537>`_
+
 =========
 Data flow
 =========

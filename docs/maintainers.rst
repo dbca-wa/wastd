@@ -172,11 +172,11 @@ cases::
     git pull
     fab deploy
 
-    # If supervisord:
+    # if running with supervisord:
     sudo supervisorctl restart wastd
 
-    # If uwsgi (with your PORT):
-    sudo pkill -f PORT
+    # if running with uwsgi:
+    sudo service uwsgi restart
 
 Developing with Docker
 ======================
