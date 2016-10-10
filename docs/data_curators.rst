@@ -85,12 +85,13 @@ After this process, there should be present:
 
 WAStD minimal record and identifier
 -----------------------------------
-Create a new `AnimalEncounter <https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/add/>`_.
 
+* Create a `new AnimalEncounter <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/>`_.
 * **Observed at** refers to the location of the encounter with the animal.
 * If written coordinates are supplied, click anywhere on map and enter given
   coordinates into the text field underneath the map widget.
-  If locality names are supplied, look them up (e.g on Google Maps) and pick an
+  If locality names are supplied, look them up (e.g on Google Maps, or pick
+  "OpenStreetMap" from the map widget's layer selector) and pick an
   approximate location on the location widget.
 * Location accuracy: give your best estimate for the accuracy.
 * Observer, reporter: Create users (if not existing) for observer and reporter.
@@ -100,15 +101,15 @@ Create a new `AnimalEncounter <https://strandings-test.dpaw.wa.gov.au/admin/obse
 
 Hit "Save and continue editing". This is the **minimal Encounter record**.
 
-Fill in, as supplied, the fields in the "Animal" section and save. This is the
-**minimal stranding record**.
+Fill in, as supplied, the fields in the "Animal" section and save.
+This is the **minimal stranding record**.
 
-WAStD will auto-generate a record ID for the record from the metadata (
+WAStD will auto-generate an ID for the record from the metadata (
 encounter date, lon, lat, animal health, maturity, and species) and populate
-the *source ID* field with it. This ID will be the link between paper forms,
-digital files and WAStD records.
+the *source ID* field with it.
+This ID will be the link between paper forms, digital files and WAStD records.
 
-Example record ID: ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234``
+Example source ID: ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234``
 
 In the edge case of multiple strandings of animals of the same species, maturity
 and health, this auto-generated source ID will not be unique, and WAStD will
@@ -117,7 +118,7 @@ In this case, make the source ID unique by appending a running number (e.g. ``-1
 
 Rename legacy files using WAStD record identifier
 -------------------------------------------------
-Now that we have a record ID, turn to the files for a moment.
+Now that we have a source ID, turn to the files for a moment.
 
 Store the original files (scanned data sheets, pictures, emails)
 in a new folder in a backed up location using WAStD's auto-generated source ID
@@ -139,7 +140,11 @@ WAStD record, or being located in an appropriately named folder.
 Upload files
 ------------
 It is very important to rename the files **before** uploading them, in order to
-preserve the new filename (containing the record ID) in the uploaded file name.
+preserve the new filename (containing the source ID) in the uploaded file name.
+
+This is important, as downloaded files will only be identified by their filename.
+If the filename does not uniquely link back to the online record, e.g. by
+containing the source ID, the user risks losing its context.
 
 Back in WAStD, attach all files - data sheet scan, communication records,
 stranding form - as Media Attachments to the Encounter, preferrably in this order.
@@ -158,9 +163,9 @@ Add subsequent sections if relevant information is given in the original
 data sheet or communication records:
 
 * Tag Observations
-* Turtle Morphometric Observations
 * Turtle Damage Observation
-* Management Actions
+* Turtle Morphometric Observations
+* Management Actions (e.g. disposal, samples sent)
 
 
 Turtle Damage Observations also cater for tag scars and tags that were seen,
@@ -183,11 +188,13 @@ Tag Observations support the following identifying tags or "things with an ID":
 Tab Observations and Turtle Morphometric Observations have optional fields to
 capture the "handler" and the "recorder", where the handler is the person
 physically handling the tag or conducting the measurements, and the recorder
-the person who writes the data sheet. Both activities bring their own source of
-errors, which are often linked to the person's respective training or handwriting.
+the person who writes the data sheet. It is interesting to retain this information,
+as both activities bring their own source of errors, which are often linked to
+the person's respective training or handwriting.
 
-After adding these data to the Encounter, save the Encounter and refresh WAStD's
-home page to see a summary as popup on the Encounter's place marker.
+After adding these data to the Encounter, save the Encounter (twice to update
+the map popup) and refresh WAStD's home page to see a summary as popup on the
+Encounter's place marker.
 
 Updating an existing stranding record
 -------------------------------------
@@ -201,8 +208,9 @@ and related Observations as required.
 If the inputs for the source ID change, delete the source ID, save the AnimalEncounter
 to generate a new, correct source ID, then update the case folder name with
 the new source ID. Lastly, rename and reupload all files to propagate the new source ID
-into filenames and file URLs. If we don't do this, things will get tricky beyond
-repair in the future.
+into filenames and file URLs.
+This extra step is extremely important to keep shared identifiers on files and
+electronic records in sync.
 
 Outcome
 -------
@@ -217,9 +225,9 @@ Cetacean Strandings
 ===================
 The data currently lives in another departmental Strandings database.
 
-Cetacean Stranding data:
+Cetacean Stranding data (rudimentary):
 
-* AnimalEncounter following instructions above
+* Create a `new AnimalEncounter <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/>`_.
 * Media Attachments following instructions above
 * CetaceanMorphometricObservation (TODO)
 * CetaceanDagameObservation (TODO)
@@ -230,14 +238,14 @@ The data currently lives in WAMTRAM 2.
 
 Turtle Tagging data:
 
-* AnimalEncounter
-* Media Attachments
+* Create a `new AnimalEncounter <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/>`_.
+* Tag Observations: For each flipper, PIT and satellite tag; plus for each sample taken.
+* Media Attachments: photos, data sheet.
 * Distinguishing Feature Observation
 * Turtle Damage Observation
 * Turtle Morphometric Observations
 * Turtle Nest Observations
 * Management Actions
-* Tag Observations
 
 Tag returns
 ===========
@@ -245,21 +253,25 @@ When TOs harvest and eat a tagged turtle, they return the tags to the Department
 
 Tag Return data:
 
-* Encounter
-* TagObservation
+* Create a `new Encounter <https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/>`_.
+* Add a TagObservation for the returned tag.
 
 If the person returning the tag is not a departmental staff member, send them
-a "thank you" email including the known history of
+a "thank you" email including the known history of the animal.
 
 Turtle Tracks
 =============
-Track count is captured by the Ningaloo Turtle Program's
-Access database.
+Track count production data are currently captured by the Ningaloo Turtle Program's Access database.
 
-Turtle Track data:
+Turtle Track data in WAStD:
 
-* Encounter
-* TrackTallyObservation (TODO)
+* Create a `new Encounter <https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/>`_.
+* Add a TrackTallyObservation.
+
+For each nest with a GPS location:
+
+* Create a `new Encounter <https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/>`_.
+* Add a Turtle nest observation.
 
 
 Temperature Loggers
@@ -292,8 +304,32 @@ This section addresses QA operators, who have two jobs:
 * Proofreading: compare data sheets to entered data
 * Subject matter expertise: making sense of the data
 
+Proofreading
+============
+A literate data QA operator can proofread data by simply comparing attached files
+to the information present.
+If errors are found, data can be updated - WAStD will retain the edit history.
+Once the record is deemed "Proofread", the QA operator clicks the transition
+"Proofread Encounter".
+This step can be reverted by clicking the transition "Require Proofreading Encounter".
+WAStD will keep track of each transition.
+
+Curating data
+=============
+A subject matter expert can review records and e.g. confirm species identification.
+Once the expert is satisfied that the record represents accurately the case as
+evident from attached pictures, data sheet and communications records, the transition
+"Curate Encounter" will mark the encounter as "curated".
+The transition can be reversed with "Flag Encounter".
+
 ============
 Data release
 ============
 This section addresses data publishers, who authorise data release (mark records
 as "publication ready") or embargo data (to prevent publication).
+
+The transition "Publish Encounter" will mark the record as "published", but not
+actually release information to the general public. The flag serves simply to
+mark a record as "ready to publish".
+This transition can be reversed with "Embargo Encounter", which will push the record
+back to "curated".
