@@ -11,32 +11,19 @@ from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
 from adminactions import actions
-from rest_framework import routers
+
 from rest_framework.authtoken import views as drf_authviews
 # from dynamic_rest import routers as dr
 from wastd.observations.models import Encounter
 from wastd.observations.views import (
     schema_view, update_names, EncounterTableView, AnimalEncounterTableView)
-from wastd.api import (
-    UserViewSet, EncounterViewSet, AnimalEncounterViewSet,
-    LoggerEncounterViewSet, TurtleNestEncounterViewSet,
-    ObservationViewSet, MediaAttachmentViewSet,
-    TagObservationViewSet)
+
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
+
+from wastd.api import sync_route, router
 
 # register all adminactions
 actions.add_to_site(site)
-
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter(schema_title='WAStD API')
-# router.register(r'users', UserViewSet)
-router.register(r'encounters', EncounterViewSet)
-router.register(r'animal-encounters', AnimalEncounterViewSet)
-router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
-router.register(r'logger-encounters', LoggerEncounterViewSet)
-router.register(r'observations', ObservationViewSet)
-router.register(r'media-attachments', MediaAttachmentViewSet)
-router.register(r'tag-observations', TagObservationViewSet)
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='pages/home.html'),
@@ -68,6 +55,10 @@ urlpatterns = [
         include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', drf_authviews.obtain_auth_token),
     url(r'^api-docs/1/', schema_view, name="api-docs"),
+
+    # Synctools
+    url("^sync/", include(sync_route.urlpatterns)),
+
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^select2/', include('django_select2.urls')),
 

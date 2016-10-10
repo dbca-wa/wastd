@@ -44,6 +44,7 @@ django-fsm-log
 django-fsm-admin
 django-extra-fields
 django-durationfield
+django-synctool
 
 # Views
 # ------------------------------------------------
@@ -51,7 +52,7 @@ django-tables2
 
 # Images
 # ------------------------------------------------
-Pillow==3.3.1
+Pillow==3.4.1
 
 
 # Unicode slugification
@@ -62,7 +63,7 @@ django-autoslug==1.9.3
 
 # Time zones support
 # ------------------------------------------------
-pytz==2016.6.1
+pytz==2016.7
 
 
 # Redis support

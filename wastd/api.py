@@ -29,7 +29,7 @@ This API is built using:
 * coreapi
 * coreapi-cli (complementary CLI for coreapi)
 """
-from rest_framework import serializers, viewsets
+from rest_framework import serializers, viewsets, routers
 # import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
 from drf_extra_fields.geo_fields import PointField
@@ -45,6 +45,16 @@ from wastd.observations.models import (
     TrackTallyObservation, TemperatureLoggerSettings, DispatchRecord,
     TemperatureLoggerDeployment)
 from wastd.users.models import User
+
+from synctool.routing import Route as SynctoolRoute
+
+# Synctools
+# http://django-synctool.readthedocs.io/
+sync_route = SynctoolRoute()
+
+
+@sync_route.app("users", "users")
+@sync_route.app("observations", "observations")
 
 
 # Serializers ----------------------------------------------------------------#
@@ -462,3 +472,14 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     queryset = TagObservation.objects.all()
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter(schema_title='WAStD API')
+# router.register(r'users', UserViewSet)
+router.register(r'encounters', EncounterViewSet)
+router.register(r'animal-encounters', AnimalEncounterViewSet)
+router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
+router.register(r'logger-encounters', LoggerEncounterViewSet)
+router.register(r'observations', ObservationViewSet)
+router.register(r'media-attachments', MediaAttachmentViewSet)
+router.register(r'tag-observations', TagObservationViewSet)

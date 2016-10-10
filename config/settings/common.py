@@ -382,3 +382,7 @@ LEAFLET_CONFIG = {
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
         ]
     }
+
+
+# Synctool
+SYNCTOOL_API_TOKEN = env('SYNCTOOL_API_TOKEN', default='TOKEN')
