@@ -18,8 +18,8 @@ WA Stranding Database
 .. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
      :target: http://wastd.readthedocs.io/
      :alt: Documentation Status
-.. image:: https://badge.waffle.io/florianm/wastd.svg?label=ready&title=Ready
-     :target: https://waffle.io/florianm/wastd
+.. image:: https://badge.waffle.io/parksandwildlife/wastd.svg?label=ready&title=Ready
+     :target: https://waffle.io/parksandwildlife/wastd
      :alt: Open Issues
 
 Note: A bug in the version of functools used by the continuous integration provider
