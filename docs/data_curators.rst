@@ -187,12 +187,22 @@ Tag Observations support the following identifying tags or "things with an ID":
 * Physical Sample
 * Other
 
+Turtle Morphometric Observations
+--------------------------------
+The measurement accuracy is set based on informed guesses:
+* If the datasheet was filled in by a trained vet or core turtle staff, it's to
+  the nearest 1mm.
+* If the datasheet specifies "measured", it's to the nearest 5mm.
+* If the datasheet specifies "estimated", it's to the nearest value closest to
+  10% of the measurement.
+
 Tab Observations and Turtle Morphometric Observations have optional fields to
 capture the "handler" and the "recorder", where the handler is the person
 physically handling the tag or conducting the measurements, and the recorder
-the person who writes the data sheet. It is interesting to retain this information,
-as both activities bring their own source of errors, which are often linked to
-the person's respective training or handwriting.
+the person who writes the data sheet.
+It is important to retain this information, as both activities bring their own
+source of errors, which are often linked to the person's respective training or
+handwriting.
 
 After adding these data to the Encounter, save the Encounter (twice to update
 the map popup) and refresh WAStD's home page to see a summary as popup on the

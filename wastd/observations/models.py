@@ -2226,18 +2226,26 @@ class TemperatureLoggerSettings(Observation):
     logging_interval = DurationField(
         verbose_name=_("Logging interval"),
         blank=True, null=True,
-        help_text=_("The time between individual readings."),
-        )
-    recording_start_date = models.DateField(
-        verbose_name=_("Recording start date"),
+        help_text=_("The time between individual readings. Format: "
+                    "1d 23:59:59. E.g, 1h is 01:00:00"), )
+
+    recording_start = models.DateTimeField(
+        verbose_name=_("Recording start"),
         blank=True, null=True,
-        help_text=_("The preset first day of recording, stored as UTC and "
-                    "shown in local time."))
+        help_text=_("The preset start of recording, stored as UTC and "
+                    "shown in local time."), )
+
+    tested = models.CharField(
+        max_length=300,
+        verbose_name=_("Tested"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Was the logger tested after programming?"), )
 
     def __str__(self):
         """The unicode representation."""
         return "Sampling starting on {0} with rate {1}".format(
-            self.recording_start_date, self.logging_interval)
+            self.recording_start, self.logging_interval)
 
 
 @python_2_unicode_compatible
@@ -2249,7 +2257,7 @@ class DispatchRecord(Observation):
         verbose_name=_("Sent to"),
         related_name="receiver",
         blank=True, null=True,
-        help_text=_("The receiver of the dispatch."))
+        help_text=_("The receiver of the dispatch."), )
 
     # sent_on = models.DateField(
     #     verbose_name=_("Sent on"),
