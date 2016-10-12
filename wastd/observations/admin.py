@@ -181,6 +181,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     # Grappelli User lookup overrides select2 select widget
     raw_id_fields = ('observer', 'reporter', )
     autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
+    change_list_filter_template = "admin/filter_listing.html"
 
     # select2 widgets for searchable dropdowns
     form = EncounterAdminForm

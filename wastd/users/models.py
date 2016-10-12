@@ -22,20 +22,27 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 @python_2_unicode_compatible
 class User(AbstractUser):
 
-    # First Name and Last Name do not cover name patterns
-    # around the globe.
+    # First Name and Last Name do not cover name patterns around the globe.
     name = models.CharField(_('Name of User'), blank=True, max_length=255)
 
     def __str__(self):
-        return "{0} ({1}) {2}".format(self.name, self.username, self.email)
+        """The unicode representation."""
+        return self.name or self.username
+
+    def fullname(self):
+        """The full name plus email."""
+        return "{0} {1}".format(self.name or self.username, self.email)
 
     def get_absolute_url(self):
+        """The absolute URL."""
         return reverse('users:detail', kwargs={'username': self.username})
 
     @staticmethod
     def autocomplete_search_fields():
+        """Search fields for Grappelli admin skin."""
         return ("id__iexact", "name__icontains", )
 
     @property
     def apitoken(self):
+        """The API token."""
         return Token.objects.get_or_create(user=self)[0].key

@@ -47,10 +47,12 @@ Emails
 ^^^^^^
 * Emails saved as Outlook *.msg*: open with Outlook (requires Windows OS),
   save attachments (data sheet, images) separately, then save email as plain text.
-* Multiple emails: merge messages chronologically into one text file.
+* Multiple emails: merge messages chronologically into one text file per email
+  thread and redact content as follows:
 * Delete footers unless they contain contact information
-* Delete clearly off topic and personal sentences. If in doubt, do not delete.
-* Delete blank lines, only insert three blank lines between emails.
+* Replace clearly off topic and personal sentences with ``[...]``. If in doubt, retain.
+* Delete blank lines within emails.
+* Insert three blank lines between emails.
 
 Printed documents
 ^^^^^^^^^^^^^^^^^
@@ -93,7 +95,7 @@ WAStD minimal record and identifier
   If locality names are supplied, look them up (e.g on Google Maps, or pick
   "OpenStreetMap" from the map widget's layer selector) and pick an
   approximate location on the location widget.
-* Location accuracy: give your best estimate for the accuracy.
+* Location precision: give your best estimate for the error inherent to the source of the location.
 * Observer, reporter: Create users (if not existing) for observer and reporter.
   Use ``firstname_lastname`` as the username, assign a dummy password
   (they will never login using the password, only via DPaW SSO),
@@ -129,9 +131,9 @@ Rename each file with the source ID a prefix, plus a simple descriptive title, e
   containing:
 * ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_datasheet.pdf``
 * ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_emails.txt``
-* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_total_lateral.txt``
-* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_total_dorsal.txt``
-* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_head.txt``
+* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_total_lateral.jpg``
+* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_total_dorsal.jpg``
+* ``2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_head.jpg``
 
 This naming convention will ensure that each file can be associated with the
 corresponding record in WAStD even without the context of being attached to a
@@ -147,7 +149,7 @@ If the filename does not uniquely link back to the online record, e.g. by
 containing the source ID, the user risks losing its context.
 
 Back in WAStD, attach all files - data sheet scan, communication records,
-stranding form - as Media Attachments to the Encounter, preferrably in this order.
+photographs - as Media Attachments to the Encounter, preferrably in this order.
 Pick a descriptive, but short title for the files - the title will be displayed
 in map popups, e.g.:
 
