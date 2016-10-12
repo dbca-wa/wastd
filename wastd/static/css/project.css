@@ -28,7 +28,8 @@ body {padding-top: 54px;}
 
 /* Leaflet popup fixed width */
 .leaflet-popup-content {min-width: 540px; padding: 10px;}
-.leaflet-popup-content-wrapper {max-height: 500px;}
+/*.leaflet-popup-content-wrapper {max-height: 500px;}*/
+
 /* popup image margins */
 .popupimage {margin-top: 15px; margin-bottom: 15px;}
 
