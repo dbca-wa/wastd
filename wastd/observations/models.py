@@ -466,8 +466,8 @@ DAMAGE_AGE_CHOICES = (
     ("fresh", "fresh"), )
 
 # End lookups ----------------------------------------------------------------#
-#
-#
+
+
 # Encounter models -----------------------------------------------------------#
 @python_2_unicode_compatible
 class Encounter(PolymorphicModel, geo_models.Model):
@@ -532,6 +532,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     ENCOUNTER_STRANDING = 'stranding'
     ENCOUNTER_TAGGING = 'tagging'
+    ENCOUNTER_INWATER = 'inwater'
     ENCOUNTER_NEST = 'nest'
     ENCOUNTER_TRACKS = 'tracks'
     ENCOUNTER_TAG = 'tag-management'
