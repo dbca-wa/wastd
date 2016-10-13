@@ -46,7 +46,7 @@ from wastd.observations.models import (
     TemperatureLoggerDeployment)
 from wastd.users.models import User
 
-from synctool.routing import Route as SynctoolRoute
+# from synctool.routing import Route as SynctoolRoute
 
 # # Synctools
 # # http://django-synctool.readthedocs.io/
@@ -268,7 +268,7 @@ class TemperatureLoggerSettingsSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TemperatureLoggerSettings
-        fields = ('logging_interval', 'recording_start_date', )
+        fields = ('logging_interval', 'recording_start', 'tested', )
 
 
 class DispatchRecordSerializer(serializers.ModelSerializer):
