@@ -29,14 +29,18 @@ import slugify
 
 # from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.contrib.gis.db import models as geo_models
+from django.contrib.gis.db.models.query import GeoQuerySet
 from django.core.urlresolvers import reverse
 from django.template import Context, loader
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-from durationfield.db.models.fields.duration import DurationField
+# from durationfield.db.models.fields.duration import DurationField
+from django.db.models.fields import DurationField
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 from polymorphic.models import PolymorphicModel
@@ -467,8 +471,18 @@ DAMAGE_AGE_CHOICES = (
 
 # End lookups ----------------------------------------------------------------#
 
+@receiver(pre_delete)
+def delete_observations(sender, instance, **kwargs):
+    """Delete Observations before deleting an Encounter.
+
+    See https://github.com/django-polymorphic/django-polymorphic/issues/34
+    """
+    if sender == Encounter:
+        [obs.delete() for obs in instance.observation_set.all()]
+
 
 # Encounter models -----------------------------------------------------------#
+
 @python_2_unicode_compatible
 class Encounter(PolymorphicModel, geo_models.Model):
     """The base Encounter class.

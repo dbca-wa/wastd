@@ -1,11 +1,13 @@
 # Django
 # ------------------------------------------------
-django==1.9.10 # rq.filter: >=1.9,<1.10
+django==1.10.2
+#==1.9.10 # rq#filter: >=1.9,<1.10
 django-extensions
 # django==1.10
 # breaking django-1.10:
 # https://github.com/django-polymorphic/django-polymorphic/issues/225 - closed
 # https://github.com/makinacorpus/django-geojson/issues/82
+# https://djaodjin.com/blog/subfieldbase-deprecated-durationfield.blog.html
 
 # Python-PostgreSQL Database Adapter
 # ------------------------------------------------
@@ -43,7 +45,7 @@ django-fsm
 django-fsm-log
 django-fsm-admin
 django-extra-fields
-django-durationfield
+# django-durationfield
 django-synctool
 
 # Views

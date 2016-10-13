@@ -20,7 +20,7 @@ from wastd.observations.views import (
 
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 
-from wastd.api import router  # , sync_route
+from wastd.api import router  # sync_route
 
 # register all adminactions
 actions.add_to_site(site)
