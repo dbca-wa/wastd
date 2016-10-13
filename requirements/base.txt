@@ -6,9 +6,9 @@ django-extensions
 
 # breaking django-1.10:
 # https://github.com/django-polymorphic/django-polymorphic/issues/225 - fixed
-# https://github.com/makinacorpus/django-geojson/issues/82
+# https://github.com/makinacorpus/django-geojson/issues/82 - resolved in 2.9.1
 # https://djaodjin.com/blog/subfieldbase-deprecated-durationfield.blog.html - fixed
-# https://github.com/gadventures/django-fsm-admin/issues/63
+# https://github.com/gadventures/django-fsm-admin/issues/63 - fixed (overwrote mixins.py with get_field() )
 
 # Python-PostgreSQL Database Adapter
 # ------------------------------------------------
@@ -46,7 +46,6 @@ django-fsm
 django-fsm-log
 django-fsm-admin
 django-extra-fields
-# django-durationfield
 django-synctool
 
 # Views
@@ -77,7 +76,7 @@ redis>=2.10.0
 
 # Map
 # ------------------------------------------------
-django-geojson
+django-geojson>=2.9.1
 django-leaflet
 
 
