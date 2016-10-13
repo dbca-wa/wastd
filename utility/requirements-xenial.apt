@@ -22,4 +22,6 @@ libwebp-dev
 
 ##django-extensions
 graphviz-dev
-
+graphviz
+libgraphviz-dev 
+pkg-config

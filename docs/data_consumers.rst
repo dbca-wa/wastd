@@ -112,7 +112,7 @@ the Departmental Single-Sign-On authentication.
 
 First code example::
 
-    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv
 
 This API call will download all AnimalEncounters as flat CSV file.
 Nested relationships (e.g. all Observation subgroups) are represented as prefix
@@ -121,29 +121,34 @@ to column names.
 All stranding encounters (anything that's not "alive and healthy") as web page,
 JSON, or CSV (will download)::
 
-    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health!=alive
-    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health!=alive
-    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health!=alive
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health!=alive
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health!=alive
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health!=alive
 
 All tagging encounters (anything that's exactly "alive and healthy") as web page,
 JSON, or CSV::
 
-    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health=alive
-    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health=alive
-    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health=alive
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health=alive
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health=alive
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health=alive
 
 The known history of a flipper tag::
 
-    https://strandings-test.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA96394
+    https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA96394
 
 All encounters with one animal ("WA96394")::
 
-    https://strandings-test.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA96394
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA96394
+
+All encounters with animals which names start with "WA9" (note the ``__startswith``
+has to be inserted manually)::
+
+    https://strandings.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA9*
 
 All of these filter queries (anything after the "?") also work through the data curation portal::
 
-    https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
-    https://strandings-test.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA96395
+    https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
+    https://strandings.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA96395
 
 Any filter combination, if found useful, can be bookmarked.
 

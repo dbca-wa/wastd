@@ -2240,8 +2240,8 @@ class TemperatureLoggerSettings(Observation):
     logging_interval = DurationField(
         verbose_name=_("Logging interval"),
         blank=True, null=True,
-        help_text=_("The time between individual readings. Format: "
-                    "1d 23:59:59. E.g, 1h is 01:00:00"), )
+        help_text=_("The time between individual readings as python timedelta "
+                    "string. E.g, 1h is `01:00:00`; 1 day is `1 00:00:00`."), )
 
     recording_start = models.DateTimeField(
         verbose_name=_("Recording start"),
