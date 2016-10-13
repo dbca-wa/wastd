@@ -278,6 +278,7 @@ CAUSE_OF_DEATH_CHOICES = NA + (
     ("poisoned", "Poisoned"),
     ("misorientation", "Misorientation on beach"),
     ("natural", "Natural death"),
+    ("euthanasia", "Euthanasia"),
     ("predation", "Predation"),
     )
 
