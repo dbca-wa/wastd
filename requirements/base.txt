@@ -3,15 +3,15 @@
 django==1.10.2
 #==1.9.10 # rq#filter: >=1.9,<1.10
 django-extensions
-# django==1.10
+
 # breaking django-1.10:
-# https://github.com/django-polymorphic/django-polymorphic/issues/225 - closed
+# https://github.com/django-polymorphic/django-polymorphic/issues/225 - fixed
 # https://github.com/makinacorpus/django-geojson/issues/82
-# https://djaodjin.com/blog/subfieldbase-deprecated-durationfield.blog.html
+# https://djaodjin.com/blog/subfieldbase-deprecated-durationfield.blog.html - fixed
 
 # Python-PostgreSQL Database Adapter
 # ------------------------------------------------
-psycopg2==2.6.2
+psycopg2  # ==2.6.2
 
 
 # Configuration
