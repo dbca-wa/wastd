@@ -497,7 +497,18 @@ class AreaType(models.Model):
 class Area(geo_models.Model):
     """An area with a polygonal extent.
 
-    This model accommodates anything with a polygonal extent.
+    This model accommodates anything with a polygonal extent, providing:
+
+    * Area type (to classify different kinds of areas)
+    * Area name must be unique within area type
+    * Polygonal extent of the area
+
+    Some additional fields are populated behind the scenes at each save and
+    serve to cache low churn, high use content:
+
+    * centroid: useful for spatial analysis and location queries
+    * northern extent: useful to sort by latitude
+    * as html: an HTML map popup
     """
     area_type = models.ForeignKey(
         AreaType,
@@ -537,6 +548,7 @@ class Area(geo_models.Model):
         """Class options."""
 
         ordering = ["northern_extent", "name"]
+        unique_together = ("area_type", "name")
         verbose_name = "Area"
         verbose_name_plural = "Areas"
 
@@ -575,6 +587,7 @@ class Area(geo_models.Model):
         return self.__str__()
 
 # End Spatial models ---------------------------------------------------------#
+
 
 @receiver(pre_delete)
 def delete_observations(sender, instance, **kwargs):
