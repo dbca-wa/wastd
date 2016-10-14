@@ -22,6 +22,12 @@ function map_init(map, options) {
         "clickable": true
     }
 
+    var polystyle = {
+        "color": "#0009ff",
+        "weight": 1,
+        "opacity": 0.65
+    }
+
     /* Map a feature to an icon class */
     function getIcon(feature){
         if (feature.properties.leaflet_icon){
@@ -57,15 +63,15 @@ function map_init(map, options) {
             // spin:false
         });
 
-        return L.marker(
-            latlng,
-            {title: feature.properties.leaflet_title, icon: icon}
-        );
+        return L.marker(latlng, {icon: icon});
+        //title: feature.properties.leaflet_title,
 
     }
 
-    function oef (feature, layer) {layer.bindPopup(feature.properties.as_html);}
-
+    function oef (feature, layer) {
+        layer.bindLabel(feature.properties.leaflet_title);
+        layer.bindPopup(feature.properties.as_html);
+    }
 
     /* Data loading */
 
@@ -81,19 +87,15 @@ function map_init(map, options) {
      * The quick and dirty way to dump all (whoa) data into one layer
      * https://github.com/makinacorpus/django-geojson#geojson-layer-view
      */
-    // $.getJSON("{% url 'observation-geojson' %}", function (data) {
-    //     L.geoJson(data, {
-    //         style: function (feature) {return {};},
-    //         onEachFeature: function (feature, layer) {
-    //             layer.bindPopup(feature.properties.as_html)
-    //         }
-    //     }).addTo(map);
-    //});
+    $.getJSON("{% url 'areas-geojson' %}", function (data) {
+        L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
+    });
 
     /*
-     * Option 3: Tiled GeoJSON because we can, baby
-     * Most performant solution, needs filters or clustering
+     * Option 3: Tiled GeoJSON      ...because we can, baby
+     * Most performant solution
      * https://github.com/glenrobertson/leaflet-tilelayer-geojson/
+     * TODO filters or clustering
      * getUnique returns grouping variable (using feature.id disables grouping)
      * ptl overrides default marker with AwesomeMarker
      * oef binds popup to marker

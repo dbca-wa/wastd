@@ -26,6 +26,7 @@
     {% compress css %}
     {% leaflet_css %}
     <link rel="stylesheet" href="{% static 'css/leaflet.awesome-markers.css' %}">
+    <link rel="stylesheet" href="{% static 'css/leaflet.label.css' %}">
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
     {% endcompress %}
     {% endblock %}
@@ -162,6 +163,7 @@
       {% compress js %}
       {% leaflet_js %} <!-- django-leaflet = Leaflet-0.7.7 plus django integration -->
       <script src="{% static 'js/leaflet.awesome-markers.min.js' %}"></script>
+      <script src="{% static 'js/leaflet.label.js' %}"></script>
       <script src="{% static 'js/fontawesome.js' %}"></script>
       <script src="{% static 'js/project.js' %}"></script>
       {% endcompress %}

@@ -523,6 +523,11 @@ class Area(geo_models.Model):
         blank=True, null=True,
         help_text=_("The northernmost latitude serves to sort areas."),)
 
+    as_html = models.TextField(
+        verbose_name=_("HTML representation"),
+        blank=True, null=True, editable=False,
+        help_text=_("The cached HTML representation for display purposes."),)
+
     geom = geo_models.PolygonField(
         srid=4326,
         verbose_name=_("Observed at"),
@@ -537,6 +542,7 @@ class Area(geo_models.Model):
 
     def save(self, *args, **kwargs):
         """Cache centroid and northern extent."""
+        self.as_html = self.get_popup
         if not self.northern_extent:
             self.northern_extent = self.derived_northern_extent
         if not self.centroid:
@@ -546,7 +552,6 @@ class Area(geo_models.Model):
     def __str__(self):
         """The unicode representation."""
         return "{0} {1}".format(self.area_type, self.name, )
-
 
     @property
     def derived_centroid(self):
@@ -558,6 +563,16 @@ class Area(geo_models.Model):
         """The northern extent, derived from the polygon."""
         return self.geom.extent[3] or None
 
+    @property
+    def get_popup(self):
+        """Generate HTML popup content."""
+        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        c = Context({"original": self})
+        return mark_safe(t.render(c))
+
+    @property
+    def leaflet_title(self):
+        return self.__str__()
 
 # End Spatial models ---------------------------------------------------------#
 
@@ -1286,7 +1301,8 @@ class AnimalEncounter(Encounter):
         """Infer the encounter type.
 
         AnimalEncounters are either in water, tagging or stranding encounters.
-        In water captures happen if the habitat is in the list of aquatic habitats.
+        In water captures happen if the habitat is in the list of aquatic
+        habitats.
         For the remaining encountesr, the value of ``health`` is an exact
         delineation between strandings and taggings - strandings are all
         but ``alive``.
@@ -1465,7 +1481,7 @@ class LoggerEncounter(Encounter):
     LOGGER_TYPE_CHOICES = (
         (LOGGER_TYPE_DEFAULT, 'Temperature Logger'),
         ('data-logger', 'Data Logger'),
-        ('ctd-data-logger', 'Conductivity, Temperature, Depth SR data logger'),  # CTD
+        ('ctd-data-logger', 'Conductivity, Temperature, Depth SR data logger'),
         )
 
     LOGGER_STATUS_DEFAULT = 'resighted'
@@ -1541,7 +1557,8 @@ class LoggerEncounter(Encounter):
         * species,
         * name if available (requires "update names" and tag obs)
 
-        The short_name could be non-unique.
+        The short_name could be non-unique for very similar encounters.
+        In this case, a modifier can be added by the user to ensure uniqueness.
         """
         nameparts = [
             self.when.strftime("%Y-%m-%d-%H-%M-%S"),
@@ -1673,8 +1690,8 @@ class TagObservation(Observation):
     The life history of each tag can be reconstructed from the sum of all of its
     TagObservations.
 
-    As TagObservations can sometimes occur without an Observation of an animal, the
-    FK to Observations is optional.
+    As TagObservations can sometimes occur without an Observation of an animal,
+    the FK to Observations is optional.
 
     Flipper Tag Status as per WAMTRAM:
 
@@ -1683,7 +1700,8 @@ class TagObservation(Observation):
     * do not use: 0L, A2, M, M1, N
     * AE = A1
     * P_ED = near flipper edge, might fall off soon
-    * PX = tag re-sighted, but operator could not read tag ID (e.g. turtle running off)
+    * PX = tag re-sighted, but operator could not read tag ID
+      (e.g. turtle running off)
     * RQ = tag re-sighted, tag was "insecure", but no action was recorded
 
     Recaptured tags: Need to record state (open, closed, tip locked or not)

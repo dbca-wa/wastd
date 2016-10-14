@@ -14,7 +14,7 @@ from adminactions import actions
 
 from rest_framework.authtoken import views as drf_authviews
 # from dynamic_rest import routers as dr
-from wastd.observations.models import Encounter
+from wastd.observations.models import Area, Encounter
 from wastd.observations.views import (
     schema_view, update_names, EncounterTableView, AnimalEncounterTableView)
 
@@ -69,6 +69,10 @@ urlpatterns = [
                                  geometry_field="where"),
         name='observation-geojson'),
 
+    url(r'^areas.geojson$',
+        GeoJSONLayerView.as_view(model=Area, properties=('leaflet_title', 'as_html')),
+        name='areas-geojson'),
+
     # Encounter as tiled GeoJSON
     url(r'^data/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
         TiledGeoJSONLayerView.as_view(
@@ -76,6 +80,13 @@ urlpatterns = [
             properties=('as_html', 'leaflet_title', 'leaflet_icon', 'leaflet_colour'),
             geometry_field="where"),
         name='encounter-tiled-geojson'),
+
+    # url(r'^areas/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
+    #     TiledGeoJSONLayerView.as_view(
+    #         model=Area,
+    #         properties=('name',),
+    #         geometry_field="geom"),
+    #     name='area-tiled-geojson'),
 
     # Update animal names for all Encounters
     url(r'^action/update-names/$', update_names, name="update-names"),
