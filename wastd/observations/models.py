@@ -472,6 +472,95 @@ DAMAGE_AGE_CHOICES = (
 
 # End lookups ----------------------------------------------------------------#
 
+
+# Spatial models -------------------------------------------------------------#
+@python_2_unicode_compatible
+class AreaType(models.Model):
+    """Area types."""
+
+    name = models.CharField(
+        max_length=1000,
+        verbose_name=_("Area Type"),
+        help_text=_("A concise term for the area type."),)
+
+    definition = models.TextField(
+        verbose_name=_("Definition"),
+        blank=True, null=True,
+        help_text=_("A comprehensive definition of the area type."), )
+
+    def __str__(self):
+        """The unicode representation."""
+        return self.name
+
+
+@python_2_unicode_compatible
+class Area(geo_models.Model):
+    """An area with a polygonal extent.
+
+    This model accommodates anything with a polygonal extent.
+    """
+    area_type = models.ForeignKey(
+        AreaType,
+        verbose_name=_("Area Type"),
+        related_name="area_type",
+        help_text=_("The area type."))
+
+    name = models.CharField(
+        max_length=1000,
+        verbose_name=_("Area Name"),
+        help_text=_("The name of the area."),)
+
+    centroid = geo_models.PointField(
+        srid=4326,
+        editable=False,
+        blank=True, null=True,
+        verbose_name=_("Centroid"),
+        help_text=_("The centroid is a simplified presentation of the Area."))
+
+    northern_extent = models.FloatField(
+        verbose_name=_("Northernmost latitude"),
+        editable=False,
+        blank=True, null=True,
+        help_text=_("The northernmost latitude serves to sort areas."),)
+
+    geom = geo_models.PolygonField(
+        srid=4326,
+        verbose_name=_("Observed at"),
+        help_text=_("The exact extent of the area as polygon in WGS84."))
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["northern_extent", "name"]
+        verbose_name = "Area"
+        verbose_name_plural = "Areas"
+
+    def save(self, *args, **kwargs):
+        """Cache centroid and northern extent."""
+        if not self.northern_extent:
+            self.northern_extent = self.derived_northern_extent
+        if not self.centroid:
+            self.centroid = self.derived_centroid
+        super(Area, self).save(*args, **kwargs)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "{0} {1}".format(self.area_type, self.name, )
+
+
+    @property
+    def derived_centroid(self):
+        """The centroid, derived from the polygon."""
+        return self.geom.centroid or None
+
+    @property
+    def derived_northern_extent(self):
+        """The northern extent, derived from the polygon."""
+        return self.geom.extent[3] or None
+
+
+# End Spatial models ---------------------------------------------------------#
+
 @receiver(pre_delete)
 def delete_observations(sender, instance, **kwargs):
     """Delete Observations before deleting an Encounter.

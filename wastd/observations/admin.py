@@ -18,6 +18,7 @@ from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
 from wastd.observations.models import (
+    AreaType, Area,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     MediaAttachment, TagObservation, ManagementAction, TrackTallyObservation,
     TurtleMorphometricObservation, TurtleDamageObservation,
@@ -169,6 +170,28 @@ EncounterAdminForm = s2form(Encounter, attrs=S2ATTRS)
 AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
 TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
 LoggerEncounterAdminForm = s2form(LoggerEncounter, attrs=S2ATTRS)
+
+
+@admin.register(AreaType)
+class AreaTypeAdmin(admin.ModelAdmin):
+    list_display = ("name", "definition")
+
+
+@admin.register(Area)
+class AreaAdmin(admin.ModelAdmin):
+    list_display = ("area_type", "name", "northern_extent", "centroid", )
+    list_select_related = True
+    list_filter = ("area_type", )
+    search_fields = ("name", )
+
+    # Leaflet geolocation widget
+    formfield_overrides = {
+        geo_models.PolygonField: {'widget': LeafletWidget(attrs={
+            'map_height': '400px',
+            'map_width': '100%',
+            'display_raw': 'true',
+            'map_srid': 4326, })},
+        }
 
 
 @admin.register(Encounter)
