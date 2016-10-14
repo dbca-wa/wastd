@@ -342,7 +342,7 @@ class EncounterSerializer(serializers.ModelSerializer):
 
         model = Encounter
         name = 'encounter'
-        fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
+        fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
                   'status', 'source', 'source_id', 'encounter_type',
                   'observation_set', )
@@ -371,7 +371,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = AnimalEncounter
-        fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
+        fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
                   'taxon', 'species', 'health', 'sex', 'behaviour',
                   'habitat', 'activity', 'checked_for_injuries',
@@ -389,7 +389,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = TurtleNestEncounter
-        fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
+        fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
                   'nest_age', 'species', 'habitat', 'disturbance',
                   'status', 'source', 'source_id', 'encounter_type',

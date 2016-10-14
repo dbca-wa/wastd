@@ -18,7 +18,7 @@ from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
 from wastd.observations.models import (
-    Area,
+    Area, SiteVisit,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     MediaAttachment, TagObservation, ManagementAction, TrackTallyObservation,
     TurtleMorphometricObservation, TurtleDamageObservation,
@@ -166,10 +166,17 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
 
 # Select2Widget forms
 S2ATTRS = {'width': '350px'}
+SiteVisitForm = s2form(SiteVisit, attrs=S2ATTRS)
 EncounterAdminForm = s2form(Encounter, attrs=S2ATTRS)
 AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
 TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
 LoggerEncounterAdminForm = s2form(LoggerEncounter, attrs=S2ATTRS)
+
+
+@admin.register(SiteVisit)
+class SiteVisitAdmin(admin.ModelAdmin):
+    form = SiteVisitForm
+    list_display = ('site', 'site_entered_on', 'site_left_on')
 
 
 @admin.register(Area)
@@ -196,8 +203,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     """
 
     # Grappelli User lookup overrides select2 select widget
-    raw_id_fields = ('observer', 'reporter', )
-    autocomplete_lookup_fields = {'fk': ['observer', 'reporter', ], }
+    raw_id_fields = ('site_visit', 'observer', 'reporter')
+    autocomplete_lookup_fields = {'fk': ['site_visit', 'observer', 'reporter']}
     change_list_filter_template = "admin/filter_listing.html"
 
     # select2 widgets for searchable dropdowns
@@ -216,11 +223,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         }
 
     # Filters for change_list
-    list_filter = ('status', 'observer', 'reporter',
+    list_filter = ('site_visit', 'status', 'observer', 'reporter',
                    'location_accuracy', 'encounter_type')
 
     # Columns for change_list, allow re-use and inserting fields
-    FIRST_COLS = ('when', 'latitude', 'longitude', 'location_accuracy', 'name')
+    FIRST_COLS = ('site_visit', 'when', 'latitude', 'longitude', 'location_accuracy', 'name')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
                  'status', 'encounter_type')
     list_display = FIRST_COLS + LAST_COLS
@@ -241,7 +248,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 
     # Change_view form layout
     fieldsets = (('Encounter', {'fields': (
-        'where', 'location_accuracy', 'when',
+        'site_visit', 'where', 'location_accuracy', 'when',
         'observer', 'reporter', 'source', 'source_id', )}),)
 
     # Change_view inlines

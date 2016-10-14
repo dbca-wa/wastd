@@ -583,9 +583,32 @@ class Area(geo_models.Model):
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
-# End Spatial models ---------------------------------------------------------#
+
+@python_2_unicode_compatible
+class SiteVisit(geo_models.Model):
+    """A visit to one site by a team of field workers collecting data."""
+
+    site = models.ForeignKey(
+        Area,
+        verbose_name=_("Site"),
+        help_text=_("The visited site is an Area of type 'Site'."), )
+    site_entered_on = models.DateTimeField(
+        verbose_name=_("Site entered on"),
+        help_text=_("The datetime of entering the site, shown as local time "
+                    "(no daylight savings), stored as UTC."))
+    site_left_on = models.DateTimeField(
+        verbose_name=_("Site left on"),
+        help_text=_("The datetime of leaving the site, shown as local time "
+                    "(no daylight savings), stored as UTC."))
+    team = models.ManyToManyField(User, related_name="site_visit_team")
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Visit to {0} on {1}".format(self.site.name,
+                                            self.site_entered_on.istoformat())
 
 
+# Utilities ------------------------------------------------------------------#
 @receiver(pre_delete)
 def delete_observations(sender, instance, **kwargs):
     """Delete Observations before deleting an Encounter.
@@ -698,6 +721,12 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ENCOUNTER_OTHER: 'purple'
         }
 
+    site_visit = models.ForeignKey(
+        SiteVisit,
+        null=True, blank=True,
+        verbose_name=_("Site Visit"),
+        help_text=_("The Site Visit during which this encounter happened."),)
+
     source = models.CharField(
         max_length=300,
         verbose_name=_("Data Source"),
@@ -718,15 +747,15 @@ class Encounter(PolymorphicModel, geo_models.Model):
         choices=STATUS_CHOICES,
         verbose_name=_("QA Status"))
 
-    when = models.DateTimeField(
-        verbose_name=_("Observed on"),
-        help_text=_("The observation datetime, shown as local time "
-                    "(no daylight savings), stored as UTC."))
-
     where = geo_models.PointField(
         srid=4326,
         verbose_name=_("Observed at"),
         help_text=_("The observation location as point in WGS84"))
+
+    when = models.DateTimeField(
+        verbose_name=_("Observed on"),
+        help_text=_("The observation datetime, shown as local time "
+                    "(no daylight savings), stored as UTC."))
 
     location_accuracy = models.CharField(
         max_length=300,
