@@ -18,7 +18,7 @@ from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
 from wastd.observations.models import (
-    AreaType, Area,
+    Area,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     MediaAttachment, TagObservation, ManagementAction, TrackTallyObservation,
     TurtleMorphometricObservation, TurtleDamageObservation,
@@ -172,15 +172,9 @@ TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
 LoggerEncounterAdminForm = s2form(LoggerEncounter, attrs=S2ATTRS)
 
 
-@admin.register(AreaType)
-class AreaTypeAdmin(admin.ModelAdmin):
-    list_display = ("name", "definition")
-
-
 @admin.register(Area)
 class AreaAdmin(admin.ModelAdmin):
     list_display = ("area_type", "name", "northern_extent", "centroid", )
-    list_select_related = True
     list_filter = ("area_type", )
     search_fields = ("name", )
 

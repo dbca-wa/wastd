@@ -38,7 +38,7 @@ from rest_framework.authentication import (
     SessionAuthentication, BasicAuthentication, TokenAuthentication)
 
 from wastd.observations.models import (
-    AreaType, Area,
+    Area,
     Encounter, AnimalEncounter, TurtleNestEncounter, LoggerEncounter,
     Observation, MediaAttachment, TagObservation,
     TurtleMorphometricObservation, TurtleDamageObservation, ManagementAction,
@@ -299,20 +299,8 @@ class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
                   )
 
 
-class AreaTypeSerializer(serializers.ModelSerializer):
-    """AreaType serializer."""
-
-    class Meta:
-        """Class options."""
-
-        model = AreaType
-        fields = ("name", "definition", )
-
-
 class AreaSerializer(serializers.ModelSerializer):
     """Area serializer."""
-
-    area_type = AreaTypeSerializer(many=False, read_only=False)
 
     class Meta:
         """Class options."""
@@ -430,13 +418,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-class AreaTypeViewSet(viewsets.ModelViewSet):
-    """AreaType view set."""
-
-    queryset = AreaType.objects.all()
-    serializer_class = AreaTypeSerializer
-
-
 class AreaViewSet(viewsets.ModelViewSet):
     """Area view set."""
 
@@ -514,7 +495,6 @@ class TagObservationViewSet(viewsets.ModelViewSet):
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter(schema_title='WAStD API')
 # router.register(r'users', UserViewSet)
-router.register(r'areatypes', AreaTypeViewSet)
 router.register(r'areas', AreaViewSet)
 router.register(r'encounters', EncounterViewSet)
 router.register(r'animal-encounters', AnimalEncounterViewSet)

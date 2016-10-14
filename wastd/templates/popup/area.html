@@ -2,14 +2,14 @@
 {% with original as o %}
 <!-- Heading -->
 <div class="row">
-    <h5>{% block title %}{{ o.area_type }} {{ o.name }}{% endblock %}
-
-    <a href="{{ o.absolute_admin_url }}"
-        class="btn btn-primary btn-sm"
-        target="_" titile="Edit Area in new tab">
-        <i class="fa fa-fw fa-pencil"></i>
-        Edit
-    </a>
+    <h5>{% block title %}{{ o }}{% endblock %}
+    <span class="pull-xs-right">
+        <a href="{{ o.absolute_admin_url }}"
+            class="btn btn-primary btn-sm"
+            target="_" titile="Edit Area in new tab">
+            <i class="fa fa-fw fa-pencil"></i>
+            Edit
+        </a>
     </span>
     </h5>
 </div>

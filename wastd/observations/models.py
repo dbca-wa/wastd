@@ -475,25 +475,6 @@ DAMAGE_AGE_CHOICES = (
 
 # Spatial models -------------------------------------------------------------#
 @python_2_unicode_compatible
-class AreaType(models.Model):
-    """Area types."""
-
-    name = models.CharField(
-        max_length=1000,
-        verbose_name=_("Area Type"),
-        help_text=_("A concise term for the area type."),)
-
-    definition = models.TextField(
-        verbose_name=_("Definition"),
-        blank=True, null=True,
-        help_text=_("A comprehensive definition of the area type."), )
-
-    def __str__(self):
-        """The unicode representation."""
-        return self.name
-
-
-@python_2_unicode_compatible
 class Area(geo_models.Model):
     """An area with a polygonal extent.
 
@@ -510,11 +491,21 @@ class Area(geo_models.Model):
     * northern extent: useful to sort by latitude
     * as html: an HTML map popup
     """
-    area_type = models.ForeignKey(
-        AreaType,
-        verbose_name=_("Area Type"),
-        related_name="area_type",
-        help_text=_("The area type."))
+    AREATYPE_MPA = 'MPA'
+    AREATYPE_LOCALITY = 'Locality'
+    AREATYPE_SITE = 'Site'
+
+    AREATYPE_CHOICES = (
+        (AREATYPE_MPA, "MPA"),
+        (AREATYPE_LOCALITY, "Locality"),
+        (AREATYPE_SITE, "Site"), )
+
+    area_type = models.CharField(
+        max_length=300,
+        verbose_name=_("Area type"),
+        default=AREATYPE_SITE,
+        choices=AREATYPE_CHOICES,
+        help_text=_("The area type."), )
 
     name = models.CharField(
         max_length=1000,
@@ -585,6 +576,12 @@ class Area(geo_models.Model):
     @property
     def leaflet_title(self):
         return self.__str__()
+
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 # End Spatial models ---------------------------------------------------------#
 
