@@ -583,6 +583,10 @@ class Area(geo_models.Model):
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    @property
+    def all_encounters_url(self):
+        return '/admin/observations/encounter/?where={0}'.format(self.pk)
+
 
 @python_2_unicode_compatible
 class SiteVisit(geo_models.Model):
