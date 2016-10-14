@@ -538,7 +538,7 @@ class Area(geo_models.Model):
     class Meta:
         """Class options."""
 
-        ordering = ["northern_extent", "name"]
+        ordering = ["-northern_extent", "name"]
         unique_together = ("area_type", "name")
         verbose_name = "Area"
         verbose_name_plural = "Areas"

@@ -24,7 +24,7 @@ from wastd.observations.models import (
     TurtleMorphometricObservation, TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
-
+from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
 TokenAdmin.raw_id_fields = ('user',)
@@ -223,7 +223,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         }
 
     # Filters for change_list
-    list_filter = ('site_visit', 'status', 'observer', 'reporter',
+    list_filter = (LocationListFilter,
+                   'site_visit', 'status', 'observer', 'reporter',
                    'location_accuracy', 'encounter_type')
 
     # Columns for change_list, allow re-use and inserting fields
@@ -233,7 +234,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     list_display = FIRST_COLS + LAST_COLS
 
     # Performance
-    # https://docs.djangoproject.com/en/1.10/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_select_related
+    # https://docs.djangoproject.com/en/1.10/ref/contrib/admin/
+    # django.contrib.admin.ModelAdmin.list_select_related
     list_select_related = True
 
     # Layout: save buttons also on top - overridden by Grapelli admin skin
