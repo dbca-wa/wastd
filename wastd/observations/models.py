@@ -587,6 +587,10 @@ class Area(geo_models.Model):
     def all_encounters_url(self):
         return '/admin/observations/encounter/?where={0}'.format(self.pk)
 
+    @property
+    def animal_encounters_url(self):
+        return '/admin/observations/animalencounter/?where={0}'.format(self.pk)
+
 
 @python_2_unicode_compatible
 class SiteVisit(geo_models.Model):
