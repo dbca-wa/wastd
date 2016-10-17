@@ -24,7 +24,8 @@ unipath
 
 # admin
 # ------------------------------------------------
-django-adminactions
+# django-adminactions # pending https://github.com/saxix/django-adminactions/pull/104
+-e git+https://github.com/florianm/django-adminactions.git#egg=django-adminactions
 django-grappelli
 
 
