@@ -12,6 +12,9 @@ WA Stranding Database
 .. image:: https://coveralls.io/repos/github/florianm/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/florianm/wastd?branch=master
      :alt: Test coverage
+.. image:: https://landscape.io/github/parksandwildlife/wastd/master/landscape.svg?style=flat
+     :target: https://landscape.io/github/parksandwildlife/wastd/master
+     :alt: Code Health
 .. image:: https://requires.io/github/parksandwildlife/wastd/requirements.svg?branch=master
      :target: https://requires.io/github/parksandwildlife/wastd/requirements/?branch=master
      :alt: Requirements Status

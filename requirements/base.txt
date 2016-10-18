@@ -24,10 +24,10 @@ unipath
 
 # admin
 # ------------------------------------------------
-# django-adminactions # pending https://github.com/saxix/django-adminactions/pull/104
--e git+https://github.com/florianm/django-adminactions.git#egg=django-adminactions
-django-grappelli
-
+# django-adminactions>=1.2
+-e git+https://github.com/saxix/django-adminactions.git@florianm-develop#egg=django-adminactions
+#django-grappelli
+-e git+https://github.com/sehmaschine/django-grappelli.git@stable/2.9.x#egg=django-grappelli
 
 # Forms
 # ------------------------------------------------
