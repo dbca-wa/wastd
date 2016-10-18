@@ -1,7 +1,6 @@
 # Django
 # ------------------------------------------------
 django==1.10.2
-#==1.9.10 # rq#filter: >=1.9,<1.10
 django-extensions
 
 # breaking django-1.10:
@@ -9,6 +8,7 @@ django-extensions
 # https://github.com/makinacorpus/django-geojson/issues/82 - resolved in 2.9.1
 # https://djaodjin.com/blog/subfieldbase-deprecated-durationfield.blog.html - fixed
 # https://github.com/gadventures/django-fsm-admin/issues/63 - fixed (overwrote mixins.py with get_field() )
+# https://github.com/saxix/django-adminactions/pull/104 - fixed by using own PR
 
 # Python-PostgreSQL Database Adapter
 # ------------------------------------------------
@@ -32,7 +32,7 @@ unipath
 # Forms
 # ------------------------------------------------
 django-braces==1.9.0
-django-crispy-forms==1.6.0
+django-crispy-forms==1.6.1
 django-floppyforms
 django-easy-select2==1.3.3
 django_select2
@@ -40,7 +40,7 @@ django_select2
 
 # Models
 # ------------------------------------------------
-django-polymorphic==1.0.1
+django-polymorphic==1.0.2
 django-model-utils
 django-reversion
 django-fsm
@@ -112,14 +112,14 @@ coreapi-cli
 # ------------------------------------------------
 whitenoise==3.2.2
 django_compressor==2.1
-boto==2.42.0
+boto==2.43.0
 django-storages-redux==1.3.2
 dj-static
 
 
 # Auth
 # ------------------------------------------------
-django-allauth==0.27.0
+django-allauth==0.28.0
 https://static.dpaw.wa.gov.au/static/py/dpaw-utils/dist/dpaw-utils-0.3a11.tar.gz
 
 
