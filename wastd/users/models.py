@@ -28,7 +28,9 @@ class User(AbstractUser):
     phone = PhoneNumberField(
         verbose_name=_('Phone Number'),
         blank=True, null=True,
-        help_text=_('The primary contact number.'), )
+        help_text=_('The primary contact number including national prefix, '
+                    'e.g. +61 4 12 345 678. '
+                    'Spaces are accepted but will be removed on saving.'), )
 
     def __str__(self):
         """The unicode representation."""

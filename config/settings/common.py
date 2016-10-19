@@ -375,7 +375,7 @@ LEAFLET_CONFIG = {
          '//map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
          {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
-       	  'minZoom': 1,
+          'minZoom': 1,
           'maxZoom': 8,
           'format': 'jpg',
           'time': '',
@@ -386,3 +386,6 @@ LEAFLET_CONFIG = {
 
 # Synctool
 SYNCTOOL_API_TOKEN = env('SYNCTOOL_API_TOKEN', default='TOKEN')
+
+# Phone number
+PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'

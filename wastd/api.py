@@ -66,7 +66,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = ('username', 'name', 'email', 'first_name', 'last_name')
+        fields = ('username', 'name', 'phone', 'email', 'first_name', 'last_name')
 
 
 class ObservationSerializer(serializers.ModelSerializer):
