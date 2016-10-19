@@ -48,6 +48,7 @@ django-fsm-log
 django-fsm-admin
 django-extra-fields
 django-synctool
+django-phonenumber-field
 
 # Views
 # ------------------------------------------------

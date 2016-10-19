@@ -57,6 +57,7 @@ THIRD_PARTY_APPS = (
     'dynamic_rest',             # Parameterised API queries
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
+    'phonenumber_field',        # Phone number field
     'leaflet',                  # for djgeojson
     'django_fsm',               # Transitions
     'django_fsm_log',           # Transition audit logs

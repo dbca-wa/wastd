@@ -11,6 +11,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -24,6 +25,10 @@ class User(AbstractUser):
 
     # First Name and Last Name do not cover name patterns around the globe.
     name = models.CharField(_('Name of User'), blank=True, max_length=255)
+    phone = PhoneNumberField(
+        verbose_name=_('Phone Number'),
+        blank=True, null=True,
+        help_text=_('The primary contact number.'), )
 
     def __str__(self):
         """The unicode representation."""
