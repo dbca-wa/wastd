@@ -330,15 +330,15 @@ LEAFLET_CONFIG = {
         },
 
     'TILES': [
-        ('Esri WorldImagery',
+        ('Aerial Image',
          '//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
          {'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'}),
 
-        ('OpenStreetMap',
+        ('Place names',
          'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
          {'attribution': '&copy; <a href="//www.openstreetmap.org/copyright">OpenStreetMap</a>'}),
 
-        ('Stamen_Watercolor',
+        ('Explorer mode',
          '//stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}',
          {'attribution': 'Map tiles by <a href="//stamen.com">Stamen Design</a>, <a href="//creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           'subdomains': 'abcd',
@@ -346,12 +346,12 @@ LEAFLET_CONFIG = {
           'maxZoom': 16,
           'ext': 'png'}),
 
-        ('Esri OceanBasemap',
+        ('Bathymetry',
          '//server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}',
          {'attribution': 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
           'maxZoom': 13,}),
 
-        ('NASA GIBS ModisTerraTrueColorCR',
+        ('Real time true colour',
          '//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
          {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
@@ -361,7 +361,7 @@ LEAFLET_CONFIG = {
           'time': '',
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
 
-        ('NASA GIBS ModisTerraBands367CR',
+        ('Real time false colour',
          '//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_Bands367/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
          {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
@@ -371,7 +371,7 @@ LEAFLET_CONFIG = {
           'time': '',
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
 
-        ('NASA GIBS ViirsEarthAtNight2012',
+        ('Light pollution',
          '//map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
          {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
