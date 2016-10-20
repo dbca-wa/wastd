@@ -56,7 +56,7 @@ django-tables2
 
 # Images
 # ------------------------------------------------
-Pillow==3.4.1
+Pillow==3.4.2
 
 
 # Unicode slugification
