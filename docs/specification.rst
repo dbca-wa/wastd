@@ -71,6 +71,7 @@ The solution architecture must consider the following contraints:
 Use case: Ministerial inquiry, annual report, strategic advice
 --------------------------------------------------------------
 This section discusses requirements of each role involved in
+
 * the response to a ministerial inquiry,
 * annual reporting for a steering committee,
 * strategic advice to a policy officer.
@@ -174,11 +175,11 @@ By doing so, the data entry operator increases **accessibility** and **completen
 
 * The electronic data entry form should follow the data sheets to facilitate data entry.
 * There should be clear, unambiguous instructions on
-`data entry <http://wastd.readthedocs.io/data_curators.html>`_.
+  `data entry <http://wastd.readthedocs.io/data_curators.html>`_.
 * Electronic data entry forms should provide input validation for formats, not content.
 * The data portal should
-`accept all formally correct data <http://wastd.readthedocs.io/developers.html#data-model>`_,
-but allow to identify and fix impossible or questionable records.
+  `accept all formally correct data <http://wastd.readthedocs.io/developers.html#data-model>`_,
+  but allow to identify and fix impossible or questionable records.
 
 Data collector: Ranger, regional staff
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -204,11 +205,11 @@ Members of the general public reporting a stranding need to know how to react -
 whom to call, which data to collect (e.g. geo-referenced phone pictures).
 
 * Primary reporters would be pleased to hear how their actions contributed to an
-increased understanding, and ultimately the conservation of the stranded species.
-This could happen in the form of a "thank you" email with an excerpt of the final
-stranding record.
-Example: TOs returning tags after harvesting a tagged turtle usually get sent
-a reward like branded t-shirts or baseball caps by Marine Science to show their appreciation.
+  increased understanding, and ultimately the conservation of the stranded species.
+  This could happen in the form of a "thank you" email with an excerpt of the
+  final stranding record.
+  Example: TOs returning tags after harvesting a tagged turtle usually get sent
+  a reward like branded t-shirts or baseball caps by Marine Science to show their appreciation.
 
 Lessons learnt
 ==============
