@@ -92,8 +92,8 @@ WAStD minimal record and identifier
 * **Observed at** refers to the location of the encounter with the animal.
 * If written coordinates are supplied, click anywhere on map and enter given
   coordinates into the text field underneath the map widget.
-  If locality names are supplied, look them up (e.g on Google Maps, or pick
-  "OpenStreetMap" from the map widget's layer selector) and pick an
+  If locality names are supplied, look them up (e.g. pick
+  "Place names" from the map widget's layer selector) and pick an
   approximate location on the location widget.
 * Location precision: give your best estimate for the error inherent to the source of the location.
 * Observer, reporter: Create users (if not existing) for observer and reporter.
