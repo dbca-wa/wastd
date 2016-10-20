@@ -125,7 +125,7 @@ Insight could be required as
   providing a fully transparent data lineage from datasheet to generated insight.
 * Insight should be **reproducible**, in that other people with limited
   technical or statistical expertise can
-  `reproduce the analysis <http://rpubs.com/florian_mayer/wastd-mark`_ from the
+  `reproduce the analysis <http://rpubs.com/florian_mayer/wastd-mark>`_ from the
   archived inputs.
 
 Analyst
@@ -134,18 +134,18 @@ The analyst's role is to bridge the gap between raw data and non-trivial questio
 through advanced statistical analysis and visualisation.
 
 * To do so, the analyst needs `universal access <https://strandings.dpaw.wa.gov.au/api/1/>`_
-to machine-readable, trustworthy data.
+  to machine-readable, trustworthy data.
 * The data needs to be complete, consistent and correct.
-The analyst needs to hit the ground running with
-`working examples <https://strandings.dpaw.wa.gov.au/users/FlorianM/>`_
-of loading the data from the machine-readable access point into the most common
-analytical frameworks.
+  The analyst needs to hit the ground running with
+  `working examples <https://strandings.dpaw.wa.gov.au/users/FlorianM/>`_
+  of loading the data from the machine-readable access point into the most common
+  analytical frameworks.
 * There should be `sufficient documentation <http://wastd.readthedocs.io/data_consumers.html>`_
-to allow statistically trained analysts to efficiently consume data without
-technical knowledge of the system they are stored in.
+  to allow statistically trained analysts to efficiently consume data without
+  technical knowledge of the system they are stored in.
 * Access needs to be following standard protocols and formats, entirely independent of
-both the systems it is stored in, as well as independent of the software packages
-it is analysed with.
+  both the systems it is stored in, as well as independent of the software packages
+  it is analysed with.
 
 Data curator 3: Subject matter expert
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
