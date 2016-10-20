@@ -1,0 +1,9 @@
+{% load observations %}
+{% with original as o %}
+<div class="row">
+    <i class="fa fa-fw fa-bolt"></i>
+   {{ o.tally }} nests
+   of {{ o.get_species_display }}
+   showing {{ o.get_disturbance_cause_display }}
+</div>
+{% endwith %}

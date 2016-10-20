@@ -406,12 +406,16 @@ HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                  "reef-coral", "reef-crest-front-slope", "reef-flat",
                  "reef-seagrass-flats", "reef-rocky", "open-water")
 
+NEST_AGE_DEFAULT = "new-track-nesting-crawl"
 NEST_AGE_CHOICES = (
-    ("false-crawl", "False crawl"),
-    ("nesting-turtle-present", "New nest (turtle present)"),
-    ("fresh", "New nest (turtle absent)"),
-    ("predated", "Predated nest"),
-    ("hatched", "Hatched nest"), )
+    ("old-track", "old track"),
+    ("new-track", "new track"),
+    ("new-track-false-crawl", "new track false crawl"),
+    (NEST_AGE_DEFAULT, "new track nesting crawl"),
+    ("nesting-turtle-present", "new nest turtle present"),
+    ("fresh", "new nest turtle absent"),
+    ("predated", "predated nest"),
+    ("hatched", "hatched nest"), )
 
 OBSERVATION_CHOICES = (
     (NA_VALUE, "NA"),
@@ -470,6 +474,24 @@ DAMAGE_AGE_CHOICES = (
     ("healed-partially", "partially healed"),
     ("fresh", "fresh"), )
 
+NEST_DAMAGE_DEFAULT = "fox-predation"
+NEST_DAMAGE_CHOICES = (
+    (NEST_DAMAGE_DEFAULT, "Fox predation"),
+    ("dingo-predation", "Dingo predation"),
+    ("dog-predation", "Dog predation"),
+    ("goanna-predation", "Goanna predation"),
+    ("croc-predation", "Croc predation"),
+    ("bird-predation", "Bird predation"),
+    ("crab-predation", "Crab predation"),
+    ("turtle-disturbance", "Turtle disturbance"),
+    ("cyclone-disturbance", "Cyclone disturbance"),
+    ("tidal-disturbance", "Tidal disturbance"),
+    ("vehicle-damage", "Vehicle damage"),
+    ("harvest", "Harvest"),
+    ("research", "Research"),
+    ("poaching", "Poaching"),
+    ("other", "Other (see comments)"),
+    )
 # End lookups ----------------------------------------------------------------#
 
 
@@ -2072,92 +2094,100 @@ class TurtleDamageObservation(Observation):
 class TrackTallyObservation(Observation):
     """Observation of turtle track tallies and signs of predation."""
 
-    false_crawls_caretta_caretta = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Loggerhead"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of Caretta caretta (Loggerhead turtle)."),)
-
-    false_crawls_chelonia_mydas = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Green"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of "
-                    "Chelonia mydas (Green turtle)."),)
-
-    false_crawls_eretmochelys_imbricata = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Hawksbill"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of "
-                    "Eretmochelys imbricata (Hawksbill turtle)."),)
-
-    false_crawls_natator_depressus = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Flatback"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of "
-                    "Natator depressus (Flatback turtle)."),)
-
-    false_crawls_lepidochelys_olivacea = models.PositiveIntegerField(
-        verbose_name=_("False Crawls Olive ridley"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of "
-                    "Lepidochelys olivacea (Olive ridley turtle)."),)
-
-    false_crawls_na = models.PositiveIntegerField(
-        verbose_name=_("False Crawls of unknown species"),
-        blank=True, null=True,
-        help_text=_("The tally of false crawls of unknown species."),)
-
-    fox_predation = models.CharField(
+    species = models.CharField(
         max_length=300,
-        verbose_name=_("Fox predation"),
-        choices=OBSERVATION_CHOICES,
-        default=NA_VALUE,
-        help_text=_(""),)
+        verbose_name=_("Species"),
+        choices=TURTLE_SPECIES_CHOICES,
+        default="unidentified-turtle",
+        help_text=_("The species of the animal causing the track."), )
 
-    dog_predation = models.CharField(
+    track_type = models.CharField(
         max_length=300,
-        verbose_name=_("Dog predation"),
-        choices=OBSERVATION_CHOICES,
-        default=NA_VALUE,
-        help_text=_(""),)
+        verbose_name=_("Track type"),
+        default=NEST_AGE_DEFAULT,
+        choices=NEST_AGE_CHOICES,
+        help_text=_("The nest age and type."), )
 
-    dingo_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Dingo predation"),
-        choices=OBSERVATION_CHOICES,
-        default=NA_VALUE,
-        help_text=_(""),)
+    tally = models.PositiveIntegerField(
+        verbose_name=_("Tally"),
+        blank=True, null=True,
+        help_text=_("The sum of encountered tracks."),)
 
-    croc_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Crocodile predation"),
-        choices=OBSERVATION_CHOICES,
-        default=NA_VALUE,
-        help_text=_(""),)
 
-    goanna_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Goanna predation"),
-        choices=OBSERVATION_CHOICES,
-        default=NA_VALUE,
-        help_text=_(""),)
-
-    bird_predation = models.CharField(
-        max_length=300,
-        verbose_name=_("Bird predation"),
-        choices=OBSERVATION_CHOICES,
-        default=NA_VALUE,
-        help_text=_(""),)
+    # fox_predation = models.CharField(
+    #     max_length=300,
+    #     verbose_name=_("Fox predation"),
+    #     choices=OBSERVATION_CHOICES,
+    #     default=NA_VALUE,
+    #     help_text=_(""),)
+    #
+    # dog_predation = models.CharField(
+    #     max_length=300,
+    #     verbose_name=_("Dog predation"),
+    #     choices=OBSERVATION_CHOICES,
+    #     default=NA_VALUE,
+    #     help_text=_(""),)
+    #
+    # dingo_predation = models.CharField(
+    #     max_length=300,
+    #     verbose_name=_("Dingo predation"),
+    #     choices=OBSERVATION_CHOICES,
+    #     default=NA_VALUE,
+    #     help_text=_(""),)
+    #
+    # croc_predation = models.CharField(
+    #     max_length=300,
+    #     verbose_name=_("Crocodile predation"),
+    #     choices=OBSERVATION_CHOICES,
+    #     default=NA_VALUE,
+    #     help_text=_(""),)
+    #
+    # goanna_predation = models.CharField(
+    #     max_length=300,
+    #     verbose_name=_("Goanna predation"),
+    #     choices=OBSERVATION_CHOICES,
+    #     default=NA_VALUE,
+    #     help_text=_(""),)
+    #
+    # bird_predation = models.CharField(
+    #     max_length=300,
+    #     verbose_name=_("Bird predation"),
+    #     choices=OBSERVATION_CHOICES,
+    #     default=NA_VALUE,
+    #     help_text=_(""),)
 
     def __str__(self):
         """The unicode representation."""
-        t1 = ('TrackTally: {0} LH, {1} GN, {2} HB, {3} FB, {4} NA')
-        return t1.format(
-            self.false_crawls_caretta_caretta,
-            self.false_crawls_chelonia_mydas,
-            self.false_crawls_eretmochelys_imbricata,
-            self.false_crawls_natator_depressus,
-            self.false_crawls_na,
-            )
+        t1 = ('TrackTally: {0} {1}s of {2}')
+        return t1.format(self.tally, self.track_type, self.species)
+
+
+@python_2_unicode_compatible
+class TurtleNestDisturbanceTallyObservation(Observation):
+    """Observation of turtle track tallies and signs of predation."""
+
+    species = models.CharField(
+        max_length=300,
+        verbose_name=_("Species"),
+        choices=TURTLE_SPECIES_CHOICES,
+        default="unidentified-turtle",
+        help_text=_("The species of the nesting animal."), )
+
+    disturbance_cause = models.CharField(
+        max_length=300,
+        verbose_name=_("Disturbance cause"),
+        choices=NEST_DAMAGE_CHOICES,
+        help_text=_("The cause of the disturbance."), )
+
+    tally = models.PositiveIntegerField(
+        verbose_name=_("Tally"),
+        blank=True, null=True,
+        help_text=_("The sum of damaged nests."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        t1 = ('Nest Damage Tally: {0} nests of {1} showing {2}')
+        return t1.format(self.tally, self.species, self.disturbance_cause)
 
 
 @python_2_unicode_compatible
@@ -2331,24 +2361,6 @@ class TurtleNestDisturbanceObservation(Observation):
     * Environmental disturbance (cyclones, tides)
     * Anthropogenic disturbance (vehicle damage, poaching, research, harvest)
     """
-
-    NEST_DAMAGE_CHOICES = (
-        ("fox-predation", "Fox predation"),
-        ("dingo-predation", "Dingo predation"),
-        ("dog-predation", "Dog predation"),
-        ("goanna-predation", "Goanna predation"),
-        ("croc-predation", "Croc predation"),
-        ("bird-predation", "Bird predation"),
-        ("crab-predation", "Crab predation"),
-        ("turtle-disturbance", "Turtle disturbance"),
-        ("cyclone-disturbance", "Cyclone disturbance"),
-        ("tidal-disturbance", "Tidal disturbance"),
-        ("vehicle-damage", "Vehicle damage"),
-        ("harvest", "Harvest"),
-        ("research", "Research"),
-        ("poaching", "Poaching"),
-        ("other", "Other (see comments)"),
-        )
 
     NEST_VIABILITY_CHOICES = (
         ("nest-left-viable", "Nest left viable"),

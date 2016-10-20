@@ -20,7 +20,8 @@ from reversion.admin import VersionAdmin
 from wastd.observations.models import (
     Area, SiteVisit,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
-    MediaAttachment, TagObservation, ManagementAction, TrackTallyObservation,
+    MediaAttachment, TagObservation, ManagementAction,
+    TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
     TurtleMorphometricObservation, TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
@@ -80,6 +81,14 @@ class TrackTallyObservationInline(admin.TabularInline):
 
     extra = 0
     model = TrackTallyObservation
+    classes = ('grp-collapse grp-open',)
+
+
+class TurtleNestDisturbanceTallyObservationInline(admin.TabularInline):
+    """Admin for TurtleNestDisturbanceTallyObservation."""
+
+    extra = 0
+    model = TurtleNestDisturbanceTallyObservation
     classes = ('grp-collapse grp-open',)
 
 
@@ -260,6 +269,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         TurtleDamageObservationInline,
         TurtleMorphometricObservationInline,
         TrackTallyObservationInline,
+        TurtleNestDisturbanceTallyObservationInline,
         ManagementActionInline,
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,

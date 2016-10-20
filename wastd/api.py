@@ -43,7 +43,8 @@ from wastd.observations.models import (
     Observation, MediaAttachment, TagObservation,
     TurtleMorphometricObservation, TurtleDamageObservation, ManagementAction,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
-    TrackTallyObservation, TemperatureLoggerSettings, DispatchRecord,
+    TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
+    TemperatureLoggerSettings, DispatchRecord,
     TemperatureLoggerDeployment)
 from wastd.users.models import User
 
@@ -113,6 +114,9 @@ class ObservationSerializer(serializers.ModelSerializer):
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, TrackTallyObservation):
             return TrackTallyObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TurtleNestDisturbanceTallyObservation):
+            return TurtleNestDisturbanceTallyObservationSerializer(
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, TagObservation):
             return TagObservationSerializer(
@@ -249,17 +253,23 @@ class TrackTallyObservationSerializer(serializers.ModelSerializer):
 
         model = TrackTallyObservation
         fields = ('observation_name',
-                  'false_crawls_caretta_caretta',
-                  'false_crawls_chelonia_mydas',
-                  'false_crawls_eretmochelys_imbricata',
-                  'false_crawls_natator_depressus',
-                  'false_crawls_lepidochelys_olivacea',
-                  'false_crawls_na',
-                  'fox_predation',
-                  'dog_predation',
-                  'dingo_predation',
-                  'goanna_predation',
-                  'bird_predation', )
+                  'species',
+                  'track_type',
+                  'tally',)
+
+
+class TurtleNestDisturbanceTallyObservationSerializer(serializers.ModelSerializer):
+    """TurtleNestDisturbanceTallyObservation serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleNestDisturbanceTallyObservation
+        fields = ('observation_name',
+                  'species',
+                  'disturbance_cause',
+                  'tally',)
+
 
 
 class TemperatureLoggerSettingsSerializer(serializers.ModelSerializer):

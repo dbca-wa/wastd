@@ -2,7 +2,7 @@
 {% with original as o %}
 <!-- Heading -->
 <div class="row">
-    <h5>{% block title %}Encounter{% endblock %}
+    <h5>{% block title %}{{ o.leaflet_title }}{% endblock %}
     <span class="pull-xs-right">
     {% if o.name %}
     <a href="{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}"

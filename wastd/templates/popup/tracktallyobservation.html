@@ -2,19 +2,6 @@
 {% with original as o %}
 <div class="row">
     <i class="fa fa-fw fa-list-ol"></i>
-   TrackTally:
-   {{o.false_crawls_caretta_caretta}} LH,
-   {{o.false_crawls_chelonia_mydas}} GN,
-   {{o.false_crawls_eretmochelys_imbricata}} HB,
-   {{o.false_crawls_natator_depressus}} FB,
-   {{o.false_crawls_na}} NA
-</div>
-<div class="row"><i class="fa fa-fw fa-cutlery"></i>
-   Predation:
-   Fox <i class="{{o.fox_predation|fa_observation_icon}}"></i>
-   Dog <i class="{{o.dog_predation|fa_observation_icon}}"></i>
-   Dingo <i class="{{o.dingo_predation|fa_observation_icon}}"></i>
-   Goanna <i class="{{o.goanna_predation|fa_observation_icon}}"></i>
-   Bird <i class="{{o.bird_predation|fa_observation_icon}}"></i>
+   {{o.tally}} {{o.get_track_type_display}} of {{o.get_species_display }}
 </div>
 {% endwith %}
