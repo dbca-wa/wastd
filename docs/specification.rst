@@ -23,15 +23,19 @@ WAStD will interact, and eventually integrate with BioSys.
 
 Departmental business related to turtle strandings:
 
-* Strandings of other marine animals (marine mammals, reptiles)
-* other turtle related data (tagging, nest and track count)
-* other administrative data related to turtle monitoring (temperature loggers)
-* Data entry (tagging) by field operators through standalone, offline, desktop capture tool
-* Mobile app, read-only, with a browseable data snapshot "have I seen this turtle before?"
-* Data entry (strandings) by less trained regional staff (Rangers), web based (not offline), through streamlined forms
-* Data entry (tagging) by field operators online through stramlined forms
-* Data ingestion from mobile data collection devices (existing Cybertracker fleet)
-
+* Strandings of other marine animals (cetaceans, pinnipeds, dugong, sea snakes)
+* Tagging of nesting turtles, and the whole life cycle of tags put on turtles
+  (legacy system: WAMTRAM 2, data custodian Bob Prince)
+* Turtle track and nest counts (fresh, predated, or hatched nests)
+  (legacy system: Ningaloo Track Count Access Database, data custodian Keely Markovina)
+* other administrative data related to turtle monitoring
+  (temperature loggers deployed in turtle nests) (no existing systems)
+* Data entry (tagging) by field operators through standalone, offline, desktop capture tool (no existing system)
+* Mobile app, read-only, with a browseable data snapshot "have I seen this turtle before?" (no existing system)
+* Data entry (strandings) by less trained regional staff (Rangers), web based (not offline),
+  through streamlined, user-friendly forms (not built yet)
+* Data entry (tagging) by field operators online through streamlined forms (not built yet)
+* Data ingestion from mobile data collection devices (existing Cybertracker fleet) (integration not built yet)
 
 If any of the above scopes were to experience an acute business risk -- e.g.
 data being siloed in outdated software,
@@ -125,8 +129,8 @@ Insight could be required as
   providing a fully transparent data lineage from datasheet to generated insight.
 * Insight should be **reproducible**, in that other people with limited
   technical or statistical expertise can
-  `reproduce the analysis <http://rpubs.com/florian_mayer/wastd-mark>`_ from the
-  archived inputs.
+  `reproduce the analysis <http://rpubs.com/florian_mayer/wastd-mark>`_
+  from the archived inputs.
 
 Analyst
 ^^^^^^^
