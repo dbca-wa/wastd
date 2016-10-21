@@ -3,15 +3,14 @@
 \documentclass[version=last,
     paper=a4, % paper size
     10pt, % default font size
-    %usenames,
     dvipsnames,
-    twoside, % PRINT Binding Correction
-    % oneside, % ONLINE
+    %twoside, % PRINT Binding Correction
+    oneside, % ONLINE
     headings=openany, % open chapters on odd and even pages
-    BCOR=7mm, % PRINT Binding Correction
+    %BCOR=7mm, % PRINT Binding Correction
     %DIV=13, % typearea 161.54 mm x 228.46 mm, top margin 22.85 mm, inner margin 16.15 mm
-    %DIV=14, % 165.00 233.36 21.21 15.00
-    DIV=15, % 168.00 237.60 19.80 14.00
+    DIV=14, % 165.00 233.36 21.21 15.00
+    %DIV=15, % 168.00 237.60 19.80 14.00
     toc=chapterentrywithdots % Table of Contents style
 ]{scrbook}
 \usepackage{typearea}
@@ -100,8 +99,8 @@
 \definecolor{deniedbg}{RGB}{242,222,222}
 \definecolor{granted}{RGB}{70,136,71}
 \definecolor{grantedbg}{RGB}{223,240,216}
-\definecolor{not reqiured}{RGB}{153,153,153}
-\definecolor{not reqiuredbg}{RGB}{255,255,255}
+\definecolor{not required}{RGB}{153,153,153}
+\definecolor{not requiredbg}{RGB}{255,255,255}
 
 \usepackage{tikz} % Drawing
 \usetikzlibrary{arrows,shapes,positioning,shadows,trees}
@@ -110,10 +109,10 @@
 %% Links, URLs
 %%
 \usepackage[
-    %colorlinks=true,
+    colorlinks=true,
     linktoc=all,
-    %linkcolor=RedFire,
-    %urlcolor=ParksWildlife,
+    linkcolor=RedFire,
+    urlcolor=ParksWildlife,
     pdftitle={{ o.leaflet_title }}
 ]{hyperref}
 
@@ -125,9 +124,10 @@
 
 
 \begin{document}
+
 {% for o in data %}
 
-\section*{% templatetag openbrace %}{{ o.leaflet_title }} }
+\chapter*{% templatetag openbrace %}{{ o.leaflet_title|latex_safe }} }
 
 {% if o.name %}
 \href{% templatetag openbrace %}{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}}{% templatetag openbrace %}{{ o.name }}}
@@ -135,6 +135,10 @@
 
 \href{% templatetag openbrace %}{{ o.absolute_admin_url }}}{% templatetag openbrace %}{{ o.get_status_display }}}
 
+{{ o.when|date:"r" }}
+
+Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
+({{ o.crs }}) \pm {{ o.location_accuracy }} m WGS 84
 
 {% endfor %}
 \end{document}

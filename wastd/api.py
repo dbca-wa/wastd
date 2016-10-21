@@ -442,10 +442,8 @@ class AreaViewSet(viewsets.ModelViewSet):
 
 class EncounterViewSet(viewsets.ModelViewSet):
     """Encounter view set."""
-    # renderer_classes = settings.REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] + (renderers.LatexRenderer, )
-    #renderer_classes = [renderers.LatexRenderer, ]
-    latex_name = 'latex/encounter.tex'
 
+    latex_name = 'latex/encounter.tex'
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
     filter_fields = [

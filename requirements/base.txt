@@ -101,7 +101,8 @@ djangorestframework-jsonp
 djangorestframework-filters
 django-url-filter
 dynamic-rest
-rest-framework-latex
+# rest-framework-latex
+-e git+https://github.com/florianm/rest-framework-latex.git#egg=rest-framework-latex
 markdown
 django-filter==0.15.3
 django-rest-swagger==2.0.7
