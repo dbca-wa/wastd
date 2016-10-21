@@ -31,40 +31,44 @@
 <!-- End Action buttons -->
 <!-- API auth -->
 <div class="row">
+    <div class="col-sm-12 ">
+        <h2>Accessing the data</h2>
+        <p>You can access all data through the API using your API token:
+            <strong>{{ request.user.apitoken }}</strong>.</p>
 
-  <div class="col-sm-12 ">
-      <h2>Accessing the data</h2>
-      <p>You can access all data through the API using your API token:
-      <strong>{{ request.user.apitoken }}</strong>.</p>
+            <h3>Code example in R</h3>
+            <pre>
+require(httr); require(jsonlite); require(DT)
+url = "{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/"
+hdr = c(Authorization = "Token {{ request.user.apitoken }}")
+j = httr::GET(paste0(url, "?format=json"), add_headers(.headers = hdr)) %>% content("text") %>% fromJSON
+d = httr::GET(paste0(url, "?format=csv"),  add_headers(.headers = hdr)) %>% content("parsed")
+datatable(d)
+            </pre>
+            <p>
+            <strong>j</strong> is the data as JSON dictionary,
+            <strong>d</strong> is the data as data.frame.
+            Note, the Token is only required for PUT, POST and DELETE requests.
+            </p>
 
-      <h3>Code example in R</h3>
-      <pre>
-        require(httr); require(jsonlite); require(DT)
-        url = "{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/"
-        j = httr::GET(paste0(url, "?format=json"),
-            add_headers(Authorization="Token{{ request.user.apitoken }}")) %>%
-            content("text") %>% fromJSON
-        d = httr::GET(paste0(url, "?format=csv"),
-            add_headers(Authorization="Token{{ request.user.apitoken }}")) %>%
-            content("parsed")
-        datatable(d)
-      </pre>
-      <p><strong>j</strong> is the data as JSON dictionary, <strong>d</strong> is the data as data.frame.</p>
+            <h3>Code example in Python</h3>
+            <pre>
+import requests
+url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
+headers = {"Authorization": "Token {{ request.user.apitoken }}"}
+j = requests.get(url + "?format=json", headers=headers).json()
+d = requests.get(url + "?format=csv", headers=headers).content
+            </pre>
 
-      <h3>Code example in Python</h3>
-      <pre>
-          import requests
-          url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
-          headers = {"Authorization": "Token {{ request.user.apitoken }}"}
-          j = requests.get(url + "?format=json", headers=headers).json()
-          d = requests.get(url + "?format=csv", headers=headers).content
-      </pre>
-  </div>
+            <h3>Code example on the command line</h3>
+            <pre>
+curl -X GET {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/ -H 'Authorization: Token {{ request.user.apitoken }}'
+            </pre>
 
-</div>
+        </div><!-- /.col-sm-12 "-->
+</div><!-- /.row "-->
 <!-- End API auth -->
 {% endif %}
 
-
-</div>
+</div><!-- /.container "-->
 {% endblock content %}

@@ -1,7 +1,9 @@
 # from django.shortcuts import render
-from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
 from rest_framework import response, schemas, permissions
+from rest_framework.schemas import get_schema_view
+from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
+
 
 # Tables
 from django_tables2 import RequestConfig, SingleTableView, tables
@@ -96,18 +98,15 @@ class AnimalEncounterTableView(EncounterTableView):
 
 
 # Django-Rest-Swagger View ---------------------------------------------------#
-@api_view()
-@permission_classes((permissions.AllowAny,))
-@renderer_classes([SwaggerUIRenderer, OpenAPIRenderer])
-def schema_view(request):
-    """Swagger API docs."""
-    generator = schemas.SchemaGenerator(title='WAStD API')
-    return response.Response(generator.get_schema(request=request))
+# http://www.django-rest-framework.org/topics/3.5-announcement/#improved-schema-generation
+schema_view = get_schema_view(
+    title='WAStD API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
 
 
+# Utilities ------------------------------------------------------------------#
 @csrf_exempt
 def update_names(request):
-    """Update cached names on Encounters."""
+    """Update cached names on Encounters and Loggers."""
     from wastd.observations.utils import allocate_animal_names
     no_names, no_loggers = allocate_animal_names()
     msg = "{0} animal names reconstructed, {1} logger names set".format(

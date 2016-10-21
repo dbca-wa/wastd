@@ -11,16 +11,14 @@ from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
 from adminactions import actions
-
+from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 # from dynamic_rest import routers as dr
+
+from wastd.api import router  # sync_route
 from wastd.observations.models import Area, Encounter
 from wastd.observations.views import (
     schema_view, update_names, EncounterTableView, AnimalEncounterTableView)
-
-from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
-
-from wastd.api import router  # sync_route
 
 # register all adminactions
 actions.add_to_site(site)
@@ -50,11 +48,11 @@ urlpatterns = [
         name="animalencounter_list"),
 
     # API
-    url(r'^api/1/', include(router.urls), name='api'),
+    url(r'^api/docs/$', schema_view, name="api-docs"),
+    url(r'^api/1/', include(router.urls), name="api"),
     url(r'^api-auth/',
         include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api-token-auth/', drf_authviews.obtain_auth_token),
-    url(r'^api-docs/1/', schema_view, name="api-docs"),
+    url(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 
     # Synctools
     # url("^api/sync/", include(sync_route.urlpatterns)),
@@ -70,7 +68,9 @@ urlpatterns = [
         name='observation-geojson'),
 
     url(r'^areas.geojson$',
-        GeoJSONLayerView.as_view(model=Area, properties=('leaflet_title', 'as_html')),
+        GeoJSONLayerView.as_view(
+            model=Area,
+            properties=('leaflet_title', 'as_html')),
         name='areas-geojson'),
 
     # Encounter as tiled GeoJSON

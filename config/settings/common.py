@@ -54,6 +54,7 @@ THIRD_PARTY_APPS = (
     'rest_framework.authtoken', # API auth via token
     'rest_framework_gis',       # API spatial fields
     'rest_framework_swagger',   # API docs
+    'rest_framework_latex',     # API latex renderer
     'dynamic_rest',             # Parameterised API queries
     'adminactions',             # extra admin trickery
     'djgeojson',                # GeoJSON views
@@ -231,6 +232,8 @@ COMPRESS_URL = STATIC_URL
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = str(APPS_DIR('media'))
 
+LATEX_RESOURCES = str(APPS_DIR('templates/latex/common'))
+
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
 
@@ -276,25 +279,30 @@ ADMIN_URL = "^admin/"
 # API: django-restframework
 # ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
+    # http://www.django-rest-framework.org/api-guide/permissions/
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        # 'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework.permissions.IsAdminUser',
         ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework_jsonp.renderers.JSONPRenderer',
         'rest_framework_csv.renderers.CSVRenderer',
-        # 'rest_framework_yaml.renderers.YAMLRenderer',
-        # 'rest_framework_latex.renderers.LatexRenderer',
+        'rest_framework_yaml.renderers.YAMLRenderer',
+        'rest_framework_latex.renderers.LatexRenderer',
         ),
     # 'DEFAULT_PARSER_CLASSES': (
     # 'rest_framework_yaml.parsers.YAMLParser',
     # ),
     'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework.filters.DjangoFilterBackend',
+        'django_filters.rest_framework.DjangoFilterBackend',
         ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',)
     }
 
 # Grappelli admin theme

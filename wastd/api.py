@@ -30,6 +30,7 @@ This API is built using:
 * coreapi-cli (complementary CLI for coreapi)
 """
 from rest_framework import serializers, viewsets, routers
+from rest_framework_latex import renderers
 # import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
 from drf_extra_fields.geo_fields import PointField
@@ -67,7 +68,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = ('username', 'name', 'phone', 'email', 'first_name', 'last_name')
+        fields = '__all__'
 
 
 class ObservationSerializer(serializers.ModelSerializer):
@@ -144,8 +145,9 @@ class MediaAttachmentSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = MediaAttachment
-        fields = ('observation_name',
-                  'media_type', 'title', 'attachment')
+        # fields = ('observation_name',
+        #           'media_type', 'title', 'attachment')
+        fields = '__all__'
 
 
 class TagObservationSerializer(serializers.ModelSerializer):
@@ -438,6 +440,8 @@ class AreaViewSet(viewsets.ModelViewSet):
 
 class EncounterViewSet(viewsets.ModelViewSet):
     """Encounter view set."""
+    renderer_classes = [renderers.LatexRenderer, ]
+    latex_name = 'latex/encounter.tex'
 
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
@@ -448,7 +452,8 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     """TurtleNestEncounter view set."""
-
+    renderer_classes = [renderers.LatexRenderer, ]
+    latex_name = 'latex/turtlenestencounter.tex'
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
@@ -459,7 +464,8 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
     """AnimalEncounter view set."""
-
+    renderer_classes = [renderers.LatexRenderer, ]
+    latex_name = 'latex/animalencounter.tex'
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
@@ -472,7 +478,8 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 
 class LoggerEncounterViewSet(viewsets.ModelViewSet):
     """LoggerEncounter view set."""
-
+    renderer_classes = [renderers.LatexRenderer, ]
+    latex_name = 'latex/loggerencounter.tex'
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
     filter_fields = [

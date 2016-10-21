@@ -93,7 +93,7 @@ pygraphviz
 
 # API
 # ------------------------------------------------
-djangorestframework
+djangorestframework==3.5.0
 djangorestframework-gis
 djangorestframework-csv
 djangorestframework-yaml
@@ -103,9 +103,9 @@ django-url-filter
 dynamic-rest
 rest-framework-latex
 markdown
-django-filter
-django-rest-swagger
-coreapi
+django-filter==0.15.3
+django-rest-swagger==2.0.7
+coreapi==2.0.8
 coreapi-cli
 
 
