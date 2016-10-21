@@ -232,8 +232,6 @@ COMPRESS_URL = STATIC_URL
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = str(APPS_DIR('media'))
 
-LATEX_RESOURCES = str(APPS_DIR('templates/latex/common'))
-
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
 
@@ -282,7 +280,7 @@ REST_FRAMEWORK = {
     # http://www.django-rest-framework.org/api-guide/permissions/
     'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.IsAuthenticated',
-        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'rest_framework.permissions.IsAdminUser',
         ],
     'DEFAULT_RENDERER_CLASSES': (
@@ -304,6 +302,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',)
     }
+
+# Shared Latex resources for DRF-latex
+# http://drf-latex.readthedocs.io/en/latest/
+LATEX_RESOURCES = str(APPS_DIR('templates/latex/common'))
+
 
 # Grappelli admin theme
 # ------------------------------------------------------------------------------
