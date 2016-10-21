@@ -139,7 +139,7 @@ TURTLE_SPECIES_CHOICES = (
     ('Eretmochelys imbricata', 'Eretmochelys imbricata (Hawksbill turtle)'),
     ('Caretta caretta', 'Caretta caretta (Loggerhead turtle)'),
     ('Lepidochelys olivacea', 'Lepidochelys olivacea (Olive ridley turtle)'),
-    ('Dermochelys coriacea', 'Leatherback turtle (Dermochelys coriacea)'),
+    ('Dermochelys coriacea', 'Dermochelys coriacea (Leatherback turtle'),
     ('Chelonia mydas agassazzi', 'Chelonia mydas agassazzi (Black turtle or East Pacific Green)'),
     ('Corolla corolla', 'Corolla corolla (Hatchback turtle)'),
     ('unidentified-turtle', 'Unidentified turtle'),

@@ -1,5 +1,5 @@
 from django import template
-
+import os
 from django_fsm_log.models import StateLog
 from django.template.defaultfilters import stringfilter, register
 from wastd.observations.models import Encounter, OBSERVATION_ICONS
@@ -64,3 +64,8 @@ def fa_observation_icon(observation_value):
     * na: did not measure
     """
     return OBSERVATION_ICONS[observation_value]
+
+
+@register.filter
+def filename(value):
+    return os.path.basename(value)

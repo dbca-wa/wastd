@@ -70,7 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = '__all__'
+        fields = ('username', 'name', 'email', 'phone', )
 
 
 class ObservationSerializer(serializers.ModelSerializer):
@@ -343,9 +343,17 @@ class EncounterSerializer(serializers.ModelSerializer):
     """
 
     observation_set = ObservationSerializer(many=True, read_only=False)
-    observer = serializers.StringRelatedField(read_only=True)
-    reporter = serializers.StringRelatedField(read_only=True)
+    observer = UserSerializer(many=False, read_only=False)
+    reporter = UserSerializer(many=False, read_only=False)
+    # observer = serializers.StringRelatedField(read_only=True)
+    # reporter = serializers.StringRelatedField(read_only=True)
     where = PointField(required=True)
+    leaflet_title = serializers.ReadOnlyField()
+    latitude = serializers.ReadOnlyField()
+    longitude = serializers.ReadOnlyField()
+    crs = serializers.ReadOnlyField()
+    absolute_admin_url = serializers.ReadOnlyField()
+    photographs = serializers.ReadOnlyField()
 
     class Meta:
         """Class options.
@@ -356,9 +364,11 @@ class EncounterSerializer(serializers.ModelSerializer):
 
         model = Encounter
         name = 'encounter'
-        fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when', 'name',
-                  'observer', 'reporter',
+        fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when',
+                  'name', 'observer', 'reporter',
                   'status', 'source', 'source_id', 'encounter_type',
+                  'leaflet_title', 'latitude', 'longitude', 'crs',
+                  'absolute_admin_url', 'photographs',
                   'observation_set', )
         geo_field = "where"
 
