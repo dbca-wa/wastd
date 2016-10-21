@@ -34,6 +34,7 @@ from django.dispatch import receiver
 from django.contrib.gis.db import models as geo_models
 from django.contrib.gis.db.models.query import GeoQuerySet
 from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse as rest_reverse
 from django.template import Context, loader
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -613,6 +614,24 @@ class Area(geo_models.Model):
     def animal_encounters_url(self):
         return '/admin/observations/animalencounter/?where={0}'.format(self.pk)
 
+    def make_rest_listurl(self, format='json'):
+        """Return the API list URL in given format (default: JSON).
+
+        Permissible formats depend on configured renderers:
+        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
+        """
+        return rest_reverse(self._meta.model_name + '-list',
+                            kwargs={'format': format})
+
+    def make_rest_detailurl(self, format='json'):
+        """Return the API detail URL in given format (default: JSON).
+
+        Permissible formats depend on configured renderers:
+        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
+        """
+        return rest_reverse(self._meta.model_name + '-detail',
+                            kwargs={'pk': self.pk, 'format': format})
+
 
 @python_2_unicode_compatible
 class SiteVisit(geo_models.Model):
@@ -1088,6 +1107,25 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return the absolute admin change URL."""
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    def make_rest_listurl(self, format='json'):
+        """Return the API list URL in given format (default: JSON).
+
+        Permissible formats depend on configured renderers:
+        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
+        """
+        return rest_reverse(self._meta.model_name + '-list',
+                            kwargs={'format': format})
+
+    def make_rest_detailurl(self, format='json'):
+        """Return the API detail URL in given format (default: JSON).
+
+        Permissible formats depend on configured renderers:
+        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
+        """
+        return rest_reverse(self._meta.model_name + '-detail',
+                            kwargs={'pk': self.pk, 'format': format})
+
 
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):

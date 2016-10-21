@@ -30,6 +30,7 @@ This API is built using:
 * coreapi-cli (complementary CLI for coreapi)
 """
 from rest_framework import serializers, viewsets, routers
+from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework_latex import renderers
 # import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
@@ -49,6 +50,7 @@ from wastd.observations.models import (
     TemperatureLoggerDeployment)
 from wastd.users.models import User
 
+from django.conf import settings
 # from synctool.routing import Route as SynctoolRoute
 
 # # Synctools
@@ -440,7 +442,8 @@ class AreaViewSet(viewsets.ModelViewSet):
 
 class EncounterViewSet(viewsets.ModelViewSet):
     """Encounter view set."""
-    renderer_classes = [renderers.LatexRenderer, ]
+    # renderer_classes = settings.REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] + (renderers.LatexRenderer, )
+    #renderer_classes = [renderers.LatexRenderer, ]
     latex_name = 'latex/encounter.tex'
 
     queryset = Encounter.objects.all()
@@ -452,7 +455,6 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     """TurtleNestEncounter view set."""
-    renderer_classes = [renderers.LatexRenderer, ]
     latex_name = 'latex/turtlenestencounter.tex'
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
@@ -464,7 +466,6 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
     """AnimalEncounter view set."""
-    renderer_classes = [renderers.LatexRenderer, ]
     latex_name = 'latex/animalencounter.tex'
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     queryset = AnimalEncounter.objects.all()
@@ -478,7 +479,6 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 
 class LoggerEncounterViewSet(viewsets.ModelViewSet):
     """LoggerEncounter view set."""
-    renderer_classes = [renderers.LatexRenderer, ]
     latex_name = 'latex/loggerencounter.tex'
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
