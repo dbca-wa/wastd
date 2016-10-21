@@ -3,14 +3,11 @@
 \begin{document}
 {% for o in data %}
 
-
 \chapter*{% templatetag openbrace %}{{ o.leaflet_title|latex_safe }}}
 
-{% if o.site_visit %}
-Site Visit {{ o.site_visit }}
-{% endif %}
-
-Case number {{ o.source_id }}
+% Map
+%\getmap[file=map_{{ o.pk }},markers={&markers=size:mid|label:{{ o.leaflet_title }}|color:red|{{ o.latitude }},{{o.longitude}}}]{% templatetag openbrace %}{{ o.latitude }},{{o.longitude}}}
+%\includegraphics[width=\textwidth]{map_{{o.pk}}}
 
 {% if o.name %}
 List all encounters with
@@ -24,33 +21,33 @@ Update details of encounter
 {{ request.scheme }}://{{ request.get_host }}{{ o.absolute_admin_url }}
 }{% templatetag openbrace %}{{ o.leaflet_title }}}
 
-
-% QA status
-\section*{Encounter details}
-\paragraph{}
-
-\getmap[
-    file=map_{{ o.pk }},
-    markers={&markers=size:mid|label:{{ o.leaflet_title }}|color:red|{{ o.latitude }},{{o.longitude}}}
-]{% templatetag openbrace %}{{ o.latitude }},{{o.longitude}}}
-\includegraphics[width=\textwidth]{map_{{o.pk}}}
-
-\paragraph{}
 Observed on {{ o.when }}
-at Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
+
+Observed at Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
 ({{ o.crs }}) $\pm$ {{ o.location_accuracy }} m WGS 84
-by {{ o.observer.name }}, recorded by {{ o.reporter.name }}.
+
+Observed by {{ o.observer.name }}
+
+Recorded by {{ o.reporter.name }}
+
+Case number {{ o.source_id }}
+
+{% if o.site_visit %}
+Site Visit {{ o.site_visit }}
+{% endif %}
+
 
 {% if o.photographs %}
 \section*{Photographs}
 {% for p in o.photographs %}
-photo {{ request.scheme }}://{{ request.get_host }}{{ p.attachment.url }}
-\write18{wget {{ request.scheme }}://{{ request.get_host }}{{ p.attachment.url }}}
-\begin{figure}[!h]
-\centering
-%\includegraphics[width=0.9\textwidth]{% templatetag openbrace %}{{ p.attachment.url }}}
-\caption{% templatetag openbrace %}{{ p.title }}}
-\end{figure}
+Photo {{ p.title }} \url{% templatetag openbrace %}{{ p.attachment }}}
+% viewset's pre_latex has already symlinked attachments
+%\write18{wget {{ p.attachment }} -O {{ p.attachment|filename }}}
+%\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.9\textwidth]{% templatetag openbrace %}{{ p.attachment }}}
+%\caption{% templatetag openbrace %}{{ p.title }}}
+%\end{figure}
 {% endfor %}
 {% endif %}
 

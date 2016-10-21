@@ -1778,6 +1778,10 @@ class MediaAttachment(Observation):
         return "Media {0} {1} for {2}".format(
             self.pk, self.title, self.encounter.__str__())
 
+    @property
+    def filepath(self):
+        return str(self.attachment.file)
+
 
 @python_2_unicode_compatible
 class TagObservation(Observation):

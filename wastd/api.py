@@ -29,9 +29,13 @@ This API is built using:
 * coreapi
 * coreapi-cli (complementary CLI for coreapi)
 """
+import os
+from json import loads, dumps
+from subprocess import Popen, PIPE
+
 from rest_framework import serializers, viewsets, routers
-from rest_framework.renderers import BrowsableAPIRenderer
-from rest_framework_latex import renderers
+# from rest_framework.renderers import BrowsableAPIRenderer
+# from rest_framework_latex import renderers
 # import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
 from drf_extra_fields.geo_fields import PointField
@@ -142,14 +146,16 @@ class ObservationSerializer(serializers.ModelSerializer):
 
 class MediaAttachmentSerializer(serializers.ModelSerializer):
     """MediaAttachment serializer."""
+    attachment = serializers.FileField(use_url=False) # TODO absolute local path
+    filepath = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = MediaAttachment
-        # fields = ('observation_name',
-        #           'media_type', 'title', 'attachment')
-        fields = '__all__'
+        fields = ('observation_name',
+                  'media_type', 'title', 'attachment', 'filepath')
+        # fields = '__all__'
 
 
 class TagObservationSerializer(serializers.ModelSerializer):
@@ -353,7 +359,7 @@ class EncounterSerializer(serializers.ModelSerializer):
     longitude = serializers.ReadOnlyField()
     crs = serializers.ReadOnlyField()
     absolute_admin_url = serializers.ReadOnlyField()
-    photographs = serializers.ReadOnlyField()
+    photographs = MediaAttachmentSerializer(many=True, read_only=False)
 
     class Meta:
         """Class options.
@@ -460,6 +466,26 @@ class EncounterViewSet(viewsets.ModelViewSet):
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'source', 'source_id', 'encounter_type', ]
 
+    def pre_latex(view, t_dir, data):
+        """Symlink photographs to temp dir for use by latex template."""
+        for enc in loads(dumps(data)):
+            if len(enc["photographs"]) > 0:
+
+                # Once per encounter, create temp_dir/media_path
+                media_path = os.path.split(enc["photographs"][0]["attachment"])[0]
+                print(media_path)
+                dest_dir = os.path.join(t_dir, "tex", media_path)
+                os.makedirs(dest_dir)
+
+                for photo in enc["photographs"]:
+                    # Once per photo, symlink file to temp_dir
+                    src = photo["filepath"]
+                    rel_src = photo["attachment"]
+                    dest = os.path.join(t_dir, "tex", rel_src)
+                    if os.path.lexists(dest):
+                        # emulate ln -sf
+                        os.remove(dest)
+                    os.symlink(src, dest)
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     """TurtleNestEncounter view set."""
