@@ -360,6 +360,7 @@ class EncounterSerializer(serializers.ModelSerializer):
     crs = serializers.ReadOnlyField()
     absolute_admin_url = serializers.ReadOnlyField()
     photographs = MediaAttachmentSerializer(many=True, read_only=False)
+    tx_logs = serializers.ReadOnlyField()
 
     class Meta:
         """Class options.
@@ -374,7 +375,7 @@ class EncounterSerializer(serializers.ModelSerializer):
                   'name', 'observer', 'reporter',
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
-                  'absolute_admin_url', 'photographs',
+                  'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
         geo_field = "where"
 
@@ -396,6 +397,19 @@ class EncounterSerializer(serializers.ModelSerializer):
 class AnimalEncounterSerializer(EncounterSerializer):
     """AnimalEncounter serializer."""
     where = PointField(required=True)
+    observation_set = ObservationSerializer(many=True, read_only=False)
+    observer = UserSerializer(many=False, read_only=False)
+    reporter = UserSerializer(many=False, read_only=False)
+    # observer = serializers.StringRelatedField(read_only=True)
+    # reporter = serializers.StringRelatedField(read_only=True)
+    where = PointField(required=True)
+    leaflet_title = serializers.ReadOnlyField()
+    latitude = serializers.ReadOnlyField()
+    longitude = serializers.ReadOnlyField()
+    crs = serializers.ReadOnlyField()
+    absolute_admin_url = serializers.ReadOnlyField()
+    photographs = MediaAttachmentSerializer(many=True, read_only=False)
+    tx_logs = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
@@ -408,6 +422,8 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'scanned_for_pit_tags',
                   'checked_for_flipper_tags',
                   'status', 'source', 'source_id', 'encounter_type',
+                  'leaflet_title', 'latitude', 'longitude', 'crs',
+                  'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
 
 
@@ -468,24 +484,30 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
-        for enc in loads(dumps(data)):
-            if len(enc["photographs"]) > 0:
+        symlink_resources(t_dir, data)
 
-                # Once per encounter, create temp_dir/media_path
-                media_path = os.path.split(enc["photographs"][0]["attachment"])[0]
-                print(media_path)
-                dest_dir = os.path.join(t_dir, "tex", media_path)
-                os.makedirs(dest_dir)
 
-                for photo in enc["photographs"]:
-                    # Once per photo, symlink file to temp_dir
-                    src = photo["filepath"]
-                    rel_src = photo["attachment"]
-                    dest = os.path.join(t_dir, "tex", rel_src)
-                    if os.path.lexists(dest):
-                        # emulate ln -sf
-                        os.remove(dest)
-                    os.symlink(src, dest)
+def symlink_resources(t_dir, data):
+    """Symlink photographs to a temp dir."""
+    for enc in loads(dumps(data)):
+        if len(enc["photographs"]) > 0:
+
+            # Once per encounter, create temp_dir/media_path
+            media_path = os.path.split(enc["photographs"][0]["attachment"])[0]
+            print(media_path)
+            dest_dir = os.path.join(t_dir, "tex", media_path)
+            os.makedirs(dest_dir)
+
+            for photo in enc["photographs"]:
+                # Once per photo, symlink file to temp_dir
+                src = photo["filepath"]
+                rel_src = photo["attachment"]
+                dest = os.path.join(t_dir, "tex", rel_src)
+                if os.path.lexists(dest):
+                    # emulate ln -sf
+                    os.remove(dest)
+                os.symlink(src, dest)
+
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     """TurtleNestEncounter view set."""
@@ -496,6 +518,10 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
         'location_accuracy', 'when', 'name', 'observer', 'reporter',  'status',
         'nest_age', 'species', 'habitat', 'disturbance', 'source', 'source_id',
         'encounter_type', ]
+
+    def pre_latex(view, t_dir, data):
+        """Symlink photographs to temp dir for use by latex template."""
+        symlink_resources(t_dir, data)
 
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
@@ -510,6 +536,10 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
         'source', 'source_id', 'encounter_type', ]
 
+    def pre_latex(view, t_dir, data):
+        """Symlink photographs to temp dir for use by latex template."""
+        symlink_resources(t_dir, data)
+
 
 class LoggerEncounterViewSet(viewsets.ModelViewSet):
     """LoggerEncounter view set."""
@@ -521,6 +551,9 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
         'deployment_status', 'comments',
         'source', 'source_id', 'encounter_type', ]
 
+    def pre_latex(view, t_dir, data):
+        """Symlink photographs to temp dir for use by latex template."""
+        symlink_resources(t_dir, data)
 
 class ObservationViewSet(viewsets.ModelViewSet):
     """Observation view set."""

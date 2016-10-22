@@ -15,7 +15,7 @@ def apitoken(user, **kwargs):
 
 @register.inclusion_tag('tx_logs.html', takes_context=False)
 def tx_logs(obj):
-    """Render the FSM transition logs for an object."""
+    """Render the FSM transition logs for an object to HTML."""
     return {'logs': [log for log in StateLog.objects.for_(obj)]}
 
 

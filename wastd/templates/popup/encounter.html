@@ -5,7 +5,7 @@
     <h5>{% block title %}{{ o.leaflet_title }}{% endblock %}
     <span class="pull-xs-right">
     {% if o.name %}
-    <a href="{% url "
+    <a href="{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}"
         class="btn btn-primary btn-sm"
         target="_" title="Browse history of animal {{ o.name }} in new tab">
         <i class="fa fa-fw fa-history"></i>

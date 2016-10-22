@@ -44,6 +44,7 @@ from django.utils.safestring import mark_safe
 from django.db.models.fields import DurationField
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
+from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
 
 from wastd.users.models import User
@@ -880,6 +881,14 @@ class Encounter(PolymorphicModel, geo_models.Model):
     def leaflet_colour(self):
         """Return the Leaflet.awesome-markers colour for the encounter type."""
         return (Encounter.LEAFLET_COLOUR[self.encounter_type])
+
+    @property
+    def tx_logs(self):
+        """A list of dicts of QA timestamp, status and operator."""
+        return [dict(timestamp=log.timestamp.isoformat(),
+                     status=log.state,
+                     operator=log.by.name)
+                for log in StateLog.objects.for_(self)]
 
     @property
     def get_encounter_type(self):

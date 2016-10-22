@@ -1,0 +1,25 @@
+{% extends 'latex/encounter.tex' %}
+{% load observations rest_framework_latex %}
+
+{% block encounter_extra %}
+\section*{Animal details}
+Species: {{ o.species }}
+
+Taxonomic group: {{ o.taxon }}
+
+Health: {{ o.health }}
+
+Sex: {{ o.sex }}
+
+Behaviour and condition: {{ o.behaviour }}
+
+Encountered on: {{ o.habitat }}
+
+Activity: {{ o.activity }}
+
+Checked for injuries: {{ o.checked_for_injuries }}
+
+Scanned for PIT tags: {{ o.scanned_for_pit_tags }}
+
+Checked for flipper tags: {{ o.checked_for_flipper_tags }}
+{% endblock %}

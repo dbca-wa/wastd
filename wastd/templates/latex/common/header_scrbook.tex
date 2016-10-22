@@ -17,15 +17,18 @@
 % Headers and footers
 %
 \usepackage[automark ,headsepline,footsepline]{scrlayer-scrpage}
-\renewcommand*{\chapterpagestyle}{empty}
-\clearpairofpagestyles
-\ihead{}
-\ohead[]{}
+%\renewcommand*{\chapterpagestyle}{empty}
+%\clearpairofpagestyles
+%\ihead[]{}
+%\chead[]{}
+%\ohead[]{}
+%\lfoot[]{\href{https://strandings.dpaw.wa.gov.au/}{Parks \& Wildlife Strandings}}
+%\cfoot[]{}
+%\rfoot[]{}
 \automark[]{}
 
 % Map
-\usepackage[overwrite=true,mode=gm,type=hybrid,language=en,zoom=7]{getmap}
-
+\usepackage[overwrite=true,mode=gm,type=hybrid,language=en,zoom=10]{getmap}
 
 %%
 %% Fonts, encoding, spacing, indentation
@@ -38,11 +41,6 @@
 \usepackage{textcomp}
 
 %\DeclareUnicodeCharacter{0080}{\textregistered}
-
-% Chapter and section headings
-%\let\raggedchapter\centering
-%\addtokomafont{chapter}{\center}
-%\addtokomafont{section}{\center\LARGE}
 
 % Paragraph spacing
 %\usepackage{parskip}    % Paragraph spacing
