@@ -1,0 +1,9 @@
+{% extends 'latex/encounter.tex' %}
+{% load observations rest_framework_latex %}
+
+{% block encounter_extra %}
+\section*{Logger details}
+Status: {{ o.deployment_status }}
+
+Comments: {{ o.comments }}
+{% endblock %}

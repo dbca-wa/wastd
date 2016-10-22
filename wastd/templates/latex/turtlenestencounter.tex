@@ -1,0 +1,9 @@
+{% extends 'latex/encounter.tex' %}
+{% load observations rest_framework_latex %}
+
+{% block encounter_extra %}
+\section*{Nest/Track details}
+{{ o.nest_age }} of {{ o.species }} on {{ o.habitat }}
+
+Disturbance: {{ o.disturbance }}
+{% endblock %}
