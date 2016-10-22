@@ -40,14 +40,14 @@ Site Visit {{ o.site_visit }}
 {% if o.photographs %}
 \section*{Photographs}
 {% for p in o.photographs %}
-Photo {{ p.title }} \url{% templatetag openbrace %}{{ p.attachment }}}
+% Photo {{ p.title }} \url{% templatetag openbrace %}{{ p.attachment }}}
 % viewset's pre_latex has already symlinked attachments
 %\write18{wget {{ p.attachment }} -O {{ p.attachment|filename }}}
-%\begin{figure}[!h]
-%\centering
+\begin{figure}[!h]
+\centering
 \includegraphics[width=0.9\textwidth]{% templatetag openbrace %}{{ p.attachment }}}
-%\caption{% templatetag openbrace %}{{ p.title }}}
-%\end{figure}
+\caption{% templatetag openbrace %}{{ p.title }}}
+\end{figure}
 {% endfor %}
 {% endif %}
 
