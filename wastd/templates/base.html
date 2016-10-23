@@ -53,28 +53,46 @@
                     </a>
                   </li> -->
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'animalencounter_list' %}">
+                    <a class="nav-link"
+                        href="{% url 'animalencounter_list' %}"
+                        title="Browse, filter and search animal encounters">
                         <i class="fa fa-table"></i>&nbsp;Data
                     </a>
                   </li>
                   {% if request.user.is_staff %}
                    <li class="nav-item">
-                     <a class="nav-link" href="{% url 'admin:index' %}" target="_">
+                     <a class="nav-link"
+                        href="{% url 'admin:index' %}"
+                        target="_"
+                        title="Data entry and curation area">
                          <i class="fa fa-cog"></i>&nbsp;Backstage
                      </a>
                    </li>
 
                    <li class="nav-item">
-                     <a class="nav-link" href="{% url 'update-names' %}">
-                         <i class="fa fa-refresh"></i>&nbsp;Update
+                     <a class="nav-link"
+                        href="{% url 'update-names' %}"
+                        title="Reconstruct animal identities">
+                         <i class="fa fa-refresh"></i>
                      </a>
                    </li>
-                   {% endif %}
+
+                   <li class="nav-item">
+                     <a class="nav-link"
+                        href="/api/1/animal-encounters/?format=latex"
+                        target="_"
+                        title="Export all Animal Encounters as PDF">
+                         <i class="fa fa-file-pdf-o"></i>
+                     </a>
+                   </li>
+
                    <li class="nav-item">
                      <a class="nav-link" href="/api/1/" target="_">
                          <i class="fa fa-database"></i>&nbsp;API
                      </a>
                    </li>
+                   {% endif %}
+
                    <!-- <li class="nav-item">
                      <a class="nav-link" href="{% url 'api-docs' %}" target="_">
                          <i class="fa fa-info"></i>&nbsp;API docs

@@ -1,0 +1,47 @@
+{% with original as o %}
+{% load observations rest_framework_latex %}
+\paragraph{}
+
+    {% if o.curved_carapace_length_mm %}
+    CCL {{ o.curved_carapace_length_mm }} $\pm$ {{ o.curved_carapace_length_accuracy }} mm
+    {% endif %}
+
+    {% if o.straight_carapace_length_mm %}
+    SCL {{ o.straight_carapace_length_mm }} $\pm$ {{ o.straight_carapace_length_accuracy }} mm
+    {% endif %}
+
+    {% if o.curved_carapace_width_mm %}
+    CCW {{ o.curved_carapace_width_mm }} $\pm$ {{ o.curved_carapace_width_accuracy }} mm
+    {% endif %}
+
+    {% if o.tail_length_carapace_mm %}
+    TLC {{ o.tail_length_carapace_mm }} $\pm$ {{ o.tail_length_carapace_accuracy }} mm
+    {% endif %}
+
+    {% if o.tail_length_vent_mm %}
+    TLV {{ o.tail_length_vent_mm }} $\pm$ {{ o.tail_length_vent_accuracy }} mm
+    {% endif %}
+
+    {% if o.tail_length_plastron_mm %}
+    TLP {{ o.tail_length_plastron_mm }} $\pm$ {{ o.tail_length_plastron_accuracy }}mm
+    {% endif %}
+
+    {% if o.maximum_head_width_mm %}
+    HW {{ o.maximum_head_width_mm }} $\pm$ {{ o.maximum_head_width_accuracy }} mm
+    {% endif %}
+
+    {% if o.maximum_head_length_mm %}
+    HL {{ o.maximum_head_length_mm }} $\pm$ {{ o.maximum_head_length_accuracy }} mm
+    {% endif %}
+
+    {% if o.handler %}
+    <i class="fa fa-fw fa-eye"></i>
+    <a href="mailto:{{ o.observer.email }}">{{ o.handler.name }}</a>
+    {% endif %}
+
+    {% if o.recorder %}
+    <i class="fa fa-fw fa-pencil"></i>
+    <a href="mailto:{{ o.reporter.email }}">{{ o.recorder.name }}</a>
+    {% endif %}
+
+{% endwith %}

@@ -52,7 +52,13 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 {% block encounter_extra %}
 {% endblock %}
 
-% TODO Observations
+% Observations
+{% if o.observation_set %}
+\section*{Observations and Measurements}
+{% for obs in o.observation_set %}
+{% include "latex/{{ obs.observation_name }}.tex" with original=obs %}
+{% endfor %}
+{% endif %}
 
 {% if o.photographs %}
 \section*{Photographs}

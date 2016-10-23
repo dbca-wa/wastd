@@ -1,0 +1,8 @@
+{% with original as o %}
+{% load observations rest_framework_latex %}
+\paragraph{}
+   {{ o.tally }} nests
+   of {{ o.species }}
+   showing {{ o.disturbance_cause }}
+</div>
+{% endwith %}

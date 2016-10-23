@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, renderer_classes, permission_cla
 from rest_framework import response, schemas, permissions
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
+from rest_framework.renderers import CoreJSONRenderer
 
 
 # Tables
@@ -100,8 +101,8 @@ class AnimalEncounterTableView(EncounterTableView):
 # Django-Rest-Swagger View ---------------------------------------------------#
 # http://www.django-rest-framework.org/topics/3.5-announcement/#improved-schema-generation
 schema_view = get_schema_view(
-    title='WAStD API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
-
+    title='WAStD API',
+    renderer_classes=[CoreJSONRenderer, OpenAPIRenderer, SwaggerUIRenderer])
 
 # Utilities ------------------------------------------------------------------#
 @csrf_exempt

@@ -1,0 +1,7 @@
+{% with original as o %}
+{% load observations rest_framework_latex %}
+\paragraph{}
+    {{ o.disturbance_cause }}
+    ({{ o.disturbance_cause_confidence }})
+    {{ o.disturbance_severity }} {{ o.comments }}
+{% endwith %}
