@@ -1,7 +1,8 @@
 {% with original as o %}
 {% load observations rest_framework_latex %}
 \paragraph{}
-    {{ o.disturbance_cause }}
-    ({{ o.disturbance_cause_confidence }})
-    {{ o.disturbance_severity }} {{ o.comments }}
+    {{ o.get_disturbance_cause_display }}
+    ({{ o.get_disturbance_cause_confidence_display }})
+    {{ o.get_disturbance_severity_display }}
+    {{ o.comments }}
 {% endwith %}

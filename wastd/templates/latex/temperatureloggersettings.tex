@@ -1,5 +1,7 @@
 {% with original as o %}
 {% load observations rest_framework_latex %}
 \paragraph{}
-    Recording every {{ o.logging_interval }} starting on {{ o.recording_start|date:"r" }}
+    Recording every {{ o.logging_interval }}
+    starting on {{ o.recording_start|date:"r" }}
+    Tested: {{ o.tested }}
 {% endwith %}

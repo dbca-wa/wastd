@@ -1,6 +1,6 @@
 {% with original as o %}
-<div class="row">
-    <i class="fa fa-fw fa-arrow-right"></i>
+{% load observations rest_framework_latex %}
+\paragraph{}
     {{ o.management_actions }}
-</div>
+    {{ o.comments}}
 {% endwith %}

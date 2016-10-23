@@ -2,7 +2,6 @@
 {% load observations rest_framework_latex %}
 \paragraph{}
    {{ o.tally }} nests
-   of {{ o.species }}
-   showing {{ o.disturbance_cause }}
-</div>
+   of {{ o.get_species_display }}
+   showing {{ o.get_disturbance_cause_display }}
 {% endwith %}

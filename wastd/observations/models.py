@@ -1719,6 +1719,13 @@ class Observation(PolymorphicModel, models.Model):
         return mark_safe(t.render(c))
 
     @property
+    def as_latex(self):
+        """A Latex representation."""
+        t = loader.get_template("latex/{0}.tex".format(self._meta.model_name))
+        c = Context({"original": self})
+        return mark_safe(t.render(c))
+
+    @property
     def observation_name(self):
         """The concrete model name.
 

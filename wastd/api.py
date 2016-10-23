@@ -54,7 +54,7 @@ from wastd.observations.models import (
     TemperatureLoggerDeployment)
 from wastd.users.models import User
 
-from django.conf import settings
+# from django.conf import settings
 # from synctool.routing import Route as SynctoolRoute
 
 # # Synctools
@@ -93,11 +93,13 @@ class ObservationSerializer(serializers.ModelSerializer):
     `Author <http://stackoverflow.com/users/1514427/michael-van-de-waeter>`_
     """
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = Observation
-        fields = ('observation_name', )
+        fields = ('observation_name', 'as_latex')
 
     def to_representation(self, obj):
         """Resolve the Observation instance to the child class's serializer."""
@@ -146,14 +148,16 @@ class ObservationSerializer(serializers.ModelSerializer):
 
 class MediaAttachmentSerializer(serializers.ModelSerializer):
     """MediaAttachment serializer."""
-    attachment = serializers.FileField(use_url=False) # TODO absolute local path
+
+    attachment = serializers.FileField(use_url=False)
     filepath = serializers.ReadOnlyField()
+    as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = MediaAttachment
-        fields = ('observation_name',
+        fields = ('observation_name', 'as_latex',
                   'media_type', 'title', 'attachment', 'filepath')
         # fields = '__all__'
 
@@ -161,11 +165,13 @@ class MediaAttachmentSerializer(serializers.ModelSerializer):
 class TagObservationSerializer(serializers.ModelSerializer):
     """TagObservation serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TagObservation
-        fields = ('observation_name',
+        fields = ('observation_name', 'as_latex',
                   'tag_type', 'name', 'tag_location',
                   'status', 'comments', )
 
@@ -173,11 +179,13 @@ class TagObservationSerializer(serializers.ModelSerializer):
 class TagObservationEncounterSerializer(serializers.ModelSerializer):
     """TagObservation serializer including encounter for standalone viewset."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TagObservation
-        fields = ('encounter', 'observation_name',
+        fields = ('encounter', 'as_latex', 'observation_name',
                   'tag_type', 'name', 'tag_location',
                   'status', 'comments', )
 
@@ -185,11 +193,13 @@ class TagObservationEncounterSerializer(serializers.ModelSerializer):
 class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
     """TurtleMorphometricObservation serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TurtleMorphometricObservation
-        fields = ('observation_name',
+        fields = ('observation_name', 'as_latex',
                   'curved_carapace_length_mm', 'curved_carapace_length_accuracy',
                   'straight_carapace_length_mm', 'straight_carapace_length_accuracy',
                   'curved_carapace_width_mm', 'curved_carapace_width_accuracy',
@@ -206,22 +216,26 @@ class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
 class ManagementActionSerializer(serializers.ModelSerializer):
     """DisposalObservation serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = ManagementAction
-        fields = ('observation_name',
+        fields = ('observation_name', 'as_latex',
                   'management_actions', 'comments', )
 
 
 class TurtleNestObservationSerializer(serializers.ModelSerializer):
     """TurtleNestObservation serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TurtleNestObservation
-        fields = ('observation_name',
+        fields = ('observation_name', 'as_latex',
                   'nest_position', 'eggs_laid', 'egg_count',
                   'no_emerged', 'no_egg_shells',
                   'no_live_hatchlings', 'no_dead_hatchlings',
@@ -235,11 +249,13 @@ class TurtleNestObservationSerializer(serializers.ModelSerializer):
 class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
     """TurtleNestDisturbanceObservation serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TurtleNestDisturbanceObservation
-        fields = ('observation_name',
+        fields = ('observation_name', 'as_latex',
                   'disturbance_cause', 'disturbance_cause_confidence',
                   'disturbance_severity', 'comments', )
 
@@ -247,22 +263,27 @@ class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
 class TurtleDamageObservationSerializer(serializers.ModelSerializer):
     """TurtleDamageObservation serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TurtleDamageObservation
-        fields = ('observation_name',
+        fields = ('observation_name', 'as_latex',
                   'body_part', 'damage_type', 'damage_age', 'description', )
 
 
 class TrackTallyObservationSerializer(serializers.ModelSerializer):
     """TrackTallyObservation serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TrackTallyObservation
         fields = ('observation_name',
+                  'as_latex',
                   'species',
                   'track_type',
                   'tally',)
@@ -271,45 +292,54 @@ class TrackTallyObservationSerializer(serializers.ModelSerializer):
 class TurtleNestDisturbanceTallyObservationSerializer(serializers.ModelSerializer):
     """TurtleNestDisturbanceTallyObservation serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TurtleNestDisturbanceTallyObservation
         fields = ('observation_name',
+                  'as_latex',
                   'species',
                   'disturbance_cause',
                   'tally',)
 
 
-
 class TemperatureLoggerSettingsSerializer(serializers.ModelSerializer):
     """TemperatureLoggerSettings serializer."""
+
+    as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TemperatureLoggerSettings
-        fields = ('logging_interval', 'recording_start', 'tested', )
+        fields = ('observation_name', 'as_latex',
+                  'logging_interval', 'recording_start', 'tested', )
 
 
 class DispatchRecordSerializer(serializers.ModelSerializer):
     """DispatchRecord serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = DispatchRecord
-        fields = ('sent_to',)
+        fields = ('observation_name', 'as_latex', 'sent_to',)
 
 
 class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
     """TemperatureLoggerDeployment serializer."""
 
+    as_latex = serializers.ReadOnlyField()
+
     class Meta:
         """Class options."""
 
         model = TemperatureLoggerDeployment
-        fields = ('depth_mm',
+        fields = ('observation_name', 'as_latex', 'depth_mm',
                   'marker1_present',
                   'distance_to_marker1_mm',
                   'marker2_present',

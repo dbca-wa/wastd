@@ -2,19 +2,19 @@
 {% load observations rest_framework_latex %}
 \paragraph{}
 
-    Hatching success {{ o.hatching_success }}
+    Hatching success {{ o.hatching_success }},
     Emergence success {{ o.emergence_success }}
 
 \paragraph{}
-    Total {{ o.egg_count }}&nbsp;&nbsp;
-    {% if o.no_emerged %}E {{ o.no_emerged }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_egg_shells %}S {{ o.no_egg_shells }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_live_hatchlings %}L {{ o.no_live_hatchlings }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_dead_hatchlings %}D {{ o.no_dead_hatchlings }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_undeveloped_eggs %}UD {{ o.no_undeveloped_eggs }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_unhatched_eggs %}UH {{ o.no_unhatched_eggs }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_unhatched_term %}UHT {{ o.no_unhatched_term }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_depredated_eggs %}P {{ o.no_depredated_eggs }}&nbsp;&nbsp;{% endif %}
+    Total {{ o.egg_count }}~~
+    {% if o.no_emerged %}E {{ o.no_emerged }}~~{% endif %}
+    {% if o.no_egg_shells %}S {{ o.no_egg_shells }}~~{% endif %}
+    {% if o.no_live_hatchlings %}L {{ o.no_live_hatchlings }}~~{% endif %}
+    {% if o.no_dead_hatchlings %}D {{ o.no_dead_hatchlings }}~~{% endif %}
+    {% if o.no_undeveloped_eggs %}UD {{ o.no_undeveloped_eggs }}~~{% endif %}
+    {% if o.no_unhatched_eggs %}UH {{ o.no_unhatched_eggs }}~~{% endif %}
+    {% if o.no_unhatched_term %}UHT {{ o.no_unhatched_term }}~~{% endif %}
+    {% if o.no_depredated_eggs %}P {{ o.no_depredated_eggs }}~~{% endif %}
 
 {% if o.nest_depth_top or o.nest_depth_bottom %}
 \paragraph{}
@@ -23,9 +23,9 @@
 
 {% if o.sand_temp  or o.air_temp or o.water_temp or o.egg_temp%}
 \paragraph{}
-    {% if o.sand_temp %}Sand {{ o.sand_temp }} &deg;C{% endif %}
-    {% if o.air_temp %}Air {{ o.air_temp }} &deg;C{% endif %}
-    {% if o.water_temp %}Water {{ o.water_temp }} &deg;C{% endif %}
-    {% if o.egg_temp %}Eggs {{ o.egg_temp }} &deg;C{% endif %}
+    {% if o.sand_temp %}Sand {{ o.sand_temp }} $^{\circ}$C{% endif %}
+    {% if o.air_temp %}Air {{ o.air_temp }} $^{\circ}$C{% endif %}
+    {% if o.water_temp %}Water {{ o.water_temp }} $^{\circ}$C{% endif %}
+    {% if o.egg_temp %}Eggs {{ o.egg_temp }} $^{\circ}$C{% endif %}
 {% endif %}
 {% endwith %}
