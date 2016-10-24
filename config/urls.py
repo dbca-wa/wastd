@@ -49,9 +49,8 @@ urlpatterns = [
 
     # API
     url(r'^api/docs/$', schema_view, name="api-docs"),
-    url(r'^api/1/', include(router.urls), name="api"),
-    url(r'^api-auth/',
-        include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/1/', include(router.urls, namespace="api")),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 
     # Synctools

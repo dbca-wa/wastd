@@ -29,16 +29,14 @@ This API is built using:
 * coreapi
 * coreapi-cli (complementary CLI for coreapi)
 """
-import os
-from json import loads, dumps
-from subprocess import Popen, PIPE
-
 from rest_framework import serializers, viewsets, routers
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
 # import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_extra_fields.geo_fields import PointField
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from rest_framework.authentication import (
     SessionAuthentication, BasicAuthentication, TokenAuthentication)
@@ -52,6 +50,8 @@ from wastd.observations.models import (
     TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
     TemperatureLoggerSettings, DispatchRecord,
     TemperatureLoggerDeployment)
+from wastd.observations.filters import AreaFilter
+from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
 # from django.conf import settings
@@ -357,7 +357,7 @@ class AreaSerializer(serializers.ModelSerializer):
         fields = ("area_type", "name", "geom", "northern_extent", "centroid", )
 
 
-class EncounterSerializer(serializers.ModelSerializer):
+class EncounterSerializer(GeoFeatureModelSerializer):
     """Encounter serializer.
 
     TODO: a writable version of the serializer will provide `create` and
@@ -404,6 +404,7 @@ class EncounterSerializer(serializers.ModelSerializer):
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
+                  'as_html',
                   'observation_set', )
         geo_field = "where"
 
@@ -424,7 +425,7 @@ class EncounterSerializer(serializers.ModelSerializer):
 
 class AnimalEncounterSerializer(EncounterSerializer):
     """AnimalEncounter serializer."""
-    where = PointField(required=True)
+    # where = PointField(required=True)
     observation_set = ObservationSerializer(many=True, read_only=False)
     observer = UserSerializer(many=False, read_only=False)
     reporter = UserSerializer(many=False, read_only=False)
@@ -452,12 +453,14 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
+                  'as_html',
                   'observation_set', )
+        geo_field = "where"
 
 
 class TurtleNestEncounterSerializer(EncounterSerializer):
     """TurtleNestEncounter serializer."""
-    where = PointField(required=True)
+    # where = PointField(required=True)
 
     class Meta:
         """Class options."""
@@ -467,12 +470,14 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'observer', 'reporter',
                   'nest_age', 'species', 'habitat', 'disturbance',
                   'status', 'source', 'source_id', 'encounter_type',
+                  'as_html',
                   'observation_set', )
+        geo_field = "where"
 
 
 class LoggerEncounterSerializer(EncounterSerializer):
     """LoggerEncounter serializer."""
-    where = PointField(required=True)
+    # where = PointField(required=True)
 
     class Meta:
         """Class options."""
@@ -481,7 +486,9 @@ class LoggerEncounterSerializer(EncounterSerializer):
         fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
                   'deployment_status', 'comments',
+                  'as_html',
                   'observation_set', )
+        geo_field = "where"
 
 
 # ViewSets define the view behavior.
@@ -509,32 +516,11 @@ class EncounterViewSet(viewsets.ModelViewSet):
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'source', 'source_id', 'encounter_type', ]
+    filter_backends = (DjangoFilterBackend, ) # AreaFilter
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
-
-
-def symlink_resources(t_dir, data):
-    """Symlink photographs to a temp dir."""
-    for enc in loads(dumps(data)):
-        if len(enc["photographs"]) > 0:
-
-            # Once per encounter, create temp_dir/media_path
-            media_path = os.path.split(enc["photographs"][0]["attachment"])[0]
-            print(media_path)
-            dest_dir = os.path.join(t_dir, "tex", media_path)
-            os.makedirs(dest_dir)
-
-            for photo in enc["photographs"]:
-                # Once per photo, symlink file to temp_dir
-                src = photo["filepath"]
-                rel_src = photo["attachment"]
-                dest = os.path.join(t_dir, "tex", rel_src)
-                if os.path.lexists(dest):
-                    # emulate ln -sf
-                    os.remove(dest)
-                os.symlink(src, dest)
 
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
@@ -582,6 +568,7 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
+
 
 class ObservationViewSet(viewsets.ModelViewSet):
     """Observation view set."""

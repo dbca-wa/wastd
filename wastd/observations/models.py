@@ -32,7 +32,7 @@ from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.contrib.gis.db import models as geo_models
-from django.contrib.gis.db.models.query import GeoQuerySet
+# from django.contrib.gis.db.models.query import GeoQuerySet
 from django.core.urlresolvers import reverse
 from rest_framework.reverse import reverse as rest_reverse
 from django.template import Context, loader

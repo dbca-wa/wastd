@@ -2,9 +2,36 @@
 {% include "latex/common/header_scrbook.tex" %}
 \begin{document}
 
-{% for o in data %}
+%-----------------------------------------------------------------------------%
+% Title page
+\subject{WA Strandings Database}
+\title{Data export}
+\subtitle{Strandings and more}
+\author{Dept Parks \& Wildlife WA}
+\publishers{Dept Parks \& Wildlife WA}
+%\uppertitleback{% templatetag openbrace %}{% block uppertitleback %}{% endblock %}}
+%\lowertitleback{% templatetag openbrace %}{% block lowertitleback %}{% endblock %}}
+%\date{}
 
-\chapter*{% templatetag openbrace %}{{ o.leaflet_title|latex_safe }}}
+%-----------------------------------------------------------------------------%
+% Front matter
+\frontmatter
+\maketitle
+%-----------------------------------------------------------------------------%
+% Main matter
+\mainmatter
+\tableofcontents
+
+{% if data.type == "FeatureCollection" %}{% endif %}
+{# TODO toggle loop for FC or Feature #}
+
+{% for feature in data.features %}
+
+{% with o=feature.properties geom=feature.geometry %}
+% ----------------------------------------------------------------------------%
+% Begin Feature
+%
+\chapter{% templatetag openbrace %}{{ o.leaflet_title|latex_safe }}}
 
 Case number {{ o.source_id }}
 
@@ -54,17 +81,14 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 
 % Observations
 {% if o.observation_set %}
-\section*{Observations and Measurements}
+\section{Observations and Measurements}
 {% for obs in o.observation_set %}
 {{ obs.as_latex }}
-{% with "latex/{{ obs.observation_name }}.tex" as templatename %}
-{% include templatename with original=obs %}
-{% endwith %}
 {% endfor %}
 {% endif %}
 
 {% if o.photographs %}
-\section*{Photographs}
+\section{Photographs}
 {% for p in o.photographs %}
 % Photo {{ p.title }} \url{% templatetag openbrace %}{{ p.attachment }}}
 % viewset's pre_latex has already symlinked attachments
@@ -76,7 +100,10 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 \end{figure}
 {% endfor %}
 {% endif %}
-
-
+%
+% End Feature
+% ----------------------------------------------------------------------------%
+{% endwith %}
 {% endfor %}
+
 \end{document}

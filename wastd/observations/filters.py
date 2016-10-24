@@ -5,9 +5,20 @@ from django.utils.translation import ugettext_lazy as _
 
 import django_filters
 from django_filters import filters, widgets
+from rest_framework_gis.filterset import GeoFilterSet
+from rest_framework_gis import filters as gis_filters
+
 # from leaflet.forms.widgets import LeafletWidget
 
 from wastd.observations.models import Area, Encounter, AnimalEncounter
+
+
+class AreaFilter(GeoFilterSet):
+    name = filters.CharFilter(name='name', lookup_type='istartswith')
+    contains_geom = gis_filters.GeometryFilter(name='geom', lookup_type='contains')
+
+    class Meta:
+        model = Area
 
 
 class LocationListFilter(SimpleListFilter):

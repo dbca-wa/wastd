@@ -13,8 +13,22 @@
           <i class="fa fa-envelope" aria-hidden="true"></i> {{ object.email }}
           <i class="fa fa-mobile" aria-hidden="true"></i> {{ object.phone }}
       </p>
-    </div>
+
   </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <p>
+      <a href="/api/1/encounters/?format=latex&observer={{ object.pk }}"
+          class="btn btn-primary btn-sm"
+          target="_" title="Export contributions of {% firstof object.name object.username %}">
+          <i class="fa fa-fw fa-file-pdf-o"></i>
+          Export all encounters by {% firstof object.name object.username %}
+      </a>
+    </p>
+  </div>
+</div>
 
 {% if object == request.user %}
 <!-- Action buttons -->

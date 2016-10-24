@@ -11,6 +11,11 @@
         <i class="fa fa-fw fa-history"></i>
         {{ o.name }}
     </a>
+    <a href="/api/1/animal-encounters/?format=latex&name={{ o.name }}"
+        class="btn btn-danger btn-sm"
+        target="_" title="Export history of animal {{ o.name }}">
+        <i class="fa fa-fw fa-file-pdf-o"></i>
+    </a>
     {% endif%}
     <a href="{{ o.absolute_admin_url }}"
         class="btn btn-{{ o.status|tb_status_icon }} btn-sm"
