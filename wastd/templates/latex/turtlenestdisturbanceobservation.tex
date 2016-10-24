@@ -1,5 +1,5 @@
-{% with original as o %}
 {% load observations rest_framework_latex %}
+{% with original as o %}
 \paragraph{}
     {{ o.get_disturbance_cause_display }}
     ({{ o.get_disturbance_cause_confidence_display }})

@@ -27,7 +27,10 @@ Update details of encounter
 }{% templatetag openbrace %}{{ o.leaflet_title }}}
 
 % Map
-\getmap[file=map_{{ o.pk }},markers={&markers=size:mid|label:{{ o.leaflet_title }}|color:red|{{ o.latitude }},{{o.longitude}}}]{% templatetag openbrace %}{{ o.latitude }},{{o.longitude}}}
+\getmap[
+    file=map_{{ o.pk }}, size=640x400,
+    markers={&markers=size:mid|label:{{ o.leaflet_title }}|color:red|{{ o.latitude }},{{o.longitude}}}
+    ]{% templatetag openbrace %}{{ o.latitude }},{{o.longitude}}}
 \begin{figure}[!h]
 \centering
 \includegraphics[width=\textwidth]{map_{{o.pk}}}
@@ -64,7 +67,6 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 {% for p in o.photographs %}
 % Photo {{ p.title }} \url{% templatetag openbrace %}{{ p.attachment }}}
 % viewset's pre_latex has already symlinked attachments
-%\write18{wget {{ p.attachment }} -O {{ p.attachment|filename }}}
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.9\textwidth]{% templatetag openbrace %}{{ p.attachment }}}

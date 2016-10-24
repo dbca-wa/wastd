@@ -1,5 +1,5 @@
-{% with original as o %}
 {% load observations rest_framework_latex %}
+{% with original as o %}
 \paragraph{}
    {{ o.tally }} {{ o.get_track_type_display }} of {{ o.get_species_display }}
 {% endwith %}
