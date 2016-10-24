@@ -1,0 +1,78 @@
+{% load observations rest_framework_latex %}
+{% with o=original %}
+% ----------------------------------------------------------------------------%
+% Begin Feature
+%
+\chapter{% templatetag openbrace %}{{ o.leaflet_title|latex_safe }}}
+
+Case number {{ o.source_id }}
+
+%% QA status and history
+{% if o.tx_logs|length > 0 %}
+{% for log in o.tx_logs %}
+{{ log.timestamp|date:"r" }}: Marked as {{ log.get_status_display }} by {{ log.operator }}
+{% endfor %}
+{% endif %}
+
+{% if o.name %}
+List all encounters with
+\href{% templatetag openbrace %}
+{{ request.scheme }}://{{ request.get_host }}{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}
+}{% templatetag openbrace %}{{ o.name }}}
+{% endif%}
+
+Update details of encounter
+\href{% templatetag openbrace %}
+{{ request.scheme }}://{{ request.get_host }}{{ o.absolute_admin_url }}
+}{% templatetag openbrace %}{{ o.leaflet_title }}}
+
+% Map
+\getmap[file=map_{{ o.pk }},markers={&markers=size:mid|label:{{ o.leaflet_title }}|color:red|{{ o.latitude }},{{o.longitude}}}]{% templatetag openbrace %}{{ o.latitude }},{{o.longitude}}}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\textwidth]{map_{{o.pk}}}
+\caption{% templatetag openbrace %}
+Observed at
+Lat {{ o.latitude|floatformat:"-4" }}
+Lon {{ o.longitude|floatformat:"-4" }}
+({{ o.crs }}) $\pm$ {{ o.location_accuracy }} m WGS 84}
+\end{figure}
+
+Observed on {{ o.when }}
+by \href{% templatetag openbrace %}
+mailto:{{ o.observer.email }}}{% templatetag openbrace %}
+{{ o.observer.name }}}{% if o.observer.phone %} ({{ o.observer.phone }}){% endif %}
+{% if o.site_visit %} during site visit {{ o.site_visit }}{% endif %}.
+
+Recorded by \href{% templatetag openbrace %}
+mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
+{{ o.reporter.name }}}{% if o.reporter.phone %} ({{ o.reporter.phone }}){% endif %}.
+
+{% block encounter_extra %}
+{% endblock %}
+
+% Observations
+{% if o.observation_set %}
+\section{Observations and Measurements}
+{% for obs in o.observations %}
+{{ obs.as_latex }}
+{% endfor %}
+{% endif %}
+
+{% if o.photographs %}
+\section{Photographs}
+{% for p in o.photographs %}
+% Photo {{ p.title }} \url{% templatetag openbrace %}{{ p.attachment }}}
+% viewset's pre_latex has already symlinked attachments
+%\write18{wget {{ p.attachment }} -O {{ p.attachment|filename }}}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.9\textwidth]{% templatetag openbrace %}{{ p.attachment }}}
+\caption{% templatetag openbrace %}{{ p.title }}}
+\end{figure}
+{% endfor %}
+{% endif %}
+%
+% End Feature
+% ----------------------------------------------------------------------------%
+{% endwith %}

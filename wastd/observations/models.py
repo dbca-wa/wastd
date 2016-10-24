@@ -840,6 +840,11 @@ class Encounter(PolymorphicModel, geo_models.Model):
         blank=True, null=True, editable=False,
         help_text=_("The cached HTML representation for display purposes."),)
 
+    as_latex = models.TextField(
+        verbose_name=_("Latex fragment"),
+        blank=True, null=True, editable=False,
+        help_text=_("The cached Latex fragment for reporting purposes."),)
+
     encounter_type = models.CharField(
         max_length=300,
         blank=True, null=True, editable=False,
@@ -947,12 +952,13 @@ class Encounter(PolymorphicModel, geo_models.Model):
         The encounter type is inferred from the type of attached Observations.
         This logic is overridden in subclasses.
         """
-        self.as_html = self.get_popup()
-        self.encounter_type = self.get_encounter_type
         if not self.source_id:
             self.source_id = self.short_name
         if (not self.name) and self.inferred_name:
             self.name = self.inferred_name
+        self.encounter_type = self.get_encounter_type
+        self.as_html = self.get_popup()
+        self.as_latex = self.get_latex()
         super(Encounter, self).save(*args, **kwargs)
 
     # Name -------------------------------------------------------------------#
@@ -1072,6 +1078,12 @@ class Encounter(PolymorphicModel, geo_models.Model):
     def get_report(self):
         """Generate an HTML report of the Encounter."""
         t = loader.get_template("reports/{0}.html".format(self._meta.model_name))
+        c = Context({"original": self})
+        return mark_safe(t.render(c))
+
+    def get_latex(self):
+        """Generate a Latex fragment of the Encounter."""
+        t = loader.get_template("latex/fragments/{0}.tex".format(self._meta.model_name))
         c = Context({"original": self})
         return mark_safe(t.render(c))
 

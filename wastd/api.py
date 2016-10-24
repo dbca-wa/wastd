@@ -404,7 +404,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
-                  'as_html',
+                  'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
 
@@ -425,6 +425,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
 
 class AnimalEncounterSerializer(EncounterSerializer):
     """AnimalEncounter serializer."""
+
     # where = PointField(required=True)
     observation_set = ObservationSerializer(many=True, read_only=False)
     observer = UserSerializer(many=False, read_only=False)
@@ -453,13 +454,14 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
-                  'as_html',
+                  'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
 
 
 class TurtleNestEncounterSerializer(EncounterSerializer):
     """TurtleNestEncounter serializer."""
+
     # where = PointField(required=True)
 
     class Meta:
@@ -470,13 +472,14 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'observer', 'reporter',
                   'nest_age', 'species', 'habitat', 'disturbance',
                   'status', 'source', 'source_id', 'encounter_type',
-                  'as_html',
+                  'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
 
 
 class LoggerEncounterSerializer(EncounterSerializer):
     """LoggerEncounter serializer."""
+
     # where = PointField(required=True)
 
     class Meta:
@@ -486,7 +489,7 @@ class LoggerEncounterSerializer(EncounterSerializer):
         fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
                   'deployment_status', 'comments',
-                  'as_html',
+                  'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
 
@@ -525,7 +528,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     """TurtleNestEncounter view set."""
-    latex_name = 'latex/turtlenestencounter.tex'
+    latex_name = 'latex/encounter.tex'
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
@@ -540,7 +543,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
     """AnimalEncounter view set."""
-    latex_name = 'latex/animalencounter.tex'
+    latex_name = 'latex/encounter.tex'
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
@@ -557,7 +560,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 
 class LoggerEncounterViewSet(viewsets.ModelViewSet):
     """LoggerEncounter view set."""
-    latex_name = 'latex/loggerencounter.tex'
+    latex_name = 'latex/encounter.tex'
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
     filter_fields = [

@@ -1,0 +1,12 @@
+{% extends 'latex/fragments/encounter.tex' %}
+{% with o=original %}
+{% block encounter_extra %}
+\section{Logger details}
+{{ o.get_deployment_status_display }}
+
+{% if o.comments %}
+{{ o.comments }}
+{% endif %}
+
+{% endblock %}
+{% endwith %}
