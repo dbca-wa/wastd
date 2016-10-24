@@ -15,7 +15,7 @@ from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 # from dynamic_rest import routers as dr
 
-from wastd.api import router  # sync_route
+from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter
 from wastd.observations.views import (
     schema_view, update_names, EncounterTableView, AnimalEncounterTableView)
@@ -55,7 +55,7 @@ urlpatterns = [
     url(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 
     # Synctools
-    # url("^api/sync/", include(sync_route.urlpatterns)),
+    # url("^sync/", include(sync_route.urlpatterns)),
 
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^select2/', include('django_select2.urls')),

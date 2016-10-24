@@ -55,13 +55,11 @@ from wastd.observations.models import (
 from wastd.users.models import User
 
 # from django.conf import settings
-# from synctool.routing import Route as SynctoolRoute
 
+# from synctool.routing import Route as SynctoolRoute
 # # Synctools
 # # http://django-synctool.readthedocs.io/
 # sync_route = SynctoolRoute()
-#
-#
 # @sync_route.app("users", "users")
 # @sync_route.app("observations", "observations")
 
