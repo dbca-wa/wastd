@@ -35,13 +35,11 @@
     {% endif %}
 
     {% if o.handler %}
-    <i class="fa fa-fw fa-eye"></i>
-    <a href="mailto:{{ o.observer.email }}">{{ o.handler.name }}</a>
+    \href{"mailto:{{ o.handler.email }}}{% templatetag openbrace %}{{ o.handler.name }}}
     {% endif %}
 
     {% if o.recorder %}
-    <i class="fa fa-fw fa-pencil"></i>
-    <a href="mailto:{{ o.reporter.email }}">{{ o.recorder.name }}</a>
+    \href{"mailto:{{ o.reporter.email }}}{% templatetag openbrace %}{{ o.recorder.name }}}
     {% endif %}
 
 {% endwith %}
