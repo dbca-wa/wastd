@@ -76,7 +76,7 @@ d = requests.get(url + "?format=csv", headers=headers).content
 
             <h3>Code example on the command line</h3>
             <pre>
-curl -X GET {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/ -H 'Authorization: Token {{ request.user.apitoken }}'
+curl GET {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/ -H 'Authorization: Token {{ request.user.apitoken }}'
             </pre>
 
         </div><!-- /.col-sm-12 "-->
