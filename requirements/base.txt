@@ -108,6 +108,7 @@ django-filter==0.15.3
 django-rest-swagger==2.0.7
 coreapi==2.0.8
 coreapi-cli
+pypandoc
 
 
 # Static and Media Storage

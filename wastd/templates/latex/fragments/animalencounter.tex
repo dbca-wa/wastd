@@ -11,7 +11,7 @@ Taxonomic group: {{ o.get_taxon_display }}
 Species: {{ o.get_species_display }}
 
 {% if o.behaviour %}
-Behaviour and condition: {{ o.behaviour }}
+Behaviour and condition: {{ o.behaviour|tex }}
 {% endif %}
 
 {% if o.cause_of_death != "na" %}

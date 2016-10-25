@@ -5,6 +5,7 @@ from django.template.defaultfilters import stringfilter, register
 from wastd.observations.models import Encounter, OBSERVATION_ICONS
 from rest_framework.authtoken.models import Token
 from django.conf import settings
+import pypandoc
 
 register = template.Library()
 
@@ -76,3 +77,10 @@ def fa_observation_icon(observation_value):
 @register.filter
 def filename(value):
     return os.path.basename(value)
+
+
+@register.filter
+@stringfilter
+def tex(string_value):
+    """Convert a text or HTML string to tex."""
+    return pypandoc.convert(string_value, 'tex', format='html')
