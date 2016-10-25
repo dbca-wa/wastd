@@ -401,3 +401,6 @@ SYNCTOOL_API_TOKEN = env('SYNCTOOL_API_TOKEN', default='TOKEN')
 
 # Phone number
 PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
+
+# Google Maps API key
+GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY', default="not-set")

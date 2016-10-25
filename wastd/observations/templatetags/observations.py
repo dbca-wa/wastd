@@ -4,11 +4,18 @@ from django_fsm_log.models import StateLog
 from django.template.defaultfilters import stringfilter, register
 from wastd.observations.models import Encounter, OBSERVATION_ICONS
 from rest_framework.authtoken.models import Token
+from django.conf import settings
 
 register = template.Library()
 
 
-@register.tag()
+@register.simple_tag
+def google_maps_apikey(*args, **kwargs):
+    """Return the settings key GOOGLE_MAPS_API_KEY."""
+    return settings.GOOGLE_MAPS_API_KEY
+
+
+@register.simple_tag
 def apitoken(user, **kwargs):
     return Token.objects.get_or_create(user=user)[0].key
 

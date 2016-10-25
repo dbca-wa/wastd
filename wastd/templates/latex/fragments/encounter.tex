@@ -27,10 +27,17 @@ Update details of encounter
 }{% templatetag openbrace %}{{ o.leaflet_title }}}
 
 % Map
-\getmap[
-    file=map_{{ o.pk }}, size=640x400,
-    markers={&markers=size:mid|label:{{ o.leaflet_title }}|color:red|{{ o.latitude }},{{o.longitude}}}
-    ]{% templatetag openbrace %}{{ o.latitude }},{{o.longitude}}}
+% http://download.nus.edu.sg/mirror/ctan/macros/latex/contrib/getmap/getmap.pdf
+\getmap[%
+    file=map_{{ o.pk }},%
+    xsize=600,%
+    ysize=400,%
+    zoom=10,%
+    type=satellite,%
+    key={% google_maps_apikey %},%
+    %markers={&markers=size:mid|label:X|color:red|{{ o.latitude }},{{o.longitude}}}%
+]{% templatetag openbrace %}{{ o.latitude }},{{o.longitude}}}
+
 \begin{figure}[!h]
 \centering
 \includegraphics[width=\textwidth]{map_{{o.pk}}}
@@ -40,6 +47,8 @@ Lat {{ o.latitude|floatformat:"-4" }}
 Lon {{ o.longitude|floatformat:"-4" }}
 ({{ o.crs }}) $\pm$ {{ o.location_accuracy }} m WGS 84}
 \end{figure}
+
+
 
 Observed on {{ o.when }}
 by \href{% templatetag openbrace %}
