@@ -35,6 +35,7 @@ def symlink_one_resource(t_dir, rj):
         print("pre_latex symlinking {0}".format(media_path))
         dest_dir = os.path.join(t_dir, "tex", media_path)
         os.makedirs(dest_dir)
+        print("pre_latex created {0}".format(str(dest_dir)))
 
         for photo in rj["photographs"]:
             # Once per photo, symlink file to temp_dir
@@ -69,7 +70,7 @@ def symlink_resources(t_dir, data):
 
     elif "photographs" in d.keys():
         print("Symlinking photographs of a JSON object")
-
+        symlink_one_resource(t_dir, d)
     else:
         print("Symlinking photographs of a list of JSON objects")
         [symlink_one_resource(t_dir, enc) for enc in d]
