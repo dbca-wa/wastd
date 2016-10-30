@@ -746,6 +746,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         (ENCOUNTER_TAGGING, "Tagging"),
         (ENCOUNTER_NEST, "Nest"),
         (ENCOUNTER_TRACKS, "Tracks"),
+        (ENCOUNTER_INWATER, "In water"),
         (ENCOUNTER_TAG, "Tag Management"),
         (ENCOUNTER_LOGGER, "Logger"),
         (ENCOUNTER_OTHER, "Other")
@@ -757,6 +758,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ENCOUNTER_NEST: "home",
         ENCOUNTER_TRACKS: "truck",
         ENCOUNTER_TAG: "cog",
+        ENCOUNTER_INWATER: "cog",
         ENCOUNTER_LOGGER: "tablet",
         ENCOUNTER_OTHER: "question-circle"
         }
@@ -764,6 +766,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
     LEAFLET_COLOUR = {
         ENCOUNTER_STRANDING: 'darkred',
         ENCOUNTER_TAGGING: 'blue',
+        ENCOUNTER_INWATER: 'blue',
         ENCOUNTER_NEST: 'green',
         ENCOUNTER_TRACKS: 'cadetblue',
         ENCOUNTER_TAG: 'darkpuple',

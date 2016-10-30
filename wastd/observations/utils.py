@@ -46,6 +46,8 @@ def symlink_one_resource(t_dir, rj):
                 # emulate ln -sf
                 os.remove(dest)
             os.symlink(src, dest)
+    else:
+        print("No photographs found.")
 
 
 def symlink_resources(t_dir, data):
