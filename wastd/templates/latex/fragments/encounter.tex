@@ -38,7 +38,7 @@ Update details of encounter
     %markers={&markers=size:mid|label:X|color:red|{{ o.latitude }},{{o.longitude}}}%
 ]{% templatetag openbrace %}{{ o.latitude }},{{o.longitude}}}
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{map_{{o.pk}}}
 \caption{% templatetag openbrace %}
@@ -67,7 +67,7 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 {% if o.observation_set %}
 \section{Observations and Measurements}
 {% for obs in o.observations %}
-{{ obs.as_latex }}
+{{ obs.as_latex|latex_safe }}
 {% endfor %}
 {% endif %}
 
@@ -79,7 +79,7 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.9\textwidth]{% templatetag openbrace %}{{ p.attachment }}}
-\caption{% templatetag openbrace %}{{ p.title }}}
+\caption{% templatetag openbrace %}{{ p.title|latex_safe }}}
 \end{figure}
 {% endfor %}
 {% endif %}
