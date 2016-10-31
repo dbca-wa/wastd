@@ -29,7 +29,7 @@ def allocate_animal_names():
 
 def symlink_one_resource(t_dir, rj):
     """Symlink photographs of a resource JSON ``rj`` to a temp dir ``t_dir``."""
-    if len(rj["photographs"]) > 0:
+    if "photographs" in rj and len(rj["photographs"]) > 0:
         # Once per encounter, create temp_dir/media_path
         media_path = os.path.split(rj["photographs"][0]["attachment"])[0]
         print("pre_latex symlinking {0}".format(media_path))
