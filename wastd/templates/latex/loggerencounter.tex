@@ -3,7 +3,15 @@
 
 {% block encounter_extra %}
 \section*{Logger details}
-Status: {{ o.deployment_status }}
+\paragraph{Type}
+{{ o.get_logger_type_display }}
 
-Comments: {{ o.comments }}
+\paragraph{Status}
+{{ o.get_deployment_status_display }}
+
+\paragraph{Logger ID}
+{{ o.logger_id|tex }}
+
+\paragraph{Comments}
+{{ o.comments|tex }}
 {% endblock %}

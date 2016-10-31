@@ -35,11 +35,11 @@
     {% endif %}
 
     {% if o.handler %}
-    \href{mailto:{{ o.handler.email }}}{% templatetag openbrace %}{{ o.handler.name }}}
+    Handled by \href{mailto:{{ o.handler.email }}}{% templatetag openbrace %}{{ o.handler.name }}}
     {% endif %}
 
     {% if o.recorder %}
-    \href{mailto:{{ o.reporter.email }}}{% templatetag openbrace %}{{ o.recorder.name }}}
+    Recorded by \href{mailto:{{ o.reporter.email }}}{% templatetag openbrace %}{{ o.recorder.name }}}
     {% endif %}
 
 {% endwith %}

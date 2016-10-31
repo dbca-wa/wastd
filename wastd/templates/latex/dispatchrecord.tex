@@ -1,5 +1,5 @@
 {% load observations rest_framework_latex %}
 {% with original as o %}
-\paragraph{}
+\paragraph{Dispatch details}
     Sent to {{ o.sent_to }} on {{ o.encounter.when|date:"d/m/Y" }}
 {% endwith %}

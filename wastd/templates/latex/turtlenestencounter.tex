@@ -2,8 +2,11 @@
 {% extends 'latex/encounter.tex' %}
 
 {% block encounter_extra %}
-\section*{Nest/Track details}
-{{ o.nest_age }} of {{ o.species }} on {{ o.habitat }}
+\section*{Nest or Track details}
+{{ o.get_nest_age_display }}
+of {{ o.get_species_display }}
+on {{ o.get_habitat_display }}
 
-Disturbance: {{ o.disturbance }}
+\paragraph{Disturbance}
+{{ o.get_disturbance_display }}
 {% endblock %}

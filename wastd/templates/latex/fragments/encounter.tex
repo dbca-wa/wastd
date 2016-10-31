@@ -67,7 +67,7 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 {% if o.observation_set %}
 \section{Observations and Measurements}
 {% for obs in o.observations %}
-{{ obs.as_latex|tex }}
+{{ obs.as_latex }}
 {% endfor %}
 {% endif %}
 

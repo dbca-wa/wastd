@@ -1,14 +1,14 @@
 {% load observations rest_framework_latex %}
 {% with original as o %}
-\paragraph{}
-    {{ o.get_tag_type_display }} {{ o.name }}
-    {{ o.get_status_display }} on {{ o.get_tag_location_display }}
+\paragraph{Logger details}
+{{ o.get_tag_type_display }} {{ o.name }}
+{{ o.get_status_display }} on {{ o.get_tag_location_display }}
 
-    {% if o.handler %}
-    \href{mailto:{{ o.handler.email }}}{% templatetag openbrace %}{{ o.handler.name }}}
-    {% endif %}
+{% if o.handler %}
+Handled by \href{mailto:{{ o.handler.email }}}{% templatetag openbrace %}{{ o.handler.name }}}
+{% endif %}
 
-    {% if o.recorder %}
-    \href{mailto:{{ o.reporter.email }}}{% templatetag openbrace %}{{ o.recorder.name }}}
-    {% endif %}
+{% if o.recorder %}
+Recorded by \href{mailto:{{ o.reporter.email }}}{% templatetag openbrace %}{{ o.recorder.name }}}
+{% endif %}
 {% endwith %}

@@ -3,23 +3,34 @@
 
 {% block encounter_extra %}
 \section*{Animal details}
-Species: {{ o.species }}
 
-Taxonomic group: {{ o.taxon }}
+\paragraph{Species}
+{{ o.get_species_display }}
 
-Health: {{ o.health }}
+\paragraph{Taxonomic group}
+{{ o.get_taxon_display }}
 
-Sex: {{ o.sex }}
+\paragraph{Health}
+{{ o.get_health_display }}
 
-Behaviour and condition: {{ o.behaviour|tex }}
+\paragraph{Sex}
+{{ o.get_sex_display }}
 
-Encountered on: {{ o.habitat }}
+\paragraph{Behaviour and condition}
+{{ o.behaviour|tex }}
 
-Activity: {{ o.activity }}
+\paragraph{Encountered on}
+{{ o.habitat }}
 
-Checked for injuries: {{ o.checked_for_injuries }}
+\paragraph{Activity}
+{{ o.activity }}
 
-Scanned for PIT tags: {{ o.scanned_for_pit_tags }}
+\paragraph{Checked for injuries}
+{{ o.get_checked_for_injuries_display }}
 
-Checked for flipper tags: {{ o.checked_for_flipper_tags }}
+\paragraph{Scanned for PIT tags}
+{{ o.get_scanned_for_pit_tags_display }}
+
+\paragraph{Checked for flipper tags}
+{{ o.get_checked_for_flipper_tags_display }}
 {% endblock %}
