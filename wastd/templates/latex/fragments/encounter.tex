@@ -3,7 +3,7 @@
 % ----------------------------------------------------------------------------%
 % Begin Feature
 %
-\chapter{% templatetag openbrace %}{{ o.leaflet_title|latex_safe }}}
+\chapter{% templatetag openbrace %}{{ o.leaflet_title|tex }}}
 
 Case number {{ o.source_id }}
 
@@ -24,7 +24,7 @@ List all encounters with
 Update details of encounter
 \href{% templatetag openbrace %}
 {{ request.scheme }}://{{ request.get_host }}{{ o.absolute_admin_url }}
-}{% templatetag openbrace %}{{ o.leaflet_title }}}
+}{% templatetag openbrace %}{{ o.leaflet_title|tex }}}
 
 % Map
 % http://download.nus.edu.sg/mirror/ctan/macros/latex/contrib/getmap/getmap.pdf
@@ -67,7 +67,7 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 {% if o.observation_set %}
 \section{Observations and Measurements}
 {% for obs in o.observations %}
-{{ obs.as_latex|latex_safe }}
+{{ obs.as_latex|tex }}
 {% endfor %}
 {% endif %}
 
@@ -79,7 +79,7 @@ mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.9\textwidth]{% templatetag openbrace %}{{ p.attachment }}}
-\caption{% templatetag openbrace %}{{ p.title|latex_safe }}}
+\caption{% templatetag openbrace %}{{ p.title|tex }}}
 \end{figure}
 {% endfor %}
 {% endif %}
