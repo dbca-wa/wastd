@@ -237,7 +237,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                    'location_accuracy', 'encounter_type')
 
     # Columns for change_list, allow re-use and inserting fields
-    FIRST_COLS = ('site_visit', 'when', 'latitude', 'longitude', 'location_accuracy', 'name')
+    FIRST_COLS = ('when', 'site_visit', 'latitude', 'longitude', 'location_accuracy', 'name')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
                  'status', 'encounter_type')
     list_display = FIRST_COLS + LAST_COLS
