@@ -245,16 +245,24 @@ MATURITY_CHOICES = ((NA_VALUE, "unknown maturity"), ) +\
     TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES +\
     (("adult", "adult"), )
 
+HEALTH_D1 = 'alive-then-died'
+HEALTH_D2 = 'dead-edible'
+HEALTH_D3 = 'dead-organs-intact'
+HEALTH_D4 = 'dead-advanced'
+HEALTH_D5 = 'dead-mummified'
+HEALTH_D6 = 'dead-disarticulated'
+DEATH_STAGES = (
+    HEALTH_D1, HEALTH_D2, HEALTH_D3, HEALTH_D4, HEALTH_D5, HEALTH_D6)
 HEALTH_CHOICES = (
     (NA_VALUE, "unknown health"),
     ('alive', 'alive, healthy'),
     ('alive-injured', 'alive, injured'),
-    ('alive-then-died', 'alive, then died'),
-    ('dead-edible', 'dead, fresh'),
-    ('dead-organs-intact', 'dead, organs intact'),
-    ('dead-advanced', 'dead, organs decomposed'),
-    ('dead-mummified', 'dead, mummified'),
-    ('dead-disarticulated', 'dead, disarticulated'),
+    (HEALTH_D1, 'D1 (alive, then died)'),
+    (HEALTH_D2, 'D2 (dead, fresh)'),
+    (HEALTH_D3, 'D3 (dead, organs intact)'),
+    (HEALTH_D4, 'D4 (dead, organs decomposed)'),
+    (HEALTH_D5, 'D5 (dead, mummified)'),
+    (HEALTH_D6, 'D6 (dead, disarticulated)'),
     ('other', 'other'),
     )
 
@@ -1432,18 +1440,21 @@ class AnimalEncounter(Encounter):
         """Infer the encounter type.
 
         AnimalEncounters are either in water, tagging or stranding encounters.
+        If the animal is dead (at various decompositional stages), a stranding
+        is assumed.
         In water captures happen if the habitat is in the list of aquatic
         habitats.
-        For the remaining encountesr, the value of ``health`` is an exact
-        delineation between strandings and taggings - strandings are all
-        but ``alive``.
+        Remaining encounters are assumed to be taggings, as other encounters are
+        excluded. Note that an animal encountered in water, or even a dead
+        animal (whether that makes sense or not) can also be tagged.
         """
-        if self.habitat in HABITAT_WATER:
-            return Encounter.ENCOUNTER_INWATER
-        elif self.health == 'alive':
-            return Encounter.ENCOUNTER_TAGGING
-        else:
+        if self.health in DEATH_STAGES:
             return Encounter.ENCOUNTER_STRANDING
+        elif self.habitat in HABITAT_WATER:
+            return Encounter.ENCOUNTER_INWATER
+        else:
+            # not stranding or in water = tagging
+            return Encounter.ENCOUNTER_TAGGING
 
     @property
     def short_name(self):
@@ -2121,8 +2132,12 @@ class TurtleMorphometricObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Turtle Morphometrics {0} for {1}".format(
-            self.pk, self.encounter)
+        tpl = "Turtle Morphometrics {0} CCL {1} CCW {2} for Encounter {3}"
+        return tpl.format(
+            self.pk,
+            self.curved_carapace_length_mm,
+            self.curved_carapace_width_mm,
+            self.encounter.pk)
 
 
 @python_2_unicode_compatible
