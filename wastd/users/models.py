@@ -25,7 +25,10 @@ class User(AbstractUser):
 
     # First Name and Last Name do not cover name patterns around the globe.
     name = models.CharField(_('Name of User'), blank=True, max_length=255)
-    # role = models.CharField(_('Role of User'), blank=True, max_length=1000)
+    role = models.CharField(_('Role of User'),
+                            blank=True, null=True,
+                            max_length=1000,
+                            help_text=_('The role of the user.'))
     phone = PhoneNumberField(
         verbose_name=_('Phone Number'),
         blank=True, null=True,
@@ -39,7 +42,8 @@ class User(AbstractUser):
 
     def fullname(self):
         """The full name plus email."""
-        return "{0} {1}".format(self.name or self.username, self.email)
+        return "{0} ({1}) {2}".format(self.name or self.username,
+                                      self.role, self.email)
 
     def get_absolute_url(self):
         """The absolute URL."""
@@ -48,7 +52,7 @@ class User(AbstractUser):
     @staticmethod
     def autocomplete_search_fields():
         """Search fields for Grappelli admin skin."""
-        return ("id__iexact", "name__icontains", )
+        return ("id__iexact", "name__icontains", "role__icontains")
 
     @property
     def apitoken(self):
