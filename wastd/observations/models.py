@@ -410,11 +410,13 @@ HABITAT_CHOICES = ((NA_VALUE, "unknown habitat"), ) +\
     ("reef-flat", "reef flat, dries at low tide"),
     ("reef-seagrass-flats", "coral reef with seagrass flats"),
     ("reef-rocky", "rocky reef"),
-    ("open-water", "open water"), )
+    ("open-water", "open water"),
+    ("harbour", "harbour"),
+    )
 
 HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                  "reef-coral", "reef-crest-front-slope", "reef-flat",
-                 "reef-seagrass-flats", "reef-rocky", "open-water")
+                 "reef-seagrass-flats", "reef-rocky", "open-water", "harbour")
 
 NEST_AGE_DEFAULT = "new-track-nesting-crawl"
 NEST_AGE_CHOICES = (
