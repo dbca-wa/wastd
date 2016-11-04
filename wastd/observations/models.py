@@ -412,6 +412,7 @@ HABITAT_CHOICES = ((NA_VALUE, "unknown habitat"), ) +\
     ("reef-rocky", "rocky reef"),
     ("open-water", "open water"),
     ("harbour", "harbour"),
+    ("boat-ramp", "boat ramp"),
     )
 
 HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
