@@ -51,12 +51,12 @@ Lon {{ o.longitude|floatformat:"-4" }}
 Observed on {{ o.when }}
 by \href{% templatetag openbrace %}
 mailto:{{ o.observer.email }}}{% templatetag openbrace %}
-{{ o.observer.name }}}{% if o.observer.phone %} ({{ o.observer.phone }}){% endif %}
+{{ o.observer.fullname }}}{% if o.observer.phone %} ({{ o.observer.phone }}){% endif %}
 {% if o.site_visit %} during site visit {{ o.site_visit }}{% endif %}.
 
 Recorded by \href{% templatetag openbrace %}
 mailto:{{ o.reporter.email }}}{% templatetag openbrace %}
-{{ o.reporter.name }}}{% if o.reporter.phone %} ({{ o.reporter.phone }}){% endif %}.
+{{ o.reporter.fullname }}}{% if o.reporter.phone %} ({{ o.reporter.phone }}){% endif %}.
 
 {% block encounter_extra %}
 {% endblock %}

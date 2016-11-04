@@ -39,10 +39,12 @@
 <!-- Observer -->
 <div class="row">
     <i class="fa fa-fw fa-eye"></i>
-    <a href="mailto:{{ o.observer.email }}">{{ o.observer.name }}</a>
+    <a href="mailto:{{ o.observer.email }}"
+    title="Send email to {{ o.observer.fullname }}">{{ o.observer.name }}</a>
 
     <i class="fa fa-fw fa-pencil"></i>
-    <a href="mailto:{{ o.reporter.email }}">{{ o.reporter.name }}</a>
+    <a href="mailto:{{ o.reporter.email }}"
+    title="Send email to {{ o.reporter.fullname }}">{{ o.reporter.name }}</a>
 </div><!-- /.row -->
 
 {% block headlines %}{% endblock %}

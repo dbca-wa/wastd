@@ -42,8 +42,7 @@ class User(AbstractUser):
 
     def fullname(self):
         """The full name plus email."""
-        return "{0} ({1}) {2}".format(self.name or self.username,
-                                      self.role, self.email)
+        return "{0} ({1})".format(self.name or self.username, self.role)
 
     def get_absolute_url(self):
         """The absolute URL."""
