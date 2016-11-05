@@ -10,10 +10,10 @@
     <div class="col-sm-12">
       <h2>{{ object }}</h2>
       <p>
-          <i class="fa fa-envelope" aria-hidden="true"></i> {{ object.email }}
-          <i class="fa fa-mobile" aria-hidden="true"></i> {{ object.phone }}
+          <i class="fa fa-fw fa-envelope" aria-hidden="true"></i> {{ object.email }}
+          <i class="fa fa-fw fa-mobile" aria-hidden="true"></i> {{ object.phone }}
+          <i class="fa fa-fw fa-user" aria-hidden="true"></i> {{ object.role }}
       </p>
-
   </div>
 </div>
 
@@ -24,7 +24,7 @@
           class="btn btn-primary btn-sm"
           target="_" title="Export contributions of {% firstof object.name object.username %}">
           <i class="fa fa-fw fa-file-pdf-o"></i>
-          Export all encounters by {% firstof object.name object.username %}
+          Export all encounters observed by {% firstof object.name object.username %}
       </a>
     </p>
   </div>
