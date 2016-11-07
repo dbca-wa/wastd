@@ -1325,6 +1325,8 @@ class AnimalEncounter(Encounter):
     * activity (choices)
     * behaviour (free text)
     * habitat (choices)
+
+    Turtle Strandings are encounters of turtles
     """
 
     taxon = models.CharField(
@@ -1519,11 +1521,15 @@ class AnimalEncounter(Encounter):
 class TurtleNestEncounter(Encounter):
     """The encounter of turtle nest during its life cycle.
 
+    The observations are assumed to follow DPaW protocol.
+    TurtleNestEncouters by third parties can be recorded, but related
+    observations cannot if they don't follow DPaW protocol.
+
     Stages:
 
     * false crawl (aborted nesting attempt)
     * new (turtle is present, observed during nesting/tagging)
-    * fresh (morning after, observed during trach count)
+    * fresh (morning after, observed during track count)
     * predated (nest and eggs destroyed by predator)
     * hatched (eggs hatched)
     """
