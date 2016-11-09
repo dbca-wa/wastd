@@ -26,8 +26,8 @@ unipath
 # ------------------------------------------------
 # django-adminactions>=1.2
 -e git+https://github.com/saxix/django-adminactions.git@florianm-develop#egg=django-adminactions
-#django-grappelli
--e git+https://github.com/sehmaschine/django-grappelli.git@stable/2.9.x#egg=django-grappelli
+django-grappelli==2.9.1
+#-e git+https://github.com/sehmaschine/django-grappelli.git@stable/2.9.x#egg=django-grappelli
 
 # Forms
 # ------------------------------------------------

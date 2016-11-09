@@ -24,10 +24,12 @@ WAStD will interact, and eventually integrate with BioSys.
 Departmental business related to turtle strandings:
 
 * Strandings of other marine animals (cetaceans, pinnipeds, dugong, sea snakes)
-* Tagging of nesting turtles, and the whole life cycle of tags put on turtles
+* (priority 1) Tagging of nesting turtles, and the whole life cycle of tags put on turtles
   (legacy system: WAMTRAM 2, data custodian Bob Prince)
-* Turtle track and nest counts (fresh, predated, or hatched nests)
+* (priority 2) Turtle track and nest counts (fresh, predated, or hatched nests)
   (legacy system: Ningaloo Track Count Access Database, data custodian Keely Markovina)
+  as turtles per km of coastline
+* Turtle track count from remotely sensed, aerial imagery
 * other administrative data related to turtle monitoring
   (temperature loggers deployed in turtle nests) (no existing systems)
 * Data entry (tagging) by field operators through standalone, offline, desktop capture tool (no existing system)
