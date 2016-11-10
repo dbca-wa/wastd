@@ -144,7 +144,7 @@ TURTLE_SPECIES_CHOICES = (
     ('Dermochelys coriacea', 'Dermochelys coriacea (Leatherback turtle)'),
     ('Chelonia mydas agassazzi', 'Chelonia mydas agassazzi (Black turtle or East Pacific Green)'),
     ('Corolla corolla', 'Corolla corolla (Hatchback turtle)'),
-    (TURTLE_SPECIES_DEFAULT, 'Chenloniidae (Unidentified turtle)'),
+    (TURTLE_SPECIES_DEFAULT, 'Cheloniidae (Unidentified turtle)'),
     # Caretta caretta x Chelonia mydas (Hybrid turtle)
     # Chelonia mydas agassazzi (Black turtle or East Pacific Green)
     # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
@@ -382,10 +382,10 @@ ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 
 BEACH_POSITION_CHOICES = (
     (NA_VALUE, "unknown habitat"),
-    ("beach-below-high-water", _("beach below high water mark")),
-    ("beach-above-high-water", _("beach between high water mark and dune")),
-    ("beach-edge-of-vegetation", _("edge of dune and vegetation")),
-    ("in-dune-vegetation", _("inside dune and vegetation")), )
+    ("beach-below-high-water", _("(B) beach below high water mark")),
+    ("beach-above-high-water", _("(A) beach above high water mark and dune")),
+    ("beach-edge-of-vegetation", _("(E) edge of vegetation")),
+    ("in-dune-vegetation", _("(V) inside vegetation")), )
 
 HABITAT_CHOICES = BEACH_POSITION_CHOICES + (
     ("beach", "beach (below vegetation line)"),
@@ -420,20 +420,20 @@ HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                  "reef-coral", "reef-crest-front-slope", "reef-flat",
                  "reef-seagrass-flats", "reef-rocky", "open-water", "harbour")
 
-NEST_AGE_DEFAULT = "new-track-successful-crawl"
+NEST_AGE_DEFAULT = "unknown"
 NEST_AGE_CHOICES = (
-    ("old-track", "old track, unsure if false or successful"),
-    ("new-track", "new track, unsure if false of successful"),
-    ("old-track-false-crawl", "old false crawl"),
-    ("old-track-false-crawl", "old successful crawl"),
-    ("new-track-false-crawl", "new false crawl"),
-    ("new-track-successful-crawl", "new successful crawl"),
-    ("nesting-turtle-present", "new nest turtle present"),
-    ("new-nest", "new nest turtle absent"),
-    ("old-nest", "old nest, turtle absent, unpredated, unhatched"),
-    ("predated-nest", "predated nest"),
-    ("hatched-nest", "hatched nest"),
-    # ("unsure", "unsure"),
+    ("old", "(O) old"),
+    ("fresh", "(F) fresh"),
+    (NEST_AGE_DEFAULT, "(U) unknown age"),
+    )
+
+NEST_TYPE_DEFAULT = "new-track-successful-crawl"
+NEST_TYPE_CHOICES = (
+    ("track-false-crawl", "(F) false crawl, non-nesting"),
+    ("track-successful-crawl", "(S) successful crawl, nesting"),
+    ("track", "(U) turtle track, unsure whether false or successful"),
+    ("nest", "(N) turtle nest, unhatched"),         # egg counts, putting eggs back
+    ("nest-hatched", "(H) turtle nest, hatched"),   # hatching and emergence success
     )
 
 OBSERVATION_CHOICES = (
@@ -1545,10 +1545,17 @@ class TurtleNestEncounter(Encounter):
 
     nest_age = models.CharField(
         max_length=300,
-        default="new",
-        verbose_name=_("Nest age"),
+        verbose_name=_("Age"),
         choices=NEST_AGE_CHOICES,
-        help_text=_("The track or nest age and type."), )
+        default=NEST_AGE_DEFAULT,
+        help_text=_("The track or nest age."), )
+
+    nest_type = models.CharField(
+        max_length=300,
+        verbose_name=_("Type"),
+        choices=NEST_TYPE_CHOICES,
+        default=NEST_TYPE_DEFAULT,
+        help_text=_("The track or nest type."), )
 
     species = models.CharField(
         max_length=300,
@@ -1586,8 +1593,9 @@ class TurtleNestEncounter(Encounter):
 
     def __str__(self):
         """The unicode representation."""
-        return "{0} of {1} in {2}".format(
+        return "{0} {1} of {2} in {3}".format(
             self.get_nest_age_display(),
+            self.get_nest_type_display(),
             self.get_species_display(),
             self.get_habitat_display(), )
 
@@ -2476,6 +2484,7 @@ class TurtleNestDisturbanceObservation(Observation):
     NEST_VIABILITY_CHOICES = (
         ("nest-left-viable", "nest left viable"),
         ("nest-destroyed", "nest destroyed"),
+        (NA_VALUE, "nest in indeterminate condition"),
         )
 
     disturbance_cause = models.CharField(
@@ -2495,6 +2504,7 @@ class TurtleNestDisturbanceObservation(Observation):
         max_length=300,
         verbose_name=_("Disturbance severity"),
         choices=NEST_VIABILITY_CHOICES,
+        default=NA_VALUE,
         help_text=_("The impact of the disturbance on nest viability."), )
 
     comments = models.TextField(

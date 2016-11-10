@@ -470,7 +470,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         model = TurtleNestEncounter
         fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when', 'name',
                   'observer', 'reporter',
-                  'nest_age', 'species', 'habitat', 'disturbance', 'comments',
+                  'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'comments',
                   'status', 'source', 'source_id', 'encounter_type',
                   'as_html', 'as_latex',
                   'observation_set', )
@@ -519,7 +519,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'source', 'source_id', 'encounter_type', ]
-    filter_backends = (DjangoFilterBackend, ) # AreaFilter
+    filter_backends = (DjangoFilterBackend, )  # AreaFilter
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -533,8 +533,8 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter',  'status',
-        'nest_age', 'species', 'habitat', 'disturbance', 'source', 'source_id',
-        'encounter_type', ]
+        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source',
+        'source_id', 'encounter_type', ]
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""

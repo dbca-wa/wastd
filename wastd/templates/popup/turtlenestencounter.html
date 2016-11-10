@@ -8,7 +8,7 @@
 {% block encounterdetails %}
 <!-- Nest overview -->
 <div class="row"><i class="fa fa-fw fa-home"></i>
-    {{ o.get_nest_age_display }}
+    {{ o.get_nest_age_display }} {{ o.get_nest_type_display }}
     of {{ o.get_species_display }}
     on {{ o.get_habitat_display }}
 </div>

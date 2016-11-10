@@ -367,13 +367,15 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
 
     form = TurtleNestEncounterAdminForm
     list_display = EncounterAdmin.FIRST_COLS + (
-        'species', 'age_display', 'habitat_display', 'disturbance', 'comments'
+        'age_display', 'type_display', 'species',
+        'habitat_display', 'disturbance', 'comments'
         ) + EncounterAdmin.LAST_COLS
     list_filter = EncounterAdmin.list_filter + (
-        'nest_age', 'species', 'habitat', 'disturbance')
+        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance')
     fieldsets = EncounterAdmin.fieldsets + (
         ('Nest', {'fields': (
-            'nest_age', 'species', 'habitat', 'disturbance', 'comments')}), )
+            'nest_age', 'nest_type', 'species',
+            'habitat', 'disturbance', 'comments')}), )
 
     # Exclude some EncounterAdmin inlines
     inlines = [
@@ -391,6 +393,11 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         """Make nest age human readable."""
         return obj.get_nest_age_display()
     age_display.short_description = 'Nest age'
+
+    def type_display(self, obj):
+        """Make nest type human readable."""
+        return obj.get_nest_type_display()
+    type_display.short_description = 'Nest type'
 
 
 @admin.register(LoggerEncounter)
