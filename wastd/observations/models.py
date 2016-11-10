@@ -778,7 +778,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ENCOUNTER_NEST: "home",
         ENCOUNTER_TRACKS: "truck",
         ENCOUNTER_TAG: "cog",
-        ENCOUNTER_INWATER: "cog",
+        ENCOUNTER_INWATER: "waterdrop",
         ENCOUNTER_LOGGER: "tablet",
         ENCOUNTER_OTHER: "question-circle"
         }
