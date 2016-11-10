@@ -367,12 +367,13 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
 
     form = TurtleNestEncounterAdminForm
     list_display = EncounterAdmin.FIRST_COLS + (
-        'species', 'age_display', 'habitat_display', 'disturbance'
+        'species', 'age_display', 'habitat_display', 'disturbance', 'comments'
         ) + EncounterAdmin.LAST_COLS
     list_filter = EncounterAdmin.list_filter + (
         'nest_age', 'species', 'habitat', 'disturbance')
     fieldsets = EncounterAdmin.fieldsets + (
-        ('Nest', {'fields': ('nest_age', 'species', 'habitat', 'disturbance')}), )
+        ('Nest', {'fields': (
+            'nest_age', 'species', 'habitat', 'disturbance', 'comments')}), )
 
     # Exclude some EncounterAdmin inlines
     inlines = [

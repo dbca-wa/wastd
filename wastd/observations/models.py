@@ -134,6 +134,7 @@ TAXON_CHOICES = NA + (
     ("Elasmobranchii", "Sharks and Rays"),
     ("Hydrophiinae", "Sea snakes and kraits"), )
 
+TURTLE_SPECIES_DEFAULT = 'Cheloniidae fam.'
 TURTLE_SPECIES_CHOICES = (
     ('Natator depressus', 'Natator depressus (Flatback turtle)'),
     ('Chelonia mydas', 'Chelonia mydas (Green turtle)'),
@@ -143,7 +144,7 @@ TURTLE_SPECIES_CHOICES = (
     ('Dermochelys coriacea', 'Dermochelys coriacea (Leatherback turtle)'),
     ('Chelonia mydas agassazzi', 'Chelonia mydas agassazzi (Black turtle or East Pacific Green)'),
     ('Corolla corolla', 'Corolla corolla (Hatchback turtle)'),
-    ('unidentified-turtle', 'Unidentified turtle'),
+    (TURTLE_SPECIES_DEFAULT, 'Chenloniidae (Unidentified turtle)'),
     # Caretta caretta x Chelonia mydas (Hybrid turtle)
     # Chelonia mydas agassazzi (Black turtle or East Pacific Green)
     # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
@@ -380,13 +381,13 @@ ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 # <option value="1">X* - Nesting: Laid</option></select>
 
 BEACH_POSITION_CHOICES = (
+    (NA_VALUE, "unknown habitat"),
     ("beach-below-high-water", _("beach below high water mark")),
     ("beach-above-high-water", _("beach between high water mark and dune")),
     ("beach-edge-of-vegetation", _("edge of dune and vegetation")),
     ("in-dune-vegetation", _("inside dune and vegetation")), )
 
-HABITAT_CHOICES = ((NA_VALUE, "unknown habitat"), ) +\
-    BEACH_POSITION_CHOICES + (
+HABITAT_CHOICES = BEACH_POSITION_CHOICES + (
     ("beach", "beach (below vegetation line)"),
     ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
     ("dune", "dune"),
@@ -419,16 +420,21 @@ HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                  "reef-coral", "reef-crest-front-slope", "reef-flat",
                  "reef-seagrass-flats", "reef-rocky", "open-water", "harbour")
 
-NEST_AGE_DEFAULT = "new-track-nesting-crawl"
+NEST_AGE_DEFAULT = "new-track-successful-crawl"
 NEST_AGE_CHOICES = (
-    ("old-track", "old track"),
-    ("new-track", "new track"),
-    ("new-track-false-crawl", "new track false crawl"),
-    (NEST_AGE_DEFAULT, "new track nesting crawl"),
+    ("old-track", "old track, unsure if false or successful"),
+    ("new-track", "new track, unsure if false of successful"),
+    ("old-track-false-crawl", "old false crawl"),
+    ("old-track-false-crawl", "old successful crawl"),
+    ("new-track-false-crawl", "new false crawl"),
+    ("new-track-successful-crawl", "new successful crawl"),
     ("nesting-turtle-present", "new nest turtle present"),
-    ("fresh", "new nest turtle absent"),
-    ("predated", "predated nest"),
-    ("hatched", "hatched nest"), )
+    ("new-nest", "new nest turtle absent"),
+    ("old-nest", "old nest, turtle absent, unpredated, unhatched"),
+    ("predated-nest", "predated nest"),
+    ("hatched-nest", "hatched nest"),
+    # ("unsure", "unsure"),
+    )
 
 OBSERVATION_CHOICES = (
     (NA_VALUE, "NA"),
@@ -489,21 +495,24 @@ DAMAGE_AGE_CHOICES = (
 
 NEST_DAMAGE_DEFAULT = "fox-predation"
 NEST_DAMAGE_CHOICES = (
-    (NEST_DAMAGE_DEFAULT, "Fox predation"),
-    ("dingo-predation", "Dingo predation"),
-    ("dog-predation", "Dog predation"),
-    ("goanna-predation", "Goanna predation"),
-    ("croc-predation", "Croc predation"),
-    ("bird-predation", "Bird predation"),
-    ("crab-predation", "Crab predation"),
-    ("turtle-disturbance", "Turtle disturbance"),
-    ("cyclone-disturbance", "Cyclone disturbance"),
-    ("tidal-disturbance", "Tidal disturbance"),
-    ("vehicle-damage", "Vehicle damage"),
-    ("harvest", "Harvest"),
-    ("research", "Research"),
-    ("poaching", "Poaching"),
-    ("other", "Other (see comments)"),
+    (NEST_DAMAGE_DEFAULT, "(F)ox predation"),
+    ("dingo-predation", "(Di)ngo predation"),
+    ("dog-predation", "(D)og predation"),
+    ("goanna-predation", "(G)oanna predation"),
+    ("croc-predation", "(C)roc predation"),
+    ("bandicoot-predation", "(Ba)ndicoot predation"),
+    ("pig-predation", "(P)ig predation"),
+    ("bird-predation", "(Bi)rd predation"),
+    ("crab-predation", "(Cr)ab predation"),
+    ("turtle-disturbance", " (A)nother Turtle"),
+    ("cyclone-disturbance", "(Cy)clone disturbance"),
+    ("tidal-disturbance", "(T)idal disturbance"),
+    ("vehicle-damage", "(V)ehicle damage"),
+    ("harvest", "(Ha)rvest"),
+    ("research", "(Re)search"),
+    ("poaching", "(Po)aching"),
+    ("unknown", "(U)nknown"),
+    ("other", "(O)ther identifiable (see comments)"),
     )
 # End lookups ----------------------------------------------------------------#
 
@@ -1539,21 +1548,21 @@ class TurtleNestEncounter(Encounter):
         default="new",
         verbose_name=_("Nest age"),
         choices=NEST_AGE_CHOICES,
-        help_text=_("The nest age and type."), )
+        help_text=_("The track or nest age and type."), )
 
     species = models.CharField(
         max_length=300,
         verbose_name=_("Species"),
-        choices=SPECIES_CHOICES,
-        default="na",
-        help_text=_("The species of the animal."), )
+        choices=TURTLE_SPECIES_CHOICES,
+        default=TURTLE_SPECIES_DEFAULT,
+        help_text=_("The species of the animal which created the track or nest."), )
 
     habitat = models.CharField(
         max_length=500,
         verbose_name=_("Habitat"),
-        choices=HABITAT_CHOICES,
-        default="na",
-        help_text=_("The habitat in which the nest was encountered."), )
+        choices=BEACH_POSITION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("The habitat in which the track or nest was encountered."), )
 
     disturbance = models.CharField(
         max_length=300,
@@ -1561,6 +1570,11 @@ class TurtleNestEncounter(Encounter):
         choices=OBSERVATION_CHOICES,
         default=NA_VALUE,
         help_text=_("Is there evidence of predation or other disturbance?"),)
+
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Comments"), )
 
     class Meta:
         """Class options."""

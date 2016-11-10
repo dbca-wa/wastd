@@ -9,6 +9,7 @@ django-extensions
 # https://djaodjin.com/blog/subfieldbase-deprecated-durationfield.blog.html - fixed
 # https://github.com/gadventures/django-fsm-admin/issues/63 - fixed (overwrote mixins.py with get_field() )
 # https://github.com/saxix/django-adminactions/pull/104 - fixed by using own PR
+# https://github.com/sehmaschine/django-grappelli/issues/783 - fixed by 2.9.1
 
 # Python-PostgreSQL Database Adapter
 # ------------------------------------------------
@@ -27,7 +28,6 @@ unipath
 # django-adminactions>=1.2
 -e git+https://github.com/saxix/django-adminactions.git@florianm-develop#egg=django-adminactions
 django-grappelli==2.9.1
-#-e git+https://github.com/sehmaschine/django-grappelli.git@stable/2.9.x#egg=django-grappelli
 
 # Forms
 # ------------------------------------------------
