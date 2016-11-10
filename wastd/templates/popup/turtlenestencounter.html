@@ -12,6 +12,11 @@
     of {{ o.get_species_display }}
     on {{ o.get_habitat_display }}
 </div>
+{% if o.comments %}
+<div class="row"><i class="fa fa-fw fa-comment-o"></i>
+    {{ o.comments }}
+</div>
+{% endif %}
 {% endblock %}
 
 {% endwith %}

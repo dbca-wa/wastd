@@ -2474,8 +2474,8 @@ class TurtleNestDisturbanceObservation(Observation):
     """
 
     NEST_VIABILITY_CHOICES = (
-        ("nest-left-viable", "Nest left viable"),
-        ("nest-destroyed", "Nest destroyed"),
+        ("nest-left-viable", "nest left viable"),
+        ("nest-destroyed", "nest destroyed"),
         )
 
     disturbance_cause = models.CharField(

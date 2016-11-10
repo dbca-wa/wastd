@@ -7,6 +7,11 @@
 of {{ o.get_species_display }}
 on {{ o.get_habitat_display }}
 
+{% if o.comments %}
+{{ o.comments|tex }}
+{% endif %}
+
+
 \paragraph{Disturbance}
 {{ o.get_disturbance_display }}
 {% endblock %}
