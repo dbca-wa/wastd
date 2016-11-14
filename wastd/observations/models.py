@@ -429,17 +429,19 @@ NEST_AGE_CHOICES = (
 
 NEST_TYPE_DEFAULT = "new-track-successful-crawl"
 NEST_TYPE_CHOICES = (
-    ("track-false-crawl", "(F) false crawl, non-nesting"),
-    ("track-successful-crawl", "(S) successful crawl, nesting"),
-    ("track", "(U) turtle track, unsure whether false or successful"),
+    ("false-crawl", "(F) false crawl, non-nesting"),
+    ("successful-crawl", "(S) successful crawl, nesting"),
+    ("track-unsure", "(U) turtle track, success unsure"),
+    ("track-not-assessed", "(T) turtle track, success not assessed"),
     ("nest", "(N) turtle nest, unhatched"),         # egg counts, putting eggs back
-    ("nest-hatched", "(H) turtle nest, hatched"),   # hatching and emergence success
+    ("hatched-nest", "(H) turtle nest, hatched"),   # hatching and emergence success
     )
 
 OBSERVATION_CHOICES = (
     (NA_VALUE, "NA"),
     ("absent", "Confirmed absent"),
-    ("present", "Confirmed present"),)
+    ("present", "Confirmed present"),
+    )
 
 OBSERVATION_ICONS = {
     NA_VALUE: "fa fa-question-circle-o",
@@ -491,26 +493,25 @@ DAMAGE_TYPE_CHOICES = (
 DAMAGE_AGE_CHOICES = (
     ("healed-entirely", "entirely healed"),
     ("healed-partially", "partially healed"),
-    ("fresh", "fresh"), )
+    ("fresh", "fresh"),
+    )
 
-NEST_DAMAGE_DEFAULT = "fox-predation"
+NEST_DAMAGE_DEFAULT = "turtle"
 NEST_DAMAGE_CHOICES = (
-    (NEST_DAMAGE_DEFAULT, "(F)ox predation"),
-    ("dingo-predation", "(Di)ngo predation"),
-    ("dog-predation", "(D)og predation"),
-    ("goanna-predation", "(G)oanna predation"),
-    ("croc-predation", "(C)roc predation"),
-    ("bandicoot-predation", "(Ba)ndicoot predation"),
-    ("pig-predation", "(P)ig predation"),
-    ("bird-predation", "(Bi)rd predation"),
-    ("crab-predation", "(Cr)ab predation"),
-    ("turtle-disturbance", " (A)nother Turtle"),
-    ("cyclone-disturbance", "(Cy)clone disturbance"),
-    ("tidal-disturbance", "(T)idal disturbance"),
-    ("vehicle-damage", "(V)ehicle damage"),
-    ("harvest", "(Ha)rvest"),
-    ("research", "(Re)search"),
-    ("poaching", "(Po)aching"),
+    (NEST_DAMAGE_DEFAULT, "(A)nother turtle"),
+    ("bandicoot", "(Ba)ndicoot predation"),
+    ("bird", "(Bi)rd predation"),
+    ("crab", "(Cr)ab predation"),
+    ("croc", "(Cr)oc predation"),
+    ("cyclone", "(Cy)clone disturbance"),
+    ("dingo", "(Di)ngo predation"),
+    ("dog", "(Do)g predation"),
+    ("fox", "(F)ox predation"),
+    ("goanna", "(G)oanna predation"),
+    ("human", "(Hu)man"),
+    ("pig", "(P)ig predation"),
+    ("tide", "(Ti)dal disturbance"),
+    ("vehicle", "(V)ehicle damage"),
     ("unknown", "(U)nknown"),
     ("other", "(O)ther identifiable (see comments)"),
     )
@@ -2482,8 +2483,8 @@ class TurtleNestDisturbanceObservation(Observation):
     """
 
     NEST_VIABILITY_CHOICES = (
-        ("nest-left-viable", "nest left viable"),
-        ("nest-destroyed", "nest destroyed"),
+        ("partly", "nest partly destroyed"),
+        ("completely", "nest completely destroyed"),
         (NA_VALUE, "nest in indeterminate condition"),
         )
 
