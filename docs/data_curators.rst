@@ -277,14 +277,17 @@ Track count production data are currently captured by the Ningaloo Turtle Progra
 
 Turtle Track data in WAStD:
 
-* Create a `new Encounter <https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/>`_.
-* Add a TrackTallyObservation.
+* Create a `new (simple) Encounter <https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/>`_.
+* Add a TrackTallyObservation for tallied numbers of tracks, nests etc.
 
 For each nest with a GPS location:
 
-* Create a `new Encounter <https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/>`_.
-* Add a Turtle nest observation.
+* Create a `new Turtle Nest Encounter <https://strandings.dpaw.wa.gov.au/admin/observations/turtlenestencounter/add/>`_.
+* Add a Turtle nest observation for the respective track or nest.
+* The fields and available options mirror the datasheet.
+* Add MediaAttachments for each photo.
 
+**Note** Data collected with mobile apps will be imported automatically.
 
 Temperature Loggers
 ===================
