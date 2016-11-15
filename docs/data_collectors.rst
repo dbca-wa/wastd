@@ -66,12 +66,8 @@ downloaded.
 **Note** You must not share your credentials, and always use your own to collect data.
 Failure to do so will result in data loss or corruption.
 
-Get the form
-^^^^^^^^^^^^
 
-
-
-Preparing to collect data
+Prepare to collect data
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 These steps have to be run before field trip while online,
 and verified before each survey.
@@ -87,8 +83,8 @@ Less than 1 MB will be downloaded.
   TrackCount form and "Get Selected".
 * **Battery** Make sure the battery is full. Screen and GPS are hungry hippos.
 
-Collecting "uptrack" data
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Collect "uptrack" data
+^^^^^^^^^^^^^^^^^^^^^^
 
 * Walk along the high water mark of the beach, record each (day 1) or each fresh
   (after day 1) uptrack as follows.
@@ -97,19 +93,20 @@ Collecting "uptrack" data
 * Track age: fresh or old. Defaults to fresh, no interaction required on "fresh
   tracks only" surveys after day 1.
 * Species: defaults to "turtle" as value for "unsure".
-* Take photo of track if unsure about species ID
+* Take photo of track if unsure about species ID. Landscape preferred!
 * Track type: defaults to "turtle track, success not assessed". No interaction
   required for "uptrack" surveys.
 * Location: Start GeoPoint. Auto-saves once accuracy drops below 5m.
 
 You should at least set species and GeoPoint, if the other value defaults are correct.
-This will take about 15 seconds plus time to take a photo (if desired).
 
 Swipe right, "Save Form and Exit" saves the record of the track.
+This will take about 13 taps and swipes over about 15 seconds plus time to take a photo.
+
 Repeat for each track.
 
-Collecting "nest" data
-^^^^^^^^^^^^^^^^^^^^^^
+Collect "nest" data
+^^^^^^^^^^^^^^^^^^^
 
 Part 1, same as uptrack:
 
@@ -124,7 +121,7 @@ Part 1, same as uptrack:
 
 Part 2, in addition to uptrack:
 
-* Follow the track until you find the nest or downtrack
+* Follow the track until you find the nest or downtrack.
 * Depending on presence of nest, set type (false crawl if no nest present,
   successful crawl if nest present)
 * Record the location of the nest, or track apex.
@@ -135,15 +132,15 @@ Part 2, in addition to uptrack:
 * Once all (typically one) disturbance causes are recorded, swipe right, select
   "Do not add", "Save form and Exit".
 
-Reviewing data
-^^^^^^^^^^^^^^
+Review data (optional)
+^^^^^^^^^^^^^^^^^^^^^^
 "Edit Saved Form" lists all forms and allows you to edit as required.
 With above settings, do this while still offline.
 Typically, records should only require to be edited immediately after capture
 while the encounter is still freshly in mind.
 Any other updates can be done once the data are in the main database.
 
-Uploading data
-^^^^^^^^^^^^^^
+Upload data (automatic)
+^^^^^^^^^^^^^^^^^^^^^^^
 With above settings, your device will automatically upload all data marked as
 "finalized".
