@@ -236,6 +236,7 @@ TURTLE_MATURITY_CHOICES = (
     ("juvenile", "juvenile"),
     ("pre-pubsecent-immature", "pre-pubsecent immature"),
     ("pubsecent-immature", "pubsecent immature"),
+    ("sub-adult", "sub-adult"),
     ("adult-measured", "adult (status determined from carapace and tail measurements)"), )
 
 MAMMAL_MATURITY_CHOICES = (
@@ -1355,16 +1356,16 @@ class AnimalEncounter(Encounter):
 
     sex = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         verbose_name=_("Sex"),
         choices=SEX_CHOICES,
+        default=NA_VALUE,
         help_text=_("The animal's sex."), )
 
     maturity = models.CharField(
         max_length=300,
-        default="unknown",
         verbose_name=_("Maturity"),
         choices=MATURITY_CHOICES,
+        default=NA_VALUE,
         help_text=_("The animal's maturity."), )
 
     health = models.CharField(
@@ -1377,9 +1378,9 @@ class AnimalEncounter(Encounter):
 
     activity = models.CharField(
         max_length=300,
-        default=NA_VALUE,
         verbose_name=_("Activity"),
         choices=ACTIVITY_CHOICES,
+        default=NA_VALUE,
         help_text=_("The animal's activity at the time of observation."), )
 
     behaviour = models.TextField(
