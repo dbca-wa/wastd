@@ -55,33 +55,38 @@ First time setup
 These steps have to be run once per device while online. Less than 10 MB will be
 downloaded.
 
-* On your Android device, install `ODK Collect <https://play.google.com/store/apps/details?id=org.odk.collect.android>`_
-* In ODK Collect > General Settings > Configure platform settings:
-* URL: https://dpaw-data.appspot.com
-* Your username and password as provided to you by the ODK admin.
+* On your Android device, install
+  `ODK Collect <https://play.google.com/store/apps/details?id=org.odk.collect.android>`_
+* In ODK Collect > General Settings > Server Settings > Configure platform settings:
+* URL: https://dpaw-data.appspot.com, plus username and password as provided to
+  you by the ODK admin. These credentials determine whether you can retrieve new
+  forms and submit data.
+* In ODK Collect > General Settings > Username / Password: your credentials again.
+  These credentials can be different from the credentials in Server Settings,
+  and they will be used to automatically set the reporter in the forms.
 * Auto send: only with Wifi
 * Default to finalized
 * Delete after send
 
-**Note** You must not share your credentials, and always use your own to collect data.
-Failure to do so will result in data loss or corruption.
+**Note** You **must not** share your credentials, and
+**always use your own credentials** in General Settings > Username/Password
+to collect data. Failure to do so will result in data loss, data corruption and
+loss of attribution.
 
 
 Prepare to collect data
-^^^^^^^^^^^^^^^^^^^^^^^^^
-These steps have to be run before field trip while online,
-and verified before each survey.
-Less than 1 MB will be downloaded.
+^^^^^^^^^^^^^^^^^^^^^^^
+These steps have to be run at least before each field trip while online,
+and verified before each survey. Less than 1 MB will be downloaded.
 
-* **Credentials** Make sure that your ODK credentials
-  (for the respective ODK Aggregate server, e.g. dpaw-data.appspot.com) are set
-  before collecting data, as these will be recorded as well (saving you to type
-  your name multiple times). Setting the credentials (username, password) in
-  ODK Collect's General Settings can be done while offline.
-* **Form** Make sure you've got the latest Track count form. The form should not change
-  during the field trip. In ODK Collect, "Get Blank Form", select the latest
-  TrackCount form and "Get Selected".
-* **Battery** Make sure the battery is full. Screen and GPS are hungry hippos.
+* **Form** Make sure you've got the latest Track count form:
+  In ODK Collect, "Get Blank Form", select the latest TrackCount form and "Get Selected".
+  The form should not change during the field trip.
+* **Credentials** Set your ODK credentials for the respective ODK Aggregate server,
+  e.g. https://dpaw-data.appspot.com/ before collecting data.
+  Setting the credentials (username, password) can be done while offline.
+* **Battery** Make sure the battery is full before you head out.
+  Screen and GPS are hungry hippos.
 
 Collect "uptrack" data
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -90,45 +95,35 @@ Collect "uptrack" data
   (after day 1) uptrack as follows.
 * "Fill Blank Form" > Track Count (latest version) > swipe right.
 * Fill in the first screen with following fields:
-* Track age: fresh or old. Defaults to fresh, no interaction required on "fresh
-  tracks only" surveys after day 1.
-* Species: defaults to "turtle" as value for "unsure".
-* Take photo of track if unsure about species ID. Landscape preferred!
-* Track type: defaults to "turtle track, success not assessed". No interaction
-  required for "uptrack" surveys.
-* Location: Start GeoPoint. Auto-saves once accuracy drops below 5m.
+* Track age: fresh (default) or old.
+  No interaction required on "fresh tracks only" surveys after day 1.
+* Species: keep default "turtle"  if unsure of species ID, else select species.
+* Take photo of track if unsure about species ID. Landscape format preferred!
+  Select angle of camera, sun and track so that the track is clearly visible.
+* Track type: defaults to "turtle track, success not assessed".
+  No interaction required for "uptrack" surveys.
+* Location: Start GeoPoint. Required. Auto-saves once accuracy drops below 5m.
 
 You should at least set species and GeoPoint, if the other value defaults are correct.
 
 Swipe right, "Save Form and Exit" saves the record of the track.
-This will take about 13 taps and swipes over about 15 seconds plus time to take a photo.
+This will take about 13 taps and swipes over about 15 seconds plus the time to take a photo.
 
 Repeat for each track.
 
 Collect "nest" data
 ^^^^^^^^^^^^^^^^^^^
 
-Part 1, same as uptrack:
-
-* Walk along the high water mark of the beach, record each (day 1) or each fresh
-  (after day 1) uptrack as follows.
-* "Fill Blank Form" > Track Count (latest version) > swipe right.
-* Fill in the first screen with following fields:
-* Track age: fresh or old. Defaults to fresh, no interaction required on "fresh
-  tracks only" surveys after day 1.
-* Species: defaults to "turtle" as value for "unsure".
-* Take photo of track if unsure about species ID. Landscape is preferred!
-
-Part 2, in addition to uptrack:
+Part 1: same screen as uptrack up to photo of track. Resuming from track type:
 
 * Follow the track until you find the nest or downtrack.
 * Depending on presence of nest, set type (false crawl if no nest present,
-  successful crawl if nest present)
+  successful crawl if nest present).
 * Record the location of the nest, or track apex.
 * Swipe right. If nest is present, fill in the "nest" screen.
 * Swipe right. If disturbance is evident, you will be asked to
-  "Add a new Disturbance observation group" - do this for each distinct disturbance
-  cause.
+  "Add a new Disturbance observation group" - do this for each distinct
+  disturbance cause.
 * Once all (typically one) disturbance causes are recorded, swipe right, select
   "Do not add", "Save form and Exit".
 
