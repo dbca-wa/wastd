@@ -139,3 +139,20 @@ Upload data (automatic)
 ^^^^^^^^^^^^^^^^^^^^^^^
 With above settings, your device will automatically upload all data marked as
 "finalized".
+
+Where's the data now?
+^^^^^^^^^^^^^^^^^^^^^
+ODK Collect uploads data to the configured ODK Aggregate clearinghouse.
+In our case, this is https://dpaw-data.appspot.com/.
+Data collectors will have received credentials to login.
+
+A synchronised copy of the data is streamed to Google Fusion Tables. Access to
+the respective table is provided on demand and requires a Google account.
+
+**In development**:
+Data will be piped from ODK Aggregate into WAStD.
+Access to WAStD is restricted to DPaW staff only.
+Once data arrive in WAStD, WAStD becomes the point of truth, as curation (e.g.
+double-checking species ID based on submitted photos) can change the data compared
+to the initial submission on ODK Aggregate.
+Analysis will consume the curated data through the WAStD API.
