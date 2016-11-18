@@ -10,24 +10,6 @@ Each field in the data sheets should be questioned:
   used to identify an animal identity?
 * Will anyone in the future require this information?
 
-Turtle Stranding
-================
-
-Improve data sheet:
-
-Photo guidelines
-----------------
-If possible, take pictures of the stranded animal:
-
-* Totals: the whole animal from above,  from each side, from the front and the back.
-  Include a length reference, such as a shoe, or an object of known lengh.
-* Details: Every flipper tag, every visible damage, notable details (fresh and healed
-  injuries, deformities)
-* Location: the surroundings showing about 20 meters or more to show beach position
-  (relative to high water line, edge of vegetation) and location (so that we can
-  find the location on Google Maps).
-
-
 Turtle tracks or nests
 ======================
 Turtle track counts can be collected on mobile apps (OpenDataKit or ESRI collector),
@@ -64,9 +46,15 @@ downloaded.
 * In ODK Collect > General Settings > Username / Password: your credentials again.
   These credentials can be different from the credentials in Server Settings,
   and they will be used to automatically set the reporter in the forms.
-* Auto send: only with Wifi
+* Auto send: "only with Wifi" if few data points are collected. Disable for vigorous
+  data collection in remote areas with limited Wifi - don't swamp the Wifi hotspot
+  by auto-uploading data with photos.
 * Default to finalized
 * Delete after send
+* If the device is used by many volunteers who are new to the software, enable
+  the "Admin Settings" (set password) and disable menu options that are not needed
+  or risk data loss (delete forms).
+
 
 **Note** You **must not** share your credentials, and
 **always use your own credentials** in General Settings > Username/Password
@@ -137,8 +125,16 @@ Any other updates can be done once the data are in the main database.
 
 Upload data (automatic)
 ^^^^^^^^^^^^^^^^^^^^^^^
-With above settings, your device will automatically upload all data marked as
-"finalized".
+With "Auto-send in Wifi" settings enabled, your device will automatically upload all data marked as
+"finalized". This is ideal for sparse use, such as Rangers reporting strandings
+before returning to a broadband Wifi'd office.
+
+With "Auto-send in Wifi" settings disabled, you need to backup data by downloading
+it manually and keeping the downloaded data safe (multiple copies over separate
+storage media). With the mobile device connected and "MTP file transfer" enabled,
+ODK data is located in either internal or SD storage in ``odk/instances``.
+Each form will be stored in a separate folder, containing both the filled in form
+as XML file, and all related pictures and media.
 
 Where's the data now?
 ^^^^^^^^^^^^^^^^^^^^^
@@ -156,3 +152,35 @@ Once data arrive in WAStD, WAStD becomes the point of truth, as curation (e.g.
 double-checking species ID based on submitted photos) can change the data compared
 to the initial submission on ODK Aggregate.
 Analysis will consume the curated data through the WAStD API.
+
+
+Turtle Stranding
+================
+
+Setup the device as described above and select the latest "Turtle Stranding" form
+in "Get blank forms".
+
+The expected work flow is:
+
+* A member of the public reports a stranded animal, a field officer responds to
+  the report and inspects the stranded animal personally.
+* A field officer discovers a stranded animal during a patrol.
+* In both cases, the field officer carries a mobile device with ODK Collect and
+  the latest "Turtle Stranding" form.
+* The field officer fills in the form while attending to the stranded animal.
+* All freshly dead turtles (D1 and D2) should be frozen and sent to Perth
+  (Erina Young) for a necropsy.
+
+The form should be self-explanatory. Some fields default to the "not assessed / NA"
+option, however effort should be untertaken to determine the correct option.
+
+Photographs are very important, in that they allow data curators to verify the field
+operator's choice of available options.
+
+If possible, photographs should be taken in landscape format.
+
+The habitat photo should be taken from about 10 m distance to the animal.
+
+Although taking several photos next to a decomposing animal may pose an olfactory
+challenge, taking a photo is invaluable, in that it cannot be taken at a later
+time, but preserves valuable and volatile information.

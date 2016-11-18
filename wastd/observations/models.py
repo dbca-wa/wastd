@@ -104,15 +104,15 @@ TAG_TYPE_CHOICES = (
 
 TAG_STATUS_DEFAULT = 'resighted'
 TAG_STATUS_APPLIED_NEW = 'applied-new'
-TAG_STATUS_CHOICES = (                                        # TRT_TAG_STATES
+TAG_STATUS_CHOICES = (                                          # TRT_TAG_STATES
     ('ordered', 'ordered from manufacturer'),
     ('produced', 'produced by manufacturer'),
     ('delivered', 'delivered to HQ'),
     ('allocated', 'allocated to field team'),
-    (TAG_STATUS_APPLIED_NEW, 'applied new'),        # A1, AE
+    (TAG_STATUS_APPLIED_NEW, 'applied new'),                    # A1, AE
     (TAG_STATUS_DEFAULT, 're-sighted associated with animal'),  # OX, P, P_OK, RQ, P_ED
-    ('reclinched', 're-sighted and reclinced on animal'),  # RC
-    ('removed', 'taken off animal'),                      # OO, R
+    ('reclinched', 're-sighted and reclinced on animal'),       # RC
+    ('removed', 'taken off animal'),                            # OO, R
     ('found', 'found detached'),
     ('returned', 'returned to HQ'),
     ('decommissioned', 'decommissioned'),
@@ -2052,14 +2052,14 @@ class TurtleMorphometricObservation(Observation):
 
     curved_carapace_width_mm = models.PositiveIntegerField(
         blank=True, null=True,
-        verbose_name=_("Curved Carapace Width (mm)"),
+        verbose_name=_("Curved carapace width (mm)"),
         help_text=_("Curved carapace width in millimetres."),)
 
     curved_carapace_width_accuracy = models.CharField(
         max_length=300,
         blank=True, null=True,
         choices=ACCURACY_CHOICES,
-        verbose_name=_("Curved carapace width accuracy"),
+        verbose_name=_("Curved carapace width c"),
         help_text=_("The expected measurement accuracy."),)
 
     tail_length_carapace_mm = models.PositiveIntegerField(
@@ -2137,7 +2137,7 @@ class TurtleMorphometricObservation(Observation):
         verbose_name=_("Body depth accuracy"),
         help_text=_("The expected measurement accuracy."),)
 
-    body_weight_mm = models.PositiveIntegerField(
+    body_weight_mm = models.PositiveIntegerField(  # srsly? should be _g
         blank=True, null=True,
         verbose_name=_("Body weight (g)"),
         help_text=_("The body weight in grams (1000 g = 1kg)."),)
