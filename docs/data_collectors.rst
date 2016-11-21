@@ -12,7 +12,7 @@ Each field in the data sheets should be questioned:
 
 Turtle tracks or nests
 ======================
-Turtle track counts can be collected on mobile apps (OpenDataKit or ESRI collector),
+Turtle track counts can be collected on mobile app (OpenDataKit),
 or on paper data sheets.
 
 Track counts can be recorded individually (preferred) or tallied over beach sections.
@@ -32,20 +32,21 @@ Track counts can be done in two methodologies:
 Mobile data collection using Open Data Kit
 ------------------------------------------
 
-First time setup
-^^^^^^^^^^^^^^^^
-These steps have to be run once per device while online. Less than 10 MB will be
-downloaded.
+Admin: First time setup
+^^^^^^^^^^^^^^^^^^^^^^^
+These steps have to be run once by the ODK admin per device while online.
+Less than 10 MB will be downloaded.
+These steps can also be run by an interested data collector on their own Android
+device.
 
 * On your Android device, install
   `ODK Collect <https://play.google.com/store/apps/details?id=org.odk.collect.android>`_
 * In ODK Collect > General Settings > Server Settings > Configure platform settings:
 * URL: https://dpaw-data.appspot.com, plus username and password as provided to
   you by the ODK admin. These credentials determine whether you can retrieve new
-  forms and submit data.
-* In ODK Collect > General Settings > Username / Password: your credentials again.
-  These credentials can be different from the credentials in Server Settings,
-  and they will be used to automatically set the reporter in the forms.
+  forms and submit data, and the username will be automatically recorded when
+  collecting data.
+* The username and password can also be set under General Settings > Server Settings.
 * Auto send: "only with Wifi" if few data points are collected. Disable for vigorous
   data collection in remote areas with limited Wifi - don't swamp the Wifi hotspot
   by auto-uploading data with photos.
@@ -55,30 +56,30 @@ downloaded.
   the "Admin Settings" (set password) and disable menu options that are not needed
   or risk data loss (delete forms).
 
-
 **Note** You **must not** share your credentials, and
 **always use your own credentials** in General Settings > Username/Password
 to collect data. Failure to do so will result in data loss, data corruption and
 loss of attribution.
 
 
-Prepare to collect data
-^^^^^^^^^^^^^^^^^^^^^^^
+Admin and Collector: Prepare to collect data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 These steps have to be run at least before each field trip while online,
 and verified before each survey. Less than 1 MB will be downloaded.
+Ideally, the admin handing out the Android device will double-check these settings
+together with the data collector.
 
 * **Form** Make sure you've got the latest Track count form:
   In ODK Collect, "Get Blank Form", select the latest TrackCount form and "Get Selected".
   The form should not change during the field trip.
 * **Credentials** Set your ODK credentials for the respective ODK Aggregate server,
-  e.g. https://dpaw-data.appspot.com/ before collecting data.
+  (e.g. https://dpaw-data.appspot.com/) before collecting data.
   Setting the credentials (username, password) can be done while offline.
 * **Battery** Make sure the battery is full before you head out.
   Screen and GPS are hungry hippos.
 
-Collect "uptrack" data
-^^^^^^^^^^^^^^^^^^^^^^
-
+Collector: Collect "uptrack" data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * Walk along the high water mark of the beach, record each (day 1) or each fresh
   (after day 1) uptrack as follows.
 * "Fill Blank Form" > Track Count (latest version) > swipe right.
@@ -87,6 +88,8 @@ Collect "uptrack" data
   No interaction required on "fresh tracks only" surveys after day 1.
 * Species: keep default "turtle"  if unsure of species ID, else select species.
 * Take photo of track if unsure about species ID. Landscape format preferred!
+  Place a length reference (measuring tape) across the whole track, lining up
+  the end with the edge of the track. This allows curators to see the track width.
   Select angle of camera, sun and track so that the track is clearly visible.
 * Track type: defaults to "turtle track, success not assessed".
   No interaction required for "uptrack" surveys.
@@ -94,8 +97,17 @@ Collect "uptrack" data
 
 You should at least set species and GeoPoint, if the other value defaults are correct.
 
-Swipe right, "Save Form and Exit" saves the record of the track.
-This will take about 13 taps and swipes over about 15 seconds plus the time to take a photo.
+Review the data, then swipe right to finish the form.
+
+If you are sure of species ID, keep "Mark form as finalized" ticked and "Save Form and Exit".
+
+If you are unsure of the species ID, (species "Turtle" and photo provided),
+untick "Mark form as finalized" and "Save Form and Exit". This gives the admin
+a chance to review and possibly determine species ID based on the photo taken before
+uploading.
+
+This will take a trained operator about 13 taps and swipes over about 15 seconds
+plus the time to take a photo.
 
 Repeat for each track.
 
@@ -115,19 +127,43 @@ Part 1: same screen as uptrack up to photo of track. Resuming from track type:
 * Once all (typically one) disturbance causes are recorded, swipe right, select
   "Do not add", "Save form and Exit".
 
-Review data (optional)
-^^^^^^^^^^^^^^^^^^^^^^
-"Edit Saved Form" lists all forms and allows you to edit as required.
-With above settings, do this while still offline.
-Typically, records should only require to be edited immediately after capture
-while the encounter is still freshly in mind.
-Any other updates can be done once the data are in the main database.
+Note on track type:
 
-Upload data (automatic)
-^^^^^^^^^^^^^^^^^^^^^^^
-With "Auto-send in Wifi" settings enabled, your device will automatically upload all data marked as
-"finalized". This is ideal for sparse use, such as Rangers reporting strandings
-before returning to a broadband Wifi'd office.
+* False crawl = a track without a nest. You'll have followed the whole track until
+  hitting the downtrack when you see that there's no nest. Take the GPS point
+  at the downtrack.
+* Successful crawl = a track with a nest. There can be body pits. Take the GPS
+  point at the nest.
+* Track, success unknown = "did check, can't tell whether it's a nest or not".
+  **Do** take a **photo** of the possible nest and **do not** mark form as finalized when saving.
+* Track, success not assessed = "didn't check, therefore can't know" = uptrack counts.
+  As soon as you follow a track, you'll see whether it's a false crawl, successful
+  crawl or track with unknown success. In this methodology, you should not need
+  to select the "not assessed" option.
+* Nest = nest without track. Does not apply here, but when you see an unhatched nest
+  with signs of predation.
+* Hatched nest = nest with broken egg shells. The DPaW staff member will attempt
+  digging up the nest to count eggs and hatchlings.
+
+When done, turn off location services, and hand the device back to the admin.
+
+Admin: Review data
+^^^^^^^^^^^^^^^^^^
+"Edit Saved Form" lists all unfinalized forms pending review and species / nest ID.
+Tap once to view read-only, tap again to edit, review and update data, then save
+and mark as finalized.
+
+
+Admin: Upload data
+^^^^^^^^^^^^^^^^^^
+Turn on the Wifi hotspot or move into Wifi range.
+On the device, turn on Wifi.
+
+With "Auto-send in Wifi" settings enabled, the device will automatically upload
+all data marked as "finalized".
+
+The "Auto-send in Wifi" setting is ideal for sparse use,
+such as Rangers reporting strandings before returning to a broadband Wifi'd office.
 
 With "Auto-send in Wifi" settings disabled, you need to backup data by downloading
 it manually and keeping the downloaded data safe (multiple copies over separate
@@ -142,8 +178,11 @@ ODK Collect uploads data to the configured ODK Aggregate clearinghouse.
 In our case, this is https://dpaw-data.appspot.com/.
 Data collectors will have received credentials to login.
 
-A synchronised copy of the data is streamed to Google Fusion Tables. Access to
-the respective table is provided on demand and requires a Google account.
+A synchronised copy of the data is streamed to
+[Google Fusion Tables](https://fusiontables.google.com/DataSource?docid=1wL_dSRNuUCyukJjiUo8RDvFQ0ejWoRpJo2p3S5Rm#map:id=6).
+
+From there, data are downloaded (pending: consumed via the GFT API) and presented
+in an RMarkdown workbook [Turtle Tracks](http://rpubs.com/florian_mayer/track-counts).
 
 **In development**:
 Data will be piped from ODK Aggregate into WAStD.
@@ -151,7 +190,7 @@ Access to WAStD is restricted to DPaW staff only.
 Once data arrive in WAStD, WAStD becomes the point of truth, as curation (e.g.
 double-checking species ID based on submitted photos) can change the data compared
 to the initial submission on ODK Aggregate.
-Analysis will consume the curated data through the WAStD API.
+The final visualisation will consume curated data through the WAStD API.
 
 
 Turtle Stranding
@@ -183,4 +222,59 @@ The habitat photo should be taken from about 10 m distance to the animal.
 
 Although taking several photos next to a decomposing animal may pose an olfactory
 challenge, taking a photo is invaluable, in that it cannot be taken at a later
-time, but preserves valuable and volatile information.
+time, and it preserves valuable and volatile information.
+
+
+Lessons learnt from paper field data collection
+===============================================
+
+Scenario 1
+----------
+One turtle is encountered in two subsequent nights by two separate teams.
+
+Night 1
+^^^^^^^
+* Data entry operators "Tim" and "Natalie" were in a rush, tagged turtle with tag "WB7326", but
+  recorded next tag "WB7330" on tag dispenser as "applied new".
+* Operators grabbed a PIT tag "900006000144755" from bag and applied it to turtle,
+  then went back to the bag, mistook another empty PIT package of tag
+  "900006000143470" (hint: with a few missing ID stickers - missing means peeled
+  off by sand, or stuck onto another datasheet when applied to a turtle)
+  for the package of the just applied tag "...755" and recorded "...470" incorrectly
+  as "applied new".
+ * Team 1 measure CCL
+
+Night 2
+^^^^^^^
+* Second team "Spud" and "Coral" encounter the same turtle with left flipper tag
+ "WB7326"
+* They scan for PIT tag, find and record "...755"
+* They apply and record another flipper tag "WB7384" on right flipper
+* They measure CCL and CCW
+
+The aftermath
+^^^^^^^^^^^^^
+* Team leader "Spud" wants to lookup tag history "WB7326", suspecting the turtle
+  might originate from different nesting location, based on the fact that the
+  turtle was already tagged. Most likely, seeing a tagged turtle this early in the
+  tagging season means that the tag has been applied elswhere earlier.
+* The tag is not in the tagging database. This is unexpected.
+* Data curator realises that the tag is from the tag series allocated to the current
+  field trip. This means that the tag must have been applied new within the past
+  days, and the corresponding datasheet must be present in the field office.
+* Data curator spends the next half hour manically trying to find the datasheet
+  referencing the application of tag "WB7326".
+* Data curator questions correctness of first datasheet's tag ID.
+* Day 1's datasheet is the only potentially matching candidate with similarities
+  to day 2's datasheet: CCL within 3mm, one tag on front left flipper.
+* Data curator decides that at least one of two datasheets is incorrect.
+* Data curator locates "WB7330" in one of the tagging backpacks. This means that
+  datasheet 1's flipper tag ID must be incorrect.
+* Data curator infers based on similar body length and position of single flipper
+  tag, datasheet 1 and 2 refer to the same turtle, and corrects the tag ID on
+  datasheet 1 to "WB7326".
+* Data curator learns from "Natalie" that the empty PIT tag box had only two
+  remaining stickers out of five left. This indicates that the recorded PIT tag ID
+  on datasheet 1 is also incorrect. The curator therefore assumes that the PIT
+  tag ID of datasheet 2 is correct and adjusts datasheet 1 to report PIT tag ID
+  "...755".
