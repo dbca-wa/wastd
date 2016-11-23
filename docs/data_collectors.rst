@@ -156,16 +156,16 @@ and mark as finalized.
 
 Admin: Upload data
 ^^^^^^^^^^^^^^^^^^
-Turn on the Wifi hotspot or move into Wifi range.
-On the device, turn on Wifi.
+When surveys are done in locations where the device can return to the comforts
+of Wifi and power points daily, data can be uploaded directly to the clearinghouse.
+
+* Turn on the Wifi hotspot or move into Wifi range.
+* On the device, turn on Wifi.
 
 With "Auto-send in Wifi" settings enabled, the device will automatically upload
 all data marked as "finalized".
 
-The "Auto-send in Wifi" setting is ideal for sparse use,
-such as Rangers reporting strandings before returning to a broadband Wifi'd office.
-
-With "Auto-send in Wifi" settings disabled, you need to backup data by downloading
+When Wifi is not available daily, you need to backup data by downloading
 it manually and keeping the downloaded data safe (multiple copies over separate
 storage media). With the mobile device connected and "MTP file transfer" enabled,
 ODK data is located in either internal or SD storage in ``odk/instances``.
@@ -278,3 +278,15 @@ The aftermath
   on datasheet 1 is also incorrect. The curator therefore assumes that the PIT
   tag ID of datasheet 2 is correct and adjusts datasheet 1 to report PIT tag ID
   "...755".
+
+
+Cost-benefit analysis for mobile data collection
+================================================
+
+Paper-based data collection
+---------------------------
+
+Filling in a paper data sheet
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Possible: typos, illegible handwriting, invalid values
+* Breaking the analog-digital barrier
