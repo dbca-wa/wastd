@@ -182,7 +182,8 @@ A synchronised copy of the data is streamed to
 [Google Fusion Tables](https://fusiontables.google.com/DataSource?docid=1wL_dSRNuUCyukJjiUo8RDvFQ0ejWoRpJo2p3S5Rm#map:id=6).
 
 From there, data are downloaded (pending: consumed via the GFT API) and presented
-in an RMarkdown workbook [Turtle Tracks](http://rpubs.com/florian_mayer/track-counts).
+in an RMarkdown workbook [Turtle Tracks](http://rpubs.com/florian_mayer/track-counts)
+as well as an RShiny app using live data [Turtle Tracker](https://rshiny.dpaw.wa.gov.au/turtles/).
 
 **In development**:
 Data will be piped from ODK Aggregate into WAStD.
@@ -225,8 +226,8 @@ challenge, taking a photo is invaluable, in that it cannot be taken at a later
 time, and it preserves valuable and volatile information.
 
 
-Lessons learnt from paper field data collection
-===============================================
+Lessons learnt from paper-based field data collection
+=====================================================
 
 Scenario 1
 ----------
@@ -279,9 +280,82 @@ The aftermath
   tag ID of datasheet 2 is correct and adjusts datasheet 1 to report PIT tag ID
   "...755".
 
+Lessons learnt from mobile field data collection
+================================================
+
+The choice of methodology can be driven by time availability.
+
+Example: Teams are dropped off on remote beaches and have too little time to
+identify and individually record turtle tracks (on paper or on mobile).
+In this case, a tally was kept on paper forms, as no specialised mobile app for
+tally observations was available yet.
+
+Devices shoot-out
+-----------------
+Hands-on field testing at Thevenard and Barrow Islands Nov/Dec 2016.
+
+General notes
+^^^^^^^^^^^^^
+* There are few rugged cases for low cost, deprecating and exotic devices
+* $70 charger with 6 USB outlets replaces the Great Charger Kelp Forest
+* $80 15Ah battery packs provide backup power
+* $5 neoprene sleeves protect against bumps, scratches and sand
+* $5 whiteboards plus whiteboard marker, place in geotagged photo of random observation
+
+Samsung Galaxy S2 9.7"
+^^^^^^^^^^^^^^^^^^^^^^
+* $700 device, $150 rugged case, $50 64GB SD
+* Office sleeves available in store, rugged cases only available online
+* GPS fix ~ 10 sec to below 5m accuracy
+* 64 GB internal storage is plenty for data collection
+* Battery life excellent
+* Screen excellent resolution and daylight readability
+* System fast and snappy
+* Android 6.0.1
+* Large size is excellent to review visualisations and read
+* (-) Large size requires two hands to hold
+* (-) too expensive to distribute widely or use in extreme conditions
+
+Samsung Galaxy S2 8"
+^^^^^^^^^^^^^^^^^^^^
+* $550 device, $150 rugged case, $50 64GB SD
+* Same pros and cons as 9.7" version, plus:
+* Size is on the border of one and two hand hold (depending on hand size).
+* 32 GB internal storage is still plenty for data collection.
+* (-) still too expensive to distribute widely or use in extreme conditions.
+
+Samsung Galaxy Tab A 7"
+^^^^^^^^^^^^^^^^^^^^^^^
+* $160 device, $30 plastic shell, $50 64GB SD
+* Rugged cases available in store at time of writing.
+* Decidedly slower and laggier performance than flagship S2.
+* (-) GPS unacceptably slow.
+* (-) 8GB internal storage is too small to collect data.
+* (-) Android 5.1.1 means external SD chip does not format as internal storage.
+
+Lenovo Tab 3 7" TB3-730F
+^^^^^^^^^^^^^^^^^^^^^^^^
+* $100 device, $50 64GB SD
+* No cover in store, but device is splash-resistant.
+* Fits in pocket and in one hand.
+* Very fast GPS fix, faster than Samsung S2, slower than Moto G4+ phone.
+* Best cost-benefit for handing out in bulk.
+
+
+General observations
+^^^^^^^^^^^^^^^^^^^^
+* All devices were daylight-readable.
+* All devices had sufficient battery life to support hours of data collection.
+* Operation in harsh environments was no problem: walking along sandy beaches in
+  daylight, sweaty fingers, flying sand.
+* External battery packs extend time between wall power charging.
+* Best low-cost field device: Lenovo Tab 3. Runner-up: Samsung S2 8".
+* Strong case against Galaxy Tab A (GPS speed, internal storage, old OS version).
+
 
 Cost-benefit analysis for mobile data collection
 ================================================
+This section is in development!
 
 Paper-based data collection
 ---------------------------
@@ -289,4 +363,4 @@ Paper-based data collection
 Filling in a paper data sheet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * Possible: typos, illegible handwriting, invalid values
-* Breaking the analog-digital barrier
+* Breaking the analog-digital barrier: GPS, PIT tag reader, barcodes for samples etc.
