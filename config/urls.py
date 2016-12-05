@@ -15,6 +15,9 @@ from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 # from dynamic_rest import routers as dr
 
+# from graphene_django.views import GraphQLView
+# from wastd.schema import schema
+
 from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter
 from wastd.observations.views import (
@@ -52,6 +55,9 @@ urlpatterns = [
     url(r'^api/1/', include(router.urls, namespace="api")),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
+
+    # GraphQL
+    # url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=schema)),
 
     # Synctools
     # url("^sync/", include(sync_route.urlpatterns)),

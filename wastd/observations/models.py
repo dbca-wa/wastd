@@ -750,9 +750,12 @@ class Encounter(PolymorphicModel, geo_models.Model):
     SOURCE_CHOICES = (
         (SOURCE_DEFAULT, _("Direct entry")),
         ("paper", _("Paper data sheet")),
+        ("odk", _("OpenDataKit mobile data capture")),
         ("wamtram", _("WAMTRAM 2 tagging DB")),
         ("ntp-exmouth", _("NTP Access DB Exmouth")),
-        ("ntp-broome", _("NTP Access DB Broome")),)
+        ("ntp-broome", _("NTP Access DB Broome")),
+
+        )
 
     ENCOUNTER_STRANDING = 'stranding'
     ENCOUNTER_TAGGING = 'tagging'

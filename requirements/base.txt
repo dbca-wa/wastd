@@ -109,6 +109,7 @@ django-rest-swagger==2.1.0
 coreapi==2.0.9
 coreapi-cli
 pypandoc
+# graphene-django>=1.0  # doesn't do spatial yet
 
 
 # Static and Media Storage

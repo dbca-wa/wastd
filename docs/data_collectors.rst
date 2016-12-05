@@ -313,12 +313,13 @@ Samsung Galaxy S2 9.7"
 * System fast and snappy
 * Android 6.0.1
 * Large size is excellent to review visualisations and read
-* (-) Large size requires two hands to hold
+* (-) Larger size (A4 page) requires two hands to hold
 * (-) too expensive to distribute widely or use in extreme conditions
 
 Samsung Galaxy S2 8"
 ^^^^^^^^^^^^^^^^^^^^
 * $550 device, $150 rugged case, $50 64GB SD
+* Fits in 8" sleeve, can be balanced on one hand while operating with other.
 * Same pros and cons as 9.7" version, plus:
 * Size is on the border of one and two hand hold (depending on hand size).
 * 32 GB internal storage is still plenty for data collection.
@@ -327,6 +328,7 @@ Samsung Galaxy S2 8"
 Samsung Galaxy Tab A 7"
 ^^^^^^^^^^^^^^^^^^^^^^^
 * $160 device, $30 plastic shell, $50 64GB SD
+* Fits in 7" sleeve, large trouser pocket, can be held securely in one hand.
 * Rugged cases available in store at time of writing.
 * Decidedly slower and laggier performance than flagship S2.
 * (-) GPS unacceptably slow.
@@ -337,9 +339,18 @@ Lenovo Tab 3 7" TB3-730F
 ^^^^^^^^^^^^^^^^^^^^^^^^
 * $100 device, $50 64GB SD
 * No cover in store, but device is splash-resistant.
-* Fits in pocket and in one hand.
-* Very fast GPS fix, faster than Samsung S2, slower than Moto G4+ phone.
+* Fits in 7" sleeve, trouser pocket, can be held securely in one hand.
+* Very fast GPS fix, faster than Samsung S2, slower than a Moto G4+ phone.
 * Best cost-benefit for handing out in bulk.
+
+Moto G4 Plus phone
+^^^^^^^^^^^^^^^^^^
+* $400 device, $4 plastic shell, $50 SD
+* Very good mid-range 5" Android phone
+* Fast GPS fix (~4-5 sec outdoors)
+* Dual SIM
+* Data collection works nicely
+* Good option for work phone for front-line staff at time of writing (Dec 2016)
 
 
 General observations

@@ -347,13 +347,15 @@ class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
                   )
 
 
-class AreaSerializer(serializers.ModelSerializer):
+class AreaSerializer(GeoFeatureModelSerializer):
+    # serializers.ModelSerializer
     """Area serializer."""
 
     class Meta:
         """Class options."""
 
         model = Area
+        geo_field = "geom"
         fields = ("area_type", "name", "geom", "northern_extent", "centroid", )
 
 
