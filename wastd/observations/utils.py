@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Observation untilities."""
-import os
 import json
+import os
 from pprint import pprint
+import requests
+import shutil
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -13,7 +15,8 @@ from django.utils.dateparse import parse_datetime
 from wastd.observations.models import (
     Encounter, AnimalEncounter, LoggerEncounter, TurtleNestEncounter,
     TurtleNestDisturbanceObservation, MediaAttachment,
-    NEST_AGE_CHOICES, NEST_TYPE_CHOICES, OBSERVATION_CHOICES
+    NEST_AGE_CHOICES, NEST_TYPE_CHOICES, OBSERVATION_CHOICES,
+    NEST_DAMAGE_CHOICES, CONFIDENCE_CHOICES
     )
 
 
@@ -146,10 +149,31 @@ def map_values(d):
     return {k.replace("-", ""): k for k in dict(d).keys()}
 
 
-def tx_odk(k, m):
+def dl_photo(photo_id, photo_url, photo_filename):
+    """Download a photo if not already done.
+
+    Arguments
+
+    photo_id The WAStD source_id of the record, to which this photo belongs
+    photo_url A URL to download the photo from
     """
-    """
-    return m[k]
+    pdir = os.path.join(settings.MEDIA_ROOT, "photos", photo_id)
+    if not os.path.exists(pdir):
+        print("Creating folder {0}".format(pdir))
+        os.mkdir(pdir)
+    else:
+        print(("Found folder {0}".format(pdir)))
+    pname = os.path.join(pdir, photo_filename)
+
+    if not os.path.exists(pname):
+        print("Downloading file {0}...".format(pname))
+        response = requests.get(photo_url)
+        with open(pname, 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+        del response
+    else:
+        print("Found file {0}".format(pname))
+
 
 def import_one_record_tc010(r, m):
     """Import one ODK Track Count 0.10 record into WAStD.
@@ -173,8 +197,6 @@ def import_one_record_tc010(r, m):
         nest_age=m["nest_age"][r["nest_age"]],
         nest_type=m["nest_type"][r["nest_type"]],
         species=m["species"][r["species"]],
-        # habitat=,
-        # disturbance
         # comments
         )
     if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
@@ -185,17 +207,60 @@ def import_one_record_tc010(r, m):
         print("Found record {0}, updating...".format(src_id))
         TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = TurtleNestEncounter.objects.get(source_id=src_id)
-        # update disturbance observation, photos
     else:
         print("New record {0}, creating...".format(src_id))
         e = TurtleNestEncounter.objects.create(**new_data)
-        # create disturbance observation, photos
 
     e.save()
     pprint(e)
 
     # TODO download photographs, attach as MediaAttachment
-    # TODO TurtleNestDisturbanceObservation
+
+    [handle_turtlenestdistobs(distobs, e, m)
+     for distobs in r["disturbanceobservation"]
+     if len(r["disturbanceobservation"]) > 0]
+
+
+def handle_turtlenestdistobs(d, e, m):
+    """Get or create TurtleNestDisturbanceObservation.
+
+    Arguments
+
+    d A dictionary like
+        {
+            "disturbance_cause": "human",
+            "disturbance_cause_confidence": "expertopinion",
+            "disturbance_severity": "na",
+            "photo_disturbance": {
+                "filename": "1479173301849.jpg",
+                "type": "image/jpeg",
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fdisturbanceobservation%5B%40ordinal%3D1%5D%2Fphoto_disturbance"
+            },
+            "comments": null
+        }
+    e The related TurtleNestEncounter (must exist)
+    m The ODK_MAPPING
+    """
+
+    print("Found disturbance obs")
+    pprint(d)
+
+    dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(
+        encounter=e,
+        disturbance_cause=m["disturbance_cause"][d["disturbance_cause"]],
+        disturbance_cause_confidence=m["disturbance_cause_confidence"][d["disturbance_cause_confidence"]],
+        disturbance_severity=m["disturbance_severity"][d["disturbance_severity"]],
+        comments=d["comments"]
+        )
+    dd.save()
+    e.save()  # cache distobs in HTML
+
+    if d["photo_disturbance"] is not None:
+        dl_photo(e.source_id,
+                 d["photo_disturbance"]["url"],
+                 d["photo_disturbance"]["filename"])
+        # TODO create MediaAttachment for dist obs photo
+    pprint(dd)
 
 
 def import_odk(jsonfile, flavour="odk-trackcount-010"):
@@ -256,6 +321,10 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
             'na': 'na',
             },
         "disturbance": map_values(OBSERVATION_CHOICES),
+        "disturbance_cause": map_values(NEST_DAMAGE_CHOICES),
+        "disturbance_cause_confidence": map_values(CONFIDENCE_CHOICES),
+        "disturbance_severity": map_values(
+            TurtleNestDisturbanceObservation.NEST_VIABILITY_CHOICES),
 
         # some have to be guessed
         "users": {u: guess_user(u) for u in set([r["reporter"] for r in d])},
@@ -269,6 +338,23 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
 
     if flavour == "odk-trackcount-010":
         print("Using flavour ODK Track Count 0.10...")
+
+        # Download photos TODO damage obs
+        pt = [[r["instanceID"],
+               r["photo_track"]["url"],
+               r["photo_track"]["filename"]]
+              for r in d
+              if r["photo_track"] is not None]
+        pn = [[r["instanceID"],
+               r["photo_nest"]["url"],
+               r["photo_nest"]["filename"]]
+              for r in d
+              if r["photo_nest"] is not None]
+        print("Downloading photos of {0} tracks and {1} nests".format(
+            len(pt), len(pn)))
+        all_photos = pt + pn
+        [dl_photo(p[0], p[1], p[2]) for p in all_photos]
+
         [import_one_record_tc010(r, ODK_MAPPING) for r in d[0:100]
          if r["instanceID"] not in ODK_MAPPING["keep"]]
         print("Done!")
