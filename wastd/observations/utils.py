@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
 from django.utils.dateparse import parse_datetime
 
 from wastd.observations.models import (
@@ -149,6 +150,10 @@ def map_values(d):
     return {k.replace("-", ""): k for k in dict(d).keys()}
 
 
+def make_photo_foldername(photo_id):
+    return os.path.join(settings.MEDIA_ROOT, "photos", photo_id)
+
+
 def dl_photo(photo_id, photo_url, photo_filename):
     """Download a photo if not already done.
 
@@ -157,7 +162,7 @@ def dl_photo(photo_id, photo_url, photo_filename):
     photo_id The WAStD source_id of the record, to which this photo belongs
     photo_url A URL to download the photo from
     """
-    pdir = os.path.join(settings.MEDIA_ROOT, "photos", photo_id)
+    pdir = make_photo_foldername(photo_id)
     if not os.path.exists(pdir):
         print("Creating folder {0}".format(pdir))
         os.mkdir(pdir)
@@ -175,50 +180,19 @@ def dl_photo(photo_id, photo_url, photo_filename):
         print("Found file {0}".format(pname))
 
 
-def import_one_record_tc010(r, m):
-    """Import one ODK Track Count 0.10 record into WAStD.
+def handle_photo(p, e, title="Track"):
+    """Create a MediaAttachment of photo p to Encounter e with a given title.
 
     Arguments
 
-    r The record as dict
-    m The mapping of ODK to WAStD choices
+    p The filepath of a locally accessible photograph
+    e The related encounter (must exist)
+    title The attachment's title (default: "Track")
     """
-
-    src_id = r["instanceID"]
-
-    new_data = dict(
-        source="odk",
-        source_id=src_id,
-        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
-        when=parse_datetime(r["observation_start_time"]),
-        location_accuracy="10",
-        observer=m["users"][r["reporter"]],
-        reporter=m["users"][r["reporter"]],
-        nest_age=m["nest_age"][r["nest_age"]],
-        nest_type=m["nest_type"][r["nest_type"]],
-        species=m["species"][r["species"]],
-        # comments
-        )
-    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
-        new_data["habitat"] = m["habitat"][r["habitat"]]
-        new_data["disturbance"] = m["disturbance"][r["disturbance"]]
-
-    if src_id in m["overwrite"]:
-        print("Found record {0}, updating...".format(src_id))
-        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
-        e = TurtleNestEncounter.objects.get(source_id=src_id)
-    else:
-        print("New record {0}, creating...".format(src_id))
-        e = TurtleNestEncounter.objects.create(**new_data)
-
-    e.save()
-    pprint(e)
-
-    # TODO download photographs, attach as MediaAttachment
-
-    [handle_turtlenestdistobs(distobs, e, m)
-     for distobs in r["disturbanceobservation"]
-     if len(r["disturbanceobservation"]) > 0]
+    with open(p, 'rb') as photo:
+        m = MediaAttachment.objects.create(
+            encounter=e, title=title, attachment=File(photo))
+        pprint(m)
 
 
 def handle_turtlenestdistobs(d, e, m):
@@ -259,8 +233,70 @@ def handle_turtlenestdistobs(d, e, m):
         dl_photo(e.source_id,
                  d["photo_disturbance"]["url"],
                  d["photo_disturbance"]["filename"])
-        # TODO create MediaAttachment for dist obs photo
+        pdir = make_photo_foldername(e.source_id)
+        pname = os.path.join(pdir, d["photo_disturbance"]["filename"])
+        handle_photo(pname, e, title="Disturbance")
     pprint(dd)
+
+
+def import_one_record_tc010(r, m):
+    """Import one ODK Track Count 0.10 record into WAStD.
+
+    Arguments
+
+    r The record as dict
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]],
+        nest_age=m["nest_age"][r["nest_age"]],
+        nest_type=m["nest_type"][r["nest_type"]],
+        species=m["species"][r["species"]],
+        # comments
+        )
+    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
+        new_data["habitat"] = m["habitat"][r["habitat"]]
+        new_data["disturbance"] = m["disturbance"][r["disturbance"]]
+
+    if src_id in m["overwrite"]:
+        print("Found record {0}, updating...".format(src_id))
+        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = TurtleNestEncounter.objects.get(source_id=src_id)
+    else:
+        print("New record {0}, creating...".format(src_id))
+        e = TurtleNestEncounter.objects.create(**new_data)
+
+    e.save()
+    pprint(e)
+
+    # MediaAttachment "Photo of track"
+    if r["photo_track"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_track"]["filename"])
+        handle_photo(pname, e, title="Track")
+
+    # MediaAttachment "Photo of nest"
+    if r["photo_nest"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_nest"]["filename"])
+        handle_photo(pname, e, title="Nest")
+
+    # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
+    [handle_turtlenestdistobs(distobs, e, m)
+     for distobs in r["disturbanceobservation"]
+     if len(r["disturbanceobservation"]) > 0]
 
 
 def import_odk(jsonfile, flavour="odk-trackcount-010"):
@@ -339,7 +375,7 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
     if flavour == "odk-trackcount-010":
         print("Using flavour ODK Track Count 0.10...")
 
-        # Download photos TODO damage obs
+        # Download photos
         pt = [[r["instanceID"],
                r["photo_track"]["url"],
                r["photo_track"]["filename"]]
@@ -356,5 +392,5 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
         [dl_photo(p[0], p[1], p[2]) for p in all_photos]
 
         [import_one_record_tc010(r, ODK_MAPPING) for r in d[0:100]
-         if r["instanceID"] not in ODK_MAPPING["keep"]]
+         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
