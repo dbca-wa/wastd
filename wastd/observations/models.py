@@ -2222,7 +2222,7 @@ class TrackTallyObservation(Observation):
         max_length=300,
         verbose_name=_("Species"),
         choices=TURTLE_SPECIES_CHOICES,
-        default="unidentified-turtle",
+        default=TURTLE_SPECIES_DEFAULT,
         help_text=_("The species of the animal causing the track."), )
 
     track_type = models.CharField(
@@ -2236,49 +2236,6 @@ class TrackTallyObservation(Observation):
         verbose_name=_("Tally"),
         blank=True, null=True,
         help_text=_("The sum of encountered tracks."),)
-
-
-    # fox_predation = models.CharField(
-    #     max_length=300,
-    #     verbose_name=_("Fox predation"),
-    #     choices=OBSERVATION_CHOICES,
-    #     default=NA_VALUE,
-    #     help_text=_(""),)
-    #
-    # dog_predation = models.CharField(
-    #     max_length=300,
-    #     verbose_name=_("Dog predation"),
-    #     choices=OBSERVATION_CHOICES,
-    #     default=NA_VALUE,
-    #     help_text=_(""),)
-    #
-    # dingo_predation = models.CharField(
-    #     max_length=300,
-    #     verbose_name=_("Dingo predation"),
-    #     choices=OBSERVATION_CHOICES,
-    #     default=NA_VALUE,
-    #     help_text=_(""),)
-    #
-    # croc_predation = models.CharField(
-    #     max_length=300,
-    #     verbose_name=_("Crocodile predation"),
-    #     choices=OBSERVATION_CHOICES,
-    #     default=NA_VALUE,
-    #     help_text=_(""),)
-    #
-    # goanna_predation = models.CharField(
-    #     max_length=300,
-    #     verbose_name=_("Goanna predation"),
-    #     choices=OBSERVATION_CHOICES,
-    #     default=NA_VALUE,
-    #     help_text=_(""),)
-    #
-    # bird_predation = models.CharField(
-    #     max_length=300,
-    #     verbose_name=_("Bird predation"),
-    #     choices=OBSERVATION_CHOICES,
-    #     default=NA_VALUE,
-    #     help_text=_(""),)
 
     def __str__(self):
         """The unicode representation."""
@@ -2294,13 +2251,14 @@ class TurtleNestDisturbanceTallyObservation(Observation):
         max_length=300,
         verbose_name=_("Species"),
         choices=TURTLE_SPECIES_CHOICES,
-        default="unidentified-turtle",
+        default=TURTLE_SPECIES_DEFAULT,
         help_text=_("The species of the nesting animal."), )
 
     disturbance_cause = models.CharField(
         max_length=300,
         verbose_name=_("Disturbance cause"),
         choices=NEST_DAMAGE_CHOICES,
+        default=NEST_DAMAGE_DEFAULT,
         help_text=_("The cause of the disturbance."), )
 
     tally = models.PositiveIntegerField(

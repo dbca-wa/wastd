@@ -1,8 +1,8 @@
 =============
 Specification
 =============
-High Level Business Requirements
-================================
+Strandings
+==========
 
 Problem
 -------
@@ -70,8 +70,8 @@ The solution architecture must consider the following contraints:
 * There must be a standardised, accessible way to import and export all data into
   and out of the system.
 * The application has to be compatible on a raw data level with Queensland's
-  StrandNet, Parks & Wildlife's Turtle Tagging database WAMTRAM 2, and the Ningaloo Turtle Program's
-  track count database.
+  StrandNet, Parks & Wildlife's Turtle Tagging database WAMTRAM 2,
+  and the Ningaloo Turtle Program's track count database.
 
 
 Use case: Ministerial inquiry, annual report, strategic advice
@@ -80,7 +80,9 @@ This section discusses requirements of each role involved in
 
 * the response to a ministerial inquiry,
 * annual reporting for a steering committee,
-* strategic advice to a policy officer.
+* strategic advice to a policy officer,
+
+and demonstrates the current implementation as a proof-of-concept / gap analysis.
 
 Minister, steering committee, policy officer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -94,11 +96,12 @@ A policy officer needs to relate infrastructure developments (e.g. new boat ramp
 or management actions (e.g. boating exclusion zones) with turtle population metrics
 (e.g. number of boat strikes).
 
-There haven't been any ministerial inquiries yet, but we assume they could ask e.g.:
+There haven't been any ministerial inquiries about turtle strandings yet,
+but we assume they could ask e.g.:
 
 * How many `boat strikes to turtles <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&taxon__exact=Cheloniidae>`_ have been recorded?
 * How many turtle strandings happened `in 2016 <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&taxon__exact=Cheloniidae&when__year=2016>`_?
-* How many turtle strandings happened in the `80 Mile Beach MPA <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&taxon__exact=Cheloniidae&where=3>`_?
+* How many turtle strandings happened within the `80 Mile Beach MPA <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&taxon__exact=Cheloniidae&where=3>`_?
 
 These examples show only a few out of many possible combinations of search filters.
 All results can be exported to spreadsheets for further analysis.
@@ -161,12 +164,15 @@ e.g. confirm species identification. This increases **correctness** of the data.
 * Data curators need convenient, unrestricted access to the data.
 * Data needs to indicate its curation status.
 * Data needs to retain its lineage by retaining its editing and status history.
+* Each human decision by the subject matter expert should be translated into an
+  automatic test or filter that flags similar records for review. This feedback
+  process aims to distil the subject matter expertise into formal rules.
 
 Data curator 2: Proofreader
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Digitising data sheets is an error-prone operation, and allocating vague information
-requires some informed decisions, based on guidelines.
-Hence, proofreading will help fighting typos and misunderstandings between datasheet
+Digitising data sheets is an error-prone operation. Sorting vague information into
+the available categories requires some informed decisions, based on guidelines.
+Proofreading will help fighting typos and misunderstandings between datasheet
 and database, therefore increasing **consistency**.
 
 * The proofreader needs original datasheets, communication records and supplemental
@@ -182,6 +188,7 @@ By doing so, the data entry operator increases **accessibility** and **completen
 * The electronic data entry form should follow the data sheets to facilitate data entry.
 * There should be clear, unambiguous instructions on
   `data entry <http://wastd.readthedocs.io/data_curators.html>`_.
+* The instructions must be able to evolve with new edge cases requiring supervisor input.
 * Electronic data entry forms should provide input validation for formats, not content.
 * The data portal should
   `accept all formally correct data <http://wastd.readthedocs.io/developers.html#data-model>`_,

@@ -73,3 +73,6 @@ docs/_build/
 
 # uwsgi config
 config/wastd_uwsgi.ini
+
+# ingested data
+wastd/static/data/

@@ -33,9 +33,9 @@ Contents:
    :maxdepth: 2
 
    overview
-   data_consumers
-   data_curators
    data_collectors
+   data_curators
+   data_consumers
    specification
    maintainers
    developers

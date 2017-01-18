@@ -74,6 +74,16 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'name', 'email', 'phone', )
 
+    def create(self, validated_data):
+        u = validated_data["username"]
+        print("UserSerializer called for {0}".format(u))
+        usr = User.objects.filter(username=u)
+        if usr.exists():
+            usr = User.objects.get(username=u)
+        else:
+            usr = User.objects.create(**validated_data)
+        return usr
+
 
 class ObservationSerializer(serializers.ModelSerializer):
     """The Observation serializer resolves its polymorphic subclasses.
@@ -91,13 +101,15 @@ class ObservationSerializer(serializers.ModelSerializer):
     `Author <http://stackoverflow.com/users/1514427/michael-van-de-waeter>`_
     """
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = Observation
-        fields = ('observation_name', 'as_latex')
+        fields = ('observation_name',
+                  #  'as_latex'
+                  )
 
     def to_representation(self, obj):
         """Resolve the Observation instance to the child class's serializer."""
@@ -149,13 +161,13 @@ class MediaAttachmentSerializer(serializers.ModelSerializer):
 
     attachment = serializers.FileField(use_url=False)
     filepath = serializers.ReadOnlyField()
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = MediaAttachment
-        fields = ('observation_name', 'as_latex',
+        fields = ('observation_name',  # 'as_latex',
                   'media_type', 'title', 'attachment', 'filepath')
         # fields = '__all__'
 
@@ -163,13 +175,13 @@ class MediaAttachmentSerializer(serializers.ModelSerializer):
 class TagObservationSerializer(serializers.ModelSerializer):
     """TagObservation serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TagObservation
-        fields = ('observation_name', 'as_latex',
+        fields = ('observation_name',  # 'as_latex',
                   'tag_type', 'name', 'tag_location',
                   'status', 'comments', )
 
@@ -177,13 +189,14 @@ class TagObservationSerializer(serializers.ModelSerializer):
 class TagObservationEncounterSerializer(serializers.ModelSerializer):
     """TagObservation serializer including encounter for standalone viewset."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TagObservation
-        fields = ('encounter', 'as_latex', 'observation_name',
+        fields = ('encounter',  # 'as_latex',
+                  'observation_name',
                   'tag_type', 'name', 'tag_location',
                   'status', 'comments', )
 
@@ -191,7 +204,7 @@ class TagObservationEncounterSerializer(serializers.ModelSerializer):
 class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
     """TurtleMorphometricObservation serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
@@ -214,26 +227,26 @@ class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
 class ManagementActionSerializer(serializers.ModelSerializer):
     """DisposalObservation serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = ManagementAction
-        fields = ('observation_name', 'as_latex',
+        fields = ('observation_name', # 'as_latex',
                   'management_actions', 'comments', )
 
 
 class TurtleNestObservationSerializer(serializers.ModelSerializer):
     """TurtleNestObservation serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TurtleNestObservation
-        fields = ('observation_name', 'as_latex',
+        fields = ('observation_name',  # 'as_latex',
                   'nest_position', 'eggs_laid', 'egg_count',
                   'no_emerged', 'no_egg_shells',
                   'no_live_hatchlings', 'no_dead_hatchlings',
@@ -247,13 +260,13 @@ class TurtleNestObservationSerializer(serializers.ModelSerializer):
 class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
     """TurtleNestDisturbanceObservation serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TurtleNestDisturbanceObservation
-        fields = ('observation_name', 'as_latex',
+        fields = ('observation_name', # 'as_latex',
                   'disturbance_cause', 'disturbance_cause_confidence',
                   'disturbance_severity', 'comments', )
 
@@ -261,90 +274,85 @@ class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
 class TurtleDamageObservationSerializer(serializers.ModelSerializer):
     """TurtleDamageObservation serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TurtleDamageObservation
-        fields = ('observation_name', 'as_latex',
+        fields = ('observation_name',  # 'as_latex',
                   'body_part', 'damage_type', 'damage_age', 'description', )
 
 
 class TrackTallyObservationSerializer(serializers.ModelSerializer):
     """TrackTallyObservation serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TrackTallyObservation
-        fields = ('observation_name',
-                  'as_latex',
-                  'species',
-                  'track_type',
-                  'tally',)
+        fields = ('observation_name',  # 'as_latex',
+                  'species', 'track_type', 'tally', )
 
 
 class TurtleNestDisturbanceTallyObservationSerializer(serializers.ModelSerializer):
     """TurtleNestDisturbanceTallyObservation serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TurtleNestDisturbanceTallyObservation
-        fields = ('observation_name',
-                  'as_latex',
-                  'species',
-                  'disturbance_cause',
-                  'tally',)
+        fields = ('observation_name', # 'as_latex',
+                  'species', 'disturbance_cause', 'tally', )
 
 
 class TemperatureLoggerSettingsSerializer(serializers.ModelSerializer):
     """TemperatureLoggerSettings serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TemperatureLoggerSettings
-        fields = ('observation_name', 'as_latex',
+        fields = ('observation_name',  # 'as_latex',
                   'logging_interval', 'recording_start', 'tested', )
 
 
 class DispatchRecordSerializer(serializers.ModelSerializer):
     """DispatchRecord serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = DispatchRecord
-        fields = ('observation_name', 'as_latex', 'sent_to',)
+        fields = ('observation_name',  # 'as_latex',
+                  'sent_to',)
 
 
 class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
     """TemperatureLoggerDeployment serializer."""
 
-    as_latex = serializers.ReadOnlyField()
+    # as_latex = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
 
         model = TemperatureLoggerDeployment
-        fields = ('observation_name', 'as_latex', 'depth_mm',
+        fields = ('observation_name',  # 'as_latex', #
+                  'depth_mm',
                   'marker1_present',
                   'distance_to_marker1_mm',
                   'marker2_present',
                   'distance_to_marker2_mm',
                   'habitat',
-                  'distance_to_vegetation_mm',
-                  )
+                  'distance_to_vegetation_mm', )
 
 
 class AreaSerializer(GeoFeatureModelSerializer):
@@ -376,11 +384,20 @@ class EncounterSerializer(GeoFeatureModelSerializer):
       both the Encounter and the nested Observations separately. Observations
       use their included `observation_name` to figure out the actual model that
       we want to `create` or `update`.
+
+      TODO
+      http://stackoverflow.com/questions/32123148/writable-nested-serializer-with-existing-objects-using-django-rest-framework-3-2
+
+      NOTE this API is not writeable, as related models (User and Observation)
+      require customisations to handle data thrown at them.
+
+      NOTE this Serializer is quite slow, as it includes HTML and Latex fragments
+      which are required by the "render to Latex" API output.
     """
 
     observation_set = ObservationSerializer(many=True, read_only=False)
-    observer = UserSerializer(many=False, read_only=False)
-    reporter = UserSerializer(many=False, read_only=False)
+    observer = UserSerializer(many=False, read_only=True)
+    reporter = UserSerializer(many=False, read_only=True)
     # observer = serializers.StringRelatedField(read_only=True)
     # reporter = serializers.StringRelatedField(read_only=True)
     where = PointField(required=True)
@@ -406,23 +423,63 @@ class EncounterSerializer(GeoFeatureModelSerializer):
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
-                  'as_html', 'as_latex',
+                  #  'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
 
-    def create(self, validated_data):
-        """Make EncounterSerializer writeable.
+    # def create(self, validated_data):
+    #     """Make EncounterSerializer writeable: create
+    #
+    #     POST a set of records, or PUT one record
+    #
+    #     behaviour:
+    #
+    #     * If Encounter exists as NEW, update
+    #     * If Encounter exists as PROOFREAD, CURATED or PUBLISHED, skip and warn
+    #     * If Encounter does not exists, create
+    #
+    #     The actual child model is looked up by "observation_name".
+    #     """
+    #     print("EncounterSerializer.save() called".format())
+    #     # Keep observation_set in the fridge, make Encounter first
+    #     obs_data = validated_data.pop('observation_set')
 
-        The actual child model is looked up by "observation_name".
-        """
-        obs_data = validated_data.pop('observation_set')
-        encounter = Encounter.objects.create(**validated_data)
-        for obs in obs_data:
-            childmodel_name = obs.pop("observation_name")
-            childmodel = getattr(Observation,
-                                 childmodel_name).related.related_model
-            childmodel.objects.create(encounter=encounter, **obs)
-        return encounter
+        # Extract Users from encounter: observer, reporter
+        # o = validated_data.pop("observer")
+        # observer, observer_created = User.objects.get_or_create(
+        #     username=o["username"], email=o["email"])
+        # print("observer {0} created {1}".format(observer, observer_created))
+        #
+        # o = validated_data.pop("reporter")
+        # reporter, reporter_created = User.objects.get_or_create(
+        #     username=o["username"], email=o["email"])
+
+        # src = validated_data["source"]
+        # srcid = validated_data["source_id"]
+        #
+        # if Encounter.objects.filter(source=src, source_id=srcid).exists():
+        #     print("Encounter exists: {0}-{1}".format(src, srcid))
+        #     encounter = Encounter.objects.get(source=src, source_id=srcid)
+        #     if encounter.status == Encounter.STATUS_NEW:
+        #         print("Encounter not proofread/curated, updating...")
+        #         encounter.update(**validated_data)
+        #         encounter.save()
+        #     else:
+        #         print("Encounter already changed, skipping.")
+        # else:
+        #     print("No Encounter with source/source_id found, creating new...")
+        #     encounter = Encounter.objects.create(**validated_data)
+        #     # encounter.reporter = reporter
+        #     # encounter.observer = observer
+        #     encounter.save()
+        #
+        #     for obs in obs_data:
+        #         childmodel_name = obs.pop("observation_name")
+        #         childmodel = getattr(Observation,
+        #                              childmodel_name).related.related_model
+        #         childmodel.objects.create(encounter=encounter, **obs)
+        #
+        # return encounter
 
 
 class AnimalEncounterSerializer(EncounterSerializer):
@@ -430,8 +487,8 @@ class AnimalEncounterSerializer(EncounterSerializer):
 
     # where = PointField(required=True)
     observation_set = ObservationSerializer(many=True, read_only=False)
-    observer = UserSerializer(many=False, read_only=False)
-    reporter = UserSerializer(many=False, read_only=False)
+    # observer = UserSerializer(many=False, read_only=False)
+    # reporter = UserSerializer(many=False, read_only=False)
     # observer = serializers.StringRelatedField(read_only=True)
     # reporter = serializers.StringRelatedField(read_only=True)
     where = PointField(required=True)
@@ -465,6 +522,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
     """TurtleNestEncounter serializer."""
 
     # where = PointField(required=True)
+    # observation_set = ObservationSerializer(many=True, read_only=False)
 
     class Meta:
         """Class options."""
@@ -474,8 +532,11 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'observer', 'reporter',
                   'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'comments',
                   'status', 'source', 'source_id', 'encounter_type',
+                  'leaflet_title', 'latitude', 'longitude', 'crs',
+                  'absolute_admin_url', 'photographs', 'tx_logs',
                   'as_html', 'as_latex',
                   'observation_set', )
+        # read_only = ('photographs',)
         geo_field = "where"
 
 
@@ -546,7 +607,9 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
     """AnimalEncounter view set."""
     latex_name = 'latex/encounter.tex'
-    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    authentication_classes = (SessionAuthentication,
+                              BasicAuthentication,
+                              TokenAuthentication)
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
