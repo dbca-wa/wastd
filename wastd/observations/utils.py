@@ -172,7 +172,7 @@ def dl_photo(photo_id, photo_url, photo_filename):
 
     if not os.path.exists(pname):
         print("Downloading file {0}...".format(pname))
-        response = requests.get(photo_url)
+        response = requests.get(photo_url, stream=True)
         with open(pname, 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
         del response
@@ -189,10 +189,30 @@ def handle_photo(p, e, title="Track"):
     e The related encounter (must exist)
     title The attachment's title (default: "Track")
     """
-    with open(p, 'rb') as photo:
-        m = MediaAttachment.objects.create(
-            encounter=e, title=title, attachment=File(photo))
-        pprint(m)
+    # Does the file exist locally?
+    if os.path.exists(p):
+        print("File {0} exists".format(p))
+        with open(p, 'rb') as photo:
+            f = File(photo)
+            # Is the file a dud?
+            if f.size > 0:
+                print("File size is {0}".format(f.size))
+
+                # Does the MediaAttachment exist already?
+                if MediaAttachment.objects.filter(encounter=e, title=title).exists():
+                    m = MediaAttachment.objects.filter(encounter=e, title=title)[0]
+                    action = "updated"
+                else:
+                    m = MediaAttachment(encounter=e, title=title)
+                    action = "Created"
+
+                # Update the file
+                m.attachment.save(title, f, save=True)
+                print("Photo {0}: {1}".format(action, m))
+            else:
+                print("[ERROR] zero size file {0}".format(p))
+    else:
+        print("[ERROR] missing file {0}".format(p))
 
 
 def handle_turtlenestdistobs(d, e, m):
@@ -235,7 +255,7 @@ def handle_turtlenestdistobs(d, e, m):
                  d["photo_disturbance"]["filename"])
         pdir = make_photo_foldername(e.source_id)
         pname = os.path.join(pdir, d["photo_disturbance"]["filename"])
-        handle_photo(pname, e, title="Disturbance")
+        handle_photo(pname, e, title="Disturbance {0}".format(dd.disturbance_cause))
     pprint(dd)
 
 
@@ -391,6 +411,6 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
         all_photos = pt + pn
         [dl_photo(p[0], p[1], p[2]) for p in all_photos]
 
-        [import_one_record_tc010(r, ODK_MAPPING) for r in d[0:100]
+        [import_one_record_tc010(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
