@@ -303,11 +303,11 @@ def import_one_record_tc010(r, m):
         new_data["disturbance"] = m["disturbance"][r["disturbance"]]
 
     if src_id in m["overwrite"]:
-        print("Found record {0}, updating...".format(src_id))
+        print("Updating unchanged existing record {0}...".format(src_id))
         TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = TurtleNestEncounter.objects.get(source_id=src_id)
     else:
-        print("New record {0}, creating...".format(src_id))
+        print("Creating new record {0}...".format(src_id))
         e = TurtleNestEncounter.objects.create(**new_data)
 
     e.save()

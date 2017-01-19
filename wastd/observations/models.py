@@ -2261,10 +2261,15 @@ class TurtleNestDisturbanceTallyObservation(Observation):
         default=NEST_DAMAGE_DEFAULT,
         help_text=_("The cause of the disturbance."), )
 
-    tally = models.PositiveIntegerField(
-        verbose_name=_("Tally"),
+    no_nests_disturbed = models.PositiveIntegerField(
+        verbose_name=_("Tally of nests disturbed"),
         blank=True, null=True,
         help_text=_("The sum of damaged nests."),)
+
+    no_tracks_encountered = models.PositiveIntegerField(
+        verbose_name=_("Tally of disturbance signs"),
+        blank=True, null=True,
+        help_text=_("The sum of signs, e.g. predator tracks."),)
 
     def __str__(self):
         """The unicode representation."""
