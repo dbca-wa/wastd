@@ -120,7 +120,7 @@ def guess_user(un):
         msg = "Username {0} found by exact match: returning {1}"
     except ObjectDoesNotExist:
         try:
-            usr = User.objects.get(username__icontains=un[0:4])
+            usr = User.objects.filter(username__icontains=un[0:4])[0]
             msg = "Username {0} found by fuzzy match: returning {1}"
         except ObjectDoesNotExist:
             msg = "Username {0} not found: created {1}"
