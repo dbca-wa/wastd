@@ -1175,7 +1175,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         return rest_reverse(self._meta.model_name + '-detail',
                             kwargs={'pk': self.pk, 'format': format})
 
-
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
         """Return true if this document can be proofread."""
@@ -1603,6 +1602,77 @@ class TurtleNestEncounter(Encounter):
             self.get_nest_type_display(),
             self.get_species_display(),
             self.get_habitat_display(), )
+
+    @property
+    def get_encounter_type(self):
+        """Infer the encounter type.
+
+        TurtleNestEncounters are always nest encounters. Would you have guessed?
+        """
+        return Encounter.ENCOUNTER_NEST
+
+    @property
+    def short_name(self):
+        """A short, often unique, human-readable representation of the encounter.
+
+        Slugified and dash-separated:
+
+        * Date of encounter as YYYY-mm-dd
+        * longitude in WGS 84 DD, rounded to 4 decimals (<10m),
+        * latitude in WGS 84 DD, rounded to 4 decimals (<10m), (missing sign!!)
+        * nest age (type),
+        * species,
+        * name if available (requires "update names" and tag obs)
+
+        The short_name could be non-unique.
+        """
+        nameparts = [
+            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
+            str(round(self.where.get_x(), 4)).replace(".", "-"),
+            str(round(self.where.get_y(), 4)).replace(".", "-"),
+            self.nest_age,
+            self.species,
+            ]
+        if self.name is not None:
+            nameparts.append(self.name)
+        return slugify.slugify("-".join(nameparts))
+
+
+@python_2_unicode_compatible
+class LineTransectEncounter(Encounter):
+    """Encounter with a line transect.
+
+    Along the line transect, non-georeferenced entities (such as tracks or
+    damage signs) are tallied.
+
+    Although individually geo-referenced Encounters are preferable, this Encounter
+    type supports tallies of abundant entities like turtle tracks on a saturation
+    beach, collected under time pressure.
+
+    Examples:
+
+    * TrackTallyObservation
+    * TurtleNestDisturbanceTallyObservation
+    """
+
+    transect = geo_models.MultiPointField(
+        srid=4326,
+        verbose_name=_("Observed at"),
+        help_text=_("The line transect as MultiPoint in WGS84"))
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["when", "where"]
+        verbose_name = "Line Transect Encounter"
+        verbose_name_plural = "Line Transect Encounters"
+        get_latest_by = "when"
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Line transect {0}".format(
+            self.pk
+            )
 
     @property
     def get_encounter_type(self):

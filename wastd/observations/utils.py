@@ -8,14 +8,16 @@ import shutil
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, MultiPoint
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
 
 from wastd.observations.models import (
     Encounter, AnimalEncounter, LoggerEncounter, TurtleNestEncounter,
+    LineTransectEncounter,
     TurtleNestDisturbanceObservation, MediaAttachment,
+    TurtleNestDisturbanceTallyObservation, TrackTallyObservation,
     NEST_AGE_CHOICES, NEST_TYPE_CHOICES, OBSERVATION_CHOICES,
     NEST_DAMAGE_CHOICES, CONFIDENCE_CHOICES
     )
@@ -331,6 +333,120 @@ def import_one_record_tc010(r, m):
      if len(r["disturbanceobservation"]) > 0]
 
 
+def odk_mp_to_multipoint(odk_mp):
+    """Convert an ODK Multipoint string to a Django MultiPoint
+    """
+    # in: "-31.99656982 115.88441855 0.0 0.0;-31.9965685 115.88441522 0.0 0.0;"
+    # out: 'MULTIPOINT(POINT(115.88441855 -31.99656982) POINT(115.88441522 -31.9965685))'
+    return MultiPoint([Point(c[1], c[0]) for c in
+                       [p.split(" ") for p in odk_mp.split(";") if len(p) > 0]])
+
+
+def import_one_record_tt05(r, m):
+    """Import one ODK Track Tally 0.5 record into WAStD.
+
+    Arguments
+
+    r The record as dict, e.g.
+        {
+            "instanceID": "uuid:29204c9c-3170-4dd1-b355-1d84d11e70e8",
+            "observation_start_time": "2017-01-19T04:42:41.195Z",
+            "reporter": "florianm",
+            "location": "-31.99656982 115.88441855 0.0 0.0;-31.9965685 115.88441522 0.0 0.0;",
+            "fb_evidence": "present",
+            "gn_evidence": "absent",
+            "hb_evidence": "absent",
+            "lh_evidence": "absent",
+            "or_evidence": "absent",
+            "unk_evidence": "present",
+            "predation_evidence": "present",
+            "fb_no_old_tracks": 10,
+            "fb_no_fresh_successful_crawls": 26,
+            "fb_no_fresh_false_crawls": 21,
+            "fb_no_fresh_tracks_unsure": 5,
+            "fb_no_fresh_tracks_not_assessed": 9,
+            "fb_no_hatched_nests": 2,
+            "gn_no_old_tracks": null,
+            "gn_no_fresh_successful_crawls": null,
+            "gn_no_fresh_false_crawls": null,
+            "gn_no_fresh_tracks_unsure": null,
+            "gn_no_fresh_tracks_not_assessed": null,
+            "gn_no_hatched_nests": null,
+            "hb_no_old_tracks": null,
+            "hb_no_fresh_successful_crawls": null,
+            "hb_no_fresh_false_crawls": null,
+            "hb_no_fresh_tracks_unsure": null,
+            "hb_no_fresh_tracks_not_assessed": null,
+            "hb_no_hatched_nests": null,
+            "lh_no_old_tracks": null,
+            "lh_no_fresh_successful_crawls": null,
+            "lh_no_fresh_false_crawls": null,
+            "lh_no_fresh_tracks_unsure": null,
+            "lh_no_fresh_tracks_not_assessed": null,
+            "lh_no_hatched_nests": null,
+            "or_no_old_tracks": null,
+            "or_no_fresh_successful_crawls": null,
+            "or_no_fresh_false_crawls": null,
+            "or_no_fresh_tracks_unsure": null,
+            "or_no_fresh_tracks_not_assessed": null,
+            "or_no_hatched_nests": null,
+            "unk_no_old_tracks": 10,
+            "unk_no_fresh_successful_crawls": 2,
+            "unk_no_fresh_false_crawls": 91,
+            "unk_no_fresh_tracks_unsure": 5,
+            "unk_no_fresh_tracks_not_assessed": 2,
+            "unk_no_hatched_nests": 5,
+            "disturbance": [
+                {
+                    "disturbance_cause": "cyclone",
+                    "no_nests_disturbed": 5,
+                    "no_tracks_encountered": 4,
+                    "disturbance_comments": "test"
+                }
+            ],
+            "observation_end_time": "2017-01-19T05:02:04.577Z"
+        }
+
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        where=odk_mp_to_multipoint(r["location"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]],
+        # nest_age=m["nest_age"][r["nest_age"]],
+        # nest_type=m["nest_type"][r["nest_type"]],
+        # species=m["species"][r["species"]],
+        # comments
+        )
+
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        LineTransectEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = LineTransectEncounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = LineTransectEncounter.objects.create(**new_data)
+
+    e.save()
+    pprint(e)
+
+    # TODO add TurtleNestDisturbanceTallyObservation
+    # [handle_turtlenestdisttallyobs(distobs, e, m)
+    #  for distobs in r["disturbance"] if len(r["disturbance"]) > 0]
+
+    # TODO add TrackTallyObservation
+    
+
 def import_odk(jsonfile, flavour="odk-trackcount-010"):
     """Import ODK Track Count 0.10 data.
 
@@ -396,9 +512,9 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
 
         # some have to be guessed
         "users": {u: guess_user(u) for u in set([r["reporter"] for r in d])},
-        "keep":  [t.source_id for t in TurtleNestEncounter.objects.exclude(
+        "keep":  [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")],
-        "overwrite": [t.source_id for t in TurtleNestEncounter.objects.filter(
+        "overwrite": [t.source_id for t in Encounter.objects.filter(
             source="odk", status=Encounter.STATUS_NEW)]
         }
     print("\n\nMapping:\n\n")
@@ -424,5 +540,12 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
         [dl_photo(p[0], p[1], p[2]) for p in all_photos]
 
         [import_one_record_tc010(r, ODK_MAPPING) for r in d
+         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        print("Done!")
+
+    elif flavour == "odk-tracktally-05":
+        print("Using flavour ODK Track Tally 0.5...")
+        import_one_record_tt05
+        [import_one_record_tt05(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
