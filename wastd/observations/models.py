@@ -2225,12 +2225,19 @@ class TrackTallyObservation(Observation):
         default=TURTLE_SPECIES_DEFAULT,
         help_text=_("The species of the animal causing the track."), )
 
-    track_type = models.CharField(
+    nest_age = models.CharField(
         max_length=300,
-        verbose_name=_("Track type"),
-        default=NEST_AGE_DEFAULT,
+        verbose_name=_("Age"),
         choices=NEST_AGE_CHOICES,
-        help_text=_("The nest age and type."), )
+        default=NEST_AGE_DEFAULT,
+        help_text=_("The track or nest age."), )
+
+    nest_type = models.CharField(
+        max_length=300,
+        verbose_name=_("Type"),
+        choices=NEST_TYPE_CHOICES,
+        default=NEST_TYPE_DEFAULT,
+        help_text=_("The track or nest type."), )
 
     tally = models.PositiveIntegerField(
         verbose_name=_("Tally"),
