@@ -103,7 +103,8 @@ def guess_user(un):
     In order, return:
 
     * A user with username `un`, or
-    * a user with username `icontain`ing the first five characters of `un`, or
+    * the first or only match of a user with username `icontain`ing the first
+      five characters of `un`, or
     * a new user with username `un`.
 
     Arguments
@@ -115,16 +116,27 @@ def guess_user(un):
     """
     User = get_user_model()
 
+    print("Guessing User for {0}...".format(un))
+
     try:
         usr = User.objects.get(username=un)
         msg = "Username {0} found by exact match: returning {1}"
+
     except ObjectDoesNotExist:
-        try:
-            usr = User.objects.filter(username__icontains=un[0:4])[0]
-            msg = "Username {0} found by fuzzy match: returning {1}"
-        except ObjectDoesNotExist:
-            msg = "Username {0} not found: created {1}"
+        usrs = User.objects.filter(username__icontains=un[0:4])
+
+        if usrs.count() == 0:
             usr = User.objects.create(username=un, name=un)
+            msg = "Username {0} not found: created {1}"
+
+        elif usrs.count() == 1:
+            usr = usrs[0]
+            msg = "Username {0} found by fuzzy match: returning only match {1}"
+            usr = usrs[0]
+
+        else:
+            usr = usrs[0]
+            msg = "[WARNING] Username {0} returned multiple matches, choosing {1}"
 
     print(msg.format(un, usr))
     return usr
