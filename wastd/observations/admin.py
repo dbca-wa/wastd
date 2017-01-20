@@ -20,6 +20,7 @@ from reversion.admin import VersionAdmin
 from wastd.observations.models import (
     Area, SiteVisit,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
+    LineTransectEncounter,
     MediaAttachment, TagObservation, ManagementAction,
     TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
     TurtleMorphometricObservation, TurtleDamageObservation,
@@ -179,7 +180,14 @@ SiteVisitForm = s2form(SiteVisit, attrs=S2ATTRS)
 EncounterAdminForm = s2form(Encounter, attrs=S2ATTRS)
 AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
 TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
+LineTransectEncounterAdminForm = s2form(LineTransectEncounter, attrs=S2ATTRS)
 LoggerEncounterAdminForm = s2form(LoggerEncounter, attrs=S2ATTRS)
+leaflet_settings = {
+    'widget': LeafletWidget(attrs={
+        'map_height': '400px',
+        'map_width': '100%',
+        'display_raw': 'true',
+        'map_srid': 4326, })}
 
 
 @admin.register(SiteVisit)
@@ -196,11 +204,7 @@ class AreaAdmin(admin.ModelAdmin):
 
     # Leaflet geolocation widget
     formfield_overrides = {
-        geo_models.PolygonField: {'widget': LeafletWidget(attrs={
-            'map_height': '400px',
-            'map_width': '100%',
-            'display_raw': 'true',
-            'map_srid': 4326, })},
+        geo_models.PolygonField: leaflet_settings,
         }
 
 
@@ -224,11 +228,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 
     # Leaflet geolocation widget
     formfield_overrides = {
-        geo_models.PointField: {'widget': LeafletWidget(attrs={
-            'map_height': '400px',
-            'map_width': '100%',
-            'display_raw': 'true',
-            'map_srid': 4326, })},
+        geo_models.PointField: leaflet_settings,
+        geo_models.LineStringField: leaflet_settings,
         }
 
     # Filters for change_list
@@ -398,6 +399,24 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         """Make nest type human readable."""
         return obj.get_nest_type_display()
     type_display.short_description = 'Nest type'
+
+
+@admin.register(LineTransectEncounter)
+class LineTransectEncounterAdmin(EncounterAdmin):
+    """Admin for LineTransectEncounter."""
+
+    form = LineTransectEncounterAdminForm
+    list_display = EncounterAdmin.FIRST_COLS + (
+        'transect',
+        ) + EncounterAdmin.LAST_COLS
+    # list_filter = EncounterAdmin.list_filter + ()
+    fieldsets = EncounterAdmin.fieldsets + (
+        ('Location', {'fields': ('transect', )}), )
+
+    inlines = [
+        TrackTallyObservationInline,
+        TurtleNestDisturbanceTallyObservationInline,
+        ]
 
 
 @admin.register(LoggerEncounter)

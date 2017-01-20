@@ -1642,23 +1642,26 @@ class TurtleNestEncounter(Encounter):
 class LineTransectEncounter(Encounter):
     """Encounter with a line transect.
 
-    Along the line transect, non-georeferenced entities (such as tracks or
-    damage signs) are tallied.
+    An observer tallies (not individually georeferenced) observations along
+    a line transect, while recording the transect route live and keeping the
+    tally until the end of the transect.
 
     Although individually geo-referenced Encounters are preferable, this Encounter
-    type supports tallies of abundant entities like turtle tracks on a saturation
-    beach, collected under time pressure.
+    type supports tallies of abundant entities (like turtle tracks on a saturation
+    beach), collected under time pressure.
 
     Examples:
 
+    ODK form "Track Tally", providing per record:
+    * One LineTransectEncounter with zero to many related:
     * TrackTallyObservation
     * TurtleNestDisturbanceTallyObservation
     """
 
-    transect = geo_models.MultiPointField(
+    transect = geo_models.LineStringField(
         srid=4326,
-        verbose_name=_("Observed at"),
-        help_text=_("The line transect as MultiPoint in WGS84"))
+        verbose_name=_("Transect line"),
+        help_text=_("The line transect as LineString in WGS84"))
 
     class Meta:
         """Class options."""
@@ -1670,7 +1673,7 @@ class LineTransectEncounter(Encounter):
 
     def __str__(self):
         """The unicode representation."""
-        return "Line transect {0}".format(
+        return "Line tx {0}".format(
             self.pk
             )
 
@@ -1678,7 +1681,9 @@ class LineTransectEncounter(Encounter):
     def get_encounter_type(self):
         """Infer the encounter type.
 
-        TurtleNestEncounters are always nest encounters. Would you have guessed?
+        If TrackTallyObservations are related, it's a track observation.
+
+        TODO support other types of line transects when added
         """
         return Encounter.ENCOUNTER_NEST
 
@@ -1700,9 +1705,7 @@ class LineTransectEncounter(Encounter):
         nameparts = [
             self.when.strftime("%Y-%m-%d-%H-%M-%S"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
-            str(round(self.where.get_y(), 4)).replace(".", "-"),
-            self.nest_age,
-            self.species,
+            str(round(self.where.get_y(), 4)).replace(".", "-")
             ]
         if self.name is not None:
             nameparts.append(self.name)
@@ -2316,8 +2319,8 @@ class TrackTallyObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        t1 = ('TrackTally: {0} {1}s of {2}')
-        return t1.format(self.tally, self.track_type, self.species)
+        t1 = ('TrackTally: {0} {1} {2}s of {3}')
+        return t1.format(self.tally, self.nest_age, self.nest_type, self.species)
 
 
 @python_2_unicode_compatible
@@ -2350,8 +2353,10 @@ class TurtleNestDisturbanceTallyObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        t1 = ('Nest Damage Tally: {0} nests of {1} showing {2}')
-        return t1.format(self.tally, self.species, self.disturbance_cause)
+        t1 = ('Nest Damage Tally: {0} nests of {1} showing {2} '
+              '({3} disturbance signs sighted)')
+        return t1.format(self.no_nests_disturbed, self.species,
+                         self.disturbance_cause, self.no_tracks_encountered)
 
 
 @python_2_unicode_compatible

@@ -8,7 +8,7 @@ import shutil
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import Point, MultiPoint
+from django.contrib.gis.geos import Point, LineString
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
@@ -278,7 +278,46 @@ def import_one_record_tc010(r, m):
 
     Arguments
 
-    r The record as dict
+    r The record as dict, e.g.
+        {
+            "instanceID": "uuid:f23177b3-2234-49be-917e-87b2096c921e",
+            "observation_start_time": "2016-11-15T01:23:32.948Z",
+            "reporter": "florianm",
+            "nest_age": "fresh",
+            "species": "flatback",
+            "photo_track": {
+                "filename": "1479173177551.jpg",
+                "type": "image/jpeg",
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fdetails%3Aphoto_track"
+            },
+            "nest_type": "successfulcrawl",
+            "observed_at:Latitude": -32.05844863,
+            "observed_at:Longitude": 115.77845847,
+            "observed_at:Altitude": 19,
+            "observed_at:Accuracy": 7,
+            "habitat": "na",
+            "photo_nest": {
+                "filename": "1479173194012.jpg",
+                "type": "image/jpeg",
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fnest%3Aphoto_nest"
+            },
+            "disturbance": "present",
+            "disturbanceobservation": [
+                {
+                    "disturbance_cause": "human",
+                    "disturbance_cause_confidence": "expertopinion",
+                    "disturbance_severity": "na",
+                    "photo_disturbance": {
+                        "filename": "1479173301849.jpg",
+                        "type": "image/jpeg",
+                        "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fdisturbanceobservation%5B%40ordinal%3D1%5D%2Fphoto_disturbance"
+                    },
+                    "comments": null
+                }
+            ],
+            "observation_end_time": "2016-11-15T01:29:59.935Z"
+        },
+
     m The mapping of ODK to WAStD choices
 
     Existing records will be overwritten.
@@ -333,17 +372,22 @@ def import_one_record_tc010(r, m):
      if len(r["disturbanceobservation"]) > 0]
 
 
-def odk_mp_to_multipoint(odk_mp):
-    """Convert an ODK Multipoint string to a Django MultiPoint
+def read_odk_linestring(odk_mp):
+    """Convert an ODK LineString string to a Django LineString
     """
     # in: "-31.99656982 115.88441855 0.0 0.0;-31.9965685 115.88441522 0.0 0.0;"
-    # out: 'MULTIPOINT(POINT(115.88441855 -31.99656982) POINT(115.88441522 -31.9965685))'
-    return MultiPoint([Point(c[1], c[0]) for c in
-                       [p.split(" ") for p in odk_mp.split(";") if len(p) > 0]])
+    # out: Line(Point(115.88441855 -31.99656982) Point(115.88441522 -31.9965685))
+    return LineString(
+        [Point(c[1], c[0]) for c in
+         [p.split(" ") for p in odk_mp.split(";") if len(p) > 0]
+         ]
+        )
 
 
 def import_one_record_tt05(r, m):
     """Import one ODK Track Tally 0.5 record into WAStD.
+
+    Notably, counts of "None" are true absences and will be converted to "0".
 
     Arguments
 
@@ -418,7 +462,7 @@ def import_one_record_tt05(r, m):
     new_data = dict(
         source="odk",
         source_id=src_id,
-        where=odk_mp_to_multipoint(r["location"]),
+        where=read_odk_linestring(r["location"]),
         when=parse_datetime(r["observation_start_time"]),
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
@@ -445,7 +489,8 @@ def import_one_record_tt05(r, m):
     #  for distobs in r["disturbance"] if len(r["disturbance"]) > 0]
 
     # TODO add TrackTallyObservation
-    
+    # Handle None as 0
+
 
 def import_odk(jsonfile, flavour="odk-trackcount-010"):
     """Import ODK Track Count 0.10 data.
