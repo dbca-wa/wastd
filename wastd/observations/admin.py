@@ -23,7 +23,8 @@ from wastd.observations.models import (
     LineTransectEncounter,
     MediaAttachment, TagObservation, ManagementAction,
     TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
-    TurtleMorphometricObservation, TurtleDamageObservation,
+    TurtleMorphometricObservation, HatchlingMorphometricObservation,
+    TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
 from wastd.observations.filters import LocationListFilter
@@ -58,6 +59,14 @@ class TurtleMorphometricObservationInline(admin.StackedInline):
 
     extra = 0
     model = TurtleMorphometricObservation
+    classes = ('grp-collapse grp-open',)
+
+
+class HatchlingMorphometricObservationInline(admin.StackedInline):
+    """Admin for HatchlingMorphometricObservation."""
+
+    extra = 0
+    model = HatchlingMorphometricObservation
     classes = ('grp-collapse grp-open',)
 
 
@@ -383,7 +392,9 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         MediaAttachmentInline,
         TagObservationInline,
         TurtleNestObservationInline,
-        TurtleNestDisturbanceObservationInline, ]
+        TurtleNestDisturbanceObservationInline,
+        HatchlingMorphometricObservationInline,
+        ]
 
     def habitat_display(self, obj):
         """Make habitat human readable."""

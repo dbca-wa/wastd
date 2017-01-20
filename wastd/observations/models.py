@@ -2213,7 +2213,7 @@ class TurtleMorphometricObservation(Observation):
         verbose_name=_("Body depth accuracy"),
         help_text=_("The expected measurement accuracy."),)
 
-    body_weight_mm = models.PositiveIntegerField(  # srsly? should be _g
+    body_weight_g = models.PositiveIntegerField(
         blank=True, null=True,
         verbose_name=_("Body weight (g)"),
         help_text=_("The body weight in grams (1000 g = 1kg)."),)
@@ -2248,6 +2248,35 @@ class TurtleMorphometricObservation(Observation):
             self.curved_carapace_width_mm,
             self.encounter.pk)
 
+
+@python_2_unicode_compatible
+class HatchlingMorphometricObservation(Observation):
+    """Morphometric measurements of a hatchling at a TurtleNestEncounter."""
+
+    straight_carapace_length_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Straight carapace length (mm)"),
+        help_text=_("The straight carapace length in millimetres."),)
+
+    straight_carapace_width_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Straight carapace width (mm)"),
+        help_text=_("The straight carapace width in millimetres."),)
+
+    body_weight_g = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Body weight (g)"),
+        help_text=_("The body weight in grams (1000 g = 1kg)."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        tpl = "{0} {1} Hatchling {0} SCL {1} SCW {2} {3}"
+        return tpl.format(
+            self.pk,
+            self.encounter.species,
+            self.straight_carapace_length_mm,
+            self.straight_carapace_width_mm,
+            )
 
 @python_2_unicode_compatible
 class TurtleDamageObservation(Observation):

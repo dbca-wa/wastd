@@ -34,6 +34,14 @@
     HL {{ o.maximum_head_length_mm }} &plusmn; {{ o.maximum_head_length_accuracy }} mm
     {% endif %}
 
+    {% if o.body_depth_mm %}
+    BD {{ o.body_depth_mm }} &plusmn; {{ o.body_depth_accuracy }} mm
+    {% endif %}
+
+    {% if o.body_weight_g %}
+    Wt {{ o.body_weight_g }} &plusmn; {{ o.body_weight_accuracy }} g
+    {% endif %}
+
     {% if o.handler %}
     <i class="fa fa-fw fa-eye"></i>
     <a href="mailto:{{ o.observer.email }}">{{ o.handler.name }}</a>

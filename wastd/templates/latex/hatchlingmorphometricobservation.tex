@@ -1,0 +1,17 @@
+{% load observations rest_framework_latex %}
+{% with original as o %}
+\paragraph{}
+
+    {% if o.straight_carapace_length_mm %}
+    SCL {{ o.straight_carapace_length_mm }} mm
+    {% endif %}
+
+    {% if o.straight_carapace_width_mm %}
+    SCW {{ o.straight_carapace_width_mm }} mm
+    {% endif %}
+
+    {% if o.body_weight_g %}
+    Wt {{ o.body_weight_g }} mm
+    {% endif %}
+
+{% endwith %}
