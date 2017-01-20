@@ -62,7 +62,7 @@ class TurtleMorphometricObservationInline(admin.StackedInline):
     classes = ('grp-collapse grp-open',)
 
 
-class HatchlingMorphometricObservationInline(admin.StackedInline):
+class HatchlingMorphometricObservationInline(admin.TabularInline):
     """Admin for HatchlingMorphometricObservation."""
 
     extra = 0

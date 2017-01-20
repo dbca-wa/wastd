@@ -164,6 +164,23 @@ def map_values(d):
     return {k.replace("-", ""): k for k in dict(d).keys()}
 
 
+def read_odk_linestring(odk_str):
+    """Convert an ODK LineString string to a Django LineString."""
+    # in: "-31.99656982 115.88441855 0.0 0.0;-31.9965685 115.88441522 0.0 0.0;"
+    # out: Line(Point(115.88441855 -31.99656982) Point(115.88441522 -31.9965685))
+    return LineString(
+        [Point(float(c[1]), float(c[0])) for c in
+         [p.split(" ") for p in odk_str.split(";") if len(p) > 0]
+         ]
+        )
+
+
+def odk_linestring_as_point(odk_str):
+    """Return the first point of an ODK LineString as Django Point."""
+    point_str = odk_str.split(";")[0].split(" ")
+    return Point(float(point_str[1]), float(point_str[0]))
+
+
 def make_photo_foldername(photo_id):
     return os.path.join(settings.MEDIA_ROOT, "photos", photo_id)
 
@@ -350,6 +367,10 @@ def import_one_record_tc010(r, m):
 
     m The mapping of ODK to WAStD choices
 
+    Returns
+
+    The created Encounter instance.
+
     Existing records will be overwritten.
     Make sure to skip existing records which should be retained.
     """
@@ -399,23 +420,25 @@ def import_one_record_tc010(r, m):
     [handle_turtlenestdistobs(distobs, e, m)
      for distobs in r["disturbanceobservation"]
      if len(r["disturbanceobservation"]) > 0]
+    return e
 
 
-def read_odk_linestring(odk_str):
-    """Convert an ODK LineString string to a Django LineString."""
-    # in: "-31.99656982 115.88441855 0.0 0.0;-31.9965685 115.88441522 0.0 0.0;"
-    # out: Line(Point(115.88441855 -31.99656982) Point(115.88441522 -31.9965685))
-    return LineString(
-        [Point(float(c[1]), float(c[0])) for c in
-         [p.split(" ") for p in odk_str.split(";") if len(p) > 0]
-         ]
-        )
+def import_one_record_tc011(r, m):
+    """Import one ODK Track Count 0.10 record into WAStD.
 
+    Arguments
 
-def odk_linestring_as_point(odk_str):
-    """Return the first point of an ODK LineString as Django Point."""
-    point_str = odk_str.split(";")[0].split(" ")
-    return Point(float(point_str[1]), float(point_str[0]))
+    r The record as dict, e.g.
+
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+    e = import_one_record_tc010(r, m)
+    # TODO TurtleNestObservation
+    # TODO HatchlingMorphometricObservation
+    return e
 
 
 def import_one_record_tt05(r, m):
@@ -919,6 +942,29 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
         [dl_photo(p[0], p[1], p[2]) for p in all_photos]
 
         [import_one_record_tc010(r, ODK_MAPPING) for r in d
+         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        print("Done!")
+
+    elif flavour == "odk-trackcount-010":
+        print("Using flavour ODK Track Count 0.11...")
+
+        # Download photos
+        pt = [[r["instanceID"],
+               r["photo_track"]["url"],
+               r["photo_track"]["filename"]]
+              for r in d
+              if r["photo_track"] is not None]
+        pn = [[r["instanceID"],
+               r["photo_nest"]["url"],
+               r["photo_nest"]["filename"]]
+              for r in d
+              if r["photo_nest"] is not None]
+        print("Downloading photos of {0} tracks and {1} nests".format(
+            len(pt), len(pn)))
+        all_photos = pt + pn
+        [dl_photo(p[0], p[1], p[2]) for p in all_photos]
+
+        [import_one_record_tc011(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 

@@ -2270,12 +2270,13 @@ class HatchlingMorphometricObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        tpl = "{0} {1} Hatchling {0} SCL {1} SCW {2} {3}"
+        tpl = "{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
         return tpl.format(
             self.pk,
             self.encounter.species,
             self.straight_carapace_length_mm,
             self.straight_carapace_width_mm,
+            self.body_weight_g,
             )
 
 @python_2_unicode_compatible
