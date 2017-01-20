@@ -75,4 +75,4 @@ docs/_build/
 config/wastd_uwsgi.ini
 
 # ingested data
-wastd/static/data/
+data/
