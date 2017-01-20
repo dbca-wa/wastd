@@ -372,16 +372,21 @@ def import_one_record_tc010(r, m):
      if len(r["disturbanceobservation"]) > 0]
 
 
-def read_odk_linestring(odk_mp):
-    """Convert an ODK LineString string to a Django LineString
-    """
+def read_odk_linestring(odk_str):
+    """Convert an ODK LineString string to a Django LineString."""
     # in: "-31.99656982 115.88441855 0.0 0.0;-31.9965685 115.88441522 0.0 0.0;"
     # out: Line(Point(115.88441855 -31.99656982) Point(115.88441522 -31.9965685))
     return LineString(
-        [Point(c[1], c[0]) for c in
-         [p.split(" ") for p in odk_mp.split(";") if len(p) > 0]
+        [Point(float(c[1]), float(c[0])) for c in
+         [p.split(" ") for p in odk_str.split(";") if len(p) > 0]
          ]
         )
+
+
+def odk_linestring_as_point(odk_str):
+    """Return the first point of an ODK LineString as Django Point."""
+    point_str = odk_str.split(";")[0].split(" ")
+    return Point(float(point_str[1]), float(point_str[0]))
 
 
 def import_one_record_tt05(r, m):
@@ -462,7 +467,8 @@ def import_one_record_tt05(r, m):
     new_data = dict(
         source="odk",
         source_id=src_id,
-        where=read_odk_linestring(r["location"]),
+        where=odk_linestring_as_point(r["location"]),
+        transect=read_odk_linestring(r["location"]),
         when=parse_datetime(r["observation_start_time"]),
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
