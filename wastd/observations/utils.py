@@ -273,6 +273,36 @@ def handle_turtlenestdistobs(d, e, m):
     pprint(dd)
 
 
+def handle_turtlenestdisttallyobs(d, e, m):
+    """Get or create TurtleNestDisturbanceObservation.
+
+    Arguments
+
+    d A dictionary like
+        {
+            "disturbance_cause": "cyclone",
+            "no_nests_disturbed": 5,
+            "no_tracks_encountered": 4,
+            "disturbance_comments": "test"
+        }
+    e The related TurtleNestEncounter (must exist)
+    m The ODK_MAPPING
+    """
+    print("Found disturbance obs")
+    pprint(d)
+
+    dd, created = TurtleNestDisturbanceTallyObservation.objects.get_or_create(
+        encounter=e,
+        disturbance_cause=m["disturbance_cause"][d["disturbance_cause"]],
+        no_nests_disturbed=d["no_nests_disturbed"] or 0,
+        no_tracks_encountered=d["no_tracks_encountered"] or 0,
+        comments=d["disturbance_comments"]
+        )
+    dd.save()
+    e.save()  # cache distobs in HTML
+    pprint(dd)
+
+
 def import_one_record_tc010(r, m):
     """Import one ODK Track Count 0.10 record into WAStD.
 
@@ -323,7 +353,6 @@ def import_one_record_tc010(r, m):
     Existing records will be overwritten.
     Make sure to skip existing records which should be retained.
     """
-
     src_id = r["instanceID"]
 
     new_data = dict(
@@ -490,12 +519,312 @@ def import_one_record_tt05(r, m):
     e.save()
     pprint(e)
 
-    # TODO add TurtleNestDisturbanceTallyObservation
-    # [handle_turtlenestdisttallyobs(distobs, e, m)
-    #  for distobs in r["disturbance"] if len(r["disturbance"]) > 0]
+    # TurtleNestDisturbanceTallyObservation
+    [handle_turtlenestdisttallyobs(distobs, e, m)
+     for distobs in r["disturbance"] if len(r["disturbance"]) > 0]
 
-    # TODO add TrackTallyObservation
-    # Handle None as 0
+    # TrackTallyObservations
+    # Flatbacks
+    msg = 'Tally (created: {0}) {1}'
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="old",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["fb_no_old_tracks"] or 0
+        )
+    print(msg.format(created, t))
+
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["fb_no_fresh_successful_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["fb_no_fresh_false_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["fb_no_fresh_tracks_unsure"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["fb_no_fresh_tracks_not_assessed"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["fb_no_hatched_nests"] or 0
+        )
+    print(msg.format(created, t))
+
+    # Greens
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="old",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["gn_no_old_tracks"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["gn_no_fresh_successful_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["gn_no_fresh_false_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["gn_no_fresh_tracks_unsure"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["gn_no_fresh_tracks_not_assessed"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["gn_no_hatched_nests"] or 0
+        )
+    print(msg.format(created, t))
+
+    # Hawksbills
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="old",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["hb_no_old_tracks"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["hb_no_fresh_successful_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["hb_no_fresh_false_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["hb_no_fresh_tracks_unsure"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["hb_no_fresh_tracks_not_assessed"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["hb_no_hatched_nests"] or 0
+        )
+    print(msg.format(created, t))
+
+    # Loggerheads
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="old",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["lh_no_old_tracks"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["lh_no_fresh_successful_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["lh_no_fresh_false_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["lh_no_fresh_tracks_unsure"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["lh_no_fresh_tracks_not_assessed"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["lh_no_hatched_nests"] or 0
+        )
+    print(msg.format(created, t))
+
+    # Olive Ridley
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="old",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["or_no_old_tracks"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["or_no_fresh_successful_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["or_no_fresh_false_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["or_no_fresh_tracks_unsure"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["or_no_fresh_tracks_not_assessed"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["or_no_hatched_nests"] or 0
+        )
+    print(msg.format(created, t))
+
+    # Unknown turtle
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="old",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["unk_no_old_tracks"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["unk_no_fresh_successful_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["unk_no_fresh_false_crawls"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["unk_no_fresh_tracks_unsure"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["unk_no_fresh_tracks_not_assessed"] or 0
+        )
+    print(msg.format(created, t))
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=e,
+        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
+        nest_age="fresh",  # old fresh
+        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
+        tally=r["unk_no_hatched_nests"] or 0
+        )
+    print(msg.format(created, t))
 
 
 def import_odk(jsonfile, flavour="odk-trackcount-010"):
@@ -526,7 +855,6 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
         >>> json_file = os.path.join(settings.STATIC_ROOT, 'data', 'TrackCount_0_10_results.json')
         >>> import_odk(json_file)
     """
-
     with open(jsonfile) as df:
         d = json.load(df)
         print("Loaded {0} records from {1}".format(len(d), jsonfile))

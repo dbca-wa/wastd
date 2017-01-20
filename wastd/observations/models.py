@@ -2351,9 +2351,14 @@ class TurtleNestDisturbanceTallyObservation(Observation):
         blank=True, null=True,
         help_text=_("The sum of signs, e.g. predator tracks."),)
 
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
+
     def __str__(self):
         """The unicode representation."""
-        t1 = ('Nest Damage Tally: {0} nests of {1} showing {2} '
+        t1 = ('Nest Damage Tally: {0} nests of {1} showing disturbance by {2} '
               '({3} disturbance signs sighted)')
         return t1.format(self.no_nests_disturbed, self.species,
                          self.disturbance_cause, self.no_tracks_encountered)
