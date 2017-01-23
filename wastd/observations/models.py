@@ -2430,7 +2430,8 @@ class TurtleNestObservation(Observation):
     no_emerged = models.PositiveIntegerField(
         verbose_name=_("Emerged (E)"),
         blank=True, null=True,
-        help_text=_("The number of hatchlings leaving or departed from nest."), )
+        help_text=_("The number of hatchlings leaving or departed from nest."
+                    "Calculated from S - (L + D)."), )
 
     no_egg_shells = models.PositiveIntegerField(
         verbose_name=_("Egg shells (S)"),
@@ -2509,6 +2510,9 @@ class TurtleNestObservation(Observation):
         """The unicode representation."""
         return "Nest Obs {0} eggs, hatching succ {1}, emerg succ {2}".format(
             self.egg_count, self.hatching_success, self.emergence_success)
+
+    # TODO custom save()
+    # calculate egg_count; calculate E = S - (L + D)
 
     @property
     def hatching_success(self):

@@ -448,6 +448,7 @@ class LoggerEncounterAdmin(EncounterAdmin):
     # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
+        TagObservationInline,
         TemperatureLoggerSettingsInline,
         DispatchRecordInline,
         TemperatureLoggerDeploymentInline, ]
