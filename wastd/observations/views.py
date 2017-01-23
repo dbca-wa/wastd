@@ -35,7 +35,7 @@ class AnimalEncounterTable(tables.Table):
 
     class Meta:
         model = AnimalEncounter
-        exclude = ["as_html", "polymorphic_ctype", "encounter_ptr"]
+        exclude = ["as_html", "as_latex", "polymorphic_ctype", "encounter_ptr"]
         attrs = {'class': 'table table-hover table-inverse table-sm'}
 
 

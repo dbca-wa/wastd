@@ -19,6 +19,7 @@ class AreaFilter(GeoFilterSet):
 
     class Meta:
         model = Area
+        fields = ['name', ]
 
 
 class LocationListFilter(SimpleListFilter):
@@ -53,6 +54,11 @@ class LocationListFilter(SimpleListFilter):
             return queryset.filter(where__within=a.geom)
         return queryset
 
+    class Meta:
+        model = Area
+        fields = ['name', ]
+
+
 class EncounterFilter(django_filters.FilterSet):
     """Encounter Filter.
 
@@ -81,6 +87,7 @@ class EncounterFilter(django_filters.FilterSet):
         """Options for EncounterFilter."""
 
         model = Encounter
+        exclude = ['where', ]
 
 
 class AnimalEncounterFilter(EncounterFilter):
@@ -89,3 +96,4 @@ class AnimalEncounterFilter(EncounterFilter):
     class Meta:
         """Options for AnimalEncounterFilter."""
         model = AnimalEncounter
+        exclude = ['where', ]
