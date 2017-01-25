@@ -12,22 +12,25 @@ Each field in the data sheets should be questioned:
 
 Turtle tracks or nests
 ======================
-Turtle track counts can be collected on mobile app (OpenDataKit),
+Turtle track counts can be collected on mobile app (OpenDataKit, ODK),
 or on paper data sheets.
 
-Track counts can be recorded individually (preferred) or tallied over beach sections.
+Tracks can be recorded individually (preferred) or tallied over beach sections.
 
-Track counts can be done in two methodologies:
-
-* *Uptrack* counts: walking in a straight line along the high water mark, only
-  inbound tracks (uptracks) are counted as "tracks with success not assessed".
-  The tracks are not followed. Except for the first day, only fresh (younger
-  than 24h) tracks are recorded.
 * *Nest* counts: walking in a straight line along the high water mark, each
   uptrack is followed to its apex, where the presence or absence of a nest
   determines the type of track (false crawl without nest, successful crawl with
   nest, unknown if unclear whether nest exists). If evident, nest disturbance is
-  recorded as well.
+  recorded as well. Disturbed unhatched nests, as well as hatched nests, if spotted,
+  are recorded as well.
+* *Uptrack* counts: walking in a straight line along the high water mark, only
+  inbound tracks (uptracks) are counted as "tracks with success not assessed".
+  The tracks are not followed. Except for the first day, only fresh (younger
+  than 24h) tracks are recorded.
+* *Track tallies* are recorded only under extreme time pressure, or on saturation
+  beaches, where the geo-referencing of individual tracks is not possible within
+  the available survey time. However, individual track counts (*nest* or *uptrack*)
+  are preferred.
 
 Mobile data collection using Open Data Kit
 ------------------------------------------
@@ -47,8 +50,8 @@ device.
   forms and submit data, and the username will be automatically recorded when
   collecting data.
 * The username and password can also be set under General Settings > Server Settings.
-* Auto send: "only with Wifi" if few data points are collected. Disable for vigorous
-  data collection in remote areas with limited Wifi - don't swamp the Wifi hotspot
+* Auto send: "only with WiFi" if few data points are collected. Disable for vigorous
+  data collection in remote areas with limited WiFi - don't swamp the WiFi hotspot
   by auto-uploading data with photos.
 * Default to finalized
 * Delete after send
@@ -62,21 +65,41 @@ to collect data. Failure to do so will result in data loss, data corruption and
 loss of attribution.
 
 
-Admin and Collector: Prepare to collect data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-These steps have to be run at least before each field trip while online,
-and verified before each survey. Less than 1 MB will be downloaded.
+Admin: Prepare devices pre field trip
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+For each device before a field trip, while still within WiFi:
+
+* Install ODK Collect, configure:
+* server https://dpaw-data.appspot.com/
+* username and password must be valid
+* Get Blank Forms > select latest "Track or Treat", "Track Tally", "Turtle Stranding"
+* Delete Forms > Blank Forms > delete older versions of above forms
+
+It is possible to restrict user-accessible settings to username / password only.
+Do so at your own discretion (through Admin Settings) to reduce possible confusion
+and user errors.
+
+Collector: Prepare devices pre survey
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Ideally, the admin handing out the Android device will double-check these settings
 together with the data collector.
 
-* **Form** Make sure you've got the latest Track count form:
-  In ODK Collect, "Get Blank Form", select the latest TrackCount form and "Get Selected".
-  The form should not change during the field trip.
-* **Credentials** Set your ODK credentials for the respective ODK Aggregate server,
-  (e.g. https://dpaw-data.appspot.com/) before collecting data.
-  Setting the credentials (username, password) can be done while offline.
+* **Credentials** Set the collector's ODK credentials (username and password)
+  for the respective ODK Aggregate server, (e.g. https://dpaw-data.appspot.com/)
+  **exactly** as given and **before** collecting data.
+  The entered username will be stored automatically with each record (only
+  correct usernames will ensure correct attribution), and used to authenticate
+  data upload to ODK Aggregate (incorrect usernames will result in failed upload).
 * **Battery** Make sure the battery is full before you head out.
-  Screen and GPS are hungry hippos.
+  Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
+  GPS on only during surveys, WiFi on only during data upload.
+
+**Note** Exact spelling includes capitalisation, interpunctuation and whitespace.
+E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
+`StephenK`, `stephen king`, `stephen-king` or `stephenking`.
+
+The following sections follow the workflow shown here:
+![Track count flow chart](https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png)
 
 Collector: Collect "uptrack" data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -89,11 +112,14 @@ Collector: Collect "uptrack" data
 * Species: keep default "turtle"  if unsure of species ID, else select species.
 * Take photo of track if unsure about species ID. Landscape format preferred!
   Place a length reference (measuring tape) across the whole track, lining up
-  the end with the edge of the track. This allows curators to see the track width.
+  the end with the edge of the track. This allows curators to gauge the track
+  width easily from the photo.
   Select angle of camera, sun and track so that the track is clearly visible.
 * Track type: defaults to "turtle track, success not assessed".
   No interaction required for "uptrack" surveys.
-* Location: Start GeoPoint. Required. Auto-saves once accuracy drops below 5m.
+* Location: Start GeoPoint. Required. Can be saved as soon as "accuracy" is
+  shown, will auto-save once accuracy drops below 5m. The fix should not take
+  longer than 5 to 10 seconds.
 
 You should at least set species and GeoPoint, if the other value defaults are correct.
 
@@ -113,19 +139,16 @@ Repeat for each track.
 
 Collect "nest" data
 ^^^^^^^^^^^^^^^^^^^
+Look for both tracks (crossing your path) and nests (may be inland).
 
-Part 1: same screen as uptrack up to photo of track. Resuming from track type:
+**Track** same screen as uptrack up to photo of track. Resuming from track type:
 
 * Follow the track until you find the nest or downtrack.
 * Depending on presence of nest, set type (false crawl if no nest present,
   successful crawl if nest present).
 * Record the location of the nest, or track apex.
-* Swipe right. If nest is present, fill in the "nest" screen.
-* Swipe right. If disturbance is evident, you will be asked to
-  "Add a new Disturbance observation group" - do this for each distinct
-  disturbance cause.
-* Once all (typically one) disturbance causes are recorded, swipe right, select
-  "Do not add", "Save form and Exit".
+
+**Nest** choose whether nest is unhatched (no shells) or hatched (shells).
 
 Note on track type:
 
@@ -145,27 +168,88 @@ Note on track type:
 * Hatched nest = nest with broken egg shells. The DPaW staff member will attempt
   digging up the nest to count eggs and hatchlings.
 
-When done, turn off location services, and hand the device back to the admin.
+Swipe right. If nest is present, fill in the "nest" screen. Indicate whether:
+* disturbance was evident,
+* eggs were counted,
+* the nest had an ID tag buried within the eggs (or tied to a nest marker pole),
+* there was a HOBO temperature logger in the nest.
+
+Swipe right. Depending on the indications above, extra screens will be shown.
+
+**Disturbance**
+
+* "Add a new Disturbance observation group" for each distinct disturbance cause.
+* Record disturbances before excavating nests, take photos of evidence.
+
+**Eggs**
+This step assumes that a trained operator has now excavated the nest, and sorted
+the eggs into the categories defined by Miller (1999) on top of a cutting board
+with a reference grid.
+
+* egg category tallies are required (0 if none found)
+* nest depth (caution - millimeters) is optional
+* photograph the eggs on top of the reference cutting board and take as many
+  pictures as required (up to five).
+
+**Nest tag**
+Some nests may contain a nest tag, which consists of builders' ribbon with the
+nest tag ID written in text marker on it.
+A nest tag ID consists of up to three parts:
+
+* Flipper tag ID: provide **exactly one**, and **do not** include any other information.
+  e.g. `WA1234`. Whitespace and capitalisation will be ignored, so `wa1234`,
+  `WA 1234` and `wa 1234` are equivalent. However, `WA1234 and some words` will
+  **not** match up with flipper tag `WA1234` unless manually rectified.
+  Operators are encouraged to enter this value with greatest care and precision.
+  The turtle flipper tag may have been unavailable or unknown at the time of
+  writing the nest tag, so it can be blank.
+* Date nest laid: this is the **calendar** date of the nesting event. If a nest
+  was tagged after the initial nesting event, the date may be unknown, and
+  therefore also blank.
+* Nest label: any extra information that is not the first flipper tag or the
+  lay date will go here, e.g. an informal nest name like `M1`. The nest label
+  may also be blank.
+
+**Temperature logger**
+Based on current protocol, only HOBO temperature loggers are deployed.
+In hatched nests, these can be found (up to one logger per nest), and will
+always be retrieved for later data download.
+Implicitly, each logger record assumes the logger to be a HOBO temperature logger,
+which is retrieved.
+
+* Logger ID: the number underneath the bar code.
+* Photo: take a photo of the logger ID / serial / bar code area if lighting allows.
+  This is a good backup for proofreading the logger ID.
+* Why not barcode: the white-on-black HOBO logger barcode does not scan quickly,
+  and barcode scanners can mistakenly OCR the logger ID (from plain text).
+
+This is the end of the form. Proceed to the next track or nest and repeat.
+
+At the end of the survey, turn off location services, and hand the device back to the admin.
 
 Admin: Review data
 ^^^^^^^^^^^^^^^^^^
-"Edit Saved Form" lists all unfinalized forms pending review and species / nest ID.
-Tap once to view read-only, tap again to edit, review and update data, then save
-and mark as finalized.
+"Edit Saved Form" lists all unfinalized forms pending review and species / nest ID:
+
+* Tap once to view read-only, tap again to edit
+* review and update data (e.g. species ID)
+* save and mark as finalized.
 
 
 Admin: Upload data
 ^^^^^^^^^^^^^^^^^^
 When surveys are done in locations where the device can return to the comforts
-of Wifi and power points daily, data can be uploaded directly to the clearinghouse.
+of WiFi and power points daily, data can be uploaded directly to the clearinghouse.
 
-* Turn on the Wifi hotspot or move into Wifi range.
-* On the device, turn on Wifi.
+* Settings: make sure the correct username and password are given. The admin can
+  choose to use their own username / password.
+* Turn on the WiFi hotspot or move into WiFi range.
+* Turn on the device's WiFi.
 
-With "Auto-send in Wifi" settings enabled, the device will automatically upload
+With "Auto-send in WiFi" settings enabled, the device will automatically upload
 all data marked as "finalized".
 
-When Wifi is not available daily, you need to backup data by downloading
+When WiFi is not available daily, the admin needs to backup data by downloading
 it manually and keeping the downloaded data safe (multiple copies over separate
 storage media). With the mobile device connected and "MTP file transfer" enabled,
 ODK data is located in either internal or SD storage in ``odk/instances``.
@@ -176,23 +260,33 @@ Where's the data now?
 ^^^^^^^^^^^^^^^^^^^^^
 ODK Collect uploads data to the configured ODK Aggregate clearinghouse.
 In our case, this is https://dpaw-data.appspot.com/.
-Data collectors will have received credentials to login.
+Data collectors will have received credentials to login, which are the credentials
+to be used in ODK Collect.
 
-A synchronised copy of the data is streamed to
-[Google Fusion Tables](https://fusiontables.google.com/DataSource?docid=1wL_dSRNuUCyukJjiUo8RDvFQ0ejWoRpJo2p3S5Rm#map:id=6).
+A synchronised copy of the data is streamed to Google Fusion Tables (GFT)
+for immediate visualization.
 
-From there, data are downloaded (pending: consumed via the GFT API) and presented
-in an RMarkdown workbook [Turtle Tracks](http://rpubs.com/florian_mayer/track-counts)
-as well as an RShiny app using live data [Turtle Tracker](https://rshiny.dpaw.wa.gov.au/turtles/).
+For an initial analysis and summary, data are downloaded from GFT and presented
+in an RMarkdown workbook
+[Turtle Tracks (here: 2016 data)](http://rpubs.com/florian_mayer/track-counts)
+as well as an RShiny app using live data
+[Turtle Tracker](https://rshiny.dpaw.wa.gov.au/turtles/).
 
-**In development**:
-Data will be piped from ODK Aggregate into WAStD.
-Access to WAStD is restricted to DPaW staff only.
-Once data arrive in WAStD, WAStD becomes the point of truth, as curation (e.g.
+After each field trip, data from ODK Aggregate are exported (as JSON) and ingested
+into WAStD. The process can be repeated; data that has been changed in WAStD and
+marked as "proofread" or even "curated" will not be overwritten.
+
+Once data are marked as "proofread" (or higher levels of QA) in WAStD,
+WAStD becomes the point of truth, as proofreading and curation (e.g.
 double-checking species ID based on submitted photos) can change the data compared
 to the initial submission on ODK Aggregate.
-The final visualisation will consume curated data through the WAStD API.
 
+Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
+https://strandings.dpaw.wa.gov.au/. See chapter "Data consumers" for working
+examples.
+
+The final analysis (in development at the time of writing) will consume
+curated data through the WAStD API.
 
 Turtle Stranding
 ================

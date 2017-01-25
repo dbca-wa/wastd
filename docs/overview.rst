@@ -31,13 +31,14 @@ WAStD's purpose is:
 
 * To fill an existing gap in departmental infrastructure (strandings, tracks)
 * To develop requirements for an integrated turtle data management ecosystem
-using real data and real processes to get the best interaction with all stakeholders.
+  using real data and real processes to get the best interaction with all
+  stakeholders.
 
 WAStD will integrate in the Departmental information landscape as follows:
 
 * Legacy data (starting with Turtle strandings) is manually entered from paper forms.
 * Legacy data that lives in ageing systems can (if desired) be batch-uploaded to WAStD.
-* Data collected digitally can be streamed into WAStD.
+* Data collected digitally can be streamed (or imported semi-automatically) into WAStD.
 * WAStD can batch-upload its data to corporate data warehouses, once they exist (e.g. BioSys).
 * Analytical applications anwering defined management questions (informing
   monitoring reports, ministerial inquries, conservation planning decisions) can be
@@ -58,6 +59,8 @@ Turtle Strandings
 =================
 
 See the chapter "Specification" for a detailed use case and its current implementation.
+
+A mobile data collection form is in development.
 
 Turtle Tagging
 ==============
@@ -108,10 +111,11 @@ Long term solution: New data entry tool
 ---------------------------------------
 To retire WAMTRAM 2, the following is required:
 
-* WAMTRAM to WAStD ETL complete and correct
-* A new electronic data entry tool (cybertracker or similar)
-* A new desktop data entry tool to digitise data sheets (= WAStD offline)
-* WAStD to implement all sanity checks and QA operations of WAMTRAM 2
+* WAMTRAM to WAStD ETL is complete and correct.
+* A new electronic data entry tool, likely a progressive web app
+  to both collect data in the field, curate data on "the morning after", and
+  to digitise data sheets.
+* WAStD to implement all sanity checks and QA operations of WAMTRAM 2.
 
 Insight from tagging data
 -------------------------
@@ -157,13 +161,13 @@ The workbook can be extended to also upload the data into WAStD's API.
 
 Long term solution: Digital data collection into WAStD
 ------------------------------------------------------
-As on now, a trained and trusted data entry operator can digitise NTP field
+As of now, a trained and trusted data entry operator can digitise NTP field
 datasheets using the WAStD "Backstage" area.
 
-At the time of writing (Nov-Dec 2016), digital data collection tools are evaluated
+At the time of writing (Jan 2017), digital data collection tools are evaluated
 and used in production by the core team, replacing the paper forms.
 
-See the chapter "Data collectors" on the current implementation.
+See the chapter "Data collectors" for notes on the current implementation.
 
 Insight
 -------

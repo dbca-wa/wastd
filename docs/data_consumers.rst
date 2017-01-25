@@ -15,7 +15,7 @@ privileges:) through the admin interface ("backstage"), and through the API prev
 
 Map
 ---
-**Getting there** https://strandings-test.dpaw.wa.gov.au/
+**Getting there** https://strandings.dpaw.wa.gov.au/
 or click on "WA Strandings Database WAStD"
 
 **Accessible to** all Parks & Wildlife staff
@@ -36,7 +36,7 @@ history.
 
 Data
 ----
-**Getting there** https://strandings-test.dpaw.wa.gov.au/animal-encounters/ or click on "Data"
+**Getting there** https://strandings.dpaw.wa.gov.au/animal-encounters/ or click on "Data"
 
 **Accessible to** all Parks & Wildlife staff
 
@@ -45,7 +45,7 @@ Currently, this part is in devlopment and does not offer all commodities yet.
 
 Backstage
 ---------
-**Getting there** https://strandings-test.dpaw.wa.gov.au/admin/ or click on "Backstage"
+**Getting there** https://strandings.dpaw.wa.gov.au/admin/ or click on "Backstage"
 
 **Accessible to** authorised Parks & Wildlife staff of group "data entry"
 
@@ -53,17 +53,17 @@ Authorised users belonging to WAStD's "data entry" group can access the admin
 interface under the "backstage" tab.
 
 Strandings and tagging encounters are located under
-`Animal Encounters <https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/>`_.
+`Animal Encounters <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/>`_.
 
 Many questions can be answered with a simple combination of filter criteria, e.g.:
 
 * How many strandings were there in 2015? Select year 2015 in the date facet (top
   left), and "Observation type" stranding in the Filter dropdown (top right).
-  https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/?observation_type=stranding&when__year=2015
+  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?observation_type=stranding&when__year=2015
 * How many strandings were suspected boat strikes?
-  https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike
+  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike
 * How many Flatback turtles were stranded in 2016?
-  https://strandings-test.dpaw.wa.gov.au/admin/observations/animalencounter/?observation_type=stranding&species__exact=Natator+depressus&when__year=2016
+  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?observation_type=stranding&species__exact=Natator+depressus&when__year=2016
 
 The result of any combination of filter criteria is a list of Animal Encounters,
 which can be exported to XLS or CSV:
@@ -76,7 +76,7 @@ which can be exported to XLS or CSV:
 
 API preview
 -----------
-**Getting there** https://strandings-test.dpaw.wa.gov.au/api/1/ or click on "API"
+**Getting there** https://strandings.dpaw.wa.gov.au/api/1/ or click on "API"
 
 **Accessible to** all Parks & Wildlife staff
 
