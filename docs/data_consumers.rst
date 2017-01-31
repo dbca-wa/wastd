@@ -78,7 +78,7 @@ API preview
 -----------
 **Getting there** https://strandings.dpaw.wa.gov.au/api/1/ or click on "API"
 
-**Accessible to** all Parks & Wildlife staff
+**Accessible to** DPaW intranet
 
 Data analysts will likely want to cut out the manual filter and download process described
 above, and consume (filtered) data programmatically. This can be done with the API.

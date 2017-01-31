@@ -220,7 +220,7 @@ class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
                   'maximum_head_width_mm', 'maximum_head_width_accuracy',
                   'maximum_head_length_mm', 'maximum_head_length_accuracy',
                   'body_depth_mm', 'body_depth_accuracy',
-                  'body_weight_mm', 'body_weight_accuracy',
+                  'body_weight_g', 'body_weight_accuracy',
                   'handler', 'recorder', )
 
 
@@ -233,7 +233,7 @@ class ManagementActionSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = ManagementAction
-        fields = ('observation_name', # 'as_latex',
+        fields = ('observation_name',  # 'as_latex',
                   'management_actions', 'comments', )
 
 
