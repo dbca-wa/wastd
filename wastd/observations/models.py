@@ -1,4 +1,3 @@
-Dugong species
 # -*- coding: utf-8 -*-
 """Observation models.
 
