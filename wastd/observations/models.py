@@ -1,3 +1,4 @@
+Dugong species
 # -*- coding: utf-8 -*-
 """Observation models.
 
@@ -219,10 +220,15 @@ SEASNAKE_SPECIES_CHOICES = (
     ("thalassophis-sp", "Thalassophis sp. (Sea snake)"),
     )
 
+SIRENIA_CHOICES = (
+    ("dugong-dugon", "Dugong dugon (Dugong)"),
+    )
+
 SPECIES_CHOICES = NA +\
  TURTLE_SPECIES_CHOICES +\
  CETACEAN_SPECIES_CHOICES +\
- SEASNAKE_SPECIES_CHOICES
+ SEASNAKE_SPECIES_CHOICES +\
+ SIRENIA_CHOICES
 
 SEX_CHOICES = (
     (NA_VALUE, "unknown sex"),
