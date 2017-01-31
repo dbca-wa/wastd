@@ -59,11 +59,11 @@ Many questions can be answered with a simple combination of filter criteria, e.g
 
 * How many strandings were there in 2015? Select year 2015 in the date facet (top
   left), and "Observation type" stranding in the Filter dropdown (top right).
-  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?observation_type=stranding&when__year=2015
+  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&when__year=2016
 * How many strandings were suspected boat strikes?
-  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike
+  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&encounter_type__exact=stranding
 * How many Flatback turtles were stranded in 2016?
-  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?observation_type=stranding&species__exact=Natator+depressus&when__year=2016
+  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&species__exact=Natator+depressus&when__year=2016
 
 The result of any combination of filter criteria is a list of Animal Encounters,
 which can be exported to XLS or CSV:

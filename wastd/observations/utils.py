@@ -423,8 +423,8 @@ def import_one_record_tc010(r, m):
     return e
 
 
-def import_one_record_tc011(r, m):
-    """Import one ODK Track Count 0.10 record into WAStD.
+def import_one_record_tt016(r, m):
+    """Import one ODK Track or Treat 0.16 record into WAStD.
 
     Arguments
 
@@ -439,6 +439,7 @@ def import_one_record_tc011(r, m):
     # TODO TurtleNestObservation
     # TODO HatchlingMorphometricObservation
     # TODO TagObservation
+    # TODO LoggerEncounter retrieved HOBO logger
     return e
 
 
@@ -946,8 +947,8 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 
-    elif flavour == "odk-trackcount-010":
-        print("Using flavour ODK Track Count 0.11...")
+    elif flavour == "odk-trackortreat-016":
+        print("Using flavour ODK Track or Treat 0.16...")
 
         # Download photos
         pt = [[r["instanceID"],
@@ -965,7 +966,7 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
         all_photos = pt + pn
         [dl_photo(p[0], p[1], p[2]) for p in all_photos]
 
-        [import_one_record_tc011(r, ODK_MAPPING) for r in d
+        [import_one_record_tt016(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 
