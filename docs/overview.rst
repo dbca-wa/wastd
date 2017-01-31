@@ -11,12 +11,12 @@ and may describe planned, but unimplemented features.
 WAStD is a data clearinghouse for:
 
 * Turtle strandings in WA, as reported to the Department of Parks & Wildlife, WA.
+* Turtle track observations, taken at sunrise after nesting (nests and false crawls).
+* Temperature logger asset management.
 
 WAStD is built scalable enough to accommodate other, related, data:
-
 * Turtle tagging observations, taken of nesting turtles.
-* Turtle track observations, taken at sunrise after nesting (nests and false crawls).
-* Cetacean and pinniped strandings.
+* Cetacean, pinniped, sea snake strandings.
 
 WAStD offers as main functionalities:
 
@@ -29,15 +29,15 @@ WAStD offers as main functionalities:
 
 WAStD's purpose is:
 
-* To fill an existing gap in departmental infrastructure (strandings, tracks)
+* To fill an existing gap in departmental infrastructure (strandings, tracks).
 * To develop requirements for an integrated turtle data management ecosystem
-  using real data and real processes to get the best interaction with all
-  stakeholders.
+  through using real data and real processes.
 
 WAStD will integrate in the Departmental information landscape as follows:
 
 * Legacy data (starting with Turtle strandings) is manually entered from paper forms.
-* Legacy data that lives in ageing systems can (if desired) be batch-uploaded to WAStD.
+* Legacy data living in legacy systems can be batch-uploaded to WAStD,
+  initially as a read-only copy.
 * Data collected digitally can be streamed (or imported semi-automatically) into WAStD.
 * WAStD can batch-upload its data to corporate data warehouses, once they exist (e.g. BioSys).
 * Analytical applications anwering defined management questions (informing
@@ -60,7 +60,7 @@ Turtle Strandings
 
 See the chapter "Specification" for a detailed use case and its current implementation.
 
-A mobile data collection form is in development.
+A mobile data collection form is in beta testing.
 
 Turtle Tagging
 ==============
@@ -112,7 +112,7 @@ Long term solution: New data entry tool
 To retire WAMTRAM 2, the following is required:
 
 * WAMTRAM to WAStD ETL is complete and correct.
-* A new electronic data entry tool, likely a progressive web app
+* A new electronic data entry tool, likely a progressive web app, is created
   to both collect data in the field, curate data on "the morning after", and
   to digitise data sheets.
 * WAStD to implement all sanity checks and QA operations of WAMTRAM 2.

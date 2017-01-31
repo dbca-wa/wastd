@@ -2,34 +2,35 @@
 Data collectors
 ===============
 
-Each field in the data sheets should be questioned:
+Each field in the data sheets has been, and should be questioned:
 
 * Is this information used in any of the analytical outputs?
 * Does this information serve any QA purpose?
 * Is this information used to derive other information, e.g. deformities being
-  used to identify an animal identity?
-* Will anyone in the future require this information?
+  used to identify a resighted, untagged animal?
+* Will anyone in the foreseeable future require this information?
 
 Turtle tracks or nests
 ======================
 Turtle track counts can be collected on mobile app (OpenDataKit, ODK),
-or on paper data sheets.
+or on paper data sheets (backup if ODK unavailable).
 
 Tracks can be recorded individually (preferred) or tallied over beach sections.
 
 * *Nest* counts: walking in a straight line along the high water mark, each
   uptrack is followed to its apex, where the presence or absence of a nest
-  determines the type of track (false crawl without nest, successful crawl with
-  nest, unknown if unclear whether nest exists). If evident, nest disturbance is
-  recorded as well. Disturbed unhatched nests, as well as hatched nests, if spotted,
-  are recorded as well.
-* *Uptrack* counts: walking in a straight line along the high water mark, only
+  determines the type of track (track without nest, track with nest, track with
+  a possible nest).
+  If evident, nest disturbance is recorded as well.
+  Disturbed unhatched nests without tracks, as well as hatched nests (without
+  tracks), if spotted, are recorded as well.
+* *Speed run* counts: walking in a straight line along the high water mark, only
   inbound tracks (uptracks) are counted as "tracks with success not assessed".
   The tracks are not followed. Except for the first day, only fresh (younger
-  than 24h) tracks are recorded.
+  than 24h) tracks are recorded. Nests are recorded if spotted.
 * *Track tallies* are recorded only under extreme time pressure, or on saturation
   beaches, where the geo-referencing of individual tracks is not possible within
-  the available survey time. However, individual track counts (*nest* or *uptrack*)
+  the available survey time. However, individual track counts (*nest* or *speed run*)
   are preferred.
 
 Mobile data collection using Open Data Kit
@@ -48,20 +49,20 @@ device.
 * URL: https://dpaw-data.appspot.com, plus username and password as provided to
   you by the ODK admin. These credentials determine whether you can retrieve new
   forms and submit data, and the username will be automatically recorded when
-  collecting data.
+  collecting data. It is crucial to spell the credentials exactly as provided.
 * The username and password can also be set under General Settings > Server Settings.
-* Auto send: "only with WiFi" if few data points are collected. Disable for vigorous
-  data collection in remote areas with limited WiFi - don't swamp the WiFi hotspot
-  by auto-uploading data with photos.
+* Auto send: "only with WiFi" if few data points are collected.
+  Disable for vigorous data collection in remote areas with limited WiFi -
+  don't swamp the WiFi hotspot by auto-uploading data with photos.
 * Default to finalized
 * Delete after send
 * If the device is used by many volunteers who are new to the software, enable
   the "Admin Settings" (set password) and disable menu options that are not needed
-  or risk data loss (delete forms).
+  or risk data loss (e.g. "delete forms").
 
 **Note** You **must not** share your credentials, and
 **always use your own credentials** in General Settings > Username/Password
-to collect data. Failure to do so will result in data loss, data corruption and
+to collect data. Failure to do so **will** result in data loss, data corruption and
 loss of attribution.
 
 
@@ -71,11 +72,12 @@ For each device before a field trip, while still within WiFi:
 
 * Install ODK Collect, configure:
 * server https://dpaw-data.appspot.com/
-* username and password must be valid
+* username and password must be valid and spelled correctly
 * Get Blank Forms > select latest "Track or Treat", "Track Tally", "Turtle Stranding"
 * Delete Forms > Blank Forms > delete older versions of above forms
 
-It is possible to restrict user-accessible settings to username / password only.
+As discussed previously, it is possible to restrict user-accessible settings
+to username / password only.
 Do so at your own discretion (through Admin Settings) to reduce possible confusion
 and user errors.
 
@@ -98,28 +100,38 @@ together with the data collector.
 E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
 `StephenK`, `stephen king`, `stephen-king` or `stephenking`.
 
-The following sections follow the workflow shown here:
-![Track count flow chart](https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png)
+.. image:: https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png
+     :alt: Track Count work flow
 
-Collector: Collect "uptrack" data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* Walk along the high water mark of the beach, record each (day 1) or each fresh
-  (after day 1) uptrack as follows.
-* "Fill Blank Form" > Track Count (latest version) > swipe right.
-* Fill in the first screen with following fields:
-* Track age: fresh (default) or old.
-  No interaction required on "fresh tracks only" surveys after day 1.
-* Species: keep default "turtle"  if unsure of species ID, else select species.
-* Take photo of track if unsure about species ID. Landscape format preferred!
+Collector: Collect "speed run" data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Walk along the high water mark on the beach until you encounter either
+  an unmarked inbound track ("uptrack") or unmarked outbound hatchling tracks.
+* "Fill Blank Form" > Track or Treat (latest version)
+* Track age: fresh (default) if less than 24 h old, or old if older than 24 h.
+  If the beach was surveyed within the last day, all unmarked tracks are "fresh".
+* Species: select species if possible, else if unsure, keep default "turtle".
+* Take photo of track if unsure about species ID. Landscape format is preferred!
   Place a length reference (measuring tape) across the whole track, lining up
   the end with the edge of the track. This allows curators to gauge the track
   width easily from the photo.
   Select angle of camera, sun and track so that the track is clearly visible.
-* Track type: defaults to "turtle track, success not assessed".
-  No interaction required for "uptrack" surveys.
+
+Adult turtle tracks:
+
+* Track type: keep default "track, not checked for nest"
 * Location: Start GeoPoint. Required. Can be saved as soon as "accuracy" is
   shown, will auto-save once accuracy drops below 5m. The fix should not take
-  longer than 5 to 10 seconds.
+  longer than 5 to 10 seconds. The acquisition speed depends on the device's GPS
+  chip and available satellites. The first fix can take a bit longer, subsequent
+  GPS fixes should be faster.
+
+Hatchling tracks:
+
+* Track type: "nest, hatched"
+* Location: Follow to hatched nest, capture location of nest.
+* Swipe right and fill in subsequent nest-related screens. A senior field worker
+  will conduct the nest excavation.
 
 You should at least set species and GeoPoint, if the other value defaults are correct.
 
@@ -127,12 +139,12 @@ Review the data, then swipe right to finish the form.
 
 If you are sure of species ID, keep "Mark form as finalized" ticked and "Save Form and Exit".
 
-If you are unsure of the species ID, (species "Turtle" and photo provided),
-untick "Mark form as finalized" and "Save Form and Exit". This gives the admin
-a chance to review and possibly determine species ID based on the photo taken before
-uploading.
+If you are unsure of the species ID, (species is "turtle" and photo of track is
+provided), untick "Mark form as finalized" and "Save Form and Exit".
+This gives the field supervisors a chance to review and possibly determine species ID
+(based on the photo taken) before uploading.
 
-This will take a trained operator about 13 taps and swipes over about 15 seconds
+This form will take a trained operator about 13 taps and swipes over about 15 seconds
 plus the time to take a photo.
 
 Repeat for each track.
@@ -144,35 +156,25 @@ Look for both tracks (crossing your path) and nests (may be inland).
 **Track** same screen as uptrack up to photo of track. Resuming from track type:
 
 * Follow the track until you find the nest or downtrack.
-* Depending on presence of nest, set type (false crawl if no nest present,
-  successful crawl if nest present).
-* Record the location of the nest, or track apex.
+* Depending on presence of nest, set Track or nest type: "track without nest",
+  "track with nest", or "track, checked for nest, unsure if nest".
+* If you're unsure about the presence of a nest, take a photo of the nest and
+  do not mark the record as "finalized". This gives the field supervisors a
+  chance to review and possibly determine nesting success
+  (based on the photo taken) before uploading.
+* Record the location of the nest, or (if no nest found) the outbound track at
+  the high water mark.
 
 **Nest** choose whether nest is unhatched (no shells) or hatched (shells).
 
-Note on track type:
+Swipe right. If nest is present, fill in the "nest" screen.
+Indicate whether:
 
-* False crawl = a track without a nest. You'll have followed the whole track until
-  hitting the downtrack when you see that there's no nest. Take the GPS point
-  at the downtrack.
-* Successful crawl = a track with a nest. There can be body pits. Take the GPS
-  point at the nest.
-* Track, success unknown = "did check, can't tell whether it's a nest or not".
-  **Do** take a **photo** of the possible nest and **do not** mark form as finalized when saving.
-* Track, success not assessed = "didn't check, therefore can't know" = uptrack counts.
-  As soon as you follow a track, you'll see whether it's a false crawl, successful
-  crawl or track with unknown success. In this methodology, you should not need
-  to select the "not assessed" option.
-* Nest = nest without track. Does not apply here, but when you see an unhatched nest
-  with signs of predation.
-* Hatched nest = nest with broken egg shells. The DPaW staff member will attempt
-  digging up the nest to count eggs and hatchlings.
-
-Swipe right. If nest is present, fill in the "nest" screen. Indicate whether:
 * disturbance was evident,
 * eggs were counted,
 * the nest had an ID tag buried within the eggs (or tied to a nest marker pole),
-* there was a HOBO temperature logger in the nest.
+* there was a temperature logger in the nest, or
+* hatchlings were found and measured.
 
 Swipe right. Depending on the indications above, extra screens will be shown.
 
@@ -189,7 +191,7 @@ with a reference grid.
 * egg category tallies are required (0 if none found)
 * nest depth (caution - millimeters) is optional
 * photograph the eggs on top of the reference cutting board and take as many
-  pictures as required (up to five).
+  pictures as required.
 
 **Nest tag**
 Some nests may contain a nest tag, which consists of builders' ribbon with the
@@ -211,17 +213,17 @@ A nest tag ID consists of up to three parts:
   may also be blank.
 
 **Temperature logger**
-Based on current protocol, only HOBO temperature loggers are deployed.
-In hatched nests, these can be found (up to one logger per nest), and will
-always be retrieved for later data download.
-Implicitly, each logger record assumes the logger to be a HOBO temperature logger,
-which is retrieved.
+In hatched nests, one or two temperature loggers can be found, and will always
+be retrieved for later data download.
 
 * Logger ID: the number underneath the bar code.
 * Photo: take a photo of the logger ID / serial / bar code area if lighting allows.
   This is a good backup for proofreading the logger ID.
 * Why not barcode: the white-on-black HOBO logger barcode does not scan quickly,
   and barcode scanners can mistakenly OCR the logger ID (from plain text).
+
+**Hatchling measurement**
+Enter straight carapace length in mm, straight carapace width in mm and weight in grams.
 
 This is the end of the form. Proceed to the next track or nest and repeat.
 
