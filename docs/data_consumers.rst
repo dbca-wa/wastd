@@ -134,21 +134,21 @@ JSON, or CSV::
 
 The known history of a flipper tag::
 
-    https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA96394
+    https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA67541
 
 All encounters with one animal ("WA96394")::
 
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA96394
+    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541
 
 All encounters with animals which names start with "WA9" (note the ``__startswith``
 has to be inserted manually)::
 
-    https://strandings.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA9*
+    https://strandings.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA6*
 
 All of these filter queries (anything after the "?") also work through the data curation portal::
 
     https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
-    https://strandings.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA96395
+    https://strandings.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA67541
 
 Any filter combination, if found useful, can be bookmarked.
 

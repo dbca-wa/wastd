@@ -111,7 +111,7 @@ TAG_STATUS_CHOICES = (                                          # TRT_TAG_STATES
     ('allocated', 'allocated to field team'),
     (TAG_STATUS_APPLIED_NEW, 'applied new'),                    # A1, AE
     (TAG_STATUS_DEFAULT, 're-sighted associated with animal'),  # OX, P, P_OK, RQ, P_ED
-    ('reclinched', 're-sighted and reclinced on animal'),       # RC
+    ('reclinched', 're-sighted and reclinched on animal'),       # RC
     ('removed', 'taken off animal'),                            # OO, R
     ('found', 'found detached'),
     ('returned', 'returned to HQ'),
