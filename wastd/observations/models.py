@@ -122,6 +122,12 @@ TAG_STATUS_CHOICES = (                                          # TRT_TAG_STATES
 TAG_STATUS_RESIGHTED = ('resighted', 'reclinched', 'removed')
 TAG_STATUS_ON_ANIMAL = (TAG_STATUS_APPLIED_NEW, TAG_STATUS_RESIGHTED)
 
+NEST_TAG_STATUS_CHOICES = (
+    (TAG_STATUS_APPLIED_NEW, 'applied new'),
+    (TAG_STATUS_DEFAULT, 're-sighted associated with nest'),
+    )
+
+
 NA_VALUE = "na"
 NA = ((NA_VALUE, "not observed"), )
 
@@ -2081,6 +2087,74 @@ class TagObservation(Observation):
 
 
 @python_2_unicode_compatible
+class NestTagObservation(Observation):
+    """Turtle Nest Tag Observation
+
+    TNTs consist of three components, which are all optional:
+
+    * flipper_tag_id: The primary flipper tag ID of the nesting turtle
+    * date_nest_laid: The calendar (not turtle) date of nest creation
+    * tag_label: Any extra nest label if other two components not available
+
+    Naming scheme:
+
+    * Uppercase and remove whitespace from flipper tag ID
+    * date nest laid: YYYY-mm-dd
+    * Uppercase and remove whitespace from tag label
+    * Join all with "_"
+
+    E.g.: WA1234_2017-12-31_M1
+    """
+    status = models.CharField(
+        max_length=300,
+        verbose_name=_("Tag status"),
+        choices=NEST_TAG_STATUS_CHOICES,
+        default=TAG_STATUS_DEFAULT,
+        help_text=_("The status this tag was seen in, or brought into."),)
+
+    flipper_tag_id = models.CharField(
+        max_length=1000,
+        verbose_name=_("Flipper Tag ID"),
+        help_text=_("The primary flipper tag ID of the nesting turtle "
+                    "if available."),)
+
+    date_nest_laid = models.DateField(
+        verbose_name=_("Date nest laid"),
+        blank=True, null=True,
+        help_text=_("The calendar (not turtle) date of nest creation."))
+
+    tag_label = models.CharField(
+        max_length=1000,
+        verbose_name=_("Tag Label"),
+        help_text=_("Any extra nest label if other two components are not "
+                    "available."),)
+
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
+
+    @property
+    def name(self):
+        """Return the nest tag name according to the naming scheme."""
+        return "_".join([
+            self.flipper_tag_id.upper().replace(" ", ""),
+            self.date_nest_laid.strftime('%Y-%m-%d'),
+            self.tag_label.upper().replace(" ", ""),
+            ])
+
+    def __str__(self):
+        """The unicode representation."""
+        return "{0} ({1})".format(self.name, self.get_status_display())
+
+    @property
+    def history_url(self):
+        """The list view of all observations of this tag."""
+        cl = reverse("admin:observations_nesttagobservation_changelist")
+        return "{0}?q={1}".format(cl, urllib.quote_plus(self.flipper_tag_id))
+
+
+@python_2_unicode_compatible
 class ManagementAction(Observation):
     """
     Management actions following an AnimalEncounter.
@@ -2285,6 +2359,7 @@ class HatchlingMorphometricObservation(Observation):
             self.body_weight_g,
             )
 
+
 @python_2_unicode_compatible
 class TurtleDamageObservation(Observation):
     """Observation of turtle damages or injuries."""
@@ -2433,11 +2508,11 @@ class TurtleNestObservation(Observation):
         help_text=_("The total number of eggs laid."), )
 
     # start Miller fields
-    no_emerged = models.PositiveIntegerField(
-        verbose_name=_("Emerged (E)"),
-        blank=True, null=True,
-        help_text=_("The number of hatchlings leaving or departed from nest."
-                    "Calculated from S - (L + D)."), )
+    # no_emerged = models.PositiveIntegerField(
+    #     verbose_name=_("Emerged (E)"),
+    #     blank=True, null=True,
+    #     help_text=_("The number of hatchlings leaving or departed from nest."
+    #                 "Calculated from S - (L + D)."), )
 
     no_egg_shells = models.PositiveIntegerField(
         verbose_name=_("Egg shells (S)"),
@@ -2519,6 +2594,12 @@ class TurtleNestObservation(Observation):
 
     # TODO custom save()
     # calculate egg_count; calculate E = S - (L + D)
+
+    @property
+    def no_emerged(self):
+        """The number of hatchlings leaving or departed from nest is S-(L+D)."""
+        return self.no_egg_shells - (
+            self.no_live_hatchlings + self.no_dead_hatchlings)
 
     @property
     def hatching_success(self):

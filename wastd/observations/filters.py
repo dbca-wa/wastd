@@ -27,7 +27,7 @@ class LocationListFilter(SimpleListFilter):
 
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
-    title = _('Marine Protected Area')
+    title = _('Area')
 
     # Parameter for the filter that will be used in the URL query.
     parameter_name = 'where'
@@ -40,8 +40,8 @@ class LocationListFilter(SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        return [(a.pk, a.name) for a in
-                Area.objects.filter(area_type=Area.AREATYPE_MPA)]
+        return [(a.pk, a.name) for a in Area.objects.all()]
+        # Area.objects.filter(area_type=Area.AREATYPE_MPA)]
 
     def queryset(self, request, queryset):
         """

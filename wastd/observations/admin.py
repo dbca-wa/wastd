@@ -21,7 +21,7 @@ from wastd.observations.models import (
     Area, SiteVisit,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     LineTransectEncounter,
-    MediaAttachment, TagObservation, ManagementAction,
+    MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
     TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
     TurtleMorphometricObservation, HatchlingMorphometricObservation,
     TurtleDamageObservation,
@@ -51,6 +51,14 @@ class TagObservationInline(admin.TabularInline):
 
     extra = 0
     model = TagObservation
+    classes = ('grp-collapse grp-open',)
+
+
+class NestTagObservationInline(admin.TabularInline):
+    """TabularInlineAdmin for NestTagObservation."""
+
+    extra = 0
+    model = NestTagObservation
     classes = ('grp-collapse grp-open',)
 
 
@@ -183,6 +191,29 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     encounter_link.allow_tags = True
 
 
+@admin.register(NestTagObservation)
+class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for NestTagObservation"""
+    save_on_top = True
+    date_hierarchy = 'date_nest_laid'
+    list_display = ('name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
+                    'status_display', 'encounter_link', 'comments')
+    list_filter = ('flipper_tag_id', 'tag_label', 'status')
+    search_fields = ('name', 'comments')
+
+    def status_display(self, obj):
+        """Make health status human readable."""
+        return obj.get_status_display()
+    status_display.short_description = 'Status'
+
+    def encounter_link(self, obj):
+        """A link to the encounter."""
+        return '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
+                                              obj.encounter.__str__())
+    encounter_link.short_description = 'Encounter'
+    encounter_link.allow_tags = True
+
+
 # Select2Widget forms
 S2ATTRS = {'width': '350px'}
 SiteVisitForm = s2form(SiteVisit, attrs=S2ATTRS)
@@ -281,8 +312,10 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         TrackTallyObservationInline,
         TurtleNestDisturbanceTallyObservationInline,
         ManagementActionInline,
+        NestTagObservationInline,
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
+        HatchlingMorphometricObservationInline,
         ]
 
     def source_display(self, obj):
@@ -343,7 +376,9 @@ class AnimalEncounterAdmin(EncounterAdmin):
         TurtleDamageObservationInline,
         TurtleMorphometricObservationInline,
         TurtleNestObservationInline,
-        ManagementActionInline, ]
+        ManagementActionInline,
+        NestTagObservationInline,
+        ]
 
     def health_display(self, obj):
         """Make health status human readable."""
@@ -390,7 +425,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
     # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
-        TagObservationInline,
+        NestTagObservationInline,
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
         HatchlingMorphometricObservationInline,
@@ -449,6 +484,7 @@ class LoggerEncounterAdmin(EncounterAdmin):
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
+        NestTagObservationInline,
         TemperatureLoggerSettingsInline,
         DispatchRecordInline,
         TemperatureLoggerDeploymentInline, ]

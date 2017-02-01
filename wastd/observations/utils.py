@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Observation untilities."""
+from datetime import datetime
 import json
 import os
 from pprint import pprint
@@ -16,10 +17,11 @@ from django.utils.dateparse import parse_datetime
 from wastd.observations.models import (
     Encounter, AnimalEncounter, LoggerEncounter, TurtleNestEncounter,
     LineTransectEncounter,
-    TurtleNestDisturbanceObservation, MediaAttachment,
+    MediaAttachment, TagObservation, NestTagObservation,
+    TurtleNestObservation, TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation, TrackTallyObservation,
     NEST_AGE_CHOICES, NEST_TYPE_CHOICES, OBSERVATION_CHOICES,
-    NEST_DAMAGE_CHOICES, CONFIDENCE_CHOICES
+    NEST_DAMAGE_CHOICES, CONFIDENCE_CHOICES, TAG_STATUS_CHOICES
     )
 
 
@@ -267,8 +269,6 @@ def handle_turtlenestdistobs(d, e, m):
     m The ODK_MAPPING
     """
 
-    print("Found disturbance obs")
-    pprint(d)
 
     dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(
         encounter=e,
@@ -278,7 +278,8 @@ def handle_turtlenestdistobs(d, e, m):
         comments=d["comments"]
         )
     dd.save()
-    e.save()  # cache distobs in HTML
+    print("Turtle Nest Disturbance Obs {0}".format("created" if created else "found"))
+    pprint(dd)
 
     if d["photo_disturbance"] is not None:
         dl_photo(e.source_id,
@@ -288,6 +289,117 @@ def handle_turtlenestdistobs(d, e, m):
         pname = os.path.join(pdir, d["photo_disturbance"]["filename"])
         handle_photo(pname, e, title="Disturbance {0}".format(dd.disturbance_cause))
     pprint(dd)
+
+    e.save()  # cache distobs in HTML
+
+
+def handle_turtlenestobs(d, e, m):
+    """Get or create a TurtleNestObservation and related MediaAttachments.
+
+    Arguments
+
+    d A dictionary containing at least:
+    {
+        "no_egg_shells": 120,
+        "no_live_hatchlings": 13,
+        "no_dead_hatchlings": 14,
+        "no_undeveloped_eggs": 15,
+        "no_unhatched_eggs": 16,
+        "no_unhatched_term": 17,
+        "no_depredated_eggs": 18,
+        "nest_depth_top": 19,
+        "nest_depth_bottom": 20,
+        "egg_photos": [
+            {
+                "photo_eggs": {
+                    "filename": "1485913363900.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D1%5D%2Fphoto_eggs"
+                }
+            },
+            {
+                "photo_eggs": {
+                    "filename": "1485913376020.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D2%5D%2Fphoto_eggs"
+                }
+            }
+        ],
+    }
+
+    e The related TurtleNestEncounter (must exist)
+    m The ODK_MAPPING
+    """
+
+    dd, created = TurtleNestObservation.objects.get_or_create(
+        encounter=e,
+        nest_position=m["habitat"][d["habitat"]],
+        no_egg_shells=d["no_egg_shells"] or 0,
+        no_live_hatchlings=d["no_live_hatchlings"] or 0,
+        no_dead_hatchlings=d["no_dead_hatchlings"] or 0,
+        no_undeveloped_eggs=d["no_undeveloped_eggs"] or 0,
+        no_unhatched_eggs=d["no_unhatched_eggs"] or 0,
+        no_unhatched_term=d["no_unhatched_term"] or 0,
+        no_depredated_eggs=d["no_depredated_eggs"] or 0,
+        nest_depth_top=d["nest_depth_top"] or 0,
+        nest_depth_bottom=d["nest_depth_bottom"] or 0
+        )
+    dd.save()
+    print("TurtleNestObservation {0}".format("created" if created else "found"))
+    pprint(dd)
+
+    for idx, ep in enumerate(d["egg_photos"]):
+        dl_photo(e.source_id,
+                 ep["photo_eggs"]["url"],
+                 ep["photo_eggs"]["filename"])
+        pdir = make_photo_foldername(e.source_id)
+        pname = os.path.join(pdir, ep["photo_eggs"]["filename"])
+        handle_photo(pname, e, title="Egg photo {0}".format(idx + 1))
+
+    e.save()
+
+
+def handle_turtlenesttagobs(d, e, m):
+    """Get or create a TagObservation and related MediaAttachments.
+
+    Arguments
+
+    d A dictionary containing at least:
+    {
+        "status": "resighted",
+        "flipper_tag_id": "S1234",
+        "date_nest_laid": "2017-02-01",
+        "tag_label": "M1",
+        "tag_comments": "test info",
+        "photo_tag": {
+            "filename": "1485913419914.jpg",
+            "type": "image/jpeg",
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fnest_tag%3Aphoto_tag"
+    },
+
+    e The related TurtleNestEncounter (must exist)
+    m The ODK_MAPPING
+    """
+    dd, created = NestTagObservation.objects.get_or_create(
+        encounter=e,
+        status=m["tag_status"][d["status"]],
+        flipper_tag_id=d["flipper_tag_id"],
+        date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d'),
+        tag_label=d["tag_label"],
+        )
+    dd.save()
+    print("NestTagObservation {0}".format("created" if created else "found"))
+    pprint(dd)
+
+    if d["photo_tag"]:
+        dl_photo(e.source_id,
+                 d["photo_tag"]["url"],
+                 d["photo_tag"]["filename"])
+        pdir = make_photo_foldername(e.source_id)
+        pname = os.path.join(pdir, d["photo_tag"]["filename"])
+        handle_photo(pname, e, title="Nest tag photo")
+
+    e.save()
 
 
 def handle_turtlenestdisttallyobs(d, e, m):
@@ -423,23 +535,200 @@ def import_one_record_tc010(r, m):
     return e
 
 
-def import_one_record_tt016(r, m):
+def import_one_record_tt026(r, m):
     """Import one ODK Track or Treat 0.16 record into WAStD.
 
     Arguments
 
     r The record as dict, e.g.
 
+{
+        "instanceID": "uuid:22623d7c-ac39-46a1-9f99-741b7c668e58",
+        "observation_start_time": "2017-02-01T01:37:11.947Z",
+        "reporter": "florianm",
+        "nest_age": "fresh",
+        "species": "flatback",
+        "photo_track": {
+            "filename": "1485913222981.jpg",
+            "type": "image/jpeg",
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fdetails%3Aphoto_track"
+        },
+        "nest_type": "successfulcrawl",
+        "observed_at:Latitude": -31.99673702,
+        "observed_at:Longitude": 115.88434861,
+        "observed_at:Altitude": -5,
+        "observed_at:Accuracy": 8,
+        "habitat": "edgeofvegetation",
+        "photo_nest": {
+            "filename": "1485913247467.jpg",
+            "type": "image/jpeg",
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fnest%3Aphoto_nest"
+        },
+        "disturbance": "yes",
+        "eggs_counted": "yes",
+        "nest_tagged": "yes",
+        "logger_found": "yes",
+        "hatchlings_measured": "yes",
+        "disturbanceobservation": [
+            {
+                "photo_disturbance": {
+                    "filename": "1485913281914.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fdisturbanceobservation%5B%40ordinal%3D1%5D%2Fphoto_disturbance"
+                },
+                "disturbance_cause": "human",
+                "disturbance_cause_confidence": "expertopinion",
+                "disturbance_severity": "partly",
+                "comments": "test"
+            },
+            {
+                "photo_disturbance": {
+                    "filename": "1485913310961.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fdisturbanceobservation%5B%40ordinal%3D2%5D%2Fphoto_disturbance"
+                },
+                "disturbance_cause": "bird",
+                "disturbance_cause_confidence": "expertopinion",
+                "disturbance_severity": "partly",
+                "comments": "test2"
+            }
+        ],
+        "no_egg_shells": 120,
+        "no_live_hatchlings": 13,
+        "no_dead_hatchlings": 14,
+        "no_undeveloped_eggs": 15,
+        "no_unhatched_eggs": 16,
+        "no_unhatched_term": 17,
+        "no_depredated_eggs": 18,
+        "nest_depth_top": 19,
+        "nest_depth_bottom": 20,
+        "egg_photos": [
+            {
+                "photo_eggs": {
+                    "filename": "1485913363900.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D1%5D%2Fphoto_eggs"
+                }
+            },
+            {
+                "photo_eggs": {
+                    "filename": "1485913376020.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D2%5D%2Fphoto_eggs"
+                }
+            }
+        ],
+        "status": "resighted",
+        "flipper_tag_id": "S1234",
+        "date_nest_laid": "2017-02-01",
+        "tag_label": "M1",
+        "tag_comments": "test info",
+        "photo_tag": {
+            "filename": "1485913419914.jpg",
+            "type": "image/jpeg",
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fnest_tag%3Aphoto_tag"
+        },
+        "logger_details": [
+            {
+                "logger_id": "S1235",
+                "photo_logger": {
+                    "filename": "1485913441063.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Flogger_details%5B%40ordinal%3D1%5D%2Fphoto_logger"
+                }
+            },
+            {
+                "logger_id": "S1236",
+                "photo_logger": {
+                    "filename": "1485913471237.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Flogger_details%5B%40ordinal%3D2%5D%2Fphoto_logger"
+                }
+            }
+        ],
+        "hatchling_measurements": [
+            {
+                "straight_carapace_length_mm": 12,
+                "straight_carapace_width_mm": 13,
+                "body_weight_g": 14
+            },
+            {
+                "straight_carapace_length_mm": 14,
+                "straight_carapace_width_mm": 15,
+                "body_weight_g": 16
+            },
+            {
+                "straight_carapace_length_mm": 17,
+                "straight_carapace_width_mm": 18,
+                "body_weight_g": 19
+            }
+        ],
+        "observation_end_time": "2017-02-01T01:44:59.504Z"
+    }
+
     m The mapping of ODK to WAStD choices
 
     Existing records will be overwritten.
     Make sure to skip existing records which should be retained.
     """
-    e = import_one_record_tc010(r, m)
-    # TODO TurtleNestObservation
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]],
+        nest_age=m["nest_age"][r["nest_age"]],
+        nest_type=m["nest_type"][r["nest_type"]],
+        species=m["species"][r["species"]],
+        # comments
+        )
+    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
+        new_data["habitat"] = m["habitat"][r["habitat"]]
+        new_data["disturbance"] = m["disturbance26"][r["disturbance"]]
+
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = TurtleNestEncounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = TurtleNestEncounter.objects.create(**new_data)
+
+    e.save()
+    pprint(e)
+
+    # MediaAttachment "Photo of track"
+    if r["photo_track"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_track"]["filename"])
+        handle_photo(pname, e, title="Track")
+
+    # MediaAttachment "Photo of nest"
+    if r["photo_nest"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_nest"]["filename"])
+        handle_photo(pname, e, title="Nest")
+
+    # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
+    [handle_turtlenestdistobs(distobs, e, m)
+     for distobs in r["disturbanceobservation"]
+     if len(r["disturbanceobservation"]) > 0]
+
+    # TurtleNestObservation
+    if r["eggs_counted"] == "yes":
+        handle_turtlenestobs(r, e, m)
+
+    # NestTagObservation
+    if r["nest_tagged"]:
+        handle_turtlenesttagobs(r, e, m)
+
     # TODO HatchlingMorphometricObservation
-    # TODO TagObservation
     # TODO LoggerEncounter retrieved HOBO logger
+
     return e
 
 
@@ -889,6 +1178,7 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
         # some values can be derived
         "nest_age": map_values(NEST_AGE_CHOICES),
         "nest_type": map_values(NEST_TYPE_CHOICES),
+        "tag_status": map_values(TAG_STATUS_CHOICES),
 
         # some are custom
         "species": {
@@ -909,6 +1199,10 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
             'na': 'na',
             },
         "disturbance": map_values(OBSERVATION_CHOICES),
+        "disturbance26": {
+            'yes': 'present',
+            'no': 'absent',
+            },
         "disturbance_cause": map_values(NEST_DAMAGE_CHOICES),
         "disturbance_cause_confidence": map_values(CONFIDENCE_CHOICES),
         "disturbance_severity": map_values(
@@ -947,26 +1241,34 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 
-    elif flavour == "odk-trackortreat-016":
-        print("Using flavour ODK Track or Treat 0.16...")
+    elif flavour == "odk-trackortreat-026":
+        print("Using flavour ODK Track or Treat 0.26...")
 
         # Download photos
-        pt = [[r["instanceID"],
-               r["photo_track"]["url"],
-               r["photo_track"]["filename"]]
-              for r in d
-              if r["photo_track"] is not None]
-        pn = [[r["instanceID"],
-               r["photo_nest"]["url"],
-               r["photo_nest"]["filename"]]
-              for r in d
-              if r["photo_nest"] is not None]
-        print("Downloading photos of {0} tracks and {1} nests".format(
-            len(pt), len(pn)))
-        all_photos = pt + pn
+        ptr = [[r["instanceID"],
+                r["photo_track"]["url"],
+                r["photo_track"]["filename"]]
+               for r in d
+               if r["photo_track"] is not None]
+
+        pne = [[r["instanceID"],
+                r["photo_nest"]["url"],
+                r["photo_nest"]["filename"]]
+               for r in d
+               if r["photo_nest"] is not None]
+
+        pta = [[r["instanceID"],
+                r["photo_nest"]["url"],
+                r["photo_nest"]["filename"]]
+               for r in d
+               if r["photo_nest"] is not None]
+
+        print("Downloading photos of {0} tracks, {1} nests, {2} tags".format(
+            len(ptr), len(pne), len(pta)))
+        all_photos = ptr + pne + pta
         [dl_photo(p[0], p[1], p[2]) for p in all_photos]
 
-        [import_one_record_tt016(r, ODK_MAPPING) for r in d
+        [import_one_record_tt026(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 
