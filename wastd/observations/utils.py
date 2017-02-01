@@ -20,6 +20,7 @@ from wastd.observations.models import (
     MediaAttachment, TagObservation, NestTagObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation, TrackTallyObservation,
+    HatchlingMorphometricObservation,
     NEST_AGE_CHOICES, NEST_TYPE_CHOICES, OBSERVATION_CHOICES,
     NEST_DAMAGE_CHOICES, CONFIDENCE_CHOICES, TAG_STATUS_CHOICES
     )
@@ -402,8 +403,79 @@ def handle_turtlenesttagobs(d, e, m):
     e.save()
 
 
+def handle_hatchlingmorphometricobs(d, e, m):
+    """Get or create a HatchlingMorphometricObservation.
+
+    Arguments
+
+    d A dictionary like
+        {
+            "straight_carapace_length_mm": 12,
+            "straight_carapace_width_mm": 13,
+            "body_weight_g": 14
+        }
+    e The related TurtleNestEncounter (must exist)
+    m The ODK_MAPPING
+    """
+    dd, created = HatchlingMorphometricObservation.objects.get_or_create(
+        encounter=e,
+        straight_carapace_length_mm=d["straight_carapace_length_mm"],
+        straight_carapace_width_mm=d["straight_carapace_width_mm"],
+        body_weight_g=d["body_weight_g"]
+        )
+    dd.save()
+    print("HatchlingMorphometricObservation {0}".format("created" if created else "found"))
+    pprint(dd)
+
+    e.save()
+
+
+def handle_loggerenc(d, e, m):
+    """Get or create a LoggerEncounter.
+
+    Arguments
+
+    d A dictionary like
+        {
+            "logger_id": "S1235",
+            "photo_logger": {
+                "filename": "1485913441063.jpg",
+                "type": "image/jpeg",
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Flogger_details%5B%40ordinal%3D1%5D%2Fphoto_logger"
+            }
+        }
+    e The related TurtleNestEncounter (must exist)
+    m The ODK_MAPPING
+    """
+    dd, created = LoggerEncounter.objects.get_or_create(
+        source=e.source,
+        source_id="{0}-{1}".format(e.source_id, d["logger_id"]),
+        where=e.where,
+        when=e.when,
+        location_accuracy=e.location_accuracy,
+        observer=e.observer,
+        reporter=e.reporter,
+        deployment_status="retrieved",
+        logger_id=d["logger_id"]
+        )
+    dd.save()
+    print("LoggerEncounter {0}".format("created" if created else "found"))
+    pprint(dd)
+
+    if d["photo_logger"]:
+        dl_photo(e.source_id,
+                 d["photo_logger"]["url"],
+                 d["photo_logger"]["filename"])
+        pdir = make_photo_foldername(e.source_id)
+        pname = os.path.join(pdir, d["photo_logger"]["filename"])
+        handle_photo(pname, dd, title="Logger ID photo")
+        # The logger encounter dd gets the photo, not the encounter e!
+
+    e.save()
+
+
 def handle_turtlenestdisttallyobs(d, e, m):
-    """Get or create TurtleNestDisturbanceObservation.
+    """Get or create a TurtleNestDisturbanceObservation.
 
     Arguments
 
@@ -532,6 +604,7 @@ def import_one_record_tc010(r, m):
     [handle_turtlenestdistobs(distobs, e, m)
      for distobs in r["disturbanceobservation"]
      if len(r["disturbanceobservation"]) > 0]
+
     return e
 
 
@@ -716,7 +789,7 @@ def import_one_record_tt026(r, m):
     # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
     [handle_turtlenestdistobs(distobs, e, m)
      for distobs in r["disturbanceobservation"]
-     if len(r["disturbanceobservation"]) > 0]
+     if r["disturbance"] and len(r["disturbanceobservation"]) > 0]
 
     # TurtleNestObservation
     if r["eggs_counted"] == "yes":
@@ -726,9 +799,18 @@ def import_one_record_tt026(r, m):
     if r["nest_tagged"]:
         handle_turtlenesttagobs(r, e, m)
 
-    # TODO HatchlingMorphometricObservation
-    # TODO LoggerEncounter retrieved HOBO logger
+    # HatchlingMorphometricObservation
+    [handle_hatchlingmorphometricobs(ho, e, m)
+     for ho in r["hatchling_measurements"]
+     if r["hatchlings_measured"] and len(r["hatchling_measurements"]) > 0]
 
+    # LoggerEncounter retrieved HOBO logger
+    [handle_loggerenc(lg, e, m)
+     for lg in r["logger_details"]
+     if r["logger_found"] and len(r["logger_details"]) > 0]
+
+    # TODO if both nest tag and logger enc present:
+    # create nest tag obs on logger enc
     return e
 
 

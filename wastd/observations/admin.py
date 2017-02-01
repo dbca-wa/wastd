@@ -196,10 +196,15 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     """Admin for NestTagObservation"""
     save_on_top = True
     date_hierarchy = 'date_nest_laid'
-    list_display = ('name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
+    list_display = ('tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
                     'status_display', 'encounter_link', 'comments')
     list_filter = ('flipper_tag_id', 'tag_label', 'status')
-    search_fields = ('name', 'comments')
+    search_fields = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
+
+    def tag_name(self, obj):
+        """Nest tag name."""
+        return obj.name
+    tag_name.short_description = 'Nest Tag ID'
 
     def status_display(self, obj):
         """Make health status human readable."""

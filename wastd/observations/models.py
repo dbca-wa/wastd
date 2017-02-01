@@ -1813,22 +1813,17 @@ class LoggerEncounter(Encounter):
 
         Slugified and dash-separated:
 
-        * Date of encounter as YYYY-mm-dd
-        * longitude in WGS 84 DD, rounded to 4 decimals (<10m),
-        * latitude in WGS 84 DD, rounded to 4 decimals (<10m), (missing sign!!)
-        * nest age (type),
-        * species,
-        * name if available (requires "update names" and tag obs)
+        * logger type
+        * deployment status
+        * logger id
 
         The short_name could be non-unique for very similar encounters.
         In this case, a modifier can be added by the user to ensure uniqueness.
         """
         nameparts = [
-            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
-            str(round(self.where.get_x(), 4)).replace(".", "-"),
-            str(round(self.where.get_y(), 4)).replace(".", "-"),
             self.logger_type,
             self.deployment_status,
+            self.logger_id
             ]
         if self.name is not None:
             nameparts.append(self.name)
@@ -2134,15 +2129,6 @@ class NestTagObservation(Observation):
         blank=True, null=True,
         help_text=_("Any other comments or notes."),)
 
-    @property
-    def name(self):
-        """Return the nest tag name according to the naming scheme."""
-        return "_".join([
-            self.flipper_tag_id.upper().replace(" ", ""),
-            self.date_nest_laid.strftime('%Y-%m-%d'),
-            self.tag_label.upper().replace(" ", ""),
-            ])
-
     def __str__(self):
         """The unicode representation."""
         return "{0} ({1})".format(self.name, self.get_status_display())
@@ -2152,6 +2138,15 @@ class NestTagObservation(Observation):
         """The list view of all observations of this tag."""
         cl = reverse("admin:observations_nesttagobservation_changelist")
         return "{0}?q={1}".format(cl, urllib.quote_plus(self.flipper_tag_id))
+
+    @property
+    def name(self):
+        """Return the nest tag name according to the naming scheme."""
+        return "_".join([
+            self.flipper_tag_id.upper().replace(" ", ""),
+            self.date_nest_laid.strftime('%Y-%m-%d'),
+            self.tag_label.upper().replace(" ", ""),
+            ])
 
 
 @python_2_unicode_compatible
