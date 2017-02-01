@@ -433,14 +433,15 @@ NEST_AGE_CHOICES = (
     (NEST_AGE_DEFAULT, "(U) unknown age"),
     )
 
-NEST_TYPE_DEFAULT = "new-track-successful-crawl"
+NEST_TYPE_DEFAULT = "track-not-assessed"
 NEST_TYPE_CHOICES = (
-    ("false-crawl", "(F) false crawl, non-nesting"),
-    ("successful-crawl", "(S) successful crawl, nesting"),
-    ("track-unsure", "(U) turtle track, success unsure"),
-    ("track-not-assessed", "(T) turtle track, success not assessed"),
-    ("nest", "(N) turtle nest, unhatched"),         # egg counts, putting eggs back
-    ("hatched-nest", "(H) turtle nest, hatched"),   # hatching and emergence success
+    ("false-crawl", "track without nest"),
+    ("successful-crawl", "track with nest"),
+    ("track-unsure", "track, checked for nest, unsure if nest"),
+    ("track-not-assessed", "track, not checked for nest"),
+    ("nest", "nest, unhatched, no track"),         # egg counts, putting eggs back
+    ("hatched-nest", "nest, hatched"),   # hatching and emergence success
+    ("body-pit", "body pit, no track"),
     )
 
 OBSERVATION_CHOICES = (
