@@ -68,10 +68,38 @@ function map_init(map, options) {
 
     }
 
+    function highlightFeature(e) {
+        var layer = e.target;
+        info.update(layer.feature.properties);
+    }
+
+    function resetHighlight(e) {
+		info.update();
+	}
+
     function oef (feature, layer) {
         layer.bindLabel(feature.properties.leaflet_title);
         layer.bindPopup(feature.properties.as_html);
+        layer.on({
+			mouseover: highlightFeature,
+			// mouseout: resetHighlight
+			click: resetHighlight
+		});
     }
+
+    // control that shows state info on hover
+    var info = L.control();
+
+    info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'info');
+        this.update();
+        return this._div;
+    };
+    info.update = function (props) {
+		this._div.innerHTML = props ? props.as_html : '';
+	};
+
+	info.addTo(map);
 
     /* Data loading */
 
@@ -86,6 +114,7 @@ function map_init(map, options) {
      * Option 2: GeoJSON view
      * The quick and dirty way to dump all (whoa) data into one layer
      * https://github.com/makinacorpus/django-geojson#geojson-layer-view
+     * We'll use this method to load area polygons.
      */
     $.getJSON("{% url 'areas-geojson' %}", function (data) {
         L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);

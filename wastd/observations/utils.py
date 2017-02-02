@@ -431,7 +431,14 @@ def handle_hatchlingmorphometricobs(d, e, m):
 
 
 def handle_loggerenc(d, e, m):
-    """Get or create a LoggerEncounter.
+    """Get or create a LoggerEncounter with photo and nest tag obs.
+
+    If the related TurtleNestEncounter e has a NestTagObservation, an idential
+    NTO will be created for the LoggerEncounter. This will allow to traverse
+    the list of NestTagObservations by name to link related AnimalEncounters
+    (when labelling a nest during a tagging), TurtleNestEncounters (when
+    excavating a hatched nest) and LoggerEncounters (when retrieving loggers
+    from the excavated, tagged nest).
 
     Arguments
 
@@ -470,6 +477,20 @@ def handle_loggerenc(d, e, m):
         pname = os.path.join(pdir, d["photo_logger"]["filename"])
         handle_photo(pname, dd, title="Logger ID photo")
         # The logger encounter dd gets the photo, not the encounter e!
+
+    # If e has NestTagObservation, replicate NTO on LoggerEncounter
+    if e.observation_set.instance_of(NestTagObservation).exists():
+        nto = e.observation_set.instance_of(NestTagObservation).first()
+        NestTagObservation.objects.get_or_create(
+            encounter=e,
+            status=nto.status,
+            flipper_tag_id=nto.flipper_tag_id,
+            date_nest_laid=nto.date_nest_laid,
+            tag_label=nto.tag_label,
+            )
+        nto.save()
+        print("NestTagObservation {0}".format("created" if created else "found"))
+        pprint(nto)
 
     e.save()
 
