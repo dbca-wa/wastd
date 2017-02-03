@@ -1,0 +1,17 @@
+{% load observations %}
+{% with original as o %}
+<div class="row">
+    <i class="fa fa-fw fa-bar-chart"></i>
+    {% if o.body_length_mm %}
+    Length {{ o.body_length_mm }} mm
+    {% endif %}
+
+    {% if o.body_girth_mm %}
+    Girth {{ o.body_girth_mm }} mm
+    {% endif %}
+
+    {% if o.tail_fluke_width_mm %}
+    Fluke {{ o.tail_fluke_width_mm }} mm
+    {% endif %}
+</div>
+{% endwith %}

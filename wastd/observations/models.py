@@ -2109,6 +2109,7 @@ class NestTagObservation(Observation):
 
     flipper_tag_id = models.CharField(
         max_length=1000,
+        blank=True, null=True,
         verbose_name=_("Flipper Tag ID"),
         help_text=_("The primary flipper tag ID of the nesting turtle "
                     "if available."),)
@@ -2120,6 +2121,7 @@ class NestTagObservation(Observation):
 
     tag_label = models.CharField(
         max_length=1000,
+        blank=True, null=True,
         verbose_name=_("Tag Label"),
         help_text=_("Any extra nest label if other two components are not "
                     "available."),)
@@ -2352,6 +2354,37 @@ class HatchlingMorphometricObservation(Observation):
             self.straight_carapace_length_mm,
             self.straight_carapace_width_mm,
             self.body_weight_g,
+            )
+
+
+@python_2_unicode_compatible
+class DugongMorphometricObservation(Observation):
+    """Morphometric measurements of a Dugong at an AnimalEncounter."""
+
+    body_length_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Body length (mm)"),
+        help_text=_("The body length in millimetres."),)
+
+    body_girth_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Body girth (mm)"),
+        help_text=_("The body girth at the widest point in millimetres."),)
+
+    tail_fluke_width_mm = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Tail fluke width (mm)"),
+        help_text=_("The tail fluke width in millimetres."),)
+
+    def __str__(self):
+        """The unicode representation."""
+        tpl = "{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
+        return tpl.format(
+            self.pk,
+            self.encounter.species,
+            self.body_length_mm,
+            self.body_girth_mm,
+            self.tail_fluke_width_mm,
             )
 
 

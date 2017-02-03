@@ -1,0 +1,18 @@
+{% load observations rest_framework_latex %}
+{% with original as o %}
+\paragraph{}
+Dugong morphometrics
+
+{% if o.body_length_mm %}
+Length {{ o.body_length_mm }} mm
+{% endif %}
+
+{% if o.body_girth_mm %}
+Girth {{ o.body_girth_mm }} mm
+{% endif %}
+
+{% if o.tail_fluke_width_mm %}
+Fluke {{ o.tail_fluke_width_mm }} mm
+{% endif %}
+
+{% endwith %}

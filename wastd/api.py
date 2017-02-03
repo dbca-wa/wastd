@@ -42,14 +42,17 @@ from rest_framework.authentication import (
     SessionAuthentication, BasicAuthentication, TokenAuthentication)
 
 from wastd.observations.models import (
-    Area,
-    Encounter, AnimalEncounter, TurtleNestEncounter, LoggerEncounter,
-    Observation, MediaAttachment, TagObservation,
-    TurtleMorphometricObservation, TurtleDamageObservation, ManagementAction,
-    TurtleNestObservation, TurtleNestDisturbanceObservation,
+    Area, SiteVisit,
+    Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
+    LineTransectEncounter,
+    Observation,
+    MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
     TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
-    TemperatureLoggerSettings, DispatchRecord,
-    TemperatureLoggerDeployment)
+    TurtleMorphometricObservation, HatchlingMorphometricObservation,
+    DugongMorphometricObservation,
+    TurtleDamageObservation,
+    TurtleNestObservation, TurtleNestDisturbanceObservation,
+    TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
 from wastd.observations.filters import AreaFilter
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
@@ -62,7 +65,6 @@ from wastd.users.models import User
 # sync_route = SynctoolRoute()
 # @sync_route.app("users", "users")
 # @sync_route.app("observations", "observations")
-
 
 # Serializers ----------------------------------------------------------------#
 class UserSerializer(serializers.ModelSerializer):
@@ -151,6 +153,15 @@ class ObservationSerializer(serializers.ModelSerializer):
                 obj, context=self.context).to_representation(obj)
         if isinstance(obj, TemperatureLoggerDeployment):
             return TemperatureLoggerDeploymentSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, NestTagObservation):
+            return NestTagObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, HatchlingMorphometricObservation):
+            return HatchlingMorphometricObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, DugongMorphometricObservation):
+            return DugongMorphometricObservationSerializer(
                 obj, context=self.context).to_representation(obj)
 
         return super(ObservationSerializer, self).to_representation(obj)
@@ -353,6 +364,72 @@ class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
                   'distance_to_marker2_mm',
                   'habitat',
                   'distance_to_vegetation_mm', )
+
+class NestTagObservationSerializer(serializers.ModelSerializer):
+    """NestTagObservationSerializer."""
+
+    # as_latex = serializers.ReadOnlyField()
+
+    class Meta:
+        """Class options."""
+
+        model = NestTagObservation
+        fields = ('observation_name',  # 'as_latex', #
+                  'status',
+                  'flipper_tag_id',
+                  'date_nest_laid',
+                  'tag_label',
+                  'comments',
+                  )
+
+
+class NestTagObservationEncounterSerializer(serializers.ModelSerializer):
+    """NestTagObservationSerializer."""
+
+    # as_latex = serializers.ReadOnlyField()
+
+    class Meta:
+        """Class options."""
+
+        model = NestTagObservation
+        fields = ('observation_name',  # 'as_latex', #
+                  'encounter',
+                  'status',
+                  'flipper_tag_id',
+                  'date_nest_laid',
+                  'tag_label',
+                  'comments',
+                  )
+
+class HatchlingMorphometricObservationSerializer(serializers.ModelSerializer):
+    """HatchlingMorphometricObservationSerializer."""
+
+    # as_latex = serializers.ReadOnlyField()
+
+    class Meta:
+        """Class options."""
+
+        model = HatchlingMorphometricObservation
+        fields = ('observation_name',  # 'as_latex', #
+                  'straight_carapace_length_mm',
+                  'straight_carapace_width_mm',
+                  'body_weight_g',
+                  )
+
+
+class DugongMorphometricObservationSerializer(serializers.ModelSerializer):
+    """DugongMorphometricObservationSerializer."""
+
+    # as_latex = serializers.ReadOnlyField()
+
+    class Meta:
+        """Class options."""
+
+        model = DugongMorphometricObservation
+        fields = ('observation_name',  # 'as_latex', #
+                  'body_length_mm',
+                  'body_girth_mm',
+                  'tail_fluke_width_mm')
 
 
 class AreaSerializer(GeoFeatureModelSerializer):
@@ -659,6 +736,16 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
 
+
+class NestTagObservationViewSet(viewsets.ModelViewSet):
+    """NestTagObservation view set."""
+
+    queryset = NestTagObservation.objects.all()
+    serializer_class = NestTagObservationEncounterSerializer
+    filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
+                     'comments']
+
+
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter(schema_title='WAStD API')
 # router.register(r'users', UserViewSet)
@@ -670,3 +757,4 @@ router.register(r'logger-encounters', LoggerEncounterViewSet)
 router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
 router.register(r'tag-observations', TagObservationViewSet)
+router.register(r'nesttag-observations', NestTagObservationViewSet)

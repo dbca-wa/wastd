@@ -24,6 +24,7 @@ from wastd.observations.models import (
     MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
     TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
     TurtleMorphometricObservation, HatchlingMorphometricObservation,
+    DugongMorphometricObservation,
     TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
@@ -75,6 +76,14 @@ class HatchlingMorphometricObservationInline(admin.TabularInline):
 
     extra = 0
     model = HatchlingMorphometricObservation
+    classes = ('grp-collapse grp-open',)
+
+
+class DugongMorphometricObservationInline(admin.TabularInline):
+    """Admin for DugongMorphometricObservation."""
+
+    extra = 0
+    model = DugongMorphometricObservation
     classes = ('grp-collapse grp-open',)
 
 
@@ -380,6 +389,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         TagObservationInline,
         TurtleDamageObservationInline,
         TurtleMorphometricObservationInline,
+        DugongMorphometricObservationInline,
         TurtleNestObservationInline,
         ManagementActionInline,
         NestTagObservationInline,
