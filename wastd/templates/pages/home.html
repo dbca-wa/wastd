@@ -18,10 +18,12 @@ function map_init(map, options) {
 
     /* Helper functions */
 
+    /* Point style */
     var style = {
         "clickable": true
     }
 
+    /* Polygon style */
     var polystyle = {
         "color": "#0009ff",
         "weight": 1,
@@ -68,26 +70,25 @@ function map_init(map, options) {
 
     }
 
+    /* Actions taken when highlighting feature */
     function highlightFeature(e) {
         var layer = e.target;
         info.update(layer.feature.properties);
     }
 
+    /* Actions taken when resetting highlight on feature */
     function resetHighlight(e) {
 		info.update();
 	}
 
+    /* Actions taken on each feature: title, popup, info preview */
     function oef (feature, layer) {
         layer.bindLabel(feature.properties.leaflet_title);
         layer.bindPopup(feature.properties.as_html);
-        layer.on({
-			mouseover: highlightFeature,
-			// mouseout: resetHighlight
-			click: resetHighlight
-		});
+        layer.on({mouseover: highlightFeature, click: resetHighlight});
     }
 
-    // control that shows state info on hover
+    /* Preview window called "info" */
     var info = L.control();
 
     info.onAdd = function (map) {
@@ -96,7 +97,7 @@ function map_init(map, options) {
         return this._div;
     };
     info.update = function (props) {
-		this._div.innerHTML = props ? props.as_html : '';
+		this._div.innerHTML = props ? props.as_html: 'Hover to preview, click to inspect';
 	};
 
 	info.addTo(map);
