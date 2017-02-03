@@ -429,7 +429,9 @@ class DugongMorphometricObservationSerializer(serializers.ModelSerializer):
         fields = ('observation_name',  # 'as_latex', #
                   'body_length_mm',
                   'body_girth_mm',
-                  'tail_fluke_width_mm')
+                  'tail_fluke_width_mm',
+                  'tusks_found',
+                  )
 
 
 class AreaSerializer(GeoFeatureModelSerializer):

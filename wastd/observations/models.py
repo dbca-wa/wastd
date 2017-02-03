@@ -2376,6 +2376,13 @@ class DugongMorphometricObservation(Observation):
         verbose_name=_("Tail fluke width (mm)"),
         help_text=_("The tail fluke width in millimetres."),)
 
+    tusks_found = models.CharField(
+        max_length=300,
+        verbose_name=_("Tusks found"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Did the animal have tusks?"), )    
+
     def __str__(self):
         """The unicode representation."""
         tpl = "{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"

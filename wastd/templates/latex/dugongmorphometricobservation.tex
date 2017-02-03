@@ -4,15 +4,17 @@
 Dugong morphometrics
 
 {% if o.body_length_mm %}
-Length {{ o.body_length_mm }} mm
+Length {{ o.body_length_mm|mm_as_cm }} cm
 {% endif %}
 
 {% if o.body_girth_mm %}
-Girth {{ o.body_girth_mm }} mm
+Girth {{ o.body_girth_mm|mm_as_cm }} cm
 {% endif %}
 
 {% if o.tail_fluke_width_mm %}
-Fluke {{ o.tail_fluke_width_mm }} mm
+Fluke {{ o.tail_fluke_width_mm|mm_as_cm }} cm
 {% endif %}
+
+Tusks {{ o.tusks_found }}
 
 {% endwith %}
