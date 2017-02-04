@@ -164,6 +164,7 @@ encounters along its life cycle stages::
     https://strandings-test.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA96394
 
 
+.. _data-analysis-animal-life-cycle:
 Animal life cycle
 -----------------
 An animal's identity can be reconstructed from overlapping sightings of a set of tags.

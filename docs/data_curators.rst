@@ -19,6 +19,7 @@ supported data sources into WAStD.
 .. * for each format, map the fields of the paper form to the online form.
 
 
+.. _itp-stranding-curation:
 Turtle Strandings
 =================
 Digitising a stranding record consists of five steps:

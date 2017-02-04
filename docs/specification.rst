@@ -17,7 +17,7 @@ Monitoring and research questions suffer the same problem.
 
 Scope
 -----
-Current scope of WAStD: Strandings of sea turtles.
+Current scope of WAStD: Strandings of sea turtles and dugongs.
 Data entry is restricted to trained and trusted admins through "backstage" admin forms.
 WAStD will interact, and eventually integrate with BioSys.
 
@@ -73,7 +73,7 @@ The solution architecture must consider the following contraints:
   StrandNet, Parks & Wildlife's Turtle Tagging database WAMTRAM 2,
   and the Ningaloo Turtle Program's track count database.
 
-
+.. _usecase-stranding-mininsterial-inquiry:
 Use case: Ministerial inquiry, annual report, strategic advice
 --------------------------------------------------------------
 This section discusses requirements of each role involved in

@@ -10,6 +10,7 @@ Each field in the data sheets has been, and should be questioned:
   used to identify a resighted, untagged animal?
 * Will anyone in the foreseeable future require this information?
 
+.. _data-capture-tracks:
 Turtle tracks or nests
 ======================
 Turtle track counts can be collected on mobile app (OpenDataKit, ODK),
@@ -290,6 +291,7 @@ examples.
 The final analysis (in development at the time of writing) will consume
 curated data through the WAStD API.
 
+.. _itp-stranding-report:
 Turtle Stranding
 ================
 
@@ -322,11 +324,12 @@ challenge, taking a photo is invaluable, in that it cannot be taken at a later
 time, and it preserves valuable and volatile information.
 
 
+.. _lessons-learnt-paper-based-data-capture:
 Lessons learnt from paper-based field data collection
 =====================================================
 
-Scenario 1
-----------
+Scenario 1: Two tags applied, both tags recorded incorrectly
+------------------------------------------------------------
 One turtle is encountered in two subsequent nights by two separate teams.
 
 Night 1
@@ -460,6 +463,7 @@ General observations
 * Strong case against Galaxy Tab A (GPS speed, internal storage, old OS version).
 
 
+.. _cost-benefit-analysis-digital-data-capture:
 Cost-benefit analysis for mobile data collection
 ================================================
 This section is in development!
