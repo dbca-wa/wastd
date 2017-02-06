@@ -317,7 +317,7 @@ class TurtleNestDisturbanceTallyObservationSerializer(serializers.ModelSerialize
         """Class options."""
 
         model = TurtleNestDisturbanceTallyObservation
-        fields = ('observation_name', # 'as_latex',
+        fields = ('observation_name',  # 'as_latex',
                   'species', 'disturbance_cause', 'tally', )
 
 
@@ -365,6 +365,7 @@ class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
                   'habitat',
                   'distance_to_vegetation_mm', )
 
+
 class NestTagObservationSerializer(serializers.ModelSerializer):
     """NestTagObservationSerializer."""
 
@@ -400,6 +401,7 @@ class NestTagObservationEncounterSerializer(serializers.ModelSerializer):
                   'tag_label',
                   'comments',
                   )
+
 
 class HatchlingMorphometricObservationSerializer(serializers.ModelSerializer):
     """HatchlingMorphometricObservationSerializer."""
@@ -446,7 +448,7 @@ class AreaSerializer(GeoFeatureModelSerializer):
         fields = ("area_type", "name", "geom", "northern_extent", "centroid", )
 
 
-class EncounterSerializer(GeoFeatureModelSerializer):
+class EncounterSerializer(serializers.HyperlinkedModelSerializer):
     """Encounter serializer.
 
     TODO: a writable version of the serializer will provide `create` and
@@ -613,7 +615,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
-                  'as_html', 'as_latex',
+                #   'as_html', 'as_latex',
                   'observation_set', )
         # read_only = ('photographs',)
         geo_field = "where"
