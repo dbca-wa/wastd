@@ -1,6 +1,7 @@
-=============
-Specification
-=============
+=========
+Use cases
+=========
+
 Strandings
 ==========
 
@@ -17,8 +18,11 @@ Monitoring and research questions suffer the same problem.
 
 Scope
 -----
-Current scope of WAStD: Strandings of sea turtles and dugongs.
-Data entry is restricted to trained and trusted admins through "backstage" admin forms.
+Current scope of WAStD: Strandings of sea turtles and dugongs;
+turtle track and nest counts.
+Data entry is restricted to trained and trusted admins through "backstage" admin forms
+as well as automated through mobile data capture for track and nest counts (in production)
+and strandings (in beta testing).
 WAStD will interact, and eventually integrate with BioSys.
 
 Departmental business related to turtle strandings:
@@ -53,8 +57,9 @@ with existing workflows of the above mentioned, out of scope business processes.
 
 Task
 ----
-Improve the information pipeline from stranded animal to ministerial / managerial inquiry,
-so that timely, defensible, reproducible, and accessible insight is available.
+Improve the information pipeline from databased, stranded animal to
+ministerial / managerial inquiry, so that timely, defensible, reproducible,
+and accessible insight is available.
 Digitise and curate the backlog of old stranding reports, while retaining the full data lineage.
 
 Constraints
@@ -66,7 +71,8 @@ The solution architecture must consider the following contraints:
   re-usable (to be integrated in BioSys), or scalable (to become a part of BioSys).
 * Any solution built must be SOE, follow OIM's standards and integrate into their
   infrastructure ecosystem.
-* Avoid double handling of data entry - do it once, and do it properly.
+* Avoid double handling of data entry - do it once, and do it properly (correct,
+  complete, consistent).
 * There must be a standardised, accessible way to import and export all data into
   and out of the system.
 * The application has to be compatible on a raw data level with Queensland's
@@ -76,13 +82,13 @@ The solution architecture must consider the following contraints:
 .. _usecase-stranding-mininsterial-inquiry:
 Use case: Ministerial inquiry, annual report, strategic advice
 --------------------------------------------------------------
-This section discusses requirements of each role involved in
+This section discusses requirements of each stakeholder role involved in
 
 * the response to a ministerial inquiry,
 * annual reporting for a steering committee,
 * strategic advice to a policy officer,
 
-and demonstrates the current implementation as a proof-of-concept / gap analysis.
+and demonstrates the current implementation in WAStD as a proof-of-concept / gap analysis.
 
 Minister, steering committee, policy officer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -106,6 +112,7 @@ but we assume they could ask e.g.:
 These examples show only a few out of many possible combinations of search filters.
 All results can be exported to spreadsheets for further analysis.
 The same results can also be generated through the API for consumption by software.
+See :ref:`data-consumers-api` for working examples.
 
 Manager
 ^^^^^^^
@@ -148,13 +155,14 @@ through advanced statistical analysis and visualisation.
   The analyst needs to hit the ground running with
   `working examples <https://strandings.dpaw.wa.gov.au/users/FlorianM/>`_
   of loading the data from the machine-readable access point into the most common
-  analytical frameworks.
-* There should be `sufficient documentation <http://wastd.readthedocs.io/data_consumers.html>`_
+  analytical frameworks. (See your own WAStD profile for code examples including
+  your own API token).
+* There should be sufficient documentation (:ref:`data-consumers`)
   to allow statistically trained analysts to efficiently consume data without
   technical knowledge of the system they are stored in.
-* Access needs to be following standard protocols and formats, entirely independent of
-  both the systems it is stored in, as well as independent of the software packages
-  it is analysed with.
+* Access needs to be following standard protocols and formats,
+  be entirely independent of both the systems it is stored in,
+  as well as independent of the software packages it is analysed with.
 
 Data curator 3: Subject matter expert
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -176,8 +184,8 @@ Proofreading will help fighting typos and misunderstandings between datasheet
 and database, therefore increasing **consistency**.
 
 * The proofreader needs original datasheets, communication records and supplemental
-images accessible close to the data entry/QA forms, ideally displaying in their
-web browser without needing to be downloaded and opened in proprietary software.
+  images accessible close to the data entry/QA forms, ideally displaying in their
+  web browser without needing to be downloaded and opened in proprietary software.
 
 Data curator 1: Data entry operator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -190,21 +198,24 @@ By doing so, the data entry operator increases **accessibility** and **completen
   `data entry <http://wastd.readthedocs.io/data_curators.html>`_.
 * The instructions must be able to evolve with new edge cases requiring supervisor input.
 * Electronic data entry forms should provide input validation for formats, not content.
-* The data portal should
-  `accept all formally correct data <http://wastd.readthedocs.io/developers.html#data-model>`_,
+* The data portal should accept all formally correct data (:ref:`data-model`),
   but allow to identify and fix impossible or questionable records.
+* The system should flag impossible or questionable records.
 
 Data collector: Ranger, regional staff
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The departmental data collector (e.g. a ranger) responds to a stranding report
 from the general public, or discovers a stranded animal themselves.
 
-* The data collector needs clear and up to date procedures, and easily useable datasheets.
+* The data collector needs clear and up to date procedures, and easily useable
+  datasheets.
 * Paper is cheap, bad information is costly. Taking the correct pictures in correct
   angles, as well as taking and processing samples, or preserving the carcass for a
   subsequent necropsy correctly is time-critical and cannot be repeated later.
-  Instructions to take the right measurements, samples and photographs must be available to the data collector.
-* Datasheets need to capture complete, consistent and correct data, while avoiding capturing unneccessary detail.
+  Instructions to take the right measurements, samples and photographs must be
+  available to the data collector.
+* Datasheets need to capture complete, consistent and correct data, while avoiding
+  capturing unneccessary detail.
 * Datasheets should provide enough guidance to the data collector on providing the
   desired data formats and precision.
 
@@ -222,7 +233,8 @@ whom to call, which data to collect (e.g. geo-referenced phone pictures).
   This could happen in the form of a "thank you" email with an excerpt of the
   final stranding record.
   Example: TOs returning tags after harvesting a tagged turtle usually get sent
-  a reward like branded t-shirts or baseball caps by Marine Science to show their appreciation.
+  a reward like branded t-shirts or baseball caps by Marine Science to show their
+  appreciation.
 
 Lessons learnt
 ==============
@@ -231,10 +243,19 @@ The journey so far:
 * April 2016: Requirements Analysis (during SDIS main sprint)
 * July 2016: Implementation
 * August - Sept 2016: Agile iterations, weekly stakeholder workshops to refine
-  requirements and update business processes understanding and requirements (during SDIS/ARAR cycle)
+  requirements and update business processes understanding and requirements
+  (during SDIS/ARAR cycle)
 * Oct 2016: Production deployment, start of turtle stranding data entry,
   "dog fooding" the data entry manual, usability improvements,
   working on datasheets.
+* Nov 2016: Development of digital data capture for turtle tracks.
+  Form revised 10 times.
+* Nov/Dec 2016: 2300+ tracks recorded digitally, replacing paper forms.
+* Dec 2016: Track app deployed to two more field teams (Karratha, Broome).
+* Jan 2016: Automated pipeline from digital capture to WAStD.
+* Jan 2016: Digital form for tracks revised 15 more times to include nest tags
+  / egg / hatchling / logger measurements.
+* Feb 2016: Revised form used in field.
 
 By sharing technology and architecture with BioSys, WAStD is part of the BioSys
 ecosystem of data warehousing, data curation, data exchange standards and

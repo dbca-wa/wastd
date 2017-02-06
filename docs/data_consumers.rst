@@ -1,3 +1,4 @@
+.. _data-consumers:
 ==================
 Data consumers
 ==================
@@ -87,6 +88,7 @@ admin interface. This facilitates a user-friendly, trial-and-error way of quickl
 building the desired API query. To learn more about the API, read on.
 
 
+.. _data-consumers-api:
 For machines: API
 =================
 This section will document the application programming interface (API).
