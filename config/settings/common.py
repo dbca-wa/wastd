@@ -412,3 +412,7 @@ GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY', default="not-set")
 # GRAPHENE = {
 #     'SCHEMA': 'wastd.schema.schema' # Where your Graphene schema lives
 # }
+
+
+# Guardian permissions, django-polymorphic integration
+GUARDIAN_GET_CONTENT_TYPE = 'polymorphic.contrib.guardian.get_polymorphic_base_content_type'
