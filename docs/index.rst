@@ -47,25 +47,25 @@ WAStD is a data warehouse for:
 * Turtle strandings in WA, as reported to the Department of Parks & Wildlife, WA.
 * Dugong strandings in WA.
 * Turtle track observations, taken at sunrise after nesting (can involve nests,
- predation, nest tags, temperature loggers, egg excavation and hatchling measurements).
+  predation, nest tags, temperature loggers, egg excavation and hatchling measurements).
 * Temperature logger asset management.
 
 WAStD is built scalable enough to accommodate other, related, data:
 
 * Turtle tagging observations, taken of nesting turtles.
 * Cetacean (whales and dolphins), pinniped (seals and sea lions), other reptiles
- (sea snake) strandings.
+  (sea snake) strandings.
 
 WAStD offers as main functionalities:
 
 * A "backstage" area, through which trained and trusted data curators can enter
- data from paper data sheets, and other curators can proofread and QA the data.
+  data from paper data sheets, and other curators can proofread and QA the data.
 * A landing page with an interactive map displaying the data (coming up: filters
- to restrict the data shown, export tools).
+  to restrict the data shown, export tools).
 * Restricted access to the "backstage" area for trusted data consumers, where
- they can search, filter and export the raw data, but not change or delete them.
+  they can search, filter and export the raw data, but not change or delete them.
 * A RESTful API that allows authenticated users to create, update, and download
- the data.
+  the data.
 
 WAStD's purpose is:
 
@@ -77,13 +77,13 @@ WAStD will integrate in the Departmental information landscape as follows:
 
 * Legacy data (starting with Turtle strandings) is manually entered from paper forms.
 * Legacy data living in legacy systems can be batch-uploaded to WAStD,
- initially as a read-only copy.
+  initially as a read-only copy.
 * Data collected digitally can be streamed (or imported semi-automatically) into WAStD.
 * WAStD can batch-upload its data to corporate data warehouses, once they exist (e.g. BioSys).
 * Analytical applications anwering defined management questions (informing
- monitoring reports, ministerial inquries, conservation planning decisions) can be
- built right now consuming the WAStD API, and later refactored to consume data from
- departmental data warehouses, once these become the point of truth for the data.
+  monitoring reports, ministerial inquries, conservation planning decisions) can be
+  built right now consuming the WAStD API, and later refactored to consume data from
+  departmental data warehouses, once these become the point of truth for the data.
 
 Departmental business related to turtle strandings:
 
@@ -123,18 +123,18 @@ The journey so far:
 * April 2016: Requirements Analysis (during SDIS main sprint)
 * July 2016: Implementation
 * August - Sept 2016: Agile iterations, weekly stakeholder workshops to refine
- requirements and update business processes understanding and requirements
- (during SDIS/ARAR cycle)
+  requirements and update business processes understanding and requirements
+  (during SDIS/ARAR cycle)
 * Oct 2016: Production deployment, start of turtle stranding data entry,
- "dog fooding" the data entry manual, usability improvements,
- working on datasheets.
+  "dog fooding" the data entry manual, usability improvements,
+  working on datasheets.
 * Nov 2016: Development of digital data capture for turtle tracks.
- Form revised 10 times.
+  Form revised 10 times.
 * Nov/Dec 2016: 2300+ tracks recorded digitally, replacing paper forms.
 * Dec 2016: Track app deployed to two more field teams (Karratha, Broome).
 * Jan 2016: Automated pipeline from digital capture to WAStD.
 * Jan 2016: Digital form for tracks revised 15 more times to include nest tags
- / egg / hatchling / logger measurements.
+  / egg / hatchling / logger measurements.
 * Feb 2016: Revised form used in field.
 
 By sharing technology and architecture with BioSys, WAStD is part of the BioSys
@@ -144,14 +144,18 @@ analytical knowledge pipelines.
 WAStD data flow as implemented
 
 .. image:: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
+    :target: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
+    :alt: WAStD data flow as implemented
 
 Systems architecture
 
-.. figure:: https://www.lucidchart.com/publicSegments/view/bfae841d-0548-44ed-b309-b9f65d3ab082/image.png
+.. image:: https://www.lucidchart.com/publicSegments/view/bfae841d-0548-44ed-b309-b9f65d3ab082/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/bfae841d-0548-44ed-b309-b9f65d3ab082/image.png
+    :alt: Systems architecture
 
 
-Indices and tables
-==================
+Technical documentation
+=======================
 
 * :ref:`genindex`
 * :ref:`modindex`
