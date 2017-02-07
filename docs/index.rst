@@ -32,11 +32,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   overview
+   business_analysts
    data_collectors
    data_curators
    data_consumers
-   specification
    maintainers
    developers
 
