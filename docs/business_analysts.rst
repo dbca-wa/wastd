@@ -1,126 +1,10 @@
 =================
 Business Analysts
 =================
+This chapter draws the big picture of the turtle data ecosystem
+by presenting business, functional and stakeholders' requirements as readable use cases.
 
-**Note** This chapter is in active development.
-
-This chapter draws the big picture of the information management ecosystem
-behind the WA Strandings Database WAStD by presenting business, functional and
-stakeholders' requirements as readable use cases.
-
-**Disclaimer** This chaper ties the requirements analysis to the current
-stop-gap / transition phase / proof-of-concept implementation in WAStD.
-
-WAStD is a data warehouse for:
-
-* Turtle strandings in WA, as reported to the Department of Parks & Wildlife, WA.
-* Dugong strandings in WA.
-* Turtle track observations, taken at sunrise after nesting (can involve nests,
-  predation, nest tags, temperature loggers, egg excavation and hatchling measurements).
-* Temperature logger asset management.
-
-WAStD is built scalable enough to accommodate other, related, data:
-* Turtle tagging observations, taken of nesting turtles.
-* Cetacean (whales and dolphins), pinniped (seals and sea lions), other reptiles
-  (sea snake) strandings.
-
-WAStD offers as main functionalities:
-
-* A "backstage" area, through which trained and trusted data curators can enter
-  data from paper data sheets, and other curators can proofread and QA the data.
-* A landing page with an interactive map displaying the data (coming up: filters
-  to restrict the data shown, export tools).
-* Restricted access to the "backstage" area for trusted data consumers, where
-  they can search, filter and export the raw data, but not change or delete them.
-* A RESTful API that allows authenticated users to create, update, and download
-  the data.
-
-WAStD's purpose is:
-
-* To fill an existing gap in departmental infrastructure (strandings, tracks).
-* To develop requirements for an integrated turtle data management ecosystem
-  through using real data and real processes.
-
-WAStD will integrate in the Departmental information landscape as follows:
-
-* Legacy data (starting with Turtle strandings) is manually entered from paper forms.
-* Legacy data living in legacy systems can be batch-uploaded to WAStD,
-  initially as a read-only copy.
-* Data collected digitally can be streamed (or imported semi-automatically) into WAStD.
-* WAStD can batch-upload its data to corporate data warehouses, once they exist (e.g. BioSys).
-* Analytical applications anwering defined management questions (informing
-  monitoring reports, ministerial inquries, conservation planning decisions) can be
-  built right now consuming the WAStD API, and later refactored to consume data from
-  departmental data warehouses, once these become the point of truth for the data.
-
-Departmental business related to turtle strandings:
-
-  * Strandings of other marine animals (cetaceans, pinnipeds, dugong, sea snakes)
-  * (priority 1) Tagging of nesting turtles, and the whole life cycle of tags put on turtles
-    (legacy system: WAMTRAM 2, data custodian Bob Prince)
-  * (priority 2) Turtle track and nest counts (fresh, predated, or hatched nests)
-    (legacy system: Ningaloo Track Count Access Database, data custodian Keely Markovina)
-    as turtles per km of coastline
-  * Turtle track count from remotely sensed, aerial imagery
-  * other administrative data related to turtle monitoring
-    (temperature loggers deployed in turtle nests) (no existing systems)
-  * Data entry (tagging) by field operators through standalone, offline, desktop capture tool (no existing system)
-  * Mobile app, read-only, with a browseable data snapshot "have I seen this turtle before?" (no existing system)
-  * Data entry (strandings) by less trained regional staff (Rangers), web based (not offline),
-    through streamlined, user-friendly forms (not built yet)
-  * Data entry (tagging) by field operators online through streamlined forms (not built yet)
-  * Data ingestion from mobile data collection devices (existing Cybertracker fleet) (integration not built yet)
-
-If any of the above scopes were to experience an acute business risk -- e.g.
-data being siloed in outdated software,
-insufficient database curation functionality corrupting core departmental data,
-data custodians retiring or not being salaried,
-outdated datasheets collecting incomplete, inconsistent, incorrect data --,
-then a solution much like WAStD or BioSys would be required to mitigate that risk,
-and sufficient care had to be taken to hand over the not always documented,
-often living business knowledge from current custodians to permanent departmental staff.
-
-The roll-out of the improvements in handling turtle strandings will cross over
-with existing workflows of the above mentioned, out of scope business processes.
-
-WAStD's design philosophy follows
-`The Basics of Unix Philosophy <http://www.catb.org/esr/writings/taoup/html/ch01s06.html#id2877537>`_
-
-The journey so far:
-
-* April 2016: Requirements Analysis (during SDIS main sprint)
-* July 2016: Implementation
-* August - Sept 2016: Agile iterations, weekly stakeholder workshops to refine
-  requirements and update business processes understanding and requirements
-  (during SDIS/ARAR cycle)
-* Oct 2016: Production deployment, start of turtle stranding data entry,
-  "dog fooding" the data entry manual, usability improvements,
-  working on datasheets.
-* Nov 2016: Development of digital data capture for turtle tracks.
-  Form revised 10 times.
-* Nov/Dec 2016: 2300+ tracks recorded digitally, replacing paper forms.
-* Dec 2016: Track app deployed to two more field teams (Karratha, Broome).
-* Jan 2016: Automated pipeline from digital capture to WAStD.
-* Jan 2016: Digital form for tracks revised 15 more times to include nest tags
-  / egg / hatchling / logger measurements.
-* Feb 2016: Revised form used in field.
-
-By sharing technology and architecture with BioSys, WAStD is part of the BioSys
-ecosystem of data warehousing, data curation, data exchange standards and
-analytical knowledge pipelines.
-
-=========================
-Business and IT processes
-=========================
-WAStD data flow as implemented
-
-.. image:: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
-
-Systems architecture
-
-.. figure:: https://www.lucidchart.com/publicSegments/view/bfae841d-0548-44ed-b309-b9f65d3ab082/image.png
-
-The remainder of this chapter applies IBM's
+We apply IBM's
 `simple pattern for requirements analysis <https://www.ibm.com/developerworks/architecture/library/ar-analpat/ar-analpat-pdf.pdf>`_
 to structure the problem space into business processes (stranding, tagging, and
 track/nest count) and IT processes (for each business process: data capture,
@@ -129,7 +13,10 @@ implementation (WAStD) are discussed as well.
 
 Business Process Turtle Strandings
 ==================================
-**Note** This section could be combined by merging IT processes and the use case.
+This business process was the first information management challenge to solve,
+and has led to the design and development of WAStD in its current form.
+
+To illustrate the design process, the background is discussed in greater detail here.
 
 Problem
 -------
@@ -141,9 +28,11 @@ For ministerial inquiries on turtle strandings, there is no timely, defensible,
 reproducible, and accessible insight available.
 Monitoring and research questions suffer the same problem.
 
+REQ Insight on turtle strandings must be available in a timely, defensible,
+reproducible and accessible manner.
+
 Task
 ----
-
 * Improve the information pipeline from databased, stranded animal to
 ministerial / managerial inquiry, so that timely, defensible, reproducible,
 and accessible insight is available.
@@ -153,16 +42,16 @@ Constraints
 -----------
 The solution architecture must consider the following contraints:
 
-* Biosys will eventually deliver similar functionality, but not within the required time.
-* Any software built must be either disposable (to be re-implemented in BioSys),
+* Biosys aims to deliver similar functionality, but not within the required time.
+* REQ The solution shall be either disposable (to be re-implemented in BioSys),
   re-usable (to be integrated in BioSys), or scalable (to become a part of BioSys).
-* Any solution built must be SOE, follow OIM's standards and integrate into their
+* REQ The solution shall be SOE, follow OIM's standards and integrate into their
   infrastructure ecosystem.
-* Avoid double handling of data entry - do it once, and do it properly (correct,
-  complete, consistent).
-* There must be a standardised, accessible way to import and export all data into
-  and out of the system.
-* The application has to be compatible on a raw data level with Queensland's
+* Double handling of data entry shall be avoided - do it once, and do it
+  properly (complete, correct, consistent).
+* REQ There must be a standardised, accessible way to import and export all data
+  into and out of the solution.
+* REQ The solution shall be compatible on a raw data level with Queensland's
   StrandNet, Parks & Wildlife's Turtle Tagging database WAMTRAM 2,
   and the Ningaloo Turtle Program's track count database.
 
@@ -171,24 +60,24 @@ Current implementation
 
 Turtle Strandings
 ^^^^^^^^^^^^^^^^^
-* Stranding paper forms are being overhauled (SFo and FM)
+* Stranding paper forms are being updated (SFo and FM, Nov 2016 - Mar 2017).
 * An updated incident response workflow for turtles has been sent to regional
-  offices by the affiliated Murdoch Vet (EY)
+  offices by the affiliated Murdoch Vet (EY Dec 2016).
 * A digital data capture form caters for turtle strandings (can be extended to others)
-  and is in beta testing (not officially released yet)
-* WAStD allows data entry from legacy paper forms, as well as data export and query
-* Live workbooks can query, analyse and visualise data from WAStD
+  and is in beta testing (not officially released yet).
+* WAStD allows data entry from legacy paper forms, as well as data export and query.
+* Live workbooks can query, analyse and visualise data from WAStD via its API.
 
 Cetacean strandings
 ^^^^^^^^^^^^^^^^^^^
 Nature Conservation kept a Filemaker Pro database of Cetacean strandings.
 The database custodian has retired after extended leave.
 
-The custodian of the legacy turtle tagging database WAMTRAM 2 understood that
-strandings of tagged turtles are a vital part of their life history (and used
-in mark-capture-recapture analysis) and aimed to include the strandings process
-into the database; however, this process was not completely implemented and is
-not operational.
+It shall be known that the custodian of the legacy turtle tagging database
+WAMTRAM 2 understood that strandings of tagged turtles are a vital part of their
+life history (and used in mark-capture-recapture analysis)
+and aimed to include the strandings process into the database;
+however, this process was not completely implemented and is not operational.
 
 IT process Stranding incident report
 ------------------------------------
@@ -409,6 +298,20 @@ whom to call, which data to collect (e.g. geo-referenced phone pictures).
   a reward like branded t-shirts or baseball caps by Marine Science to show their
   appreciation.
 
+Gap analysis
+------------
+
+* The digital data capture form does not yet include taxa other than turtles.
+* Front-line staff are not yet trained in its use.
+* Therefore, paper forms are not phased out yet.
+* The digital data capture app in its current implementation still requires a few
+  manual steps by the application maintainer to import data into WAStD. This process
+  is not yet fully automated and does not yet happen in real-time.
+* The WAStD API is, although operational, not yet fully optimised.
+* Not all possible data products are implemented yet (e.g. as self-service
+  dashboards).
+* Members of the public who report strandings have not yet web access to "their"
+  strandings and related data (e.g. the life history of a stranded, tagged turtle).
 
 Business Process Turtle Tagging
 ===============================
@@ -426,9 +329,27 @@ See :ref:`cost-benefit-analysis-digital-data-capture`.
 Digital data capture of tagging-related data happens under time pressure
 and in harsh conditions (night, low light, operator fatigue, beach, sand, heat,
 humidity). The workflow is non-linear, as the tagged, biopsied, restrained,
-but also very powerful turtle does not always follow the field protocol in sequence.
+therefore stressed, but also very powerful turtle does not always follow the
+field protocol in sequence.
 The technology currently used for digital data capture of strandings and tracks
 is not flexible enough to provide a viable tagging data capture form.
+
+REQ The solution for a digital turtle tagging field data capture app must be
+optimised for harsh environmental conditions and low light, as well as
+the non-linear and  opportunistic nature of tagging data capture.
+
+REQ The solution shall carry the complete backlog of tagging records to provide
+the field workers with real-time insight about last sighting and in general all
+data relating to the encountered turtle (if already tagged), utilised tags, samples,
+data loggers and all other uniquely identifiable involved entities.
+
+REQ The solution shall allow daily syncing between multiple field data capture devices
+while still in the field.
+
+REQ The solution shall be responsive to different device display widths.
+
+REQ The solution shall be able to toggle interface features and functionality between
+field data capture, field data curation, data upload, central data curation and other roles.
 
 
 IT process Turtle tagging data curation (field and office)
@@ -535,6 +456,12 @@ See chapter :ref:`data-consumers` on how to get to a `Tag history
  or an `animal history
 <https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541>`_.
 
+Gap analysis
+------------
+Tagging is currently handled in WAMTRAM 2.
+
+To replace WAMTRAM 2, a digital data capture app as well as a central data warehouse
+such as BioSys or WAStD are required.
 
 Business Process Turtle Tracks
 ==============================
@@ -546,7 +473,7 @@ at Cable Beach and the Karratha office.
 
 IT process Turtle track and nest data curation
 ----------------------------------------------
-The same processes as described in turtle strandings apply.
+The same processes as described in turtle strandings apply to tracks and nest data.
 
 IT process Legacy data ETL
 --------------------------
