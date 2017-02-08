@@ -86,25 +86,12 @@ WAStD will integrate in the Departmental information landscape as follows:
 
 Departmental business related to turtle strandings:
 
-* Strandings of other marine animals (cetaceans, pinnipeds, dugong, sea snakes)
-* (priority 1) Tagging of nesting turtles, and the whole life cycle of tags put on turtles
-  (legacy system: WAMTRAM 2, data custodian Bob Prince)
-* (priority 2) Turtle track and nest counts (fresh, predated, or hatched nests)
-  (legacy system: Ningaloo Track Count Access Database, data custodian Keely Markovina)
-  as turtles per km of coastline
-* Turtle track count from remotely sensed, aerial imagery
-* other administrative data related to turtle monitoring
-  (temperature loggers deployed in turtle nests) (no existing systems)
-* Data entry (tagging) by field operators through standalone, offline, desktop capture tool (no existing system)
-* Mobile app, read-only, with a browseable data snapshot "have I seen this turtle before?" (no existing system)
-* Data entry (strandings) by less trained regional staff (Rangers), web based (not offline),
-  through streamlined, user-friendly forms (not built yet)
-* Data entry (tagging) by field operators online through streamlined forms (not built yet)
-* Data ingestion from mobile data collection devices (existing Cybertracker fleet) (integration not built yet)
+Documented at https://confluence.dpaw.wa.gov.au/display/MSIM/Legacy+systems
 
-If any of the above scopes were to experience an acute business risk -- e.g.
+If any of the legacy systems were to experience an acute business risk -- e.g.
 data being siloed in outdated software,
-insufficient database curation functionality corrupting core departmental data,
+insufficient database curation functionality (missing sanity checks)
+corrupting core departmental data,
 data custodians retiring or not being salaried,
 outdated datasheets collecting incomplete, inconsistent, incorrect data --,
 then a solution much like WAStD or BioSys would be required to mitigate that risk,
@@ -131,7 +118,7 @@ The journey so far:
 * Jan 2016: Automated pipeline from digital capture to WAStD.
 * Jan 2016: Digital form for tracks revised 15 more times to include nest tags,
   egg, hatchling and logger measurements.
-* Feb 2016: Revised form used in field.
+* Feb 2016: Revised tracks form used in field.
 
 By sharing technology and architecture with BioSys, WAStD is part of the BioSys
 ecosystem of data warehousing, data curation, data exchange standards and
