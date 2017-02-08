@@ -2145,9 +2145,9 @@ class NestTagObservation(Observation):
     def name(self):
         """Return the nest tag name according to the naming scheme."""
         return "_".join([
-            self.flipper_tag_id.upper().replace(" ", ""),
-            self.date_nest_laid.strftime('%Y-%m-%d'),
-            self.tag_label.upper().replace(" ", ""),
+            self.flipper_tag_id.upper().replace(" ", "") if self.flipper_tag_id else '',
+            self.date_nest_laid.strftime('%Y-%m-%d') if self.date_nest_laid else '',
+            self.tag_label.upper().replace(" ", "") if self.tag_label else '',
             ])
 
 
@@ -2381,7 +2381,7 @@ class DugongMorphometricObservation(Observation):
         verbose_name=_("Tusks found"),
         choices=OBSERVATION_CHOICES,
         default=NA_VALUE,
-        help_text=_("Did the animal have tusks?"), )    
+        help_text=_("Did the animal have tusks?"), )
 
     def __str__(self):
         """The unicode representation."""

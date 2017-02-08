@@ -381,16 +381,24 @@ def handle_turtlenesttagobs(d, e, m):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    dd, created = NestTagObservation.objects.get_or_create(
-        encounter=e,
-        status=m["tag_status"][d["status"]],
-        flipper_tag_id=d["flipper_tag_id"],
-        date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d'),
-        tag_label=d["tag_label"],
-        )
-    dd.save()
-    print("NestTagObservation {0}".format("created" if created else "found"))
-    pprint(dd)
+    print(d)
+    if (d["status"] is None and
+            d["flipper_tag_id"] is None and
+            d["date_nest_laid"] is None and
+            d["tag_label"] is None):
+        print("No TurtleNestObs found, skipping.")
+        return
+    else:
+        dd, created = NestTagObservation.objects.get_or_create(
+            encounter=e,
+            status=m["tag_status"][d["status"]],
+            flipper_tag_id=d["flipper_tag_id"],
+            date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
+            tag_label=d["tag_label"],
+            )
+        dd.save()
+        print("NestTagObservation {0}".format("created" if created else "found"))
+        pprint(dd)
 
     if d["photo_tag"]:
         dl_photo(e.source_id,
@@ -1244,7 +1252,7 @@ def import_one_record_tt05(r, m):
     print(msg.format(created, t))
 
 
-def import_odk(jsonfile, flavour="odk-trackcount-010"):
+def import_odk(jsonfile, flavour="odk-trackortreat-026"):
     """Import ODK Track Count 0.10 data.
 
     Arguments
@@ -1254,7 +1262,7 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
 
     Preparation:
 
-    * https://dpaw-data.appspot.com/ > Submissions > Form "TrackCount 0.10"
+    * https://dpaw-data.appspot.com/ > Submissions > Form e.g. "TrackCount 0.10"
     * Export > JSON > Export
     * Submissions > Exported Submissions > download JSON
 
@@ -1307,7 +1315,13 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
             'no': 'absent',
             },
         "disturbance_cause": map_values(NEST_DAMAGE_CHOICES),
-        "disturbance_cause_confidence": map_values(CONFIDENCE_CHOICES),
+        # "disturbance_cause_confidence": map_values(CONFIDENCE_CHOICES),
+        "disturbance_cause_confidence": {
+            "guess": "guess",
+            "expertopinion": "expert-opinion",
+            "validated": "validated",
+            "validate": "validated",
+            },
         "disturbance_severity": map_values(
             TurtleNestDisturbanceObservation.NEST_VIABILITY_CHOICES),
 
@@ -1318,6 +1332,10 @@ def import_odk(jsonfile, flavour="odk-trackcount-010"):
         "overwrite": [t.source_id for t in Encounter.objects.filter(
             source="odk", status=Encounter.STATUS_NEW)]
         }
+
+    # typo in Track or Treat 0.26
+    # ODK_MAPPING["disturbance_cause_confidence"]["validate"] = "validated"
+
     print("\n\nMapping:\n\n")
     pprint(ODK_MAPPING)
 
