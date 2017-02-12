@@ -270,10 +270,7 @@ A synchronised copy of the data is streamed to Google Fusion Tables (GFT)
 for immediate visualization.
 
 For an initial analysis and summary, data are downloaded from GFT and presented
-in an RMarkdown workbook
-[Turtle Tracks (here: 2016 data)](http://rpubs.com/florian_mayer/track-counts)
-as well as an RShiny app using live data
-[Turtle Tracker](https://rshiny.dpaw.wa.gov.au/turtles/).
+in an RMarkdown workbook `Tracks <http://rpubs.com/florian_mayer/tracks>`_.
 
 After each field trip, data from ODK Aggregate are exported (as JSON) and ingested
 into WAStD. The process can be repeated; data that has been changed in WAStD and

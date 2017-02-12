@@ -316,6 +316,27 @@ Gap analysis
 Business Process Turtle Tagging
 ===============================
 
+IT process Turtle tag asset management
+--------------------------------------
+Tags have a life cycle, characterised by interactions with humans and animals:
+
+* TODO add tag status list
+* LLC diagram tag
+
+Use cases:
+
+* Order tag (typically in batches) with running ID e.g. WB1500 - WB3500
+* Record tag batches as ordered, produced, delivered (how much detail is required?),
+  allocated to field team (important)
+* Query: how many tags have we ordered?
+* Query: what's the next available tag number?
+* Query: which tags are available to hand out to field teams? when do we have to re-order?
+* Field teams report tags as "applied new", "re-clinched" or "re-sighted"
+  when tagging animals through digital or paper field data forms
+* Tag returns from TOs after harvest
+* Tags can be found on stranded animals, returned to HQ
+* Tags are never re-applied to different animals but destroyed and recorded as such
+
 IT process Turtle tagging field data collection
 -----------------------------------------------
 Currently, data is collected on paper forms, and then fed into the legacy system
@@ -393,9 +414,9 @@ Interim solution: ETL to WAStD
 ------------------------------
 The task of extraction, transformation and loading (ETL) of tagging data is
 automated and documented in an RMarkdown workbook
-`Tagging ETL <https://github.com/parksandwildlife/ningaloo-turtle-etl/blob/master/tagging-etl.Rmd>`_.
+`Tagging ETL <https://github.com/parksandwildlife/turtle-scripts/blob/master/wamtram/wamtram_etl.Rmd>`_.
 The workbook is under version control in the repository
-`Ningaloo Turtle ETL <https://github.com/parksandwildlife/ningaloo-turtle-etl/>`_.
+`Turtle Scripts <https://github.com/parksandwildlife/turtle-scripts/>`_.
 
 Based on WAMTRAM 1 developer Simon Woodman's technical documentation, the
 workbook aims:
@@ -478,7 +499,7 @@ The same processes as described in turtle strandings apply to tracks and nest da
 IT process Legacy data ETL
 --------------------------
 The Ningaloo ETL RMarkdown workbook
-(`source <https://github.com/parksandwildlife/ningaloo-turtle-etl/blob/master/ningaloo-etl.Rmd>`_)
+(`source <https://github.com/parksandwildlife/turtle-scripts/blob/master/ningaloo/ningaloo_etl.Rmd>`_)
 extracts data from the NTP database snapshot on the internal data catalogue into
 CSV and GeoJSON files, and uploads them to the NTP
 `dataset <internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data>`_.
@@ -491,7 +512,7 @@ IT process Turtle track and nest count analysis
 Fundamentally, the same process as in turtle stranding analysis applies.
 
 As a first working example, production data from 2016, captured digitally with the new
-mobile data capture app, are shown `here <http://rpubs.com/florian_mayer/track-counts>`_.
+mobile data capture app, are shown `here <http://rpubs.com/florian_mayer/tracks>`_.
 
 As a second example, the RMarkdown workbook
 `Ningaloo spatial modelling <internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data/resource/422c91ca-7673-432f-911a-449d3dc2e35a>`_,
@@ -501,9 +522,18 @@ summary of the NTP data.
 
 More analyses are required and scheduled for implementation, e.g.:
 
-* Spatio-temporal patterns and variation of tracks on Thevenard Is
-* Nesting success at Thevenard Is
-
+* Spatio-temporal distribution, patterns and variation of patterns of tracks
+* Nesting success at Thevenard Is as ratio of successful over total nesting
+  crawls (tracks with, without, unsure, not assessed if nest) on a beach
+* Hatching success as ratio of hatched over total eggs in a nest
+* Control charts of track / nest abundance over time to detect significant changes
+* Significance of nesting beaches
+* Control charts of nesting seasons to detect significant shifts in nesting timing
+* Disturbance and predation: quantity, spatial and temporal distribution,
+  patterns and variation of patterns
+* Impact of experimental design and survey effort on measured abundance
+* Modelling to get point estimates of nesting effort (what else?) for a given
+  time and place
 
 Legacy system: Ningaloo Track count database
 --------------------------------------------
@@ -513,7 +543,7 @@ Links:
   `data snapshot <internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data>`_
   on the internal data catalogue
 * Ningaloo Turtle Program `homepage <http://www.ningalooturtles.org.au/>`_
-* `Code repository <https://github.com/parksandwildlife/ningaloo-turtle-etl/>`_
+* `Code repository <https://github.com/parksandwildlife/turtle-scripts/>`_
 
 **Note** Data sheets and field guide are being updated at the moment.
 
