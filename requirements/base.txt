@@ -19,7 +19,7 @@ django-grappelli==2.9.1
 
 # API
 # ------------------------------------------------
-djangorestframework==3.5.3
+djangorestframework==3.5.4
 djangorestframework-gis
 djangorestframework-csv
 djangorestframework-yaml
@@ -32,7 +32,7 @@ dynamic-rest
 markdown
 django-filter==1.0.1
 django-rest-swagger
-coreapi==2.1.1
+coreapi==2.2.4
 coreapi-cli
 pypandoc
 # graphene-django>=1.0  # doesn't do spatial yet

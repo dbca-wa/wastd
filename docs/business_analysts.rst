@@ -4,12 +4,30 @@ Business Analysts
 This chapter draws the big picture of the turtle data ecosystem
 by presenting business, functional and stakeholders' requirements as readable use cases.
 
-We apply IBM's
-`simple pattern for requirements analysis <https://www.ibm.com/developerworks/architecture/library/ar-analpat/ar-analpat-pdf.pdf>`_
+We apply IBM's `simple pattern for requirements analysis
+<https://www.ibm.com/developerworks/architecture/library/ar-analpat/ar-analpat-pdf.pdf>`_
 to structure the problem space into business processes (stranding, tagging, and
 track/nest count) and IT processes (for each business process: data capture,
 data QA and curation, data analysis). Legacy systems and their ties to the current
 implementation (WAStD) are discussed as well.
+
+Non-functional requirements
+===========================
+The turtle monitoring program will periodically re-evaluate projects, delivery,
+priorities, and even the target outcomes. This will cause requirements at the
+level discussed here to evolve and change over time.
+
+REQ The solution architecture shall allow an evolution of components and functionality.
+
+REQ The solution technology must be supported by DPaW OIM.
+
+REQ The solution technology must be within the skill range of the primary maintainer (FM).
+
+REQ (SFo) WAStD surveys should allow attachments (datasheets containing multiple
+records so we avoid duplicate attachments to individual records) as well as
+comments (e.g. climatic / environmental conditions or systematic errors in
+methodology impacting data capture / validity / changing assumptions,
+e.g. tracks blown away before capture leading to undersampling).
 
 Business Process Turtle Strandings
 ==================================
@@ -486,6 +504,9 @@ such as BioSys or WAStD are required.
 
 Business Process Turtle Tracks
 ==============================
+Turtle tracks are evidence of nesting activity. Tracks and taggings together
+form a complete picture of a nesting beach.
+
 IT process Turtle track and nest count
 --------------------------------------
 See :ref:`data-capture-tracks` for digital data capture of tracks and nests,
@@ -545,7 +566,9 @@ Links:
 * Ningaloo Turtle Program `homepage <http://www.ningalooturtles.org.au/>`_
 * `Code repository <https://github.com/parksandwildlife/turtle-scripts/>`_
 
-**Note** Data sheets and field guide are being updated at the moment.
+.. image:: https://www.lucidchart.com/publicSegments/view/f64d33a0-bcf4-4dd5-80c6-3204f1925aed/image.png
+     :target: internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data
+     :alt: Ningaloo turtle program data management
 
 The Ningaloo Turtle Program (NTP) database consists of an MS Access database
 and frontend. Volunteers conduct track count surveys, enter data, and curate
@@ -554,6 +577,17 @@ the database.
 Use case: Track data collection
 -------------------------------
 **TODO** expand
+req PB: minimise data entry, a/d barrier crossings, handling steps
+req PB: internet speed is very slow in Exmouth. online transactions have to be async or minimised
+reduce double handling at data entry, digital data capture
+be able to add new surveyed sites and times, opportunistic sightings, independent of pre-configured exp design
+need access to other places' turtle data
+lots of data in different places, need data in one place
+need clear data sharing policies, licences
+all data should be as open as possible after mitigating data sensitivities
+KM: digital capture if data is compatible and legacy data can be migrated
+KM: NTP database is outdated and requires upgrade, no local capability available to maintain / upgrade
+
 
 Use case: Track data analysis
 -----------------------------
@@ -639,3 +673,36 @@ Proofreading and curation requires trained core staff and cannot be outsourced.
 
 REQ The business owner shall provide sufficient staff time and resources for
 documentation, training, data entry, proofreading and curation.
+
+Business Process Annual Reporting
+=================================
+
+IT process data analysis and visualisation
+------------------------------------------
+REQ DA and DV must be automated and reproducible. Data must be pulled from the
+point of truth (database), and a snapshot of the data used in the analysis must,
+together with the analytical script, be uploaded to the internal data catalogue.
+
+REQ Data products (e.g. figures and maps), utilised data (snapshots), and scripts
+must be discoverable and accessible, and well documented with metadata.
+
+REQ The turtle group must be trained, and willing to be trained, in the use of
+the chosen analytical procedures.
+
+REQ Analytical procedures shall require as little effort to re-run (with current
+data) from the operator (turtle group members) as possible.
+
+REQ Analytical procedures must be provided with sufficient documentation,
+training resources, and ongoing support to allow efficient engagement
+of turtle group members with data analysis and reporting.
+
+IT process reporting
+--------------------
+REQ Reporting must be collaboratively authored, version-controlled, data-driven
+and provide a clear separation of structure, content and layout.
+
+REQ The turtle group must be trained in the use of the chosen reporting framework.
+
+REQ Reporting framework procedures must be provided with sufficient
+documentation, training resources, and ongoing support to allow efficient
+engagement of turtle group members with data analysis and reporting.
