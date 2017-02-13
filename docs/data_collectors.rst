@@ -163,8 +163,7 @@ Look for both tracks (crossing your path) and nests (may be inland).
   do not mark the record as "finalized". This gives the field supervisors a
   chance to review and possibly determine nesting success
   (based on the photo taken) before uploading.
-* Record the location of the nest, or (if no nest found) the outbound track at
-  the high water mark.
+* Record the location of the nest, or (if no nest found) the track apex.
 
 **Nest** choose whether nest is unhatched (no shells) or hatched (shells).
 
