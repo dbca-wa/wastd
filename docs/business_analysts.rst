@@ -409,6 +409,15 @@ turtles are part of this scope.
 
 :ref:`data-analysis-animal-life-cycle` illustrates M-C-R analysis.
 
+REQ The system could maintain the location and processing status of samples
+taken from a tagged (or stranded) turtle.
+
+Use cases:
+
+* Where is sample S1234 at the moment? Who is in possession of the sample? How
+  can I contact them?
+* Has the sample been analysed? Where is the data?
+* Is there any tissue left from that sample to analyse? How much?
 
 Legacy system: WAMTRAM 2
 ------------------------
@@ -528,6 +537,27 @@ CSV and GeoJSON files, and uploads them to the NTP
 The workbook can be extended to also upload the data into WAStD's API.
 
 
+IT process Aerial imagery track count
+-------------------------------------
+Aerial imagery:
+
+* Survey Nov 2014
+* Survey Nov 2016
+
+Methodology and data ingestion in development. Currently: fresh tracks, success
+not assessed, at high tide. Only species is assessed if evident.
+
+UI mockup: view mosaic, clicking each track (protocol: on high water mark)
+opens dialog with buttons for each species
+choice, clicking any species choice saves feature and closes dialog.
+Auto-set "observed by" and "recorded by" to current user's DPaW username.
+
+Data shall be ingested to WAStD. Ingestion should be scripted, but does not need
+to be real time, as these surveys happen too seldomly.
+
+How to handle multiple analysis of same beach? This would be useful for analysis
+of observer bias.
+
 IT process Turtle track and nest count analysis
 -----------------------------------------------
 Fundamentally, the same process as in turtle stranding analysis applies.
@@ -576,22 +606,63 @@ the database.
 
 Use case: Track data collection
 -------------------------------
-**TODO** expand
-req PB: minimise data entry, a/d barrier crossings, handling steps
-req PB: internet speed is very slow in Exmouth. online transactions have to be async or minimised
-reduce double handling at data entry, digital data capture
-be able to add new surveyed sites and times, opportunistic sightings, independent of pre-configured exp design
-need access to other places' turtle data
-lots of data in different places, need data in one place
-need clear data sharing policies, licences
-all data should be as open as possible after mitigating data sensitivities
-KM: digital capture if data is compatible and legacy data can be migrated
-KM: NTP database is outdated and requires upgrade, no local capability available to maintain / upgrade
+The current implementation is shown in the figure above.
+
+Volunteers are trained by the NTP Coordinator and, following the NTP field manual,
+collect turtle track data on paper data forms. Geolocation is collected on
+GPS and digital cameras.
+
+The data collection methodology captures tracks with nest individually, but
+tracks without nests are only tallied. Predation is only recorded qualitatively.
+
+Other Volunteers digitise the paper forms, GPS and camera into the NTP Access db.
+This process is error-prone and resource-intensive.
+
+The NTP Coodinator QAs the data, but does not have the time resources to
+comprehensively proofread and compare data sheets vs entered data.
+
+The NTP Coordinator exports data on demand.
+
+The NTP Coordinator and the Ningaloo Marine Park Coodinator (MPC) create data
+products (figures and tables) and write, or contribute, to several recurring
+reports.
+
+From MPC and NTP Coodinator:
+
+REQ Minimise data entry, a/d barrier crossings, handling steps, reduce double
+handling at data entry, prefer digital data capture.
+
+REQ Internet speed is very slow in Exmouth. Online transactions have to be async
+or minimised.
+
+REQ be able to record at new surveyed sites and times, opportunistic sightings,
+independent of pre-configured exp design.
+
+REQ MPC and NTP Coordinator need access to other places' turtle data.
+
+REQ need data in one place.
+
+REQ Need clear data sharing policies, licences.
+
+REQ All data should be as open as possible after mitigating data sensitivities.
+
+REQ KM: digital capture would be preferred if data is compatible and legacy data can
+be migrated.
+
+REQ KM: NTP database is outdated and requires upgrade, no local capability available
+to maintain / upgrade.
+
+REQ Have the analysis script automated in a literate programming paradigm.
 
 
 Use case: Track data analysis
 -----------------------------
-**TODO** expand
+Known required analytical products:
+
+* nesting success
+* hatching / emergence success
+* spatial distribution, patterns, change of patterns (temporal patterns)
+* modelling: optimal monitoring from beginning / peak / end of hatching
 
 
 Non-functional requirements
