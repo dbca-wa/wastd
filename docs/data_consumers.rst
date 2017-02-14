@@ -91,6 +91,8 @@ building the desired API query. To learn more about the API, read on.
 .. _data-consumers-api:
 For machines: API
 =================
+**Note** This section is being re-written, as the API is being fine-tuned.
+
 This section will document the application programming interface (API).
 
 The API aims to serve programmers to batch-upload data,
@@ -109,30 +111,49 @@ Working examples:
 * Reading all Animal Observations into a data.frame in R
 * Uploading one Animal Observation from R and Python
 
-The following examples will only work for DPaW staff, as the API sits behind
-the Departmental Single-Sign-On authentication.
+The following examples will only work on the DPaW intranet, as the API sits behind
+the Departmental firewall (intranet only) until the Single-Sign-On authentication
+will work without browsers.
 
-First code example::
+API > JSON > table
+------------------
+To get started, clone the turtle script `Github repo
+<https://github.com/parksandwildlife/turtle-scripts>`_ in your
+`RStudio Server <https://rstudio.dpaw.wa.gov.au/>`_.
 
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv
+The workbooks show real-life use cases of downloading data as JSON from the API,
+transforming the nested document structure into flat table structures.
 
-This API call will download all AnimalEncounters as flat CSV file.
-Nested relationships (e.g. all Observation subgroups) are represented as prefix
-to column names.
+
+
+.. First code example::
+..
+..     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv
+..
+.. This API call will download all AnimalEncounters as flat CSV file. Currently,
+.. that CSV file is really weird. We've got a team of highly trained monkeys working
+.. on a fix.
+.. Nested relationships (e.g. all Observation subgroups) are represented as prefix
+.. to column names.
+
+
+API parameters
+--------------
+This section shows examples of filtering data server-side through URL parameters.
 
 All stranding encounters (anything that's not "alive and healthy") as web page,
-JSON, or CSV (will download)::
+JSON::
 
     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health!=alive
     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health!=alive
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health!=alive
+.. https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health!=alive
 
 All tagging encounters (anything that's exactly "alive and healthy") as web page,
 JSON, or CSV::
 
     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health=alive
     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health=alive
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health=alive
+.. https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health=alive
 
 The known history of a flipper tag::
 

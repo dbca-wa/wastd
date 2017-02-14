@@ -11,24 +11,6 @@ track/nest count) and IT processes (for each business process: data capture,
 data QA and curation, data analysis). Legacy systems and their ties to the current
 implementation (WAStD) are discussed as well.
 
-Non-functional requirements
-===========================
-The turtle monitoring program will periodically re-evaluate projects, delivery,
-priorities, and even the target outcomes. This will cause requirements at the
-level discussed here to evolve and change over time.
-
-REQ The solution architecture shall allow an evolution of components and functionality.
-
-REQ The solution technology must be supported by DPaW OIM.
-
-REQ The solution technology must be within the skill range of the primary maintainer (FM).
-
-REQ (SFo) WAStD surveys should allow attachments (datasheets containing multiple
-records so we avoid duplicate attachments to individual records) as well as
-comments (e.g. climatic / environmental conditions or systematic errors in
-methodology impacting data capture / validity / changing assumptions,
-e.g. tracks blown away before capture leading to undersampling).
-
 Business Process Turtle Strandings
 ==================================
 This business process was the first information management challenge to solve,
@@ -744,6 +726,30 @@ Proofreading and curation requires trained core staff and cannot be outsourced.
 
 REQ The business owner shall provide sufficient staff time and resources for
 documentation, training, data entry, proofreading and curation.
+
+The turtle monitoring program will periodically re-evaluate projects, delivery,
+priorities, and even the target outcomes. This will cause requirements at the
+level discussed here to evolve and change over time.
+
+REQ The solution architecture shall allow an evolution of components ande so functionality.
+
+REQ The solution technology must be supported by DPaW OIM.
+
+REQ The solution technology must be within the skill range of the primary maintainer (FM).
+
+REQ (SFo) WAStD surveys should allow attachments (datasheets containing multiple
+records so we avoid duplicate attachments to individual records) as well as
+comments (e.g. climatic / environmental conditions or systematic errors in
+methodology impacting data capture / validity / changing assumptions,
+e.g. tracks blown away before capture leading to undersampling).
+
+REQ The solution shall be open source under an open license.
+
+REQ All requirements shall be translated completely into functional requirements,
+and have 100% test coverage.
+
+REQ The solution shall, if the technology allows, implement continuous
+integration and testing as well as continuous deployment.
 
 Business Process Annual Reporting
 =================================
