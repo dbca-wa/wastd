@@ -19,7 +19,7 @@ from rest_framework.authtoken import views as drf_authviews
 # from wastd.schema import schema
 
 from wastd.api import router  # , sync_route
-from wastd.observations.models import Area, Encounter
+from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
     schema_view, update_names, EncounterTableView, AnimalEncounterTableView)
 
@@ -81,7 +81,7 @@ urlpatterns = [
     # Encounter as tiled GeoJSON
     url(r'^data/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
         TiledGeoJSONLayerView.as_view(
-            model=Encounter,
+            model=AnimalEncounter,
             properties=('as_html', 'leaflet_title', 'leaflet_icon', 'leaflet_colour'),
             geometry_field="where"),
         name='encounter-tiled-geojson'),

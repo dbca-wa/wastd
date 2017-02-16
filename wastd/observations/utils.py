@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Observation untilities."""
+import csv
 from datetime import datetime
 import json
 import os
@@ -1252,13 +1253,17 @@ def import_one_record_tt05(r, m):
     print(msg.format(created, t))
 
 
-def import_odk(jsonfile, flavour="odk-trackortreat-026"):
+def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
     """Import ODK Track Count 0.10 data.
 
     Arguments
 
-    jsonfile A filepath to the JSON exported from ODK Aggregate
+    datafile A filepath to the JSON exported from ODK Aggregate
     flavour The ODK form with version
+
+    flavour A string indicating the type of input
+
+    extradata A second datafile (tags for WAMTRAM)
 
     Preparation:
 
@@ -1280,9 +1285,6 @@ def import_odk(jsonfile, flavour="odk-trackortreat-026"):
         >>> json_file = os.path.join(settings.STATIC_ROOT, 'data', 'TrackCount_0_10_results.json')
         >>> import_odk(json_file)
     """
-    with open(jsonfile) as df:
-        d = json.load(df)
-        print("Loaded {0} records from {1}".format(len(d), jsonfile))
 
     # generate a fresh mapping... once
     ODK_MAPPING = {
@@ -1341,6 +1343,9 @@ def import_odk(jsonfile, flavour="odk-trackortreat-026"):
 
     if flavour == "odk-trackcount-010":
         print("Using flavour ODK Track Count 0.10...")
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), jsonfile))
 
         # Download photos
         pt = [[r["instanceID"],
@@ -1364,6 +1369,9 @@ def import_odk(jsonfile, flavour="odk-trackortreat-026"):
 
     elif flavour == "odk-trackortreat-026":
         print("Using flavour ODK Track or Treat 0.26...")
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), jsonfile))
 
         # Download photos
         ptr = [[r["instanceID"],
@@ -1395,7 +1403,26 @@ def import_odk(jsonfile, flavour="odk-trackortreat-026"):
 
     elif flavour == "odk-tracktally-05":
         print("Using flavour ODK Track Tally 0.5...")
-        import_one_record_tt05
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), jsonfile))
         [import_one_record_tt05(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
+
+    elif flavour == "cet":
+        print("Using flavour Cetacean strandings...")
+
+        print("not impemented yet")
+
+    elif flavour == "wamtram":
+        print("Using flavour WAMTRAM...")
+        enc = csv.DictReader(open(datafile))
+        tags = csv.DictReader(open(extradata))
+
+        print("not impemented yet")
+        # [import_one_encounter_wamtram(e, ODK_MAPPING) for e in enc]
+        # [import_one_tag_wamtram(t, ODK_MAPPING) for t in tags]
+
+    else:
+        print("Format not recognized. Exiting.")
