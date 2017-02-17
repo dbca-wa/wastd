@@ -1253,6 +1253,125 @@ def import_one_record_tt05(r, m):
     print(msg.format(created, t))
 
 
+#------------------------------------------------------------------------------#
+# WAMTRAM
+#
+def import_one_encounter_wamtram(r, m):
+    """Import one ODK Track Tally 0.5 record into WAStD.
+
+    Notably, counts of "None" are true absences and will be converted to "0".
+
+    Arguments
+
+    r The record as dict, e.g.
+
+    {'ACTION_TAKEN': 'NA',
+    'ALIVE': 'Y',
+    'BEACH_POSITION_CODE': 'A',
+    'CC_LENGTH_Not_Measured': '0',
+    'CC_NOTCH_LENGTH_Not_Measured': '1',
+    'CC_WIDTH_Not_Measured': '0',
+    'CLUTCH_COMPLETED': 'N',
+    'COMMENTS': 'PTT: #103225-11858',
+    'COMMENT_FROMRECORDEDTAGSTABLE': 'PTT',
+    'CONDITION_CODE': 'NA',
+    'DATE_ENTERED': '2010-12-20 00:00:00',
+    'DATUM_CODE': 'WGS84',
+    'DidNotCheckForInjury': '0',
+    'EASTING': 'NA',
+    'EGG_COUNT_METHOD': 'NA',
+    'ENTERED_BY': 'NA',
+    'ENTERED_BY_PERSON_ID': '3537',
+    'ENTRY_BATCH_ID': '301',
+    'LATITUDE': '-21.46315',
+    'LATITUDE_DEGREES': 'NA',
+    'LATITUDE_MINUTES': 'NA',
+    'LATITUDE_SECONDS': 'NA',
+    'LONGITUDE': '115.01963',
+    'LONGITUDE': '115.01963',
+    'LONGITUDE_DEGREES': 'NA',
+    'LONGITUDE_MINUTES': 'NA',
+    'LONGITUDE_SECONDS': 'NA',
+    'MEASUREMENTS': 'Y',
+    'MEASURER_PERSON_ID': '623',
+    'MEASURER_REPORTER_PERSON_ID': '3826',
+    'Mund': '0',
+    'NESTING': 'Y',
+    'NORTHING': 'NA',
+    'NUMBER_OF_EGGS': 'NA',
+    'OBSERVATION_ID': '211465',
+    'OBSERVATION_STATUS': 'Initial Nesting',
+    'ORIGINAL_OBSERVATION_ID': 'NA',
+    'OTHER_TAGS': '103225-11858  PENV URS',
+    'OTHER_TAGS_IDENTIFICATION_TYPE': 'PTT',
+    'PLACE_CODE': 'THEE',
+    'PLACE_DESCRIPTION': 'NA',
+    'REPORTER_PERSON_ID': '3826',
+    'SCARS_LEFT': '0',
+    'SCARS_LEFT_SCALE_1': '0',
+    'SCARS_LEFT_SCALE_2': '0',
+    'SCARS_LEFT_SCALE_3': '0',
+    'SCARS_RIGHT': '0',
+    'SCARS_RIGHT_SCALE_1': '0',
+    'SCARS_RIGHT_SCALE_2': '0',
+    'SCARS_RIGHT_SCALE_3': '0',
+    'TAGGER_PERSON_ID': '623',
+    'TURTLE_ID': '55742',
+    'TagScarNotChecked': '0',
+    'TransferID': 'NA',
+    'ZONE': 'NA',
+    'activity_code': 'I',
+    'activity_description': 'Returning to water - Nesting',
+    'activity_is_nesting': 'Y',
+    'activity_label': 'Returning To Water',
+    'display_this_observation': '1',
+    'observation_datetime_gmt08': '2010-12-12 00:55:00',
+    'observation_datetime_utc': '2010-12-11 16:55:00'}
+
+    m The ODK_MAPPING
+
+    Returns
+
+    The created encounter, e.g.
+    {'activity': u'na',
+    'behaviour': u'',
+    'cause_of_death': u'na',
+    'cause_of_death_confidence': u'na',
+    'checked_for_flipper_tags': u'na',
+    'checked_for_injuries': u'na',
+    'encounter_ptr_id': 2574,
+    'encounter_type': u'stranding',
+    'habitat': u'na',
+    'health': u'dead-edible',
+    'id': 2574,
+    'location_accuracy': u'1000',
+    'maturity': u'adult',
+    'name': None,
+    'observer_id': 1,
+    'polymorphic_ctype_id': 17,
+    'reporter_id': 5,
+    'scanned_for_pit_tags': u'na',
+    'sex': u'na',
+    'site_visit_id': None,
+    'source': u'direct',
+    'source_id': u'2017-02-03-10-35-00-112-3242-25-5623-dead-edible-adult-na-dugong-dugon',
+    'species': u'dugong-dugon',
+    'status': u'new',
+    'taxon': u'Sirenia',
+    'when': datetime.datetime(2017, 2, 3, 2, 35, tzinfo=<UTC>),
+    'where': <Point object at 0x7f16854fb400>}
+
+    Point(float(r["LONGITUDE"]), float(r["LATITUDE"]))
+    """
+    print("Import one WAMTRAM...")
+    pprint(r)
+
+    print("Done.")
+
+
+#------------------------------------------------------------------------------#
+# Main import call
+#
 def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
     """Import ODK Track Count 0.10 data.
 
@@ -1327,10 +1446,6 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
         "disturbance_severity": map_values(
             TurtleNestDisturbanceObservation.NEST_VIABILITY_CHOICES),
 
-        # some have to be guessed
-        "users": {u: guess_user(u) for u in set([r["reporter"] for r in d])},
-        "keep":  [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")],
         "overwrite": [t.source_id for t in Encounter.objects.filter(
             source="odk", status=Encounter.STATUS_NEW)]
         }
@@ -1345,7 +1460,10 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
         print("Using flavour ODK Track Count 0.10...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), jsonfile))
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="odk")]
 
         # Download photos
         pt = [[r["instanceID"],
@@ -1371,7 +1489,10 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
         print("Using flavour ODK Track or Treat 0.26...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), jsonfile))
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="odk")]
 
         # Download photos
         ptr = [[r["instanceID"],
@@ -1405,23 +1526,36 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
         print("Using flavour ODK Track Tally 0.5...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), jsonfile))
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="odk")]
+
         [import_one_record_tt05(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 
     elif flavour == "cet":
         print("Using flavour Cetacean strandings...")
+        # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="cet")]
 
         print("not impemented yet")
 
     elif flavour == "wamtram":
         print("Using flavour WAMTRAM...")
         enc = csv.DictReader(open(datafile))
-        tags = csv.DictReader(open(extradata))
+
+        # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="wamtram")]
 
         print("not impemented yet")
-        # [import_one_encounter_wamtram(e, ODK_MAPPING) for e in enc]
+        [import_one_encounter_wamtram(e, ODK_MAPPING) for e in enc]
+
+        # if extradata:
+        #   tags = csv.DictReader(open(extradata))
         # [import_one_tag_wamtram(t, ODK_MAPPING) for t in tags]
 
     else:

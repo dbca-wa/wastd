@@ -766,7 +766,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ("wamtram", _("WAMTRAM 2 tagging DB")),
         ("ntp-exmouth", _("NTP Access DB Exmouth")),
         ("ntp-broome", _("NTP Access DB Broome")),
-
+        ("cet", _("Cetacean and Pinniped strandings DB")),
         )
 
     ENCOUNTER_STRANDING = 'stranding'
