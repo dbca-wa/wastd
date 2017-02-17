@@ -156,7 +156,6 @@ TURTLE_SPECIES_CHOICES = (
     # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
     # Natator depressus x Caretta caretta (Hybrid turtle)
     # Natator depressus x Chelonia mydas (Hybrid turtle)
-    # dolphins
     )
 CETACEAN_SPECIES_CHOICES = (
     # dolphins
@@ -177,7 +176,7 @@ CETACEAN_SPECIES_CHOICES = (
     ("unidentified-dolphin", "Unidentified dolphin"),
     # whales
     ("Balaenoptera acutorostrata", "Balaenoptera acutorostrata (Dwarf minke whale)"),
-    ("Balaenoptera bonaerensis", "Balaenoptera bonaerensis (Antarctic minke whale)<"),
+    ("Balaenoptera bonaerensis", "Balaenoptera bonaerensis (Antarctic minke whale)"),
     ("Balaenoptera borealis", "Balaenoptera borealis (Sei whale)"),
     ("Balaenoptera edeni", "Balaenoptera edeni (Bryde's whale)"),
     ("Balaenoptera musculus", "Balaenoptera musculus (Blue whale)"),
@@ -205,28 +204,28 @@ CETACEAN_SPECIES_CHOICES = (
     ("unidentified-whale", "Unidentified whale"), )
 
 SEASNAKE_SPECIES_CHOICES = (
-    ("hydrophiinae-subfam", "Hydrophiinae subfam. (Sea snakes and kraits)"),
-    ("acalyptophis-sp", "Acalyptophis sp. (Horned sea snake)"),
-    ("aipysurus-sp", "Aipysurus sp. (Olive sea snake)"),
-    ("astrotia-sp", "Astrotia sp. (Stokes' sea snake)"),
-    ("emydocephalus-sp", "Emydocephalus sp. (Turtlehead sea snake)"),
-    ("enhydrina-sp", "Enhydrina sp. (Beaked sea snake)"),
-    ("ephalophis-sp", "Ephalophis sp. (Grey's mudsnake)"),
-    ("hydrelaps-sp", "Hydrelaps sp. (Port Darwin mudsnake)"),
-    ("hydrophis-sp", "Hydrophis sp. (sea snake)"),
-    ("kerilia-sp", "Kerilia sp. (Jerdon's sea snake)"),
-    ("kolpophis-sp", "Kolpophis sp. (bighead sea snake)"),
-    ("lapemis-sp", "Lapemis sp. (Shaw's sea snake)"),
-    ("laticauda-sp", "Laticauda sp. (Sea krait)"),
-    ("parahydrophis-sp", "Parahydrophis (Northern mangrove sea snake)"),
-    ("parapistocalamus-sp", "Parapistocalamus sp. (Hediger's snake)"),
-    ("pelamis-sp", "Pelamis sp. (Yellow-bellied sea snake)"),
-    ("praescutata-sp", "Praescutata sp. (Sea snake)"),
-    ("thalassophis-sp", "Thalassophis sp. (Sea snake)"),
+    ("Hydrophiinae subfam.", "Hydrophiinae subfam. (Sea snakes and kraits)"),
+    ("Acalyptophis sp.", "Acalyptophis sp. (Horned sea snake)"),
+    ("Aipysurus sp.", "Aipysurus sp. (Olive sea snake)"),
+    ("Astrotia sp.", "Astrotia sp. (Stokes' sea snake)"),
+    ("Emydocephalus sp.", "Emydocephalus sp. (Turtlehead sea snake)"),
+    ("Enhydrina sp.", "Enhydrina sp. (Beaked sea snake)"),
+    ("Ephalophis sp.", "Ephalophis sp. (Grey's mudsnake)"),
+    ("Hydrelaps sp.", "Hydrelaps sp. (Port Darwin mudsnake)"),
+    ("Hydrophis sp.", "Hydrophis sp. (sea snake)"),
+    ("Kerilia sp.", "Kerilia sp. (Jerdon's sea snake)"),
+    ("Kolpophis sp.", "Kolpophis sp. (bighead sea snake)"),
+    ("Lapemis sp.", "Lapemis sp. (Shaw's sea snake)"),
+    ("Laticauda sp.", "Laticauda sp. (Sea krait)"),
+    ("Parahydrophis sp.", "Parahydrophis (Northern mangrove sea snake)"),
+    ("Parapistocalamus sp.", "Parapistocalamus sp. (Hediger's snake)"),
+    ("Pelamis sp.", "Pelamis sp. (Yellow-bellied sea snake)"),
+    ("Praescutata sp.", "Praescutata sp. (Sea snake)"),
+    ("Thalassophis sp.", "Thalassophis sp. (Sea snake)"),
     )
 
 SIRENIA_CHOICES = (
-    ("dugong-dugon", "Dugong dugon (Dugong)"),
+    ("Dugong dugon", "Dugong dugon (Dugong)"),
     )
 
 SPECIES_CHOICES = NA +\
@@ -441,10 +440,10 @@ NEST_AGE_CHOICES = (
 
 NEST_TYPE_DEFAULT = "track-not-assessed"
 NEST_TYPE_CHOICES = (
+    ("track-not-assessed", "track, not checked for nest"),
     ("false-crawl", "track without nest"),
     ("successful-crawl", "track with nest"),
     ("track-unsure", "track, checked for nest, unsure if nest"),
-    ("track-not-assessed", "track, not checked for nest"),
     ("nest", "nest, unhatched, no track"),         # egg counts, putting eggs back
     ("hatched-nest", "nest, hatched"),   # hatching and emergence success
     ("body-pit", "body pit, no track"),
