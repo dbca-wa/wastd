@@ -1611,6 +1611,86 @@ def import_one_encounter_wamtram(r, m):
 
     print("Done.")
 
+#------------------------------------------------------------------------------#
+# Cetacean strandings database (Filemaker Pro)
+def import_one_record_cet(r, m):
+    """Import one Cetacean strandings database record into WAStD.
+
+    The Filemaker Pro db is exported to CSV, and read here as csv.DictReader.
+    This method imports one DictReader.next() record.
+
+    Arguments
+
+    r The record as dict, e.g.
+
+    {'A': '',
+    'Admin comment': '',
+    'Age': 'J',
+    'Ailment_injury comment': '',
+    'Attachment': '',
+    'Boat_Ship Strike': '',
+    'C': '1',
+    'Carcass Location_Fate': 'Buried 300m NE of Doungup Park cut in dunes. See map on file.',
+    'Cause of Death _drop down_': 'Euthanasia - firearm',
+    'Comments': '',
+    'Common Name': 'Minke Whale',
+    'Condition comments': '',
+    'Condition when found': 'Live',
+    'Cow_calf pair Stranding': '',
+    'DPaW Attended': '',
+    'Date': '27/07/82',
+    'Dead Stranding': '',
+    'Demographic comment': '',
+    'El Nino': '',
+    'Entanglement': '',
+    'Entanglement gear': '',
+    'Entanglement gear details': '',
+    'Event': 'Single Stranding\nLive Stranding',
+    'F': '1',
+    'Fate': '',
+    'File Number': '025298F3803',
+    'Floating carcass': '',
+    'Heavy Metals': '',
+    'ID': '',
+    'Lat': '-33.4886',
+    'Length _m_': '3.98',
+    'Live Stranding': 'Yes',
+    'Location': 'Doungup Park',
+    'Long': '115.5406 ',
+    'M': '',
+    'Mass Stranding': '',
+
+    'Moon Phase': '',
+    'Near River': '',
+    'Number of animals': '1',
+    'Outcome': 'Euthanased',
+    'PCB': '',
+    'PM Report location': '',
+    'Photos taken': 'Yes',
+    'Post Mortem': 'Yes',
+    'Post mortem report summary': 'Cause of death - Haemorrhagic gastroenteritis',
+    'Record No.': '1',
+    'Rescue info': '',
+    'SA': '',
+    'Sampling comments': '',
+    'Scientific Name': 'Balaenoptera acutorostrata',
+    'Single Stranding': 'Yes',
+    'Site': 'Doungup Park beach, 20km SW of Bunbury, 8 km from Capel.',
+    'U': '',
+    'Weight _kg_': '',
+    '_U': '',
+    'latdeg': '33',
+    'latmin': '29',
+    'latsec': '19',
+    'longdeg': '115',
+    'longmin': '32',
+    'longsec': '26'}
+
+    m The ODK_MAPPING
+    """
+    print("FAKE Creating one AnimalEncounter from Cetacean Stranding")
+    pprint(r)
+    print("done")
 
 #------------------------------------------------------------------------------#
 # Main import call
@@ -1822,18 +1902,29 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
         ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="cet")]
 
+        enc = csv.DictReader(open(datafile))
+
+        [import_one_record_cet(e, ODK_MAPPING) for e in enc
+         if e["Record No."] not in ODK_MAPPING["keep"]]
+
+    elif flavour == "pin":
+        print("Using flavour Pinniped strandings...")
+        # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="pin")]
+        enc = csv.DictReader(open(datafile))
         print("not impemented yet")
 
-    elif flavour == "wamtram":
-        print("Using flavour WAMTRAM...")
+    elif flavour == "w2":
+        print("ALL ABOARD THE WAMTRAM!!!")
         enc = csv.DictReader(open(datafile))
 
         # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
         ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="wamtram")]
 
-        print("not impemented yet")
-        [import_one_encounter_wamtram(e, ODK_MAPPING) for e in enc]
+        [import_one_encounter_wamtram(e, ODK_MAPPING) for e in enc
+         if e["OBSERVATION_ID"] not in ODK_MAPPING["keep"]]
 
         # if extradata:
         #   tags = csv.DictReader(open(extradata))
