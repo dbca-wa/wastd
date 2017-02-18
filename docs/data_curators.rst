@@ -311,6 +311,30 @@ Create a `new LoggerEncounter <https://strandings.dpaw.wa.gov.au/admin/observati
 * If logger was deployed, resighted, or retrieved, add one "Temperature logger deployment" section.
 * If logger was downloaded, add one Media attachment for each downloaded file and attach the file.
 
+====================
+Data upload from ODK
+====================
+This section documents how to ingest data from digital data collection forms.
+ODK forms are undergoing improvements, and therefore are versioned.
+
+On the ODK Aggregate server, the administrator opens the "Submissions > Filter
+submissios" tab and selects "Export" to "JSON". Under "Exported submissions",
+the administrator downloads the JSON file (once ready).
+
+On the production server, the application maintainer transfers the downloaded
+JSON file to the "wastd/data" folder and runs::
+
+    fab shell
+    from wastd.observations.utils import *
+    import_odk('data/TrackCount_0_10_results.json', flavour="odk-tc010")
+    import_odk('data/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
+    import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
+
+This process contains three manual steps, which at the current rate of evolution
+of forms and corresponding import routines poses the most efficient solution.
+
+The downloaded JSON files contain all data (excluding images, which are linked
+via URLs) and pose (with the exception of images) an additional backup.
 
 =======
 Data QA
