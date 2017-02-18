@@ -330,11 +330,12 @@ JSON file to the "wastd/data" folder and runs::
     import_odk('data/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
     import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
 
-This process contains three manual steps, which at the current rate of evolution
-of forms and corresponding import routines poses the most efficient solution.
+This process contains three manual steps for each form,
+which at the current churn rate of forms (and corresponding import routines)
+is the most efficient solution.
 
 The downloaded JSON files contain all data (excluding images, which are linked
-via URLs) and pose (with the exception of images) an additional backup.
+via URLs) and provide an additional backup.
 
 =======
 Data QA

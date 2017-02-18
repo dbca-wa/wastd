@@ -101,7 +101,6 @@ TAG_TYPE_CHOICES = (
     ('wa-museum-reptile-registration-number', 'WA Museum Natural History Reptiles Catalogue Registration Number'),  # WAMusR
     ('other', 'Other'),)
 
-
 TAG_STATUS_DEFAULT = 'resighted'
 TAG_STATUS_APPLIED_NEW = 'applied-new'
 TAG_STATUS_CHOICES = (                                          # TRT_TAG_STATES

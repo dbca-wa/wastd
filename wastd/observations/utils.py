@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Observation untilities."""
 import csv
-from datetime import datetime
+from dateutil import parser
 import json
 import os
 from pprint import pprint
@@ -23,7 +23,8 @@ from wastd.observations.models import (
     TurtleNestDisturbanceTallyObservation, TrackTallyObservation,
     HatchlingMorphometricObservation,
     NEST_AGE_CHOICES, NEST_TYPE_CHOICES, OBSERVATION_CHOICES,
-    NEST_DAMAGE_CHOICES, CONFIDENCE_CHOICES, TAG_STATUS_CHOICES
+    NEST_DAMAGE_CHOICES, CONFIDENCE_CHOICES, TAG_STATUS_CHOICES,
+    CETACEAN_SPECIES_CHOICES
     )
 
 
@@ -1659,7 +1660,6 @@ def import_one_record_cet(r, m):
     'Long': '115.5406 ',
     'M': '',
     'Mass Stranding': '',
-
     'Moon Phase': '',
     'Near River': '',
     'Number of animals': '1',
@@ -1687,15 +1687,146 @@ def import_one_record_cet(r, m):
     'longsec': '26'}
 
     m The ODK_MAPPING
+
+    species not in WAStD cetacean species
+
+
+    cause of death
+     'Birthing',
+     'Boat/ship strike',
+     'Complications from stranding',
+     'Disease/health',
+     'Drowning/misadventure',
+     'Entanglement',
+     'Euthanasia',
+     'Euthanasia - firearm',
+     'Euthanasia - firearm - SOP 17(1)',
+     'Euthanasia - implosion',
+     'Euthanasia - injection',
+     'Failure to thrive/dependant calf',
+     'Failure to thrive/dependent calf',
+     'Live stranding',
+     'Misadventure',
+     'Misadventure 13 died during event',
+     'Mixed fate group',
+     'Old age',
+     'PM report pending',
+     'Predatory attack',
+     'Predatory attack - Orca',
+     'Predatory attack - shark',
+     'Remote stranding - died',
+     'SEE Necropsy Report',
+     'Spear/gunshot',
+     'Starvation',
+     'Still born',
+     'Stingray barb',
+     'Stranding',
+     'Trauma',
+     'Under nourished',
+     'Unknown',
+     'Unkown',
+     'Weapon (gun, spear etc)'
+
+
+     Should create AnimalEncounter e.g.
+
+    'activity': u'na',
+    'behaviour': u'',
+    'cause_of_death': u'na',
+    'cause_of_death_confidence': u'na',
+    'checked_for_flipper_tags': u'na',
+    'checked_for_injuries': u'na',
+    'habitat': u'na',
+    'health': u'dead-edible',
+    'location_accuracy': u'1000',
+    'maturity': u'adult',
+    'name': None,
+    'observer_id': 1,
+    'reporter_id': 5,
+    'scanned_for_pit_tags': u'na',
+    'sex': u'na',
+    'source': u'cet',
+    'source_id': u'cet-1234',  # src_id
+    'species': u'dugong-dugon',
+    'taxon': u'Cetacea',
+    'when': datetime.datetime(2017, 2, 3, 2, 35, tzinfo=<UTC>),
+    'where': <Point object at 0x7fdede584b50>
+
     """
-    print("FAKE Creating one AnimalEncounter from Cetacean Stranding")
-    pprint(r)
+    print("Creating one AnimalEncounter from Cetacean Stranding")
+    # pprint(r)
+
+    # TODO this mapping needs QA
+    SPECIES = dict([[d[0], d[0]] for d in CETACEAN_SPECIES_CHOICES])
+    SPECIES.update({
+        '': 'unidentified-whale',
+        'Balaenoptera musculus ? brevicauda': 'Balaenoptera musculus brevicauda',
+        'Tasmacetus shepherdi ?': 'unidentified-dolphin',
+        'Mesoplodon bowdoini': 'Mesoplodon sp.',
+        'Mesoplodon mirus': 'Mesoplodon sp.',
+        'Balaenopter musculus brevicauda': 'Balaenoptera musculus brevicauda',
+        'Balaenoptera ? musculus ? brevicauda': 'Balaenoptera musculus brevicauda',
+        'Mesoplodon grayi': 'Mesoplodon sp.',
+        'Physeter macrocephalus ': 'Physeter macrocephalus',
+        'Orcaella heinsohni x ?': 'Orcaella heinsohni',
+        'Tursiops truncatus    ': 'Tursiops truncatus',
+        'Tursiops truncatus ': 'Tursiops truncatus',
+        'Sousa chinensis': 'Sousa sahulensis',
+        'Kogia simus': 'Kogia sima',
+        'Stenella  sp ? (coeruleoalba)': 'unidentified-dolphin',
+        'Caperea marginata': 'unidentified-dolphin',
+        'Balaenopters cf. B. omurai': 'Balaenoptera sp.',
+        'Mesoplodon hectori': 'Mesoplodon sp.',
+        'Berardius arnuxii': 'unidentified-dolphin',
+        'Mesoplodon grayi (?)': 'Mesoplodon sp.',
+        'Tasmacetus shepherdi': 'unidentified-dolphin',
+        'Mesoplodon sp': 'Mesoplodon sp.',
+        })
+
+    src_id = "cet-{0}".format(r["Record No."])
+
+    new_data = {
+        'when': parser.parse('{0} 12:00:00 +0800'.format(r["Date"])),
+        'where': Point(float(r["Long"] or 120), float(r["Lat"] or -35)),
+        'taxon': u'Cetacea',
+        'species': SPECIES[r["Scientific Name"] or ''],
+        'activity': u'na',  # TODO
+        'behaviour': u'',  # TODO
+        'cause_of_death': u'na',  # TODO
+        'cause_of_death_confidence': u'na',  # TODO
+        'checked_for_flipper_tags': u'na',  # TODO
+        'checked_for_injuries': u'na',  # TODO
+        'habitat': u'na',  # TODO
+        'health': u'dead-edible',  # TODO
+        'location_accuracy': u'10',
+        'maturity': u'adult',  # TODO
+        'name': None,  # TODO
+        'observer_id': 1,
+        'reporter_id': 1,
+        'scanned_for_pit_tags': u'na',  # TODO
+        'sex': u'na',  # TODO
+        'source': u'cet',
+        'source_id': src_id,
+        }
+    # check if src_id exists
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = AnimalEncounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = AnimalEncounter.objects.create(**new_data)
+
+    e.save()
+    pprint(e)
+
     print("done")
+
 
 #------------------------------------------------------------------------------#
 # Main import call
 #
-def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
+def import_odk(datafile, flavour="odk-tt031", extradata=None):
     """Import ODK Track Count 0.10 data.
 
     Arguments
@@ -1901,6 +2032,8 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
         # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
         ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="cet")]
+        ODK_MAPPING["overwrite"] = [t.source_id for t in Encounter.objects.filter(
+            source="cet", status=Encounter.STATUS_NEW)]
 
         enc = csv.DictReader(open(datafile))
 
