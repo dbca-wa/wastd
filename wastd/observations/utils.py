@@ -294,6 +294,47 @@ def handle_turtlenestdistobs(d, e, m):
 
     e.save()  # cache distobs in HTML
 
+def handle_turtlenestdistobs31(d, e):
+    """Get or create TurtleNestDisturbanceObservation.
+
+    Arguments
+
+    d A dictionary like
+        {
+            "disturbance_cause": "human",
+            "disturbance_cause_confidence": "expert-opinion",
+            "disturbance_severity": "na",
+            "photo_disturbance": {
+                "filename": "1479173301849.jpg",
+                "type": "image/jpeg",
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fdisturbanceobservation%5B%40ordinal%3D1%5D%2Fphoto_disturbance"
+            },
+            "comments": null
+        }
+    e The related TurtleNestEncounter (must exist)
+    """
+    dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(
+        encounter=e,
+        disturbance_cause=d["disturbance_cause"],
+        disturbance_cause_confidence=d["disturbance_cause_confidence"],
+        disturbance_severity=d["disturbance_severity"],
+        comments=d["comments"]
+        )
+    dd.save()
+    print("Turtle Nest Disturbance Obs {0}".format("created" if created else "found"))
+    pprint(dd)
+
+    if d["photo_disturbance"] is not None:
+        dl_photo(e.source_id,
+                 d["photo_disturbance"]["url"],
+                 d["photo_disturbance"]["filename"])
+        pdir = make_photo_foldername(e.source_id)
+        pname = os.path.join(pdir, d["photo_disturbance"]["filename"])
+        handle_photo(pname, e, title="Disturbance {0}".format(dd.disturbance_cause))
+    pprint(dd)
+
+    e.save()  # cache distobs in HTML
+
 
 def handle_turtlenestobs(d, e, m):
     """Get or create a TurtleNestObservation and related MediaAttachments.
@@ -336,6 +377,70 @@ def handle_turtlenestobs(d, e, m):
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
         nest_position=m["habitat"][d["habitat"]],
+        no_egg_shells=d["no_egg_shells"] or 0,
+        no_live_hatchlings=d["no_live_hatchlings"] or 0,
+        no_dead_hatchlings=d["no_dead_hatchlings"] or 0,
+        no_undeveloped_eggs=d["no_undeveloped_eggs"] or 0,
+        no_unhatched_eggs=d["no_unhatched_eggs"] or 0,
+        no_unhatched_term=d["no_unhatched_term"] or 0,
+        no_depredated_eggs=d["no_depredated_eggs"] or 0,
+        nest_depth_top=d["nest_depth_top"] or 0,
+        nest_depth_bottom=d["nest_depth_bottom"] or 0
+        )
+    dd.save()
+    print("TurtleNestObservation {0}".format("created" if created else "found"))
+    pprint(dd)
+
+    for idx, ep in enumerate(d["egg_photos"]):
+        dl_photo(e.source_id,
+                 ep["photo_eggs"]["url"],
+                 ep["photo_eggs"]["filename"])
+        pdir = make_photo_foldername(e.source_id)
+        pname = os.path.join(pdir, ep["photo_eggs"]["filename"])
+        handle_photo(pname, e, title="Egg photo {0}".format(idx + 1))
+
+    e.save()
+
+def handle_turtlenestobs31(d, e):
+    """Get or create a TurtleNestObservation and related MediaAttachments.
+
+    Arguments
+
+    d A dictionary containing at least:
+    {
+        "no_egg_shells": 120,
+        "no_live_hatchlings": 13,
+        "no_dead_hatchlings": 14,
+        "no_undeveloped_eggs": 15,
+        "no_unhatched_eggs": 16,
+        "no_unhatched_term": 17,
+        "no_depredated_eggs": 18,
+        "nest_depth_top": 19,
+        "nest_depth_bottom": 20,
+        "egg_photos": [
+            {
+                "photo_eggs": {
+                    "filename": "1485913363900.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D1%5D%2Fphoto_eggs"
+                }
+            },
+            {
+                "photo_eggs": {
+                    "filename": "1485913376020.jpg",
+                    "type": "image/jpeg",
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D2%5D%2Fphoto_eggs"
+                }
+            }
+        ],
+    }
+
+    e The related TurtleNestEncounter (must exist)
+    """
+
+    dd, created = TurtleNestObservation.objects.get_or_create(
+        encounter=e,
+        nest_position=d["habitat"],
         no_egg_shells=d["no_egg_shells"] or 0,
         no_live_hatchlings=d["no_live_hatchlings"] or 0,
         no_dead_hatchlings=d["no_dead_hatchlings"] or 0,
@@ -411,8 +516,58 @@ def handle_turtlenesttagobs(d, e, m):
 
     e.save()
 
+def handle_turtlenesttagobs31(d, e):
+    """Get or create a TagObservation and related MediaAttachments.
 
-def handle_hatchlingmorphometricobs(d, e, m):
+    Arguments
+
+    d A dictionary containing at least:
+    {
+        "status": "applied-new",
+        "flipper_tag_id": "S1234",
+        "date_nest_laid": "2017-02-01",
+        "tag_label": "M1",
+        "tag_comments": "test info",
+        "photo_tag": {
+            "filename": "1485913419914.jpg",
+            "type": "image/jpeg",
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fnest_tag%3Aphoto_tag"
+    },
+
+    e The related TurtleNestEncounter (must exist)
+    """
+    print(d)
+    if (d["status"] is None and
+            d["flipper_tag_id"] is None and
+            d["date_nest_laid"] is None and
+            d["tag_label"] is None):
+        print("No TurtleNestObs found, skipping.")
+        return
+    else:
+        dd, created = NestTagObservation.objects.get_or_create(
+            encounter=e,
+            status=d["status"],
+            flipper_tag_id=d["flipper_tag_id"],
+            date_nest_laid=datetime.strptime(
+                d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
+            tag_label=d["tag_label"],
+            )
+        dd.save()
+        print("NestTagObservation {0}".format("created" if created else "found"))
+        pprint(dd)
+
+    if d["photo_tag"]:
+        dl_photo(e.source_id,
+                 d["photo_tag"]["url"],
+                 d["photo_tag"]["filename"])
+        pdir = make_photo_foldername(e.source_id)
+        pname = os.path.join(pdir, d["photo_tag"]["filename"])
+        handle_photo(pname, e, title="Nest tag photo")
+
+    e.save()
+
+
+def handle_hatchlingmorphometricobs(d, e):
     """Get or create a HatchlingMorphometricObservation.
 
     Arguments
@@ -424,7 +579,6 @@ def handle_hatchlingmorphometricobs(d, e, m):
             "body_weight_g": 14
         }
     e The related TurtleNestEncounter (must exist)
-    m The ODK_MAPPING
     """
     dd, created = HatchlingMorphometricObservation.objects.get_or_create(
         encounter=e,
@@ -439,7 +593,7 @@ def handle_hatchlingmorphometricobs(d, e, m):
     e.save()
 
 
-def handle_loggerenc(d, e, m):
+def handle_loggerenc(d, e):
     """Get or create a LoggerEncounter with photo and nest tag obs.
 
     If the related TurtleNestEncounter e has a NestTagObservation, an idential
@@ -461,7 +615,6 @@ def handle_loggerenc(d, e, m):
             }
         }
     e The related TurtleNestEncounter (must exist)
-    m The ODK_MAPPING
     """
     dd, created = LoggerEncounter.objects.get_or_create(
         source=e.source,
@@ -830,17 +983,107 @@ def import_one_record_tt026(r, m):
         handle_turtlenesttagobs(r, e, m)
 
     # HatchlingMorphometricObservation
-    [handle_hatchlingmorphometricobs(ho, e, m)
+    [handle_hatchlingmorphometricobs(ho, e)
      for ho in r["hatchling_measurements"]
-     if r["hatchlings_measured"] and len(r["hatchling_measurements"]) > 0]
+     if len(r["hatchling_measurements"]) > 0]
 
     # LoggerEncounter retrieved HOBO logger
-    [handle_loggerenc(lg, e, m)
+    [handle_loggerenc(lg, e)
      for lg in r["logger_details"]
-     if r["logger_found"] and len(r["logger_details"]) > 0]
+     if len(r["logger_details"]) > 0]
 
     # TODO if both nest tag and logger enc present:
     # create nest tag obs on logger enc
+    return e
+
+
+def import_one_record_tt031(r, m):
+    """Import one ODK Track or Treat 0.31 record into WAStD.
+
+
+    The only change vs tt026 is that ODK now allows dashes in choice values.
+    The following choices are now are identical to WAStD
+    and do not require a mapping any longer:
+
+    * nest_type
+    * habitat
+    * disturbance_cause_confidence
+    * status (tag status)
+
+    Arguments
+
+    r The record as dict
+
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]],
+        nest_age=r["nest_age"],
+        nest_type=r["nest_type"],
+        species=m["species"][r["species"]],
+        # comments
+        )
+    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
+        new_data["habitat"] = r["habitat"]
+        new_data["disturbance"] = m["disturbance26"][r["disturbance"]]
+
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = TurtleNestEncounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = TurtleNestEncounter.objects.create(**new_data)
+
+    e.save()
+    pprint(e)
+
+    # MediaAttachment "Photo of track"
+    if r["photo_track"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_track"]["filename"])
+        handle_photo(pname, e, title="Track")
+
+    # MediaAttachment "Photo of nest"
+    if r["photo_nest"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_nest"]["filename"])
+        handle_photo(pname, e, title="Nest")
+
+    # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
+    [handle_turtlenestdistobs31(distobs, e)
+     for distobs in r["disturbanceobservation"]
+     if r["disturbance"] and len(r["disturbanceobservation"]) > 0]
+
+    # TurtleNestObservation
+    if r["eggs_counted"] == "yes":
+        handle_turtlenestobs31(r, e)
+
+    # NestTagObservation
+    if r["nest_tagged"]:
+        handle_turtlenesttagobs31(r, e)
+
+    # HatchlingMorphometricObservation
+    [handle_hatchlingmorphometricobs(ho, e)
+     for ho in r["hatchling_measurements"]
+     if len(r["hatchling_measurements"]) > 0]
+
+    # LoggerEncounter retrieved HOBO logger
+    [handle_loggerenc(lg, e)
+     for lg in r["logger_details"]
+     if len(r["logger_details"]) > 0]
+
     return e
 
 
@@ -1438,6 +1681,7 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
         "disturbance_cause": map_values(NEST_DAMAGE_CHOICES),
         # "disturbance_cause_confidence": map_values(CONFIDENCE_CHOICES),
         "disturbance_cause_confidence": {
+            "na": "guess",
             "guess": "guess",
             "expertopinion": "expert-opinion",
             "validated": "validated",
@@ -1456,7 +1700,7 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
     print("\n\nMapping:\n\n")
     pprint(ODK_MAPPING)
 
-    if flavour == "odk-trackcount-010":
+    if flavour == "odk-tc010":
         print("Using flavour ODK Track Count 0.10...")
         with open(datafile) as df:
             d = json.load(df)
@@ -1485,7 +1729,7 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 
-    elif flavour == "odk-trackortreat-026":
+    elif flavour == "odk-tt026":
         print("Using flavour ODK Track or Treat 0.26...")
         with open(datafile) as df:
             d = json.load(df)
@@ -1522,7 +1766,44 @@ def import_odk(datafile, flavour="odk-trackortreat-026", extradata=None):
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 
-    elif flavour == "odk-tracktally-05":
+    elif flavour == "odk-tt031":
+        print("Using flavour ODK Track or Treat 0.31...")
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="odk")]
+
+        # Download photos
+        ptr = [[r["instanceID"],
+                r["photo_track"]["url"],
+                r["photo_track"]["filename"]]
+               for r in d
+               if r["photo_track"] is not None]
+
+        pne = [[r["instanceID"],
+                r["photo_nest"]["url"],
+                r["photo_nest"]["filename"]]
+               for r in d
+               if r["photo_nest"] is not None]
+
+        pta = [[r["instanceID"],
+                r["photo_nest"]["url"],
+                r["photo_nest"]["filename"]]
+               for r in d
+               if r["photo_nest"] is not None]
+
+        print("Downloading photos of {0} tracks, {1} nests, {2} tags".format(
+            len(ptr), len(pne), len(pta)))
+        all_photos = ptr + pne + pta
+        [dl_photo(p[0], p[1], p[2]) for p in all_photos]
+
+        [import_one_record_tt031(r, ODK_MAPPING) for r in d
+         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        print("Done!")
+
+    elif flavour == "odk-tally05":
         print("Using flavour ODK Track Tally 0.5...")
         with open(datafile) as df:
             d = json.load(df)
