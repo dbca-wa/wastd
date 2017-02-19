@@ -290,6 +290,8 @@ HEALTH_CHOICES = (
 CAUSE_OF_DEATH_CHOICES = NA + (
     ("indeterminate-decomposed", "Indeterminate due to decomposition"),
     ("boat-strike", "Boat strike"),
+    ("trauma-human-induced", "Human induced trauma"),
+    ("trauma-animal-induced", "Animal induced trauma"),
     ("drowned-entangled-fisheries", "Drowned entangled in fisheries equipment"),
     ("drowned-entangled-infrastructure", "Drowned entangled in infrastructure"),
     ("drowned-entangled-debris", "Drowned entangled in debris"),
@@ -303,6 +305,14 @@ CAUSE_OF_DEATH_CHOICES = NA + (
     ("poisoned", "Poisoned"),
     ("misorientation", "Misorientation on beach"),
     ("natural", "Natural death"),
+    ("birthing", "Birthing complications"),
+    ("still-born", "Still birth"),
+    ("calf-failure-to-thrive", "Calf failed to thrive"),
+    ("starved", "Starvation"),
+    ("stranded", "Stranding"),
+    ("euthanasia-firearm", "Euthanasia by firearm"),
+    ("euthanasia-injection", "Euthanasia by injection"),
+    ("euthanasia-implosion", "Euthanasia by implosion"),
     ("euthanasia", "Euthanasia"),
     ("predation", "Predation"),
     )

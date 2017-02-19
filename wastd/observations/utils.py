@@ -1589,7 +1589,7 @@ def import_one_encounter_wamtram(r, m):
     'health': u'dead-edible',
     'id': 2574,
     'location_accuracy': u'1000',
-    'maturity': u'adult',
+    'maturity': u'adult',1
     'name': None,
     'observer_id': 1,
     'polymorphic_ctype_id': 17,
@@ -1614,6 +1614,25 @@ def import_one_encounter_wamtram(r, m):
 
 #------------------------------------------------------------------------------#
 # Cetacean strandings database (Filemaker Pro)
+def infer_cetacean_sex(f, m):
+    """Infer WAStD sex from Cetacean db values.
+
+    Arguments
+
+    f String The db value of column "is female". Females are '1'.
+    m String The db value of column "is male". Males are '1'.
+
+    Return
+    String One of WAStD SEX_CHOICES "na" (unknown sex), "female" or "male"
+    """
+    if f == "1":
+        return "female"
+    elif m == "1":
+        return "male"
+    else:
+        return "na"
+
+
 def import_one_record_cet(r, m):
     """Import one Cetacean strandings database record into WAStD.
 
@@ -1626,7 +1645,11 @@ def import_one_record_cet(r, m):
 
     {'A': '',
     'Admin comment': '',
-    'Age': 'J',
+    'Age': one of:
+    {'', '1', '1-2', '1-3', '11 years old', '2-3', '2-3 years old', '3 month',
+    '3-4 months', '4 months', '6 yrs ', 'A', 'A, C', 'AC', 'AMC', 'C', 'J',
+    'Juvenile', 'MC', 'Neonate', 'Possibly yearling', 'SA', 'Still born',
+    'X', 'Yearing', 'Yearling', 'Young', 'x', '~35', '~8-10 years'},
     'Ailment_injury comment': '',
     'Attachment': '',
     'Boat_Ship Strike': '',
@@ -1688,47 +1711,7 @@ def import_one_record_cet(r, m):
 
     m The ODK_MAPPING
 
-    species not in WAStD cetacean species
-
-
-    cause of death
-     'Birthing',
-     'Boat/ship strike',
-     'Complications from stranding',
-     'Disease/health',
-     'Drowning/misadventure',
-     'Entanglement',
-     'Euthanasia',
-     'Euthanasia - firearm',
-     'Euthanasia - firearm - SOP 17(1)',
-     'Euthanasia - implosion',
-     'Euthanasia - injection',
-     'Failure to thrive/dependant calf',
-     'Failure to thrive/dependent calf',
-     'Live stranding',
-     'Misadventure',
-     'Misadventure 13 died during event',
-     'Mixed fate group',
-     'Old age',
-     'PM report pending',
-     'Predatory attack',
-     'Predatory attack - Orca',
-     'Predatory attack - shark',
-     'Remote stranding - died',
-     'SEE Necropsy Report',
-     'Spear/gunshot',
-     'Starvation',
-     'Still born',
-     'Stingray barb',
-     'Stranding',
-     'Trauma',
-     'Under nourished',
-     'Unknown',
-     'Unkown',
-     'Weapon (gun, spear etc)'
-
-
-     Should create AnimalEncounter e.g.
+    Returns AnimalEncounter e.g.
 
     'activity': u'na',
     'behaviour': u'',
@@ -1756,8 +1739,8 @@ def import_one_record_cet(r, m):
     print("Creating one AnimalEncounter from Cetacean Stranding")
     # pprint(r)
 
-    # TODO this mapping needs QA
     SPECIES = dict([[d[0], d[0]] for d in CETACEAN_SPECIES_CHOICES])
+    # TODO this mapping needs QA (add species to CETACEAN_SPECIES_CHOICES)
     SPECIES.update({
         '': 'unidentified-whale',
         'Balaenoptera musculus ? brevicauda': 'Balaenoptera musculus brevicauda',
@@ -1783,7 +1766,61 @@ def import_one_record_cet(r, m):
         'Mesoplodon sp': 'Mesoplodon sp.',
         })
 
+    COD = {
+         'Birthing': "birthing",
+         'Boat/ship strike': "boat-strike",
+         'Complications from stranding': "stranded",
+         'Disease/health': "natural",
+         'Drowning/misadventure': "drowned-other",
+         'Entanglement': "drowned-entangled",
+         'Euthanasia': "euthanasia",
+         'Euthanasia - firearm': "euthanasia-firearm",
+         'Euthanasia - firearm - SOP 17(1)': "euthanasia-firearm",
+         'Euthanasia - implosion': "euthanasia-implosion",
+         'Euthanasia - injection': "euthanasia-injection",
+         'Failure to thrive/dependant calf': "calf-failure-to-thrive",
+         'Failure to thrive/dependent calf': "calf-failure-to-thrive",
+         'Live stranding': "na",  # not a cause of death then
+         'Misadventure': "natural",
+         'Misadventure 13 died during event': "natural",
+         'Mixed fate group': "na",  # split into individual strandings
+         'Old age': "natural",
+         'Predatory attack': "predation",
+         'PM report pending': "na",  # set COD once necropsy done
+         'Predatory attack - Orca': "predation",
+         'Predatory attack - shark': "predation",
+         'Remote stranding - died': "stranded",  # remoteness is not COD
+         'SEE Necropsy Report': "na",  # and transcribe here
+         'Spear/gunshot': "trauma-human-induced",
+         'Starvation': "starved",
+         'Still born': "still-born",
+         'Stingray barb': "trauma-animal-induced",
+         'Stranding': "stranded",
+         'Trauma': "trauma",
+         'Under nourished': "starved",  # if COD, else physical condition
+         'Unknown': "na",
+         'Unkown': "na",
+         '': "na",
+         'Weapon (gun, spear etc)': "trauma-human-induced",
+         }
+
     src_id = "cet-{0}".format(r["Record No."])
+
+    """
+    Map:
+    'Condition when found': 'Live',
+    'Dead Stranding': '',
+
+    'Boat_Ship Strike': '',
+    'C': '1',
+    'ID': '' > name
+    sex: 'F': '1', 'M': '', 'U': '',
+
+    Attachments:
+    'Attachment': '',
+    'Photos taken': 'Yes',
+    'Post Mortem': 'Yes',
+    """
 
     new_data = {
         'when': parser.parse('{0} 12:00:00 +0800'.format(r["Date"])),
@@ -1791,8 +1828,46 @@ def import_one_record_cet(r, m):
         'taxon': u'Cetacea',
         'species': SPECIES[r["Scientific Name"] or ''],
         'activity': u'na',  # TODO
-        'behaviour': u'',  # TODO
-        'cause_of_death': u'na',  # TODO
+        'behaviour': " ".join([
+            "Age", r['Age'], "\n",
+            "Admin comment", r['Admin comment'], "\n",
+            "Ailment_injury comment", r['Ailment_injury comment'], "\n",
+            "Carcass Location_Fate", r['Carcass Location_Fate'], "\n",
+            "Comments", r['Comments'], "\n",
+            "Condition comments", r['Condition comments'], "\n",
+            "DPaW Attended", r['DPaW Attended'], "\n",
+            "Cow_calf pair Stranding", r['Cow_calf pair Stranding'], "\n",
+            "Demographic comment", r['Demographic comment'], "\n",
+            "El Nino", r['El Nino'], "\n",
+            "Entanglement", r['Entanglement'], "\n",
+            "Entanglement gear", r['Entanglement gear'], "\n",
+            "Entanglement gear details", r['Entanglement gear details'], "\n",
+            "Event", r['Event'], "\n",
+            "Fate", r['Fate'], "\n",
+            "File Number", r['File Number'], "\n",
+            "Floating carcass", r['Floating carcass'], "\n",
+            "Heavy Metals", r['Heavy Metals'], "\n",
+            "Moon Phase", r['Moon Phase'], "\n",
+            "Near River", r['Near River'], "\n",
+            "Single Stranding", r['Single Stranding'], "\n",
+            "Mass Stranding", r['Mass Stranding'], "\n",
+            "Number of animals", r['Number of animals'], "\n",
+            "Outcome", r['Outcome'], "\n",
+            "PM Report location", r['PM Report location'], "\n",
+            "Post mortem report summary", r['Post mortem report summary'], "\n",
+            'Live Stranding', r['Live Stranding'], "\n",
+            'Location', r['Location'], "\n",
+            'PCB', r['PCB'], "\n",
+            'Record No.', r['Record No.'], "\n",
+            'Rescue info', r['Rescue info'], "\n",
+            'SA', r['SA'], "\n",
+            'Sampling comments', r['Sampling comments'], "\n",
+            'Site', r['Site'], "\n",
+            "Length _m_", r['Length _m_'], "\n",
+            'Weight _kg_', r['Weight _kg_'], "\n",
+            "Name", r["ID"], "\n",
+            ]),
+        'cause_of_death': COD[r["Cause of Death _drop down_"]],
         'cause_of_death_confidence': u'na',  # TODO
         'checked_for_flipper_tags': u'na',  # TODO
         'checked_for_injuries': u'na',  # TODO
@@ -1800,11 +1875,11 @@ def import_one_record_cet(r, m):
         'health': u'dead-edible',  # TODO
         'location_accuracy': u'10',
         'maturity': u'adult',  # TODO
-        'name': None,  # TODO
+        # 'name': r["ID"] or None,
         'observer_id': 1,
         'reporter_id': 1,
         'scanned_for_pit_tags': u'na',  # TODO
-        'sex': u'na',  # TODO
+        'sex': infer_cetacean_sex(r["F"], r["M"]),
         'source': u'cet',
         'source_id': src_id,
         }
