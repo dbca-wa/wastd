@@ -1633,6 +1633,12 @@ def infer_cetacean_sex(f, m):
         return "na"
 
 
+def fix_species_name(spname):
+    """Return one Encounter's species name to lowercase-dashseparated."""
+    return spname.replace(".", "").replace("? ", "").replace(
+        "(?)", "").replace("?", "").strip().replace(" ", "-").lower()
+
+
 def import_one_record_cet(r, m):
     """Import one Cetacean strandings database record into WAStD.
 
@@ -1742,28 +1748,12 @@ def import_one_record_cet(r, m):
     SPECIES = dict([[d[0], d[0]] for d in CETACEAN_SPECIES_CHOICES])
     # TODO this mapping needs QA (add species to CETACEAN_SPECIES_CHOICES)
     SPECIES.update({
-        '': 'unidentified-whale',
-        'Balaenoptera musculus ? brevicauda': 'Balaenoptera musculus brevicauda',
-        'Tasmacetus shepherdi ?': 'unidentified-dolphin',
-        'Mesoplodon bowdoini': 'Mesoplodon sp.',
-        'Mesoplodon mirus': 'Mesoplodon sp.',
-        'Balaenopter musculus brevicauda': 'Balaenoptera musculus brevicauda',
-        'Balaenoptera ? musculus ? brevicauda': 'Balaenoptera musculus brevicauda',
-        'Mesoplodon grayi': 'Mesoplodon sp.',
-        'Physeter macrocephalus ': 'Physeter macrocephalus',
-        'Orcaella heinsohni x ?': 'Orcaella heinsohni',
-        'Tursiops truncatus    ': 'Tursiops truncatus',
-        'Tursiops truncatus ': 'Tursiops truncatus',
-        'Sousa chinensis': 'Sousa sahulensis',
-        'Kogia simus': 'Kogia sima',
-        'Stenella  sp ? (coeruleoalba)': 'unidentified-dolphin',
-        'Caperea marginata': 'unidentified-dolphin',
-        'Balaenopters cf. B. omurai': 'Balaenoptera sp.',
-        'Mesoplodon hectori': 'Mesoplodon sp.',
-        'Berardius arnuxii': 'unidentified-dolphin',
-        'Mesoplodon grayi (?)': 'Mesoplodon sp.',
-        'Tasmacetus shepherdi': 'unidentified-dolphin',
-        'Mesoplodon sp': 'Mesoplodon sp.',
+        '': 'cetacea',
+        'balaenopter-musculus-brevicauda': "balaenoptera-musculus-brevicauda",
+        'balaenopters-cf-b-omurai': "balaenoptera-omurai",
+        'kogia-simus': "kogia-sima",
+        'orcaella-heinsohni-x': "orcaella-heinsohni",
+        'stenella--sp-(coeruleoalba)': "stenella-sp",
         })
 
     COD = {
@@ -1826,7 +1816,7 @@ def import_one_record_cet(r, m):
         'when': parser.parse('{0} 12:00:00 +0800'.format(r["Date"])),
         'where': Point(float(r["Long"] or 120), float(r["Lat"] or -35)),
         'taxon': u'Cetacea',
-        'species': fix_species_name(SPECIES[r["Scientific Name"] or '']),
+        'species': SPECIES[fix_species_name(r["Scientific Name"] or '')],
         'activity': u'na',  # TODO
         'behaviour': " ".join([
             "Age", r['Age'], "\n",
@@ -1897,19 +1887,6 @@ def import_one_record_cet(r, m):
 
     print("done")
 
-
-def fix_species_name(a):
-    """Sanitize one Encounter's species name to lowercase-dashseparated."""
-    a.species = a.species.replace(".", "").strip().replace(" ", "-").lower()
-    a.save()
-
-
-def fix_all_species_names():
-    """Sanitize all species names to lowercase-dashseparated."""
-    [fix_species_name(a) for a in AnimalEncounter.objects.all()]
-    [fix_species_name(a) for a in TurtleNestEncounter.objects.all()]
-    [fix_species_name(a) for a in TrackTallyObservation.objects.all()]
-    [fix_species_name(a) for a in TurtleNestDisturbanceTallyObservation.objects.all()]
 
 #------------------------------------------------------------------------------#
 # Main import call

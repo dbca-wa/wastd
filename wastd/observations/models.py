@@ -163,16 +163,17 @@ CETACEAN_SPECIES_CHOICES = (
     ("lagenorhynchus-obscurus", "Lagenorhynchus obscurus (Dusky dolphin)"),
     ("orcaella-heinsohni", "Orcaella heinsohni (Australian snubfin dolphin)"),
     ("sousa-sahulensis", "Sousa sahulensis (Australian humpback dolphin)"),
+    ("sousa-chinensis", "Sousa chinensis (Chinese white dolphin)"),
     ("stenella-attenuata", "Stenella attenuata (Pantropical spotted dolphin)"),
     ("stenella-coeruleoalba", "Stenella coeruleoalba (Striped dolphin)"),
     ("stenella-longirostris", "Stenella longirostris (Spinner dolphin)"),
-    ("stenella-sp.", "Stenella sp. (Unidentified spotted dolphin)"),
+    ("stenella-sp", "Stenella sp. (Unidentified spotted dolphin)"),
     ("steno-bredanensis", "Steno bredanensis (Rough-toothed dolphin)"),
     ("tursiops-aduncus", "Tursiops aduncus (Indo-Pacific bottlenose dolphin)"),
     ("tursiops-truncatus", "Tursiops truncatus (Offshore bottlenose dolphin)"),
     ("tursiops-sp", "Tursiops sp. (Unidentified bottlenose dolphin)"),
 
-    ("unidentified-dolphin", "Unidentified dolphin"),
+    ("delphinidae-fam", "Unidentified dolphin"),
     # whales
     ("balaenoptera-acutorostrata", "Balaenoptera acutorostrata (Dwarf minke whale)"),
     ("balaenoptera-bonaerensis", "Balaenoptera bonaerensis (Antarctic minke whale)"),
@@ -181,7 +182,9 @@ CETACEAN_SPECIES_CHOICES = (
     ("balaenoptera-musculus", "Balaenoptera musculus (Blue whale)"),
     ("balaenoptera-musculus-brevicauda", "Balaenoptera musculus brevicauda (Pygmy blue whale)"),
     ("balaenoptera-physalus", "Balaenoptera physalus (Fin whale)"),
+    ("balaenoptera-omurai", "Balaenoptera omurai (Omura's whale)"),
     ("balaenoptera-sp", "Balaenoptera sp. (Unidentified Balaenoptera)"),
+    ("caperea-marginata", "Caperea marginata (Pygmy Right Whale)"),
     ("eubalaena-australis", "Eubalaena australis (Southern right whale)"),
     ("feresa-attenuata", "Feresa attenuata (Pygmy killer whale)"),
     ("globicephala-macrorhynchus", "Globicephala macrorhynchus (Short-finned pilot whale)"),
@@ -192,16 +195,22 @@ CETACEAN_SPECIES_CHOICES = (
     ("kogia-sima", "Kogia sima (Dwarf sperm whale)"),
     ("kogia-sp", "Kogia sp. (Unidentified small sperm whale)"),
     ("megaptera-novaeangliae", "Megaptera novaeangliae (Humpback whale)"),
+    ("mesoplodon-bowdoini", "Mesoplodon bowdoini (Andew's beaked whale)"),
     ("mesoplodon-densirostris", "Mesoplodon densirostris (Blainville's beaked whale)"),
+    ("mesoplodon-grayi", "Mesoplodon grayi (Gray's beaked whale)"),
+    ("mesoplodon-hectori", "Mesoplodon hectori (Hector's beaked whale"),
     ("mesoplodon-layardii", "Mesoplodon layardii (Strap-toothed whale)"),
+    ("mesoplodon-mirus", "Mesoplodon mirus (True's beaked whale)"),
     ("mesoplodon-sp", "Mesoplodon sp. (Beaked whale)"),
+    ("berardius-arnuxii", "Berardius arnuxii (Giant beaked whale)"),
     ("orcinus-orca", "Orcinus orca (Killer whale)"),
     ("peponocephala-electra", "Peponocephala electra (Melon-headed whale)"),
     ("physeter-macrocephalus", "Physeter macrocephalus (Sperm whale)"),
     ("pseudorca-crassidens", "Pseudorca crassidens (False killer whale)"),
     ("ziphius-cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"),
+    ("tasmacetus-shepherdi", "Tasmacetus shepherdi (Shepherd's beaked whale)"),
 
-    ("unidentified-whale", "Unidentified whale"), )
+    ("cetacea", "Unidentified whale"), )
 
 SEASNAKE_SPECIES_DEFAULT = 'hydrophiinae-subfam'
 SEASNAKE_SPECIES_CHOICES = (
