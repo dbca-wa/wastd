@@ -139,18 +139,8 @@ TAXON_CHOICES = NA + (
     ("Elasmobranchii", "Sharks and Rays"),
     ("Hydrophiinae", "Sea snakes and kraits"), )
 
-TURTLE_SPECIES_DEFAULT = 'Cheloniidae fam.'
+TURTLE_SPECIES_DEFAULT = 'cheloniidae-fam'
 TURTLE_SPECIES_CHOICES = (
-    ('Natator depressus', 'OLD Natator depressus (Flatback turtle)'),
-    ('Chelonia mydas', 'OLD Chelonia mydas (Green turtle)'),
-    ('Eretmochelys imbricata', 'OLD Eretmochelys imbricata (Hawksbill turtle)'),
-    ('Caretta caretta', 'OLD Caretta caretta (Loggerhead turtle)'),
-    ('Lepidochelys olivacea', 'OLD Lepidochelys olivacea (Olive ridley turtle)'),
-    ('Dermochelys coriacea', 'OLD Dermochelys coriacea (Leatherback turtle)'),
-    ('Chelonia mydas agassazzi', 'OLD Chelonia mydas agassazzi (Black turtle or East Pacific Green)'),
-    ('Corolla corolla', 'OLD Corolla corolla (Hatchback turtle)'),
-    (TURTLE_SPECIES_DEFAULT, 'OLD Cheloniidae (Unidentified turtle)'),
-
     ('natator-depressus', 'Natator depressus (Flatback turtle)'),
     ('chelonia-mydas', 'Chelonia mydas (Green turtle)'),
     ('eretmochelys-imbricata', 'Eretmochelys imbricata (Hawksbill turtle)'),
@@ -159,7 +149,7 @@ TURTLE_SPECIES_CHOICES = (
     ('dermochelys-coriacea', 'Dermochelys coriacea (Leatherback turtle)'),
     ('chelonia-mydas-agassazzi', 'Chelonia mydas agassazzi (Black turtle or East Pacific Green)'),
     ('corolla-corolla', 'Corolla corolla (Hatchback turtle)'),
-    ('cheloniidae-fam', 'Cheloniidae (Unidentified turtle)'),
+    (TURTLE_SPECIES_DEFAULT, 'Cheloniidae (Unidentified turtle)'),
     # Caretta caretta x Chelonia mydas (Hybrid turtle)
     # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
     # Natator depressus x Caretta caretta (Hybrid turtle)
@@ -211,13 +201,11 @@ CETACEAN_SPECIES_CHOICES = (
     ("pseudorca-crassidens", "Pseudorca crassidens (False killer whale)"),
     ("ziphius-cavirostris", "Ziphius cavirostris (Cuvier's beaked whale)"),
 
-    ("Kogia breviceps", "OLD Kogia breviceps (Pygmy sperm whale)"),
-    ("Pseudorca crassidens", "OLD seudorca crassidens (False killer whale)"),
-    ("Globicephala macrorhynchus", "OLD Globicephala macrorhynchus (Short-finned pilot whale)"),
     ("unidentified-whale", "Unidentified whale"), )
 
+SEASNAKE_SPECIES_DEFAULT = 'hydrophiinae-subfam'
 SEASNAKE_SPECIES_CHOICES = (
-    ("hydrophiinae-subfam", "Hydrophiinae subfam. (Sea snakes and kraits)"),
+    (SEASNAKE_SPECIES_DEFAULT, "Hydrophiinae subfam. (Sea snakes and kraits)"),
     ("acalyptophis-sp", "Acalyptophis sp. (Horned sea snake)"),
     ("aipysurus-sp", "Aipysurus sp. (Olive sea snake)"),
     ("astrotia-sp", "Astrotia sp. (Stokes' sea snake)"),
