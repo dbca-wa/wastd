@@ -591,10 +591,11 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'habitat', 'activity', 'checked_for_injuries',
                   'scanned_for_pit_tags',
                   'checked_for_flipper_tags',
+                  'cause_of_death', 'cause_of_death_confidence',
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
-                  'as_html', 'as_latex',
+                #   'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
 
@@ -695,8 +696,9 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
-        'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
+        'taxon', 'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
+        'cause_of_death', 'cause_of_death_confidence',
         'source', 'source_id', 'encounter_type', ]
 
     def pre_latex(view, t_dir, data):

@@ -1741,6 +1741,16 @@ def import_one_record_cet(r, m):
     'when': datetime.datetime(2017, 2, 3, 2, 35, tzinfo=<UTC>),
     'where': <Point object at 0x7fdede584b50>
 
+    The species name mapping is created from names found with:
+
+    from wastd.observations.utils import *
+    legacy_strandings = csv.DictReader(open("data/cetaceans.csv"))
+    wastd_cet_species = [d[0] for d in CETACEAN_SPECIES_CHOICES]]
+    set([fix_species_name(x["Scientific Name"])
+         for x in legacy_strandings
+         if fix_species_name(x["Scientific Name"]) not in wastd_cet_species)
+
+
     """
     print("Creating one AnimalEncounter from Cetacean Stranding")
     # pprint(r)
@@ -1886,6 +1896,83 @@ def import_one_record_cet(r, m):
     pprint(e)
 
     print("done")
+
+
+def pinniped_coords_as_point(cstring):
+    """Convert the pinniped strandings coordinate format into a Point.
+
+    Arguments:
+
+    cstring, a string of coordinates in the following formats:
+
+    example_formats = [
+    '',
+    '-32.943382; 115.659916',  # Lat Lon   D.D; D.D
+    '121:56.04; 33:49.53',     # Lon Lat   D:M.M; D:M.M
+    '28:44.528; 114:37.096',   # Lat Lon   D:M.M; D:M.M
+    '29:56:39.6; 114:58:41.1', # Lat Lon   D:M:S.S; D:M:S.S
+    '28:46114:37',             # Lat Lon   D:MD:M
+    '28:46;114:36',            # Lat Lon   D:M;D:M
+    '30 29.955; 155 03.621',   # Lat Lon   D M.M; D M.M
+    '30:07:47;114:56:40',      # Lat Lon   D:M:S; D:M:S
+    '314394.595; 6237428.999', # UTM
+    '33 27 0.73s 115 34 35.00e',# Lat Lon  D M S.S"s" D M S"s"
+    '35:2 :11.198; 116:44:21.536',# weird space
+    '416247E; 6143585',        # UTM E N
+    'Hauled out, resting, good body condition.',  # column mismatch
+    'Lat 6240557; Long 0236825', # UTM N E
+    '`31:00;115:19']           # Stray "`"
+
+    Returns
+    Point in WGS84 or None
+    """
+    print("Got coords {0}".format(cstring))
+    print("TODO: parse to point")
+    return None
+
+
+
+
+def import_one_record_pin(r, m):
+    """Import one Pinniped strandings database record into WAStD.
+
+    The Filemaker Pro db is exported to CSV, and read here as csv.DictReader.
+    This method imports one DictReader.next() record.
+
+    Arguments
+
+    r The record as dict, e.g.
+        {'Attachment': '',
+        'Comment': '',
+        'Common Name': 'Australian Sea Lion',
+        'Condition': 'Fish hooks ',
+        'Date': '30/01/80',
+        'Day': '30',
+        'ID No.': '1',
+        'Lat_Long': '30:08;114:57',
+        'Location': 'Fisherman\xe2\x80\x99s Island',
+        'Man Influenced': 'Yes',
+        'Month': 'January',
+        'Number': '1',
+        'Scientific Name': 'Neophoca cinerea',
+        'Sex': 'Female',
+        'Special': '',
+        'Year': '1980'}
+
+    Species:
+        {'': 'pinnipedia',
+        '1': 'pinnipedia',
+        'Female': 'pinnipedia',
+        'Arctocephalus forsteri': "arctocephalus-forsteri",
+        'Arctocephalus forsterii': "arctocephalus-forsteri",
+        'Arctocephalus tropicalis': "arctocephalus-tropicalis",
+        'Hydrurga leptonyx': "hydrurga-leptonyx",
+        'Lobodon carcinophagus': "lobodon-carcinophagus",
+        'Mirounga leonina': "mirounga-leonina",
+        'Neophoca cinerea': "neophoca-cinerea"}
+
+
+    """
 
 
 #------------------------------------------------------------------------------#

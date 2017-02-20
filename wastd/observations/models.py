@@ -212,6 +212,24 @@ CETACEAN_SPECIES_CHOICES = (
 
     ("cetacea", "Unidentified whale"), )
 
+PINNIPED_SPECIES_DEFAULT = 'pinnipedia'
+PINNIPED_SPECIES_CHOICES = (
+    ("arctocephalus-forsteri", "Arctocephalus forsteri (New Zealand fur seal)"),
+    ("neophoca-cinerea", "Neophoca cinerea (Australian sea lion)"),
+    ("arctocephalus-tropicalis", "Arctocephalus tropicalis (Subantarctic fur seal)"),
+    ("", ""),
+    ("", ""),
+    ("", ""),
+    (PINNIPED_SPECIES_DEFAULT, "Unidentified pinniped"),
+
+    'Arctocephalus tropicalis',
+    'Female',
+    'Hydrurga leptonyx',
+    'Lobodon carcinophagus',
+    'Mirounga leonina',
+    'Neophoca cinerea'
+)
+
 SEASNAKE_SPECIES_DEFAULT = 'hydrophiinae-subfam'
 SEASNAKE_SPECIES_CHOICES = (
     (SEASNAKE_SPECIES_DEFAULT, "Hydrophiinae subfam. (Sea snakes and kraits)"),
