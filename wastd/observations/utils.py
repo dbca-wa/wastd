@@ -1826,7 +1826,7 @@ def import_one_record_cet(r, m):
         'when': parser.parse('{0} 12:00:00 +0800'.format(r["Date"])),
         'where': Point(float(r["Long"] or 120), float(r["Lat"] or -35)),
         'taxon': u'Cetacea',
-        'species': SPECIES[r["Scientific Name"] or ''],
+        'species': fix_species_name(SPECIES[r["Scientific Name"] or '']),
         'activity': u'na',  # TODO
         'behaviour': " ".join([
             "Age", r['Age'], "\n",
@@ -1897,6 +1897,19 @@ def import_one_record_cet(r, m):
 
     print("done")
 
+
+def fix_species_name(a):
+    """Sanitize one Encounter's species name to lowercase-dashseparated."""
+    a.species = a.species.replace(".", "").strip().replace(" ", "-").lower()
+    a.save()
+
+
+def fix_all_species_names():
+    """Sanitize all species names to lowercase-dashseparated."""
+    [fix_species_name(a) for a in AnimalEncounter.objects.all()]
+    [fix_species_name(a) for a in TurtleNestEncounter.objects.all()]
+    [fix_species_name(a) for a in TrackTallyObservation.objects.all()]
+    [fix_species_name(a) for a in TurtleNestDisturbanceTallyObservation.objects.all()]
 
 #------------------------------------------------------------------------------#
 # Main import call
