@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Observation untilities."""
 import csv
+from datetime import datetime
 from dateutil import parser
 import json
 import os
@@ -22,9 +23,7 @@ from wastd.observations.models import (
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation, TrackTallyObservation,
     HatchlingMorphometricObservation,
-    NEST_AGE_CHOICES, NEST_TYPE_CHOICES, OBSERVATION_CHOICES,
-    NEST_DAMAGE_CHOICES, CONFIDENCE_CHOICES, TAG_STATUS_CHOICES,
-    CETACEAN_SPECIES_CHOICES
+    NEST_TYPE_CHOICES, TAG_STATUS_CHOICES, CETACEAN_SPECIES_CHOICES
     )
 
 
@@ -100,7 +99,7 @@ def symlink_resources(t_dir, data):
         [symlink_one_resource(t_dir, enc) for enc in d]
 
 
-#------------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # Data import from ODK Aggregate
 # TODO create and use writable API
 #
@@ -127,23 +126,23 @@ def guess_user(un):
 
     try:
         usr = User.objects.get(username=un)
-        msg = "Username {0} found by exact match: returning {1}"
+        msg = "   Username {0} found by exact match: returning {1}"
 
     except ObjectDoesNotExist:
         usrs = User.objects.filter(username__icontains=un[0:4])
 
         if usrs.count() == 0:
             usr = User.objects.create(username=un, name=un)
-            msg = "Username {0} not found: created {1}"
+            msg = "  Username {0} not found: created {1}"
 
         elif usrs.count() == 1:
             usr = usrs[0]
-            msg = "Username {0} found by fuzzy match: returning only match {1}"
+            msg = "  Username {0} found by fuzzy match: returning only match {1}"
             usr = usrs[0]
 
         else:
             usr = usrs[0]
-            msg = "[WARNING] Username {0} returned multiple matches, choosing {1}"
+            msg = "  [WARNING] Username {0} returned multiple matches, choosing {1}"
 
     print(msg.format(un, usr))
     return usr
@@ -187,6 +186,7 @@ def odk_linestring_as_point(odk_str):
 
 
 def make_photo_foldername(photo_id):
+    """Return a foldername for a given photo ID underneath MEDIA_ROOT."""
     return os.path.join(settings.MEDIA_ROOT, "photos", photo_id)
 
 
@@ -198,22 +198,23 @@ def dl_photo(photo_id, photo_url, photo_filename):
     photo_id The WAStD source_id of the record, to which this photo belongs
     photo_url A URL to download the photo from
     """
+    print("  Downloading photo...")
     pdir = make_photo_foldername(photo_id)
     if not os.path.exists(pdir):
-        print("Creating folder {0}".format(pdir))
+        print("  Creating folder {0}".format(pdir))
         os.mkdir(pdir)
     else:
-        print(("Found folder {0}".format(pdir)))
+        print(("  Found folder {0}".format(pdir)))
     pname = os.path.join(pdir, photo_filename)
 
     if not os.path.exists(pname):
-        print("Downloading file {0}...".format(pname))
+        print("  Downloading file {0}...".format(pname))
         response = requests.get(photo_url, stream=True)
         with open(pname, 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
         del response
     else:
-        print("Found file {0}".format(pname))
+        print("  Found file {0}".format(pname))
 
 
 def handle_photo(p, e, title="Track"):
@@ -226,13 +227,14 @@ def handle_photo(p, e, title="Track"):
     title The attachment's title (default: "Track")
     """
     # Does the file exist locally?
+    print("  Creating photo attachment...")
     if os.path.exists(p):
-        print("File {0} exists".format(p))
+        print("  File {0} exists".format(p))
         with open(p, 'rb') as photo:
             f = File(photo)
             # Is the file a dud?
             if f.size > 0:
-                print("File size is {0}".format(f.size))
+                print("  File size is {0}".format(f.size))
 
                 # Does the MediaAttachment exist already?
                 if MediaAttachment.objects.filter(encounter=e, title=title).exists():
@@ -244,11 +246,11 @@ def handle_photo(p, e, title="Track"):
 
                 # Update the file
                 m.attachment.save(title, f, save=True)
-                print("Photo {0}: {1}".format(action, m))
+                print("  Photo {0}: {1}".format(action, m))
             else:
-                print("[ERROR] zero size file {0}".format(p))
+                print("  [ERROR] zero size file {0}".format(p))
     else:
-        print("[ERROR] missing file {0}".format(p))
+        print("  [ERROR] missing file {0}".format(p))
 
 
 def handle_turtlenestdistobs(d, e, m):
@@ -271,18 +273,17 @@ def handle_turtlenestdistobs(d, e, m):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-
-
+    print("  Creating TurtleNestDisturbanceObservation...")
     dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(
         encounter=e,
-        disturbance_cause=m["disturbance_cause"][d["disturbance_cause"]],
+        disturbance_cause=d["disturbance_cause"],
         disturbance_cause_confidence=m["disturbance_cause_confidence"][d["disturbance_cause_confidence"]],
         disturbance_severity=m["disturbance_severity"][d["disturbance_severity"]],
         comments=d["comments"]
         )
     dd.save()
-    print("Turtle Nest Disturbance Obs {0}".format("created" if created else "found"))
-    pprint(dd)
+    action = "created" if created else "updated"
+    print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
     if d["photo_disturbance"] is not None:
         dl_photo(e.source_id,
@@ -291,9 +292,7 @@ def handle_turtlenestdistobs(d, e, m):
         pdir = make_photo_foldername(e.source_id)
         pname = os.path.join(pdir, d["photo_disturbance"]["filename"])
         handle_photo(pname, e, title="Disturbance {0}".format(dd.disturbance_cause))
-    pprint(dd)
 
-    e.save()  # cache distobs in HTML
 
 def handle_turtlenestdistobs31(d, e):
     """Get or create TurtleNestDisturbanceObservation.
@@ -314,6 +313,7 @@ def handle_turtlenestdistobs31(d, e):
         }
     e The related TurtleNestEncounter (must exist)
     """
+    print("  Creating TurtleNestDisturbanceObservation...")
     dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(
         encounter=e,
         disturbance_cause=d["disturbance_cause"],
@@ -322,8 +322,8 @@ def handle_turtlenestdistobs31(d, e):
         comments=d["comments"]
         )
     dd.save()
-    print("Turtle Nest Disturbance Obs {0}".format("created" if created else "found"))
-    pprint(dd)
+    action = "created" if created else "updated"
+    print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
     if d["photo_disturbance"] is not None:
         dl_photo(e.source_id,
@@ -332,9 +332,6 @@ def handle_turtlenestdistobs31(d, e):
         pdir = make_photo_foldername(e.source_id)
         pname = os.path.join(pdir, d["photo_disturbance"]["filename"])
         handle_photo(pname, e, title="Disturbance {0}".format(dd.disturbance_cause))
-    pprint(dd)
-
-    e.save()  # cache distobs in HTML
 
 
 def handle_turtlenestobs(d, e, m):
@@ -374,7 +371,7 @@ def handle_turtlenestobs(d, e, m):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-
+    print("  Creating TurtleNestObservation...")
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
         nest_position=m["habitat"][d["habitat"]],
@@ -389,8 +386,8 @@ def handle_turtlenestobs(d, e, m):
         nest_depth_bottom=d["nest_depth_bottom"] or 0
         )
     dd.save()
-    print("TurtleNestObservation {0}".format("created" if created else "found"))
-    pprint(dd)
+    action = "created" if created else "updated"
+    print("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     for idx, ep in enumerate(d["egg_photos"]):
         dl_photo(e.source_id,
@@ -400,7 +397,6 @@ def handle_turtlenestobs(d, e, m):
         pname = os.path.join(pdir, ep["photo_eggs"]["filename"])
         handle_photo(pname, e, title="Egg photo {0}".format(idx + 1))
 
-    e.save()
 
 def handle_turtlenestobs31(d, e):
     """Get or create a TurtleNestObservation and related MediaAttachments.
@@ -438,7 +434,7 @@ def handle_turtlenestobs31(d, e):
 
     e The related TurtleNestEncounter (must exist)
     """
-
+    print("  Creating TurtleNestObservation...")
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
         nest_position=d["habitat"],
@@ -453,8 +449,8 @@ def handle_turtlenestobs31(d, e):
         nest_depth_bottom=d["nest_depth_bottom"] or 0
         )
     dd.save()
-    print("TurtleNestObservation {0}".format("created" if created else "found"))
-    pprint(dd)
+    action = "created" if created else "updated"
+    print("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     for idx, ep in enumerate(d["egg_photos"]):
         dl_photo(e.source_id,
@@ -463,8 +459,6 @@ def handle_turtlenestobs31(d, e):
         pdir = make_photo_foldername(e.source_id)
         pname = os.path.join(pdir, ep["photo_eggs"]["filename"])
         handle_photo(pname, e, title="Egg photo {0}".format(idx + 1))
-
-    e.save()
 
 
 def handle_turtlenesttagobs(d, e, m):
@@ -488,12 +482,10 @@ def handle_turtlenesttagobs(d, e, m):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    print(d)
     if (d["status"] is None and
             d["flipper_tag_id"] is None and
             d["date_nest_laid"] is None and
             d["tag_label"] is None):
-        print("No TurtleNestObs found, skipping.")
         return
     else:
         dd, created = NestTagObservation.objects.get_or_create(
@@ -504,8 +496,8 @@ def handle_turtlenesttagobs(d, e, m):
             tag_label=d["tag_label"],
             )
         dd.save()
-        print("NestTagObservation {0}".format("created" if created else "found"))
-        pprint(dd)
+        action = "created" if created else "updated"
+        print("  NestTagObservation {0}: {1}".format(action, dd))
 
     if d["photo_tag"]:
         dl_photo(e.source_id,
@@ -515,7 +507,6 @@ def handle_turtlenesttagobs(d, e, m):
         pname = os.path.join(pdir, d["photo_tag"]["filename"])
         handle_photo(pname, e, title="Nest tag photo")
 
-    e.save()
 
 def handle_turtlenesttagobs31(d, e):
     """Get or create a TagObservation and related MediaAttachments.
@@ -537,12 +528,10 @@ def handle_turtlenesttagobs31(d, e):
 
     e The related TurtleNestEncounter (must exist)
     """
-    print(d)
     if (d["status"] is None and
             d["flipper_tag_id"] is None and
             d["date_nest_laid"] is None and
             d["tag_label"] is None):
-        print("No TurtleNestObs found, skipping.")
         return
     else:
         dd, created = NestTagObservation.objects.get_or_create(
@@ -554,8 +543,8 @@ def handle_turtlenesttagobs31(d, e):
             tag_label=d["tag_label"],
             )
         dd.save()
-        print("NestTagObservation {0}".format("created" if created else "found"))
-        pprint(dd)
+        action = "created" if created else "updated"
+        print("  NestTagObservation {0}: {1}".format(action, dd))
 
     if d["photo_tag"]:
         dl_photo(e.source_id,
@@ -564,8 +553,6 @@ def handle_turtlenesttagobs31(d, e):
         pdir = make_photo_foldername(e.source_id)
         pname = os.path.join(pdir, d["photo_tag"]["filename"])
         handle_photo(pname, e, title="Nest tag photo")
-
-    e.save()
 
 
 def handle_hatchlingmorphometricobs(d, e):
@@ -581,6 +568,7 @@ def handle_hatchlingmorphometricobs(d, e):
         }
     e The related TurtleNestEncounter (must exist)
     """
+    print("  Creating Hatchling Obs...")
     dd, created = HatchlingMorphometricObservation.objects.get_or_create(
         encounter=e,
         straight_carapace_length_mm=d["straight_carapace_length_mm"],
@@ -588,10 +576,8 @@ def handle_hatchlingmorphometricobs(d, e):
         body_weight_g=d["body_weight_g"]
         )
     dd.save()
-    print("HatchlingMorphometricObservation {0}".format("created" if created else "found"))
-    pprint(dd)
-
-    e.save()
+    action = "created" if created else "updated"
+    print("  Hatchling Obs {0}: {1}".format(action, dd))
 
 
 def handle_loggerenc(d, e):
@@ -617,6 +603,7 @@ def handle_loggerenc(d, e):
         }
     e The related TurtleNestEncounter (must exist)
     """
+    print("  Creating LoggerEncounter...")
     dd, created = LoggerEncounter.objects.get_or_create(
         source=e.source,
         source_id="{0}-{1}".format(e.source_id, d["logger_id"]),
@@ -629,10 +616,11 @@ def handle_loggerenc(d, e):
         logger_id=d["logger_id"]
         )
     dd.save()
-    print("LoggerEncounter {0}".format("created" if created else "found"))
-    pprint(dd)
+    action = "created" if created else "updated"
+    print("  LoggerEncounter {0}: {1}".format(action, dd))
 
     if d["photo_logger"]:
+        print("  Attaching photo to LoggerEncounter...")
         dl_photo(e.source_id,
                  d["photo_logger"]["url"],
                  d["photo_logger"]["filename"])
@@ -643,6 +631,7 @@ def handle_loggerenc(d, e):
 
     # If e has NestTagObservation, replicate NTO on LoggerEncounter
     if e.observation_set.instance_of(NestTagObservation).exists():
+        print("  TurtleNestEncounter has nest tag, replicating nest tag observation on LoggerEncounter...")
         nto = e.observation_set.instance_of(NestTagObservation).first()
         NestTagObservation.objects.get_or_create(
             encounter=e,
@@ -652,10 +641,8 @@ def handle_loggerenc(d, e):
             tag_label=nto.tag_label,
             )
         nto.save()
-        print("NestTagObservation {0}".format("created" if created else "found"))
-        pprint(nto)
-
-    e.save()
+        action = "created" if created else "updated"
+        print("  NestTag Observation {0} for {1}".format(action, nto))
 
 
 def handle_turtlenestdisttallyobs(d, e, m):
@@ -673,19 +660,19 @@ def handle_turtlenestdisttallyobs(d, e, m):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    print("Found disturbance obs")
-    pprint(d)
+    print("  Found disturbance observation...")
 
     dd, created = TurtleNestDisturbanceTallyObservation.objects.get_or_create(
         encounter=e,
-        disturbance_cause=m["disturbance_cause"][d["disturbance_cause"]],
+        disturbance_cause=d["disturbance_cause"],
         no_nests_disturbed=d["no_nests_disturbed"] or 0,
         no_tracks_encountered=d["no_tracks_encountered"] or 0,
         comments=d["disturbance_comments"]
         )
     dd.save()
+    action = "created" if created else "updated"
+    print("  Disturbance observation {0}: {1}".format(action, dd))
     e.save()  # cache distobs in HTML
-    pprint(dd)
 
 
 def import_one_record_tc010(r, m):
@@ -752,14 +739,14 @@ def import_one_record_tc010(r, m):
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
         reporter=m["users"][r["reporter"]],
-        nest_age=m["nest_age"][r["nest_age"]],
+        nest_age=r["nest_age"],
         nest_type=m["nest_type"][r["nest_type"]],
         species=m["species"][r["species"]],
         # comments
         )
     if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
         new_data["habitat"] = m["habitat"][r["habitat"]]
-        new_data["disturbance"] = m["disturbance"][r["disturbance"]]
+        new_data["disturbance"] = r["disturbance"]
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -770,7 +757,6 @@ def import_one_record_tc010(r, m):
         e = TurtleNestEncounter.objects.create(**new_data)
 
     e.save()
-    pprint(e)
 
     # MediaAttachment "Photo of track"
     if r["photo_track"] is not None:
@@ -789,6 +775,7 @@ def import_one_record_tc010(r, m):
      for distobs in r["disturbanceobservation"]
      if len(r["disturbanceobservation"]) > 0]
 
+    print("\n")
     return e
 
 
@@ -938,14 +925,14 @@ def import_one_record_tt026(r, m):
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
         reporter=m["users"][r["reporter"]],
-        nest_age=m["nest_age"][r["nest_age"]],
+        nest_age=r["nest_age"],
         nest_type=m["nest_type"][r["nest_type"]],
         species=m["species"][r["species"]],
         # comments
         )
     if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
         new_data["habitat"] = m["habitat"][r["habitat"]]
-        new_data["disturbance"] = m["disturbance26"][r["disturbance"]]
+        new_data["disturbance"] = r["disturbance"]
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -956,7 +943,6 @@ def import_one_record_tt026(r, m):
         e = TurtleNestEncounter.objects.create(**new_data)
 
     e.save()
-    pprint(e)
 
     # MediaAttachment "Photo of track"
     if r["photo_track"] is not None:
@@ -993,8 +979,8 @@ def import_one_record_tt026(r, m):
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
-    # TODO if both nest tag and logger enc present:
-    # create nest tag obs on logger enc
+    print("\n")
+    e.save()
     return e
 
 
@@ -1048,7 +1034,6 @@ def import_one_record_tt031(r, m):
         e = TurtleNestEncounter.objects.create(**new_data)
 
     e.save()
-    pprint(e)
 
     # MediaAttachment "Photo of track"
     if r["photo_track"] is not None:
@@ -1085,7 +1070,20 @@ def import_one_record_tt031(r, m):
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
+    print(" Saved {0}\n".format(e))
+    e.save()
     return e
+
+
+def make_tallyobs(encounter, species, nest_age, nest_type, tally_number):
+    t, created = TrackTallyObservation.objects.get_or_create(
+        encounter=encounter,
+        species=species,
+        nest_age=nest_age,
+        nest_type=nest_type,
+        tally=tally_number
+        )
+    print('  Tally (created: {0}) {1}'.format(created, t))
 
 
 def import_one_record_tt05(r, m):
@@ -1172,10 +1170,6 @@ def import_one_record_tt05(r, m):
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
         reporter=m["users"][r["reporter"]],
-        # nest_age=m["nest_age"][r["nest_age"]],
-        # nest_type=m["nest_type"][r["nest_type"]],
-        # species=m["species"][r["species"]],
-        # comments
         )
 
     if src_id in m["overwrite"]:
@@ -1187,317 +1181,71 @@ def import_one_record_tt05(r, m):
         e = LineTransectEncounter.objects.create(**new_data)
 
     e.save()
-    pprint(e)
 
     # TurtleNestDisturbanceTallyObservation
     [handle_turtlenestdisttallyobs(distobs, e, m)
      for distobs in r["disturbance"] if len(r["disturbance"]) > 0]
 
-    # TrackTallyObservations
-    # Flatbacks
-    msg = 'Tally (created: {0}) {1}'
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="old",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["fb_no_old_tracks"] or 0
-        )
-    print(msg.format(created, t))
+    #  TrackTallyObservations
+    FB = "natator-depressus"
+    GN = "chelonia-mydas"
+    HB = "eretmochelys-imbricata"
+    LH = "caretta-caretta"
+    OR = "lepidochelys-olivacea"
+    UN = "cheloniidae-fam"
 
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["fb_no_fresh_successful_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["fb_no_fresh_false_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["fb_no_fresh_tracks_unsure"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["fb_no_fresh_tracks_not_assessed"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["flatback"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["fb_no_hatched_nests"] or 0
-        )
-    print(msg.format(created, t))
+    tally_mapping = [
+        [FB, "old",   "track-not-assessed", r["fb_no_old_tracks"] or 0],
+        [FB, "fresh", "successful-crawl",   r["fb_no_fresh_successful_crawls"] or 0],
+        [FB, "fresh", "false-crawl",        r["fb_no_fresh_false_crawls"] or 0],
+        [FB, "fresh", "track-unsure",       r["fb_no_fresh_tracks_unsure"] or 0],
+        [FB, "fresh", "track-not-assessed", r["fb_no_fresh_tracks_not_assessed"] or 0],
+        [FB, "fresh", "hatched-nest",       r["fb_no_hatched_nests"] or 0],
 
-    # Greens
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="old",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["gn_no_old_tracks"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["gn_no_fresh_successful_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["gn_no_fresh_false_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["gn_no_fresh_tracks_unsure"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["gn_no_fresh_tracks_not_assessed"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["green"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["gn_no_hatched_nests"] or 0
-        )
-    print(msg.format(created, t))
+        [GN, "old",   "track-not-assessed", r["gn_no_old_tracks"] or 0],
+        [GN, "fresh", "successful-crawl",   r["gn_no_fresh_successful_crawls"] or 0],
+        [GN, "fresh", "false-crawl",        r["gn_no_fresh_false_crawls"] or 0],
+        [GN, "fresh", "track-unsure",       r["gn_no_fresh_tracks_unsure"] or 0],
+        [GN, "fresh", "track-not-assessed", r["gn_no_fresh_tracks_not_assessed"] or 0],
+        [GN, "fresh", "hatched-nest",       r["gn_no_hatched_nests"] or 0],
 
-    # Hawksbills
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="old",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["hb_no_old_tracks"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["hb_no_fresh_successful_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["hb_no_fresh_false_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["hb_no_fresh_tracks_unsure"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["hb_no_fresh_tracks_not_assessed"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["hawksbill"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["hb_no_hatched_nests"] or 0
-        )
-    print(msg.format(created, t))
+        [HB, "old", "track-not-assessed",   r["hb_no_old_tracks"] or 0],
+        [HB, "fresh", "successful-crawl",   r["hb_no_fresh_successful_crawls"] or 0],
+        [HB, "fresh", "false-crawl",        r["hb_no_fresh_false_crawls"] or 0],
+        [HB, "fresh", "track-unsure",       r["hb_no_fresh_tracks_unsure"] or 0],
+        [HB, "fresh", "track-not-assessed", r["hb_no_fresh_tracks_not_assessed"] or 0],
+        [HB, "fresh", "hatched-nest",       r["hb_no_hatched_nests"] or 0],
 
-    # Loggerheads
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="old",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["lh_no_old_tracks"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["lh_no_fresh_successful_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["lh_no_fresh_false_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["lh_no_fresh_tracks_unsure"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["lh_no_fresh_tracks_not_assessed"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["loggerhead"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["lh_no_hatched_nests"] or 0
-        )
-    print(msg.format(created, t))
+        [LH, "old", "track-not-assessed",   r["lh_no_old_tracks"] or 0],
+        [LH, "fresh", "successful-crawl",   r["lh_no_fresh_successful_crawls"] or 0],
+        [LH, "fresh", "false-crawl",        r["lh_no_fresh_false_crawls"] or 0],
+        [LH, "fresh", "track-unsure",       r["lh_no_fresh_tracks_unsure"] or 0],
+        [LH, "fresh", "track-not-assessed", r["lh_no_fresh_tracks_not_assessed"] or 0],
+        [LH, "fresh", "hatched-nest",       r["lh_no_hatched_nests"] or 0],
 
-    # Olive Ridley
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="old",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["or_no_old_tracks"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["or_no_fresh_successful_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["or_no_fresh_false_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["or_no_fresh_tracks_unsure"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["or_no_fresh_tracks_not_assessed"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["oliveridley"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["or_no_hatched_nests"] or 0
-        )
-    print(msg.format(created, t))
+        [OR, "old", "track-not-assessed",   r["or_no_old_tracks"] or 0],
+        [OR, "fresh", "successful-crawl",   r["or_no_fresh_successful_crawls"] or 0],
+        [OR, "fresh", "false-crawl",        r["or_no_fresh_false_crawls"] or 0],
+        [OR, "fresh", "track-unsure",       r["or_no_fresh_tracks_unsure"] or 0],
+        [OR, "fresh", "track-not-assessed", r["or_no_fresh_tracks_not_assessed"] or 0],
+        [OR, "fresh", "hatched-nest",       r["or_no_hatched_nests"] or 0],
 
-    # Unknown turtle
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="old",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["unk_no_old_tracks"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="successful-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["unk_no_fresh_successful_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="false-crawl",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["unk_no_fresh_false_crawls"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-unsure",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["unk_no_fresh_tracks_unsure"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="track-not-assessed",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["unk_no_fresh_tracks_not_assessed"] or 0
-        )
-    print(msg.format(created, t))
-    t, created = TrackTallyObservation.objects.get_or_create(
-        encounter=e,
-        species=m["species"]["turtle"],  # flatback green hawksbill loggerhead oliveridley turtle
-        nest_age="fresh",  # old fresh
-        nest_type="hatched-nest",  # false-crawl successful-crawl track-unsure track-not-assessed hatched-nest
-        tally=r["unk_no_hatched_nests"] or 0
-        )
-    print(msg.format(created, t))
+        [UN, "old", "track-not-assessed",  r["unk_no_old_tracks"] or 0],
+        [UN, "fresh", "successful-crawl",  r["unk_no_fresh_successful_crawls"] or 0],
+        [UN, "fresh", "false-crawl",       r["unk_no_fresh_false_crawls"] or 0],
+        [UN, "fresh", "track-unsure",      r["unk_no_fresh_tracks_unsure"] or 0],
+        [UN, "fresh", "track-not-assessed",r["unk_no_fresh_tracks_not_assessed"] or 0],
+        [UN, "fresh", "hatched-nest",      r["unk_no_hatched_nests"] or 0],
+        ]
+
+    [make_tallyobs(e, x[0], x[1], x[2], x[3]) for x in tally_mapping]
+
+    e.save()
+    print("\n")
+    return e
 
 
-#------------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # WAMTRAM
 #
 def import_one_encounter_wamtram(r, m):
@@ -1612,7 +1360,8 @@ def import_one_encounter_wamtram(r, m):
 
     print("Done.")
 
-#------------------------------------------------------------------------------#
+
+# -----------------------------------------------------------------------------#
 # Cetacean strandings database (Filemaker Pro)
 def infer_cetacean_sex(f, m):
     """Infer WAStD sex from Cetacean db values.
@@ -1647,6 +1396,7 @@ def make_comment(dictobj, fieldname):
     """
     return "{0}: {1}\n\n".format(fieldname, dictobj[fieldname]) if \
         fieldname in dictobj and dictobj[fieldname] != "" else ""
+
 
 def import_one_record_cet(r, m):
     """Import one Cetacean strandings database record into WAStD.
@@ -1762,7 +1512,6 @@ def import_one_record_cet(r, m):
 
     """
     print("Creating one AnimalEncounter from Cetacean Stranding")
-    # pprint(r)
 
     SPECIES = dict([[d[0], d[0]] for d in CETACEAN_SPECIES_CHOICES])
     # TODO this mapping needs QA (add species to CETACEAN_SPECIES_CHOICES)
@@ -1905,7 +1654,6 @@ def import_one_record_cet(r, m):
         e = AnimalEncounter.objects.create(**new_data)
 
     e.save()
-    pprint(e)
 
     print("done")
 
@@ -2026,7 +1774,6 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
     # generate a fresh mapping... once
     ODK_MAPPING = {
         # some values can be derived
-        "nest_age": map_values(NEST_AGE_CHOICES),
         "nest_type": map_values(NEST_TYPE_CHOICES),
         "tag_status": map_values(TAG_STATUS_CHOICES),
 
@@ -2048,13 +1795,10 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
             'vegetation': 'in-dune-vegetation',
             'na': 'na',
             },
-        "disturbance": map_values(OBSERVATION_CHOICES),
         "disturbance26": {
             'yes': 'present',
             'no': 'absent',
             },
-        "disturbance_cause": map_values(NEST_DAMAGE_CHOICES),
-        # "disturbance_cause_confidence": map_values(CONFIDENCE_CHOICES),
         "disturbance_cause_confidence": {
             "na": "guess",
             "guess": "guess",
