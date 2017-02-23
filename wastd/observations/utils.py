@@ -1639,6 +1639,15 @@ def fix_species_name(spname):
         "(?)", "").replace("?", "").strip().replace(" ", "-").lower()
 
 
+def make_comment(dictobj, fieldname):
+    """Render a dict's field to text
+
+    Return
+        '<fieldname>: <dictobj["fieldname"]>' or ''
+    """
+    return "{0}: {1}\n\n".format(fieldname, dictobj[fieldname]) if \
+        fieldname in dictobj and dictobj[fieldname] != "" else ""
+
 def import_one_record_cet(r, m):
     """Import one Cetacean strandings database record into WAStD.
 
@@ -1762,6 +1771,7 @@ def import_one_record_cet(r, m):
         'balaenopter-musculus-brevicauda': "balaenoptera-musculus-brevicauda",
         'balaenopters-cf-b-omurai': "balaenoptera-omurai",
         'kogia-simus': "kogia-sima",
+        'sousa-chinensis': 'sousa-sahulensis',
         'orcaella-heinsohni-x': "orcaella-heinsohni",
         'stenella--sp-(coeruleoalba)': "stenella-sp",
         })
@@ -1808,14 +1818,8 @@ def import_one_record_cet(r, m):
 
     """
     Map:
-    'Condition when found': 'Live',
-    'Dead Stranding': '',
-
-    'Boat_Ship Strike': '',
+    'SA', # subadult?
     'C': '1',
-    'ID': '' > name
-    sex: 'F': '1', 'M': '', 'U': '',
-
     Attachments:
     'Attachment': '',
     'Photos taken': 'Yes',
@@ -1828,45 +1832,53 @@ def import_one_record_cet(r, m):
         'taxon': u'Cetacea',
         'species': SPECIES[fix_species_name(r["Scientific Name"] or '')],
         'activity': u'na',  # TODO
-        'behaviour': " ".join([
-            "Age", r['Age'], "\n",
-            "Admin comment", r['Admin comment'], "\n",
-            "Ailment_injury comment", r['Ailment_injury comment'], "\n",
-            "Carcass Location_Fate", r['Carcass Location_Fate'], "\n",
-            "Comments", r['Comments'], "\n",
-            "Condition comments", r['Condition comments'], "\n",
-            "DPaW Attended", r['DPaW Attended'], "\n",
-            "Cow_calf pair Stranding", r['Cow_calf pair Stranding'], "\n",
-            "Demographic comment", r['Demographic comment'], "\n",
-            "El Nino", r['El Nino'], "\n",
-            "Entanglement", r['Entanglement'], "\n",
-            "Entanglement gear", r['Entanglement gear'], "\n",
-            "Entanglement gear details", r['Entanglement gear details'], "\n",
-            "Event", r['Event'], "\n",
-            "Fate", r['Fate'], "\n",
-            "File Number", r['File Number'], "\n",
-            "Floating carcass", r['Floating carcass'], "\n",
-            "Heavy Metals", r['Heavy Metals'], "\n",
-            "Moon Phase", r['Moon Phase'], "\n",
-            "Near River", r['Near River'], "\n",
-            "Single Stranding", r['Single Stranding'], "\n",
-            "Mass Stranding", r['Mass Stranding'], "\n",
-            "Number of animals", r['Number of animals'], "\n",
-            "Outcome", r['Outcome'], "\n",
-            "PM Report location", r['PM Report location'], "\n",
-            "Post mortem report summary", r['Post mortem report summary'], "\n",
-            'Live Stranding', r['Live Stranding'], "\n",
-            'Location', r['Location'], "\n",
-            'PCB', r['PCB'], "\n",
-            'Record No.', r['Record No.'], "\n",
-            'Rescue info', r['Rescue info'], "\n",
-            'SA', r['SA'], "\n",
-            'Sampling comments', r['Sampling comments'], "\n",
-            'Site', r['Site'], "\n",
-            "Length _m_", r['Length _m_'], "\n",
-            'Weight _kg_', r['Weight _kg_'], "\n",
-            "Name", r["ID"], "\n",
-            ]),
+        'behaviour': "".join([make_comment(r, x) for x in [
+            "File Number",
+            "Name",
+            "Age",
+
+            "Comments",
+            "Admin comment",
+
+            "Event",
+
+            'Boat_Ship Strike',
+            "Entanglement",
+            "Entanglement gear",
+            "Entanglement gear details",
+            "Floating carcass",
+            "Single Stranding",
+            "Cow_calf pair Stranding",
+            "Mass Stranding",
+            "Number of animals",
+            "Demographic comment",
+            'Live Stranding',
+            'Dead Stranding',
+
+            "DPaW Attended",
+            'Rescue info',
+            "Outcome",
+            "Fate",
+            "Carcass Location_Fate",
+
+            "El Nino",
+            "Heavy Metals",
+            'PCB',
+            "Moon Phase",
+            "Near River",
+
+            'Condition when found',
+            "Condition comments",
+            "Ailment_injury comment",
+            "PM Report location",
+            "Post mortem report summary",
+            'Sampling comments',
+            "Length _m_",
+            'Weight _kg_',
+
+            'Site',
+            'Location',
+            ]]),
         'cause_of_death': COD[r["Cause of Death _drop down_"]],
         'cause_of_death_confidence': u'na',  # TODO
         'checked_for_flipper_tags': u'na',  # TODO
@@ -1919,7 +1931,7 @@ def pinniped_coords_as_point(cstring):
     '33 27 0.73s 115 34 35.00e',# Lat Lon  D M S.S"s" D M S"s"
     '35:2 :11.198; 116:44:21.536',# weird space
     '416247E; 6143585',        # UTM E N
-    'Hauled out, resting, good body condition.',  # column mismatch
+    'Hauled out, resting, good body condition.',  # column mismatch?
     'Lat 6240557; Long 0236825', # UTM N E
     '`31:00;115:19']           # Stray "`"
 
