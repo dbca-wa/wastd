@@ -1634,7 +1634,7 @@ def infer_cetacean_sex(f, m):
 
 
 def fix_species_name(spname):
-    """Return one Encounter's species name to lowercase-dashseparated."""
+    """Return one species name lowercase-dashseparated."""
     return spname.replace(".", "").replace("? ", "").replace(
         "(?)", "").replace("?", "").strip().replace(" ", "-").lower()
 

@@ -217,18 +217,11 @@ PINNIPED_SPECIES_CHOICES = (
     ("arctocephalus-forsteri", "Arctocephalus forsteri (New Zealand fur seal)"),
     ("neophoca-cinerea", "Neophoca cinerea (Australian sea lion)"),
     ("arctocephalus-tropicalis", "Arctocephalus tropicalis (Subantarctic fur seal)"),
-    ("", ""),
-    ("", ""),
-    ("", ""),
+    ("hydrurga-leptonyx", "Hydrurga leptonyx (Leopard seal)"),
+    ("lobodon-carcinophagus", "Lobodon carcinophagus (Crabeater seal)"),
+    ("mirounga-leonina", "Mirounga leonina (Southern elephant seal)"),
     (PINNIPED_SPECIES_DEFAULT, "Unidentified pinniped"),
-
-    'Arctocephalus tropicalis',
-    'Female',
-    'Hydrurga leptonyx',
-    'Lobodon carcinophagus',
-    'Mirounga leonina',
-    'Neophoca cinerea'
-)
+    )
 
 SEASNAKE_SPECIES_DEFAULT = 'hydrophiinae-subfam'
 SEASNAKE_SPECIES_CHOICES = (
@@ -259,8 +252,9 @@ SIRENIA_CHOICES = (
 SPECIES_CHOICES = NA +\
  TURTLE_SPECIES_CHOICES +\
  CETACEAN_SPECIES_CHOICES +\
- SEASNAKE_SPECIES_CHOICES +\
- SIRENIA_CHOICES
+ SIRENIA_CHOICES +\
+ PINNIPED_SPECIES_CHOICES +\
+ SEASNAKE_SPECIES_CHOICES
 
 SEX_CHOICES = (
     (NA_VALUE, "unknown sex"),
