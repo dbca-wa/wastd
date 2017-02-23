@@ -775,7 +775,8 @@ def import_one_record_tc010(r, m):
      for distobs in r["disturbanceobservation"]
      if len(r["disturbanceobservation"]) > 0]
 
-    print("\n")
+    print(" Saved {0}\n".format(e))
+    e.save()
     return e
 
 
@@ -786,7 +787,7 @@ def import_one_record_tt026(r, m):
 
     r The record as dict, e.g.
 
-{
+    {
         "instanceID": "uuid:22623d7c-ac39-46a1-9f99-741b7c668e58",
         "observation_start_time": "2017-02-01T01:37:11.947Z",
         "reporter": "florianm",
@@ -979,7 +980,7 @@ def import_one_record_tt026(r, m):
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
-    print("\n")
+    print(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1511,8 +1512,6 @@ def import_one_record_cet(r, m):
 
 
     """
-    print("Creating one AnimalEncounter from Cetacean Stranding")
-
     SPECIES = dict([[d[0], d[0]] for d in CETACEAN_SPECIES_CHOICES])
     # TODO this mapping needs QA (add species to CETACEAN_SPECIES_CHOICES)
     SPECIES.update({
@@ -1653,9 +1652,9 @@ def import_one_record_cet(r, m):
         print("Creating new record {0}...".format(src_id))
         e = AnimalEncounter.objects.create(**new_data)
 
+    print(" Saved {0}\n".format(e))
     e.save()
-
-    print("done")
+    return e
 
 
 def pinniped_coords_as_point(cstring):
@@ -1689,8 +1688,6 @@ def pinniped_coords_as_point(cstring):
     print("Got coords {0}".format(cstring))
     print("TODO: parse to point")
     return None
-
-
 
 
 def import_one_record_pin(r, m):
@@ -1730,12 +1727,11 @@ def import_one_record_pin(r, m):
         'Lobodon carcinophagus': "lobodon-carcinophagus",
         'Mirounga leonina': "mirounga-leonina",
         'Neophoca cinerea': "neophoca-cinerea"}
-
-
     """
+    pass
 
 
-#------------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # Main import call
 #
 def import_odk(datafile, flavour="odk-tt031", extradata=None):
@@ -1766,9 +1762,11 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
 
     Example:
 
-        >>> from django.conf import settings
-        >>> json_file = os.path.join(settings.STATIC_ROOT, 'data', 'TrackCount_0_10_results.json')
-        >>> import_odk(json_file)
+        >>> from wastd.observations.utils import *
+        >>> import_odk('data/TrackCount_0_10_results.json', flavour="odk-tc010")
+        >>> import_odk('data/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
+        >>> import_odk('data/cetaceans.csv', flavour="cet")
+
     """
 
     # generate a fresh mapping... once
