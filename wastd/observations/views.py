@@ -1,3 +1,4 @@
+"""Views for WAStD."""
 # from django.shortcuts import render
 # from rest_framework.decorators import api_view, renderer_classes, permission_classes
 # from rest_framework import response, schemas, permissions
@@ -24,16 +25,22 @@ from wastd.observations.forms import (
 # https://kuttler.eu/en/post/using-django-tables2-filters-crispy-forms-together/
 # http://stackoverflow.com/questions/25256239/
 class EncounterTable(tables.Table):
+    """A data table for Encounters."""
 
     class Meta:
+        """Model opts."""
+
         model = Encounter
-        exclude = ["as_html", "polymorphic_ctype", ]
+        exclude = ["as_html", "as_latex", "polymorphic_ctype",  "encounter_ptr"]
         attrs = {'class': 'table table-hover table-inverse table-sm'}
 
 
 class AnimalEncounterTable(tables.Table):
+    """A data table for AnimalEncounters."""
 
     class Meta:
+        """Model opts."""
+
         model = AnimalEncounter
         exclude = ["as_html", "as_latex", "polymorphic_ctype", "encounter_ptr"]
         attrs = {'class': 'table table-hover table-inverse table-sm'}
@@ -81,6 +88,7 @@ class PagedFilteredTableView(SingleTableView):
 
 class EncounterTableView(PagedFilteredTableView):
     """Filtered paginated TableView for Encounter."""
+
     model = Encounter
     table_class = EncounterTable
     paginate_by = 5
@@ -90,6 +98,7 @@ class EncounterTableView(PagedFilteredTableView):
 
 class AnimalEncounterTableView(EncounterTableView):
     """Filtered paginated TableView for AninmalEncounter."""
+
     model = AnimalEncounter
     table_class = AnimalEncounterTable
     paginate_by = 5
@@ -103,6 +112,7 @@ class AnimalEncounterTableView(EncounterTableView):
 schema_view = get_schema_view(
     title='WAStD API',
     renderer_classes=[CoreJSONRenderer, OpenAPIRenderer, SwaggerUIRenderer])
+
 
 # Utilities ------------------------------------------------------------------#
 @csrf_exempt

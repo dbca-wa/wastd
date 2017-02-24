@@ -15,6 +15,7 @@ from django.contrib.gis.geos import Point, LineString
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
+from django.utils.timezone import get_fixed_timezone, utc
 
 from wastd.observations.models import (
     Encounter, AnimalEncounter, LoggerEncounter, TurtleNestEncounter,
@@ -1335,7 +1336,7 @@ def import_one_record_tt05(r, m):
     [make_tallyobs(e, x[0], x[1], x[2], x[3]) for x in tally_mapping]
 
     e.save()
-    print("\n")
+    print(" Saved {0}\n".format(e))
     return e
 
 
@@ -1429,7 +1430,7 @@ def import_one_encounter_wamtram(r, m):
     'health': u'dead-edible',
     'id': 2574,
     'location_accuracy': u'1000',
-    'maturity': u'adult',1
+    'maturity': u'adult',
     'name': None,
     'observer_id': 1,
     'polymorphic_ctype_id': 17,
@@ -1445,35 +1446,96 @@ def import_one_encounter_wamtram(r, m):
     'when': datetime.datetime(2017, 2, 3, 2, 35, tzinfo=<UTC>),
     'where': <Point object at 0x7f16854fb400>}
 
-    Point(float(r["LONGITUDE"]), float(r["LATITUDE"]))
+    TODO
+    Tags
+    'COMMENT_FROMRECORDEDTAGSTABLE': 'PTT',
+    'COMMENTS': 'PTT: #103225-11858',
+    'OTHER_TAGS_IDENTIFICATION_TYPE': 'PTT',
+    'OTHER_TAGS': '103225-11858  PENV URS',
+    'SCARS_LEFT': '0',
+    'SCARS_LEFT_SCALE_1': '0',
+    'SCARS_LEFT_SCALE_2': '0',
+    'SCARS_LEFT_SCALE_3': '0',
+    'SCARS_RIGHT': '0',
+    'SCARS_RIGHT_SCALE_1': '0',
+    'SCARS_RIGHT_SCALE_2': '0',
+    'SCARS_RIGHT_SCALE_3': '0',
+    'TagScarNotChecked': '0',
+    'TransferID': 'NA',
+
+    Measurements
+    'DidNotCheckForInjury': '0',
+    'Mund': '0',
+    'ALIVE': 'Y',
+    'CONDITION_CODE': 'NA',
+    'MEASUREMENTS': 'Y',
+    'NUMBER_OF_EGGS': 'NA',
+    'EGG_COUNT_METHOD': 'NA',
+    'CLUTCH_COMPLETED': 'N',
+    'MEASURER_PERSON_ID': '623',
+    'MEASURER_REPORTER_PERSON_ID': '3826',
+    'CC_LENGTH_Not_Measured': '0',
+    'CC_NOTCH_LENGTH_Not_Measured': '1',
+    'CC_WIDTH_Not_Measured': '0',
+
+
+    Personnel
+    'REPORTER_PERSON_ID': '3826',
+    'TAGGER_PERSON_ID': '623',
+
+    Event
+    'ACTION_TAKEN': 'NA',
+    'NESTING': 'Y',
+    'OBSERVATION_STATUS': 'Initial Nesting',
+
+    Comments
+    'display_this_observation': '1' # mention if "0"
+
+    Turtle
+    'OBSERVATION_ID': '211465',
+    'ORIGINAL_OBSERVATION_ID': 'NA',
+    'TURTLE_ID': '55742',
+
+    Audit trail
+    'DATE_ENTERED': '2010-12-20 00:00:00',
+    'ENTERED_BY': 'NA',
+    'ENTERED_BY_PERSON_ID': '3537',
+    'ENTRY_BATCH_ID': '301',
     """
-    print("Import one WAMTRAM...")
-    pprint(r)
-
-    src_id = r["instanceID"]
-
+    src_id = "wamtram-observation-id-{0}".format(r["OBSERVATION_ID"])
     new_data = dict(
         source="wamtram",
         source_id=src_id,
-        where=odk_linestring_as_point(r["location"]),
-        transect=read_odk_linestring(r["location"]),
-        when=parse_datetime(r["observation_start_time"]),
+        where=Point(float(r["LONGITUDE"]), float(r["LATITUDE"])),
+        when=parse_datetime("{0}+00".format(r["observation_datetime_utc"])),
         location_accuracy="10",
-        observer=m["users"][r["reporter"]],
-        reporter=m["users"][r["reporter"]],
+        observer_id=1,  # lookup_w2_user(r["REPORTER_PERSON_ID"]),
+        reporter_id=1,
+        taxon="Cheloniidae",
+        species=m["species"][r["SPECIES_CODE"]],
+        activity=m["activity"][r['activity_code']],
+        sex="female",
+        maturity="adult",
+        health=m["health"][r['CONDITION_CODE']],
         )
+
+    """
+    TODO create mapping for:
+    habitat = m["habitat"][r['BEACH_POSITION_CODE']],
+    behaviour="", # all comments go here
+    """
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
-        LineTransectEncounter.objects.filter(source_id=src_id).update(**new_data)
-        e = LineTransectEncounter.objects.get(source_id=src_id)
+        AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = AnimalEncounter.objects.get(source_id=src_id)
     else:
         print("Creating new record {0}...".format(src_id))
-        e = LineTransectEncounter.objects.create(**new_data)
+        e = AnimalEncounter.objects.create(**new_data)
 
     e.save()
-
-    print("Done.")
+    print(" Saved {0}\n".format(e))
+    return e
 
 
 # -----------------------------------------------------------------------------#
@@ -1766,8 +1828,8 @@ def import_one_record_cet(r, m):
         print("Creating new record {0}...".format(src_id))
         e = AnimalEncounter.objects.create(**new_data)
 
-    print(" Saved {0}\n".format(e))
     e.save()
+    print(" Saved {0}\n".format(e))
     return e
 
 
@@ -1895,7 +1957,52 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
             'loggerhead': 'caretta-caretta',
             'oliveridley': 'lepidochelys-olivacea',
             'leatherback': 'dermochelys-coriacea',
-            'turtle': 'cheloniidae-fam'
+            'turtle': 'cheloniidae-fam',
+
+            # WAMTRAM
+            'FB': 'natator-depressus',
+            'GN': 'chelonia-mydas',
+            'HK': 'eretmochelys-imbricata',
+            'LO': 'caretta-caretta',
+            'OR': 'lepidochelys-olivacea',
+            'LB': 'dermochelys-coriacea',
+            '?': 'cheloniidae-fam',
+            '0': 'cheloniidae-fam',
+            },
+        "activity": {
+            "&": "captivity",       # Captive animal
+            "A": "arriving",        # Resting at waters edge - Nesting
+            "B": "arriving",        # Leaving water - Nesting
+            "C": "approaching",     # Climbing beach slope - Nesting
+            "D": "approaching",     # Moving over bare sand (=beach) - Nesting
+            "E": "digging-body-pit",  # Digging body hole - Nesting
+            "F": "excavating-egg-chamber",  # Excavating egg chamber - Nesting
+            "G": "laying-eggs",     # Laying eggs - confirmed observation - Nesting
+            "H": "filling-in-egg-chamber",  # Covering nest (filling in) - Nesting
+            "I": "returning-to-water",  # Returning to water - Nesting
+            # "J": "",              # Check/?edit these: only on VA records
+            "K": "non-breeding",    # Basking - on beach above waterline
+            "L": "arriving",        # Arriving - Nesting
+            "M": "other",           # Mating
+            "N": "other",           # Courting
+            "O": "non-breeding",    # Free at sea
+            "Q": "na",              # Not recorded in field
+            "R": "non-breeding",    # Released to wild
+            "S": "non-breeding",    # Rescued from stranding
+            "V": "non-breeding",    # Caught in fishing gear - Decd
+            "W": "non-breeding",    # Captured in water (reef or sea)
+            "X": "floating",        # Turtle dead
+            "Y": "floating",        # Caught in fishing gear - Relsd
+            "Z": "other",           # Hunted for food by Ab & others
+            },
+        "health": {
+            "F": "dead-edible",     # Carcase - fresh
+            "G": "alive",           # Good - fat
+            "H": "alive",           # Live & fit
+            "I": "alive",           # Injured but OK
+            "M": "alive",           # Moribund
+            "P": "alive",           # Poor - thin
+            "NA": "na",
             },
         "habitat": {
             'abovehwm': 'beach-above-high-water',
@@ -2013,6 +2120,8 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
         # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
         ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="wamtram")]
+        ODK_MAPPING["overwrite"] = [t.source_id for t in Encounter.objects.filter(
+            source="wamtram", status=Encounter.STATUS_NEW)]
 
         [import_one_encounter_wamtram(e, ODK_MAPPING) for e in enc
          if e["OBSERVATION_ID"] not in ODK_MAPPING["keep"]]

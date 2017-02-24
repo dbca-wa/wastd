@@ -289,10 +289,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     # Filters for change_list
     list_filter = (LocationListFilter,
                    'site_visit', 'status', 'observer', 'reporter',
-                   'location_accuracy', 'encounter_type')
+                   'location_accuracy', 'encounter_type', 'source')
 
     # Columns for change_list, allow re-use and inserting fields
-    FIRST_COLS = ('when', 'site_visit', 'latitude', 'longitude', 'location_accuracy', 'name')
+    FIRST_COLS = ('when', 'site_visit', 'latitude', 'longitude',
+                  'location_accuracy', 'name')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
                  'status', 'encounter_type')
     list_display = FIRST_COLS + LAST_COLS
