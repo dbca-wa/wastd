@@ -715,6 +715,15 @@ class SiteVisit(geo_models.Model):
         verbose_name=_("Site left on"),
         help_text=_("The datetime of leaving the site, shown as local time "
                     "(no daylight savings), stored as UTC."))
+    transect = geo_models.LineStringField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Transect line"),
+        help_text=_("The surveyed path as LineString in WGS84."))
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Describe any circumstances affecting data collection."), )
     team = models.ManyToManyField(User, related_name="site_visit_team")
 
     def __str__(self):
@@ -797,7 +806,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ("wamtram", _("WAMTRAM 2 tagging DB")),
         ("ntp-exmouth", _("NTP Access DB Exmouth")),
         ("ntp-broome", _("NTP Access DB Broome")),
-        ("cet", _("Cetacean and Pinniped strandings DB")),
+        ("cet", _("Cetacean strandings DB")),
+        ("pin", _("Pinniped strandings DB")),
         )
 
     ENCOUNTER_STRANDING = 'stranding'

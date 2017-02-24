@@ -278,7 +278,7 @@ def handle_turtlenestdistobs(d, e, m):
         encounter=e,
         disturbance_cause=d["disturbance_cause"],
         disturbance_cause_confidence=m["disturbance_cause_confidence"][d["disturbance_cause_confidence"]],
-        disturbance_severity=m["disturbance_severity"][d["disturbance_severity"]],
+        disturbance_severity=d["disturbance_severity"],
         comments=d["comments"]
         )
     dd.save()
@@ -1024,7 +1024,100 @@ def import_one_record_tt031(r, m):
         )
     if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
         new_data["habitat"] = r["habitat"]
-        new_data["disturbance"] = m["disturbance26"][r["disturbance"]]
+        new_data["disturbance"] = m["disturbance"][r["disturbance"]]
+
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = TurtleNestEncounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = TurtleNestEncounter.objects.create(**new_data)
+
+    e.save()
+
+    # MediaAttachment "Photo of track"
+    if r["photo_track"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_track"]["filename"])
+        handle_photo(pname, e, title="Track")
+
+    # MediaAttachment "Photo of nest"
+    if r["photo_nest"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_nest"]["filename"])
+        handle_photo(pname, e, title="Nest")
+
+    # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
+    [handle_turtlenestdistobs31(distobs, e)
+     for distobs in r["disturbanceobservation"]
+     if r["disturbance"] and len(r["disturbanceobservation"]) > 0]
+
+    # TurtleNestObservation
+    if r["eggs_counted"] == "yes":
+        handle_turtlenestobs31(r, e)
+
+    # NestTagObservation
+    if r["nest_tagged"]:
+        handle_turtlenesttagobs31(r, e)
+
+    # HatchlingMorphometricObservation
+    [handle_hatchlingmorphometricobs(ho, e)
+     for ho in r["hatchling_measurements"]
+     if len(r["hatchling_measurements"]) > 0]
+
+    # LoggerEncounter retrieved HOBO logger
+    [handle_loggerenc(lg, e)
+     for lg in r["logger_details"]
+     if len(r["logger_details"]) > 0]
+
+    print(" Saved {0}\n".format(e))
+    e.save()
+    return e
+
+
+def import_one_record_tt034(r, m):
+    """Import one ODK Track or Treat 0.34 record into WAStD.
+
+
+    The only change vs tt026 is that ODK now allows dashes in choice values.
+    The following choices are now are identical to WAStD
+    and do not require a mapping any longer:
+
+    * species
+    * nest_type
+    * habitat
+    * disturbance evident
+    * disturbance_cause_confidence
+    * status (tag status)
+
+    Arguments
+
+    r The record as dict
+
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]],
+        nest_age=r["nest_age"],
+        nest_type=r["nest_type"],
+        species=r["species"],
+        # comments
+        )
+    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
+        new_data["habitat"] = r["habitat"]
+        new_data["disturbance"] = r["disturbance"]
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -1231,12 +1324,12 @@ def import_one_record_tt05(r, m):
         [OR, "fresh", "track-not-assessed", r["or_no_fresh_tracks_not_assessed"] or 0],
         [OR, "fresh", "hatched-nest",       r["or_no_hatched_nests"] or 0],
 
-        [UN, "old", "track-not-assessed",  r["unk_no_old_tracks"] or 0],
-        [UN, "fresh", "successful-crawl",  r["unk_no_fresh_successful_crawls"] or 0],
-        [UN, "fresh", "false-crawl",       r["unk_no_fresh_false_crawls"] or 0],
-        [UN, "fresh", "track-unsure",      r["unk_no_fresh_tracks_unsure"] or 0],
-        [UN, "fresh", "track-not-assessed",r["unk_no_fresh_tracks_not_assessed"] or 0],
-        [UN, "fresh", "hatched-nest",      r["unk_no_hatched_nests"] or 0],
+        [UN, "old", "track-not-assessed",   r["unk_no_old_tracks"] or 0],
+        [UN, "fresh", "successful-crawl",   r["unk_no_fresh_successful_crawls"] or 0],
+        [UN, "fresh", "false-crawl",        r["unk_no_fresh_false_crawls"] or 0],
+        [UN, "fresh", "track-unsure",       r["unk_no_fresh_tracks_unsure"] or 0],
+        [UN, "fresh", "track-not-assessed", r["unk_no_fresh_tracks_not_assessed"] or 0],
+        [UN, "fresh", "hatched-nest",       r["unk_no_hatched_nests"] or 0],
         ]
 
     [make_tallyobs(e, x[0], x[1], x[2], x[3]) for x in tally_mapping]
@@ -1250,9 +1343,7 @@ def import_one_record_tt05(r, m):
 # WAMTRAM
 #
 def import_one_encounter_wamtram(r, m):
-    """Import one ODK Track Tally 0.5 record into WAStD.
-
-    Notably, counts of "None" are true absences and will be converted to "0".
+    """Import one WAMTRAM 2 tagging record into WAStD.
 
     Arguments
 
@@ -1358,6 +1449,29 @@ def import_one_encounter_wamtram(r, m):
     """
     print("Import one WAMTRAM...")
     pprint(r)
+
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="wamtram",
+        source_id=src_id,
+        where=odk_linestring_as_point(r["location"]),
+        transect=read_odk_linestring(r["location"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]],
+        )
+
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        LineTransectEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = LineTransectEncounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = LineTransectEncounter.objects.create(**new_data)
+
+    e.save()
 
     print("Done.")
 
@@ -1748,44 +1862,41 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
 
     Preparation:
 
-    * https://dpaw-data.appspot.com/ > Submissions > Form e.g. "TrackCount 0.10"
+    * https://dpaw-data.appspot.com/ > Submissions > Form e.g. "Track or Treat 0.31"
     * Export > JSON > Export
     * Submissions > Exported Submissions > download JSON
 
     Behaviour:
 
-    * Records in JSON that are not in db will be created in db
-    * Records in JSON that are in db, but have status NEW (not QA'd yet) will
-      be created in db
-    * Records in JSON that are in db, but have status **above** NEW (QA'd and
-      possibly locally changed) will be ignored
+    * Records not in WAStD will be created
+    * Records in WAStD of status NEW (unchanged since import) will be updated
+    * Records in WAStD of status **above** NEW (QA'd and possibly locally changed) will be skipped
 
     Example:
 
         >>> from wastd.observations.utils import *
         >>> import_odk('data/TrackCount_0_10_results.json', flavour="odk-tc010")
         >>> import_odk('data/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
+        >>> import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
+        >>> import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
         >>> import_odk('data/cetaceans.csv', flavour="cet")
 
     """
-
-    # generate a fresh mapping... once
+    # Older ODK forms don't support dashes for choice fields and require mapping
     ODK_MAPPING = {
         # some values can be derived
         "nest_type": map_values(NEST_TYPE_CHOICES),
         "tag_status": map_values(TAG_STATUS_CHOICES),
 
-        # some are custom
         "species": {
-            'flatback': 'Natator depressus',
-            'green': 'Chelonia mydas',
-            'hawksbill': 'Eretmochelys imbricata',
-            'loggerhead': 'Caretta caretta',
-            'oliveridley': 'Lepidochelys olivacea',
-            'leatherback': 'Dermochelys coriacea',
-            'turtle': 'Cheloniidae fam.'
+            'flatback': 'natator-depressus',
+            'green': 'chelonia-mydas',
+            'hawksbill': 'eretmochelys-imbricata',
+            'loggerhead': 'caretta-caretta',
+            'oliveridley': 'lepidochelys-olivacea',
+            'leatherback': 'dermochelys-coriacea',
+            'turtle': 'cheloniidae-fam'
             },
-
         "habitat": {
             'abovehwm': 'beach-above-high-water',
             'belowhwm': 'beach-below-high-water',
@@ -1793,10 +1904,11 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
             'vegetation': 'in-dune-vegetation',
             'na': 'na',
             },
-        "disturbance26": {
+        "disturbance": {
             'yes': 'present',
             'no': 'absent',
             },
+        # typo in Track or Treat 0.26: validate (missing "d")
         "disturbance_cause_confidence": {
             "na": "guess",
             "guess": "guess",
@@ -1804,18 +1916,9 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
             "validated": "validated",
             "validate": "validated",
             },
-        "disturbance_severity": map_values(
-            TurtleNestDisturbanceObservation.NEST_VIABILITY_CHOICES),
-
         "overwrite": [t.source_id for t in Encounter.objects.filter(
             source="odk", status=Encounter.STATUS_NEW)]
         }
-
-    # typo in Track or Treat 0.26
-    # ODK_MAPPING["disturbance_cause_confidence"]["validate"] = "validated"
-
-    print("\n\nMapping:\n\n")
-    pprint(ODK_MAPPING)
 
     if flavour == "odk-tc010":
         print("Using flavour ODK Track Count 0.10...")
@@ -1825,22 +1928,6 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
         ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
         ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
-
-        # Download photos
-        pt = [[r["instanceID"],
-               r["photo_track"]["url"],
-               r["photo_track"]["filename"]]
-              for r in d
-              if r["photo_track"] is not None]
-        pn = [[r["instanceID"],
-               r["photo_nest"]["url"],
-               r["photo_nest"]["filename"]]
-              for r in d
-              if r["photo_nest"] is not None]
-        print("Downloading photos of {0} tracks and {1} nests".format(
-            len(pt), len(pn)))
-        all_photos = pt + pn
-        [dl_photo(p[0], p[1], p[2]) for p in all_photos]
 
         [import_one_record_tc010(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
@@ -1855,30 +1942,6 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
         ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
-        # Download photos
-        ptr = [[r["instanceID"],
-                r["photo_track"]["url"],
-                r["photo_track"]["filename"]]
-               for r in d
-               if r["photo_track"] is not None]
-
-        pne = [[r["instanceID"],
-                r["photo_nest"]["url"],
-                r["photo_nest"]["filename"]]
-               for r in d
-               if r["photo_nest"] is not None]
-
-        pta = [[r["instanceID"],
-                r["photo_nest"]["url"],
-                r["photo_nest"]["filename"]]
-               for r in d
-               if r["photo_nest"] is not None]
-
-        print("Downloading photos of {0} tracks, {1} nests, {2} tags".format(
-            len(ptr), len(pne), len(pta)))
-        all_photos = ptr + pne + pta
-        [dl_photo(p[0], p[1], p[2]) for p in all_photos]
-
         [import_one_record_tt026(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
@@ -1892,33 +1955,22 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
         ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
-        # Download photos
-        ptr = [[r["instanceID"],
-                r["photo_track"]["url"],
-                r["photo_track"]["filename"]]
-               for r in d
-               if r["photo_track"] is not None]
-
-        pne = [[r["instanceID"],
-                r["photo_nest"]["url"],
-                r["photo_nest"]["filename"]]
-               for r in d
-               if r["photo_nest"] is not None]
-
-        pta = [[r["instanceID"],
-                r["photo_nest"]["url"],
-                r["photo_nest"]["filename"]]
-               for r in d
-               if r["photo_nest"] is not None]
-
-        print("Downloading photos of {0} tracks, {1} nests, {2} tags".format(
-            len(ptr), len(pne), len(pta)))
-        all_photos = ptr + pne + pta
-        [dl_photo(p[0], p[1], p[2]) for p in all_photos]
-
         [import_one_record_tt031(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
+
+    elif flavour == "odk-tt034":
+            print("Using flavour ODK Track or Treat 0.34...")
+            with open(datafile) as df:
+                d = json.load(df)
+                print("Loaded {0} records from {1}".format(len(d), datafile))
+            ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+            ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+                status=Encounter.STATUS_NEW).filter(source="odk")]
+
+            [import_one_record_tt034(r, ODK_MAPPING) for r in d
+             if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+            print("Done!")
 
     elif flavour == "odk-tally05":
         print("Using flavour ODK Track Tally 0.5...")
