@@ -10,10 +10,6 @@
 {% block javascript%}
 {{ block.super }}
 <script type="text/javascript">
-
-
-/* TODO Cluster markers: https://github.com/Leaflet/Leaflet.markercluster */
-
 function map_init(map, options) {
 
     /* Helper functions */
@@ -109,7 +105,11 @@ function map_init(map, options) {
      * Ideal for filters with sensible defaults (e.g. show only current year)
      * https://github.com/makinacorpus/django-geojson#geojson-template-filter
      */
-    // L.geoJson({{ qs_results|geojsonfeature|safe }}).addTo(map);
+    L.geoJson(
+        {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
+        // {clipTiles: true, unique: getUnique},
+        {style: style, pointToLayer: ptl, onEachFeature: oef}
+    ).addTo(map);
 
     /*
      * Option 2: GeoJSON view
@@ -130,11 +130,11 @@ function map_init(map, options) {
      * ptl overrides default marker with AwesomeMarker
      * oef binds popup to marker
      */
-    var geojsonTileLayer = new L.TileLayer.GeoJSON(
-        'data/{z}/{x}/{y}.geojson',
-        {clipTiles: true, unique: getUnique},
-        {style: style, pointToLayer: ptl, onEachFeature: oef}
-    ).addTo(map);
+    // var geojsonTileLayer = new L.TileLayer.GeoJSON(
+    //     'data/{z}/{x}/{y}.geojson',
+    //     {clipTiles: true, unique: getUnique},
+    //     {style: style, pointToLayer: ptl, onEachFeature: oef}
+    // ).addTo(map);
 
 }
 </script>

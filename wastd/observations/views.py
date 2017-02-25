@@ -20,6 +20,23 @@ from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
 from wastd.observations.forms import (
     EncounterListFormHelper, AnimalEncounterListFormHelper)
 
+from django.views.generic.list import ListView
+from django.utils import timezone
+
+
+class HomeView(ListView):
+
+    model = AnimalEncounter
+    template_name = "pages/home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
+
+    def get_queryset(self, **kwargs):
+        return AnimalEncounter.objects.filter(taxon="Cheloniidae")
+
 
 # Encounters -----------------------------------------------------------------#
 # https://kuttler.eu/en/post/using-django-tables2-filters-crispy-forms-together/

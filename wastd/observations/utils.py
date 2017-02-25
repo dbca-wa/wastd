@@ -2004,6 +2004,9 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
             "P": "alive",           # Poor - thin
             "NA": "na",
             },
+
+        # tag status 0L A1 A2 ae AE M M1 N OO OX p P P_ED P_OK PX Q R RC RQ
+
         "habitat": {
             'abovehwm': 'beach-above-high-water',
             'belowhwm': 'beach-below-high-water',

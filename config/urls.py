@@ -21,13 +21,16 @@ from rest_framework.authtoken import views as drf_authviews
 from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
-    schema_view, update_names, EncounterTableView, AnimalEncounterTableView)
+    schema_view, update_names,
+    HomeView, EncounterTableView, AnimalEncounterTableView)
 
 # register all adminactions
 actions.add_to_site(site)
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='pages/home.html'),
+    url(r'^$',
+        # TemplateView.as_view(template_name='pages/home.html'),
+        HomeView.as_view(),
         name='home'),
 
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'),
