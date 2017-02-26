@@ -17,6 +17,7 @@ from django.core.files import File
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import get_fixed_timezone, utc
 
+from wastd.users.models import User
 from wastd.observations.models import (
     Encounter, AnimalEncounter, LoggerEncounter, TurtleNestEncounter,
     LineTransectEncounter,
@@ -1343,7 +1344,7 @@ def import_one_record_tt05(r, m):
 # -----------------------------------------------------------------------------#
 # WAMTRAM
 #
-def import_one_encounter_wamtram(r, m):
+def import_one_encounter_wamtram(r, m, u):
     """Import one WAMTRAM 2 tagging record into WAStD.
 
     Arguments
@@ -1414,6 +1415,8 @@ def import_one_encounter_wamtram(r, m):
     'observation_datetime_utc': '2010-12-11 16:55:00'}
 
     m The ODK_MAPPING
+
+    u a dict of WAMTRAM PERSON_ID: WAStD User object
 
     Returns
 
@@ -1503,14 +1506,21 @@ def import_one_encounter_wamtram(r, m):
     'ENTRY_BATCH_ID': '301',
     """
     src_id = "wamtram-observation-id-{0}".format(r["OBSERVATION_ID"])
+
+    # Personnel: Get WAStD User from u if PERSON_ID present, default to 1
+    observer_id = u[r["TAGGER_PERSON_ID"]] if r["TAGGER_PERSON_ID"] in u else 1
+    reporter_id = u[r["REPORTER_PERSON_ID"]] if r["REPORTER_PERSON_ID"] in u else 1
+    meas_observer_id = u[r["MEASURER_PERSON_ID"]] if r["MEASURER_PERSON_ID"] in u else 1
+    meas_reporter_id = u[r["MEASURER_REPORTER_PERSON_ID"]] if r["MEASURER_REPORTER_PERSON_ID"] in u else 1
+
     new_data = dict(
         source="wamtram",
         source_id=src_id,
         where=Point(float(r["LONGITUDE"]), float(r["LATITUDE"])),
         when=parse_datetime("{0}+00".format(r["observation_datetime_utc"])),
         location_accuracy="10",
-        observer_id=1,  # lookup_w2_user(r["REPORTER_PERSON_ID"]),
-        reporter_id=1,
+        observer_id=observer_id,  # lookup_w2_user(r["REPORTER_PERSON_ID"]),
+        reporter_id=reporter_id,
         taxon="Cheloniidae",
         species=m["species"][r["SPECIES_CODE"]],
         activity=m["activity"][r['activity_code']],
@@ -1907,10 +1917,71 @@ def import_one_record_pin(r, m):
     pass
 
 
+def update_wastd_user(u):
+    """Create or update a WAStD user from a dict.
+
+    Arguments
+
+    u   A dict with name, email, role (SPECIALTY) and WAMTRAM PERSON_ID, e.g.
+
+    {'ADDRESS_LINE_1': 'NA',
+   'ADDRESS_LINE_2': 'NA',
+   'COMMENTS': 'MSP Thevenard 2016-17',
+   'COUNTRY': 'NA',
+   'EMAIL': 'NA',
+   'FAX': 'NA',
+   'FIRST_NAME': 'Joel',
+   'MIDDLE_NAME': 'NA',
+   'MOBILE': 'NA',
+   'PERSON_ID': '4725',
+   'POST_CODE': 'NA',
+   'Recorder': '0',
+   'SPECIALTY': 'NA',
+   'STATE': 'NA',
+   'SURNAME': 'Kerbey',
+   'TELEPHONE': 'NA',
+   'TOWN': 'NA',
+   'Transfer': 'NA',
+   'email': 'NA',
+   'name': 'Joel Kerbey'}
+
+    Return
+
+    The updated or created WAStD User ID
+    """
+    usr, created = User.objects.get_or_create(
+        username=u["name"].lower().replace(" ", "_"))
+    print("User {0}: {1}".format("created" if created else "found", usr))
+
+    # Update name
+    if (usr.name is None or usr.name == "") and u["name"] != "NA" and u["name"] != "":
+        usr.name = u["name"]
+        print("  User name updated from name: {0}".format(usr.name))
+
+    # Update email
+    if (usr.email is None or usr.email == "") and u["EMAIL"] != "NA":
+        usr.email = u["EMAIL"]
+        print("  User email updated from EMAIL: {0}".format(usr.role))
+
+    # If role is not set, or doesn't already contain SPECIALTY, add SPECIALTY
+    if ((usr.role is None or usr.role == "" or u["SPECIALTY"] not in usr.role)
+        and u["SPECIALTY"] != "NA"):
+        usr.role = "{0} Specialty: {1}".format(usr.role or '', u["SPECIALTY"]).strip()
+        print("  User role updated from SPECIALTY: {0}".format(usr.role))
+
+    if ((usr.role is None or usr.role == "" or u["COMMENTS"] not in usr.role)
+        and u["COMMENTS"] != "NA"):
+        usr.role = "{0} Comments: {1}".format(usr.role or '', u["COMMENTS"]).strip()
+        print("  User role updated from COMMENTS: {0}".format(usr.role))
+
+    usr.save()
+    print(" Saved User {0}".format(usr))
+    return usr.id
+
 # -----------------------------------------------------------------------------#
 # Main import call
 #
-def import_odk(datafile, flavour="odk-tt031", extradata=None):
+def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
     """Import ODK Track Count 0.10 data.
 
     Arguments
@@ -1921,6 +1992,8 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
     flavour A string indicating the type of input
 
     extradata A second datafile (tags for WAMTRAM)
+
+    usercsv A CSV file with columns "name" and "PERSON_ID"
 
     Preparation:
 
@@ -1942,6 +2015,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
         >>> import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
         >>> import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
         >>> import_odk('data/cetaceans.csv', flavour="cet")
+        >>> import_odk('data/wamtram_encounters.csv', flavour='wamtram', usercsv='data/wamtram_users.csv')
 
     """
     # Older ODK forms don't support dashes for choice fields and require mapping
@@ -2116,9 +2190,14 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
         enc = csv.DictReader(open(datafile))
         print("not impemented yet")
 
-    elif flavour == "w2":
+    elif flavour == "wamtram":
         print("ALL ABOARD THE WAMTRAM!!!")
         enc = csv.DictReader(open(datafile))
+        wamtram_users = csv.DictReader(open(usercsv))
+
+        # List of [WAStD User object (.id), WAMTRAM user dict (["PERSON_ID"])]
+        users = {user["PERSON_ID"]: update_wastd_user(user)
+                 for user in wamtram_users if user["name"] != ""}
 
         # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
         ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
@@ -2126,7 +2205,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None):
         ODK_MAPPING["overwrite"] = [t.source_id for t in Encounter.objects.filter(
             source="wamtram", status=Encounter.STATUS_NEW)]
 
-        [import_one_encounter_wamtram(e, ODK_MAPPING) for e in enc
+        [import_one_encounter_wamtram(e, ODK_MAPPING, users) for e in enc
          if e["OBSERVATION_ID"] not in ODK_MAPPING["keep"]]
 
         # if extradata:
