@@ -783,3 +783,70 @@ REQ The turtle group must be trained in the use of the chosen reporting framewor
 REQ Reporting framework procedures must be provided with sufficient
 documentation, training resources, and ongoing support to allow efficient
 engagement of turtle group members with data analysis and reporting.
+
+
+===========================
+How it's made - the process
+===========================
+Listen - look - touch - understand - build - repeat.
+
+Listen
+======
+Listen to stakeholders to clarify past, present and future of:
+
+* scope and growth of scope
+* data in: data sheets
+* work flows: manuals, instructions, communication
+* insight out: products
+
+Ask:
+
+* If we can handle all data from data sheets and produce all products, what
+  data haven't we touched?
+* Who needs to be involved, when and how?
+* Who needs to be trained, how often, who trains the trainers?
+
+Writing down the above will evolve into the project's documentation, including
+requirements analysis, technical documentation, user-level manuals, and training material.
+
+Look
+====
+Look at examples of all production data. Review data sheets with stakeholders.
+Does all data serve QA or generated insight? What's missing, what's unnecessary?
+
+The combined understanding of production data will evolve into a data model, based
+on a good understanding of involved product life cycles and user roles.
+
+Touch
+=====
+Create live documents (workbooks) loading and inspecting production data
+for each legacy system.
+Describe and document legacy data in the workbooks.
+Clean and transform legacy data, store snapshots in a central place (data catalogue).
+
+These workbooks will evolve into ETL scripts for data in legacy systems.
+
+Understand
+==========
+Build insight from the sanitised legacy data as raw versions of every product
+identified by the stakeholders.
+
+Review often with stakeholders to confirm relevance, validity, and evolve the
+data product to optimise insight for data consumers.
+
+Build
+=====
+Build systems to handle, store, document, process data.
+
+Be modular and agile enough to evolve the systems into production systems.
+
+Deploy systems in production mode to allow stakeholder interaction and to battle-test
+deployment and recovery protocols.
+
+Repeat
+======
+Build features end-to-end, optimize architecture rather than implementation.
+Keep iterations small and consult stakeholders.
+
+Verify the necessity of a feature through a product utilising it, and verify the
+product's validity (and the correctnenss of data processing) with stakeholders.
