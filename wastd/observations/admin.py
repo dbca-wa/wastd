@@ -364,6 +364,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'cause_of_death', 'cause_of_death_confidence',
         'maturity_display', 'sex_display', 'behaviour',
         'habitat_display',
+        'nesting_event',
         'checked_for_injuries',
         'scanned_for_pit_tags',
         'checked_for_flipper_tags',
@@ -372,6 +373,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'taxon', 'species',
         'health', 'cause_of_death', 'cause_of_death_confidence',
         'maturity', 'sex', 'habitat',
+        'nesting_event',
         'checked_for_injuries',
         'scanned_for_pit_tags',
         'checked_for_flipper_tags', )
@@ -380,6 +382,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
          {'fields': ('taxon', 'species', 'maturity', 'sex',
                      'activity', 'behaviour', 'habitat',
                      'health', 'cause_of_death', 'cause_of_death_confidence',
+                     'nesting_event',
                      'checked_for_injuries',
                      'scanned_for_pit_tags',
                      'checked_for_flipper_tags',)}), )
