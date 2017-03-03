@@ -1527,12 +1527,14 @@ def import_one_encounter_wamtram(r, m, u):
         sex="female",
         maturity="adult",
         health=m["health"][r['CONDITION_CODE']],
+        habitat=m["habitat"][r["BEACH_POSITION_CODE"]],
+        nesting_event=m["nesting"][r["NESTING"]],
         )
 
     """
     TODO create mapping for:
-    habitat = m["habitat"][r['BEACH_POSITION_CODE']],
     behaviour="", # all comments go here
+    r["NESTING"] Y/N/U = nesting success
     """
 
     if src_id in m["overwrite"]:
@@ -1978,6 +1980,7 @@ def update_wastd_user(u):
     print(" Saved User {0}".format(usr))
     return usr.id
 
+
 # -----------------------------------------------------------------------------#
 # Main import call
 #
@@ -2015,7 +2018,8 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
         >>> import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
         >>> import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
         >>> import_odk('data/cetaceans.csv', flavour="cet")
-        >>> import_odk('data/wamtram_encounters.csv', flavour='wamtram', usercsv='data/wamtram_users.csv')
+        >>> import_odk('data/wamtram_encounters.csv', flavour="wamtram", usercsv="data/wamtram_users.csv")
+
 
     """
     # Older ODK forms don't support dashes for choice fields and require mapping
@@ -2043,6 +2047,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
             '?': 'cheloniidae-fam',
             '0': 'cheloniidae-fam',
             },
+
         "activity": {
             "&": "captivity",       # Captive animal
             "A": "arriving",        # Resting at waters edge - Nesting
@@ -2069,6 +2074,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
             "Y": "floating",        # Caught in fishing gear - Relsd
             "Z": "other",           # Hunted for food by Ab & others
             },
+
         "health": {
             "F": "dead-edible",     # Carcase - fresh
             "G": "alive",           # Good - fat
@@ -2087,11 +2093,29 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
             'edgeofvegetation': 'beach-edge-of-vegetation',
             'vegetation': 'in-dune-vegetation',
             'na': 'na',
+
+            # WAMTRAM BEACH_POSITION_CODE
+            'NA': 'na',
+            "?": "na",
+            "A": "beach-above-high-water",
+            "B": "beach-above-high-water",
+            "C": "beach-below-high-water",
+            "D": "beach-edge-of-vegetation",
+            "E": "in-dune-vegetation",
             },
+
         "disturbance": {
             'yes': 'present',
             'no': 'absent',
             },
+
+        # WAMTRAM NESTING
+        "nesting": {
+            'Y': 'present',
+            'N': 'absent',
+            'U': 'na',
+            },
+
         # typo in Track or Treat 0.26: validate (missing "d")
         "disturbance_cause_confidence": {
             "na": "guess",
@@ -2100,6 +2124,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
             "validated": "validated",
             "validate": "validated",
             },
+
         "overwrite": [t.source_id for t in Encounter.objects.filter(
             source="odk", status=Encounter.STATUS_NEW)]
         }

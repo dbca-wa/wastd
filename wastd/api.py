@@ -36,6 +36,7 @@ from rest_framework import serializers, viewsets, routers
 # from dynamic_rest import serializers as ds, viewsets as dv
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_extra_fields.geo_fields import PointField
+from rest_framework_gis.filters import InBBoxFilter
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from rest_framework.authentication import (
@@ -65,6 +66,7 @@ from wastd.users.models import User
 # sync_route = SynctoolRoute()
 # @sync_route.app("users", "users")
 # @sync_route.app("observations", "observations")
+
 
 # Serializers ----------------------------------------------------------------#
 class UserSerializer(serializers.ModelSerializer):
@@ -448,8 +450,10 @@ class AreaSerializer(GeoFeatureModelSerializer):
         fields = ("area_type", "name", "geom", "northern_extent", "centroid", )
 
 
-class EncounterSerializer(serializers.HyperlinkedModelSerializer):
+class EncounterSerializer(GeoFeatureModelSerializer):
     """Encounter serializer.
+
+    Alternative: serializers.HyperlinkedModelSerializer
 
     TODO: a writable version of the serializer will provide `create` and
     `update` methods, which also create/update the inline Observations.
@@ -471,9 +475,6 @@ class EncounterSerializer(serializers.HyperlinkedModelSerializer):
 
       NOTE this API is not writeable, as related models (User and Observation)
       require customisations to handle data thrown at them.
-
-      NOTE this Serializer is quite slow, as it includes HTML and Latex fragments
-      which are required by the "render to Latex" API output.
     """
 
     observation_set = ObservationSerializer(many=True, read_only=False)
@@ -664,7 +665,6 @@ class EncounterViewSet(viewsets.ModelViewSet):
     filter_fields = [
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'source', 'source_id', 'encounter_type', ]
-    filter_backends = (DjangoFilterBackend, )  # AreaFilter
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -673,13 +673,16 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     """TurtleNestEncounter view set."""
+
     latex_name = 'latex/encounter.tex'
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'name', 'observer', 'reporter',  'status',
+        'location_accuracy', 'when', 'name',
+        'observer', 'reporter',  'status',
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source',
         'source_id', 'encounter_type', ]
+    # filter_backends = (InBBoxFilter, DjangoFilterBackend)
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -688,6 +691,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
     """AnimalEncounter view set."""
+
     latex_name = 'latex/encounter.tex'
     authentication_classes = (SessionAuthentication,
                               BasicAuthentication,
@@ -695,7 +699,8 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
+        'location_accuracy', 'when', 'name',
+        'observer', 'reporter', 'status',
         'taxon', 'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
         'cause_of_death', 'cause_of_death_confidence',
@@ -715,6 +720,7 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
         'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
         'deployment_status', 'comments',
         'source', 'source_id', 'encounter_type', ]
+    filter_backends = (DjangoFilterBackend, InBBoxFilter)
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -750,6 +756,7 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = NestTagObservationEncounterSerializer
     filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
                      'comments']
+    filter_backends = (DjangoFilterBackend, InBBoxFilter)
 
 
 # Routers provide an easy way of automatically determining the URL conf.

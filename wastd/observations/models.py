@@ -1450,6 +1450,13 @@ class AnimalEncounter(Encounter):
         default=NA_VALUE,
         help_text=_("The habitat in which the animal was encountered."), )
 
+    nesting_event = models.CharField(
+        max_length=300,
+        verbose_name=_("Nesting event"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Was the animal nesting?"),)
+
     checked_for_injuries = models.CharField(
         max_length=300,
         verbose_name=_("Checked for injuries"),
@@ -1519,12 +1526,15 @@ class AnimalEncounter(Encounter):
         excluded. Note that an animal encountered in water, or even a dead
         animal (whether that makes sense or not) can also be tagged.
         """
-        if self.health in DEATH_STAGES:
+        if self.nesting_event == "present":
+            return Encounter.ENCOUNTER_TAGGING
+        elif self.health in DEATH_STAGES:
             return Encounter.ENCOUNTER_STRANDING
         elif self.habitat in HABITAT_WATER:
+            # this will ignore inwater encounters without habitat
             return Encounter.ENCOUNTER_INWATER
         else:
-            # not stranding or in water = tagging
+            # not stranding or in water = fallback to tagging
             return Encounter.ENCOUNTER_TAGGING
 
     @property
