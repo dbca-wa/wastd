@@ -1344,6 +1344,11 @@ def import_one_record_tt05(r, m):
 # -----------------------------------------------------------------------------#
 # WAMTRAM
 #
+def make_wamtram_source_id(original_id):
+    """Generate the source_id for WAMTRAM records."""
+    return "wamtram-observation-id-{0}".format(original_id)
+
+
 def import_one_encounter_wamtram(r, m, u):
     """Import one WAMTRAM 2 tagging record into WAStD.
 
@@ -1505,7 +1510,7 @@ def import_one_encounter_wamtram(r, m, u):
     'ENTERED_BY_PERSON_ID': '3537',
     'ENTRY_BATCH_ID': '301',
     """
-    src_id = "wamtram-observation-id-{0}".format(r["OBSERVATION_ID"])
+    src_id = make_wamtram_source_id(r["OBSERVATION_ID"])
 
     # Personnel: Get WAStD User from u if PERSON_ID present, default to 1
     observer_id = u[r["TAGGER_PERSON_ID"]] if r["TAGGER_PERSON_ID"] in u else 1
@@ -1549,6 +1554,97 @@ def import_one_encounter_wamtram(r, m, u):
     print(" Saved {0}\n".format(e))
     return e
 
+
+def sanitize_tag_name(name):
+    return name.upper().replace(" ", "")
+
+
+def make_tag_side(side, position):
+    """Return the WAStD tag_position from WAMTRAM side and position.
+
+    Arguments:
+
+    side The WAMTRAM tag side, values: NA L R
+    position The WAMTRAM tag position, values: NA 1 2 3
+
+    Return
+    The WAStD tag_position, e.g. flipper-front-left-1 or flipper-front-right-3
+    """
+    side_dict = {
+        "NA": "left",
+        "L": "left",
+        "R": "right"
+        }
+    pos_dict = {
+        "NA": "1",
+        "1": "1",
+        "2": "2",
+        "3": "3"
+        }
+    return "flipper-front-{0}-{1}".format(side_dict[side], pos_dict[position])
+
+
+def import_one_tag(t, m):
+    """Import one WAMTRAM 2 tag observation record into WAStD.
+
+    Arguments
+
+    t The record as dict, e.g.
+
+    {
+     'observation_id': '267425',
+     'recorded_tag_id': '394783',
+     'tag_name': 'WB 9239',
+     'tag_state': 'A1',
+     'attached_on_side': 'R',
+     'tag_position': 'NA',
+     'comments': 'NA',
+     'tag_label': 'NA',
+     }
+
+    m The ODK_MAPPING
+
+    Return a TabObservation e.g.
+
+    {
+    'tag_type': u'flipper-tag'
+    'encounter_id': 80,
+    'handler_id': 1,
+    'recorder_id': 1,
+    'name': u'WA1234',
+    'status': u'resighted',
+    'tag_location': u'whole',
+    'comments': u'',
+    }
+    """
+    tag_name = sanitize_tag_name(t["tag_name"])
+    enc = AnimalEncounter.objects.get(
+        source_id=make_wamtram_source_id(t["observation_id"]))
+
+    new_data = dict(
+        encounter_id=enc.id,
+        tag_type='flipper-tag',
+        handler_id=enc.observer_id,
+        recorder_id=enc.reporter_id,
+        name=tag_name,
+        tag_location=make_tag_side(t["attached_on_side"], t["tag_position"]),
+        status=m["tag_status"][t["tag_state"]],
+        comments='{0}{1}'.format(t["comments"], t["tag_label"]),
+        )
+
+    if TagObservation.objects.filter(encounter=enc, name=tag_name).exists():
+        print("Updating existing tag obs {0}...".format(tag_name))
+        e = TagObservation.objects.filter(
+            encounter=enc, name=tag_name).update(**new_data)
+        e = TagObservation.objects.get(encounter=enc, name=tag_name)
+
+    else:
+        print("Creating new tag obs {0}...".format(tag_name))
+        e = TagObservation.objects.create(**new_data)
+
+    e.save()
+    print(" Saved {0}\n".format(e))
+    return e
 
 # -----------------------------------------------------------------------------#
 # Cetacean strandings database (Filemaker Pro)
@@ -2018,7 +2114,8 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
         >>> import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
         >>> import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
         >>> import_odk('data/cetaceans.csv', flavour="cet")
-        >>> import_odk('data/wamtram_encounters.csv', flavour="wamtram", usercsv="data/wamtram_users.csv")
+        >>> import_odk('data/wamtram_encounters.csv', flavour="wamtram", extradata="data/wamtram_users.csv")
+        >>> import_odk('data/wamtram_tagobservations.csv', flavour="whambam")
 
 
     """
@@ -2085,7 +2182,20 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
             "NA": "na",
             },
 
-        # tag status 0L A1 A2 ae AE M M1 N OO OX p P P_ED P_OK PX Q R RC RQ
+        "tag_status": {
+            "#": 'resighted',
+            "OX": 'resighted',
+            "P": 'resighted',
+            "P_OK": 'resighted',
+            "RQ": 'resighted',
+            "P_ED": 'resighted',
+            "A1": 'applied-new',
+            "AE": 'applied-new',
+            "RC": 'reclinched',
+            "OO": 'removed',
+            "R": 'removed',
+            "Q": 'resighted'
+            },
 
         "habitat": {
             'abovehwm': 'beach-above-high-water',
@@ -2236,6 +2346,17 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
         # if extradata:
         #   tags = csv.DictReader(open(extradata))
         # [import_one_tag_wamtram(t, ODK_MAPPING) for t in tags]
+
+    elif flavour == "whambam":
+        print("thank you ma'am")
+        tags = csv.DictReader(open(datafile))
+
+        print("  Caching tagging encounters...")
+        enc = [x["source_id"] for x in
+               AnimalEncounter.objects.filter(source="wamtram").values("source_id")]
+
+        [import_one_tag(x, ODK_MAPPING) for x in tags
+         if make_wamtram_source_id(x["observation_id"]) in enc]
 
     else:
         print("Format not recognized. Exiting.")
