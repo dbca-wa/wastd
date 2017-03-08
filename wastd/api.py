@@ -664,7 +664,8 @@ class EncounterViewSet(viewsets.ModelViewSet):
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
+        'site_visit', 'location_accuracy', 'when', 'name',
+        'observer', 'reporter', 'status',
         'source', 'source_id', 'encounter_type', ]
 
     def pre_latex(view, t_dir, data):
@@ -679,7 +680,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'name',
+        'site_visit', 'location_accuracy', 'when', 'name',
         'observer', 'reporter',  'status',
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source',
         'source_id', 'encounter_type', ]
@@ -700,7 +701,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'name',
+        'site_visit', 'location_accuracy', 'when', 'name',
         'observer', 'reporter', 'status',
         'taxon', 'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
@@ -718,7 +719,8 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
     filter_fields = [
-        'location_accuracy', 'when', 'name', 'observer', 'reporter', 'status',
+        'site_visit', 'location_accuracy', 'when', 'name',
+        'observer', 'reporter', 'status',
         'deployment_status', 'comments',
         'source', 'source_id', 'encounter_type', ]
     filter_backends = (DjangoFilterBackend, InBBoxFilter)

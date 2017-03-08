@@ -18,7 +18,7 @@ from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
 from wastd.observations.models import (
-    Area, SiteVisit,
+    Area, Expedition, SiteVisit, FieldMediaAttachment,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     LineTransectEncounter,
     MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
@@ -230,6 +230,7 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
 
 # Select2Widget forms
 S2ATTRS = {'width': '350px'}
+ExpeditionForm = s2form(Expedition, attrs=S2ATTRS)
 SiteVisitForm = s2form(SiteVisit, attrs=S2ATTRS)
 EncounterAdminForm = s2form(Encounter, attrs=S2ATTRS)
 AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
@@ -244,10 +245,32 @@ leaflet_settings = {
         'map_srid': 4326, })}
 
 
+
+class FieldMediaAttachmentInline(admin.TabularInline):
+    """TabularInlineAdmin for FieldMediaAttachment."""
+
+    extra = 0
+    model = FieldMediaAttachment
+    classes = ('grp-collapse grp-open',)
+    widgets = {'attachment': ImageThumbnailFileInput}  # seems inactive
+
+
+@admin.register(Expedition)
+class ExpeditionAdmin(admin.ModelAdmin):
+    form = ExpeditionForm
+    list_display = ('site', 'started_on', 'finished_on', 'comments')
+    date_hierarchy = 'started_on'
+    inlines = [FieldMediaAttachmentInline, ]
+    # Leaflet geolocation widget
+    formfield_overrides = {
+        geo_models.PointField: leaflet_settings,
+        geo_models.LineStringField: leaflet_settings,
+        }
+
+
 @admin.register(SiteVisit)
-class SiteVisitAdmin(admin.ModelAdmin):
+class SiteVisitAdmin(ExpeditionAdmin):
     form = SiteVisitForm
-    list_display = ('site', 'site_entered_on', 'site_left_on')
 
 
 @admin.register(Area)

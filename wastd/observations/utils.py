@@ -19,6 +19,7 @@ from django.utils.timezone import get_fixed_timezone, utc
 
 from wastd.users.models import User
 from wastd.observations.models import (
+    SiteVisit,
     Encounter, AnimalEncounter, LoggerEncounter, TurtleNestEncounter,
     LineTransectEncounter,
     MediaAttachment, TagObservation, NestTagObservation,
@@ -44,6 +45,7 @@ def allocate_animal_names():
     * For each new capture, get the primary flipper tag name as animal name
     * Set the animal name of this and all related Encounters
     """
+    [s.claim_encounters for s in SiteVisit.objects.all()]
     ae = [a.set_name_and_propagate(a.primary_flipper_tag.name)
           for a in AnimalEncounter.objects.all() if a.is_new_capture]
     le = [a.save() for a in LoggerEncounter.objects.all()]

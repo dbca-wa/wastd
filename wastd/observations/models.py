@@ -562,6 +562,20 @@ NEST_DAMAGE_CHOICES = (
 # End lookups ----------------------------------------------------------------#
 
 
+def encounter_media(instance, filename):
+    """Return an upload file path for an encounter media attachment."""
+    if not instance.encounter.id:
+        instance.encounter.save()
+    return 'encounter/{0}/{1}'.format(instance.encounter.source_id, filename)
+
+
+def expedition_media(instance, filename):
+    """Return an upload file path for an expedition media attachment."""
+    if not instance.expedition.id:
+        instance.expedition.save()
+    return 'expedition/{0}/{1}'.format(instance.expedition.id, filename)
+
+
 # Spatial models -------------------------------------------------------------#
 @python_2_unicode_compatible
 class Area(geo_models.Model):
@@ -700,36 +714,124 @@ class Area(geo_models.Model):
 
 
 @python_2_unicode_compatible
-class SiteVisit(geo_models.Model):
-    """A visit to one site by a team of field workers collecting data."""
+class Expedition(PolymorphicModel, geo_models.Model):
+    """An endeavour of a team to a location within a defined time range."""
 
     site = models.ForeignKey(
         Area,
-        verbose_name=_("Site"),
-        help_text=_("The visited site is an Area of type 'Site'."), )
-    site_entered_on = models.DateTimeField(
+        verbose_name=_("Surveyed area"),
+        help_text=_("The entire surveyed area."), )
+
+    started_on = models.DateTimeField(
         verbose_name=_("Site entered on"),
         help_text=_("The datetime of entering the site, shown as local time "
                     "(no daylight savings), stored as UTC."))
-    site_left_on = models.DateTimeField(
+
+    finished_on = models.DateTimeField(
         verbose_name=_("Site left on"),
         help_text=_("The datetime of leaving the site, shown as local time "
                     "(no daylight savings), stored as UTC."))
+
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Describe any circumstances affecting data collection, "
+                    "e.g. days without surveys."), )
+
+    team = models.ManyToManyField(
+        User,
+        blank=True, null=True,
+        related_name="expedition_team")
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Expedition to {0} from {1} to {2}".format(
+            self.site.name,
+            self.started_on.isoformat(),
+            self.finished_on.isoformat())
+
+    @property
+    def site_visits(self):
+        """Return a QuerySet of site visits."""
+        return SiteVisit.objects.filter(
+            site__geom__contained=self.site.geom,
+            started_on__gte=self.started_on,
+            finished_on__lte=self.finished_on)
+
+
+@python_2_unicode_compatible
+class SiteVisit(Expedition):
+    """A visit to one site by a team of field workers collecting data."""
+
     transect = geo_models.LineStringField(
         srid=4326,
         blank=True, null=True,
         verbose_name=_("Transect line"),
-        help_text=_("The surveyed path as LineString in WGS84."))
-    comments = models.TextField(
-        verbose_name=_("Comments"),
-        blank=True, null=True,
-        help_text=_("Describe any circumstances affecting data collection."), )
-    team = models.ManyToManyField(User, related_name="site_visit_team")
+        help_text=_("The surveyed path as LineString in WGS84, optional."))
 
     def __str__(self):
         """The unicode representation."""
-        return "Visit to {0} on {1}".format(self.site.name,
-                                            self.site_entered_on.istoformat())
+        return "Survey of {0} from {1} to {2}".format(
+            self.site.name,
+            self.started_on.isoformat(),
+            self.finished_on.isoformat())
+
+    @property
+    def encounters(self):
+        """Return the QuerySet of all Encounters within this SiteVisit."""
+        return Encounter.objects.filter(
+            where__contained=self.site.geom,
+            when__gte=self.started_on,
+            when__lte=self.finished_on)
+
+    def claim_encounters(self):
+        """Update Encounters within this SiteVisit with reference to self."""
+        self.encounters.update(site_visit=self)
+
+
+@python_2_unicode_compatible
+class FieldMediaAttachment(models.Model):
+    """A media attachment to an Expedition or Survey."""
+
+    MEDIA_TYPE_CHOICES = (
+        ('data_sheet', _('Data sheet')),
+        ('journal', _('Field journal')),
+        ('communication', _('Communication record')),
+        ('photograph', _('Photograph')),
+        ('other', _('Other')), )
+
+    expedition = models.ForeignKey(
+        Expedition,
+        verbose_name=_("Expedition"),
+        help_text=_("Surveys can be conducted during an expedition."), )
+
+    media_type = models.CharField(
+        max_length=300,
+        verbose_name=_("Attachment type"),
+        choices=MEDIA_TYPE_CHOICES,
+        default="photograph",
+        help_text=_("What is the attached file about?"),)
+
+    title = models.CharField(
+        max_length=300,
+        verbose_name=_("Attachment name"),
+        blank=True, null=True,
+        help_text=_("Give the attachment a representative name"),)
+
+    attachment = models.FileField(
+        upload_to=expedition_media,
+        max_length=500,
+        verbose_name=_("File attachment"),
+        help_text=_("Upload the file"),)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Attachment {0} {1} for {2}".format(
+            self.pk, self.title, self.expedition.__str__())
+
+    @property
+    def filepath(self):
+        return str(self.attachment.file)
 
 
 # Utilities ------------------------------------------------------------------#
@@ -1944,13 +2046,6 @@ class Observation(PolymorphicModel, models.Model):
     def datetime(self):
         """The encounter's timestamp."""
         return self.encounter.when or ''
-
-
-def encounter_media(instance, filename):
-    """Return an upload file path for an encounter media attachment."""
-    if not instance.encounter.id:
-        instance.encounter.save()
-    return 'encounter/{0}/{1}'.format(instance.encounter.source_id, filename)
 
 
 @python_2_unicode_compatible
