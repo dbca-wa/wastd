@@ -51,6 +51,18 @@ from wastd.users.models import User
 
 # Lookups --------------------------------------------------------------------#
 
+SOURCE_DEFAULT = "direct"
+SOURCE_CHOICES = (
+    (SOURCE_DEFAULT, _("Direct entry")),
+    ("paper", _("Paper data sheet")),
+    ("odk", _("OpenDataKit mobile data capture")),
+    ("wamtram", _("WAMTRAM 2 tagging DB")),
+    ("ntp-exmouth", _("NTP Access DB Exmouth")),
+    ("ntp-broome", _("NTP Access DB Broome")),
+    ("cet", _("Cetacean strandings DB")),
+    ("pin", _("Pinniped strandings DB")),
+    )
+
 BODY_PART_DEFAULT = "whole"
 TURTLE_BODY_PART_CHOICES = (
     ("head", "head"),
@@ -763,6 +775,21 @@ class Expedition(PolymorphicModel, geo_models.Model):
 class SiteVisit(Expedition):
     """A visit to one site by a team of field workers collecting data."""
 
+    source = models.CharField(
+        max_length=300,
+        verbose_name=_("Data Source"),
+        default=SOURCE_DEFAULT,
+        choices=SOURCE_CHOICES,
+        help_text=_("Where was this record captured initially?"), )
+
+    source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID"),
+        help_text=_("The ID of the record in the original source, or "
+                    "a newly allocated ID if left blank. Delete and save "
+                    "to regenerate this ID."), )
+
     transect = geo_models.LineStringField(
         srid=4326,
         blank=True, null=True,
@@ -899,18 +926,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ("10", _("GPS reading at exact location (10 m)")),
         (LOCATION_DEFAULT, _("Site centroid or place name (1 km)")),
         ("10000", _("Rough estimate (10 km)")), )
-
-    SOURCE_DEFAULT = "direct"
-    SOURCE_CHOICES = (
-        (SOURCE_DEFAULT, _("Direct entry")),
-        ("paper", _("Paper data sheet")),
-        ("odk", _("OpenDataKit mobile data capture")),
-        ("wamtram", _("WAMTRAM 2 tagging DB")),
-        ("ntp-exmouth", _("NTP Access DB Exmouth")),
-        ("ntp-broome", _("NTP Access DB Broome")),
-        ("cet", _("Cetacean strandings DB")),
-        ("pin", _("Pinniped strandings DB")),
-        )
 
     ENCOUNTER_STRANDING = 'stranding'
     ENCOUNTER_TAGGING = 'tagging'

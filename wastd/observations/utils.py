@@ -1024,7 +1024,6 @@ def import_one_record_tt031(r, m):
         nest_age=r["nest_age"],
         nest_type=r["nest_type"],
         species=m["species"][r["species"]],
-        # comments
         )
     if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
         new_data["habitat"] = r["habitat"]
@@ -1171,6 +1170,88 @@ def import_one_record_tt034(r, m):
     print(" Saved {0}\n".format(e))
     e.save()
     return e
+
+
+def import_one_record_sv01(r, m):
+    """Import one ODK Site Visit 0.1 record into WAStD.
+
+    Arguments
+
+    r The record as dict, e.g.
+    {
+        "instanceID": "uuid:cc7224d7-f40f-4368-a937-1eb655e0203a",
+        "observation_start_time": "2017-03-08T07:10:43.378Z",
+        "reporter": "florianm",
+        "photo_start": {
+            "filename": "1488957113670.jpg",
+            "type": "image/jpeg",
+            "url": "https://..."
+        },
+        "transect": "-31.9966142 115.88456594 0.0 0.0;",
+        "photo_finish": {
+            "filename": "1488957172832.jpg",
+            "type": "image/jpeg",
+            "url": "https://..."
+        },
+        "comments": null,
+        "observation_end_time": "2017-03-08T07:13:23.317Z"
+    }
+
+    m The mapping of ODK to WAStD choices
+
+    All existing records will be updated.
+    Make sure to skip existing records which should be retained unchanged.
+
+    Creates a SiteVisit, e.g.
+    {
+     'started_on': datetime.datetime(2017, 1, 31, 16, 0, tzinfo=<UTC>),
+     'finished_on': datetime.datetime(2017, 2, 4, 16, 0, tzinfo=<UTC>),
+     'site_id': 17,
+     'source': u'direct',
+     'source_id': None,
+     'transect': None,
+     'comments': u'',
+    }
+    """
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        site_id=17,  # TODO: reconstruct site on SiteVisit if not given
+        transect=read_odk_linestring(r["transect"]),
+        started_on=parse_datetime(r["observation_start_time"]),
+        finished_on=parse_datetime(r["observation_end_time"]),
+        # m["users"][r["reporter"]],  # add to team
+        comments=r["comments"]
+        )
+
+
+    if SiteVisit.objects.filter(source_id=src_id).exists():
+        print("Updating unchanged existing record {0}...".format(src_id))
+        SiteVisit.objects.filter(source_id=src_id).update(**new_data)
+        e = SiteVisit.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = SiteVisit.objects.create(**new_data)
+
+    e.save()
+
+    # MediaAttachments
+    if r["photo_start"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_start"]["filename"])
+        handle_photo(pname, e, title="Site conditions at start of suvey")
+
+    if r["photo_finish"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_finish"]["filename"])
+        handle_photo(pname, e, title="Site conditions at end of suvey")
+
+    print(" Saved {0}\n".format(e))
+    e.save()
+    return e
+
 
 
 def make_tallyobs(encounter, species, nest_age, nest_type, tally_number):
@@ -2118,6 +2199,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
         >>> import_odk('data/cetaceans.csv', flavour="cet")
         >>> import_odk('data/wamtram_encounters.csv', flavour="wamtram", extradata="data/wamtram_users.csv")
         >>> import_odk('data/wamtram_tagobservations.csv', flavour="whambam")
+        >>> import_odk('data/Site_Visit_0_1_results.json', flavour="sitevisit")
 
 
     """
@@ -2359,6 +2441,17 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
 
         [import_one_tag(x, ODK_MAPPING) for x in tags
          if make_wamtram_source_id(x["observation_id"]) in enc]
+
+    elif flavour == "sitevisit":
+        print("Loading Site Visits...")
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set(
+            [r["reporter"] for r in d])}
+
+        [import_one_record_sv01(r, ODK_MAPPING) for r in d]     # retain local edits
+        print("Done!")
 
     else:
         print("Format not recognized. Exiting.")
