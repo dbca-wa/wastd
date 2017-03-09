@@ -34,13 +34,10 @@ from rest_framework import serializers, viewsets, routers
 # from rest_framework_latex import renderers
 # import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
-from django_filters.rest_framework import DjangoFilterBackend
 from drf_extra_fields.geo_fields import PointField
-from rest_framework_gis.filters import InBBoxFilter
+
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from rest_framework.authentication import (
-    SessionAuthentication, BasicAuthentication, TokenAuthentication)
 
 from wastd.observations.models import (
     Area, SiteVisit,
@@ -470,9 +467,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
       use their included `observation_name` to figure out the actual model that
       we want to `create` or `update`.
 
-      TODO
-      http://stackoverflow.com/questions/32123148/writable-nested-serializer-with-existing-objects-using-django-rest-framework-3-2
-
+      TODO http://stackoverflow.com/q/32123148/2813717
       NOTE this API is not writeable, as related models (User and Observation)
       require customisations to handle data thrown at them.
     """
@@ -508,6 +503,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
                   #  'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
+        id_field = "source_id"
 
     # def create(self, validated_data):
     #     """Make EncounterSerializer writeable: create
@@ -600,6 +596,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
                 #   'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
+        id_field = "source_id"
 
 
 class TurtleNestEncounterSerializer(EncounterSerializer):
@@ -684,7 +681,6 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
         'observer', 'reporter',  'status',
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source',
         'source_id', 'encounter_type', ]
-    # filter_backends = (InBBoxFilter, DjangoFilterBackend)
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -695,9 +691,6 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     """AnimalEncounter view set."""
 
     latex_name = 'latex/encounter.tex'
-    authentication_classes = (SessionAuthentication,
-                              BasicAuthentication,
-                              TokenAuthentication)
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
@@ -723,7 +716,6 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
         'observer', 'reporter', 'status',
         'deployment_status', 'comments',
         'source', 'source_id', 'encounter_type', ]
-    filter_backends = (DjangoFilterBackend, InBBoxFilter)
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -759,7 +751,6 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = NestTagObservationEncounterSerializer
     filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
                      'comments']
-    filter_backends = (DjangoFilterBackend, InBBoxFilter)
 
 
 # Routers provide an easy way of automatically determining the URL conf.

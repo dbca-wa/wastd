@@ -1,6 +1,6 @@
 # Django
 # ------------------------------------------------
-django==1.10.5
+django>=1.10
 django-extensions
 
 # breaking django-1.10:
@@ -19,7 +19,7 @@ django-grappelli==2.9.1
 
 # API
 # ------------------------------------------------
-djangorestframework==3.5.4
+djangorestframework
 djangorestframework-gis
 djangorestframework-csv
 djangorestframework-yaml
@@ -27,12 +27,12 @@ djangorestframework-jsonp
 djangorestframework-filters
 django-url-filter
 dynamic-rest
-# rest-framework-latex
--e git+https://github.com/florianm/rest-framework-latex.git#egg=rest-framework-latex
+rest-framework-latex
+# -e git+https://github.com/florianm/rest-framework-latex.git#egg=rest-framework-latex
 markdown
-django-filter==1.0.1
+django-filter
 django-rest-swagger
-coreapi==2.2.4
+coreapi
 coreapi-cli
 pypandoc
 # graphene-django>=1.0  # doesn't do spatial yet

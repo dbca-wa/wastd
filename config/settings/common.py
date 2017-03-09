@@ -278,6 +278,12 @@ ADMIN_URL = "^admin/"
 # API: django-restframework
 # ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        ),
+
     # http://www.django-rest-framework.org/api-guide/permissions/
     'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.IsAuthenticated',
@@ -288,7 +294,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework_jsonp.renderers.JSONPRenderer',
-        'rest_framework_csv.renderers.CSVRenderer',
+        # 'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework_yaml.renderers.YAMLRenderer',
         'rest_framework_latex.renderers.LatexRenderer',
         ),
@@ -297,13 +303,11 @@ REST_FRAMEWORK = {
     # ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework_gis.filters.InBBoxFilter',
         ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-        ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
     'PAGE_SIZE': 100,
     }
 
