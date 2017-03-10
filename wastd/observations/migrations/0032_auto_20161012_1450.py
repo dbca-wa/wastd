@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import durationfield.db.models.fields.duration
 
 
 class Migration(migrations.Migration):
@@ -21,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='temperatureloggersettings',
             name='logging_interval',
-            field=durationfield.db.models.fields.duration.DurationField(blank=True, help_text='The time between individual readings. Format: 1d 23:59:59. E.g, 1h is 01:00:00', null=True, verbose_name='Logging interval'),
+            field=models.DurationField(blank=True, help_text='The time between individual readings. Format: 1d 23:59:59. E.g, 1h is 01:00:00', null=True, verbose_name='Logging interval'),
         ),
         migrations.AlterField(
             model_name='temperatureloggersettings',

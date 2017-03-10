@@ -29,6 +29,7 @@ This API is built using:
 * coreapi
 * coreapi-cli (complementary CLI for coreapi)
 """
+from django.shortcuts import render
 from rest_framework import serializers, viewsets, routers
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
@@ -37,7 +38,12 @@ from rest_framework import serializers, viewsets, routers
 from drf_extra_fields.geo_fields import PointField
 
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from rest_framework_gis.pagination import GeoJsonPagination
 
+from rest_framework_gis.filterset import GeoFilterSet
+from rest_framework_gis.filters import GeometryFilter, InBBoxFilter
+from django_filters import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from wastd.observations.models import (
     Area, SiteVisit,
@@ -63,6 +69,108 @@ from wastd.users.models import User
 # sync_route = SynctoolRoute()
 # @sync_route.app("users", "users")
 # @sync_route.app("observations", "observations")
+
+from django.template import Context, Template
+from rest_framework_gis.filters import InBBoxFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
+from collections import OrderedDict
+from rest_framework import pagination
+from rest_framework.response import Response as RestResponse
+
+
+class MyGeoJsonPagination(pagination.LimitOffsetPagination):
+    """
+    A geoJSON implementation of a LimitOffset pagination serializer.
+
+    Attempt to un-break HTML filter controls in browsable API.
+
+    https://github.com/tomchristie/django-rest-framework/issues/4812
+    """
+
+    def get_paginated_response(self, data):
+        return RestResponse(OrderedDict([
+            ('type', 'FeatureCollection'),
+            ('count', self.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('features', data['features']),
+            # ('data', data),
+            ]))
+
+
+class InBBoxHTMLMixin:
+    template = Template("""
+    {% load i18n %}
+    <style type="text/css">
+    #geofilter input[type="text"]{
+        width: 100px;
+    }
+    </style>
+    <h2>{% trans "Limit results to area" %}</h2>
+    <form id="geofilter" action="" method="get">
+
+        <div class="form-group row">
+            <div class="col-md-2"></div>
+            <div class="col-md-2">
+            <div class="controls">
+            <input type="text" class="form-control" id="gf-north" placeholder="North">
+            </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-2">
+            <div class="controls">
+            <input type="text" class="form-control" id="gf-west" placeholder="West">
+            </div>
+            </div>
+
+            <div class="col-md-2"></div>
+            <div class="col-md-2">
+            <div class="controls">
+            <input type="text" class="form-control" id="gf-east" placeholder="East">
+            </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-2"></div>
+            <div class="col-md-2">
+            <div class="controls">
+            <input type="text" class="form-control" id="gf-south" placeholder="South">
+            </div>
+            </div>
+        </div>
+
+        <input id="gf-result" type="hidden" name="{{bbox_param}}">
+        <button type="submit" class="btn btn-primary">{% trans "Submit" %}
+        </button>
+    </form>
+    <script language="JavaScript">
+    (function() {
+        document.getElementById("geofilter").onsubmit = function(){
+            var result = document.getElementById("gf-result");
+            var box = [
+                document.getElementById("gf-south").value,
+                document.getElementById("gf-west").value,
+                document.getElementById("gf-north").value,
+                document.getElementById("gf-east").value
+            ];
+            if(!box.every(function(i){ return i.length }))
+                return false;
+            result.value = box.join(",");
+        }
+    })();
+    </script>
+    """)
+
+    def to_html(self, request, queryset, view):
+        return self.template.render(Context({'bbox_param': self.bbox_param}))
+
+
+class CustomBBoxFilter(InBBoxHTMLMixin, InBBoxFilter):
+    bbox_param = 'in_bbox'
 
 
 # Serializers ----------------------------------------------------------------#
@@ -578,6 +686,8 @@ class AnimalEncounterSerializer(EncounterSerializer):
     photographs = MediaAttachmentSerializer(many=True, read_only=False)
     tx_logs = serializers.ReadOnlyField()
 
+    pagination_class = GeoJsonPagination
+
     class Meta:
         """Class options."""
 
@@ -661,9 +771,12 @@ class EncounterViewSet(viewsets.ModelViewSet):
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
     filter_fields = [
-        'site_visit', 'location_accuracy', 'when', 'name',
-        'observer', 'reporter', 'status',
-        'source', 'source_id', 'encounter_type', ]
+        'encounter_type', 'status', 'site_visit', 'source', 'source_id',
+        'location_accuracy', 'when', 'name', 'observer', 'reporter', ]
+    bbox_filter_field = 'where'
+    # bbox_filter_include_overlapping = True
+    pagination_class = MyGeoJsonPagination
+    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -677,10 +790,11 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
-        'site_visit', 'location_accuracy', 'when', 'name',
-        'observer', 'reporter',  'status',
-        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source',
-        'source_id', 'encounter_type', ]
+        'encounter_type', 'status', 'site_visit', 'source', 'source_id',
+        'location_accuracy', 'when', 'name', 'observer', 'reporter',
+        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source']
+    pagination_class = MyGeoJsonPagination
+    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -694,12 +808,13 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
-        'site_visit', 'location_accuracy', 'when', 'name',
-        'observer', 'reporter', 'status',
+        'encounter_type', 'status', 'site_visit', 'source', 'source_id',
+        'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'taxon', 'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
-        'cause_of_death', 'cause_of_death_confidence',
-        'source', 'source_id', 'encounter_type', ]
+        'cause_of_death', 'cause_of_death_confidence']
+    pagination_class = MyGeoJsonPagination
+    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -708,14 +823,16 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 
 class LoggerEncounterViewSet(viewsets.ModelViewSet):
     """LoggerEncounter view set."""
+
     latex_name = 'latex/encounter.tex'
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
     filter_fields = [
-        'site_visit', 'location_accuracy', 'when', 'name',
-        'observer', 'reporter', 'status',
-        'deployment_status', 'comments',
-        'source', 'source_id', 'encounter_type', ]
+        'encounter_type', 'status', 'site_visit', 'source', 'source_id',
+        'location_accuracy', 'when', 'name', 'observer', 'reporter',
+        'deployment_status', 'comments']
+    pagination_class = MyGeoJsonPagination
+    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -734,6 +851,7 @@ class MediaAttachmentViewSet(viewsets.ModelViewSet):
 
     queryset = MediaAttachment.objects.all()
     serializer_class = MediaAttachmentSerializer
+    filter_backends = (DjangoFilterBackend, )
 
 
 class TagObservationViewSet(viewsets.ModelViewSet):
@@ -742,6 +860,7 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     queryset = TagObservation.objects.all()
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
+    filter_backends = (DjangoFilterBackend, )
 
 
 class NestTagObservationViewSet(viewsets.ModelViewSet):
@@ -751,7 +870,7 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = NestTagObservationEncounterSerializer
     filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
                      'comments']
-
+    filter_backends = (DjangoFilterBackend, )
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter(schema_title='WAStD API')

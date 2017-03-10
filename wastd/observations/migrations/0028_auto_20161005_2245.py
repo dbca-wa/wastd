@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import durationfield.db.models.fields.duration
 
 
 class Migration(migrations.Migration):
@@ -47,7 +46,7 @@ class Migration(migrations.Migration):
             name='TemperatureLoggerSettings',
             fields=[
                 ('observation_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='observations.Observation')),
-                ('logging_interval', durationfield.db.models.fields.duration.DurationField(blank=True, help_text='The time between individual readings.', null=True, verbose_name='Logging interval')),
+                ('logging_interval', models.DurationField(blank=True, help_text='The time between individual readings.', null=True, verbose_name='Logging interval')),
                 ('recording_start_date', models.DateField(blank=True, help_text='The preset first day of recording, stored as UTC and shown in local time.', null=True, verbose_name='Recording start date')),
             ],
             options={

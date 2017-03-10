@@ -41,30 +41,31 @@ DJANGO_APPS = (
     )
 
 THIRD_PARTY_APPS = (
-    'django_extensions',        # shell_plus and others
-    'crispy_forms',             # Form layouts
-    'floppyforms',              # Floppyforms: Admin GIS widgets
-    'easy_select2',             # Select2 dropdowns
-    'django_tables2',           # View mixins
-    'django_filters',           # Form filters
-    'allauth',                  # registration
-    'allauth.account',          # registration
-    'allauth.socialaccount',    # registration
-    'rest_framework',           # API
-    'rest_framework.authtoken', # API auth via token
-    'rest_framework_gis',       # API spatial fields
-    'rest_framework_swagger',   # API docs
-    'rest_framework_latex',     # API latex renderer
-    'dynamic_rest',             # Parameterised API queries
-    'adminactions',             # extra admin trickery
-    'djgeojson',                # GeoJSON views
-    'phonenumber_field',        # Phone number field
-    'leaflet',                  # for djgeojson
-    'django_fsm',               # Transitions
-    'django_fsm_log',           # Transition audit logs
-    'fsm_admin',                # Transitions in admin
-    'reversion',                # Version history
-    # 'graphene_django',          # GraphQL API
+    'django_extensions',            # shell_plus and others
+    'crispy_forms',                 # Form layouts
+    'floppyforms',                  # Floppyforms: Admin GIS widgets
+    'easy_select2',                 # Select2 dropdowns
+    'django_tables2',               # View mixins
+    'django_filters',               # Form filters
+    'allauth',                      # registration
+    'allauth.account',              # registration
+    'allauth.socialaccount',        # registration
+    'adminactions',                 # extra admin trickery
+    'djgeojson',                    # GeoJSON views
+    'leaflet',                      # for djgeojson
+    'phonenumber_field',            # Phone number field
+    'django_fsm',                   # Transitions
+    'django_fsm_log',               # Transition audit logs
+    'fsm_admin',                    # Transitions in admin
+    'reversion',                    # Version history
+    # 'graphene_django',              # GraphQL API
+    'rest_framework',               # API
+    'rest_framework.authtoken',     # API auth via token
+    'rest_framework_gis',           # API spatial fields
+    'rest_framework_swagger',       # API docs
+    'rest_framework_latex',         # API latex renderer
+    # 'dynamic_rest',                 # Parameterised API queries
+
     )
 
 # Apps specific for this project go here.
@@ -301,13 +302,13 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PARSER_CLASSES': (
     # 'rest_framework_yaml.parsers.YAMLParser',
     # ),
-    'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework_gis.filters.InBBoxFilter',
-        ),
+    # 'DEFAULT_FILTER_BACKENDS': (
+    #     'django_filters.rest_framework.DjangoFilterBackend',
+    #     # 'rest_framework_gis.filters.InBBoxFilter',
+    #     ),
 
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
     'PAGE_SIZE': 100,
     }
 

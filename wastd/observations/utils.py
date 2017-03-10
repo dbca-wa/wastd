@@ -2197,7 +2197,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
         >>> import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
         >>> import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
         >>> import_odk('data/cetaceans.csv', flavour="cet")
-        >>> import_odk('data/wamtram_encounters.csv', flavour="wamtram", extradata="data/wamtram_users.csv")
+        >>> import_odk('data/wamtram_encounters.csv', flavour="wamtram", usercsv="data/wamtram_users.csv")
         >>> import_odk('data/wamtram_tagobservations.csv', flavour="whambam")
         >>> import_odk('data/Site_Visit_0_1_results.json', flavour="sitevisit")
 

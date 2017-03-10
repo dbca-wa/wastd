@@ -20,7 +20,7 @@ django-grappelli==2.9.1
 # API
 # ------------------------------------------------
 djangorestframework
-djangorestframework-gis
+djangorestframework-gis==0.11.0
 djangorestframework-csv
 djangorestframework-yaml
 djangorestframework-jsonp
@@ -30,7 +30,7 @@ dynamic-rest
 rest-framework-latex
 # -e git+https://github.com/florianm/rest-framework-latex.git#egg=rest-framework-latex
 markdown
-django-filter
+django-filter>=1.0.1
 django-rest-swagger
 coreapi
 coreapi-cli
