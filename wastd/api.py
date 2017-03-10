@@ -90,13 +90,13 @@ class MyGeoJsonPagination(pagination.LimitOffsetPagination):
 
     def get_paginated_response(self, data):
         return RestResponse(OrderedDict([
-            ('type', 'FeatureCollection'),
-            ('count', self.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('features', data['features']),
-            # ('data', data),
-            ]))
+                ('type', 'FeatureCollection'),
+                ('count', self.count),
+                ('next', self.get_next_link()),
+                ('previous', self.get_previous_link()),
+                ('features', data['features']),
+                # ('data', data),
+                ]))
 
 
 class InBBoxHTMLMixin:
@@ -585,7 +585,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     reporter = UserSerializer(many=False, read_only=True)
     # observer = serializers.StringRelatedField(read_only=True)
     # reporter = serializers.StringRelatedField(read_only=True)
-    where = PointField(required=True)
+    # where = PointField(required=True)   ## THIS BREAKS GEOJSON OUTPUT
     leaflet_title = serializers.ReadOnlyField()
     latitude = serializers.ReadOnlyField()
     longitude = serializers.ReadOnlyField()
@@ -671,39 +671,25 @@ class EncounterSerializer(GeoFeatureModelSerializer):
 class AnimalEncounterSerializer(EncounterSerializer):
     """AnimalEncounter serializer."""
 
-    # where = PointField(required=True)
-    observation_set = ObservationSerializer(many=True, read_only=False)
-    # observer = UserSerializer(many=False, read_only=False)
-    # reporter = UserSerializer(many=False, read_only=False)
-    # observer = serializers.StringRelatedField(read_only=True)
-    # reporter = serializers.StringRelatedField(read_only=True)
-    where = PointField(required=True)
-    leaflet_title = serializers.ReadOnlyField()
-    latitude = serializers.ReadOnlyField()
-    longitude = serializers.ReadOnlyField()
-    crs = serializers.ReadOnlyField()
-    absolute_admin_url = serializers.ReadOnlyField()
     photographs = MediaAttachmentSerializer(many=True, read_only=False)
     tx_logs = serializers.ReadOnlyField()
-
-    pagination_class = GeoJsonPagination
 
     class Meta:
         """Class options."""
 
         model = AnimalEncounter
-        fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when', 'name',
-                  'observer', 'reporter',
-                  'taxon', 'species', 'health', 'sex', 'behaviour',
+        fields = ('pk', 'site_visit', 'source', 'source_id',
+                  'encounter_type', 'leaflet_title',
+                  'status', 'observer', 'reporter',
+                  'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
+                  'when',
+                  'name', 'taxon', 'species', 'health', 'sex', 'behaviour',
                   'habitat', 'activity', 'nesting_event',
                   'checked_for_injuries',
                   'scanned_for_pit_tags',
                   'checked_for_flipper_tags',
                   'cause_of_death', 'cause_of_death_confidence',
-                  'status', 'source', 'source_id', 'encounter_type',
-                  'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
-                #   'as_html', 'as_latex',
                   'observation_set', )
         geo_field = "where"
         id_field = "source_id"
@@ -712,21 +698,20 @@ class AnimalEncounterSerializer(EncounterSerializer):
 class TurtleNestEncounterSerializer(EncounterSerializer):
     """TurtleNestEncounter serializer."""
 
-    # where = PointField(required=True)
-    # observation_set = ObservationSerializer(many=True, read_only=False)
-
     class Meta:
         """Class options."""
 
         model = TurtleNestEncounter
-        fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when', 'name',
-                  'observer', 'reporter',
-                  'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'comments',
-                  'status', 'source', 'source_id', 'encounter_type',
-                  'leaflet_title', 'latitude', 'longitude', 'crs',
+        fields = ('pk', 'site_visit', 'source', 'source_id',
+                  'encounter_type', 'leaflet_title',
+                  'status', 'observer', 'reporter',
+                  'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
+                  'when',
+                  'nest_age', 'nest_type', 'species', 'habitat', 'disturbance',
+                  'comments',
                   'absolute_admin_url', 'photographs', 'tx_logs',
-                #   'as_html', 'as_latex',
-                  'observation_set', )
+                  'observation_set',
+                  )
         # read_only = ('photographs',)
         geo_field = "where"
 
@@ -734,16 +719,18 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
 class LoggerEncounterSerializer(EncounterSerializer):
     """LoggerEncounter serializer."""
 
-    # where = PointField(required=True)
-
     class Meta:
         """Class options."""
 
         model = LoggerEncounter
-        fields = ('pk', 'where', 'location_accuracy', 'when', 'name',
-                  'observer', 'reporter',
+        fields = ('pk', 'site_visit', 'source', 'source_id',
+                  'encounter_type', 'leaflet_title',
+                  'status', 'observer', 'reporter',
+                  'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
+                  'when',
                   'deployment_status', 'comments',
-                  'as_html', 'as_latex',
+                  'comments',
+                  'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
         geo_field = "where"
 
@@ -762,6 +749,9 @@ class AreaViewSet(viewsets.ModelViewSet):
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
     filter_fields = ["area_type", ]
+    bbox_filter_field = 'geom'
+    pagination_class = MyGeoJsonPagination
+    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
 
 class EncounterViewSet(viewsets.ModelViewSet):
