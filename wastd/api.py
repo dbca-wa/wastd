@@ -366,6 +366,7 @@ class TurtleNestObservationSerializer(serializers.ModelSerializer):
         model = TurtleNestObservation
         fields = ('observation_name',  # 'as_latex',
                   'nest_position', 'eggs_laid', 'egg_count',
+                  'egg_count_calculated',
                   'no_emerged', 'no_egg_shells',
                   'no_live_hatchlings', 'no_dead_hatchlings',
                   'no_undeveloped_eggs', 'no_unhatched_eggs',
