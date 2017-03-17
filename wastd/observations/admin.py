@@ -339,7 +339,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     # Change_view form layout
     fieldsets = (('Encounter', {'fields': (
         'site_visit', 'where', 'location_accuracy', 'when',
-        'observer', 'reporter', 'source', 'source_id', )}),)
+        'observer', 'reporter', 'source', 'source_id', 'name',)}),)
 
     # Change_view inlines
     inlines = [
