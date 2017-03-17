@@ -2799,7 +2799,11 @@ class TurtleNestObservation(Observation):
 
     @property
     def egg_count_calculated(self):
-        """The calculated egg count from nest excavations is S-(L+D)."""
+        """The calculated egg count from nest excavations is:
+
+        no_egg_shells + no_undeveloped_eggs + no_unhatched_eggs +
+        no_unhatched_term + no_depredated_eggs
+        """
         return (
             (self.no_egg_shells or 0) +
             (self.no_undeveloped_eggs or 0) +
@@ -2828,23 +2832,19 @@ class TurtleNestObservation(Observation):
 
         Formula after Miller 1999::
 
-            Hatching success = 100 *
+            Emergence success = 100 *
                 (no_egg_shells - no_live_hatchlings - no_dead_hatchlings) / (
                 no_egg_shells + no_undeveloped_eggs + no_unhatched_eggs +
                 no_unhatched_term + no_depredated_eggs)
         """
-        return 100 * (
+        if (self.egg_count_calculated == 0):
+            return 0
+        else:
+            return 100 * (
                 (self.no_egg_shells or 0) -
                 (self.no_live_hatchlings or 0) -
                 (self.no_dead_hatchlings or 0)
-            ) / (
-                (self.no_egg_shells or 0) +
-                (self.no_undeveloped_eggs or 0) +
-                (self.no_unhatched_eggs or 0) +
-                (self.no_unhatched_term or 0) +
-                (self.no_depredated_eggs or 0)
-            )
-
+                ) / self.egg_count_calculated
 
 @python_2_unicode_compatible
 class TurtleNestDisturbanceObservation(Observation):
