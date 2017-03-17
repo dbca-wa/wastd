@@ -1616,7 +1616,7 @@ def import_one_encounter_wamtram(r, m, u):
         maturity="adult",
         health=m["health"][r['CONDITION_CODE']],
         habitat=m["habitat"][r["BEACH_POSITION_CODE"]],
-        nesting_event=m["nesting"][r["NESTING"]],
+        nesting_event=m["nesting"][r["CLUTCH_COMPLETED"]],
         )
 
     """
@@ -2308,6 +2308,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
             'Y': 'present',
             'N': 'absent',
             'U': 'na',
+            'NA': 'na',
             },
 
         # typo in Track or Treat 0.26: validate (missing "d")
