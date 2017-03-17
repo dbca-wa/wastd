@@ -12,6 +12,7 @@
 <script type="text/javascript">
 function map_init(map, options) {
 
+
     /* Helper functions */
 
     /* Point style */
@@ -105,6 +106,12 @@ function map_init(map, options) {
      * Ideal for filters with sensible defaults (e.g. show only current year)
      * https://github.com/makinacorpus/django-geojson#geojson-template-filter
      */
+    // L.geoJson(
+    //     {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
+    //     // {clipTiles: true, unique: getUnique},
+    //     {style: style, pointToLayer: ptl, onEachFeature: oef}
+    // ).addTo(map);
+
     L.geoJson(
         {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
         // {clipTiles: true, unique: getUnique},
@@ -135,6 +142,7 @@ function map_init(map, options) {
     //     {clipTiles: true, unique: getUnique},
     //     {style: style, pointToLayer: ptl, onEachFeature: oef}
     // ).addTo(map);
+
 
 }
 </script>

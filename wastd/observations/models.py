@@ -2701,7 +2701,7 @@ class TurtleNestObservation(Observation):
     egg_count = models.PositiveIntegerField(
         verbose_name=_("Total number of eggs laid"),
         blank=True, null=True,
-        help_text=_("The total number of eggs laid."), )
+        help_text=_("The total number of eggs laid as observed during tagging."), )
 
     # start Miller fields
     # no_emerged = models.PositiveIntegerField(
@@ -2789,13 +2789,23 @@ class TurtleNestObservation(Observation):
             self.egg_count, self.hatching_success, self.emergence_success)
 
     # TODO custom save()
-    # calculate egg_count; calculate E = S - (L + D)
+    # calculate egg_count;
 
     @property
     def no_emerged(self):
         """The number of hatchlings leaving or departed from nest is S-(L+D)."""
         return self.no_egg_shells - (
             self.no_live_hatchlings + self.no_dead_hatchlings)
+
+    @property
+    def egg_count_calculated(self):
+        """The calculated egg count from nest excavations is S-(L+D)."""
+        return (
+            (self.no_egg_shells or 0) +
+            (self.no_undeveloped_eggs or 0) +
+            (self.no_unhatched_eggs or 0) +
+            (self.no_unhatched_term or 0) +
+            (self.no_depredated_eggs or 0))
 
     @property
     def hatching_success(self):
@@ -2807,15 +2817,10 @@ class TurtleNestObservation(Observation):
                 no_egg_shells + no_undeveloped_eggs + no_unhatched_eggs +
                 no_unhatched_term + no_depredated_eggs)
         """
-        return 100 * (
-                (self.no_egg_shells or 0)
-            ) / (
-                (self.no_egg_shells or 0) +
-                (self.no_undeveloped_eggs or 0) +
-                (self.no_unhatched_eggs or 0) +
-                (self.no_unhatched_term or 0) +
-                (self.no_depredated_eggs or 0)
-            )
+        if (self.egg_count_calculated == 0):
+            return 0
+        else:
+            return 100 * (self.no_egg_shells or 0) / self.egg_count_calculated
 
     @property
     def emergence_success(self):
