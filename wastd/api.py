@@ -30,6 +30,7 @@ This API is built using:
 * coreapi-cli (complementary CLI for coreapi)
 """
 from django.shortcuts import render
+from django.db import models as django_models
 from rest_framework import serializers, viewsets, routers
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
@@ -39,10 +40,10 @@ from drf_extra_fields.geo_fields import PointField
 
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from rest_framework_gis.pagination import GeoJsonPagination
-
+from rest_framework import filters
 from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis.filters import GeometryFilter, InBBoxFilter
-from django_filters import filters
+import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from wastd.observations.models import (
@@ -171,6 +172,21 @@ class InBBoxHTMLMixin:
 
 class CustomBBoxFilter(InBBoxHTMLMixin, InBBoxFilter):
     bbox_param = 'in_bbox'
+
+
+class CustomDateFilter(filters.FilterSet):
+
+    on_day = django_filters.DateFilter(name="when", lookup_expr="exact")
+
+    class Meta:
+
+        model = Encounter
+        fields = ['when', ]
+        filter_overrides = {
+            django_models.DateTimeField: {
+                'filter_class': django_filters.IsoDateTimeFilter
+                },
+        }
 
 
 # Serializers ----------------------------------------------------------------#
@@ -767,6 +783,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     bbox_filter_field = 'where'
     # bbox_filter_include_overlapping = True
     pagination_class = MyGeoJsonPagination
+    filter_class = CustomDateFilter
     filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):

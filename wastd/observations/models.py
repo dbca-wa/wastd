@@ -1574,6 +1574,13 @@ class AnimalEncounter(Encounter):
         default=NA_VALUE,
         help_text=_("Was the animal nesting?"),)
 
+    laparoscopy = models.BooleanField(
+        max_length=300,
+        verbose_name=_("Laparoscopy conducted"),
+        default=False,
+        help_text=_("Was the animal's sex and maturity determined through "
+                    "laparoscopy?"),)
+
     checked_for_injuries = models.CharField(
         max_length=300,
         verbose_name=_("Checked for injuries"),
