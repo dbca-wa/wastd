@@ -11,6 +11,55 @@ track/nest count) and IT processes (for each business process: data capture,
 data QA and curation, data analysis). Legacy systems and their ties to the current
 implementation (WAStD) are discussed as well.
 
+Overview
+========
+.. Reference with :ref:`dm-roles`
+.. _dm-roles:
+Data management roles
+---------------------
+.. image:: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
+     :alt: Turtle program data management roles
+
+.. Reference with :ref:`dm-overview`
+.. _dm-overview:
+Data management overview
+------------------------
+.. image:: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
+     :target: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
+     :alt: Turtle program data management overview
+
+Each business process on the left hand side will be discussed below in more detail.
+
+.. Reference with :ref:`dm-data-entry`
+.. _dm-data-entry:
+Data entry process overview
+---------------------------
+.. image:: https://www.lucidchart.com/publicSegments/view/b80e04eb-893d-4e70-99f7-e403c7a285ed/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/b80e04eb-893d-4e70-99f7-e403c7a285ed/image.png
+     :alt: Turtle program data entry process overview
+
+.. Reference with :ref:`dm-implementation-process-model`
+.. _dm-implementation-process-model:
+Implementation process model
+----------------------------
+.. image:: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
+     :alt: Turtle program information management system implementation process model
+
+Paradigm:
+
+* do it, then
+* do it right, then
+* do it better.
+
+* Build end-to-end pipelines in small iterations (agile)
+* Use production data
+    * to detect real-world problems,
+    * to battle-test implementation approaches,
+    * to evolve working solutions into correct, then comprehensive solutions
+
+
 Business Process Turtle Strandings
 ==================================
 This business process was the first information management challenge to solve,
@@ -33,10 +82,12 @@ reproducible and accessible manner.
 
 Task
 ----
+
 * Improve the information pipeline from databased, stranded animal to
-ministerial / managerial inquiry, so that timely, defensible, reproducible,
-and accessible insight is available.
-* Digitise and curate the backlog of old stranding reports, while retaining the full data lineage.
+  ministerial / managerial inquiry, so that timely, defensible, reproducible,
+  and accessible insight is available.
+* Digitise and curate the backlog of old stranding reports, while retaining
+  full data lineage.
 
 Constraints
 -----------
@@ -60,6 +111,7 @@ Current implementation
 
 Turtle Strandings
 ^^^^^^^^^^^^^^^^^
+* The data flow is shown in :ref:`dm-data-entry`
 * Stranding paper forms are being updated (SFo and FM, Nov 2016 - Mar 2017).
 * An updated incident response workflow for turtles has been sent to regional
   offices by the affiliated Murdoch Vet (EY Dec 2016).
@@ -68,6 +120,12 @@ Turtle Strandings
 * WAStD allows data entry from legacy paper forms, as well as data export and query.
 * Live workbooks can query, analyse and visualise data from WAStD via its API.
 
+The following figure details the data flow for turtle strandings:
+
+.. image:: https://www.lucidchart.com/publicSegments/view/792bc100-204d-41ff-8bd4-84a26d604fd8/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/792bc100-204d-41ff-8bd4-84a26d604fd8/image.png
+     :alt: Turtle strandings data management: current implementation
+
 Cetacean strandings
 ^^^^^^^^^^^^^^^^^^^
 Nature Conservation kept a Filemaker Pro database of Cetacean strandings.
@@ -75,9 +133,16 @@ The database custodian has retired after extended leave.
 
 It shall be known that the custodian of the legacy turtle tagging database
 WAMTRAM 2 understood that strandings of tagged turtles are a vital part of their
-life history (and used in mark-capture-recapture analysis)
+life history -- as they are used in mark-capture-recapture analysis --
 and aimed to include the strandings process into the database;
 however, this process was not completely implemented and is not operational.
+
+The fopllowing figure shows current implementation and possible transition
+of Cetacean stranding data management.
+
+.. image:: https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png
+     :alt: Cetacean strandings data management: current implementation and transition process
 
 IT process Stranding incident report
 ------------------------------------
@@ -109,6 +174,10 @@ technology (e.g. tablets or smart phones), and be able to auto-upload the data
 once online (office WiFi or mobile reception) without manual effort.
 
 REQ The digital data capture tool shall record location and time automatically.
+
+REQ There shall be one centralised wildlife incident response contact within DPaW,
+which shall direct the incidents to the respective responders both within and
+external to the Department.
 
 IT process Stranding data curation
 ----------------------------------
@@ -178,9 +247,12 @@ See :ref:`data-consumers-api` for working examples.
 
 Manager
 ^^^^^^^
-The manager requires timely and defensible insight to answer the ministerial
-inquiry, to fulfil reporting obligations to the steering committee, or to provide
-data-driven, strategic advice.
+The manager requires timely and defensible insight
+
+* to answer a ministerial inquiry,
+* to fulfil reporting obligations e.g. to a steering committee, or
+* to provide data-driven, strategic advice for management interventions or plans.
+
 Insight could be required as
 
 * `data <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/>`_
@@ -199,11 +271,11 @@ Insight could be required as
 * Insight should be **defensible**, in that the processing steps of both data
   `QA <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/10/change/>`_
   (audit trail of QA operations)
-  and `analysis <http://rpubs.com/florian_mayer/wastd-mark>`_ are well documented,
+  and `analysis <http://rpubs.com/florian_mayer/tracks>`_ are well documented,
   providing a fully transparent data lineage from datasheet to generated insight.
 * Insight should be **reproducible**, in that other people with limited
   technical or statistical expertise can
-  `reproduce the analysis <http://rpubs.com/florian_mayer/wastd-mark>`_
+  `reproduce the analysis <http://rpubs.com/florian_mayer/tracks>`_
   from the archived inputs.
 
 Analyst
@@ -211,7 +283,8 @@ Analyst
 The analyst's role is to bridge the gap between raw data and non-trivial questions
 through advanced statistical analysis and visualisation.
 
-* To do so, the analyst needs `universal access <https://strandings.dpaw.wa.gov.au/api/1/>`_
+* To do so, the analyst needs
+  `universal access <https://strandings.dpaw.wa.gov.au/api/1/>`_
   to machine-readable, trustworthy data.
 * The data needs to be complete, consistent and correct.
   The analyst needs to hit the ground running with
@@ -579,7 +652,7 @@ Links:
 * `Code repository <https://github.com/parksandwildlife/turtle-scripts/>`_
 
 .. image:: https://www.lucidchart.com/publicSegments/view/f64d33a0-bcf4-4dd5-80c6-3204f1925aed/image.png
-     :target: internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data
+     :target: https://www.lucidchart.com/publicSegments/view/f64d33a0-bcf4-4dd5-80c6-3204f1925aed/image.png
      :alt: Ningaloo turtle program data management
 
 The Ningaloo Turtle Program (NTP) database consists of an MS Access database
@@ -751,6 +824,33 @@ and have 100% test coverage.
 REQ The solution shall, if the technology allows, implement continuous
 integration and testing as well as continuous deployment.
 
+Requirements of the Turtle group
+--------------------------------
+
+REQ The group requires basic training in R, reproducible reporting, version control
+
+REQ The data entry operator (TO) should be trained to be a trainer for others
+
+REQ With data entry coming more and more from digital sources, the data entry
+operator should migrate from a data entry, typist role towards a QA operator
+
+REQ The turtle group needs a dedicated scientific programmer, or at least
+dedicated time of the Information Manager (FM) for scientific programming.
+
+REQ Media collected during field work should be re-usable for media and reporting:
+
+* sound bits
+* good pictures with appropriate license for re-use
+* short statements for general public
+* media opportunities like upcoming field trips
+* presenting an easy to understand data summary
+
+The above listed outputs are available early in the process, but required far
+later in the process. In other words, when we need them it's too late to collect
+them.
+
+"Sane management underpinned by robust science"
+
 Business Process Annual Reporting
 =================================
 
@@ -850,3 +950,8 @@ Keep iterations small and consult stakeholders.
 
 Verify the necessity of a feature through a product utilising it, and verify the
 product's validity (and the correctnenss of data processing) with stakeholders.
+
+
+=====================
+Reproducible Research
+=====================
