@@ -573,7 +573,9 @@ form a complete picture of a nesting beach.
 
 IT process Turtle track and nest count
 --------------------------------------
-See :ref:`data-capture-tracks` for digital data capture of tracks and nests,
+TODO insert digital track count app diagram
+
+See :ref:`data-capture-tracks`_ for digital data capture of tracks and nests,
 which is curretly in production use by the core Turtle team, and in beta testing
 at Cable Beach and the Karratha office.
 
@@ -594,10 +596,22 @@ The workbook can be extended to also upload the data into WAStD's API.
 
 IT process Aerial imagery track count
 -------------------------------------
-Aerial imagery:
+Aerial imagery was captured of all turtle nesting beaches:
 
-* Survey Nov 2014
-* Survey Nov 2016
+* Survey Nov 2014: Kimberley
+* Survey Nov 2016: Pilbara
+
+It is assumed that this imagery captures the overwhelming majority of turtle nesting
+beaches, and that no significant nesting sites were missed.
+
+Current process:
+
+* Mosaics from aerial data is inspected in Quantum GIS (v. 2.18) by core turtle staff.
+* Each visible track is captured using a copy of a template shapefile with
+  associated style, which provides a popup form in line with the digital track
+  count app, but highly streamlined for this process, so that the lowest possible
+  user interaction is required per track.
+* The shapefile can be imported to WAStD through a data ingestion script
 
 Methodology and data ingestion in development. Currently: fresh tracks, success
 not assessed, at high tide. Only species is assessed if evident.
