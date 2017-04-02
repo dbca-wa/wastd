@@ -492,6 +492,72 @@ Legacy system: WAMTRAM 2
   typos and incorrectly entered data
 * Once import validation passes, WAMTRAM ingests the new data batch
 
+* System requires data to be entered in chronological order else throws errors
+* Data is required to be known / entered the next day
+* Flipper tag procurement through DPaW as custodians of tag names (e.g. "WA1234")
+* W2 disallows team 2 to enter tags allocated to team 1, even is team 1's turtles
+  mitrate to team 2's tagging area
+* Taggers need to know from existing tags to which tagging area the tag was assigned to
+* W2 is missing the option to enter a resighted turtle if the original tagging
+  is not already recorded or imported
+* W2 assumes all datasheets are available for data entry before the next tagging
+  night
+* Pend want to enter every observation independently of whether related records are
+  already entered
+* Flipper and PIT tag asset management: need to know location and beach they
+  are assigned to. This allows to QA typos in datasheets by narrowing down
+  possible lists of tag names.
+* At any point in time we need to know precise location and holder of tags, which
+  may change every night during tagging season
+* Limitations to working on gas plants: electronic devices are only recently
+  permitted on Barrow Is. All electronic devices must be certified for fire / spark safety.
+* Varanus Is would work with tablets
+* Barrow Is is too hectic for tablets
+* Pend do not need to know turtle history when tagging, they treat every turtle
+  similarly
+* There should be a SOP on defining activities that are available to enter
+  (toggle "display observation" on activity).
+* W2 does not export observer name, only observer number
+* W2 field data entry database report Observations is useless
+* W2 beach names contain duplicates: Munda main beach = Cowrie beach
+* W2 beaches should be de-duplicated and have a bounding box / poly
+* If entering a re-sighting in W2 field db, operators should not immediately see
+  existing tag names. It is too easy to perpetuate an incorrect tag name. Data
+  entry operator should be able to flag historic records as
+  "suggested edit: WA12341 should be WA12347".
+* The system should keep digital copies of original datasheets with records
+* The Dept should demand datasheets to be returned as part of tagging license.
+  Pend does not mind returning datasheets as they scan it anyways.
+  There could be resistance from industry partners  to return datasheets.
+* Penv get 2-3k taggings each year from Barrow and Munda
+* W2 does not record surveys, so surveys without sightings (true absence) are
+  not recorded
+* Penv: data collection, entry, QA, analysis should be repeatable, standardised
+  by DPaW
+* Penv want to capture data through tablets where feasible
+* Penv's PW designed the W2 tagging datasheet with W2 developer BR, revision 2017
+  by DPaW
+* Other groups: Ningaloo, Gnaraloo do some tagging, lots of satellite tagging
+  Care for Headland (tr, tag), Jessica Oates / Astron tag for Quadrant on Varanus Is
+* W2 only knows location of tagging data, should add license number to batch of
+  tags, compliance check: who tags without license
+
+Output:
+* LTMMTP Chevron 2015: reports on metrics from tagging
+* need "new turtle", "remigrant"
+* need "has tag scars"
+
+
+WAMTRAM requirement to DPaW for Animal ethics:
+
+* The number of turtles per species:
+* basic handling: sighted and measured, not tagged or biopsied
+* other study: sat tag
+* other method on conscious animal:
+* any tag applied-new or re-clinched,
+* biopsy taken if not already in flipper-tagged
+
+
 Interim solution: ETL to WAStD
 ------------------------------
 The task of extraction, transformation and loading (ETL) of tagging data is
