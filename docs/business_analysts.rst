@@ -11,6 +11,36 @@ track/nest count) and IT processes (for each business process: data capture,
 data QA and curation, data analysis). Legacy systems and their ties to the current
 implementation (WAStD) are discussed as well.
 
+Aims
+====
+
+* Develop systems for the compilation, management and long-term storage of datasets
+  and their metadata related to sea turtles and their habitats
+
+  * interim (data: WAStD) and long term (metadata: CKAN) systems developed and operational
+  * long-term solution (BioSys) in development
+
+* Develop a stranding information database
+
+  * WA Strandings Database (WAStD) developed and operational for
+    turtles, dugong, sea snakes, ready for other taxa if and when required
+
+* Improve current marine turtle database to ensure functionality across user
+  groups for tagged turtles, beach surveys and other information
+
+  * WAMTRAM 2 ongoing bug fixes (Simon Woodman, Bob Prince)
+  * WAMTRAM 2 integration with WAStD for reporting ("tracks" workbook)
+  * data migration in development: accessing, understanding, extracting,
+    transforming, loading the data
+
+* Develop project management systems (projects, scientific papers, reports, plans)
+  that complement existing corporate systems
+
+  * project management system SDIS (v4)
+  * publication approval system (in prep)
+  * data-driven, reproducible reporting
+
+
 Overview
 ========
 .. Reference with :ref:`dm-roles`
@@ -26,7 +56,7 @@ Data management roles
 Data management overview
 ------------------------
 .. image:: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
+     :target: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
      :alt: Turtle program data management overview
 
 Each business process on the left hand side will be discussed below in more detail.
