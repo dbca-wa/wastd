@@ -13,33 +13,18 @@ implementation (WAStD) are discussed as well.
 
 Aims
 ====
+NdS OA AF 3: "Establish efficient Information Management systems."
 
 * Develop systems for the compilation, management and long-term storage of datasets
   and their metadata related to sea turtles and their habitats
 
-  * interim (data: WAStD) and long term (metadata: CKAN) systems developed and operational
-  * long-term solution (BioSys) in development
-
 * Develop a stranding information database
-
-  * WA Strandings Database (WAStD) developed and operational for
-    turtles, dugong, sea snakes, ready for other taxa if and when required
 
 * Improve current marine turtle database to ensure functionality across user
   groups for tagged turtles, beach surveys and other information
 
-  * WAMTRAM 2 ongoing bug fixes (Simon Woodman, Bob Prince)
-  * WAMTRAM 2 integration with WAStD for reporting ("tracks" workbook)
-  * data migration in development: accessing, understanding, extracting,
-    transforming, loading the data
-
 * Develop project management systems (projects, scientific papers, reports, plans)
   that complement existing corporate systems
-
-  * project management system SDIS (v4)
-  * publication approval system (in prep)
-  * data-driven, reproducible reporting
-
 
 Overview
 ========
