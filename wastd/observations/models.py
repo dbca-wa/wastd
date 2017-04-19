@@ -111,6 +111,7 @@ TAG_TYPE_CHOICES = (
     ('aqwa-nickname', 'AQWA informal name'),  # UWW, from former name UnderWater World
     ('atlantis-nickname', 'Atlantis informal name'),  # ATLANTIS
     ('wa-museum-reptile-registration-number', 'WA Museum Natural History Reptiles Catalogue Registration Number'),  # WAMusR
+    ('genetic-tag', 'Genetic ID sequence'),
     ('other', 'Other'),)
 
 TAG_STATUS_DEFAULT = 'resighted'

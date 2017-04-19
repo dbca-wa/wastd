@@ -2312,7 +2312,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
             },
 
         # typo in Track or Treat 0.26: validate (missing "d")
-        "disturbance_cause_confidence": {
+        "disturbance_cause_confidence": {   
             "na": "guess",
             "guess": "guess",
             "expertopinion": "expert-opinion",
