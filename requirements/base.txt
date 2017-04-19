@@ -36,6 +36,7 @@ coreapi
 coreapi-cli
 pypandoc
 # graphene-django>=1.0  # doesn't do spatial yet
+-e git+https://github.com/parksandwildlife/graphene-django.git#egg=graphene_django
 
 # Auth
 # ------------------------------------------------

@@ -293,6 +293,14 @@ Insight could be required as
   `reproduce the analysis <http://rpubs.com/florian_mayer/tracks>`_
   from the archived inputs.
 
+Real-world example of Cetacean stranding questions:
+
+* incidents with mortality
+* incidents with entanglement (ensuing mortality or not)
+* other non-entanglement incidents
+* strandings (ensuing mortality or not)
+* mortalities in cetacean stranding db are cases with "cause of death" not "na"
+
 Analyst
 ^^^^^^^
 The analyst's role is to bridge the gap between raw data and non-trivial questions

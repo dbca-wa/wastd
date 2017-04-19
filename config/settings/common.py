@@ -58,7 +58,7 @@ THIRD_PARTY_APPS = (
     'django_fsm_log',               # Transition audit logs
     'fsm_admin',                    # Transitions in admin
     'reversion',                    # Version history
-    # 'graphene_django',              # GraphQL API
+    'graphene_django',              # GraphQL API
     'rest_framework',               # API
     'rest_framework.authtoken',     # API auth via token
     'rest_framework_gis',           # API spatial fields
@@ -413,10 +413,10 @@ PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
 # Google Maps API key
 GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY', default="not-set")
 
-# # Graphene-django
-# GRAPHENE = {
-#     'SCHEMA': 'wastd.schema.schema' # Where your Graphene schema lives
-# }
+# Graphene-django
+GRAPHENE = {
+    'SCHEMA': 'wastd.schema.schema'
+}
 
 
 # Guardian permissions, django-polymorphic integration

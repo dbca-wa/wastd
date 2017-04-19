@@ -1,9 +1,11 @@
-# from graphene import relay, ObjectType, AbstractType
+# import graphene
+# from graphene import relay  #  , ObjectType, AbstractType
 # from graphene_django import DjangoObjectType
 # from graphene_django.filter import DjangoFilterConnectionField
 #
-# from wastd.observations.models import *
-# 
+# from wastd.observations.models import Encounter
+#
+#
 # class EncounterNode(DjangoObjectType):
 #     class Meta:
 #         model = Encounter

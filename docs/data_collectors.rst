@@ -338,7 +338,7 @@ Night 1
   off by sand, or stuck onto another datasheet when applied to a turtle)
   for the package of the just applied tag "...755" and recorded "...470" incorrectly
   as "applied new".
- * Team 1 measure CCL
+* Team 1 measure CCL
 
 Night 2
 ^^^^^^^
@@ -456,7 +456,7 @@ General observations
   daylight, sweaty fingers, flying sand.
 * External battery packs extend time between wall power charging.
 * Best low-cost field device: Lenovo Tab 3. Runner-up: Samsung S2 8".
-* Strong case against Galaxy Tab A (GPS speed, internal storage, old OS version).
+* Strong case against Galaxy Tab A (slow GPS, low internal storage, old OS version).
 
 
 .. _cost-benefit-analysis-digital-data-capture:
@@ -464,10 +464,15 @@ Cost-benefit analysis for mobile data collection
 ================================================
 This section is in development!
 
+TODO add lucidchart "digital vs paper-based data collection"
+TODO digitise notes "lessons learnt from digitising strandings"
+
 Paper-based data collection
 ---------------------------
 
 Filling in a paper data sheet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * Possible: typos, illegible handwriting, invalid values
-* Breaking the analog-digital barrier: GPS, PIT tag reader, barcodes for samples etc.
+* Breaking the analog-digital barrier multiple times is costly and error prone:
+  GPS, PIT tag reader, barcodes for samples etc.
+* Associating media to records is hard and error-prone
