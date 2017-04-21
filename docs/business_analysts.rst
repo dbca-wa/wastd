@@ -109,13 +109,16 @@ Constraints
 The solution architecture must consider the following contraints:
 
 * Biosys aims to deliver similar functionality, but not within the required time.
-* REQ The solution shall be either disposable (to be re-implemented in BioSys),
+* REQ The interim solution shall be either disposable (to be re-implemented in BioSys),
   re-usable (to be integrated in BioSys), or scalable (to become a part of BioSys).
-* REQ The solution shall be SOE, follow OIM's standards and integrate into their
+* REQ [#5](https://github.com/parksandwildlife/biosys-turtles/issues/5)
+  The solution shall be SOE, follow OIM's standards and integrate into their
   infrastructure ecosystem.
-* Double handling of data entry shall be avoided - do it once, and do it
+* REQ [#7](https://github.com/parksandwildlife/biosys-turtles/issues/7)
+  Double handling of data entry shall be avoided - do it once, and do it
   properly (complete, correct, consistent).
-* REQ There must be a standardised, accessible way to import and export all data
+* REQ [#6](https://github.com/parksandwildlife/biosys-turtles/issues/6)
+  There must be a standardised, accessible way to import and export all data
   into and out of the solution.
 * REQ The solution shall be compatible on a raw data level with Queensland's
   StrandNet, Parks & Wildlife's Turtle Tagging database WAMTRAM 2,
