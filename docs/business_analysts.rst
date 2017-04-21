@@ -120,7 +120,8 @@ The solution architecture must consider the following contraints:
 * REQ [#6](https://github.com/parksandwildlife/biosys-turtles/issues/6)
   There must be a standardised, accessible way to import and export all data
   into and out of the solution.
-* REQ The solution shall be compatible on a raw data level with Queensland's
+* REQ [#8](https://github.com/parksandwildlife/biosys-turtles/issues/8)
+  The solution shall be compatible on a raw data level with Queensland's
   StrandNet, Parks & Wildlife's Turtle Tagging database WAMTRAM 2,
   and the Ningaloo Turtle Program's track count database.
 
@@ -417,19 +418,25 @@ Business Process Turtle Tagging
 
 IT process Turtle tag asset management
 --------------------------------------
+[Related BR](https://github.com/parksandwildlife/biosys-turtles/milestone/8)
+
 Tags have a life cycle, characterised by interactions with humans and animals:
 
-* TODO add tag status list
-* LLC diagram tag
+* TODO [#9 create tag status list](https://github.com/parksandwildlife/biosys-turtles/issues/9)
+* TODO [#3 LLC diagram tag](https://github.com/parksandwildlife/biosys-turtles/issues/3)
 
-Use cases:
+Use cases along the life cycle of a tag, also mentioned in
+[REQ #10](https://github.com/parksandwildlife/biosys-turtles/issues/10):
 
 * Order tag (typically in batches) with running ID e.g. WB1500 - WB3500
 * Record tag batches as ordered, produced, delivered (how much detail is required?),
   allocated to field team (important)
 * Query: how many tags have we ordered?
 * Query: what's the next available tag number?
-* Query: which tags are available to hand out to field teams? when do we have to re-order?
+* Query: which tags are available to hand out to field teams?
+* Query: when do we have to re-order?
+* Query: which tags are in possession of field team x?
+* Query: where is tag y, who is in possession or tag y?
 * Field teams report tags as "applied new", "re-clinched" or "re-sighted"
   when tagging animals through digital or paper field data forms
 * Tag returns from TOs after harvest
@@ -454,32 +461,41 @@ field protocol in sequence.
 The technology currently used for digital data capture of strandings and tracks
 is not flexible enough to provide a viable tagging data capture form.
 
-REQ The solution for a digital turtle tagging field data capture app must be
+[REQ #12](https://github.com/parksandwildlife/biosys-turtles/issues/12)
+The solution for a digital turtle tagging field data capture app must be
 optimised for harsh environmental conditions and low light, as well as
 the non-linear and  opportunistic nature of tagging data capture.
 
-REQ The solution shall carry the complete backlog of tagging records to provide
+[REQ #11](https://github.com/parksandwildlife/biosys-turtles/issues/11)
+The solution shall carry the complete backlog of tagging records to provide
 the field workers with real-time insight about last sighting and in general all
-data relating to the encountered turtle (if already tagged), utilised tags, samples,
-data loggers and all other uniquely identifiable involved entities.
+data relating to the encountered turtle (if already tagged), utilised tags,
+samples, data loggers and all other uniquely identifiable involved entities.
 
-REQ The solution shall allow daily syncing between multiple field data capture devices
-while still in the field.
+REQ The solution shall allow daily syncing between multiple field data capture
+devices while still in the field.
+
+
+[REQ #13](https://github.com/parksandwildlife/biosys-turtles/issues/13)
+The solution shall be able to toggle interface features and functionality
+between field data capture, field data curation, data upload, central data
+curation and other roles.
+
+[REQ The solution shall provide data entry from paper datasheets (similar to
+W2 field data collection database) as well as direct digital data capture (
+similar to track count app).
 
 REQ The solution shall be responsive to different device display widths.
-
-REQ The solution shall be able to toggle interface features and functionality between
-field data capture, field data curation, data upload, central data curation and other roles.
 
 
 IT process Turtle tagging data curation (field and office)
 ----------------------------------------------------------
-Tagging data captured in the field is particularly error-prone due to the stressful
-circumstances of the field work.
+Tagging data captured in the field is particularly error-prone due to the
+stressful circumstances of the field work.
 
 Currently, a first round of data curation occurs during data entry of paper data
 forms into the WAMTRAM field database on the morning after a tagging night, when
-memory of any possible irrregularity is still fresh.
+memory of any possible irregularity is still fresh.
 Anecdotal use cases are reported at :ref:`lessons-learnt-paper-based-data-capture`.
 
 
@@ -490,8 +506,14 @@ turtles are part of this scope.
 
 :ref:`data-analysis-animal-life-cycle` illustrates M-C-R analysis.
 
-REQ The system could maintain the location and processing status of samples
-taken from a tagged (or stranded) turtle.
+REQ The system should maintain the location and processing status of physical
+samples (biopsy, histology, etc.) taken from a tagged (or stranded) turtle.
+
+REQ The solution should allow adding new groups of measurements as required.
+E.g., blood samples may return e.g. 30 defined biochemical measurements per turtle.
+The solution should have a way to add those defined fields explicitly, so that
+the data can be accessed in a structured way. This paves the way for queries
+like "what is the mean / SD / min / max blood sugar level for flatback turtles".
 
 Use cases:
 
@@ -657,6 +679,7 @@ Tagging is currently handled in WAMTRAM 2.
 
 To replace WAMTRAM 2, a digital data capture app as well as a central data warehouse
 such as BioSys or WAStD are required.
+
 
 Business Process Turtle Tracks
 ==============================
