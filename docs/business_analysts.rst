@@ -185,7 +185,7 @@ An updated workflow for turtle strandings is being distributed to field offices
 at the time of writing (Jan 2017), but requires further updates to include
 other priority taxa (cetaceans, pinnipeds, dugong, sea snakes etc.).
 
-`REQ #19 https://github.com/parksandwildlife/biosys-turtles/issues/19`_
+`REQ #19 <https://github.com/parksandwildlife/biosys-turtles/issues/19>`_
 Data should, where feasible, be "born digitally" to minimize the costly and
 error-prone crossing of the analog-digital barrier.
 
@@ -210,10 +210,12 @@ external to the Department.
 
 IT process Stranding data curation
 ----------------------------------
-Data curation requires at least four steps:
+Data curation requires at least four steps
+(`REQ #26 <https://github.com/parksandwildlife/biosys-turtles/issues/26>`_):
 
 * A data entry operator digitises legacy data from emails, old paper-based
   stranding reports and other, unstructured information.
+  `REQ #25 <https://github.com/parksandwildlife/biosys-turtles/issues/25>`_
 * A second data entry operator proof-reads the digitised records.
 * A qualified curator with good business knowledge of turtle ecology reviews the
   records.
