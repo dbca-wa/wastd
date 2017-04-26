@@ -15,16 +15,20 @@ Aims
 ====
 NdS OA AF 3: "Establish efficient Information Management systems."
 
-* Develop systems for the compilation, management and long-term storage of datasets
+* `Develop systems for the compilation, management and long-term storage of datasets
   and their metadata related to sea turtles and their habitats
+  <https://github.com/parksandwildlife/biosys-turtles/issues/14>`_
 
-* Develop a stranding information database
+* `Develop a stranding information database
+  <https://github.com/parksandwildlife/biosys-turtles/issues/15>`_
 
-* Improve current marine turtle database to ensure functionality across user
+* `Improve current marine turtle database to ensure functionality across user
   groups for tagged turtles, beach surveys and other information
+  <https://github.com/parksandwildlife/biosys-turtles/issues/16>`_
 
-* Develop project management systems (projects, scientific papers, reports, plans)
+* `Develop project management systems (projects, scientific papers, reports, plans)
   that complement existing corporate systems
+  <https://github.com/parksandwildlife/biosys-turtles/issues/17>`_
 
 Overview
 ========
@@ -92,7 +96,8 @@ For ministerial inquiries on turtle strandings, there is no timely, defensible,
 reproducible, and accessible insight available.
 Monitoring and research questions suffer the same problem.
 
-REQ Insight on turtle strandings must be available in a timely, defensible,
+`REQ #18 <https://github.com/parksandwildlife/biosys-turtles/issues/18>`_
+Insight on turtle strandings must be available in a timely, defensible,
 reproducible and accessible manner.
 
 Task
@@ -111,16 +116,16 @@ The solution architecture must consider the following contraints:
 * Biosys aims to deliver similar functionality, but not within the required time.
 * REQ The interim solution shall be either disposable (to be re-implemented in BioSys),
   re-usable (to be integrated in BioSys), or scalable (to become a part of BioSys).
-* REQ [#5](https://github.com/parksandwildlife/biosys-turtles/issues/5)
+* `REQ #5 <https://github.com/parksandwildlife/biosys-turtles/issues/5)>`_
   The solution shall be SOE, follow OIM's standards and integrate into their
   infrastructure ecosystem.
-* REQ [#7](https://github.com/parksandwildlife/biosys-turtles/issues/7)
+* `REQ #7 <https://github.com/parksandwildlife/biosys-turtles/issues/7>`_
   Double handling of data entry shall be avoided - do it once, and do it
   properly (complete, correct, consistent).
-* REQ [#6](https://github.com/parksandwildlife/biosys-turtles/issues/6)
+* `REQ #6 <https://github.com/parksandwildlife/biosys-turtles/issues/6>`_
   There must be a standardised, accessible way to import and export all data
   into and out of the solution.
-* REQ [#8](https://github.com/parksandwildlife/biosys-turtles/issues/8)
+* `REQ #8 <https://github.com/parksandwildlife/biosys-turtles/issues/8>`_
   The solution shall be compatible on a raw data level with Queensland's
   StrandNet, Parks & Wildlife's Turtle Tagging database WAMTRAM 2,
   and the Ningaloo Turtle Program's track count database.
@@ -150,14 +155,14 @@ Cetacean strandings
 Nature Conservation kept a Filemaker Pro database of Cetacean strandings.
 The database custodian has retired after extended leave.
 
-It shall be known that the custodian of the legacy turtle tagging database
-WAMTRAM 2 understood that strandings of tagged turtles are a vital part of their
-life history -- as they are used in mark-capture-recapture analysis --
+It shall be noted that the custodian of the legacy turtle tagging database
+WAMTRAM 2 understood correctly that strandings of tagged turtles are a vital
+part of their life history -- as they are used in mark-capture-recapture analysis --
 and aimed to include the strandings process into the database;
-however, this process was not completely implemented and is not operational.
+however, this process was not completely implemented and is not fully operational.
 
-The fopllowing figure shows current implementation and possible transition
-of Cetacean stranding data management.
+The following figure shows current implementation and possible transition of
+Cetacean stranding data management.
 
 .. image:: https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png
      :target: https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png
@@ -180,21 +185,26 @@ An updated workflow for turtle strandings is being distributed to field offices
 at the time of writing (Jan 2017), but requires further updates to include
 other priority taxa (cetaceans, pinnipeds, dugong, sea snakes etc.).
 
-REQ Data should be born digitally to minimize the costly and error-prone crossing
-of the analog-digital barrier.
+`REQ #19 https://github.com/parksandwildlife/biosys-turtles/issues/19`_
+Data should, where feasible, be "born digitally" to minimize the costly and
+error-prone crossing of the analog-digital barrier.
 
-REQ The incident responder shall be provided with a comprehensive, easy to follow,
-work flow (as flow chart printout, handbook, or in a digital format).
-
-REQ The incident responder shall be able to capture the data offline, with the
+`REQ #21 <https://github.com/parksandwildlife/biosys-turtles/issues/21>`_
+The incident responder shall be able to capture the data offline, with the
 necessary reference at hand (species ID guides, relevant data from the central
 database, "next steps" flow chart), using cheap and readily available
 technology (e.g. tablets or smart phones), and be able to auto-upload the data
 once online (office WiFi or mobile reception) without manual effort.
 
-REQ The digital data capture tool shall record location and time automatically.
+`REQ #22 <https://github.com/parksandwildlife/biosys-turtles/issues/22>`_
+The digital data capture tool shall record location and time automatically.
 
-REQ There shall be one centralised wildlife incident response contact within DPaW,
+`REQ #20 <https://github.com/parksandwildlife/biosys-turtles/issues/20>`_
+The incident responder shall be provided with a comprehensive, easy to follow,
+work flow (as flow chart printout, handbook, or in a digital format).
+
+`REQ #23 <https://github.com/parksandwildlife/biosys-turtles/issues/23>`_
+There shall be one centralised wildlife incident response contact within DPaW,
 which shall direct the incidents to the respective responders both within and
 external to the Department.
 
