@@ -236,10 +236,10 @@ implementation serves several analytical requirements:
 
 REQ Data consumers shall be able to query, filter and export the raw data.
 
-REQ Data access shall be restricted role-based, so that sensitive data is accessible
+`REQ #31 <https://github.com/parksandwildlife/biosys-turtles/issues/31>`_
+Data access shall be restricted role-based, so that sensitive data is accessible
 only to trusted and authorised data consumers.
-
-REQ The system shall default data restrictions to be suitable for the general audience.
+The system shall default data restrictions to be suitable for the general audience.
 
 .. _usecase-stranding-mininsterial-inquiry:
 Use case: Ministerial inquiry, annual report, strategic advice
@@ -473,31 +473,31 @@ field protocol in sequence.
 The technology currently used for digital data capture of strandings and tracks
 is not flexible enough to provide a viable tagging data capture form.
 
-[REQ #12](https://github.com/parksandwildlife/biosys-turtles/issues/12)
+`REQ #12 <https://github.com/parksandwildlife/biosys-turtles/issues/12>`_
 The solution for a digital turtle tagging field data capture app must be
 optimised for harsh environmental conditions and low light, as well as
 the non-linear and  opportunistic nature of tagging data capture.
 
-[REQ #11](https://github.com/parksandwildlife/biosys-turtles/issues/11)
+`REQ #11 <https://github.com/parksandwildlife/biosys-turtles/issues/11>`_
 The solution shall carry the complete backlog of tagging records to provide
 the field workers with real-time insight about last sighting and in general all
 data relating to the encountered turtle (if already tagged), utilised tags,
 samples, data loggers and all other uniquely identifiable involved entities.
 
-REQ The solution shall allow daily syncing between multiple field data capture
+`REQ #28 <https://github.com/parksandwildlife/biosys-turtles/issues/28>`_
+The solution shall allow daily syncing between multiple field data capture
 devices while still in the field.
 
-
-[REQ #13](https://github.com/parksandwildlife/biosys-turtles/issues/13)
+`REQ #29 <https://github.com/parksandwildlife/biosys-turtles/issues/29>`_
 The solution shall be able to toggle interface features and functionality
 between field data capture, field data curation, data upload, central data
 curation and other roles.
+The solution shall be responsive to different device display widths.
 
-[REQ The solution shall provide data entry from paper datasheets (similar to
-W2 field data collection database) as well as direct digital data capture (
-similar to track count app).
-
-REQ The solution shall be responsive to different device display widths.
+`REQ #13 <https://github.com/parksandwildlife/biosys-turtles/issues/13>`_
+The solution shall provide data entry from paper datasheets (similar to
+W2 field data collection database) as well as direct digital data capture
+(similar to track count app).
 
 
 IT process Turtle tagging data curation (field and office)
@@ -513,19 +513,14 @@ Anecdotal use cases are reported at :ref:`lessons-learnt-paper-based-data-captur
 
 IT process Turtle tagging data analysis
 ---------------------------------------
-Tagged turtles are useful for mark-capture-recapture analysis. Stranded tagged
-turtles are part of this scope.
+Tagged turtles are useful for mark-capture-recapture analysis.
+Stranded tagged turtles are part of this scope.
 
 :ref:`data-analysis-animal-life-cycle` illustrates M-C-R analysis.
 
-REQ The system should maintain the location and processing status of physical
+`REQ #35 <https://github.com/parksandwildlife/biosys-turtles/issues/35>`_
+The system should maintain the location and processing status of physical
 samples (biopsy, histology, etc.) taken from a tagged (or stranded) turtle.
-
-REQ The solution should allow adding new groups of measurements as required.
-E.g., blood samples may return e.g. 30 defined biochemical measurements per turtle.
-The solution should have a way to add those defined fields explicitly, so that
-the data can be accessed in a structured way. This paves the way for queries
-like "what is the mean / SD / min / max blood sugar level for flatback turtles".
 
 Use cases:
 
@@ -534,10 +529,18 @@ Use cases:
 * Has the sample been analysed? Where is the data?
 * Is there any tissue left from that sample to analyse? How much?
 
+REQ The solution should allow adding new groups of measurements as required.
+E.g., blood samples may return e.g. 30 defined biochemical measurements per turtle.
+The solution should have a way to add those defined fields explicitly, so that
+the data can be accessed in a structured way. This paves the way for queries
+like "what is the mean / SD / min / max blood sugar level for flatback turtles".
+
+
 Legacy system: WAMTRAM 2
 ------------------------
 
-* `Documentation (access restricted to Turtle team) <https://confluence.dpaw.wa.gov.au/display/sd/MSP%20Turtle%20Tagging%20DB>`_
+* `Documentation (access restricted to Turtle team)
+  <https://confluence.dpaw.wa.gov.au/display/sd/MSP%20Turtle%20Tagging%20DB>`_
 * Data backend is an MS SQL Server 2012 database on kens-mssql-001-prod
 * Curator Bob Prince administrates data through an MS Access admin front-end
 * For each field team, Bob uses the admin frontend to export the

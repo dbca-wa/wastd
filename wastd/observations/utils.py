@@ -5,7 +5,7 @@ from datetime import datetime
 from dateutil import parser
 import json
 import os
-from pprint import pprint
+# from pprint import pprint
 import requests
 import shutil
 
@@ -15,7 +15,7 @@ from django.contrib.gis.geos import Point, LineString
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
-from django.utils.timezone import get_fixed_timezone, utc
+# from django.utils.timezone import get_fixed_timezone, utc
 
 from wastd.users.models import User
 from wastd.observations.models import (
@@ -2312,7 +2312,7 @@ def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
             },
 
         # typo in Track or Treat 0.26: validate (missing "d")
-        "disturbance_cause_confidence": {   
+        "disturbance_cause_confidence": {
             "na": "guess",
             "guess": "guess",
             "expertopinion": "expert-opinion",
