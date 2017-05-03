@@ -88,8 +88,8 @@ Requirements to TIMTAMS will be largely shared by all data streams.
 Data entry process (current)
 ----------------------------
 .. image:: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
-     :alt: Turtle program data entry process overview
+    :target: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
+    :alt: Turtle program data entry process overview
 
 Each data stream goes through parts of this process:
 
@@ -101,9 +101,9 @@ Each data stream goes through parts of this process:
 * Proofreading entered data against paper datasheets
 * Curating data with subject matter expertise
 
-Data flow (ideal)
------------------
-..image:: https://www.lucidchart.com/publicSegments/view/5ce9d09d-f027-4d8c-b8b4-15f352173a0b/image.png
+Data life cycle
+---------------
+.. image:: https://www.lucidchart.com/publicSegments/view/5ce9d09d-f027-4d8c-b8b4-15f352173a0b/image.png
     :target: https://www.lucidchart.com/publicSegments/view/5ce9d09d-f027-4d8c-b8b4-15f352173a0b/image.png
     :alt: Turtle data flow, ideal state
 
