@@ -66,6 +66,14 @@ Implementation process model
      :target: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
      :alt: Turtle program information management system implementation process model
 
+.. _dm-ideal-system:
+Ideal system
+------------
+.. image:: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
+    :alt: Turtle information management system overview
+
+
 Paradigm:
 
 * do it, then
@@ -529,7 +537,8 @@ Use cases:
 * Has the sample been analysed? Where is the data?
 * Is there any tissue left from that sample to analyse? How much?
 
-REQ The solution should allow adding new groups of measurements as required.
+`REQ #37 <https://github.com/parksandwildlife/biosys-turtles/issues/37>`_
+The solution should allow adding new groups of measurements as required.
 E.g., blood samples may return e.g. 30 defined biochemical measurements per turtle.
 The solution should have a way to add those defined fields explicitly, so that
 the data can be accessed in a structured way. This paves the way for queries
@@ -539,21 +548,23 @@ like "what is the mean / SD / min / max blood sugar level for flatback turtles".
 Legacy system: WAMTRAM 2
 ------------------------
 
+TODO diagram WAMTRAM 2 data flow.
+
 * `Documentation (access restricted to Turtle team)
   <https://confluence.dpaw.wa.gov.au/display/sd/MSP%20Turtle%20Tagging%20DB>`_
-* Data backend is an MS SQL Server 2012 database on kens-mssql-001-prod
-* Curator Bob Prince administrates data through an MS Access admin front-end
+* Data backend is an MS SQL Server 2012 database on ``kens-mssql-001-prod``.
+* Curator Bob Prince administrates data through an MS Access admin front-end.
 * For each field team, Bob uses the admin frontend to export the
-  entire current database into a data collection database
+  entire current database into a data collection database.
 * Field teams receive a data collection database backend (MS Access
   mdb) plus data collection frontend (MS Access mde) which allows data entry,
   does rudimentary data validation, and allows looking up existing data (e.g.
-  tag history, turtle history)
+  tag history, turtle history).
 * Field teams return the data collection backend, which Bob imports into WAMTRAM 2
 * If WAMTRAM 2 reports import errors, Bob changes field data using his subject
   matter expertise and scans of original data sheets (if available) to resolve
-  typos and incorrectly entered data
-* Once import validation passes, WAMTRAM ingests the new data batch
+  typos and incorrectly entered data.
+* Once import validation passes, WAMTRAM ingests the new data batch.
 
 * System requires data to be entered in chronological order else throws errors
 * Data is required to be known / entered the next day
