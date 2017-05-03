@@ -32,6 +32,9 @@ NdS OA AF 3: "Establish efficient Information Management systems."
 
 Overview
 ========
+This section gives a brief overview of the information management ecosystem
+("the system") described in this chapter.
+
 .. Reference with :ref:`dm-roles`
 .. _dm-roles:
 Data management roles
@@ -39,6 +42,17 @@ Data management roles
 .. image:: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
      :target: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
      :alt: Turtle program data management roles
+
+Stakeholders interact with the system in different roles:
+
+* data collection
+* data entry
+* data QA and curation
+* data analysis
+* information consumer
+
+A person can occupy none, one or several roles. Each role has a different set of
+requirements and goals.
 
 .. Reference with :ref:`dm-overview`
 .. _dm-overview:
@@ -48,7 +62,7 @@ Data management current state
      :target: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
      :alt: Turtle data management overview - current state
 
-Each business process on the left hand side will be discussed below in more detail.
+Each data stream on the left hand side will be discussed below in more detail.
 
 .. _dm-ideal-system:
 Data management ideal state
@@ -57,34 +71,41 @@ Data management ideal state
     :target: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
     :alt: Turtle information management system overview
 
+This diagram shows a simlified ideal system architecture.
+Each core data stream is implemented in the Turtle Information Management and
+Tag Asset Management System (TIMTAMS).
+TIMTAMS interacts with the data repository BioSys through the BioSys API.
+Other core systems also have an API.
+The APIs are accessible through an Enterprise Service Bus (ESB).
+An ESB is a phone network between APIs.
+Applications interact with data repositories through the ESB, like humans can
+talk to each other on the phone.
+Requirements to TIMTAMS will be largely shared by all data streams.
+
 
 .. Reference with :ref:`dm-data-entry`
 .. _dm-data-entry:
-Data entry process overview
----------------------------
-.. image:: https://www.lucidchart.com/publicSegments/view/b80e04eb-893d-4e70-99f7-e403c7a285ed/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/b80e04eb-893d-4e70-99f7-e403c7a285ed/image.png
+Data entry process (current)
+----------------------------
+.. image:: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
      :alt: Turtle program data entry process overview
 
-.. Reference with :ref:`dm-implementation-process-model`
-.. _dm-implementation-process-model:
-Implementation process model
-----------------------------
-.. image:: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
-     :alt: Turtle program information management system implementation process model
+Each data stream goes through parts of this process:
 
-Paradigm:
+* Scanning & filing digital data sheets
+* Converting digital data formats to standard formats
+* Entering data from datasheets into an online system
+* Importing records from one digital system into another
+* Entering data directly into the system (online or offline)
+* Proofreading entered data against paper datasheets
+* Curating data with subject matter expertise
 
-* do it, then
-* do it right, then
-* do it better.
-
-* Build end-to-end pipelines in small iterations (agile)
-* Use production data
-    * to detect real-world problems,
-    * to battle-test implementation approaches,
-    * to evolve working solutions into correct, then comprehensive solutions
+Data flow (ideal)
+-----------------
+..image:: https://www.lucidchart.com/publicSegments/view/5ce9d09d-f027-4d8c-b8b4-15f352173a0b/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/5ce9d09d-f027-4d8c-b8b4-15f352173a0b/image.png
+    :alt: Turtle data flow, ideal state
 
 
 Business Process Turtle Strandings
@@ -1105,6 +1126,26 @@ Keep iterations small and consult stakeholders.
 
 Verify the necessity of a feature through a product utilising it, and verify the
 product's validity (and the correctnenss of data processing) with stakeholders.
+
+.. Reference with :ref:`dm-implementation-process-model`
+.. _dm-implementation-process-model:
+Implementation process model
+----------------------------
+.. image:: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
+     :alt: Turtle program information management system implementation process model
+
+Paradigm:
+
+* do it, then
+* do it right, then
+* do it better.
+
+* Build end-to-end pipelines in small iterations (agile)
+* Use production data
+    * to detect real-world problems,
+    * to battle-test implementation approaches,
+    * to evolve working solutions into correct, then comprehensive solutions
 
 
 =====================
