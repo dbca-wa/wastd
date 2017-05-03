@@ -42,13 +42,21 @@ Data management roles
 
 .. Reference with :ref:`dm-overview`
 .. _dm-overview:
-Data management overview
-------------------------
+Data management current state
+-----------------------------
 .. image:: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
      :target: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
-     :alt: Turtle program data management overview
+     :alt: Turtle data management overview - current state
 
 Each business process on the left hand side will be discussed below in more detail.
+
+.. _dm-ideal-system:
+Data management ideal state
+---------------------------
+.. image:: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
+    :alt: Turtle information management system overview
+
 
 .. Reference with :ref:`dm-data-entry`
 .. _dm-data-entry:
@@ -65,14 +73,6 @@ Implementation process model
 .. image:: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
      :target: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
      :alt: Turtle program information management system implementation process model
-
-.. _dm-ideal-system:
-Ideal system
-------------
-.. image:: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
-    :alt: Turtle information management system overview
-
 
 Paradigm:
 
