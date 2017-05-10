@@ -2,7 +2,9 @@
 Business Analysts
 =================
 This chapter draws the big picture of the turtle data ecosystem
-by presenting business, functional and stakeholders' requirements as readable use cases.
+by presenting business, functional and stakeholders' requirements as readable
+use cases and describing existing implementations.
+
 
 We apply IBM's `simple pattern for requirements analysis
 <https://www.ibm.com/developerworks/architecture/library/ar-analpat/ar-analpat-pdf.pdf>`_
@@ -565,11 +567,29 @@ The solution should have a way to add those defined fields explicitly, so that
 the data can be accessed in a structured way. This paves the way for queries
 like "what is the mean / SD / min / max blood sugar level for flatback turtles".
 
+`REQ #5 <https://github.com/parksandwildlife/biosys-turtles/issues/6>`_
+The analysts need timely access to the data. The data should be in standardised
+formats.
+
+`REQ #39 <https://github.com/parksandwildlife/biosys-turtles/issues/39>`_
+Data analysts should be given working examples on how to access the data.
+E.g., the R package `wastdr <https://github.com/parksandwildlife/wastdr>`_
+provides convenience wrappers around the WAStD API, plus working examples and
+example data.
+
+`REQ #31 <https://github.com/parksandwildlife/biosys-turtles/issues/31>`_
+Data analysts, like all other stakeholders, require role based access to the data
+they are supposed to access, and preventing them from accessing data they are not
+supposed to see.
 
 Legacy system: WAMTRAM 2
 ------------------------
 
-TODO diagram WAMTRAM 2 data flow.
+.. image:: https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png
+    :alt: Turtle tagging system WAMTRAM 2 data flow
+
+The basic data flow for the turtle tagging system WAMTRAM 2 is:
 
 * `Documentation (access restricted to Turtle team)
   <https://confluence.dpaw.wa.gov.au/display/sd/MSP%20Turtle%20Tagging%20DB>`_
@@ -581,61 +601,62 @@ TODO diagram WAMTRAM 2 data flow.
   mdb) plus data collection frontend (MS Access mde) which allows data entry,
   does rudimentary data validation, and allows looking up existing data (e.g.
   tag history, turtle history).
-* Field teams return the data collection backend, which Bob imports into WAMTRAM 2
-* If WAMTRAM 2 reports import errors, Bob changes field data using his subject
+* Field teams return the data collection backend, which Bob imports into W2.
+* If W2 reports import errors, Bob changes field data using his subject
   matter expertise and scans of original data sheets (if available) to resolve
-  typos and incorrectly entered data.
+  typos and incorrectly entered data. Bob frequently has to contact the field
+  teams in order to reconcile conflicting data.
 * Once import validation passes, WAMTRAM ingests the new data batch.
-
-* System requires data to be entered in chronological order else throws errors
-* Data is required to be known / entered the next day
-* Flipper tag procurement through DPaW as custodians of tag names (e.g. "WA1234")
-* W2 disallows team 2 to enter tags allocated to team 1, even is team 1's turtles
-  mitrate to team 2's tagging area
-* Taggers need to know from existing tags to which tagging area the tag was assigned to
+* W2 requires data to be entered in chronological order or else throws errors.
+* Flipper tag procurement happens through DPaW as custodians of tag names (e.g. "WA1234").
+* W2 disallows team 2 to enter tags allocated to team 1, even if team 1's turtles
+  migrate to team 2's tagging area.
+* REQ Taggers need to know from existing tags to which tagging area the tag was assigned to.
 * W2 is missing the option to enter a resighted turtle if the original tagging
-  is not already recorded or imported
+  is not already recorded or imported.
 * W2 assumes all datasheets are available for data entry before the next tagging
-  night
-* Pend want to enter every observation independently of whether related records are
-  already entered
-* Flipper and PIT tag asset management: need to know location and beach they
+  night.
+* REQ (Pend) Data entry operators need to be able to enter every observation
+  independently of whether related records are already entered.
+* REQ Flipper and PIT tag asset management: need to know location and beach they
   are assigned to. This allows to QA typos in datasheets by narrowing down
   possible lists of tag names.
-* At any point in time we need to know precise location and holder of tags, which
-  may change every night during tagging season
-* Limitations to working on gas plants: electronic devices are only recently
-  permitted on Barrow Is. All electronic devices must be certified for fire / spark safety.
-* Varanus Is would work with tablets
-* Barrow Is is too hectic for tablets
+* REQ At any point in time we need to know precise location and holder of tags, which
+  may change every night during tagging season.
+* Limitations impacting data collection on gas plants: electronic devices are
+  only recently permitted on Barrow Is. All electronic devices must be certified
+  for fire / spark safety.
+* Varanus Is would work with tablets.
+* Barrow Is is too hectic for tablets.
 * Pend do not need to know turtle history when tagging, they treat every turtle
-  similarly
-* There should be a SOP on defining activities that are available to enter
+  similarly.
+* REQ There should be a SOP on defining activities that are available to enter
   (toggle "display observation" on activity).
-* W2 does not export observer name, only observer number
-* W2 field data entry database report Observations is useless
+* W2 does not export observer name, only observer number.
+* W2 field data entry database report Observations is useless.
 * W2 beach names contain duplicates: Munda main beach = Cowrie beach
-* W2 beaches should be de-duplicated and have a bounding box / poly
-* If entering a re-sighting in W2 field db, operators should not immediately see
-  existing tag names. It is too easy to perpetuate an incorrect tag name. Data
-  entry operator should be able to flag historic records as
-  "suggested edit: WA12341 should be WA12347".
-* The system should keep digital copies of original datasheets with records
+* W2 beaches should be de-duplicated and have a bounding box / poly.
+* REQ If entering a re-sighting in W2 field db, operators should not immediately
+  see existing tag names. It is too easy to perpetuate an incorrect tag name.
+  Data entry operator should be able to flag historic records as
+  "suggested edit: WA12341 should be WA12347", but not actually change them.
+* The system should keep digital copies of original datasheets with records.
 * The Dept should demand datasheets to be returned as part of tagging license.
   Pend does not mind returning datasheets as they scan it anyways.
   There could be resistance from industry partners  to return datasheets.
-* Penv get 2-3k taggings each year from Barrow and Munda
+* Penv get 2-3k taggings each year from Barrow and Munda.
 * W2 does not record surveys, so surveys without sightings (true absence) are
-  not recorded
+  not recorded.
+* REQ The solution shall record surveys in order to record true absences.
 * Penv: data collection, entry, QA, analysis should be repeatable, standardised
-  by DPaW
-* Penv want to capture data through tablets where feasible
+  by DPaW.
+* Penv want to capture data through tablets where feasible, otherwise on paper.
 * Penv's PW designed the W2 tagging datasheet with W2 developer BR, revision 2017
-  by DPaW
-* Other groups: Ningaloo, Gnaraloo do some tagging, lots of satellite tagging
-  Care for Headland (tr, tag), Jessica Oates / Astron tag for Quadrant on Varanus Is
-* W2 only knows location of tagging data, should add license number to batch of
-  tags, compliance check: who tags without license
+  by DPaW.
+* Other groups: Ningaloo, Gnaraloo do some tagging, lots of satellite tagging.
+  Care for Headland (tr, tag), Jessica Oates / Astron tag for Quadrant on Varanus Is.
+* REQ W2 only knows location of tagging data, should add license number to batch of
+  tags, compliance check: who tags without license?
 
 Output:
 * LTMMTP Chevron 2015: reports on metrics from tagging
@@ -643,7 +664,7 @@ Output:
 * need "has tag scars"
 
 
-WAMTRAM requirement to DPaW for Animal ethics:
+REQ WAMTRAM requirement to DPaW for Animal ethics:
 
 * The number of turtles per species:
 * basic handling: sighted and measured, not tagged or biopsied
@@ -669,10 +690,10 @@ workbook aims:
   internal data catalogue, and
 * to transform and load data into WAStD using WAStD's API
 
-Loading data into WAStD assumes:
+Loading data into, and analysing data from WAStD assumes:
 
 * WAMTRAM 2 remains point of truth and curation interface for data until data
-  are collected/entered directly into WAStD;
+  are collected/entered directly into WAStD or other new system;
 * Loading data into WAStD is repeatable without creating duplicates;
 * WAStD will contain a full representation of WAMTRAM's data and will be able to
   deliver the same insight.
@@ -724,8 +745,8 @@ Gap analysis
 ------------
 Tagging is currently handled in WAMTRAM 2.
 
-To replace WAMTRAM 2, a digital data capture app as well as a central data warehouse
-such as BioSys or WAStD are required.
+To replace WAMTRAM 2, digital / paper-based data capture as well as a central
+data warehouse such as BioSys or WAStD are required.
 
 
 Business Process Turtle Tracks
