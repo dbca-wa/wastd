@@ -30,7 +30,7 @@ dynamic-rest
 rest-framework-latex
 # -e git+https://github.com/florianm/rest-framework-latex.git#egg=rest-framework-latex
 markdown
-django-filter>=1.0.1
+django-filter>=1.0.2
 django-rest-swagger
 coreapi
 coreapi-cli

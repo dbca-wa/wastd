@@ -85,6 +85,6 @@ def test():
 
 def doc():
     """Compile docs, draw data models and transitions."""
-    local('./manage.py graph_models --pygraphviz observations '
-          'users -g -o docs/datamodel.png')
+    #local('./manage.py graph_models --pygraphviz observations '
+    #      'users -g -o docs/datamodel.png')
     local("cd docs && make html && cd ..")
