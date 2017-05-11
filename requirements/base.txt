@@ -1,7 +1,7 @@
 # Django
 # ------------------------------------------------
 django>=1.10
-django-extensions
+django-extensions==1.7.9
 
 # breaking django-1.10:
 # https://github.com/django-polymorphic/django-polymorphic/issues/225 - fixed
