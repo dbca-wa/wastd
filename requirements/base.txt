@@ -62,7 +62,7 @@ unipath
 
 # Docs
 # ------------------------------------------------
-Sphinx
+Sphinx==1.5.5
 flake8
 pydot
 sphinx_rtd_theme
