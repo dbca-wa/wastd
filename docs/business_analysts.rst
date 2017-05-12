@@ -106,8 +106,8 @@ Each data stream goes through parts of this process:
 
 Data life cycle
 ---------------
-.. image:: https://www.lucidchart.com/publicSegments/view/5ce9d09d-f027-4d8c-b8b4-15f352173a0b/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/5ce9d09d-f027-4d8c-b8b4-15f352173a0b/image.png
+.. image:: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
     :alt: Turtle data flow, ideal state
 
 
