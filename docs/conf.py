@@ -30,7 +30,10 @@ sys.path.insert(0, os.path.abspath('..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.local'
 
 # 3. Setup the Django app, so that autodoc will find the modules this help references
-django.setup()
+try:
+    django.setup()
+except:
+    pass
 # print("Now the Django settings are loaded, e.g. installed apps are:"
 #       "{0}".format(", ".join([app for app in settings.INSTALLED_APPS])))
 
@@ -277,15 +280,14 @@ latex_elements = {
      # Latex figure (float) alignment
      #
      # 'figure_align': 'htbp',
-}
+     }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'WAStD.tex', u'WAStD Documentation',
-     u'Florian Mayer', 'manual'),
-]
+    (master_doc, 'WAStD.tex', u'WAStD Documentation', u'Florian Mayer',
+     'manual'), ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -324,10 +326,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'wastd', u'WAStD Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, 'wastd', u'WAStD Documentation', [author], 1)]
 
 # If true, show URL addresses after external links.
 #
@@ -341,9 +340,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'WAStD', u'WAStD Documentation',
-     author, 'WAStD', 'WA Sea Turtle Database',
-     'Survey database'),
-]
+     author, 'WAStD', 'WA Sea Turtle Database', 'Survey database'), ]
 
 # Documents to append as an appendix to all manuals.
 #

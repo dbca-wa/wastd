@@ -85,10 +85,11 @@ talk to each other on the phone.
 Requirements to TIMTAMS will be largely shared by all data streams.
 
 
-.. Reference with :ref:`dm-data-entry`
+
 .. _dm-data-entry:
 Data entry process (current)
 ----------------------------
+.. Reference with :ref:`dm-data-entry`
 .. image:: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
     :target: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
     :alt: Turtle program data entry process overview
@@ -700,7 +701,7 @@ Loading data into, and analysing data from WAStD assumes:
 
 Long term solution: New data entry tool
 ---------------------------------------
-To retire WAMTRAM 2, the following is required:
+To retire WAMTRAM 2, the following is required
 
 * WAMTRAM to WAStD ETL is complete and correct.
 * A new electronic data entry tool, likely a progressive web app, is created
