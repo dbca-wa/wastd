@@ -13,6 +13,16 @@ track/nest count) and IT processes (for each business process: data capture,
 data QA and curation, data analysis). Legacy systems and their ties to the current
 implementation (WAStD) are discussed as well.
 
+Glossary
+========
+* Data capture: capturing an observation onto a paper datasheet or into a digital system
+* Paper data capture: capturing an observation onto a paper datasheet
+* Digital data capture: capturing an observation into a digital system
+* Data entry: entering data from a paper datasheet into a digital system
+* Data record: one data point
+
+Both digital data capture and data entry result in one digital data record.
+
 Aims
 ====
 NdS OA AF 3: "Establish efficient Information Management systems."
@@ -506,6 +516,12 @@ Use cases along the life cycle of a tag, also mentioned in
 
 IT process Turtle tagging field data collection
 -----------------------------------------------
+Ideal process:
+
+.. image:: https://www.lucidchart.com/publicSegments/view/b577a3d7-4314-4421-8752-1299e852ea74/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/b577a3d7-4314-4421-8752-1299e852ea74/image.png
+     :alt: Tagging data life cycle (ideal)
+
 Currently, data is collected on paper forms, and then fed into the legacy system
 WAMTRAM 2 (see below).
 
@@ -603,9 +619,11 @@ supposed to see.
 Legacy system: WAMTRAM 2
 ------------------------
 
+Current process:
+
 .. image:: https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png
-    :alt: Turtle tagging system WAMTRAM 2 data flow
+     :target: https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png
+     :alt: Tagging data life cycle (current)
 
 The basic data flow for the turtle tagging system WAMTRAM 2 is:
 
