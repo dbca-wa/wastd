@@ -659,6 +659,39 @@ The basic data flow for the turtle tagging system WAMTRAM 2 is:
 * REQ W2 only knows location of tagging data, should add license number to batch of
   tags, compliance check: who tags without license?
 
+Ideas from Analyst of Barrow Is tagging data:
+
+* Contractor (PENV) send workbook with raw data to analyst in April
+* Contractor sends temp logger data when retrieved (end of May)
+* Analyst produces report for consumer (CHEV)
+* Raw data contains edits and deletions from central curation activity (BP), so
+  data don't necessarily sum up, and baseline changes minimally
+* Analyst cannot easily detect or understand these changes, but gets criticism
+  from consumer (CHEV).
+* Data: tagging data, hatching success separately, tracks
+* Analyst creates time blocks within season and looks at each animal's recapture
+  history between time blocks
+* REQ analyst needs full animal history of each encountered animal, even if
+  some previous encounters were collected by other groups (e.g. by DpaW on THV)
+* REQ analyst needs full data lineage including edit history of data
+* REQ analyst needs to know sampling effort (surveys) even if no data collected
+* REQ analyst needs covariates (weather, wind, sun, disturbance, predator
+  presence, sun angle, tide, beach geomorph, geology, sand moisture content,
+  beach slope, location on beach relative to HWM and vegetation)
+* ca 3 levels of wind strength would be sufficient from a modelling perspective
+* Covariates can help model detection process of track / nest
+* REQ data needs to be synced between devices daily during data capture, and
+  to master db if online
+* REQ analyst wants to make model available and accessible as workbook, but this
+  is client's decision (CHEV)
+* REQ data lineage must be preserved to explain discrepancies
+* REQ survey metadata plus covariates need to be captured
+* REQ analyst needs to be able to easily detect changes in tallies of empirical
+  data, e.g. implemented as QA gatecheck
+* Analyst has to spend lots of time with data QA and chasing up central custodian's
+  QA decisions (deletions, renaming of tags with typos), which is not billable
+
+
 Output:
 * LTMMTP Chevron 2015: reports on metrics from tagging
 * need "new turtle", "remigrant"
