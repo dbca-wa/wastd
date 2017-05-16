@@ -58,8 +58,8 @@ requirements and goals.
 
 .. Reference with :ref:`dm-overview`
 .. _dm-overview:
-Data management current state
------------------------------
+Turtle business processes current state
+---------------------------------------
 .. image:: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
      :target: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
      :alt: Turtle data management overview - current state
@@ -67,15 +67,15 @@ Data management current state
 Each data stream on the left hand side will be discussed below in more detail.
 
 .. _dm-ideal-system:
-Data management ideal state
----------------------------
+Turtle business processes ideal state
+-------------------------------------
 .. image:: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
     :target: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
     :alt: Turtle information management system overview
 
 This diagram shows a simlified ideal system architecture.
-Each core data stream is implemented in the Turtle Information Management and
-Tag Asset Management System (TIMTAMS).
+Each core data stream is implemented in the Turtle Information Management
+System (TIM).
 TIMTAMS interacts with the data repository BioSys through the BioSys API.
 Other core systems also have an API.
 The APIs are accessible through an Enterprise Service Bus (ESB).
@@ -85,14 +85,12 @@ talk to each other on the phone.
 Requirements to TIMTAMS will be largely shared by all data streams.
 
 
-
 .. _dm-data-entry:
-Data entry process (current)
-----------------------------
-.. Reference with :ref:`dm-data-entry`
-.. image:: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/85ba2cac-8a41-42dd-b300-f9d11f0754fc/image.png
-    :alt: Turtle program data entry process overview
+IT processes along the Data life cycle
+--------------------------------------
+.. image:: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
+    :alt: Turtle data flow, ideal state
 
 Each data stream goes through parts of this process:
 
@@ -103,13 +101,6 @@ Each data stream goes through parts of this process:
 * Entering data directly into the system (online or offline)
 * Proofreading entered data against paper datasheets
 * Curating data with subject matter expertise
-
-Data life cycle
----------------
-.. image:: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
-    :alt: Turtle data flow, ideal state
-
 
 Business Process Turtle Strandings
 ==================================
@@ -284,6 +275,13 @@ This section discusses requirements of each stakeholder role involved in
 
 and demonstrates the current implementation in WAStD.
 
+The data life cycle in this particular case is shown below.
+
+.. image:: https://www.lucidchart.com/publicSegments/view/ff4a25e1-8efc-4936-baec-5dbe54ac7204/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/ff4a25e1-8efc-4936-baec-5dbe54ac7204/image.png
+     :alt: Stranding data life cycle
+
+
 Minister, steering committee, policy officer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The minister sends an inquiry to the Department.
@@ -413,6 +411,8 @@ Data collector: Ranger, regional staff
 The departmental data collector (e.g. a ranger) responds to a stranding report
 from the general public, or discovers a stranded animal themselves.
 
+`REQ 40 <https://github.com/parksandwildlife/biosys-turtles/issues/40>`_
+
 * The data collector needs clear and up to date procedures, and easily useable
   datasheets.
 * Paper is cheap, bad information is costly. Taking the correct pictures in correct
@@ -431,16 +431,33 @@ These forms are different to the curation forms - more streamlined for data entr
 
 Primary reporter: General public
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A member of the public encounters stranded, entangled, or injured wildlife.
 Members of the general public reporting a stranding need to know how to react -
 whom to call, which data to collect (e.g. geo-referenced phone pictures).
+Depending on the urgency, the member of the public will:
 
-* Primary reporters would be pleased to hear how their actions contributed to an
-  increased understanding, and ultimately the conservation of the stranded species.
-  This could happen in the form of a "thank you" email with an excerpt of the
-  final stranding record.
-  Example: TOs returning tags after harvesting a tagged turtle usually get sent
-  a reward like branded t-shirts or baseball caps by Marine Science to show their
-  appreciation.
+* alert DPaW immediately, so a ranger can attend the incident;
+* notify DPaW later (e.g. if remote and offline);
+* do nothing.
+
+Depending on the efficiency of the notification pathway, the incident information
+will find its way to the data entry operator in several ways:
+
+* A DPaW ranger attends the incident fills in the correct datasheet, scans and emails it to the
+  correct internal contact.
+* A DPaW staff member reports an incident which is too remote or too old to attend
+  to the correct internal contact.
+* The report from the member of the public finds its way through detours to the
+  correct internal contact.
+
+Primary reporters would be pleased to hear how their actions contributed to an
+increased understanding, and ultimately the conservation of the stranded species.
+This could happen in the form of a "thank you" email with an excerpt of the
+final stranding record.
+
+Example: TOs returning tags after harvesting a tagged turtle usually get sent
+a reward like branded t-shirts or baseball caps by Marine Science to show their
+appreciation.
 
 Gap analysis
 ------------
@@ -664,32 +681,39 @@ Ideas from Analyst of Barrow Is tagging data:
 * Contractor (PENV) send workbook with raw data to analyst in April
 * Contractor sends temp logger data when retrieved (end of May)
 * Analyst produces report for consumer (CHEV)
-* Raw data contains edits and deletions from central curation activity (BP), so
-  data don't necessarily sum up, and baseline changes minimally
-* Analyst cannot easily detect or understand these changes, but gets criticism
-  from consumer (CHEV).
 * Data: tagging data, hatching success separately, tracks
 * Analyst creates time blocks within season and looks at each animal's recapture
   history between time blocks
 * REQ analyst needs full animal history of each encountered animal, even if
   some previous encounters were collected by other groups (e.g. by DpaW on THV)
-* REQ analyst needs full data lineage including edit history of data
+* REQ data needs to be synced between devices daily during data capture, and
+  to master db if online
+* REQ analyst wants to make model available and accessible as workbook, but this
+  is client's decision (CHEV)
+
+Data lineage:
+
+* Analyst has to spend lots of time with data QA and chasing up central custodian's
+  QA decisions (deletions, renaming of tags with typos), which is not billable
+* Raw data contains edits and deletions from central curation activity (BP), so
+  data don't necessarily sum up, and baseline changes minimally
+* Analyst cannot easily detect or understand these changes, but gets criticism
+  from consumer (CHEV).
+* REQ analysis needs to be reproducible
+* REQ analysis needs to be re-run if existing data (incl previous seasons) changes
+* REQ data lineage must be preserved to explain discrepancies
+* REQ analyst needs to be able to easily detect changes in tallies of empirical
+  data, e.g. implemented as QA gatecheck
+
+Capture survey metadata, include covariates:
+
 * REQ analyst needs to know sampling effort (surveys) even if no data collected
 * REQ analyst needs covariates (weather, wind, sun, disturbance, predator
   presence, sun angle, tide, beach geomorph, geology, sand moisture content,
   beach slope, location on beach relative to HWM and vegetation)
 * ca 3 levels of wind strength would be sufficient from a modelling perspective
 * Covariates can help model detection process of track / nest
-* REQ data needs to be synced between devices daily during data capture, and
-  to master db if online
-* REQ analyst wants to make model available and accessible as workbook, but this
-  is client's decision (CHEV)
-* REQ data lineage must be preserved to explain discrepancies
 * REQ survey metadata plus covariates need to be captured
-* REQ analyst needs to be able to easily detect changes in tallies of empirical
-  data, e.g. implemented as QA gatecheck
-* Analyst has to spend lots of time with data QA and chasing up central custodian's
-  QA decisions (deletions, renaming of tags with typos), which is not billable
 
 
 Output:
