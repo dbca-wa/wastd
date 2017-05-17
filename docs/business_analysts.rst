@@ -66,10 +66,10 @@ Stakeholders interact with the system in different roles:
 A person can occupy none, one or several roles. Each role has a different set of
 requirements and goals.
 
-.. Reference with :ref:`dm-overview`
 .. _dm-overview:
 Turtle business processes current state
 ---------------------------------------
+.. Reference with :ref:`dm-overview`
 .. image:: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
      :target: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
      :alt: Turtle data management overview - current state
@@ -84,16 +84,13 @@ Turtle business processes ideal state
     :alt: Turtle information management system overview
 
 This diagram shows a simlified ideal system architecture.
-Each core data stream is implemented in the Turtle Information Management
-System (TIM).
+Each core data stream is implemented in the Turtle Information Management System (TIM).
 TIMTAMS interacts with the data repository BioSys through the BioSys API.
 Other core systems also have an API.
 The APIs are accessible through an Enterprise Service Bus (ESB).
-An ESB is a phone network between APIs.
-Applications interact with data repositories through the ESB, like humans can
-talk to each other on the phone.
-Requirements to TIMTAMS will be largely shared by all data streams.
-
+An ESB is like a phone network between APIs: Applications interact with data
+repositories through the ESB, like humans can talk to each other on the phone.
+Requirements to TIMS will be largely shared by all data streams.
 
 .. _dm-data-entry:
 IT processes along the Data life cycle
@@ -834,7 +831,7 @@ IT process Turtle track and nest count
 --------------------------------------
 TODO insert digital track count app diagram
 
-See :ref:`data-capture-tracks`_ for digital data capture of tracks and nests,
+See :ref:`data-capture-tracks` for digital data capture of tracks and nests,
 which is curretly in production use by the core Turtle team, and in beta testing
 at Cable Beach and the Karratha office.
 

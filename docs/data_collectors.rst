@@ -391,11 +391,12 @@ Hands-on field testing at Thevenard and Barrow Islands Nov/Dec 2016.
 
 General notes
 ^^^^^^^^^^^^^
-* There are few rugged cases for low cost, deprecating and exotic devices
+* There are not many rugged cases available for low end, older or exotic devices
 * $70 charger with 6 USB outlets replaces the Great Charger Kelp Forest
 * $80 15Ah battery packs provide backup power
-* $5 neoprene sleeves protect against bumps, scratches and sand
-* $5 whiteboards plus whiteboard marker, place in geotagged photo of random observation
+* $5 neoprene sleeves protect every device against bumps, scratches and sand
+* $5 whiteboards plus whiteboard marker, placed in geotagged photo of any random
+  observation are the best way to capture opportunistic observations
 
 Samsung Galaxy S2 9.7"
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -460,19 +461,53 @@ General observations
 
 
 .. _cost-benefit-analysis-digital-data-capture:
-Cost-benefit analysis for mobile data collection
-================================================
-This section is in development!
+Cost-benefit analysis for digital data collection
+=================================================
 
-TODO add lucidchart "digital vs paper-based data collection"
-TODO digitise notes "lessons learnt from digitising strandings"
+The following diagram is also shown at :ref:`dm-data-entry`.
+
+.. image:: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
+    :alt: Turtle data flow, ideal state
+
+Digital data collection provides systematic advantages over paper-based
+data collection, as it skips several work-intensive, error-prone steps
+in the data life cycle.
 
 Paper-based data collection
 ---------------------------
 
 Filling in a paper data sheet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* Possible: typos, illegible handwriting, invalid values
+* Error sources: typos, illegible or rushed handwriting, invalid values, fields
+  incorrectly filled or skipped.
 * Breaking the analog-digital barrier multiple times is costly and error prone:
   GPS, PIT tag reader, barcodes for samples etc.
-* Associating media to records is hard and error-prone
+* Associating media to records is labourious and error-prone
+
+Digitising a paper data sheet
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Data collected on paper has to be read (interpreting handwriting correctly),
+mentally mapped from datasheet to electronic form, and typed off (correctly) by
+the data entry operator.
+
+Proof-reading a digital record against paper data sheet
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A second person, acting as proofreader, has to reproduce the same mental effort
+to map the paper data sheet to the electronic form and correct any errors they find.
+
+
+Digital data collection
+-----------------------
+Digital forms can offer dropdown menus with pre-defined values to reduce sources
+of error.
+
+Digital data capture devices can reliably and easily record and associate
+location and take photos. Compare pressing a "record location" button to taking
+a GPS point, reading, understanding, typing, and confirming 15 digits under time
+pressure, sleep deprivation and harsh environmental conditions.
+
+Data collected digitally enters the system as "proofread", eliminating two laborious
+and error-prone steps requiring human interaction.
+In addition, the data is available to QA straight away, possibly creating a
+tighter error-checking loop.
