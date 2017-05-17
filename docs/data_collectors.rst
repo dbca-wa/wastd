@@ -466,8 +466,8 @@ Cost-benefit analysis for digital data collection
 
 The following diagram is also shown at :ref:`dm-data-entry`.
 
-.. image:: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/666d67b5-a29f-45cd-9e32-23368f6b5015/image.png
+.. image:: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
     :alt: Turtle data flow, ideal state
 
 Digital data collection provides systematic advantages over paper-based
