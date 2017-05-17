@@ -9,19 +9,27 @@ use cases and describing existing implementations.
 We apply IBM's `simple pattern for requirements analysis
 <https://www.ibm.com/developerworks/architecture/library/ar-analpat/ar-analpat-pdf.pdf>`_
 to structure the problem space into business processes (stranding, tagging, and
-track/nest count) and IT processes (for each business process: data capture,
-data QA and curation, data analysis). Legacy systems and their ties to the current
-implementation (WAStD) are discussed as well.
+track/nest count) and IT processes (for each business process: data collection,
+capture, proofreading and curation, query, export and data analysis).
+Legacy systems and their ties to the current implementation (WAStD) are discussed as well.
 
 Glossary
 ========
-* Data capture: capturing an observation onto a paper datasheet or into a digital system
-* Paper data capture: capturing an observation onto a paper datasheet
-* Digital data capture: capturing an observation into a digital system
-* Data entry: entering data from a paper datasheet into a digital system
-* Data record: one data point
-
-Both digital data capture and data entry result in one digital data record.
+* **Data collection** refers to the collection of information gained from an
+  observation onto a paper datasheet.
+* **Data capture** refers to **data entry**, the process of entering information
+  either from a datasheet or from a direct observation into an electronic form.
+* A **data record** is one data point, e.g. one observation, in a digital
+  system, e.g. in a database. A data record is often kept as one row in a table.
+* **Data QA** refers to the various stages of ensuring that data records are as
+  true and reliable as possible. Data QA includes proofreading and what we call
+  curation.
+* **Proofreading** is the process of comparing the primary data source, e.g.
+  a hand-written datasheet or an email, to the digital record to eliminate
+  typographical errors, mis-readings, and overall to make sure that the record
+  represents the observer's intent as closely as possible.
+* **Curation** is the process of validating and possibly updating records against
+  subject matter expertise.
 
 Aims
 ====
@@ -47,10 +55,10 @@ Overview
 This section gives a brief overview of the information management ecosystem
 ("the system") described in this chapter.
 
-.. Reference with :ref:`dm-roles`
 .. _dm-roles:
 Data management roles
 ---------------------
+.. Reference with :ref:`dm-roles`
 .. image:: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
      :target: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
      :alt: Turtle program data management roles
@@ -59,9 +67,10 @@ Stakeholders interact with the system in different roles:
 
 * data collection
 * data entry
-* data QA and curation
+* data QA (proofreading and curation)
+* data query and export
 * data analysis
-* information consumer
+* knowledge inference and advice
 
 A person can occupy none, one or several roles. Each role has a different set of
 requirements and goals.
@@ -79,13 +88,14 @@ Each data stream on the left hand side will be discussed below in more detail.
 .. _dm-ideal-system:
 Turtle business processes ideal state
 -------------------------------------
+.. Reference with :ref:`dm-ideal-system`
 .. image:: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
     :target: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
     :alt: Turtle information management system overview
 
 This diagram shows a simlified ideal system architecture.
-Each core data stream is implemented in the Turtle Information Management System (TIM).
-TIMTAMS interacts with the data repository BioSys through the BioSys API.
+Each core data stream is implemented in the Turtle Information Management System (TIMS).
+TIMS interacts with the data repository BioSys through the BioSys API.
 Other core systems also have an API.
 The APIs are accessible through an Enterprise Service Bus (ESB).
 An ESB is like a phone network between APIs: Applications interact with data
@@ -95,19 +105,25 @@ Requirements to TIMS will be largely shared by all data streams.
 .. _dm-data-entry:
 IT processes along the Data life cycle
 --------------------------------------
+.. Reference with :ref:`dm-data-entry`
 .. image:: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
     :target: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
     :alt: Turtle data flow, ideal state
 
 Each data stream goes through parts of this process:
 
-* Scanning & filing digital data sheets
+* Collecting data: capturing an observation onto a datasheet
+* Scanning & filing datasheets
 * Converting digital data formats to standard formats
-* Entering data from datasheets into an online system
+* Capturing data: Entering data from datasheets into an online system, or entering
+  observations directly into digital forms
 * Importing records from one digital system into another
-* Entering data directly into the system (online or offline)
 * Proofreading entered data against paper datasheets
 * Curating data with subject matter expertise
+* Marking data as embargoed or ready to release
+* Querying / exporting data
+* Analysing, visualising, modelling data
+* Inferring knowledge
 
 Business Process Turtle Strandings
 ==================================
