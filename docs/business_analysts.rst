@@ -160,7 +160,8 @@ Constraints
 The solution architecture must consider the following contraints:
 
 * Biosys aims to deliver similar functionality, but not within the required time.
-* REQ The interim solution shall be either disposable (to be re-implemented in BioSys),
+* `REQ #47 <https://github.com/parksandwildlife/biosys-turtles/issues/47>`_
+  The interim solution shall be either disposable (to be re-implemented in BioSys),
   re-usable (to be integrated in BioSys), or scalable (to become a part of BioSys).
 * `REQ #5 <https://github.com/parksandwildlife/biosys-turtles/issues/5)>`_
   The solution shall be SOE, follow OIM's standards and integrate into their
@@ -220,9 +221,9 @@ A ranger or other departmental field worker responds to a stranding incident.
 The stranding (using a mobile data collection app) is reported to HQ,
 and further actions are taken as per latest instructions (to be updated).
 
-The current paper-based process involves paper-based stranding report forms, scanning, emailing,
-manually entering and proofreading. It feeds into the workflow documented
-at :ref:`itp-stranding-curation`.
+The current paper-based process involves paper-based stranding report forms,
+scanning, emailing, manually entering and proofreading.
+It feeds into the workflow documented at :ref:`itp-stranding-curation`.
 
 A new digital reporting process is in beta-testing, ready to incorporate other
 taxonomic groups of strandings and documented at :ref:`itp-stranding-report`.
@@ -272,7 +273,7 @@ Detailed instructions for each role are documented at :ref:`itp-stranding-curati
 
 IT process Stranding data analysis
 ----------------------------------
-As documented at :ref:`usecase-stranding-mininsterial-inquiry`, the current
+As documented at :ref:`usecase-stranding-ministerial-inquiry`, the current
 implementation serves several analytical requirements:
 
 * A ministerial inquiry seeks a summary of "how many, which species, where, when".
@@ -287,7 +288,7 @@ Data access shall be restricted role-based, so that sensitive data is accessible
 only to trusted and authorised data consumers.
 The system shall default data restrictions to be suitable for the general audience.
 
-.. _usecase-stranding-mininsterial-inquiry:
+.. _usecase-stranding-ministerial-inquiry:
 Use case: Ministerial inquiry, annual report, strategic advice
 --------------------------------------------------------------
 This section discusses requirements of each stakeholder role involved in
@@ -304,6 +305,8 @@ The data life cycle in this particular case is shown below.
      :target: https://www.lucidchart.com/publicSegments/view/ff4a25e1-8efc-4936-baec-5dbe54ac7204/image.png
      :alt: Stranding data life cycle
 
+The following use case traces the data life cycle back to front to keep the
+narrative engaging.
 
 Minister, steering committee, policy officer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -318,7 +321,7 @@ or management actions (e.g. boating exclusion zones) with turtle population metr
 (e.g. number of boat strikes).
 
 There haven't been any ministerial inquiries about turtle strandings yet,
-but we assume they could ask e.g.:
+but we assume they could ask e.g.: (see also `REQ #43 <https://github.com/parksandwildlife/biosys-turtles/issues/43>`_)
 
 * How many `boat strikes to turtles <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&taxon__exact=Cheloniidae>`_ have been recorded?
 * How many turtle strandings happened `in 2016 <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&taxon__exact=Cheloniidae&when__year=2016>`_?
@@ -338,6 +341,7 @@ The manager requires timely and defensible insight
 * to provide data-driven, strategic advice for management interventions or plans.
 
 Insight could be required as
+(see also `REQ #43 <https://github.com/parksandwildlife/biosys-turtles/issues/43>`_):
 
 * `data <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/>`_
   (spreadsheet - "List all incidents of <species> within <region> and <date range>"),
@@ -349,7 +353,8 @@ Insight could be required as
 * `geographic distribution <https://strandings.dpaw.wa.gov.au/>`_
   (maps - "Where did the strandings happen?").
 
-* Insight should be available as **timely** as possible, minimizing human bottlenecks.
+* `REQ #18 <https://github.com/parksandwildlife/biosys-turtles/issues/18>`_
+  Insight should be available as **timely** as possible, minimizing human bottlenecks.
 * Insight should be **accessible**, in that managers should be able to
   retrieve answers to common questions themselves.
 * Insight should be **defensible**, in that the processing steps of both data
@@ -362,7 +367,8 @@ Insight could be required as
   `reproduce the analysis <http://rpubs.com/florian_mayer/tracks>`_
   from the archived inputs.
 
-Real-world example of Cetacean stranding questions:
+Real-world example of Cetacean stranding questions
+(see also `REQ #43 <https://github.com/parksandwildlife/biosys-turtles/issues/43>`_):
 
 * incidents with mortality
 * incidents with entanglement (ensuing mortality or not)
@@ -374,20 +380,23 @@ Analyst
 ^^^^^^^
 The analyst's role is to bridge the gap between raw data and non-trivial questions
 through advanced statistical analysis and visualisation.
+`REQ #48 <https://github.com/parksandwildlife/biosys-turtles/issues/48>`_
 
 * To do so, the analyst needs
   `universal access <https://strandings.dpaw.wa.gov.au/api/1/>`_
   to machine-readable, trustworthy data.
 * The data needs to be complete, consistent and correct.
+* `REQ # 39 <https://github.com/parksandwildlife/biosys-turtles/issues/39>`_
   The analyst needs to hit the ground running with
   `working examples <https://strandings.dpaw.wa.gov.au/users/FlorianM/>`_
   of loading the data from the machine-readable access point into the most common
-  analytical frameworks. (See your own WAStD profile for code examples including
-  your own API token).
+  `analytical frameworks <https://github.com/parksandwildlife/wastdr>`_.
 * There should be sufficient documentation (:ref:`data-consumers`)
   to allow statistically trained analysts to efficiently consume data without
   technical knowledge of the system they are stored in.
-* Access needs to be following standard protocols and formats,
+  (See your own WAStD profile for code examples including your own API token).
+* `REQ #6 <https://github.com/parksandwildlife/biosys-turtles/issues/6>`_
+  Access needs to be following standard protocols and formats,
   be entirely independent of both the systems it is stored in,
   as well as independent of the software packages it is analysed with.
 
@@ -398,7 +407,8 @@ e.g. confirm species identification. This increases **correctness** of the data.
 
 * Data curators need convenient, unrestricted access to the data.
 * Data needs to indicate its curation status.
-* Data needs to retain its lineage by retaining its editing and status history.
+* `REQ #26 <https://github.com/parksandwildlife/biosys-turtles/issues/26>`_
+  Data needs to retain its lineage by retaining its editing and status history.
 * Each human decision by the subject matter expert should be translated into an
   automatic test or filter that flags similar records for review. This feedback
   process aims to distil the subject matter expertise into formal rules.
