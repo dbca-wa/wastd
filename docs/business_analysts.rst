@@ -184,8 +184,8 @@ Turtle Strandings
 ^^^^^^^^^^^^^^^^^
 * The data flow is shown in :ref:`dm-data-entry`
 * Stranding paper forms are being updated (SFo and FM, Nov 2016 - Mar 2017).
-* An updated incident response workflow for turtles has been sent to regional
-  offices by the affiliated Murdoch Vet (EY Dec 2016).
+* An updated incident response workflow for marine wildlife incidents is in
+  development (May 2017, KimO). The affiliated Murdoch Vet (EY Dec 2016) has her own requirements.
 * A digital data capture form caters for turtle strandings (can be extended to others)
   and is in beta testing (not officially released yet).
 * WAStD allows data entry from legacy paper forms, as well as data export and query.
