@@ -50,10 +50,30 @@ NdS OA AF 3: "Establish efficient Information Management systems."
   that complement existing corporate systems
   <https://github.com/parksandwildlife/biosys-turtles/issues/17>`_
 
-Overview
-========
+Overview - Turtle monitoring
+============================
+This section provides a quick overview of turtle monitoring activities along the
+life cycle of a turtle.
+
+..image:: https://www.lucidchart.com/publicSegments/view/8c466bd4-bd12-4bf0-890e-9ad372d7bec4/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/8c466bd4-bd12-4bf0-890e-9ad372d7bec4/image.png
+    :alt: Turtle life cycle
+
+Here, a simplified turtle life cycle  is shown together with data captured along it.
+Note that duration and frequency of individual stages may differ between turtle species.
+E.g., leatherbacks do not nest at all in WA, but are encountered occasionally.
+
+The three main areas of monitoring work are:
+
+* Tagging of nesting female turtles (during nesting season, on nesting beach, directly after nesting or nesting attempt) - "tagging"
+* Track and nest count (during nesting season, on nesting beach, on morning after nesting) - "tracks"
+* Marine wildlife incidents involving turtles (any place, any time) - "strandings"
+
+Overview - Data management
+==========================
 This section gives a brief overview of the information management ecosystem
-("the system") described in this chapter.
+("the system" referring to current implementation, or "the solution" referring
+to ideal solution) described in this chapter.
 
 .. _dm-roles:
 Data management roles
@@ -184,12 +204,15 @@ Turtle Strandings
 ^^^^^^^^^^^^^^^^^
 * The data flow is shown in :ref:`dm-data-entry`
 * Stranding paper forms are being updated (SFo and FM, Nov 2016 - Mar 2017).
-* An updated incident response workflow for marine wildlife incidents is in
-  development (May 2017, KimO). The affiliated Murdoch Vet (EY Dec 2016) has her own requirements.
+* `REQ #23 <https://github.com/parksandwildlife/biosys-turtles/issues/23>`_
+  An updated incident response workflow for marine wildlife incidents is in
+  development (May 2017, KimO).
+  The affiliated Murdoch Vet (EY Dec 2016) has her own requirements.
 * A digital data capture form caters for turtle strandings (can be extended to others)
   and is in beta testing (not officially released yet).
 * WAStD allows data entry from legacy paper forms, as well as data export and query.
-* Live workbooks can query, analyse and visualise data from WAStD via its API.
+* `Live workbooks <http://rpubs.com/florian_mayer/strandings>`_
+  can query, analyse and visualise data from WAStD via its API.
 
 The following figure details the data flow for turtle strandings:
 
@@ -267,9 +290,10 @@ Data curation requires at least four steps
 * A qualified curator with good business knowledge of turtle ecology reviews the
   records.
 * A manager with data publication permission flags records as ready for public
-  release.
+  release, or embargoes the data.
 
-Detailed instructions for each role are documented at :ref:`itp-stranding-curation`.
+Detailed instructions for each role are documented at
+:doc:`./data_curators/itp-stranding-curation`.
 
 IT process Stranding data analysis
 ----------------------------------
@@ -281,9 +305,9 @@ implementation serves several analytical requirements:
 * A researcher seeks to infer knowledge about ecological processes, their change
   over space and time, and possible drivers.
 
-REQ Data consumers shall be able to query, filter and export the raw data.
-
+`REQ #43 <https://github.com/parksandwildlife/biosys-turtles/issues/43>`_
 `REQ #31 <https://github.com/parksandwildlife/biosys-turtles/issues/31>`_
+Data consumers shall be able to query, filter and export the raw data.
 Data access shall be restricted role-based, so that sensitive data is accessible
 only to trusted and authorised data consumers.
 The system shall default data restrictions to be suitable for the general audience.
@@ -321,7 +345,8 @@ or management actions (e.g. boating exclusion zones) with turtle population metr
 (e.g. number of boat strikes).
 
 There haven't been any ministerial inquiries about turtle strandings yet,
-but we assume they could ask e.g.: (see also `REQ #43 <https://github.com/parksandwildlife/biosys-turtles/issues/43>`_)
+but we assume they could ask e.g.:
+(see also `REQ #43 <https://github.com/parksandwildlife/biosys-turtles/issues/43>`_)
 
 * How many `boat strikes to turtles <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&taxon__exact=Cheloniidae>`_ have been recorded?
 * How many turtle strandings happened `in 2016 <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&taxon__exact=Cheloniidae&when__year=2016>`_?
@@ -330,7 +355,7 @@ but we assume they could ask e.g.: (see also `REQ #43 <https://github.com/parksa
 These examples show only a few out of many possible combinations of search filters.
 All results can be exported to spreadsheets for further analysis.
 The same results can also be generated through the API for consumption by software.
-See :ref:`data-consumers-api` for working examples.
+See :doc:`data_consumers/data-consumers-api` for working examples.
 
 Manager
 ^^^^^^^
@@ -833,12 +858,10 @@ Use case: Turtle Tagging digital data capture
 
 Use case: Inquiry about tagged turtle
 -------------------------------------
-**TODO** expand
 
-See chapter :ref:`data-consumers` on how to get to a `Tag history
-<https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA67541>`_
- or an `animal history
-<https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541>`_.
+See chapter :doc:`data-consumers` on how to get to a
+`Tag history <https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA67541>`_
+ or an `animal history <https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541>`_.
 
 Gap analysis
 ------------
@@ -1247,15 +1270,9 @@ Keep iterations small and consult stakeholders.
 Verify the necessity of a feature through a product utilising it, and verify the
 product's validity (and the correctnenss of data processing) with stakeholders.
 
-.. Reference with :ref:`dm-implementation-process-model`
-.. _dm-implementation-process-model:
-Implementation process model
-----------------------------
-.. image:: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/3949cd83-fe94-4bd0-b984-e7d3bc9fb7d9/image.png
-     :alt: Turtle program information management system implementation process model
 
-Paradigm:
+Paradigms
+=========
 
 * do it, then
 * do it right, then
@@ -1271,3 +1288,4 @@ Paradigm:
 =====================
 Reproducible Research
 =====================
+TODO section on RR.
