@@ -441,7 +441,8 @@ e.g. confirm species identification. This increases **correctness** of the data.
 * Data needs to indicate its curation status.
 * `REQ #26 <https://github.com/parksandwildlife/biosys-turtles/issues/26>`_
   Data needs to retain its lineage by retaining its editing and status history.
-* Each human decision by the subject matter expert should be translated into an
+* `REQ #55 <https://github.com/parksandwildlife/biosys-turtles/issues/55>`_
+  Each human decision by the subject matter expert should be translated into an
   automatic test or filter that flags similar records for review. This feedback
   process aims to distil the subject matter expertise into formal rules.
 
@@ -452,7 +453,9 @@ the available categories requires some informed decisions, based on guidelines.
 Proofreading will help fighting typos and misunderstandings between datasheet
 and database, therefore increasing **consistency**.
 
-* The proofreader needs original datasheets, communication records and supplemental
+* `REQ #25 <https://github.com/parksandwildlife/biosys-turtles/issues/25>`_
+  `REQ #42 <https://github.com/parksandwildlife/biosys-turtles/issues/42>`_
+  The proofreader needs original datasheets, communication records and supplemental
   images accessible close to the data entry/QA forms, ideally displaying in their
   web browser without needing to be downloaded and opened in proprietary software.
 
@@ -476,20 +479,22 @@ Data collector: Ranger, regional staff
 The departmental data collector (e.g. a ranger) responds to a stranding report
 from the general public, or discovers a stranded animal themselves.
 
-`REQ 40 <https://github.com/parksandwildlife/biosys-turtles/issues/40>`_
-
-* The data collector needs clear and up to date procedures, and easily useable
+* The data collector needs clear and up to date procedures, and easily useable,
+  up to date (`REQ #40 <https://github.com/parksandwildlife/biosys-turtles/issues/40>`_)
   datasheets.
 * Paper is cheap, bad information is costly. Taking the correct pictures in correct
-  angles, as well as taking and processing samples, or preserving the carcass for a
-  subsequent necropsy correctly is time-critical and cannot be repeated later.
+  angles and lighting, as well as taking and processing samples, or preserving
+  the carcass for a subsequent necropsy correctly is time-critical and cannot be
+  repeated later.
+  `REQ #56 <https://github.com/parksandwildlife/biosys-turtles/issues/56>`_
   Instructions to take the right measurements, samples and photographs must be
   available to the data collector.
 * Datasheets need to capture complete, consistent and correct data, while avoiding
-  capturing unneccessary detail.
+  capturing unnecessary detail.
 * Datasheets should provide enough guidance to the data collector on providing the
   desired data formats and precision.
 
+`REQ #25 <https://github.com/parksandwildlife/biosys-turtles/issues/25>`_
 The data collector could reduce the workload on core staff by entering the datasheet
 themselves, if the data portal had data entry forms with restricted access.
 These forms are different to the curation forms - more streamlined for data entry.
@@ -508,13 +513,14 @@ Depending on the urgency, the member of the public will:
 Depending on the efficiency of the notification pathway, the incident information
 will find its way to the data entry operator in several ways:
 
-* A DPaW ranger attends the incident fills in the correct datasheet, scans and emails it to the
-  correct internal contact.
-* A DPaW staff member reports an incident which is too remote or too old to attend
-  to the correct internal contact.
+* A DPaW ranger attends the incident fills in the correct datasheet, scans and
+  emails it to the correct internal contact.
+* A DPaW staff member reports an incident which is too remote or too old to
+  attend to the correct internal contact.
 * The report from the member of the public finds its way through detours to the
   correct internal contact.
 
+`REQ #57 <https://github.com/parksandwildlife/biosys-turtles/issues/57>`_
 Primary reporters would be pleased to hear how their actions contributed to an
 increased understanding, and ultimately the conservation of the stranded species.
 This could happen in the form of a "thank you" email with an excerpt of the
@@ -527,9 +533,8 @@ appreciation.
 Gap analysis
 ------------
 
-* The digital data capture form does not yet include taxa other than turtles.
-* Front-line staff are not yet trained in its use.
-* Therefore, paper forms are not phased out yet.
+* Front-line staff are not yet trained in using WAStD.
+* Paper forms are not phased out yet.
 * The digital data capture app in its current implementation still requires a few
   manual steps by the application maintainer to import data into WAStD. This process
   is not yet fully automated and does not yet happen in real-time.
@@ -544,15 +549,15 @@ Business Process Turtle Tagging
 
 IT process Turtle tag asset management
 --------------------------------------
-[Related BR](https://github.com/parksandwildlife/biosys-turtles/milestone/8)
+`Milestone Turtle Tagging <https://github.com/parksandwildlife/biosys-turtles/milestone/8>`_
 
 Tags have a life cycle, characterised by interactions with humans and animals:
 
-* TODO [#9 create tag status list](https://github.com/parksandwildlife/biosys-turtles/issues/9)
-* TODO [#3 LLC diagram tag](https://github.com/parksandwildlife/biosys-turtles/issues/3)
+* `#9 create tag status list <https://github.com/parksandwildlife/biosys-turtles/issues/9>`_
+* `#3 LC diagram tag <https://github.com/parksandwildlife/biosys-turtles/issues/3>`_
 
 Use cases along the life cycle of a tag, also mentioned in
-[REQ #10](https://github.com/parksandwildlife/biosys-turtles/issues/10):
+`REQ #10 <https://github.com/parksandwildlife/biosys-turtles/issues/10>`_:
 
 * Order tag (typically in batches) with running ID e.g. WB1500 - WB3500
 * Record tag batches as ordered, produced, delivered (how much detail is required?),
@@ -707,6 +712,8 @@ The basic data flow for the turtle tagging system WAMTRAM 2 is:
   is not already recorded or imported.
 * W2 assumes all datasheets are available for data entry before the next tagging
   night.
+
+
 * REQ (Pend) Data entry operators need to be able to enter every observation
   independently of whether related records are already entered.
 * REQ Flipper and PIT tag asset management: need to know location and beach they
