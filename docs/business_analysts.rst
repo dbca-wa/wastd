@@ -1,6 +1,7 @@
 =================
 Business Analysts
 =================
+
 This chapter draws the big picture of the turtle data ecosystem
 by presenting business, functional and stakeholders' requirements as readable
 use cases and describing existing implementations.
@@ -55,7 +56,7 @@ Overview - Turtle monitoring
 This section provides a quick overview of turtle monitoring activities along the
 life cycle of a turtle.
 
-..image:: https://www.lucidchart.com/publicSegments/view/8c466bd4-bd12-4bf0-890e-9ad372d7bec4/image.png
+.. image:: https://www.lucidchart.com/publicSegments/view/8c466bd4-bd12-4bf0-890e-9ad372d7bec4/image.png
     :target: https://www.lucidchart.com/publicSegments/view/8c466bd4-bd12-4bf0-890e-9ad372d7bec4/image.png
     :alt: Turtle life cycle
 
@@ -76,12 +77,13 @@ This section gives a brief overview of the information management ecosystem
 to ideal solution) described in this chapter.
 
 .. _dm-roles:
+
 Data management roles
 ---------------------
-.. Reference with :ref:`dm-roles`
+
 .. image:: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
-     :alt: Turtle program data management roles
+   :target: https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png
+   :alt: Turtle program data management roles
 
 Stakeholders interact with the system in different roles:
 
@@ -96,22 +98,24 @@ A person can occupy none, one or several roles. Each role has a different set of
 requirements and goals.
 
 .. _dm-overview:
+
 Turtle business processes current state
 ---------------------------------------
-.. Reference with :ref:`dm-overview`
+
 .. image:: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
-     :alt: Turtle data management overview - current state
+   :target: https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png
+   :alt: Turtle data management overview - current state
 
 Each data stream on the left hand side will be discussed below in more detail.
 
 .. _dm-ideal-system:
+
 Turtle business processes ideal state
 -------------------------------------
-.. Reference with :ref:`dm-ideal-system`
+
 .. image:: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
-    :alt: Turtle information management system overview
+   :target: https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png
+   :alt: Turtle information management system overview
 
 This diagram shows a simlified ideal system architecture.
 Each core data stream is implemented in the Turtle Information Management System (TIMS).
@@ -123,12 +127,13 @@ repositories through the ESB, like humans can talk to each other on the phone.
 Requirements to TIMS will be largely shared by all data streams.
 
 .. _dm-data-entry:
+
 IT processes along the Data life cycle
 --------------------------------------
-.. Reference with :ref:`dm-data-entry`
+
 .. image:: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
-    :alt: Turtle data flow, ideal state
+   :target: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
+   :alt: Turtle data flow, ideal state
 
 Each data stream goes through parts of this process:
 
@@ -217,8 +222,8 @@ Turtle Strandings
 The following figure details the data flow for turtle strandings:
 
 .. image:: https://www.lucidchart.com/publicSegments/view/792bc100-204d-41ff-8bd4-84a26d604fd8/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/792bc100-204d-41ff-8bd4-84a26d604fd8/image.png
-     :alt: Turtle strandings data management: current implementation
+   :target: https://www.lucidchart.com/publicSegments/view/792bc100-204d-41ff-8bd4-84a26d604fd8/image.png
+   :alt: Turtle strandings data management: current implementation
 
 Cetacean strandings
 ^^^^^^^^^^^^^^^^^^^
@@ -235,8 +240,8 @@ The following figure shows current implementation and possible transition of
 Cetacean stranding data management.
 
 .. image:: https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png
-     :target: https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png
-     :alt: Cetacean strandings data management: current implementation and transition process
+   :target: https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png
+   :alt: Cetacean strandings data management: current implementation and transition process
 
 IT process Stranding incident report
 ------------------------------------
@@ -293,7 +298,7 @@ Data curation requires at least four steps
   release, or embargoes the data.
 
 Detailed instructions for each role are documented at
-:doc:`./data_curators/itp-stranding-curation`.
+:ref:`itp-stranding-curation`.
 
 IT process Stranding data analysis
 ----------------------------------
@@ -313,8 +318,10 @@ only to trusted and authorised data consumers.
 The system shall default data restrictions to be suitable for the general audience.
 
 .. _usecase-stranding-ministerial-inquiry:
+
 Use case: Ministerial inquiry, annual report, strategic advice
 --------------------------------------------------------------
+
 This section discusses requirements of each stakeholder role involved in
 
 * the response to a ministerial inquiry,
@@ -355,7 +362,7 @@ but we assume they could ask e.g.:
 These examples show only a few out of many possible combinations of search filters.
 All results can be exported to spreadsheets for further analysis.
 The same results can also be generated through the API for consumption by software.
-See :doc:`data_consumers/data-consumers-api` for working examples.
+See :ref:`data-consumers-api` for working examples.
 
 Manager
 ^^^^^^^
@@ -857,10 +864,9 @@ Use case: Turtle Tagging digital data capture
 
 Use case: Inquiry about tagged turtle
 -------------------------------------
-
-See chapter :doc:`data-consumers` on how to get to a
+See chapter :ref:`data-consumers` on how to get to a
 `Tag history <https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA67541>`_
- or an `animal history <https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541>`_.
+or an `animal history <https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541>`_.
 
 Gap analysis
 ------------
@@ -881,7 +887,7 @@ IT process Turtle track and nest count
     :target: https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png
     :alt: Mobile data collection
 
-See :doc:`data_collectors/data-capture-tracks` for the current implementation of
+See :ref:`data-capture-tracks` for the current implementation of
 digital data capture of tracks and nests,
 which is curretly in production use by the core Turtle team, and in beta testing
 at Cable Beach and the Karratha office.

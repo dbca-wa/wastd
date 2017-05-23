@@ -20,6 +20,7 @@ supported data sources into WAStD.
 
 
 .. _itp-stranding-curation:
+
 Turtle Strandings
 =================
 Digitising a stranding record consists of five steps:
@@ -191,6 +192,7 @@ Tag Observations support the following identifying tags or "things with an ID":
 Turtle Morphometric Observations
 --------------------------------
 The measurement accuracy is set based on informed guesses:
+
 * If the datasheet was filled in by a trained vet or core turtle staff, it's to
   the nearest 1mm.
 * If the datasheet specifies "measured", it's to the nearest 5mm.

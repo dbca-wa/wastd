@@ -11,6 +11,7 @@ Each field in the data sheets has been, and should be questioned:
 * Will anyone in the foreseeable future require this information?
 
 .. _data-capture-tracks:
+
 Turtle tracks or nests
 ======================
 Turtle track counts can be collected on mobile app (OpenDataKit, ODK),
@@ -102,7 +103,8 @@ E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
 `StephenK`, `stephen king`, `stephen-king` or `stephenking`.
 
 .. image:: https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png
-     :alt: Track Count work flow
+    :target: https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png
+    :alt: Track Count work flow
 
 Collector: Collect "speed run" data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -288,6 +290,7 @@ The final analysis (in development at the time of writing) will consume
 curated data through the WAStD API.
 
 .. _itp-stranding-report:
+
 Turtle Stranding
 ================
 
@@ -321,6 +324,7 @@ time, and it preserves valuable and volatile information.
 
 
 .. _lessons-learnt-paper-based-data-capture:
+
 Lessons learnt from paper-based field data collection
 =====================================================
 
@@ -461,10 +465,11 @@ General observations
 
 
 .. _cost-benefit-analysis-digital-data-capture:
+
 Cost-benefit analysis for digital data collection
 =================================================
 
-The following diagram is also shown at :doc:`business_analysts/dm-data-entry`.
+The following diagram is also shown at :ref:`dm-data-entry`.
 
 .. image:: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
     :target: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png

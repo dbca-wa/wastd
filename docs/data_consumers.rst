@@ -1,7 +1,9 @@
 .. _data-consumers:
-==================
+
+==============
 Data consumers
-==================
+==============
+
 This chapter addresses data consumers.
 
 For humans: GUI
@@ -89,6 +91,7 @@ building the desired API query. To learn more about the API, read on.
 
 
 .. _data-consumers-api:
+
 For machines: API
 =================
 **Note** This section is being re-written, as the API is being fine-tuned.
@@ -146,14 +149,12 @@ JSON::
 
     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health!=alive
     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health!=alive
-.. https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health!=alive
 
 All tagging encounters (anything that's exactly "alive and healthy") as web page,
 JSON, or CSV::
 
     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health=alive
     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health=alive
-.. https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv&health=alive
 
 The known history of a flipper tag::
 
@@ -188,6 +189,7 @@ encounters along its life cycle stages::
 
 
 .. _data-analysis-animal-life-cycle:
+
 Animal life cycle
 -----------------
 An animal's identity can be reconstructed from overlapping sightings of a set of tags.

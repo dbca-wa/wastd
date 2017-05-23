@@ -14,6 +14,7 @@ In this chapter, we will discuss:
 * remaining modules of the observations app
 
 .. _data-model:
+
 Data model
 ==========
 WAStD is designed to handle biological
