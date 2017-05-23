@@ -207,7 +207,7 @@ Current implementation
 
 Turtle Strandings
 ^^^^^^^^^^^^^^^^^
-* The data flow is shown in :ref:`dm-data-entry`
+* The data flow is shown in :ref:`dm-data-entry`.
 * Stranding paper forms are being updated (SFo and FM, Nov 2016 - Mar 2017).
 * `REQ #23 <https://github.com/parksandwildlife/biosys-turtles/issues/23>`_
   An updated incident response workflow for marine wildlife incidents is in
