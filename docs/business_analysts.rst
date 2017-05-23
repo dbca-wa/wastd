@@ -847,7 +847,6 @@ source the data from the WAStD API.
 
 Use case: Turtle Tagging digital data capture
 ---------------------------------------------
-**TODO** expand and link chart "DDC"
 
 * preparation before field trip while online
 * field data capture (during tagging)
@@ -878,11 +877,20 @@ form a complete picture of a nesting beach.
 
 IT process Turtle track and nest count
 --------------------------------------
-TODO insert digital track count app diagram
+.. image:: https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png
+    :alt: Mobile data collection
 
-See :ref:`data-capture-tracks` for digital data capture of tracks and nests,
+See :doc:`data_collectors/data-capture-tracks` for the current implementation of
+digital data capture of tracks and nests,
 which is curretly in production use by the core Turtle team, and in beta testing
 at Cable Beach and the Karratha office.
+
+The mobile data collection form implements the following workflow:
+
+.. image:: https://www.lucidchart.com/publicSegments/view/b0a9c41e-9578-4396-a009-a01721757c98/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/b0a9c41e-9578-4396-a009-a01721757c98/image.png
+    :alt: Form "Track or treat" workflow
 
 IT process Turtle track and nest data curation
 ----------------------------------------------
