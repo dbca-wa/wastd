@@ -679,22 +679,20 @@ supposed to see.
 Legacy system: WAMTRAM 2
 ------------------------
 
-Current process:
+The basic data flow for the current production turtle tagging system WAMTRAM 2
+is shown in the following diagram and explained below.
 
 .. image:: https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png
      :target: https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png
      :alt: Tagging data life cycle (current)
 
-The basic data flow for the turtle tagging system WAMTRAM 2 is:
 
-* `Documentation (access restricted to Turtle team)
-  <https://confluence.dpaw.wa.gov.au/display/sd/MSP%20Turtle%20Tagging%20DB>`_
 * Data backend is an MS SQL Server 2012 database on ``kens-mssql-001-prod``.
 * Curator Bob Prince administrates data through an MS Access admin front-end.
 * For each field team, Bob uses the admin frontend to export the
   entire current database into a data collection database.
-* Field teams receive a data collection database backend (MS Access
-  mdb) plus data collection frontend (MS Access mde) which allows data entry,
+* Field teams receive a data collection database backend (MS Access mdb)
+  plus data collection frontend (MS Access mde) which allows data entry,
   does rudimentary data validation, and allows looking up existing data (e.g.
   tag history, turtle history).
 * Field teams return the data collection backend, which Bob imports into W2.
@@ -703,24 +701,39 @@ The basic data flow for the turtle tagging system WAMTRAM 2 is:
   typos and incorrectly entered data. Bob frequently has to contact the field
   teams in order to reconcile conflicting data.
 * Once import validation passes, WAMTRAM ingests the new data batch.
-* W2 requires data to be entered in chronological order or else throws errors.
+* W2 requires data to be entered in chronological order or else it throws errors.
 * Flipper tag procurement happens through DPaW as custodians of tag names (e.g. "WA1234").
 * W2 disallows team 2 to enter tags allocated to team 1, even if team 1's turtles
   migrate to team 2's tagging area.
-* REQ Taggers need to know from existing tags to which tagging area the tag was assigned to.
-* W2 is missing the option to enter a resighted turtle if the original tagging
-  is not already recorded or imported.
-* W2 assumes all datasheets are available for data entry before the next tagging
-  night.
+* Deployment `Documentation
+  <https://confluence.dpaw.wa.gov.au/display/sd/MSP%20Turtle%20Tagging%20DB>`_
+  is restricted to WAMTRAM 2 maintainers.
 
 
-* REQ (Pend) Data entry operators need to be able to enter every observation
-  independently of whether related records are already entered.
+A tag asset management system as per
+`REQ #35 <https://github.com/parksandwildlife/biosys-turtles/issues/35>`_
+will solve the following problems:
+
+* Taggers need to know from existing tags to which tagging area the tag was
+  assigned to.
 * REQ Flipper and PIT tag asset management: need to know location and beach they
   are assigned to. This allows to QA typos in datasheets by narrowing down
   possible lists of tag names.
 * REQ At any point in time we need to know precise location and holder of tags, which
   may change every night during tagging season.
+
+
+If the solution would allow data entry in random order
+`REQ #58 <https://github.com/parksandwildlife/biosys-turtles/issues/58>`_, and
+let curators later fix any remaining issues, this would solve the following problems:
+
+* W2 is missing the option to enter a resighted turtle if the original tagging
+  is not already recorded or imported.
+* W2 assumes all datasheets are available for data entry before the next tagging
+  night, and enforces data entry in chronological order. This is seen as a limitation.
+
+
+
 * Limitations impacting data collection on gas plants: electronic devices are
   only recently permitted on Barrow Is. All electronic devices must be certified
   for fire / spark safety.
