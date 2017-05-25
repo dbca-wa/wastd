@@ -695,6 +695,8 @@ is shown in the following diagram and explained below.
   plus data collection frontend (MS Access mde) which allows data entry,
   does rudimentary data validation, and allows looking up existing data (e.g.
   tag history, turtle history).
+* Penv get 2-3k taggings each year from Barrow and Munda.
+  This is far more than DPaW themselves tag.
 * Field teams return the data collection backend, which Bob imports into W2.
 * If W2 reports import errors, Bob changes field data using his subject
   matter expertise and scans of original data sheets (if available) to resolve
@@ -702,7 +704,8 @@ is shown in the following diagram and explained below.
   teams in order to reconcile conflicting data.
 * Once import validation passes, WAMTRAM ingests the new data batch.
 * W2 requires data to be entered in chronological order or else it throws errors.
-* Flipper tag procurement happens through DPaW as custodians of tag names (e.g. "WA1234").
+* Flipper tag procurement happens through DPaW as custodians of tag names
+  (e.g. "WA1234").
 * W2 disallows team 2 to enter tags allocated to team 1, even if team 1's turtles
   migrate to team 2's tagging area.
 * Deployment `Documentation
@@ -734,38 +737,55 @@ let curators later fix any remaining issues, this would solve the following prob
 
 
 
-* Limitations impacting data collection on gas plants: electronic devices are
-  only recently permitted on Barrow Is. All electronic devices must be certified
-  for fire / spark safety.
+`REQ #59 <https://github.com/parksandwildlife/biosys-turtles/issues/59>`_
+Limitations impacting digital data collection on gas plants:
+
+* Electronic devices are only recently permitted on Barrow Is.
+* All electronic devices must be certified for fire / spark safety.
 * Varanus Is would work with tablets.
 * Barrow Is is too hectic for tablets.
-* Pend do not need to know turtle history when tagging, they treat every turtle
+
+
+* `REQ #11 <https://github.com/parksandwildlife/biosys-turtles/issues/11>`_
+  Pend do not need to know turtle history when tagging, they treat every turtle
   similarly.
-* REQ There should be a SOP on defining activities that are available to enter
+
+Stakeholder requirements to maintain WAMTRAM 2:
+
+* `REQ #60 <https://github.com/parksandwildlife/biosys-turtles/issues/60>`_
+  There should be a SOP on defining activities that are available to enter
   (toggle "display observation" on activity).
-* W2 does not export observer name, only observer number.
-* W2 field data entry database report Observations is useless.
-* W2 beach names contain duplicates: Munda main beach = Cowrie beach
-* W2 beaches should be de-duplicated and have a bounding box / poly.
-* REQ If entering a re-sighting in W2 field db, operators should not immediately
+* `REQ #61 <https://github.com/parksandwildlife/biosys-turtles/issues/61>`_
+  W2 does not export observer name, only observer number.
+
+Other stakeholder feedback on WAMTRAM2:
+
+* `REQ #62 <https://github.com/parksandwildlife/biosys-turtles/issues/62>`_
+  W2 field data entry database report Observations is useless.
+* `REQ #63 <https://github.com/parksandwildlife/biosys-turtles/issues/63>`_
+  W2 beach names contain duplicates: Munda main beach = Cowrie beach
+  W2 beaches should be de-duplicated and have a bounding box / poly.
+* `REQ #64 <https://github.com/parksandwildlife/biosys-turtles/issues/64>` _
+  If entering a re-sighting in W2 field db, operators should not immediately
   see existing tag names. It is too easy to perpetuate an incorrect tag name.
   Data entry operator should be able to flag historic records as
   "suggested edit: WA12341 should be WA12347", but not actually change them.
-* The system should keep digital copies of original datasheets with records.
-* The Dept should demand datasheets to be returned as part of tagging license.
+* `REQ #65 <https://github.com/parksandwildlife/biosys-turtles/issues/65>`_
+  The system should keep digital copies of original datasheets with records.
+* `REQ #66 <https://github.com/parksandwildlife/biosys-turtles/issues/66>`_
+  The Dept should demand datasheets to be returned as part of tagging license.
   Pend does not mind returning datasheets as they scan it anyways.
   There could be resistance from industry partners  to return datasheets.
-* Penv get 2-3k taggings each year from Barrow and Munda.
-* W2 does not record surveys, so surveys without sightings (true absence) are
+* `REQ #45 <https://github.com/parksandwildlife/biosys-turtles/issues/45>`_
+  W2 does not record surveys, so surveys without sightings (true absence) are
   not recorded.
-* REQ The solution shall record surveys in order to record true absences.
-* Penv: data collection, entry, QA, analysis should be repeatable, standardised
+
+* `REQ #67 <https://github.com/parksandwildlife/biosys-turtles/issues/67>`_
+  Penv: data collection, entry, QA, analysis should be repeatable, standardised
   by DPaW.
 * Penv want to capture data through tablets where feasible, otherwise on paper.
 * Penv's PW designed the W2 tagging datasheet with W2 developer BR, revision 2017
   by DPaW.
-* Other groups: Ningaloo, Gnaraloo do some tagging, lots of satellite tagging.
-  Care for Headland (tr, tag), Jessica Oates / Astron tag for Quadrant on Varanus Is.
 * REQ W2 only knows location of tagging data, should add license number to batch of
   tags, compliance check: who tags without license?
 
