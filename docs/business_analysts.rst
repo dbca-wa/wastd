@@ -923,6 +923,11 @@ form a complete picture of a nesting beach.
 
 IT process Turtle track and nest count
 --------------------------------------
+
+.. image:: https://www.lucidchart.com/publicSegments/view/b301ca6f-0489-4a2c-b36c-87220419b8dc/image.png
+     :target: https://www.lucidchart.com/publicSegments/view/b301ca6f-0489-4a2c-b36c-87220419b8dc/image.png
+     :alt: Track and nest count data life cycle (ideal)
+
 .. image:: https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png
     :target: https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png
     :alt: Mobile data collection
@@ -1095,8 +1100,9 @@ Known required analytical products:
 
 Non-functional requirements
 ===========================
+
 This section documents lessons learnt during the requirements analysis, design
- and development of WAStD and anecdotal wisdom of colleagues and data custodians.
+and development of WAStD and anecdotal wisdom of colleagues and data custodians.
 
 
 Senior data custodians are gold mines of business knowledge
@@ -1120,9 +1126,9 @@ of each person to the value chain of data.
 
 A picture is worth a thousand badly drawn schematics
 ----------------------------------------------------
-Pictures are cheap to take but expensive not to take. Curators can tell nearly
-all details of a stranded animal from good pictures. Often the initial guess
-of the first respondent is overruled by expert advice based on photographs later.
+Pictures are cheap to take but expensive not to take.
+Experts can tell nearly all details of a stranded animal from good pictures.
+Often the initial guess of the first respondent is overruled by expert advice based on photographs later.
 Datasheets can be wrong, photos are more objective.
 Datasheets should provide a list of desired photographic perspectives and angles,
 and a list of details to capture close up.
