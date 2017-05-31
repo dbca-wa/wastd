@@ -786,24 +786,34 @@ Other stakeholder feedback on WAMTRAM2:
 * Penv want to capture data through tablets where feasible, otherwise on paper.
 * Penv's PW designed the W2 tagging datasheet with W2 developer BR, revision 2017
   by DPaW.
-* REQ W2 only knows location of tagging data, should add license number to batch of
-  tags, compliance check: who tags without license?
+* `REQ #68 <https://github.com/parksandwildlife/biosys-turtles/issues/68>`_
+  W2 should add license number to batch of tags,
+  compliance check: who tags without license?
 
-Ideas from Analyst of Barrow Is tagging data:
+Analysis workflow for Analyst of Barrow Is tagging data:
 
-* Contractor (PENV) send workbook with raw data to analyst in April
-* Contractor sends temp logger data when retrieved (end of May)
-* Analyst produces report for consumer (CHEV)
-* Data: tagging data, hatching success separately, tracks
+* Contractor (PENV) send workbook with raw data to analyst in April.
+* Contractor sends temp logger data when retrieved (end of May).
+* Analyst produces report for consumer (CHEV).
+* Data: tagging data, hatching success separately, tracks.
 * Analyst creates time blocks within season and looks at each animal's recapture
-  history between time blocks
-* REQ analyst needs full animal history of each encountered animal, even if
-  some previous encounters were collected by other groups (e.g. by DpaW on THV)
-* REQ data needs to be synced between devices daily during data capture, and
-  to master db if online
-* REQ analyst wants to make model available and accessible as workbook, but this
-  is client's decision (CHEV)
+  history between time blocks.
 
+
+
+* `REQ #11 <https://github.com/parksandwildlife/biosys-turtles/issues/11>`_
+  The analyst needs full animal history of each encountered animal, even if
+  some previous encounters were collected by other groups (e.g. by DpaW on THV)
+* `REQ #28 <https://github.com/parksandwildlife/biosys-turtles/issues/28>`_
+  Data needs to be synced between devices daily during data capture, and
+  to master db if online.
+* `REQ #36 <https://github.com/parksandwildlife/biosys-turtles/issues/36>`_
+  The analyst wants to make model available, accessible, and reproducible as a
+  workbook, but this is client's decision (CHEV).
+  The analysis needs to be re-run if existing data (incl previous seasons) changes.
+  This requires the analysis to be reproducible.
+
+`REQ #26 <https://github.com/parksandwildlife/biosys-turtles/issues/26>`_
 Data lineage:
 
 * Analyst has to spend lots of time with data QA and chasing up central custodian's
@@ -812,23 +822,25 @@ Data lineage:
   data don't necessarily sum up, and baseline changes minimally
 * Analyst cannot easily detect or understand these changes, but gets criticism
   from consumer (CHEV).
-* REQ analysis needs to be reproducible
-* REQ analysis needs to be re-run if existing data (incl previous seasons) changes
-* REQ data lineage must be preserved to explain discrepancies
-* REQ analyst needs to be able to easily detect changes in tallies of empirical
+
+* `REQ #26 <https://github.com/parksandwildlife/biosys-turtles/issues/26>`_
+  Data lineage must be preserved to explain discrepancies.
+* `REQ #69 <https://github.com/parksandwildlife/biosys-turtles/issues/69>`_
+  The analyst needs to be able to easily detect changes in tallies of empirical
   data, e.g. implemented as QA gatecheck
 
 Capture survey metadata, include covariates:
 
-* REQ analyst needs to know sampling effort (surveys) even if no data collected
-* REQ analyst needs covariates (weather, wind, sun, disturbance, predator
+* `REQ #45 <https://github.com/parksandwildlife/biosys-turtles/issues/45>`_
+  analyst needs to know sampling effort (surveys) even if no data collected
+  The analyst also needs covariates (weather, wind, sun, disturbance, predator
   presence, sun angle, tide, beach geomorph, geology, sand moisture content,
   beach slope, location on beach relative to HWM and vegetation)
 * ca 3 levels of wind strength would be sufficient from a modelling perspective
 * Covariates can help model detection process of track / nest
-* REQ survey metadata plus covariates need to be captured
 
 
+`REQ #62 <https://github.com/parksandwildlife/biosys-turtles/issues/62>`_
 Output:
 * LTMMTP Chevron 2015: reports on metrics from tagging
 * need "new turtle", "remigrant"
@@ -871,7 +883,7 @@ Loading data into, and analysing data from WAStD assumes:
 
 Long term solution: New data entry tool
 ---------------------------------------
-To retire WAMTRAM 2, the following is required
+To retire WAMTRAM 2, the following is required:
 
 * WAMTRAM to WAStD ETL is complete and correct.
 * A new electronic data entry tool, likely a progressive web app, is created
@@ -953,7 +965,7 @@ The Ningaloo ETL RMarkdown workbook
 (`source <https://github.com/parksandwildlife/turtle-scripts/blob/master/ningaloo/ningaloo_etl.Rmd>`_)
 extracts data from the NTP database snapshot on the internal data catalogue into
 CSV and GeoJSON files, and uploads them to the NTP
-`dataset <internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data>`_.
+`dataset <http://internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data>`_.
 
 The workbook can be extended to also upload the data into WAStD's API.
 
@@ -1060,7 +1072,7 @@ The NTP Coordinator and the Ningaloo Marine Park Coodinator (MPC) create data
 products (figures and tables) and write, or contribute, to several recurring
 reports.
 
-From MPC and NTP Coodinator:
+From MPC and NTP Coordinator:
 
 REQ Minimise data entry, a/d barrier crossings, handling steps, reduce double
 handling at data entry, prefer digital data capture.
