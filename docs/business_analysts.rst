@@ -1072,33 +1072,34 @@ The NTP Coordinator and the Ningaloo Marine Park Coodinator (MPC) create data
 products (figures and tables) and write, or contribute, to several recurring
 reports.
 
+
+
+
 From MPC and NTP Coordinator:
 
-REQ Minimise data entry, a/d barrier crossings, handling steps, reduce double
-handling at data entry, prefer digital data capture.
-
-REQ Internet speed is very slow in Exmouth. Online transactions have to be async
-or minimised.
-
-REQ be able to record at new surveyed sites and times, opportunistic sightings,
-independent of pre-configured exp design.
-
-REQ MPC and NTP Coordinator need access to other places' turtle data.
-
-REQ need data in one place.
-
-REQ Need clear data sharing policies, licences.
-
-REQ All data should be as open as possible after mitigating data sensitivities.
-
-REQ KM: digital capture would be preferred if data is compatible and legacy data can
-be migrated.
-
-REQ KM: NTP database is outdated and requires upgrade, no local capability available
-to maintain / upgrade.
-
-REQ Have the analysis script automated in a literate programming paradigm.
-
+* `REQ #7 <https://github.com/parksandwildlife/biosys-turtles/issues/7>`_
+  Minimise data entry, a/d barrier crossings, handling steps, reduce double
+  handling at data entry, prefer digital data capture.
+* `REQ #70 <https://github.com/parksandwildlife/biosys-turtles/issues/70>`_
+  Internet speed is very slow in Exmouth. Online transactions have to be async
+  or minimised.
+* `REQ #71 <https://github.com/parksandwildlife/biosys-turtles/issues/71>`_
+  The system must be able to record at new surveyed sites and times,
+  opportunistic sightings, independent of pre-configured exp design.
+* `REQ #30 <https://github.com/parksandwildlife/biosys-turtles/issues/30>`_
+  MPC and NTP Coordinator need access to other places' turtle data.
+* `REQ #72 <https://github.com/parksandwildlife/biosys-turtles/issues/72>`_
+  REQ need data in one place.
+* `REQ #33 <https://github.com/parksandwildlife/biosys-turtles/issues/33>`_
+  REQ Need clear data sharing policies, licences.
+* `REQ #73 <https://github.com/parksandwildlife/biosys-turtles/issues/73>`_
+  REQ All data should be as open as possible after mitigating data sensitivities.
+* `REQ #74 <https://github.com/parksandwildlife/biosys-turtles/issues/74>`_
+  Coordinator NTP: digital capture would be preferred if data is compatible and
+  legacy data can be migrated.
+  NTP database is outdated and requires upgrade, no local capability
+  available to maintain / upgrade.
+  Have the analysis script automated in a literate programming paradigm.
 
 Use case: Track data analysis
 -----------------------------
@@ -1119,39 +1120,43 @@ and development of WAStD and anecdotal wisdom of colleagues and data custodians.
 
 Senior data custodians are gold mines of business knowledge
 -----------------------------------------------------------
-Extracting their experience and intuition, and solidifing their knowledge into
+`REQ #75 <https://github.com/parksandwildlife/biosys-turtles/issues/75>`_
+Extracting their experience and intuition, and solidifying their knowledge into
 written documentation takes months to years. Retirement, budget cuts and personal
 circumstances can cut this available time short.
 
-NFR All custodians and colleagues with deep knowledge of related legacy systems
+All custodians and colleagues with deep knowledge of related legacy systems
 shall be consulted, their suggestions shall be incorporated into the systems
 philosophy and design, and they should sign off on the requirements analysis.
 
 Volunteers multiply value six-fold
 ----------------------------------
+`REQ #57 <https://github.com/parksandwildlife/biosys-turtles/issues/57>`_
 For each dollar the Department spends in the field, volunteers contribute about
 six dollars in value. Sending them feedback and showing appreciation helps to
 uphold motivation levels and retain this free work force.
 
-NFR The system shall allow the display, export and emailing of the contributions
+The system shall allow the display, export and emailing of the contributions
 of each person to the value chain of data.
 
 A picture is worth a thousand badly drawn schematics
 ----------------------------------------------------
+`REQ #76 <https://github.com/parksandwildlife/biosys-turtles/issues/76>`_
 Pictures are cheap to take but expensive not to take.
 Experts can tell nearly all details of a stranded animal from good pictures.
-Often the initial guess of the first respondent is overruled by expert advice based on photographs later.
+Often the initial guess of the first respondent is overruled by expert advice
+based on photographs later.
 Datasheets can be wrong, photos are more objective.
 Datasheets should provide a list of desired photographic perspectives and angles,
 and a list of details to capture close up.
 
-REQ Data collection shall prompt the user to take photos where feasible to augment
+Data collection shall prompt the user to take photos where feasible to augment
 their judgement in the field.
 
-REQ The system shall allow attaching any file (datasheet scans, photographs,
+The system shall allow attaching any file (datasheet scans, photographs,
 email threads) to any record.
 
-REQ The system shall allow proof-readers and curators to easily compare attached
+The system shall allow proof-readers and curators to easily compare attached
 media with entered data for a given record.
 
 Data entry is worth every drop of sweat spent on forms, procedure and documentation
@@ -1162,6 +1167,7 @@ Data is only trustworthy if the full data lineage is retained.
 Data curation goes through several stages, each adding value (entry, proofreading,
 subject matter expertise).
 
+`REQ #69 <https://github.com/parksandwildlife/biosys-turtles/issues/69>`_
 REQ The system shall keep an audit trail of well-defined QA steps.
 
 Data curation takes a long time - ca 30 min per stranding record.
@@ -1195,35 +1201,37 @@ The turtle monitoring program will periodically re-evaluate projects, delivery,
 priorities, and even the target outcomes. This will cause requirements at the
 level discussed here to evolve and change over time.
 
-REQ The solution architecture shall allow an evolution of components ande so functionality.
+REQ The solution architecture shall allow an evolution of components and functionality.
 
+`REQ #54 <https://github.com/parksandwildlife/biosys-turtles/issues/54>`_
 REQ The solution technology must be supported by DPaW OIM.
-
 REQ The solution technology must be within the skill range of the primary maintainer (FM).
 
+`REQ #77 <https://github.com/parksandwildlife/biosys-turtles/issues/77>`_
 REQ (SFo) WAStD surveys should allow attachments (datasheets containing multiple
 records so we avoid duplicate attachments to individual records) as well as
 comments (e.g. climatic / environmental conditions or systematic errors in
 methodology impacting data capture / validity / changing assumptions,
 e.g. tracks blown away before capture leading to undersampling).
 
+`REQ #78 <https://github.com/parksandwildlife/biosys-turtles/issues/78>`_
 REQ The solution shall be open source under an open license.
 
+`REQ #79 <https://github.com/parksandwildlife/biosys-turtles/issues/79>`_
 REQ All requirements shall be translated completely into functional requirements,
 and have 100% test coverage.
-
 REQ The solution shall, if the technology allows, implement continuous
 integration and testing as well as continuous deployment.
 
 Requirements of the Turtle group
 --------------------------------
 
-REQ The group requires basic training in R, reproducible reporting, version control
+REQ The group requires basic training in R, reproducible reporting, version control.
 
-REQ The data entry operator (TO) should be trained to be a trainer for others
+REQ The data entry operator (TO) should be trained to be a trainer for others.
 
 REQ With data entry coming more and more from digital sources, the data entry
-operator should migrate from a data entry, typist role towards a QA operator
+operator should migrate from a data entry, typist role towards a QA operator.
 
 REQ The turtle group needs a dedicated scientific programmer, or at least
 dedicated time of the Information Manager (FM) for scientific programming.
@@ -1237,8 +1245,8 @@ REQ Media collected during field work should be re-usable for media and reportin
 * presenting an easy to understand data summary
 
 The above listed outputs are available early in the process, but required far
-later in the process. In other words, when we need them it's too late to collect
-them.
+later in the process.
+In other words, by the time we need them it's too late to collect them.
 
 "Sane management underpinned by robust science"
 
