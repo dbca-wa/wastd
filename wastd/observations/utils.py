@@ -107,7 +107,7 @@ def symlink_resources(t_dir, data):
 # Data import from ODK Aggregate
 # TODO create and use writable API
 #
-def guess_user(un):
+def guess_user(un, default_username="florianm"):
     """Find exact or fuzzy match of username, or create User.
 
     In order, return:
@@ -120,6 +120,7 @@ def guess_user(un):
     Arguments
 
     un A username
+    default_username The default username if un is None
 
     Returns
     An instance of settings.AUTH_USER_MODEL
@@ -133,20 +134,25 @@ def guess_user(un):
         msg = "   Username {0} found by exact match: returning {1}"
 
     except ObjectDoesNotExist:
-        usrs = User.objects.filter(username__icontains=un[0:4])
+        try:
+            usrs = User.objects.filter(username__icontains=un[0:4])
 
-        if usrs.count() == 0:
-            usr = User.objects.create(username=un, name=un)
-            msg = "  Username {0} not found: created {1}"
+            if usrs.count() == 0:
+                usr = User.objects.create(username=un, name=un)
+                msg = "  Username {0} not found: created {1}"
 
-        elif usrs.count() == 1:
-            usr = usrs[0]
-            msg = "  Username {0} found by fuzzy match: returning only match {1}"
-            usr = usrs[0]
+            elif usrs.count() == 1:
+                usr = usrs[0]
+                msg = "  Username {0} found by fuzzy match: only match is {1}"
+                usr = usrs[0]
 
-        else:
-            usr = usrs[0]
-            msg = "  [WARNING] Username {0} returned multiple matches, choosing {1}"
+            else:
+                usr = usrs[0]
+                msg = "  [WARNING] Username {0} returned multiple matches, choosing {1}"
+
+        except TypeError:
+            usr = User.objects.first()
+            msg = "  [WARNING] Username not given, using admin {1}"
 
     print(msg.format(un, usr))
     return usr
@@ -2163,7 +2169,7 @@ def update_wastd_user(u):
 # -----------------------------------------------------------------------------#
 # Main import call
 #
-def import_odk(datafile, flavour="odk-tt031", extradata=None, usercsv=None):
+def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
     """Import ODK Track Count 0.10 data.
 
     Arguments

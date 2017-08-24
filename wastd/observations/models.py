@@ -1271,20 +1271,20 @@ class Encounter(PolymorphicModel, geo_models.Model):
     def get_popup(self):
         """Generate HTML popup content."""
         t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
-        c = Context({"original": self})
-        return mark_safe(t.render(c))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
 
     def get_report(self):
         """Generate an HTML report of the Encounter."""
         t = loader.get_template("reports/{0}.html".format(self._meta.model_name))
-        c = Context({"original": self})
-        return mark_safe(t.render(c))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
 
     def get_latex(self):
         """Generate a Latex fragment of the Encounter."""
         t = loader.get_template("latex/fragments/{0}.tex".format(self._meta.model_name))
-        c = Context({"original": self})
-        return mark_safe(t.render(c))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
 
     @property
     def observations(self):
@@ -2033,15 +2033,15 @@ class Observation(PolymorphicModel, models.Model):
     def as_html(self):
         """An HTML representation."""
         t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
-        c = Context({"original": self})
-        return mark_safe(t.render(c))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
 
     @property
     def as_latex(self):
         """A Latex representation."""
         t = loader.get_template("latex/{0}.tex".format(self._meta.model_name))
-        c = Context({"original": self})
-        return mark_safe(t.render(c))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
 
     @property
     def observation_name(self):
