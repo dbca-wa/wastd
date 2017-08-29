@@ -184,7 +184,9 @@ def read_odk_linestring(odk_str):
     # out: Line(Point(115.88441855 -31.99656982) Point(115.88441522 -31.9965685))
     return LineString(
         [Point(float(c[1]), float(c[0])) for c in
-         [p.split(" ") for p in odk_str.split(";") if len(p) > 0]
+         [p.strip().split(" ")
+          for p in odk_str.split(";")
+          if len(p) > 0]
          ]
         )
 
