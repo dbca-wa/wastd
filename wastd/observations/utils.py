@@ -247,8 +247,10 @@ def handle_photo(p, e, title="Track"):
                 print("  File size is {0}".format(f.size))
 
                 # Does the MediaAttachment exist already?
-                if MediaAttachment.objects.filter(encounter=e, title=title).exists():
-                    m = MediaAttachment.objects.filter(encounter=e, title=title)[0]
+                if MediaAttachment.objects.filter(
+                        encounter=e, title=title).exists():
+                    m = MediaAttachment.objects.filter(
+                        encounter=e, title=title)[0]
                     action = "updated"
                 else:
                     m = MediaAttachment(encounter=e, title=title)
@@ -1140,12 +1142,18 @@ def import_one_record_tt034(r, m):
 
     # MediaAttachment "Photo of track"
     if r["photo_track"] is not None:
+        dl_photo(e.source_id,
+                 r["photo_track"]["url"],
+                 r["photo_track"]["filename"])
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_track"]["filename"])
         handle_photo(pname, e, title="Track")
 
     # MediaAttachment "Photo of nest"
     if r["photo_nest"] is not None:
+        dl_photo(e.source_id,
+                 r["photo_nest"]["url"],
+                 r["photo_nest"]["filename"])
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_nest"]["filename"])
         handle_photo(pname, e, title="Nest")
