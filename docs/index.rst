@@ -33,7 +33,9 @@ This manual aims to provide useful information for:
 .. toctree::
    :maxdepth: 2
 
-   data_collectors
+   data_collection/data_collection_overview
+   data_collection/data_collection_admin
+   data_collection/data_collection_training
    data_curators
    data_consumers
    business_analysts

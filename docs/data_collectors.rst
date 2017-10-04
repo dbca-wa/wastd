@@ -2,6 +2,12 @@
 Data collectors
 ===============
 
+NOTE this chapter has been split up (content duplicated) into the data collection chapters for admins and collectors.
+
+
+
+
+
 Each field in the data sheets has been, and should be questioned:
 
 * Is this information used in any of the analytical outputs?
