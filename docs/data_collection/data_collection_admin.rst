@@ -22,10 +22,23 @@ device.
 
 Setup the tablet
 ----------------
-The tablet needs to be linked to a Google account. 
-This allows all tablets to upload captured photos to the same Google Photos account.
 
-Some setup steps we found useful:
+* Start fully charged, plug into charger to lengthen screen timeout
+* Language: English / Australia
+* Wifi: do not use DBCA's Wongi, use guest.dbca.wa.gov.au
+* Sign into a work-only Google account - all tablets handed out from turtle program are linked to florianm.dec@gmail.com. 
+  If you are not Florian Mayer, use your own work-only Google account.
+* If you have other tablets already set up and linked against your Google account, let the tablet restore from backup (installs apps).
+* Google services: untick "help improve..." options. Keep "Back up apps etc" and "Location services" option.
+* Wait for restore to finish.
+* Skip creating a Lenovo ID. The "Start using your new device" button is hidden under the keyboard. Press "Back" to minimize keyboard.
+* Update apps and address any notifications.
+
+Device settings:
+* Date & time: Set time zone to AWST (GMT+08)
+* Security: do not configure any screen lock
+
+App settings:
 
 * Camera: Enable location capture, so that all photos are geo-referenced with
   the coordinates they were taken at. This turns the camera into a generic 

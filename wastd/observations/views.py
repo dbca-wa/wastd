@@ -48,7 +48,7 @@ class EncounterTable(tables.Table):
         """Model opts."""
 
         model = Encounter
-        exclude = ["as_html", "as_latex", "polymorphic_ctype",  "encounter_ptr"]
+        exclude = ["as_html", "as_latex", "polymorphic_ctype", "encounter_ptr"]
         attrs = {'class': 'table table-hover table-inverse table-sm'}
 
 
@@ -128,7 +128,7 @@ class AnimalEncounterTableView(EncounterTableView):
 # http://www.django-rest-framework.org/topics/3.5-announcement/#improved-schema-generation
 schema_view = get_schema_view(
     title='WAStD API',
-    renderer_classes=[CoreJSONRenderer, OpenAPIRenderer, SwaggerUIRenderer])
+    renderer_classes=[OpenAPIRenderer, CoreJSONRenderer, SwaggerUIRenderer])
 
 
 # Utilities ------------------------------------------------------------------#

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""WAStD URLs."""
 from __future__ import unicode_literals
 
 from django.conf import settings
@@ -13,6 +14,8 @@ from django.views import defaults as default_views
 from adminactions import actions
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
+from rest_framework.documentation import include_docs_urls
+
 # from dynamic_rest import routers as dr
 
 # from graphene_django.views import GraphQLView
@@ -54,7 +57,8 @@ urlpatterns = [
         name="animalencounter_list"),
 
     # API
-    url(r'^api/docs/$', schema_view, name="api-docs"),
+    url(r'^api/1/swagger/$', schema_view, name="api-docs"),
+    url(r'^api/1/docs/', include_docs_urls(title='WAStD API')),
     url(r'^api/1/', include(router.urls, namespace="api")),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
