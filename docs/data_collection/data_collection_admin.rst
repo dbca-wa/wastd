@@ -61,31 +61,26 @@ Requirements:
 
 * An Android device
 * A valid username and password for https://dpaw-data.appspot.com as provided to you by Florian Mayer.
+  The username and password will be per tablet, not per data collector.
 
 * On your Android device, install
   `ODK Collect <https://play.google.com/store/apps/details?id=org.odk.collect.android>`_
-* In ODK Collect > General Settings > Server Settings > 
-  Configure platform settings:
+* Drop a shortcut to ODK Collect onto the home screen.
+* In ODK Collect > Settings (three dots top or bottom right) > General Settings > Server >
   * URL: https://dpaw-data.appspot.com
   * username and password as provided to you by the ODK data maintainer. 
   These credentials determine whether you can retrieve new
   forms and submit data, and the username will be automatically recorded when
   collecting data. It is crucial to spell the credentials exactly as provided.
-* The username and password can also be set under 
-  General Settings > Server Settings.
-* Auto send: "only with WiFi" if few data points are collected.
-  Disable for vigorous data collection in remote areas with limited bandwidth provided by WiFi hotspots -
-  don't swamp the WiFi hotspot by auto-uploading data with photos.
-* Default to finalized
-* Delete after send
-* If the device is used by many volunteers who are new to the software, enable
-  the "Admin Settings" (set password) and disable menu options that are not needed
-  or risk data loss (e.g. "delete forms").
-
-**Note** You **must not** share your credentials, and
-**always use your own credentials** in General Settings > Username/Password
-to collect data. 
-Failure to do so **will** result in data loss, data corruption and loss of attribution.
+* Form management:
+  * Auto send: "WiFi only" if few data points are collected.
+    Disable for vigorous data collection in remote areas with limited bandwidth 
+    provided by WiFi hotspots - don't swamp the WiFi hotspot by auto-uploading data with photos.
+  * Delete after send: yes.
+* User and device identity > Form metadata > Username: set to the data collector's username. 
+  This name will be automatically recorded in ODK forms as "observed by".
+* ODK Collect > Settings > Admin settings > User settings: de-select all but "Form metadata".
+* ODK Collect > Settings > Admin settings > Admin password: set and remember.
 
 Providing training
 ==================
@@ -110,6 +105,10 @@ together with the data collector.
 **Note** Exact spelling includes capitalisation, interpunctuation and whitespace.
 E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
 `StephenK`, `stephen king`, `stephen-king` or `stephenking`.
+
+**Note** Some smaller programs may opt to maintain one login per device, and not
+bother with individual usernames for each volunteer. The decision lies with the program
+leader.
 
 .. image:: https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png
     :target: https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png
@@ -137,8 +136,7 @@ Admin: Upload data
 When surveys are done in locations where the device can return to the comforts
 of WiFi and power points daily, data can be uploaded directly to the clearinghouse.
 
-* Settings: make sure the correct username and password are given. The admin can
-  choose to use their own username / password.
+* Settings: the correct username and password have been configured during device setup.
 * Turn on the WiFi hotspot or move into WiFi range.
 * Turn on the device's WiFi.
 
@@ -152,6 +150,10 @@ ODK data is located in either internal or SD storage in ``odk/instances``.
 Each form will be stored in a separate folder, containing both the filled in form
 as XML file, and all related pictures and media.
 
+Simplest backup: periodically take a copy of ``odk/instances``. 
+If data upload works at the end, no further steps have to be taken and the copy of 
+``odk/instances`` can be archived.
+
 Where's the data now?
 ^^^^^^^^^^^^^^^^^^^^^
 ODK Collect uploads data to the configured ODK Aggregate clearinghouse.
@@ -160,13 +162,11 @@ Data collectors will have received credentials to login, which are the credentia
 to be used in ODK Collect.
 
 A synchronised copy of the data is streamed to Google Fusion Tables (GFT)
-for immediate visualization.
-
-For an initial analysis and summary, data are downloaded from GFT and presented
-in an RMarkdown workbook `Tracks <http://rpubs.com/florian_mayer/tracks>`_.
+for immediate visualization. A confidential link is shared with admins on request.
 
 After each field trip, data from ODK Aggregate are exported (as JSON) and ingested
-into WAStD. The process can be repeated; data that has been changed in WAStD and
+into WAStD by the maintainer (FM). 
+The process can be repeated; data that has been changed in WAStD and
 marked as "proofread" or even "curated" will not be overwritten.
 
 Once data are marked as "proofread" (or higher levels of QA) in WAStD,
@@ -175,8 +175,7 @@ double-checking species ID based on submitted photos) can change the data compar
 to the initial submission on ODK Aggregate.
 
 Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
-https://strandings.dpaw.wa.gov.au/. See chapter "Data consumers" for working
-examples.
+`https://strandings.dpaw.wa.gov.au/ <https://strandings.dpaw.wa.gov.au/>`_. 
+See chapter "Data consumers" for working examples.
 
-The final analysis (in development at the time of writing) will consume
-curated data through the WAStD API.
+The final analysis consumes curated data through the WAStD API using the R package wastdR.

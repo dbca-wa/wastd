@@ -4,92 +4,18 @@ Data collection training
 
 This chapter provides the training resources for prospective data collectors.
 
-Using the data collection device and software
-=============================================
-
-* Android tablets
-* ODK Collect
-
-Topics covered:
-
-* Basic device management: WiFi, GPS, camera and location, Photo upload, accounts, on-board storage vs SD cards.
-* Basic data collection software maintenance: download new and delete outdated data collection forms, set server and credentials, manage upload settings.
-* Links to further documentation on Android and ODK Collect.
-
-Device management
-=================
-
-We assume that you'll have been given an already set up Android tablet.
-This section summarises the minimum you should know about how the tablet is set up.
-Link to device setup (admin).
-
-Tested devices
---------------
-
-* Samsung Tab S2, 10" and 8"
-* Lenovo Tab3 7"
-* Moto G4+ 5"
-
-Best field device: Lenovo Tab3 7"
-
-Link to device comparison
-
-WiFi and GPS
-------------
-
-* When to turn on
-
-Camera
-------
-
-* Enable location capture
-
-Accounts
---------
-
-* Auto-upload photos to Google Photos
-
-Storage
--------
-
-* Storage options for app data depends on Android version
-* SD cards can be formatted as "internal storage" on Android 6+, don't bother with SD cards on Android 5 
-
-Data collection software management
-===================================
-
-Setup
-=====
-
-* Server, credentials, upload settings
-
-Maintenance
-===========
-
-Download new forms
-------------------
-
-Delete old forms
-----------------
-
-
-Fill in a new form
-------------------
-
-Understand that one filled in ODK form is one data record.
-
+* Hardware: Android devices (tablets, phablets, phones), default: Lenovo Tab3 7"
+* Software: ODK Collect
 
 Preparing a device pre survey
 =============================
 Run through this section every time before heading out to collect data.
 Ideally, the admin handing out the Android device will double-check these settings together with the data collector.
 
-* **Credentials** Set the collector's ODK credentials (username and password)
-  for the respective ODK Aggregate server, (e.g. https://dpaw-data.appspot.com/)
-  **exactly** as given and **before** collecting data.
-  The entered username will be stored automatically with each record (only
-  correct usernames will ensure correct attribution), and used to authenticate
-  data upload to ODK Aggregate (incorrect usernames will result in failed upload).
+* Settings > General Settings > User and device identity > Form metadata > Username 
+  This username will be recorded during data collection - we need this so we can say "thank you".
+  For volunteers, this will be firstname_lastname, e.g. florian_mayer in all lower case and underscore separated.
+  For DBCA staff, this will be the DBCA username, e.g. FlorianM or JoanneKi, with initials capitalised and last name abbreviated.
 * **Battery** Make sure the battery is full before you head out.
   Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
   GPS on only during surveys, WiFi on only during data upload.
@@ -307,38 +233,85 @@ You'll need:
 Training walk-through
 ---------------------
 
+0 Pre survey
+^^^^^^^^^^^^
+
+* Battery full?
+* WiFi off
+* GPS on
+* Set your ODK Collect username
+
 1 Survey start
 ^^^^^^^^^^^^^^
+* Site visit Start
+* Any reason you'd expect tracks to be non detectable, e.g. strong winds or rain? Photo, comment
 
 2 Fox track
 ^^^^^^^^^^^
+* Fox sake
 
 3 Track without nest
 ^^^^^^^^^^^^^^^^^^^^
+* Track or Treat, track without nest
 
 4 Track with nest
 ^^^^^^^^^^^^^^^^^
+* Track or Treat, track with nest
 
 5 Track, unsure if nest
 ^^^^^^^^^^^^^^^^^^^^^^^
+* Track or Treat, track unsure if nest
 
 6 Nest without track
 ^^^^^^^^^^^^^^^^^^^^
+* Track or Treat, nest, unhatched, no track
 
 7 Nest without track, predated
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Track or Treat, nest, unhatched, no track
+* Disturbed or predated: yes
+* Add new "Disturbance observation" group for each disturbance
 
 8 Hatched nest, predated
 ^^^^^^^^^^^^^^^^^^^^^^^^
+* Track or Treat, nest, hatched
+* Disturbed or predated: yes
+* Add new "Disturbance observation" group for each disturbance
+
+Depending on whether your program records these events:
+
+* Pretend we've excavated and counted eggs
+* Pretend we've found nest tags
+* Pretend we've found a data logger in the nest
+* Pretend we've found and measured a few hatchlings
 
 9 Signs of disturbance or predation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Fox sake
 
 10 Dead turtle
 ^^^^^^^^^^^^^^
+* Marine wildlife incident
 
 11 A noteworthy find
 ^^^^^^^^^^^^^^^^^^^^
+* Take a photo, landscape
+* Write on a whiteboard what we're looking at and include as label and length reference
 
 12 Survey end
 ^^^^^^^^^^^^^
+* Site visit end
+* Any new reasons impacting data collection? Photo, comment
+
+13 Return device
+^^^^^^^^^^^^^^^^
+Returning to an office (WiFi and wall power):
+
+* GPS off
+* WiFi on
+
+Returning to a deposit box (no WiFi, portable battery):
+
+* GPS off
+* Device off
+* Plugin battery to charge device
