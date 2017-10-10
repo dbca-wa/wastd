@@ -15,10 +15,9 @@ Tasks covered:
 
 Admin: First time setup
 =======================
-These steps have to be run once by the admin per device while online.
-Less than 10 MB will be downloaded.
-These steps can also be run by an interested data collector on their own Android
-device.
+
+These steps have to be run once per new tablet. 
+They are the minimum steps to provide a production ready data collection tablet.
 
 Setup the tablet
 ----------------
@@ -45,16 +44,30 @@ App settings:
   data collection form (image, time, location).
 * Google Photos: auto-upload all photos in original resolution to Google Photos.
 
+If not linked to florianm.dec@gmail.com, install apps:
+
+* ODK Collect
+
 
 Setup ODK Collect
 -----------------
+
+These steps have to be run once by the admin per device while online.
+Less than 10 MB will be downloaded.
+These steps can also be run by an interested data collector on their own Android
+device.
+
+Requirements:
+
+* An Android device
+* A valid username and password for https://dpaw-data.appspot.com as provided to you by Florian Mayer.
 
 * On your Android device, install
   `ODK Collect <https://play.google.com/store/apps/details?id=org.odk.collect.android>`_
 * In ODK Collect > General Settings > Server Settings > 
   Configure platform settings:
-* URL: https://dpaw-data.appspot.com, plus username and password as provided to
-  you by the ODK data maintainer. 
+  * URL: https://dpaw-data.appspot.com
+  * username and password as provided to you by the ODK data maintainer. 
   These credentials determine whether you can retrieve new
   forms and submit data, and the username will be automatically recorded when
   collecting data. It is crucial to spell the credentials exactly as provided.
@@ -115,6 +128,9 @@ Admin: Review data
 * review and update data (e.g. species ID)
 * save and mark as finalized.
 
+Delete unwanted repeating groups:
+
+* Tap and hold a group title bar, select "delete".
 
 Admin: Upload data
 ^^^^^^^^^^^^^^^^^^
