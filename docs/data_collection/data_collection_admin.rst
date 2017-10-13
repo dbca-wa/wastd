@@ -34,6 +34,7 @@ Setup the tablet
 * Update apps and address any notifications.
 
 Device settings:
+
 * Date & time: Set time zone to AWST (GMT+08)
 * Security: do not configure any screen lock
 
@@ -67,8 +68,10 @@ Requirements:
   `ODK Collect <https://play.google.com/store/apps/details?id=org.odk.collect.android>`_
 * Drop a shortcut to ODK Collect onto the home screen.
 * In ODK Collect > Settings (three dots top or bottom right) > General Settings > Server >
+  
   * URL: https://dpaw-data.appspot.com
   * username and password as provided to you by the ODK data maintainer. 
+  
   These credentials determine whether you can retrieve new
   forms and submit data, and the username will be automatically recorded when
   collecting data. It is crucial to spell the credentials exactly as provided.
@@ -87,37 +90,21 @@ Providing training
 Run all data collectors through the chapter "Data collection training" until they
 are competent and comfortable with the hardware and software.
 
-Collector: Prepare devices pre survey
-=====================================
-Ideally, the admin handing out the Android device will double-check these settings
-together with the data collector.
+Admin: Prepare devices pre survey
+=================================
+If the logistics allow, the admin handing out the Android device will execute the steps of 
+:ref:`dct-pre-survey` together with the data collector.
 
-* **Credentials** Set the collector's ODK credentials (username and password)
-  for the respective ODK Aggregate server, (e.g. https://dpaw-data.appspot.com/)
-  **exactly** as given and **before** collecting data.
-  The entered username will be stored automatically with each record (only
-  correct usernames will ensure correct attribution), and used to authenticate
-  data upload to ODK Aggregate (incorrect usernames will result in failed upload).
-* **Battery** Make sure the battery is full before you head out.
-  Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
-  GPS on only during surveys, WiFi on only during data upload.
+Admin: Prepare a length reference pre survey
+============================================
+Take a garden stake (length 1.50 m) and mark minimum and maximum track width of 
+expected species with coloured tape. Prepare one stake per tablet.
 
-**Note** Exact spelling includes capitalisation, interpunctuation and whitespace.
-E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
-`StephenK`, `stephen king`, `stephen-king` or `stephenking`.
-
-**Note** Some smaller programs may opt to maintain one login per device, and not
-bother with individual usernames for each volunteer. The decision lies with the program
-leader.
-
-.. image:: https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png
-    :alt: Track Count work flow
-
-Collector: collect data
+Collector: Collect data
 =======================
 Now the data collector will head out into the field and collect data following
 the protocols from the "Data collection training" chapter.
+The admin should be intimately acquainted with this chapter.
 
 Admin: Review data
 ==================
@@ -125,14 +112,14 @@ Admin: Review data
 
 * Tap once to view read-only, tap again to edit
 * review and update data (e.g. species ID)
-* save and mark as finalized.
+* mark as finalized and save.
 
 Delete unwanted repeating groups:
 
 * Tap and hold a group title bar, select "delete".
 
 Admin: Upload data
-^^^^^^^^^^^^^^^^^^
+==================
 When surveys are done in locations where the device can return to the comforts
 of WiFi and power points daily, data can be uploaded directly to the clearinghouse.
 
@@ -141,7 +128,9 @@ of WiFi and power points daily, data can be uploaded directly to the clearinghou
 * Turn on the device's WiFi.
 
 With "Auto-send in WiFi" settings enabled, the device will automatically upload
-all data marked as "finalized".
+all data marked as "finalized". 
+This will leave all non-finalised forms requiring review in "Edit Saved Forms".
+Review each form and "save as finalized".
 
 When WiFi is not available daily, the admin needs to backup data by downloading
 it manually and keeping the downloaded data safe (multiple copies over separate
@@ -155,7 +144,7 @@ If data upload works at the end, no further steps have to be taken and the copy 
 ``odk/instances`` can be archived.
 
 Where's the data now?
-^^^^^^^^^^^^^^^^^^^^^
+=====================
 ODK Collect uploads data to the configured ODK Aggregate clearinghouse.
 In our case, this is https://dpaw-data.appspot.com/.
 Data collectors will have received credentials to login, which are the credentials
@@ -178,4 +167,4 @@ Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
 `https://strandings.dpaw.wa.gov.au/ <https://strandings.dpaw.wa.gov.au/>`_. 
 See chapter "Data consumers" for working examples.
 
-The final analysis consumes curated data through the WAStD API using the R package wastdR.
+The final analysis consumes curated data through the WAStD API using the R package ``wastdR``.

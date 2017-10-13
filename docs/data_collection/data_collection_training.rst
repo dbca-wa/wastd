@@ -4,23 +4,33 @@ Data collection training
 
 This chapter provides the training resources for prospective data collectors.
 
-* Hardware: Android devices (tablets, phablets, phones), default: Lenovo Tab3 7"
+* Hardware: Android devices (tablets, phablets, phones), current default: Lenovo Tab3 7"
 * Software: ODK Collect
+
+
+.. _dct-pre-survey:
 
 Preparing a device pre survey
 =============================
 Run through this section every time before heading out to collect data.
 Ideally, the admin handing out the Android device will double-check these settings together with the data collector.
 
-* Settings > General Settings > User and device identity > Form metadata > Username 
-  This username will be recorded during data collection - we need this so we can say "thank you".
-  For volunteers, this will be firstname_lastname, e.g. florian_mayer in all lower case and underscore separated.
-  For DBCA staff, this will be the DBCA username, e.g. FlorianM or JoanneKi, with initials capitalised and last name abbreviated.
+* Settings > General Settings > User and device identity > Form metadata > Username:
+  * This username will be recorded during data collection - 
+    we need this so we can say "thank you".
+  * For volunteers, this should be firstname_lastname, e.g. florian_mayer in all 
+    lower case and underscore separated.
+  * For DBCA staff, this should be the DBCA username, e.g. FlorianM or JoanneKi, 
+    with initials capitalised and last name abbreviated.
 * **Battery** Make sure the battery is full before you head out.
   Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
   GPS on only during surveys, WiFi on only during data upload.
+* **Length reference** A stick with markings for the minimum and maximum track width
+  for each expected species.
 
-**Note** Exact spelling includes capitalisation, interpunctuation and whitespace.
+**Note** While a typo in the username will not break anything (but make our life harder), 
+exact spelling would be greatly appreciated.
+Exact spelling includes capitalisation, interpunctuation and whitespace.
 E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
 `StephenK`, `stephen king`, `stephen-king` or `stephenking`.
 
@@ -28,9 +38,11 @@ Collecting turtle data
 ======================
 
 This section runs through all possible scenarios of turtle data collection.
+The data collector should already be trained to recognise species from tracks, as well as 
+identify turtle nests and body pits.
 
-Data collection protocols
--------------------------
+Data collection protocol overview
+---------------------------------
 
 Marine wildlife incidents, such as turtle strandings, are always recorded on a case-by-case basis.
 Tracks can be recorded individually (preferred) or tallied over beach sections.
@@ -57,19 +69,14 @@ Track count work flow
     :target: https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png
     :alt: Track Count work flow
 
-Collector: Collect "speed run" data
------------------------------------
+Protocol "speed run" track count
+--------------------------------
 * Walk along the high water mark on the beach until you encounter either
   an unmarked inbound track ("uptrack") or unmarked outbound hatchling tracks.
 * "Fill Blank Form" > Track or Treat (latest version)
 * Track age: fresh (default) if less than 24 h old, or old if older than 24 h.
   If the beach was surveyed within the last day, all unmarked tracks are "fresh".
-* Species: select species if possible, else if unsure, keep default "turtle".
-* Take photo of track if unsure about species ID. Landscape format is preferred!
-  Place a length reference (measuring tape) across the whole track, lining up
-  the end with the edge of the track. This allows curators to gauge the track
-  width easily from the photo.
-  Select angle of camera, sun and track so that the track is clearly visible.
+* Species: select species if possible, else if unsure, keep default "Turtle".
 
 Adult turtle tracks:
 
@@ -82,19 +89,28 @@ Adult turtle tracks:
 
 Hatchling tracks:
 
-* Track type: "nest, hatched"
+* Track type: "nest, hatched".
 * Location: Follow to hatched nest, capture location of nest.
 * Swipe right and fill in subsequent nest-related screens. A senior field worker
   will conduct the nest excavation.
 
 You should at least set species and GeoPoint, if the other value defaults are correct.
 
+If you were unsure about the species and have therefore kept the default "Turtle", 
+you will be shown a subsequent screen "Unsure about species", where you can take photos 
+of both the uptrack (water towards land) and the downtrack (returning from land to water).
+
+* Landscape format is preferred!
+* Place a length reference (measuring tape or marked stick) across the whole track, 
+  lining up the end with the edge of the track. 
+  This allows reviewers to easily gauge the track width from the photo.
+* Select angle of camera, sun and track so that both track and length reference are clearly visible.
+
 Review the data, then swipe right to finish the form.
 
-If you are sure of species ID, keep "Mark form as finalized" ticked and "Save Form and Exit".
-
-If you are unsure of the species ID, (species is "turtle" and photo of track is
-provided), untick "Mark form as finalized" and "Save Form and Exit".
+If you are sure of species ID and presence or absence of nest, 
+keep "Mark form as finalized" ticked and "Save Form and Exit".
+Otherwise, untick "Mark form as finalized" and "Save Form and Exit".
 This gives the field supervisors a chance to review and possibly determine species ID
 (based on the photo taken) before uploading.
 
@@ -103,8 +119,17 @@ about 15 seconds plus the time to take a photo.
 
 Repeat for each track.
 
-Collect "nest" data
--------------------
+Protocol "Oh no I forgot something"
+-----------------------------------
+This happens to the best of us. If you want to change your mind about a form:
+
+* ODK Collect > Edit Saved Form > Sort by date (sorting symbol top right) > Tap form to edit.
+* Correct errors right away, and at the latest before handing back the device or uploading the data.
+
+Protocol "nest counts"
+----------------------
+This protocol is the preferred protocol and includes the steps of "speed run".
+
 Look for both tracks (crossing your path) and nests (may be inland).
 
 **Track** same screen as uptrack up to photo of track. Resuming from track type:
@@ -182,6 +207,8 @@ This is the end of the form. Proceed to the next track or nest and repeat.
 
 At the end of the survey, turn off location services, and hand the device back to the admin.
 
+Track tally
+
 .. _dct-stranding-report:
 
 Turtle Stranding
@@ -233,6 +260,8 @@ You'll need:
 Training walk-through
 ---------------------
 
+
+
 0 Pre survey
 ^^^^^^^^^^^^
 
@@ -245,6 +274,7 @@ Training walk-through
 ^^^^^^^^^^^^^^
 * Site visit Start
 * Any reason you'd expect tracks to be non detectable, e.g. strong winds or rain? Photo, comment
+* Mention in comment that this is a training run
 
 2 Fox track
 ^^^^^^^^^^^
