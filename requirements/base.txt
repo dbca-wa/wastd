@@ -20,7 +20,7 @@ django-grappelli==2.9.1
 # API
 # ------------------------------------------------
 djangorestframework
-djangorestframework-gis==0.11.2
+djangorestframework-gis
 djangorestframework-csv
 djangorestframework-yaml
 djangorestframework-jsonp
