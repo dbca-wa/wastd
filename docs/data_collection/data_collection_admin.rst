@@ -97,8 +97,41 @@ If the logistics allow, the admin handing out the Android device will execute th
 
 Admin: Prepare a length reference pre survey
 ============================================
-Take a garden stake (length 1.50 m) and mark minimum and maximum track width of 
-expected species with coloured tape. Prepare one stake per tablet.
+For situations where the data collector is unsure of the turtle species causing a given turtle track,
+the data collection form offers to take a picture of the track for later review and species identification.
+Having a length reference in the photos helps the reviewer immensely with species identification.
+
+A simple and cheap length reference for tricky turtle tracks
+can be fabricated from a  plastic, non-bendy tomato garden stake ($5),
+marked with goloured duct tape ($5 per roll) at the minimum and maximum track width 
+for each turtle species expected to occur in the surveyed area.
+
+A folding rule is a more portable, but more expensive alterative to the tomato stake.
+
+https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
+    :target: https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
+    :alt: Turtle track length reference
+
+The stick can be simplified, e.g. if only green and flatback turtles are expected,
+a stick can be cut to the maximum flatback track width, with one marking for the 
+minimum green track width.
+
+Additional length markings, e.g. intervals of 10cm, can be added as required.
+
+This method is preferred over the use of a measuring tape as length reference in 
+photos of tracks of unknown species for the following reasons:
+
+* A rigid stick will lay on top of sand ripples, 
+  while measuring tape will distort measurement by bending over them.
+* The coloured, centimeter-wide markings on the stick will be visible at lower image quality 
+  than the millimeter-wide centimeter markings on a measuring tape.
+* The coloured tape wraps around the stick and is thereby visible from any angle, 
+  while tape can flip over and hide its markings.
+* By reducing length references to relevant lengths, cognitive load is taken off the data collector. 
+  One can simply read off the stick markings which species' track width range 
+  a given track falls into.
+
+Prepare one length reference per data collection team.
 
 Collector: Collect data
 =======================
