@@ -51,19 +51,7 @@
             <strong>{{ request.user.apitoken }}</strong>.</p>
 
             <h3>Code example in R</h3>
-            <pre>
-require(httr); require(jsonlite); require(DT)
-url = "{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/"
-hdr = c(Authorization = "Token {{ request.user.apitoken }}")
-j = httr::GET(paste0(url, "?format=json"), add_headers(.headers = hdr)) %>% content("text") %>% fromJSON
-d = httr::GET(paste0(url, "?format=csv"),  add_headers(.headers = hdr)) %>% content("parsed")
-datatable(d)
-            </pre>
-            <p>
-            <strong>j</strong> is the data as JSON dictionary,
-            <strong>d</strong> is the data as data.frame.
-            Note, the Token is only required for PUT, POST and DELETE requests.
-            </p>
+            See <a href="https://parksandwildlife.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.
 
             <h3>Code example in Python</h3>
             <pre>

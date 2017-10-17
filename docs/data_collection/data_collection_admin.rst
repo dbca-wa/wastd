@@ -200,4 +200,5 @@ Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
 `https://strandings.dpaw.wa.gov.au/ <https://strandings.dpaw.wa.gov.au/>`_. 
 See chapter "Data consumers" for working examples.
 
-The final analysis consumes curated data through the WAStD API using the R package ``wastdR``.
+The final analysis consumes curated data through the WAStD API using the R package ``wastdR``. Working examples can be found at the 
+`wastdr documentation <https://parksandwildlife.github.io/wastdr/index.html>`_.
