@@ -178,23 +178,23 @@ If data upload works at the end, no further steps have to be taken and the copy 
 
 Where's the data now?
 =====================
-ODK Collect uploads data to the configured ODK Aggregate clearinghouse.
-In our case, this is https://dpaw-data.appspot.com/.
-Data collectors will have received credentials to login, which are the credentials
-to be used in ODK Collect.
+ODK Collect uploads data to the specified ODK Aggregate clearinghouse.
+In our case, we run ODK Aggregate at 
+`https://dpaw-data.appspot.com/ <https://dpaw-data.appspot.com/>`_.
 
 A synchronised copy of the data is streamed to Google Fusion Tables (GFT)
-for immediate visualization. A confidential link is shared with admins on request.
+for immediate visualization. 
+A confidential link is shared with admins on request.
+DBCA staff can find the links to the data 
+`here <https://confluence.dpaw.wa.gov.au/display/MSIM/ODK+data+views>`_.
 
-After each field trip, data from ODK Aggregate are exported (as JSON) and ingested
-into WAStD by the maintainer (FM). 
+After each field trip, data from ODK Aggregate are exported (as JSON) and ingested into WAStD by the maintainer (FM). 
 The process can be repeated; data that has been changed in WAStD and
 marked as "proofread" or even "curated" will not be overwritten.
 
 Once data are marked as "proofread" (or higher levels of QA) in WAStD,
 WAStD becomes the point of truth, as proofreading and curation (e.g.
-double-checking species ID based on submitted photos) can change the data compared
-to the initial submission on ODK Aggregate.
+double-checking species ID based on submitted photos) can change the data compared to the initial submission on ODK Aggregate.
 
 Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
 `https://strandings.dpaw.wa.gov.au/ <https://strandings.dpaw.wa.gov.au/>`_. 

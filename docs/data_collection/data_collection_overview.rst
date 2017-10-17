@@ -109,6 +109,8 @@ identify and individually record turtle tracks (on paper or on mobile).
 In this case, a tally was kept on paper forms, as no specialised mobile app for
 tally observations was available yet.
 
+.. _device-shootout:
+
 Devices shoot-out
 =================
 Hands-on field testing at Thevenard and Barrow Islands Nov/Dec 2016.
