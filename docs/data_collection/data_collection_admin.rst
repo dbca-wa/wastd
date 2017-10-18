@@ -108,7 +108,7 @@ for each turtle species expected to occur in the surveyed area.
 
 A folding rule is a more portable, but more expensive alterative to the tomato stake.
 
-https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
+.. image:: https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
     :target: https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
     :alt: Turtle track length reference
 

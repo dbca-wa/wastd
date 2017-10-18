@@ -43,6 +43,18 @@ This section provides a condensed overview of the information management infrast
 
 See also :ref:`business-process-turtle-tracks`.
 
+The following diagram is also shown at :ref:`dm-data-entry`.
+
+.. image:: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
+    :alt: Turtle data flow, ideal state
+
+
+.. image:: https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png
+    :target: https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png
+    :alt: Turtle data flow, current state
+
+
 .. _lessons-learnt-paper-based-data-capture:
 
 Lessons learnt from paper-based field data collection
@@ -193,13 +205,6 @@ General observations
 
 Cost-benefit analysis for digital data collection
 =================================================
-
-The following diagram is also shown at :ref:`dm-data-entry`.
-
-.. image:: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
-    :alt: Turtle data flow, ideal state
-
 Digital data collection provides systematic advantages over paper-based
 data collection, as it skips several work-intensive, error-prone steps
 in the data life cycle.
