@@ -200,5 +200,17 @@ Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
 `https://strandings.dpaw.wa.gov.au/ <https://strandings.dpaw.wa.gov.au/>`_. 
 See chapter "Data consumers" for working examples.
 
-The final analysis consumes curated data through the WAStD API using the R package ``wastdR``. Working examples can be found at the 
+The final analysis consumes curated data through the WAStD API using the R package 
+``wastdR``. Working examples can be found at the 
 `wastdr documentation <https://parksandwildlife.github.io/wastdr/index.html>`_.
+
+Admin: Update forms
+===================
+From time to time the forms might be updated. 
+In this case, all data collection admins (and volunteers using their private devices) will be notified, 
+and each of their tablets need to run through the following steps:
+
+* ODK Collect > Get blank form > (the new forms should already be selected, e.g. Track or Treat 0.36) > Get selected forms
+* ODK Collect > Delete saved form > Blank forms > select the old form (e.g. Track or Treat 0.35) > delete
+* Once all tablets are updated, notify the maintainer (Florian Mayer).
+* Once all devices are updated, the old form version can be retired.
