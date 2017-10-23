@@ -35,6 +35,20 @@ Exact spelling includes capitalisation, interpunctuation and whitespace.
 E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
 `StephenK`, `stephen king`, `stephen-king` or `stephenking`.
 
+Device checkout Broome - Cable Beach
+------------------------------------
+* There are two tablets (and one hotspot providing WiFi to the tablets) on a charger.
+* Disconnect both tablets from the charger.
+* Turn one on (to collect data), one off (as backup).
+* Take the tablets and the collection backpack out.
+
+Device checkin Broome - Cable Beach
+-----------------------------------
+* Deposit the collection backpack.
+* Connect both tablets to the charger.
+* Any tablets with data on them should be kept running.
+* Any tablets which weren't used at all can be kept powered off.
+
 Length reference
 ================
 Take a length reference, such as a stake marked with coloured tape at minimum and 
@@ -106,7 +120,8 @@ If you were unsure about the species and have therefore kept the default "Turtle
 you will be shown a subsequent screen "Unsure about species", where you can take photos 
 of both the uptrack (water towards land) and the downtrack (returning from land to water).
 
-* Landscape format is preferred!
+* Landscape format is preferred, but choose aspect at your own discretion.
+* Flip device into landscape **before** tapping "take photo" (else it forgets the first photo taken).
 * Place a length reference (measuring tape or marked stick) across the whole track, 
   lining up the end with the edge of the track. 
   This allows reviewers to easily gauge the track width from the photo.
@@ -116,14 +131,18 @@ Review the data, then swipe right to finish the form.
 
 If you are sure of species ID and presence or absence of nest, 
 keep "Mark form as finalized" ticked and "Save Form and Exit".
-Otherwise, untick "Mark form as finalized" and "Save Form and Exit".
+
+**If tablets are left unsupervised** E.g. West Pilbara, Cable Beach - simply save and let it upload.
+Supervisors will QA the data later.
+
+**If a supervisor regularly checks the devices** De-select "Mark form as finalized" and "Save Form and Exit".
 This gives the field supervisors a chance to review and possibly determine species ID
 (based on the photo taken) before uploading.
 
 This form will take a trained operator about 13 taps and swipes over 
 about 15 seconds plus the time to take a photo.
 
-Repeat for each track.
+Repeat for each track / nest.
 
 Protocol "Oh no I forgot something"
 -----------------------------------
