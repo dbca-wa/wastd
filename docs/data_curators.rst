@@ -328,9 +328,20 @@ JSON file to the "wastd/data" folder and runs::
 
     fab shell
     from wastd.observations.utils import *
-    import_odk('data/TrackCount_0_10_results.json', flavour="odk-tc010")
-    import_odk('data/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
-    import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
+  
+    import_odk("data/latest/Track_Tally_0_5_results.json", flavour="odk-tally05")                                                     
+    #import_odk('data/latest/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
+    import_odk('data/latest/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
+    import_odk('data/latest/Track_or_Treat_0_35_results.json', flavour="odk-tt036")
+    import_odk('data/latest/Track_or_Treat_0_36_results.json', flavour="odk-tt036")
+    import_odk('data/latest/Fox_Sake_0_3_results.json', flavour="odk-fs03")
+
+
+    # TODO: 
+    # MWI, TS 0.8, 0.9
+
+
+In [2]: import_odk("data/latest/Track_Tally_0_5_results.json", flavour="odk-tally05")     
 
 This process contains three manual steps for each form,
 which at the current churn rate of forms (and corresponding import routines)

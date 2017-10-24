@@ -332,9 +332,10 @@ def handle_turtlenestdistobs31(d, e):
         encounter=e,
         disturbance_cause=d["disturbance_cause"],
         disturbance_cause_confidence=d["disturbance_cause_confidence"],
-        disturbance_severity=d["disturbance_severity"],
         comments=d["comments"]
         )
+    if "disturbance_severity" in d.keys():
+        dd["disturbance_severity"] = d["disturbance_severity"]
     dd.save()
     action = "created" if created else "updated"
     print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
@@ -774,12 +775,18 @@ def import_one_record_tc010(r, m):
 
     # MediaAttachment "Photo of track"
     if r["photo_track"] is not None:
+        dl_photo(e.source_id,
+                 r["photo_track"]["url"],
+                 r["photo_track"]["filename"])
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_track"]["filename"])
         handle_photo(pname, e, title="Track")
 
     # MediaAttachment "Photo of nest"
     if r["photo_nest"] is not None:
+        dl_photo(e.source_id,
+                 r["photo_nest"]["url"],
+                 r["photo_nest"]["filename"])
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_nest"]["filename"])
         handle_photo(pname, e, title="Nest")
@@ -963,12 +970,18 @@ def import_one_record_tt026(r, m):
     if r["photo_track"] is not None:
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_track"]["filename"])
+        dl_photo(e.source_id,
+            r["photo_track"]["url"],
+            r["photo_track"]["filename"])
         handle_photo(pname, e, title="Track")
 
     # MediaAttachment "Photo of nest"
     if r["photo_nest"] is not None:
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_nest"]["filename"])
+        dl_photo(e.source_id,
+            r["photo_nest"]["url"],
+            r["photo_nest"]["filename"])
         handle_photo(pname, e, title="Nest")
 
     # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
@@ -1053,12 +1066,20 @@ def import_one_record_tt031(r, m):
     if r["photo_track"] is not None:
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_track"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_track"]["url"],
+            r["photo_track"]["filename"])
         handle_photo(pname, e, title="Track")
 
     # MediaAttachment "Photo of nest"
     if r["photo_nest"] is not None:
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_nest"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_nest"]["url"],
+            r["photo_nest"]["filename"])
         handle_photo(pname, e, title="Nest")
 
     # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
@@ -1144,20 +1165,22 @@ def import_one_record_tt034(r, m):
 
     # MediaAttachment "Photo of track"
     if r["photo_track"] is not None:
-        dl_photo(e.source_id,
-                 r["photo_track"]["url"],
-                 r["photo_track"]["filename"])
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_track"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_track"]["url"],
+            r["photo_track"]["filename"])
         handle_photo(pname, e, title="Track")
 
     # MediaAttachment "Photo of nest"
     if r["photo_nest"] is not None:
-        dl_photo(e.source_id,
-                 r["photo_nest"]["url"],
-                 r["photo_nest"]["filename"])
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_nest"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_nest"]["url"],
+            r["photo_nest"]["filename"])
         handle_photo(pname, e, title="Nest")
 
     # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
@@ -1187,6 +1210,186 @@ def import_one_record_tt034(r, m):
     e.save()
     return e
 
+
+def import_one_record_tt036(r, m):
+    """Import one ODK Track or Treat 0.35 or 0.36 record into WAStD.
+
+
+    The only change vs tt026 is that ODK now allows dashes in choice values.
+    The changes to tt034 are differently named track and nest photos.
+    The following choices are now are identical to WAStD
+    and do not require a mapping any longer:
+
+    * species
+    * nest_type
+    * habitat
+    * disturbance evident
+    * disturbance_cause_confidence
+    * status (tag status)
+
+    Arguments
+
+    r The record as dict
+
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]],
+        nest_age=r["nest_age"],
+        nest_type=r["nest_type"],
+        species=r["species"],
+        # comments
+        )
+    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
+        new_data["habitat"] = r["habitat"]
+        new_data["disturbance"] = r["disturbance"]
+
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = TurtleNestEncounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = TurtleNestEncounter.objects.create(**new_data)
+
+    e.save()
+
+        # MediaAttachment "Photo of track 1"
+    if r["photo_track_1"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_track_1"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_track_1"]["url"],
+            r["photo_track_1"]["filename"])
+        handle_photo(pname, e, title="Uptrack")
+
+        # MediaAttachment "Photo of track 2"
+    if r["photo_track_2"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_track_2"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_track_2"]["url"],
+            r["photo_track_2"]["filename"])
+        handle_photo(pname, e, title="Downtrack")
+
+
+    # MediaAttachment "Photo of nest 1"
+    if r["photo_nest_1"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_nest_1"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_nest_1"]["url"],
+            r["photo_nest_1"]["filename"])
+        handle_photo(pname, e, title="Nest 1")
+
+    # MediaAttachment "Photo of nest 2"
+    if r["photo_nest_2"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_nest_2"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_nest_2"]["url"],
+            r["photo_nest_2"]["filename"])
+        handle_photo(pname, e, title="Nest 2")
+
+    # MediaAttachment "Photo of nest 3"
+    if r["photo_nest_3"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_nest_3"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_nest_3"]["url"],
+            r["photo_nest_3"]["filename"])
+        handle_photo(pname, e, title="Nest 3")
+
+    # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
+    [handle_turtlenestdistobs31(distobs, e)
+     for distobs in r["disturbanceobservation"]
+     if r["disturbance"] and len(r["disturbanceobservation"]) > 0]
+
+    # TurtleNestObservation
+    if r["eggs_counted"] == "yes":
+        handle_turtlenestobs31(r, e)
+
+    # NestTagObservation
+    if r["nest_tagged"]:
+        handle_turtlenesttagobs31(r, e)
+
+    # HatchlingMorphometricObservation
+    [handle_hatchlingmorphometricobs(ho, e)
+     for ho in r["hatchling_measurements"]
+     if len(r["hatchling_measurements"]) > 0]
+
+    # LoggerEncounter retrieved HOBO logger
+    [handle_loggerenc(lg, e)
+     for lg in r["logger_details"]
+     if len(r["logger_details"]) > 0]
+
+    print(" Saved {0}\n".format(e))
+    e.save()
+    return e
+
+def import_one_record_fs03(r, m):
+    """Import one ODK Fox Sake 0.3 record into WAStD.
+
+    The following choices are now are identical to WAStD
+    and do not require a mapping any longer:
+
+    * disturbance evident
+    * disturbance_cause_confidence
+
+    Arguments
+
+    r The record as dict
+
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        where=Point(r["location:Longitude"], r["location:Latitude"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]]
+        )
+
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        Encounter.objects.filter(source_id=src_id).update(**new_data)
+        e = Encounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = Encounter.objects.create(**new_data)
+
+    e.save()
+
+    # TurtleNestDisturbanceObservation
+    handle_turtlenestdistobs31(r, e)
+
+
+    print(" Saved {0}\n".format(e))
+    e.save()
+    return e
 
 def import_one_record_sv01(r, m):
     """Import one ODK Site Visit 0.1 record into WAStD.
@@ -2294,7 +2497,8 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
             "RC": 'reclinched',
             "OO": 'removed',
             "R": 'removed',
-            "Q": 'resighted'
+            "Q": 'resighted',
+            'resighted': 'resighted'
             },
 
         "habitat": {
@@ -2391,6 +2595,32 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
             [import_one_record_tt034(r, ODK_MAPPING) for r in d
              if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
             print("Done!")
+
+    elif flavour == "odk-tt036":
+            print("Using flavour ODK Track or Treat 0.35-0.36...")
+            with open(datafile) as df:
+                d = json.load(df)
+                print("Loaded {0} records from {1}".format(len(d), datafile))
+            ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+            ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+                status=Encounter.STATUS_NEW).filter(source="odk")]
+
+            [import_one_record_tt036(r, ODK_MAPPING) for r in d
+             if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+            print("Done!")
+
+    elif flavour == "odk-fs03":
+        print("Using flavour ODK Fox Sake 0.3...")
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="odk")]
+
+        [import_one_record_fs03(r, ODK_MAPPING) for r in d
+         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        print("Done!")
 
     elif flavour == "odk-tally05":
         print("Using flavour ODK Track Tally 0.5...")

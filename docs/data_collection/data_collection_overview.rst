@@ -13,6 +13,8 @@ Read :ref:`data_collection_admin`.
 
 Are you a solution architect, developer or business analyst? Then read on.
 
+/data/details/species = 'cheloniidae-fam' & (/data/details/nest_type = 'track-unsure' | /data/details/nest_type = 'track-not-assessed' |  /data/details/nest_type = 'false-crawl' |  /data/details/nest_type = 'successful-crawl')
+
 Solution architecture and infrastructure
 ========================================
 

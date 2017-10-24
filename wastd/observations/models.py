@@ -2308,13 +2308,16 @@ class NestTagObservation(Observation):
     def history_url(self):
         """The list view of all observations of this tag."""
         cl = reverse("admin:observations_nesttagobservation_changelist")
-        return "{0}?q={1}".format(cl, urllib.quote_plus(self.flipper_tag_id))
+        if self.flipper_tag_id:
+            return "{0}?q={1}".format(cl, urllib.quote_plus(self.flipper_tag_id))
+        else: 
+            return cl
 
     @property
     def name(self):
         """Return the nest tag name according to the naming scheme."""
         return "_".join([
-            self.flipper_tag_id.upper().replace(" ", "") if self.flipper_tag_id else '',
+            (self.flipper_tag_id if self.flipper_tag_id else '').upper().replace(" ", ""),
             self.date_nest_laid.strftime('%Y-%m-%d') if self.date_nest_laid else '',
             self.tag_label.upper().replace(" ", "") if self.tag_label else '',
             ])
