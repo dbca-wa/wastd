@@ -1391,6 +1391,58 @@ def import_one_record_fs03(r, m):
     e.save()
     return e
 
+
+def import_one_record_mwi01(r, m):
+    """Import one ODK Marine wildlife Incident 0.1 record into WAStD.
+
+    Arguments
+
+    r The record as dict
+
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+    src_id = r["instanceID"]
+
+    new_data = dict(
+        source="odk",
+        source_id=src_id,
+        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
+        when=parse_datetime(r["observation_start_time"]),
+        location_accuracy="10",
+        observer=m["users"][r["reporter"]],
+        reporter=m["users"][r["reporter"]],
+        species=r["species"],
+        # comments
+        )
+
+    if src_id in m["overwrite"]:
+        print("Updating unchanged existing record {0}...".format(src_id))
+        AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
+        e = AnimalEncounter.objects.get(source_id=src_id)
+    else:
+        print("Creating new record {0}...".format(src_id))
+        e = AnimalEncounter.objects.create(**new_data)
+
+    e.save()
+
+    # MediaAttachment "Photo of track 1"
+    # if r["photo_track_1"] is not None:
+    #     pdir = make_photo_foldername(src_id)
+    #     pname = os.path.join(pdir, r["photo_track_1"]["filename"])
+    #     dl_photo(
+    #         e.source_id,
+    #         r["photo_track_1"]["url"],
+    #         r["photo_track_1"]["filename"])
+    #     handle_photo(pname, e, title="Uptrack")
+
+    print(" Saved {0}\n".format(e))
+    e.save()
+    return e
+
+
 def import_one_record_sv01(r, m):
     """Import one ODK Site Visit 0.1 record into WAStD.
 
@@ -2619,6 +2671,19 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
         [import_one_record_fs03(r, ODK_MAPPING) for r in d
+         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        print("Done!")
+
+    elif flavour == "odk-mwi01":
+        print("Using flavour ODK Marine Wildlife Incident 0.1...")
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="odk")]
+
+        [import_one_record_mwi01(r, ODK_MAPPING) for r in d
          if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
         print("Done!")
 
