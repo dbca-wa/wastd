@@ -280,7 +280,7 @@ def handle_turtlenestdistobs(d, e, m):
             "photo_disturbance": {
                 "filename": "1479173301849.jpg",
                 "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fdisturbanceobservation%5B%40ordinal%3D1%5D%2Fphoto_disturbance"
+                "url": "https://dpaw-data.appspot.com/view/..."
             },
             "comments": null
         }
@@ -321,7 +321,7 @@ def handle_turtlenestdistobs31(d, e):
             "photo_disturbance": {
                 "filename": "1479173301849.jpg",
                 "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fdisturbanceobservation%5B%40ordinal%3D1%5D%2Fphoto_disturbance"
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
             },
             "comments": null
         }
@@ -370,14 +370,14 @@ def handle_turtlenestobs(d, e, m):
                 "photo_eggs": {
                     "filename": "1485913363900.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D1%5D%2Fphoto_eggs"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                 }
             },
             {
                 "photo_eggs": {
                     "filename": "1485913376020.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D2%5D%2Fphoto_eggs"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                 }
             }
         ],
@@ -434,14 +434,14 @@ def handle_turtlenestobs31(d, e):
                 "photo_eggs": {
                     "filename": "1485913363900.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D1%5D%2Fphoto_eggs"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
                 }
             },
             {
                 "photo_eggs": {
                     "filename": "1485913376020.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D2%5D%2Fphoto_eggs"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
                 }
             }
         ],
@@ -491,7 +491,7 @@ def handle_turtlenesttagobs(d, e, m):
         "photo_tag": {
             "filename": "1485913419914.jpg",
             "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fnest_tag%3Aphoto_tag"
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
 
     e The related TurtleNestEncounter (must exist)
@@ -1403,6 +1403,110 @@ def import_one_record_mwi01(r, m):
 
     Existing records will be overwritten.
     Make sure to skip existing records which should be retained.
+
+    Input: a dict like
+
+    {
+    "instanceID": "uuid:b0c9954e-7076-4395-a790-c05387daf699",
+    "observation_start_time": "2017-10-19T04:45:40.295Z",
+    "reporter": "haylee_ramsay",
+    "observed_at:Latitude": -20.776875,
+    "observed_at:Longitude": 116.8621166667,
+    "observed_at:Altitude": 27.3,
+    "observed_at:Accuracy": 5.0,
+    "location_comment": null,
+    "incident_time": "2017-10-19T04:45:00.000Z",
+    "habitat": "dunebeneathvegetation",
+    "photo_habitat": null,
+    "species": "flatback",
+    "maturity": "adult",
+    "sex": "na",
+    "photo_carapace_top": null,
+    "photo_head_top": null,
+    "photo_head_side": null,
+    "photo_head_front": null,
+    "activity": "carcassinland",
+    "health": "deadedible",
+    "behaviour": null,
+    "cause_of_death": "harvest",
+    "cause_of_death_confidence": "guess",
+    "checked_for_injuries": "present",
+    "scanned_for_pit_tags": "na",
+    "checked_for_flipper_tags": "absent",
+    "samples_taken": "absent",
+    "damage_observation": [
+      {
+        "photo_damage": null,
+        "body_part": "eyes",
+        "damage_type": "other",
+        "damage_age": "fresh",
+        "description": null
+      },
+      {
+        "photo_damage": null,
+        "body_part": "other",
+        "damage_type": "other",
+        "damage_age": "fresh",
+        "description": null
+      }
+    ],
+    "tag_observation": [],
+    "curved_carapace_length_mm": 111,
+    "curved_carapace_length_accuracy": "10",
+    "curved_carapace_width_mm": null,
+    "curved_carapace_width_accuracy": "10",
+    "tail_length_carapace_mm": null,
+    "tail_length_carapace_accuracy": "10",
+    "maximum_head_width_mm": null,
+    "maximum_head_width_accuracy": "10",
+    "photo_habitat_2": null,
+    "photo_habitat_3": null,
+    "photo_habitat_4": null,
+    "observation_end_time": "2017-10-19T04:48:56.299Z"
+  },
+  {
+    "instanceID": "uuid:89355a74-3126-4aba-b4b8-1de0768fb443",
+    "observation_start_time": "2017-10-19T04:51:27.754Z",
+    "reporter": "isabelle_dehaviland",
+    "observed_at:Latitude": -20.7768466667,
+    "observed_at:Longitude": 116.8621866667,
+    "observed_at:Altitude": 24.7,
+    "observed_at:Accuracy": 4.9,
+    "location_comment": null,
+    "incident_time": "2017-10-19T04:51:27.754Z",
+    "habitat": "beach",
+    "photo_habitat": null,
+    "species": "turtle",
+    "maturity": "na",
+    "sex": "na",
+    "photo_carapace_top": null,
+    "photo_head_top": null,
+    "photo_head_side": null,
+    "photo_head_front": null,
+    "activity": "beachwashed",
+    "health": "na",
+    "behaviour": null,
+    "cause_of_death": "na",
+    "cause_of_death_confidence": "na",
+    "checked_for_injuries": "na",
+    "scanned_for_pit_tags": "na",
+    "checked_for_flipper_tags": "na",
+    "samples_taken": "na",
+    "damage_observation": [],
+    "tag_observation": [],
+    "curved_carapace_length_mm": null,
+    "curved_carapace_length_accuracy": "10",
+    "curved_carapace_width_mm": null,
+    "curved_carapace_width_accuracy": "10",
+    "tail_length_carapace_mm": null,
+    "tail_length_carapace_accuracy": "10",
+    "maximum_head_width_mm": null,
+    "maximum_head_width_accuracy": "10",
+    "photo_habitat_2": null,
+    "photo_habitat_3": null,
+    "photo_habitat_4": null,
+    "observation_end_time": "2017-10-23T02:27:58.036Z"
+  }
     """
     src_id = r["instanceID"]
 
@@ -1415,8 +1519,20 @@ def import_one_record_mwi01(r, m):
         observer=m["users"][r["reporter"]],
         reporter=m["users"][r["reporter"]],
         species=r["species"],
+        habitat=r["habitat"],
+        maturity=r["maturity"],
+        sex=r["sex"],
+        activity=r["activity"],
+        health=r["health"],
+        behaviour=r["behaviour"],
         # comments
         )
+    # "cause_of_death": "na",
+    # "cause_of_death_confidence": "na",
+    # "checked_for_injuries": "na",
+    # "scanned_for_pit_tags": "na",
+    # "checked_for_flipper_tags": "na",
+    # "samples_taken": "na",
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -1428,15 +1544,92 @@ def import_one_record_mwi01(r, m):
 
     e.save()
 
-    # MediaAttachment "Photo of track 1"
-    # if r["photo_track_1"] is not None:
-    #     pdir = make_photo_foldername(src_id)
-    #     pname = os.path.join(pdir, r["photo_track_1"]["filename"])
-    #     dl_photo(
-    #         e.source_id,
-    #         r["photo_track_1"]["url"],
-    #         r["photo_track_1"]["filename"])
-    #     handle_photo(pname, e, title="Uptrack")
+    # "damage_observation": [],
+    
+    # "tag_observation": [],
+
+    ## TurtleMorphometricObservation
+    # "curved_carapace_length_mm": null,
+    # "curved_carapace_length_accuracy": "10",
+    # "curved_carapace_width_mm": null,
+    # "curved_carapace_width_accuracy": "10",
+    # "tail_length_carapace_mm": null,
+    # "tail_length_carapace_accuracy": "10",
+    # "maximum_head_width_mm": null,
+    # "maximum_head_width_accuracy": "10",
+
+    # MediaAttachment "Photo of habitat"
+    if r["photo_habitat"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_habitat"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_habitat"]["url"],
+            r["photo_habitat"]["filename"])
+        handle_photo(pname, e, title="Habitat")
+
+    if r["photo_habitat_2"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_habitat_2"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_habitat_2"]["url"],
+            r["photo_habitat_2"]["filename"])
+        handle_photo(pname, e, title="Habitat 2")
+
+    if r["photo_habitat_3"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_habitat_3"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_habitat_3"]["url"],
+            r["photo_habitat_3"]["filename"])
+        handle_photo(pname, e, title="Habitat 3")
+
+    if r["photo_habitat_4"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_habitat_4"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_habitat_4"]["url"],
+            r["photo_habitat_4"]["filename"])
+        handle_photo(pname, e, title="Habitat 4")
+
+    if r["photo_carapace_top"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_carapace_top"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_carapace_top"]["url"],
+            r["photo_carapace_top"]["filename"])
+        handle_photo(pname, e, title="Carapace top")
+
+    if r["photo_head_top"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_head_top"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_head_top"]["url"],
+            r["photo_head_top"]["filename"])
+        handle_photo(pname, e, title="Head top")
+
+    if r["photo_head_side"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_head_side"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_head_side"]["url"],
+            r["photo_head_side"]["filename"])
+        handle_photo(pname, e, title="Head side")
+
+    if r["photo_head_front"] is not None:
+        pdir = make_photo_foldername(src_id)
+        pname = os.path.join(pdir, r["photo_head_front"]["filename"])
+        dl_photo(
+            e.source_id,
+            r["photo_head_front"]["url"],
+            r["photo_head_front"]["filename"])
+        handle_photo(pname, e, title="Head front")
 
     print(" Saved {0}\n".format(e))
     e.save()
