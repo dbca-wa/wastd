@@ -49,6 +49,18 @@ Device checkin Broome - Cable Beach
 * Any tablets with data on them should be kept running.
 * Any tablets which weren't used at all can be kept powered off.
 
+Device checkout Kimberley - Anna Plains
+---------------------------------------
+* There are four switched off tablets on power packs.
+* Disconnect the tablets and take two for each data collection team.
+* When at the data collection site, switch on one tablet, turn off WiFi, turn on GPS, connect to car charger (cigarette lighter socket).
+* Switch off tablet after site visit.
+
+Device checkin Kimberley - Anna Plains
+---------------------------------------
+* Make sure all tablets are switched off.
+* Connect tablets to solar powered battery pack or to backup battery packs.
+
 Length reference
 ================
 Take a length reference, such as a stake marked with coloured tape at minimum and 

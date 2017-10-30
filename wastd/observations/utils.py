@@ -538,7 +538,7 @@ def handle_turtlenesttagobs31(d, e):
         "photo_tag": {
             "filename": "1485913419914.jpg",
             "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fnest_tag%3Aphoto_tag"
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
 
     e The related TurtleNestEncounter (must exist)
@@ -613,7 +613,7 @@ def handle_loggerenc(d, e):
             "photo_logger": {
                 "filename": "1485913441063.jpg",
                 "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Flogger_details%5B%40ordinal%3D1%5D%2Fphoto_logger"
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
             }
         }
     e The related TurtleNestEncounter (must exist)
@@ -705,7 +705,7 @@ def import_one_record_tc010(r, m):
             "photo_track": {
                 "filename": "1479173177551.jpg",
                 "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fdetails%3Aphoto_track"
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
             },
             "nest_type": "successfulcrawl",
             "observed_at:Latitude": -32.05844863,
@@ -716,7 +716,7 @@ def import_one_record_tc010(r, m):
             "photo_nest": {
                 "filename": "1479173194012.jpg",
                 "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fnest%3Aphoto_nest"
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
             },
             "disturbance": "present",
             "disturbanceobservation": [
@@ -727,7 +727,7 @@ def import_one_record_tc010(r, m):
                     "photo_disturbance": {
                         "filename": "1479173301849.jpg",
                         "type": "image/jpeg",
-                        "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_TrackCount-0-10_1479172852%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3Af23177b3-2234-49be-917e-87b2096c921e%5D%2Fdisturbanceobservation%5B%40ordinal%3D1%5D%2Fphoto_disturbance"
+                        "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                     },
                     "comments": null
                 }
@@ -817,7 +817,7 @@ def import_one_record_tt026(r, m):
         "photo_track": {
             "filename": "1485913222981.jpg",
             "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fdetails%3Aphoto_track"
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
         },
         "nest_type": "successfulcrawl",
         "observed_at:Latitude": -31.99673702,
@@ -828,7 +828,7 @@ def import_one_record_tt026(r, m):
         "photo_nest": {
             "filename": "1485913247467.jpg",
             "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fnest%3Aphoto_nest"
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
         },
         "disturbance": "yes",
         "eggs_counted": "yes",
@@ -840,7 +840,7 @@ def import_one_record_tt026(r, m):
                 "photo_disturbance": {
                     "filename": "1485913281914.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fdisturbanceobservation%5B%40ordinal%3D1%5D%2Fphoto_disturbance"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                 },
                 "disturbance_cause": "human",
                 "disturbance_cause_confidence": "expertopinion",
@@ -851,7 +851,7 @@ def import_one_record_tt026(r, m):
                 "photo_disturbance": {
                     "filename": "1485913310961.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fdisturbanceobservation%5B%40ordinal%3D2%5D%2Fphoto_disturbance"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                 },
                 "disturbance_cause": "bird",
                 "disturbance_cause_confidence": "expertopinion",
@@ -873,14 +873,14 @@ def import_one_record_tt026(r, m):
                 "photo_eggs": {
                     "filename": "1485913363900.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D1%5D%2Fphoto_eggs"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                 }
             },
             {
                 "photo_eggs": {
                     "filename": "1485913376020.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fegg_photos%5B%40ordinal%3D2%5D%2Fphoto_eggs"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                 }
             }
         ],
@@ -892,7 +892,7 @@ def import_one_record_tt026(r, m):
         "photo_tag": {
             "filename": "1485913419914.jpg",
             "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Fnest_tag%3Aphoto_tag"
+            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
         },
         "logger_details": [
             {
@@ -900,7 +900,7 @@ def import_one_record_tt026(r, m):
                 "photo_logger": {
                     "filename": "1485913441063.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Flogger_details%5B%40ordinal%3D1%5D%2Fphoto_logger"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                 }
             },
             {
@@ -908,7 +908,7 @@ def import_one_record_tt026(r, m):
                 "photo_logger": {
                     "filename": "1485913471237.jpg",
                     "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Track-or-Treat-0-26_1485851835%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A22623d7c-ac39-46a1-9f99-741b7c668e58%5D%2Flogger_details%5B%40ordinal%3D2%5D%2Fphoto_logger"
+                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
                 }
             }
         ],
@@ -970,7 +970,8 @@ def import_one_record_tt026(r, m):
     if r["photo_track"] is not None:
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_track"]["filename"])
-        dl_photo(e.source_id,
+        dl_photo(
+            e.source_id,
             r["photo_track"]["url"],
             r["photo_track"]["filename"])
         handle_photo(pname, e, title="Track")
@@ -979,7 +980,8 @@ def import_one_record_tt026(r, m):
     if r["photo_nest"] is not None:
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_nest"]["filename"])
-        dl_photo(e.source_id,
+        dl_photo(
+            e.source_id,
             r["photo_nest"]["url"],
             r["photo_nest"]["filename"])
         handle_photo(pname, e, title="Nest")
@@ -1014,7 +1016,6 @@ def import_one_record_tt026(r, m):
 
 def import_one_record_tt031(r, m):
     """Import one ODK Track or Treat 0.31 record into WAStD.
-
 
     The only change vs tt026 is that ODK now allows dashes in choice values.
     The following choices are now are identical to WAStD
@@ -1112,7 +1113,6 @@ def import_one_record_tt031(r, m):
 
 def import_one_record_tt034(r, m):
     """Import one ODK Track or Treat 0.34 record into WAStD.
-
 
     The only change vs tt026 is that ODK now allows dashes in choice values.
     The following choices are now are identical to WAStD
@@ -1214,7 +1214,6 @@ def import_one_record_tt034(r, m):
 def import_one_record_tt036(r, m):
     """Import one ODK Track or Treat 0.35 or 0.36 record into WAStD.
 
-
     The only change vs tt026 is that ODK now allows dashes in choice values.
     The changes to tt034 are differently named track and nest photos.
     The following choices are now are identical to WAStD
@@ -1265,7 +1264,7 @@ def import_one_record_tt036(r, m):
 
     e.save()
 
-        # MediaAttachment "Photo of track 1"
+    # MediaAttachment "Photo of track 1"
     if r["photo_track_1"] is not None:
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_track_1"]["filename"])
@@ -1275,7 +1274,7 @@ def import_one_record_tt036(r, m):
             r["photo_track_1"]["filename"])
         handle_photo(pname, e, title="Uptrack")
 
-        # MediaAttachment "Photo of track 2"
+    # MediaAttachment "Photo of track 2"
     if r["photo_track_2"] is not None:
         pdir = make_photo_foldername(src_id)
         pname = os.path.join(pdir, r["photo_track_2"]["filename"])
@@ -1284,7 +1283,6 @@ def import_one_record_tt036(r, m):
             r["photo_track_2"]["url"],
             r["photo_track_2"]["filename"])
         handle_photo(pname, e, title="Downtrack")
-
 
     # MediaAttachment "Photo of nest 1"
     if r["photo_nest_1"] is not None:
@@ -1343,6 +1341,7 @@ def import_one_record_tt036(r, m):
     e.save()
     return e
 
+
 def import_one_record_fs03(r, m):
     """Import one ODK Fox Sake 0.3 record into WAStD.
 
@@ -1386,7 +1385,6 @@ def import_one_record_fs03(r, m):
     # TurtleNestDisturbanceObservation
     handle_turtlenestdistobs31(r, e)
 
-
     print(" Saved {0}\n".format(e))
     e.save()
     return e
@@ -1407,75 +1405,22 @@ def import_one_record_mwi01(r, m):
     Input: a dict like
 
     {
-    "instanceID": "uuid:b0c9954e-7076-4395-a790-c05387daf699",
-    "observation_start_time": "2017-10-19T04:45:40.295Z",
-    "reporter": "haylee_ramsay",
-    "observed_at:Latitude": -20.776875,
-    "observed_at:Longitude": 116.8621166667,
-    "observed_at:Altitude": 27.3,
-    "observed_at:Accuracy": 5.0,
+    "instanceID": "uuid:2273f52a-276a-4972-bc45-034626a3c278",
+    "observation_start_time": "2017-08-15T04:17:31.194Z",
+    "reporter": null,
+    "observed_at:Latitude": -15.7072566667,
+    "observed_at:Longitude": 124.4008183333,
+    "observed_at:Altitude": -7.6,
+    "observed_at:Accuracy": 5.8,
     "location_comment": null,
-    "incident_time": "2017-10-19T04:45:00.000Z",
-    "habitat": "dunebeneathvegetation",
-    "photo_habitat": null,
-    "species": "flatback",
-    "maturity": "adult",
-    "sex": "na",
-    "photo_carapace_top": null,
-    "photo_head_top": null,
-    "photo_head_side": null,
-    "photo_head_front": null,
-    "activity": "carcassinland",
-    "health": "deadedible",
-    "behaviour": null,
-    "cause_of_death": "harvest",
-    "cause_of_death_confidence": "guess",
-    "checked_for_injuries": "present",
-    "scanned_for_pit_tags": "na",
-    "checked_for_flipper_tags": "absent",
-    "samples_taken": "absent",
-    "damage_observation": [
-      {
-        "photo_damage": null,
-        "body_part": "eyes",
-        "damage_type": "other",
-        "damage_age": "fresh",
-        "description": null
-      },
-      {
-        "photo_damage": null,
-        "body_part": "other",
-        "damage_type": "other",
-        "damage_age": "fresh",
-        "description": null
-      }
-    ],
-    "tag_observation": [],
-    "curved_carapace_length_mm": 111,
-    "curved_carapace_length_accuracy": "10",
-    "curved_carapace_width_mm": null,
-    "curved_carapace_width_accuracy": "10",
-    "tail_length_carapace_mm": null,
-    "tail_length_carapace_accuracy": "10",
-    "maximum_head_width_mm": null,
-    "maximum_head_width_accuracy": "10",
-    "photo_habitat_2": null,
-    "photo_habitat_3": null,
-    "photo_habitat_4": null,
-    "observation_end_time": "2017-10-19T04:48:56.299Z"
-  },
-  {
-    "instanceID": "uuid:89355a74-3126-4aba-b4b8-1de0768fb443",
-    "observation_start_time": "2017-10-19T04:51:27.754Z",
-    "reporter": "isabelle_dehaviland",
-    "observed_at:Latitude": -20.7768466667,
-    "observed_at:Longitude": 116.8621866667,
-    "observed_at:Altitude": 24.7,
-    "observed_at:Accuracy": 4.9,
-    "location_comment": null,
-    "incident_time": "2017-10-19T04:51:27.754Z",
+    "incident_time": "2017-08-15T04:17:00.000Z",
     "habitat": "beach",
-    "photo_habitat": null,
+    "photo_habitat": {
+      "filename": "1502770702714.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A2273f52a-276a-4972-bc45-034626a3c278%5D%2Fincident%3Aphoto_habitat"
+    },
     "species": "turtle",
     "maturity": "na",
     "sex": "na",
@@ -1505,8 +1450,118 @@ def import_one_record_mwi01(r, m):
     "photo_habitat_2": null,
     "photo_habitat_3": null,
     "photo_habitat_4": null,
-    "observation_end_time": "2017-10-23T02:27:58.036Z"
-  }
+    "observation_end_time": "2017-08-15T04:18:55.033Z"
+    },
+    {
+    "instanceID": "uuid:87fcedb9-05ba-476e-90c0-9bfa40faf7f2",
+    "observation_start_time": "2017-10-24T23:26:00.396Z",
+    "reporter": "florianm",
+    "observed_at:Latitude": -31.9413368,
+    "observed_at:Longitude": 115.9716166,
+    "observed_at:Altitude": 0e-10,
+    "observed_at:Accuracy": 22.092,
+    "location_comment": null,
+    "incident_time": "2017-10-24T23:26:00.000Z",
+    "habitat": "harbour",
+    "photo_habitat": {
+      "filename": "1508887643518.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fincident%3Aphoto_habitat"
+    },
+    "species": "flatback",
+    "maturity": "adult",
+    "sex": "female",
+    "photo_carapace_top": {
+      "filename": "1508887669660.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fphotos_turtle%3Aphoto_carapace_top"
+    },
+    "photo_head_top": {
+      "filename": "1508887683511.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fphotos_turtle%3Aphoto_head_top"
+    },
+    "photo_head_side": {
+      "filename": "1508887698795.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fphotos_turtle%3Aphoto_head_side"
+    },
+    "photo_head_front": {
+      "filename": "1508887714082.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fphotos_turtle%3Aphoto_head_front"
+    },
+    "activity": "beachwashed",
+    "health": "deadedible",
+    "behaviour": "condition comments",
+    "cause_of_death": "poisoned",
+    "cause_of_death_confidence": "expertopinion",
+    "checked_for_injuries": "present",
+    "scanned_for_pit_tags": "present",
+    "checked_for_flipper_tags": "present",
+    "samples_taken": "present",
+    "damage_observation": [
+      {
+        "photo_damage": {
+          "filename": "1508887793593.jpg",
+          "type": "image/jpeg",
+          "url":
+            "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fdamage_observation%5B%40ordinal%3D1%5D%2Fphoto_damage"
+        },
+        "body_part": "flipperfrontright",
+        "damage_type": "other",
+        "damage_age": "fresh",
+        "description": null
+      }
+    ],
+    "tag_observation": [
+      {
+        "photo_tag": {
+          "filename": "1508887828938.jpg",
+          "type": "image/jpeg",
+          "url":
+            "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Ftag_observation%5B%40ordinal%3D1%5D%2Fphoto_tag"
+        },
+        "name": "wa1234",
+        "tag_type": "flippertag",
+        "tag_location": "flipperfrontright1",
+        "tag_status": "resighted",
+        "tag_comments": null
+      }
+    ],
+    "curved_carapace_length_mm": 890,
+    "curved_carapace_length_accuracy": "10",
+    "curved_carapace_width_mm": 560,
+    "curved_carapace_width_accuracy": "10",
+    "tail_length_carapace_mm": 210,
+    "tail_length_carapace_accuracy": "10",
+    "maximum_head_width_mm": 125,
+    "maximum_head_width_accuracy": "10",
+    "photo_habitat_2": {
+      "filename": "1508887910356.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fhabitat_photos%3Aphoto_habitat_2"
+    },
+    "photo_habitat_3": {
+      "filename": "1508887919139.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fhabitat_photos%3Aphoto_habitat_3"
+    },
+    "photo_habitat_4": {
+      "filename": "1508887930269.jpg",
+      "type": "image/jpeg",
+      "url":
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fhabitat_photos%3Aphoto_habitat_4"
+    },
+    "observation_end_time": "2017-10-24T23:32:20.630Z"
+    }
     """
     src_id = r["instanceID"]
 
@@ -1545,10 +1600,10 @@ def import_one_record_mwi01(r, m):
     e.save()
 
     # "damage_observation": [],
-    
+
     # "tag_observation": [],
 
-    ## TurtleMorphometricObservation
+    # #TurtleMorphometricObservation
     # "curved_carapace_length_mm": null,
     # "curved_carapace_length_accuracy": "10",
     # "curved_carapace_width_mm": null,
@@ -1690,7 +1745,6 @@ def import_one_record_sv01(r, m):
         comments=r["comments"]
         )
 
-
     if SiteVisit.objects.filter(source_id=src_id).exists():
         print("Updating unchanged existing record {0}...".format(src_id))
         SiteVisit.objects.filter(source_id=src_id).update(**new_data)
@@ -1717,8 +1771,8 @@ def import_one_record_sv01(r, m):
     return e
 
 
-
 def make_tallyobs(encounter, species, nest_age, nest_type, tally_number):
+    """Create a TrackTallyObservation."""
     t, created = TrackTallyObservation.objects.get_or_create(
         encounter=encounter,
         species=species,
@@ -1801,7 +1855,6 @@ def import_one_record_tt05(r, m):
     Existing records will be overwritten.
     Make sure to skip existing records which should be retained.
     """
-
     src_id = r["instanceID"]
 
     new_data = dict(
@@ -1838,47 +1891,47 @@ def import_one_record_tt05(r, m):
     UN = "cheloniidae-fam"
 
     tally_mapping = [
-        [FB, "old",   "track-not-assessed", r["fb_no_old_tracks"] or 0],
-        [FB, "fresh", "successful-crawl",   r["fb_no_fresh_successful_crawls"] or 0],
-        [FB, "fresh", "false-crawl",        r["fb_no_fresh_false_crawls"] or 0],
-        [FB, "fresh", "track-unsure",       r["fb_no_fresh_tracks_unsure"] or 0],
-        [FB, "fresh", "track-not-assessed", r["fb_no_fresh_tracks_not_assessed"] or 0],
-        [FB, "fresh", "hatched-nest",       r["fb_no_hatched_nests"] or 0],
+        [FB, "old",   "track-not-assessed",     r["fb_no_old_tracks"] or 0],
+        [FB, "fresh", "successful-crawl",       r["fb_no_fresh_successful_crawls"] or 0],
+        [FB, "fresh", "false-crawl",            r["fb_no_fresh_false_crawls"] or 0],
+        [FB, "fresh", "track-unsure",           r["fb_no_fresh_tracks_unsure"] or 0],
+        [FB, "fresh", "track-not-assessed",     r["fb_no_fresh_tracks_not_assessed"] or 0],
+        [FB, "fresh", "hatched-nest",           r["fb_no_hatched_nests"] or 0],
 
-        [GN, "old",   "track-not-assessed", r["gn_no_old_tracks"] or 0],
-        [GN, "fresh", "successful-crawl",   r["gn_no_fresh_successful_crawls"] or 0],
-        [GN, "fresh", "false-crawl",        r["gn_no_fresh_false_crawls"] or 0],
-        [GN, "fresh", "track-unsure",       r["gn_no_fresh_tracks_unsure"] or 0],
-        [GN, "fresh", "track-not-assessed", r["gn_no_fresh_tracks_not_assessed"] or 0],
-        [GN, "fresh", "hatched-nest",       r["gn_no_hatched_nests"] or 0],
+        [GN, "old",     "track-not-assessed",   r["gn_no_old_tracks"] or 0],
+        [GN, "fresh",   "successful-crawl",     r["gn_no_fresh_successful_crawls"] or 0],
+        [GN, "fresh",   "false-crawl",          r["gn_no_fresh_false_crawls"] or 0],
+        [GN, "fresh",   "track-unsure",         r["gn_no_fresh_tracks_unsure"] or 0],
+        [GN, "fresh",   "track-not-assessed",   r["gn_no_fresh_tracks_not_assessed"] or 0],
+        [GN, "fresh",   "hatched-nest",         r["gn_no_hatched_nests"] or 0],
 
-        [HB, "old", "track-not-assessed",   r["hb_no_old_tracks"] or 0],
-        [HB, "fresh", "successful-crawl",   r["hb_no_fresh_successful_crawls"] or 0],
-        [HB, "fresh", "false-crawl",        r["hb_no_fresh_false_crawls"] or 0],
-        [HB, "fresh", "track-unsure",       r["hb_no_fresh_tracks_unsure"] or 0],
-        [HB, "fresh", "track-not-assessed", r["hb_no_fresh_tracks_not_assessed"] or 0],
-        [HB, "fresh", "hatched-nest",       r["hb_no_hatched_nests"] or 0],
+        [HB, "old",     "track-not-assessed",   r["hb_no_old_tracks"] or 0],
+        [HB, "fresh",   "successful-crawl",     r["hb_no_fresh_successful_crawls"] or 0],
+        [HB, "fresh",   "false-crawl",          r["hb_no_fresh_false_crawls"] or 0],
+        [HB, "fresh",   "track-unsure",         r["hb_no_fresh_tracks_unsure"] or 0],
+        [HB, "fresh",   "track-not-assessed",   r["hb_no_fresh_tracks_not_assessed"] or 0],
+        [HB, "fresh",   "hatched-nest",         r["hb_no_hatched_nests"] or 0],
 
-        [LH, "old", "track-not-assessed",   r["lh_no_old_tracks"] or 0],
-        [LH, "fresh", "successful-crawl",   r["lh_no_fresh_successful_crawls"] or 0],
-        [LH, "fresh", "false-crawl",        r["lh_no_fresh_false_crawls"] or 0],
-        [LH, "fresh", "track-unsure",       r["lh_no_fresh_tracks_unsure"] or 0],
-        [LH, "fresh", "track-not-assessed", r["lh_no_fresh_tracks_not_assessed"] or 0],
-        [LH, "fresh", "hatched-nest",       r["lh_no_hatched_nests"] or 0],
+        [LH, "old",     "track-not-assessed",   r["lh_no_old_tracks"] or 0],
+        [LH, "fresh",   "successful-crawl",     r["lh_no_fresh_successful_crawls"] or 0],
+        [LH, "fresh",   "false-crawl",          r["lh_no_fresh_false_crawls"] or 0],
+        [LH, "fresh",   "track-unsure",         r["lh_no_fresh_tracks_unsure"] or 0],
+        [LH, "fresh",   "track-not-assessed",   r["lh_no_fresh_tracks_not_assessed"] or 0],
+        [LH, "fresh",   "hatched-nest",         r["lh_no_hatched_nests"] or 0],
 
-        [OR, "old", "track-not-assessed",   r["or_no_old_tracks"] or 0],
-        [OR, "fresh", "successful-crawl",   r["or_no_fresh_successful_crawls"] or 0],
-        [OR, "fresh", "false-crawl",        r["or_no_fresh_false_crawls"] or 0],
-        [OR, "fresh", "track-unsure",       r["or_no_fresh_tracks_unsure"] or 0],
-        [OR, "fresh", "track-not-assessed", r["or_no_fresh_tracks_not_assessed"] or 0],
-        [OR, "fresh", "hatched-nest",       r["or_no_hatched_nests"] or 0],
+        [OR, "old",     "track-not-assessed",   r["or_no_old_tracks"] or 0],
+        [OR, "fresh",   "successful-crawl",     r["or_no_fresh_successful_crawls"] or 0],
+        [OR, "fresh",   "false-crawl",          r["or_no_fresh_false_crawls"] or 0],
+        [OR, "fresh",   "track-unsure",         r["or_no_fresh_tracks_unsure"] or 0],
+        [OR, "fresh",   "track-not-assessed",   r["or_no_fresh_tracks_not_assessed"] or 0],
+        [OR, "fresh",   "hatched-nest",         r["or_no_hatched_nests"] or 0],
 
-        [UN, "old", "track-not-assessed",   r["unk_no_old_tracks"] or 0],
-        [UN, "fresh", "successful-crawl",   r["unk_no_fresh_successful_crawls"] or 0],
-        [UN, "fresh", "false-crawl",        r["unk_no_fresh_false_crawls"] or 0],
-        [UN, "fresh", "track-unsure",       r["unk_no_fresh_tracks_unsure"] or 0],
-        [UN, "fresh", "track-not-assessed", r["unk_no_fresh_tracks_not_assessed"] or 0],
-        [UN, "fresh", "hatched-nest",       r["unk_no_hatched_nests"] or 0],
+        [UN, "old",     "track-not-assessed",   r["unk_no_old_tracks"] or 0],
+        [UN, "fresh",   "successful-crawl",     r["unk_no_fresh_successful_crawls"] or 0],
+        [UN, "fresh",   "false-crawl",          r["unk_no_fresh_false_crawls"] or 0],
+        [UN, "fresh",   "track-unsure",         r["unk_no_fresh_tracks_unsure"] or 0],
+        [UN, "fresh",   "track-not-assessed",   r["unk_no_fresh_tracks_not_assessed"] or 0],
+        [UN, "fresh",   "hatched-nest",         r["unk_no_hatched_nests"] or 0],
         ]
 
     [make_tallyobs(e, x[0], x[1], x[2], x[3]) for x in tally_mapping]
@@ -2609,13 +2662,11 @@ def update_wastd_user(u):
         print("  User email updated from EMAIL: {0}".format(usr.role))
 
     # If role is not set, or doesn't already contain SPECIALTY, add SPECIALTY
-    if ((usr.role is None or usr.role == "" or u["SPECIALTY"] not in usr.role)
-        and u["SPECIALTY"] != "NA"):
+    if ((usr.role is None or usr.role == "" or u["SPECIALTY"] not in usr.role) and u["SPECIALTY"] != "NA"):
         usr.role = "{0} Specialty: {1}".format(usr.role or '', u["SPECIALTY"]).strip()
         print("  User role updated from SPECIALTY: {0}".format(usr.role))
 
-    if ((usr.role is None or usr.role == "" or u["COMMENTS"] not in usr.role)
-        and u["COMMENTS"] != "NA"):
+    if ((usr.role is None or usr.role == "" or u["COMMENTS"] not in usr.role) and u["COMMENTS"] != "NA"):
         usr.role = "{0} Comments: {1}".format(usr.role or '', u["COMMENTS"]).strip()
         print("  User role updated from COMMENTS: {0}".format(usr.role))
 
