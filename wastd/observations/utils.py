@@ -325,6 +325,18 @@ def handle_turtlenestdistobs31(d, e):
             },
             "comments": null
         }
+
+
+    "disturbanceobservation": [
+      {
+        "photo_disturbance": null,
+        "disturbance_cause": "pig",
+        "disturbance_cause_confidence": "guess",
+        "disturbance_severity": "partly",
+        "comments": null
+      }
+    ],
+
     e The related TurtleNestEncounter (must exist)
     """
     print("  Creating TurtleNestDisturbanceObservation...")
@@ -334,8 +346,8 @@ def handle_turtlenestdistobs31(d, e):
         disturbance_cause_confidence=d["disturbance_cause_confidence"],
         comments=d["comments"]
         )
-    if "disturbance_severity" in d.keys():
-        dd["disturbance_severity"] = d["disturbance_severity"]
+    if "disturbance_severity" in d:
+        dd.disturbance_severity = d["disturbance_severity"]
     dd.save()
     action = "created" if created else "updated"
     print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
