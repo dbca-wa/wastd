@@ -323,8 +323,19 @@ On the ODK Aggregate server, the administrator opens the "Submissions > Filter
 submissios" tab and selects "Export" to "JSON". Under "Exported submissions",
 the administrator downloads the JSON file (once ready).
 
-On the production server, the application maintainer transfers the downloaded
-JSON file to the "wastd/data" folder and runs::
+Export files
+============
+On the ODK Aggregate server `https://dpaw-data.appspot.com/ <https://dpaw-data.appspot.com/>`_:
+
+* Form Management > Forms List > for each form: Export > JSON
+* Submissions > Exported Submissions > Download files.
+
+Transfer the files via gateway server to prod::
+
+  florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr data kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd
+  florianm@kens-xenmate-dev ~/wastd $ rsync -Pavvr data aws-eco-001:/mnt/projects/wastd
+
+On the production server, run::
 
     fab shell
     from wastd.observations.utils import *
@@ -340,15 +351,23 @@ JSON file to the "wastd/data" folder and runs::
     # TODO: 
     # MWI, TS 0.8, 0.9
 
-
-In [2]: import_odk("data/latest/Track_Tally_0_5_results.json", flavour="odk-tally05")     
-
 This process contains three manual steps for each form,
 which at the current churn rate of forms (and corresponding import routines)
 is the most efficient solution.
 
 The downloaded JSON files contain all data (excluding images, which are linked
 via URLs) and provide an additional backup.
+
+
+.. note:: Fun fact, one could download the JSON from ODK Aggregate directly to the production server,
+  substituting the respective URL to the JSON export::
+      export ODKUN="my-odk-username"
+      export ODKPW="my-odk-password"
+
+      curl -u $ODKUN:$ODKPW -o data/latest/tt036.json https://dpaw-data.appspot.com/view/...
+
+  A better way might be to pursue reading the data from the ODK-A API, and writing to the WAStD API.
+  This simplified process could be fully automated and run either on the prod server or locally.
 
 =======
 Data QA

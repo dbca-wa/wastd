@@ -36,18 +36,14 @@ Setup the tablet
 Device settings:
 
 * Date & time: Set time zone to AWST (GMT+08)
-* Security: do not configure any screen lock
+* Security: do not configure any screen lock (leave as is)
 
 App settings:
 
 * Camera: Enable location capture, so that all photos are geo-referenced with
   the coordinates they were taken at. This turns the camera into a generic 
   data collection form (image, time, location).
-* Google Photos: auto-upload all photos in original resolution to Google Photos.
-
-If not linked to florianm.dec@gmail.com, install apps:
-
-* ODK Collect
+* Google Photos: auto-backup all photos in original resolution to Google Photos.
 
 
 Setup ODK Collect
@@ -102,17 +98,17 @@ the data collection form offers to take a picture of the track for later review 
 Having a length reference in the photos helps the reviewer immensely with species identification.
 
 A simple and cheap length reference for tricky turtle tracks
-can be fabricated from a  plastic, non-bendy tomato garden stake ($5),
+can be fabricated from a  foldable wooden rule (2m folding into 20cm segments),
 marked with goloured duct tape ($5 per roll) at the minimum and maximum track width 
 for each turtle species expected to occur in the surveyed area.
 
-A folding rule is a more portable, but more expensive alterative to the tomato stake.
+Tomato stick prototype:
 
 .. image:: https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
     :target: https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
     :alt: Turtle track length reference
 
-The stick can be simplified, e.g. if only green and flatback turtles are expected,
+The reference can be simplified, e.g. if only green and flatback turtles are expected,
 a stick can be cut to the maximum flatback track width, with one marking for the 
 minimum green track width.
 
@@ -121,15 +117,14 @@ Additional length markings, e.g. intervals of 10cm, can be added as required.
 This method is preferred over the use of a measuring tape as length reference in 
 photos of tracks of unknown species for the following reasons:
 
-* A rigid stick will lay on top of sand ripples, 
+* A rigid rule will lay on top of sand ripples, 
   while measuring tape will distort measurement by bending over them.
-* The coloured, centimeter-wide markings on the stick will be visible at lower image quality 
+* The coloured, centimeter-wide markings on the rule will be visible at lower image quality 
   than the millimeter-wide centimeter markings on a measuring tape.
-* The coloured tape wraps around the stick and is thereby visible from any angle, 
+* The coloured tape wraps around the rule and is thereby visible from any angle, 
   while tape can flip over and hide its markings.
 * By reducing length references to relevant lengths, cognitive load is taken off the data collector. 
-  One can simply read off the stick markings which species' track width range 
-  a given track falls into.
+  One can simply read off the markings which species' track width range a given track falls into.
 
 Prepare one length reference per data collection team.
 
