@@ -1,3 +1,5 @@
+.. _data-collection-training:
+
 ========================
 Data collection training
 ========================

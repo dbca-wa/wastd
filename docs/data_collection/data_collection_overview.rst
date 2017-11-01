@@ -5,15 +5,13 @@ Data collection
 This chapter provides an entrypoint to all documentation on the data collection process.
 
 Are you a volunteer or staff data collector? 
-All you need to know is written at :ref:`data_collection_training`, but feel free to read more of this documentation.
+All you need to know is written at :ref:`data-collection-training`, but feel free to read more of this documentation.
 
 Are you a data collection admin in charge of maintaining collection devices 
 (tablets), training data collectors, and uploading the data? 
 Read :ref:`data_collection_admin`.
 
 Are you a solution architect, developer or business analyst? Then read on.
-
-/data/details/species = 'cheloniidae-fam' & (/data/details/nest_type = 'track-unsure' | /data/details/nest_type = 'track-not-assessed' |  /data/details/nest_type = 'false-crawl' |  /data/details/nest_type = 'successful-crawl')
 
 Solution architecture and infrastructure
 ========================================
