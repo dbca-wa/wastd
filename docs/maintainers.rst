@@ -62,6 +62,7 @@ Permissions
 * The production web server shall run under the www-data account.
 
 Create folders, set permissions (files 0644, folders 0755)::
+
     mkdir staticfiles
     sudo chown -R www-data:www-data .
     find . -type f -exec sudo chmod 0664 {} \;
@@ -80,6 +81,7 @@ Setup the database::
     ./manage.py migrate
 
 Sync data and files::
+
     (wastd)me@UAT:~/projects/wastd$ rsync -Pavvr wastd/media/ me@PROD:/mnt/projects/wastd/wastd/media/
     (wastd)me@UAT:~/projects/wastd$ ./manage.py dumpdata --natural-primary --natural-foreign --indent 4 > data.dump
     (wastd)me@UAT:~/projects/wastd$ rsync -Pavvr data.json me@PROD:/mnt/projects/wastd/
@@ -123,6 +125,7 @@ Install uwsgi system-wide::
     sudo pip install uwsgi
 
 Create folders and set ownership::
+
     (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/spool/uwsgi/spooler
     (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/spool/uwsgi/sockets
     (wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/log/uwsgi/
@@ -135,6 +138,7 @@ Create folders and set ownership::
     (wastd)me@PROD:/mnt/projects/wastd$ ln -s config/wastd_uwsgi.ini /etc/uwsgi/vassals/wastd_uwsgi.ini
 
 Create a file /etc/init/uwsgi.conf with these contents::
+
     # Emperor uWSGI script
 
     description "uWSGI Emperor"
