@@ -17,7 +17,7 @@ def clean():
 
 def pip():
     """Install python requirements."""
-    local("pip install -r requirements/current_dev.txt")
+    local("pip install -r requirements/dev.txt")
 
 
 def static():
