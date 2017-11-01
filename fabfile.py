@@ -17,7 +17,7 @@ def clean():
 
 def pip():
     """Install python requirements."""
-    local("pip install -r requirements/dev.txt")
+    local("pip install -r requirements/current_dev.txt")
 
 
 def static():
@@ -56,7 +56,7 @@ def go():
 
 
 def pro():
-    """Run the app with local settings and runserver (dev)."""
+    """Run the app with local settings and runserver (pro)."""
     static()
     local('python manage.py runserver --settings=config.settings.production 0.0.0.0:8220')
 
