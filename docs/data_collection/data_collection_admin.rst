@@ -1,3 +1,5 @@
+.. _data-collection-admini:
+
 ==============================
 Data collection administrators
 ==============================
