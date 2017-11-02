@@ -130,7 +130,7 @@ def guess_user(un, default_username="florianm"):
     print("Guessing User for {0}...".format(un))
 
     try:
-        usr = User.objects.get(username=un)
+        usr = User.objects.get(username=un.replace(" ", "_"))
         msg = "   Username {0} found by exact match: returning {1}"
 
     except ObjectDoesNotExist:
@@ -2892,30 +2892,30 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
         print("Done!")
 
     elif flavour == "odk-tt034":
-            print("Using flavour ODK Track or Treat 0.34...")
-            with open(datafile) as df:
-                d = json.load(df)
-                print("Loaded {0} records from {1}".format(len(d), datafile))
-            ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-            ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
-                status=Encounter.STATUS_NEW).filter(source="odk")]
+        print("Using flavour ODK Track or Treat 0.34...")
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="odk")]
 
-            [import_one_record_tt034(r, ODK_MAPPING) for r in d
-             if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
-            print("Done!")
+        [import_one_record_tt034(r, ODK_MAPPING) for r in d
+         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        print("Done!")
 
     elif flavour == "odk-tt036":
-            print("Using flavour ODK Track or Treat 0.35-0.36...")
-            with open(datafile) as df:
-                d = json.load(df)
-                print("Loaded {0} records from {1}".format(len(d), datafile))
-            ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-            ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
-                status=Encounter.STATUS_NEW).filter(source="odk")]
+        print("Using flavour ODK Track or Treat 0.35-0.36...")
+        with open(datafile) as df:
+            d = json.load(df)
+            print("Loaded {0} records from {1}".format(len(d), datafile))
+        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+            status=Encounter.STATUS_NEW).filter(source="odk")]
 
-            [import_one_record_tt036(r, ODK_MAPPING) for r in d
-             if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
-            print("Done!")
+        [import_one_record_tt036(r, ODK_MAPPING) for r in d
+         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        print("Done!")
 
     elif flavour == "odk-fs03":
         print("Using flavour ODK Fox Sake 0.3...")

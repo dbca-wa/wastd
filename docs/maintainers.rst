@@ -93,12 +93,18 @@ Run ``fab static`` and ``fab go`` to see WAStD running in dev.
 Getting data from PROD via gateway server to DEV::
 
     (wastd)florianm@aws-eco-001:/mnt/projects/wastd$ ./manage.py dumpdata --natural-primary --natural-foreign --indent 4 > data.json
+    (wastd)florianm@aws-eco-001:/mnt/projects/wastd$ pg_dump -h localhost -p 5443 -U sdis -Fc wastd_8220 > wastd_8220.dump
     (wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr data.json florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm
+    (wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr wastd_8220.dump florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm
     (wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr wastd/media/ florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd/wastd/media/
 
+
     (wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/data.json data
+    (wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd_8220.dump data
     (wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd/wastd/media/ wastd/media/
     (wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ ./manage.py loaddata data/data.json
+    # or:
+    (wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ pg_restore -h localhost -p 5443 -U sdis -d wastd_8220 < data/wastd_8220.dump
 
 
 Useful commands

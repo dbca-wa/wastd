@@ -1060,6 +1060,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         verbose_name = "Encounter"
         verbose_name_plural = "Encounters"
         get_latest_by = "when"
+        base_manager_name = 'base_objects'  # fix delete bug
 
     @property
     def opts(self):
@@ -1624,6 +1625,7 @@ class AnimalEncounter(Encounter):
         verbose_name = "Animal Encounter"
         verbose_name_plural = "Animal Encounters"
         get_latest_by = "when"
+        base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
         """The unicode representation."""
@@ -1782,6 +1784,7 @@ class TurtleNestEncounter(Encounter):
         verbose_name = "Turtle Nest Encounter"
         verbose_name_plural = "Turtle Nest Encounters"
         get_latest_by = "when"
+        base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
         """The unicode representation."""
@@ -1858,6 +1861,7 @@ class LineTransectEncounter(Encounter):
         verbose_name = "Line Transect Encounter"
         verbose_name_plural = "Line Transect Encounters"
         get_latest_by = "when"
+        base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
         """The unicode representation."""
@@ -1966,6 +1970,7 @@ class LoggerEncounter(Encounter):
         verbose_name = "Logger Encounter"
         verbose_name_plural = "Logger Encounters"
         get_latest_by = "when"
+        base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
         """The unicode representation."""
@@ -2024,6 +2029,11 @@ class Observation(PolymorphicModel, models.Model):
         Encounter,
         verbose_name=_("Encounter"),
         help_text=("The Encounter during which the observation was made"),)
+
+    class Meta:
+        """Class options."""
+
+        base_manager_name = 'base_objects'
 
     def __str__(self):
         """The unicode representation."""
@@ -2099,6 +2109,11 @@ class MediaAttachment(Observation):
         max_length=500,
         verbose_name=_("File attachment"),
         help_text=_("Upload the file"),)
+
+    class Meta:
+        """Class options."""
+
+        base_manager_name = 'base_objects'
 
     def __str__(self):
         """The unicode representation."""
