@@ -1,24 +1,30 @@
 # -*- coding: utf-8 -*-
 """Observation untilities."""
 import csv
-from datetime import datetime
-from dateutil import parser
 import json
 import os
+
+from confy import env
+from datetime import datetime
+from dateutil import parser
 # from pprint import pprint
 import requests
 import shutil
 
+from requests.auth import HTTPDigestAuth
+from xml.etree import ElementTree
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import Point, LineString
+from django.contrib.gis.geos import LineString
+from django.contrib.gis.geos import Point
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
 # from django.utils.timezone import get_fixed_timezone, utc
 
-from wastd.users.models import User
 from wastd.observations.models import *
+from wastd.users.models import User
 
 
 def allocate_animal_names():
@@ -398,6 +404,7 @@ def handle_turtlenestdistobs31(d, e):
 
     handle_media_attachment(
         e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause))
+
 
 def handle_turtlenestobs(d, e, m):
     """Get or create a TurtleNestObservation and related MediaAttachments.
@@ -880,7 +887,6 @@ def import_one_record_fs03(r, m):
 
     e.save()
 
-    # TurtleNestDisturbanceObservation
     handle_turtlenestdistobs31(r, e)
 
     print(" Saved {0}\n".format(e))
@@ -1539,8 +1545,8 @@ def import_one_encounter_wamtram(r, m, u):
     # Personnel: Get WAStD User from u if PERSON_ID present, default to 1
     observer_id = u[r["TAGGER_PERSON_ID"]] if r["TAGGER_PERSON_ID"] in u else 1
     reporter_id = u[r["REPORTER_PERSON_ID"]] if r["REPORTER_PERSON_ID"] in u else 1
-    meas_observer_id = u[r["MEASURER_PERSON_ID"]] if r["MEASURER_PERSON_ID"] in u else 1
-    meas_reporter_id = u[r["MEASURER_REPORTER_PERSON_ID"]] if r["MEASURER_REPORTER_PERSON_ID"] in u else 1
+    # meas_observer_id = u[r["MEASURER_PERSON_ID"]] if r["MEASURER_PERSON_ID"] in u else 1
+    # meas_reporter_id = u[r["MEASURER_REPORTER_PERSON_ID"]] if r["MEASURER_REPORTER_PERSON_ID"] in u else 1
 
     new_data = dict(
         source="wamtram",
@@ -1580,6 +1586,7 @@ def import_one_encounter_wamtram(r, m, u):
 
 
 def sanitize_tag_name(name):
+    """Return a string capitalised and stripped of all whitespace."""
     return name.upper().replace(" ", "")
 
 
@@ -1670,6 +1677,7 @@ def import_one_tag(t, m):
     print(" Saved {0}\n".format(e))
     return e
 
+
 # -----------------------------------------------------------------------------#
 # Cetacean strandings database (Filemaker Pro)
 def infer_cetacean_sex(f, m):
@@ -1698,7 +1706,7 @@ def fix_species_name(spname):
 
 
 def make_comment(dictobj, fieldname):
-    """Render a dict's field to text
+    """Render a dict's field to text.
 
     Return
         '<fieldname>: <dictobj["fieldname"]>' or ''
@@ -1708,7 +1716,7 @@ def make_comment(dictobj, fieldname):
 
 
 def import_one_record_cet(r, m):
-    """Import one Cetacean strandings database record into WAStD.
+    r"""Import one Cetacean strandings database record into WAStD.
 
     The Filemaker Pro db is exported to CSV, and read here as csv.DictReader.
     This method imports one DictReader.next() record.
@@ -1820,9 +1828,9 @@ def import_one_record_cet(r, m):
 
 
     """
-    SPECIES = map_and_keep(CETACEAN_SPECIES_CHOICES)
+    species = map_and_keep(CETACEAN_SPECIES_CHOICES)
     # TODO this mapping needs QA (add species to CETACEAN_SPECIES_CHOICES)
-    SPECIES.update({
+    happy_little_mistakes = {
         '': 'cetacea',
         'balaenopter-musculus-brevicauda': "balaenoptera-musculus-brevicauda",
         'balaenopters-cf-b-omurai': "balaenoptera-omurai",
@@ -1830,45 +1838,46 @@ def import_one_record_cet(r, m):
         'sousa-chinensis': 'sousa-sahulensis',
         'orcaella-heinsohni-x': "orcaella-heinsohni",
         'stenella--sp-(coeruleoalba)': "stenella-sp",
-        })
+        }
+    species.update(happy_little_mistakes)
 
-    COD = {
-         'Birthing': "birthing",
-         'Boat/ship strike': "boat-strike",
-         'Complications from stranding': "stranded",
-         'Disease/health': "natural",
-         'Drowning/misadventure': "drowned-other",
-         'Entanglement': "drowned-entangled",
-         'Euthanasia': "euthanasia",
-         'Euthanasia - firearm': "euthanasia-firearm",
-         'Euthanasia - firearm - SOP 17(1)': "euthanasia-firearm",
-         'Euthanasia - implosion': "euthanasia-implosion",
-         'Euthanasia - injection': "euthanasia-injection",
-         'Failure to thrive/dependant calf': "calf-failure-to-thrive",
-         'Failure to thrive/dependent calf': "calf-failure-to-thrive",
-         'Live stranding': "na",  # not a cause of death then
-         'Misadventure': "natural",
-         'Misadventure 13 died during event': "natural",
-         'Mixed fate group': "na",  # split into individual strandings
-         'Old age': "natural",
-         'Predatory attack': "predation",
-         'PM report pending': "na",  # set COD once necropsy done
-         'Predatory attack - Orca': "predation",
-         'Predatory attack - shark': "predation",
-         'Remote stranding - died': "stranded",  # remoteness is not COD
-         'SEE Necropsy Report': "na",  # and transcribe here
-         'Spear/gunshot': "trauma-human-induced",
-         'Starvation': "starved",
-         'Still born': "still-born",
-         'Stingray barb': "trauma-animal-induced",
-         'Stranding': "stranded",
-         'Trauma': "trauma",
-         'Under nourished': "starved",  # if COD, else physical condition
-         'Unknown': "na",
-         'Unkown': "na",
-         '': "na",
-         'Weapon (gun, spear etc)': "trauma-human-induced",
-         }
+    cod = {
+        'Birthing': "birthing",
+        'Boat/ship strike': "boat-strike",
+        'Complications from stranding': "stranded",
+        'Disease/health': "natural",
+        'Drowning/misadventure': "drowned-other",
+        'Entanglement': "drowned-entangled",
+        'Euthanasia': "euthanasia",
+        'Euthanasia - firearm': "euthanasia-firearm",
+        'Euthanasia - firearm - SOP 17(1)': "euthanasia-firearm",
+        'Euthanasia - implosion': "euthanasia-implosion",
+        'Euthanasia - injection': "euthanasia-injection",
+        'Failure to thrive/dependant calf': "calf-failure-to-thrive",
+        'Failure to thrive/dependent calf': "calf-failure-to-thrive",
+        'Live stranding': "na",  # not a cause of death then
+        'Misadventure': "natural",
+        'Misadventure 13 died during event': "natural",
+        'Mixed fate group': "na",  # split into individual strandings
+        'Old age': "natural",
+        'Predatory attack': "predation",
+        'PM report pending': "na",  # set COD once necropsy done
+        'Predatory attack - Orca': "predation",
+        'Predatory attack - shark': "predation",
+        'Remote stranding - died': "stranded",  # remoteness is not COD
+        'SEE Necropsy Report': "na",  # and transcribe here
+        'Spear/gunshot': "trauma-human-induced",
+        'Starvation': "starved",
+        'Still born': "still-born",
+        'Stingray barb': "trauma-animal-induced",
+        'Stranding': "stranded",
+        'Trauma': "trauma",
+        'Under nourished': "starved",  # if COD, else physical condition
+        'Unknown': "na",
+        'Unkown': "na",
+        '': "na",
+        'Weapon (gun, spear etc)': "trauma-human-induced",
+        }
 
     src_id = "cet-{0}".format(r["Record No."])
 
@@ -1886,7 +1895,7 @@ def import_one_record_cet(r, m):
         'when': parser.parse('{0} 12:00:00 +0800'.format(r["Date"])),
         'where': Point(float(r["Long"] or 120), float(r["Lat"] or -35)),
         'taxon': u'Cetacea',
-        'species': SPECIES[fix_species_name(r["Scientific Name"] or '')],
+        'species': species[fix_species_name(r["Scientific Name"] or '')],
         'activity': u'na',  # TODO
         'behaviour': "".join([make_comment(r, x) for x in [
             "File Number",
@@ -1935,7 +1944,7 @@ def import_one_record_cet(r, m):
             'Site',
             'Location',
             ]]),
-        'cause_of_death': COD[r["Cause of Death _drop down_"]],
+        'cause_of_death': cod[r["Cause of Death _drop down_"]],
         'cause_of_death_confidence': u'na',  # TODO
         'checked_for_flipper_tags': u'na',  # TODO
         'checked_for_injuries': u'na',  # TODO
@@ -1966,7 +1975,7 @@ def import_one_record_cet(r, m):
 
 
 def pinniped_coords_as_point(cstring):
-    """Convert the pinniped strandings coordinate format into a Point.
+    r"""Convert the pinniped strandings coordinate format into a Point.
 
     Arguments:
 
@@ -1999,7 +2008,7 @@ def pinniped_coords_as_point(cstring):
 
 
 def import_one_record_pin(r, m):
-    """Import one Pinniped strandings database record into WAStD.
+    r"""Import one Pinniped strandings database record into WAStD.
 
     The Filemaker Pro db is exported to CSV, and read here as csv.DictReader.
     This method imports one DictReader.next() record.
@@ -2047,25 +2056,25 @@ def update_wastd_user(u):
     u   A dict with name, email, role (SPECIALTY) and WAMTRAM PERSON_ID, e.g.
 
     {'ADDRESS_LINE_1': 'NA',
-   'ADDRESS_LINE_2': 'NA',
-   'COMMENTS': 'MSP Thevenard 2016-17',
-   'COUNTRY': 'NA',
-   'EMAIL': 'NA',
-   'FAX': 'NA',
-   'FIRST_NAME': 'Joel',
-   'MIDDLE_NAME': 'NA',
-   'MOBILE': 'NA',
-   'PERSON_ID': '4725',
-   'POST_CODE': 'NA',
-   'Recorder': '0',
-   'SPECIALTY': 'NA',
-   'STATE': 'NA',
-   'SURNAME': 'Kerbey',
-   'TELEPHONE': 'NA',
-   'TOWN': 'NA',
-   'Transfer': 'NA',
-   'email': 'NA',
-   'name': 'Joel Kerbey'}
+    'ADDRESS_LINE_2': 'NA',
+    'COMMENTS': 'MSP Thevenard 2016-17',
+    'COUNTRY': 'NA',
+    'EMAIL': 'NA',
+    'FAX': 'NA',
+    'FIRST_NAME': 'Joel',
+    'MIDDLE_NAME': 'NA',
+    'MOBILE': 'NA',
+    'PERSON_ID': '4725',
+    'POST_CODE': 'NA',
+    'Recorder': '0',
+    'SPECIALTY': 'NA',
+    'STATE': 'NA',
+    'SURNAME': 'Kerbey',
+    'TELEPHONE': 'NA',
+    'TOWN': 'NA',
+    'Transfer': 'NA',
+    'email': 'NA',
+    'name': 'Joel Kerbey'}
 
     Return
 
@@ -2235,14 +2244,15 @@ def make_mapping():
             source="odk", status=Encounter.STATUS_NEW)]
         }
 
+
 # -----------------------------------------------------------------------------#
 # Main import call
 #
-def import_odk(datafile, 
-    flavour="odk-tt036", 
-    extradata=None, 
-    usercsv=None, 
-    mapping=make_mapping()):
+def import_odk(datafile,
+               flavour="odk-tt036",
+               extradata=None,
+               usercsv=None,
+               mapping=make_mapping()):
     """Import ODK data.
 
     Arguments
@@ -2283,13 +2293,10 @@ def import_odk(datafile,
         import_odk('data/latest/tt031.json', flavour="odk-tt031")
         import_odk('data/latest/tt034.json', flavour="odk-tt034")
         import_odk('data/latest/tt035.json', flavour="odk-tt036")
-        import_odk('data/latest/tt036.json', flavour="odk-tt036") 
+        import_odk('data/latest/tt036.json', flavour="odk-tt036")
         import_odk('data/latest/fs03.json', flavour="odk-fs03")
         import_odk('data/latest/mwi01.json', flavour="odk-mwi01")
-
-
     """
-
     if flavour == "odk-tt034":
         print("Using flavour ODK Track or Treat 0.34...")
         with open(datafile) as df:
@@ -2422,3 +2429,181 @@ def import_odk(datafile,
 
     else:
         print("Format {0} not recognized. Exiting.".format(flavour))
+
+
+# ---------------------------------------------------------------------------#
+# ODK Aggregate API helpers
+#
+def xmlelem_to_dict(t, ns="{http://opendatakit.org/submissions}"):
+    """Convert a potentially nested XML Element to a dict, strip namespace.
+
+    Source: https://stackoverflow.com/a/19557036/2813717
+    Credit: https://stackoverflow.com/users/489638/s29
+    """
+    return {t.tag.replace(ns, ""): map(xmlelem_to_dict, list(t)) or t.text}
+
+
+def odka_forms(url=env('ODKA_URL'),
+               un=env('ODKA_UN'),
+               pw=env('ODKA_PW')):
+    """Return an OpenRosa xformsList XML response as list of dicts.
+
+    See https://groups.google.com/forum/#!topic/opendatakit-developers/rfjN1nwYRFY
+
+    Arguments
+
+    url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
+        default: the value of environment variable "ODKA_URL".
+    un A username that exists on the ODK-A instance.
+        Default: the value of environment variable "ODKA_UN".
+    pw The username's password.
+        Default: the value of environment variable "ODKA_PW".
+
+    Returns
+    A list of dicts, each dict contains one xform:
+
+    [
+      {'downloadUrl': 'https://dpaw-data.appspot.com/formXml?formId=build_Site-Visit-Start-0-1_1490753483',
+       'formID': 'build_Site-Visit-Start-0-1_1490753483',
+       'hash': 'md5:c18c69c713c648bac240cbac9eee2d8a',
+       'majorMinorVersion': None,
+       'name': 'Site Visit Start 0.1',
+       'version': None},
+      {...repeat for each form...},
+    ]
+    """
+    api = "{0}/xformsList".format(url)
+    au = HTTPDigestAuth(un, pw)
+    print("[odka_forms] Retrieving xformsList from {0}...".format(url))
+    res = requests.get(api, auth=au)
+    ns = "{http://openrosa.org/xforms/xformsList}"
+    xforms = ElementTree.fromstring(res.content)
+    forms = [{x.tag.replace(ns, ""): xform.find(x.tag).text for x in xform}
+             for xform in list(xforms)]
+    # not quite right:
+    # xforms_dict = [xmlelem_to_dict(xform, ns=ns) for xform in list(xforms)]
+    print("[odka_forms] Done, retrieved {0} forms.".format(len(forms)))
+    return forms
+
+
+def odka_submission_ids(form_id,
+                        limit=10000,
+                        url=env('ODKA_URL'),
+                        un=env('ODKA_UN'),
+                        pw=env('ODKA_PW')):
+    """Return a list of submission IDs for a given ODKA formID.
+
+    TODO: should lower numEntries
+
+    Arguments:
+
+    form_id An existing xform formID,
+        e.g. 'build_Site-Visit-End-0-1_1490756971'.
+    limit The maximum number of submission IDs to retrieve, default: 10000.
+    url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
+        default: the value of environment variable "ODKA_URL".
+    un A username that exists on the ODK-A instance.
+        Default: the value of environment variable "ODKA_UN".
+    pw The username's password.
+        Default: the value of environment variable "ODKA_PW".
+
+
+    Returns
+    A list of submission IDs. Each ID can be used as input for odka_submission().
+
+    Example:
+
+    forms = odka_forms()
+    ids = odka_submission_ids(forms[6]["formID"])
+
+    ['uuid:c439fb45-3a1f-4127-be49-571af79a2c63',
+     'uuid:13f06748-54a4-4aac-9dc2-e547c80a1c37',
+     'uuid:fdde19ad-cc80-48d6-a0fd-adebfa3c5e02',
+     'uuid:ce83e6cf-df9f-4705-8cfc-5fc413e22c43',
+     'uuid:5d4b2bb6-21c0-4ec9-801a-f13b74a78add',
+     'uuid:a9772680-b6f9-45c0-8ed4-189f5e722a6c',
+     ...
+    ]
+    """
+    pars = {'formId': form_id, 'numEntries': limit}
+    api = "{0}/view/submissionList".format(url)
+    au = HTTPDigestAuth(un, pw)
+    print("[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(form_id))
+    res = requests.get(api, auth=au, params=pars)
+    el = ElementTree.fromstring(res.content)
+    ids = [e.text for e in el.find('{http://opendatakit.org/submissions}idList')]
+    print("[odka_submission_ids] Done, retrieved {0} submission IDs.".format(len(ids)))
+    return ids
+
+
+def odka_submission(form_id,
+                    submission_id,
+                    url=env('ODKA_URL'),
+                    un=env('ODKA_UN'),
+                    pw=env('ODKA_PW'),
+                    verbose=False):
+    """Download one ODKA submission and return as ElementTree (goal: dict).
+
+    Arguments:
+
+    form_id An existing xform formID,
+        e.g. 'build_Site-Visit-Start-0-1_1490753483'.
+    submission_id An existing opendatakit submission ID,
+        e.g. 'uuid:a9772680-b6f9-45c0-8ed4-189f5e722a6c'.
+    limit The maximum number of submission IDs to retrieve, default: 10000.
+    url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
+        default: the value of environment variable "ODKA_URL".
+    un A username that exists on the ODK-A instance.
+        Default: the value of environment variable "ODKA_UN".
+    pw The username's password.
+        Default: the value of environment variable "ODKA_PW".
+    verbose Whether to print verbose log messages, default: False.
+
+    Returns
+    WIP - currently the submission as XML Element.
+
+    Example
+    d = odka_submission('build_Site-Visit-Start-0-1_1490753483',
+        'uuid:a9772680-b6f9-45c0-8ed4-189f5e722a6c')
+    list(d)
+    """
+    api = ("{0}/view/downloadSubmission?formId={1}"
+           "[@version=null%20and%20@uiVersion=null]/data[@key={2}]").format(
+        url, form_id, submission_id)
+    au = HTTPDigestAuth(un, pw)
+    print("[odka_submission] Retrieving {0}".format(submission_id))
+    if verbose:
+        print("[odka_submission] URL {0}".format(api))
+    res = requests.get(api, auth=au)
+    el = ElementTree.fromstring(res.content)
+    return xmlelem_to_dict(el)
+
+
+def odka_submissions(form_id,
+                     url=env('ODKA_URL'),
+                     un=env('ODKA_UN'),
+                     pw=env('ODKA_PW'),
+                     verbose=False):
+    """Retrieve a list of all submissions for a given formID.
+
+    Arguments:
+
+    form_id An existing xform formID,
+        e.g. 'build_Site-Visit-Start-0-1_1490753483'.
+    url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
+        default: the value of environment variable "ODKA_URL".
+    un A username that exists on the ODK-A instance.
+        Default: the value of environment variable "ODKA_UN".
+    pw The username's password.
+        Default: the value of environment variable "ODKA_PW".
+    verbose Whether to print verbose log messages, default: False.
+
+    Example
+    forms = odka_forms()
+    data = odka_submissions(forms[6]["formID"])
+    """
+    print("[odka_submissions] Retrieving submissions for formID {0}...".format(form_id))
+    d = [odka_submission(form_id, x, url=url, un=un, pw=pw, verbose=verbose)
+         for x in odka_submission_ids(form_id, url=url, un=un, pw=pw)]
+    print("[odka_submissions] Done, retrieved {0} submissions.".format(len(d)))
+    return d
