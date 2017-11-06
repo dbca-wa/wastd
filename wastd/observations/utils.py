@@ -18,16 +18,7 @@ from django.utils.dateparse import parse_datetime
 # from django.utils.timezone import get_fixed_timezone, utc
 
 from wastd.users.models import User
-from wastd.observations.models import (
-    SiteVisit,
-    Encounter, AnimalEncounter, LoggerEncounter, TurtleNestEncounter,
-    LineTransectEncounter,
-    MediaAttachment, TagObservation, NestTagObservation,
-    TurtleNestObservation, TurtleNestDisturbanceObservation,
-    TurtleNestDisturbanceTallyObservation, TrackTallyObservation,
-    HatchlingMorphometricObservation,
-    NEST_TYPE_CHOICES, TAG_STATUS_CHOICES, CETACEAN_SPECIES_CHOICES
-    )
+from wastd.observations.models import *
 
 
 def allocate_animal_names():
@@ -125,20 +116,23 @@ def guess_user(un, default_username="florianm"):
     Returns
     An instance of settings.AUTH_USER_MODEL
     """
-    User = get_user_model()
+    usermodel = get_user_model()
+
+    if un is None:
+        un = default_username
 
     print("Guessing User for {0}...".format(un))
 
     try:
-        usr = User.objects.get(username=un.replace(" ", "_"))
+        usr = usermodel.objects.get(username=un.replace(" ", "_"))
         msg = "   Username {0} found by exact match: returning {1}"
 
     except ObjectDoesNotExist:
         try:
-            usrs = User.objects.filter(username__icontains=un[0:4])
+            usrs = usermodel.objects.filter(username__icontains=un[0:4])
 
             if usrs.count() == 0:
-                usr = User.objects.create(username=un, name=un)
+                usr = usermodel.objects.create(username=un, name=un)
                 msg = "  Username {0} not found: created {1}"
 
             elif usrs.count() == 1:
@@ -151,7 +145,7 @@ def guess_user(un, default_username="florianm"):
                 msg = "  [WARNING] Username {0} returned multiple matches, choosing {1}"
 
         except TypeError:
-            usr = User.objects.first()
+            usr = usermodel.objects.first()
             msg = "  [WARNING] Username not given, using admin {1}"
 
     print(msg.format(un, usr))
@@ -176,6 +170,36 @@ def map_values(d):
      u'trackunsure': u'track-unsure'}
     """
     return {k.replace("-", ""): k for k in dict(d).keys()}
+
+
+def keep_values(d):
+    """Return a dict of WAStD:WAStD dropdown menu choices for a given choice dict.
+
+    This is handy to generate a combined ODK and WAStD lookup.
+
+    Arguments
+
+    d The dict_name, e.g. NEST_TYPE_CHOICES
+
+    Returns
+
+    A dict of WAStD (keys) to WAStD (values) choices, e.g. NEST_TYPE_CHOICES
+    {u'false-crawl': u'false-crawl',
+     u'hatched-nest': u'hatched-nest',
+     u'nest': u'nest',
+     u'successful-crawl': u'successful-crawl',
+     u'track-not-assessed': u'track-not-assessed',
+     u'track-unsure': u'track-unsure'}
+    """
+    return {k: k for k in dict(d).keys()}
+
+
+def map_and_keep(d):
+    """Return the combined result of keep_values and map_values."""
+    a = map_values(d)
+    b = keep_values(d)
+    a.update(b)
+    return a
 
 
 def read_odk_linestring(odk_str):
@@ -267,6 +291,31 @@ def handle_photo(p, e, title="Track"):
         print("  [ERROR] missing file {0}".format(p))
 
 
+def handle_media_attachment(e, photo_dict, title="Photo"):
+    """Download unless already done, then create or update a photo.
+
+    Arguments:
+
+    e An Encounter with a source_id at e.source_id
+
+    {
+                "filename": "1485913363900.jpg",
+                "type": "image/jpeg",
+                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+            }
+    """
+    if photo_dict is None:
+        print("  ODK collect photo not taken, skipping {0}".format(title))
+        return
+    pdir = make_photo_foldername(e.source_id)
+    pname = os.path.join(pdir, photo_dict["filename"])
+    dl_photo(
+        e.source_id,
+        photo_dict["url"],
+        photo_dict["filename"])
+    handle_photo(pname, e, title=title)
+
+
 def handle_turtlenestdistobs(d, e, m):
     """Get or create TurtleNestDisturbanceObservation.
 
@@ -291,7 +340,7 @@ def handle_turtlenestdistobs(d, e, m):
     dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(
         encounter=e,
         disturbance_cause=d["disturbance_cause"],
-        disturbance_cause_confidence=m["disturbance_cause_confidence"][d["disturbance_cause_confidence"]],
+        disturbance_cause_confidence=m["confidence"][d["disturbance_cause_confidence"]],
         disturbance_severity=d["disturbance_severity"],
         comments=d["comments"]
         )
@@ -299,13 +348,8 @@ def handle_turtlenestdistobs(d, e, m):
     action = "created" if created else "updated"
     print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
-    if d["photo_disturbance"] is not None:
-        dl_photo(e.source_id,
-                 d["photo_disturbance"]["url"],
-                 d["photo_disturbance"]["filename"])
-        pdir = make_photo_foldername(e.source_id)
-        pname = os.path.join(pdir, d["photo_disturbance"]["filename"])
-        handle_photo(pname, e, title="Disturbance {0}".format(dd.disturbance_cause))
+    handle_media_attachment(
+        e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause))
 
 
 def handle_turtlenestdistobs31(d, e):
@@ -352,14 +396,8 @@ def handle_turtlenestdistobs31(d, e):
     action = "created" if created else "updated"
     print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
-    if d["photo_disturbance"] is not None:
-        dl_photo(e.source_id,
-                 d["photo_disturbance"]["url"],
-                 d["photo_disturbance"]["filename"])
-        pdir = make_photo_foldername(e.source_id)
-        pname = os.path.join(pdir, d["photo_disturbance"]["filename"])
-        handle_photo(pname, e, title="Disturbance {0}".format(dd.disturbance_cause))
-
+    handle_media_attachment(
+        e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause))
 
 def handle_turtlenestobs(d, e, m):
     """Get or create a TurtleNestObservation and related MediaAttachments.
@@ -417,12 +455,7 @@ def handle_turtlenestobs(d, e, m):
     print("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     for idx, ep in enumerate(d["egg_photos"]):
-        dl_photo(e.source_id,
-                 ep["photo_eggs"]["url"],
-                 ep["photo_eggs"]["filename"])
-        pdir = make_photo_foldername(e.source_id)
-        pname = os.path.join(pdir, ep["photo_eggs"]["filename"])
-        handle_photo(pname, e, title="Egg photo {0}".format(idx + 1))
+        handle_media_attachment(e, ep, title="Egg photo {0}".format(idx + 1))
 
 
 def handle_turtlenestobs31(d, e):
@@ -480,12 +513,8 @@ def handle_turtlenestobs31(d, e):
     print("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     for idx, ep in enumerate(d["egg_photos"]):
-        dl_photo(e.source_id,
-                 ep["photo_eggs"]["url"],
-                 ep["photo_eggs"]["filename"])
-        pdir = make_photo_foldername(e.source_id)
-        pname = os.path.join(pdir, ep["photo_eggs"]["filename"])
-        handle_photo(pname, e, title="Egg photo {0}".format(idx + 1))
+        handle_media_attachment(
+            e, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1))
 
 
 def handle_turtlenesttagobs(d, e, m):
@@ -520,66 +549,12 @@ def handle_turtlenesttagobs(d, e, m):
             status=m["tag_status"][d["status"]],
             flipper_tag_id=d["flipper_tag_id"],
             date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
-            tag_label=d["tag_label"],
-            )
+            tag_label=d["tag_label"])
         dd.save()
         action = "created" if created else "updated"
         print("  NestTagObservation {0}: {1}".format(action, dd))
 
-    if d["photo_tag"]:
-        dl_photo(e.source_id,
-                 d["photo_tag"]["url"],
-                 d["photo_tag"]["filename"])
-        pdir = make_photo_foldername(e.source_id)
-        pname = os.path.join(pdir, d["photo_tag"]["filename"])
-        handle_photo(pname, e, title="Nest tag photo")
-
-
-def handle_turtlenesttagobs31(d, e):
-    """Get or create a TagObservation and related MediaAttachments.
-
-    Arguments
-
-    d A dictionary containing at least:
-    {
-        "status": "applied-new",
-        "flipper_tag_id": "S1234",
-        "date_nest_laid": "2017-02-01",
-        "tag_label": "M1",
-        "tag_comments": "test info",
-        "photo_tag": {
-            "filename": "1485913419914.jpg",
-            "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-    },
-
-    e The related TurtleNestEncounter (must exist)
-    """
-    if (d["status"] is None and
-            d["flipper_tag_id"] is None and
-            d["date_nest_laid"] is None and
-            d["tag_label"] is None):
-        return
-    else:
-        dd, created = NestTagObservation.objects.get_or_create(
-            encounter=e,
-            status=d["status"],
-            flipper_tag_id=d["flipper_tag_id"],
-            date_nest_laid=datetime.strptime(
-                d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
-            tag_label=d["tag_label"],
-            )
-        dd.save()
-        action = "created" if created else "updated"
-        print("  NestTagObservation {0}: {1}".format(action, dd))
-
-    if d["photo_tag"]:
-        dl_photo(e.source_id,
-                 d["photo_tag"]["url"],
-                 d["photo_tag"]["filename"])
-        pdir = make_photo_foldername(e.source_id)
-        pname = os.path.join(pdir, d["photo_tag"]["filename"])
-        handle_photo(pname, e, title="Nest tag photo")
+    handle_media_attachment(e, d["photo_tag"], title="Nest tag photo")
 
 
 def handle_hatchlingmorphometricobs(d, e):
@@ -633,28 +608,21 @@ def handle_loggerenc(d, e):
     print("  Creating LoggerEncounter...")
     dd, created = LoggerEncounter.objects.get_or_create(
         source=e.source,
-        source_id="{0}-{1}".format(e.source_id, d["logger_id"]),
-        where=e.where,
-        when=e.when,
-        location_accuracy=e.location_accuracy,
-        observer=e.observer,
-        reporter=e.reporter,
-        deployment_status="retrieved",
-        logger_id=d["logger_id"]
-        )
+        source_id="{0}-{1}".format(e.source_id, d["logger_id"]))
+
+    dd.where = e.where
+    dd.when = e.when
+    dd.location_accuracy = e.location_accuracy
+    dd.observer = e.observer
+    dd.reporter = e.reporter
+    dd.deployment_status = "retrieved"
+    dd.logger_id = d["logger_id"]
+
     dd.save()
     action = "created" if created else "updated"
     print("  LoggerEncounter {0}: {1}".format(action, dd))
 
-    if d["photo_logger"]:
-        print("  Attaching photo to LoggerEncounter...")
-        dl_photo(e.source_id,
-                 d["photo_logger"]["url"],
-                 d["photo_logger"]["filename"])
-        pdir = make_photo_foldername(e.source_id)
-        pname = os.path.join(pdir, d["photo_logger"]["filename"])
-        handle_photo(pname, dd, title="Logger ID photo")
-        # The logger encounter dd gets the photo, not the encounter e!
+    handle_media_attachment(dd, d["photo_logger"], title="Logger ID")
 
     # If e has NestTagObservation, replicate NTO on LoggerEncounter
     if e.observation_set.instance_of(NestTagObservation).exists():
@@ -702,427 +670,6 @@ def handle_turtlenestdisttallyobs(d, e, m):
     e.save()  # cache distobs in HTML
 
 
-def import_one_record_tc010(r, m):
-    """Import one ODK Track Count 0.10 record into WAStD.
-
-    Arguments
-
-    r The record as dict, e.g.
-        {
-            "instanceID": "uuid:f23177b3-2234-49be-917e-87b2096c921e",
-            "observation_start_time": "2016-11-15T01:23:32.948Z",
-            "reporter": "florianm",
-            "nest_age": "fresh",
-            "species": "flatback",
-            "photo_track": {
-                "filename": "1479173177551.jpg",
-                "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
-            },
-            "nest_type": "successfulcrawl",
-            "observed_at:Latitude": -32.05844863,
-            "observed_at:Longitude": 115.77845847,
-            "observed_at:Altitude": 19,
-            "observed_at:Accuracy": 7,
-            "habitat": "na",
-            "photo_nest": {
-                "filename": "1479173194012.jpg",
-                "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-            },
-            "disturbance": "present",
-            "disturbanceobservation": [
-                {
-                    "disturbance_cause": "human",
-                    "disturbance_cause_confidence": "expertopinion",
-                    "disturbance_severity": "na",
-                    "photo_disturbance": {
-                        "filename": "1479173301849.jpg",
-                        "type": "image/jpeg",
-                        "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-                    },
-                    "comments": null
-                }
-            ],
-            "observation_end_time": "2016-11-15T01:29:59.935Z"
-        },
-
-    m The mapping of ODK to WAStD choices
-
-    Returns
-
-    The created Encounter instance.
-
-    Existing records will be overwritten.
-    Make sure to skip existing records which should be retained.
-    """
-    src_id = r["instanceID"]
-
-    new_data = dict(
-        source="odk",
-        source_id=src_id,
-        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
-        when=parse_datetime(r["observation_start_time"]),
-        location_accuracy="10",
-        observer=m["users"][r["reporter"]],
-        reporter=m["users"][r["reporter"]],
-        nest_age=r["nest_age"],
-        nest_type=m["nest_type"][r["nest_type"]],
-        species=m["species"][r["species"]],
-        # comments
-        )
-    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
-        new_data["habitat"] = m["habitat"][r["habitat"]]
-        new_data["disturbance"] = r["disturbance"]
-
-    if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
-        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
-        e = TurtleNestEncounter.objects.get(source_id=src_id)
-    else:
-        print("Creating new record {0}...".format(src_id))
-        e = TurtleNestEncounter.objects.create(**new_data)
-
-    e.save()
-
-    # MediaAttachment "Photo of track"
-    if r["photo_track"] is not None:
-        dl_photo(e.source_id,
-                 r["photo_track"]["url"],
-                 r["photo_track"]["filename"])
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_track"]["filename"])
-        handle_photo(pname, e, title="Track")
-
-    # MediaAttachment "Photo of nest"
-    if r["photo_nest"] is not None:
-        dl_photo(e.source_id,
-                 r["photo_nest"]["url"],
-                 r["photo_nest"]["filename"])
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_nest"]["filename"])
-        handle_photo(pname, e, title="Nest")
-
-    # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
-    [handle_turtlenestdistobs(distobs, e, m)
-     for distobs in r["disturbanceobservation"]
-     if len(r["disturbanceobservation"]) > 0]
-
-    print(" Saved {0}\n".format(e))
-    e.save()
-    return e
-
-
-def import_one_record_tt026(r, m):
-    """Import one ODK Track or Treat 0.16 record into WAStD.
-
-    Arguments
-
-    r The record as dict, e.g.
-
-    {
-        "instanceID": "uuid:22623d7c-ac39-46a1-9f99-741b7c668e58",
-        "observation_start_time": "2017-02-01T01:37:11.947Z",
-        "reporter": "florianm",
-        "nest_age": "fresh",
-        "species": "flatback",
-        "photo_track": {
-            "filename": "1485913222981.jpg",
-            "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
-        },
-        "nest_type": "successfulcrawl",
-        "observed_at:Latitude": -31.99673702,
-        "observed_at:Longitude": 115.88434861,
-        "observed_at:Altitude": -5,
-        "observed_at:Accuracy": 8,
-        "habitat": "edgeofvegetation",
-        "photo_nest": {
-            "filename": "1485913247467.jpg",
-            "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
-        },
-        "disturbance": "yes",
-        "eggs_counted": "yes",
-        "nest_tagged": "yes",
-        "logger_found": "yes",
-        "hatchlings_measured": "yes",
-        "disturbanceobservation": [
-            {
-                "photo_disturbance": {
-                    "filename": "1485913281914.jpg",
-                    "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-                },
-                "disturbance_cause": "human",
-                "disturbance_cause_confidence": "expertopinion",
-                "disturbance_severity": "partly",
-                "comments": "test"
-            },
-            {
-                "photo_disturbance": {
-                    "filename": "1485913310961.jpg",
-                    "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-                },
-                "disturbance_cause": "bird",
-                "disturbance_cause_confidence": "expertopinion",
-                "disturbance_severity": "partly",
-                "comments": "test2"
-            }
-        ],
-        "no_egg_shells": 120,
-        "no_live_hatchlings": 13,
-        "no_dead_hatchlings": 14,
-        "no_undeveloped_eggs": 15,
-        "no_unhatched_eggs": 16,
-        "no_unhatched_term": 17,
-        "no_depredated_eggs": 18,
-        "nest_depth_top": 19,
-        "nest_depth_bottom": 20,
-        "egg_photos": [
-            {
-                "photo_eggs": {
-                    "filename": "1485913363900.jpg",
-                    "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-                }
-            },
-            {
-                "photo_eggs": {
-                    "filename": "1485913376020.jpg",
-                    "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-                }
-            }
-        ],
-        "status": "resighted",
-        "flipper_tag_id": "S1234",
-        "date_nest_laid": "2017-02-01",
-        "tag_label": "M1",
-        "tag_comments": "test info",
-        "photo_tag": {
-            "filename": "1485913419914.jpg",
-            "type": "image/jpeg",
-            "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-        },
-        "logger_details": [
-            {
-                "logger_id": "S1235",
-                "photo_logger": {
-                    "filename": "1485913441063.jpg",
-                    "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-                }
-            },
-            {
-                "logger_id": "S1236",
-                "photo_logger": {
-                    "filename": "1485913471237.jpg",
-                    "type": "image/jpeg",
-                    "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-                }
-            }
-        ],
-        "hatchling_measurements": [
-            {
-                "straight_carapace_length_mm": 12,
-                "straight_carapace_width_mm": 13,
-                "body_weight_g": 14
-            },
-            {
-                "straight_carapace_length_mm": 14,
-                "straight_carapace_width_mm": 15,
-                "body_weight_g": 16
-            },
-            {
-                "straight_carapace_length_mm": 17,
-                "straight_carapace_width_mm": 18,
-                "body_weight_g": 19
-            }
-        ],
-        "observation_end_time": "2017-02-01T01:44:59.504Z"
-    }
-
-    m The mapping of ODK to WAStD choices
-
-    Existing records will be overwritten.
-    Make sure to skip existing records which should be retained.
-    """
-    src_id = r["instanceID"]
-
-    new_data = dict(
-        source="odk",
-        source_id=src_id,
-        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
-        when=parse_datetime(r["observation_start_time"]),
-        location_accuracy="10",
-        observer=m["users"][r["reporter"]],
-        reporter=m["users"][r["reporter"]],
-        nest_age=r["nest_age"],
-        nest_type=m["nest_type"][r["nest_type"]],
-        species=m["species"][r["species"]],
-        # comments
-        )
-    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
-        new_data["habitat"] = m["habitat"][r["habitat"]]
-        new_data["disturbance"] = r["disturbance"]
-
-    if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
-        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
-        e = TurtleNestEncounter.objects.get(source_id=src_id)
-    else:
-        print("Creating new record {0}...".format(src_id))
-        e = TurtleNestEncounter.objects.create(**new_data)
-
-    e.save()
-
-    # MediaAttachment "Photo of track"
-    if r["photo_track"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_track"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_track"]["url"],
-            r["photo_track"]["filename"])
-        handle_photo(pname, e, title="Track")
-
-    # MediaAttachment "Photo of nest"
-    if r["photo_nest"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_nest"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_nest"]["url"],
-            r["photo_nest"]["filename"])
-        handle_photo(pname, e, title="Nest")
-
-    # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
-    [handle_turtlenestdistobs(distobs, e, m)
-     for distobs in r["disturbanceobservation"]
-     if r["disturbance"] and len(r["disturbanceobservation"]) > 0]
-
-    # TurtleNestObservation
-    if r["eggs_counted"] == "yes":
-        handle_turtlenestobs(r, e, m)
-
-    # NestTagObservation
-    if r["nest_tagged"]:
-        handle_turtlenesttagobs(r, e, m)
-
-    # HatchlingMorphometricObservation
-    [handle_hatchlingmorphometricobs(ho, e)
-     for ho in r["hatchling_measurements"]
-     if len(r["hatchling_measurements"]) > 0]
-
-    # LoggerEncounter retrieved HOBO logger
-    [handle_loggerenc(lg, e)
-     for lg in r["logger_details"]
-     if len(r["logger_details"]) > 0]
-
-    print(" Saved {0}\n".format(e))
-    e.save()
-    return e
-
-
-def import_one_record_tt031(r, m):
-    """Import one ODK Track or Treat 0.31 record into WAStD.
-
-    The only change vs tt026 is that ODK now allows dashes in choice values.
-    The following choices are now are identical to WAStD
-    and do not require a mapping any longer:
-
-    * nest_type
-    * habitat
-    * disturbance_cause_confidence
-    * status (tag status)
-
-    Arguments
-
-    r The record as dict
-
-    m The mapping of ODK to WAStD choices
-
-    Existing records will be overwritten.
-    Make sure to skip existing records which should be retained.
-    """
-    src_id = r["instanceID"]
-
-    new_data = dict(
-        source="odk",
-        source_id=src_id,
-        where=Point(r["observed_at:Longitude"], r["observed_at:Latitude"]),
-        when=parse_datetime(r["observation_start_time"]),
-        location_accuracy="10",
-        observer=m["users"][r["reporter"]],
-        reporter=m["users"][r["reporter"]],
-        nest_age=r["nest_age"],
-        nest_type=r["nest_type"],
-        species=m["species"][r["species"]],
-        )
-    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
-        new_data["habitat"] = r["habitat"]
-        new_data["disturbance"] = m["disturbance"][r["disturbance"]]
-
-    if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
-        TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
-        e = TurtleNestEncounter.objects.get(source_id=src_id)
-    else:
-        print("Creating new record {0}...".format(src_id))
-        e = TurtleNestEncounter.objects.create(**new_data)
-
-    e.save()
-
-    # MediaAttachment "Photo of track"
-    if r["photo_track"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_track"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_track"]["url"],
-            r["photo_track"]["filename"])
-        handle_photo(pname, e, title="Track")
-
-    # MediaAttachment "Photo of nest"
-    if r["photo_nest"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_nest"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_nest"]["url"],
-            r["photo_nest"]["filename"])
-        handle_photo(pname, e, title="Nest")
-
-    # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
-    [handle_turtlenestdistobs31(distobs, e)
-     for distobs in r["disturbanceobservation"]
-     if r["disturbance"] and len(r["disturbanceobservation"]) > 0]
-
-    # TurtleNestObservation
-    if r["eggs_counted"] == "yes":
-        handle_turtlenestobs31(r, e)
-
-    # NestTagObservation
-    if r["nest_tagged"]:
-        handle_turtlenesttagobs31(r, e)
-
-    # HatchlingMorphometricObservation
-    [handle_hatchlingmorphometricobs(ho, e)
-     for ho in r["hatchling_measurements"]
-     if len(r["hatchling_measurements"]) > 0]
-
-    # LoggerEncounter retrieved HOBO logger
-    [handle_loggerenc(lg, e)
-     for lg in r["logger_details"]
-     if len(r["logger_details"]) > 0]
-
-    print(" Saved {0}\n".format(e))
-    e.save()
-    return e
-
-
 def import_one_record_tt034(r, m):
     """Import one ODK Track or Treat 0.34 record into WAStD.
 
@@ -1157,12 +704,12 @@ def import_one_record_tt034(r, m):
         observer=m["users"][r["reporter"]],
         reporter=m["users"][r["reporter"]],
         nest_age=r["nest_age"],
-        nest_type=r["nest_type"],
-        species=r["species"],
+        nest_type=m["nest_type"][r["nest_type"]],
+        species=m["species"][r["species"]],
         # comments
         )
     if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
-        new_data["habitat"] = r["habitat"]
+        new_data["habitat"] = m["habitat"][r["habitat"]]
         new_data["disturbance"] = r["disturbance"]
 
     if src_id in m["overwrite"]:
@@ -1175,25 +722,8 @@ def import_one_record_tt034(r, m):
 
     e.save()
 
-    # MediaAttachment "Photo of track"
-    if r["photo_track"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_track"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_track"]["url"],
-            r["photo_track"]["filename"])
-        handle_photo(pname, e, title="Track")
-
-    # MediaAttachment "Photo of nest"
-    if r["photo_nest"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_nest"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_nest"]["url"],
-            r["photo_nest"]["filename"])
-        handle_photo(pname, e, title="Nest")
+    handle_media_attachment(e, r["photo_track"], title="Track")
+    handle_media_attachment(e, r["photo_nest"], title="Nest")
 
     # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
     [handle_turtlenestdistobs31(distobs, e)
@@ -1206,7 +736,7 @@ def import_one_record_tt034(r, m):
 
     # NestTagObservation
     if r["nest_tagged"]:
-        handle_turtlenesttagobs31(r, e)
+        handle_turtlenesttagobs(r, e, m)
 
     # HatchlingMorphometricObservation
     [handle_hatchlingmorphometricobs(ho, e)
@@ -1262,7 +792,7 @@ def import_one_record_tt036(r, m):
         species=r["species"],
         # comments
         )
-    if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
+    if r["nest_type"] in ["successful-crawl", "nest", "hatched-nest"]:
         new_data["habitat"] = r["habitat"]
         new_data["disturbance"] = r["disturbance"]
 
@@ -1276,55 +806,11 @@ def import_one_record_tt036(r, m):
 
     e.save()
 
-    # MediaAttachment "Photo of track 1"
-    if r["photo_track_1"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_track_1"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_track_1"]["url"],
-            r["photo_track_1"]["filename"])
-        handle_photo(pname, e, title="Uptrack")
-
-    # MediaAttachment "Photo of track 2"
-    if r["photo_track_2"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_track_2"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_track_2"]["url"],
-            r["photo_track_2"]["filename"])
-        handle_photo(pname, e, title="Downtrack")
-
-    # MediaAttachment "Photo of nest 1"
-    if r["photo_nest_1"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_nest_1"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_nest_1"]["url"],
-            r["photo_nest_1"]["filename"])
-        handle_photo(pname, e, title="Nest 1")
-
-    # MediaAttachment "Photo of nest 2"
-    if r["photo_nest_2"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_nest_2"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_nest_2"]["url"],
-            r["photo_nest_2"]["filename"])
-        handle_photo(pname, e, title="Nest 2")
-
-    # MediaAttachment "Photo of nest 3"
-    if r["photo_nest_3"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_nest_3"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_nest_3"]["url"],
-            r["photo_nest_3"]["filename"])
-        handle_photo(pname, e, title="Nest 3")
+    handle_media_attachment(e, r["photo_track_1"], title="Uptrack")
+    handle_media_attachment(e, r["photo_track_2"], title="Downtrack")
+    handle_media_attachment(e, r["photo_nest_1"], title="Nest 1")
+    handle_media_attachment(e, r["photo_nest_2"], title="Nest 2")
+    handle_media_attachment(e, r["photo_nest_3"], title="Nest 3")
 
     # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
     [handle_turtlenestdistobs31(distobs, e)
@@ -1337,7 +823,7 @@ def import_one_record_tt036(r, m):
 
     # NestTagObservation
     if r["nest_tagged"]:
-        handle_turtlenesttagobs31(r, e)
+        handle_turtlenesttagobs(r, e, m)
 
     # HatchlingMorphometricObservation
     [handle_hatchlingmorphometricobs(ho, e)
@@ -1430,8 +916,7 @@ def import_one_record_mwi01(r, m):
     "photo_habitat": {
       "filename": "1502770702714.jpg",
       "type": "image/jpeg",
-      "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A2273f52a-276a-4972-bc45-034626a3c278%5D%2Fincident%3Aphoto_habitat"
+      "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "species": "turtle",
     "maturity": "na",
@@ -1478,8 +963,7 @@ def import_one_record_mwi01(r, m):
     "photo_habitat": {
       "filename": "1508887643518.jpg",
       "type": "image/jpeg",
-      "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fincident%3Aphoto_habitat"
+      "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "species": "flatback",
     "maturity": "adult",
@@ -1487,26 +971,22 @@ def import_one_record_mwi01(r, m):
     "photo_carapace_top": {
       "filename": "1508887669660.jpg",
       "type": "image/jpeg",
-      "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fphotos_turtle%3Aphoto_carapace_top"
+      "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "photo_head_top": {
       "filename": "1508887683511.jpg",
       "type": "image/jpeg",
-      "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fphotos_turtle%3Aphoto_head_top"
+      "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "photo_head_side": {
       "filename": "1508887698795.jpg",
       "type": "image/jpeg",
-      "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fphotos_turtle%3Aphoto_head_side"
+      "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "photo_head_front": {
       "filename": "1508887714082.jpg",
       "type": "image/jpeg",
-      "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fphotos_turtle%3Aphoto_head_front"
+      "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "activity": "beachwashed",
     "health": "deadedible",
@@ -1522,8 +1002,7 @@ def import_one_record_mwi01(r, m):
         "photo_damage": {
           "filename": "1508887793593.jpg",
           "type": "image/jpeg",
-          "url":
-            "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fdamage_observation%5B%40ordinal%3D1%5D%2Fphoto_damage"
+          "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
         },
         "body_part": "flipperfrontright",
         "damage_type": "other",
@@ -1537,7 +1016,7 @@ def import_one_record_mwi01(r, m):
           "filename": "1508887828938.jpg",
           "type": "image/jpeg",
           "url":
-            "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Ftag_observation%5B%40ordinal%3D1%5D%2Fphoto_tag"
+            "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
         },
         "name": "wa1234",
         "tag_type": "flippertag",
@@ -1558,19 +1037,19 @@ def import_one_record_mwi01(r, m):
       "filename": "1508887910356.jpg",
       "type": "image/jpeg",
       "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fhabitat_photos%3Aphoto_habitat_2"
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "photo_habitat_3": {
       "filename": "1508887919139.jpg",
       "type": "image/jpeg",
       "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fhabitat_photos%3Aphoto_habitat_3"
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "photo_habitat_4": {
       "filename": "1508887930269.jpg",
       "type": "image/jpeg",
       "url":
-        "https://dpaw-data.appspot.com/view/binaryData?blobKey=build_Marine-Wildlife-Incident-0-1_1502342347%5B%40version%3Dnull+and+%40uiVersion%3Dnull%5D%2Fdata%5B%40key%3Duuid%3A87fcedb9-05ba-476e-90c0-9bfa40faf7f2%5D%2Fhabitat_photos%3Aphoto_habitat_4"
+        "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
     },
     "observation_end_time": "2017-10-24T23:32:20.630Z"
     }
@@ -1585,21 +1064,20 @@ def import_one_record_mwi01(r, m):
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
         reporter=m["users"][r["reporter"]],
-        species=r["species"],
-        habitat=r["habitat"],
-        maturity=r["maturity"],
+        species=m["species"][r["species"]],
+        habitat=m["habitat"][r["habitat"]],
+        maturity=m["maturity"][r["maturity"]],
         sex=r["sex"],
-        activity=r["activity"],
-        health=r["health"],
+        activity=m["activity"][r["activity"]],
+        health=m["health"][r["health"]],
+        cause_of_death=m["cause_of_death"][r["cause_of_death"]],
+        cause_of_death_confidence=m["confidence"][r["cause_of_death_confidence"]],
         behaviour=r["behaviour"],
+        checked_for_injuries=m["yes_no"][r["checked_for_injuries"]],
+        scanned_for_pit_tags=m["yes_no"][r["scanned_for_pit_tags"]],
+        checked_for_flipper_tags=m["yes_no"][r["checked_for_flipper_tags"]],
         # comments
         )
-    # "cause_of_death": "na",
-    # "cause_of_death_confidence": "na",
-    # "checked_for_injuries": "na",
-    # "scanned_for_pit_tags": "na",
-    # "checked_for_flipper_tags": "na",
-    # "samples_taken": "na",
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -1611,7 +1089,12 @@ def import_one_record_mwi01(r, m):
 
     e.save()
 
-    # "damage_observation": [],
+    if r["checked_for_injuries"]:
+        print("  Damage seen - TODO")
+        # "damage_observation": [],
+
+    if r["samples_taken"]:
+        print("  Samples taken - TODO")
 
     # "tag_observation": [],
 
@@ -1625,78 +1108,14 @@ def import_one_record_mwi01(r, m):
     # "maximum_head_width_mm": null,
     # "maximum_head_width_accuracy": "10",
 
-    # MediaAttachment "Photo of habitat"
-    if r["photo_habitat"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_habitat"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_habitat"]["url"],
-            r["photo_habitat"]["filename"])
-        handle_photo(pname, e, title="Habitat")
-
-    if r["photo_habitat_2"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_habitat_2"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_habitat_2"]["url"],
-            r["photo_habitat_2"]["filename"])
-        handle_photo(pname, e, title="Habitat 2")
-
-    if r["photo_habitat_3"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_habitat_3"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_habitat_3"]["url"],
-            r["photo_habitat_3"]["filename"])
-        handle_photo(pname, e, title="Habitat 3")
-
-    if r["photo_habitat_4"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_habitat_4"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_habitat_4"]["url"],
-            r["photo_habitat_4"]["filename"])
-        handle_photo(pname, e, title="Habitat 4")
-
-    if r["photo_carapace_top"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_carapace_top"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_carapace_top"]["url"],
-            r["photo_carapace_top"]["filename"])
-        handle_photo(pname, e, title="Carapace top")
-
-    if r["photo_head_top"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_head_top"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_head_top"]["url"],
-            r["photo_head_top"]["filename"])
-        handle_photo(pname, e, title="Head top")
-
-    if r["photo_head_side"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_head_side"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_head_side"]["url"],
-            r["photo_head_side"]["filename"])
-        handle_photo(pname, e, title="Head side")
-
-    if r["photo_head_front"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_head_front"]["filename"])
-        dl_photo(
-            e.source_id,
-            r["photo_head_front"]["url"],
-            r["photo_head_front"]["filename"])
-        handle_photo(pname, e, title="Head front")
+    handle_media_attachment(e, r["photo_habitat"], title="Habitat")
+    handle_media_attachment(e, r["photo_habitat_2"], title="Habitat 2")
+    handle_media_attachment(e, r["photo_habitat_3"], title="Habitat 3")
+    handle_media_attachment(e, r["photo_habitat_4"], title="Habitat 4")
+    handle_media_attachment(e, r["photo_carapace_top"], title="Carapace top")
+    handle_media_attachment(e, r["photo_head_top"], title="Head top")
+    handle_media_attachment(e, r["photo_head_side"], title="Head side")
+    handle_media_attachment(e, r["photo_head_front"], title="Head front")
 
     print(" Saved {0}\n".format(e))
     e.save()
@@ -1768,15 +1187,8 @@ def import_one_record_sv01(r, m):
     e.save()
 
     # MediaAttachments
-    if r["photo_start"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_start"]["filename"])
-        handle_photo(pname, e, title="Site conditions at start of suvey")
-
-    if r["photo_finish"] is not None:
-        pdir = make_photo_foldername(src_id)
-        pname = os.path.join(pdir, r["photo_finish"]["filename"])
-        handle_photo(pname, e, title="Site conditions at end of suvey")
+    handle_media_attachment(e, r["photo_start"], title="Site conditions at start of suvey")
+    handle_media_attachment(e, r["photo_finish"], title="Site conditions at end of suvey")
 
     print(" Saved {0}\n".format(e))
     e.save()
@@ -2408,7 +1820,7 @@ def import_one_record_cet(r, m):
 
 
     """
-    SPECIES = dict([[d[0], d[0]] for d in CETACEAN_SPECIES_CHOICES])
+    SPECIES = map_and_keep(CETACEAN_SPECIES_CHOICES)
     # TODO this mapping needs QA (add species to CETACEAN_SPECIES_CHOICES)
     SPECIES.update({
         '': 'cetacea',
@@ -2688,21 +2100,163 @@ def update_wastd_user(u):
 
 
 # -----------------------------------------------------------------------------#
+# Mapping
+#
+def make_mapping():
+    """Generate a mapping of ODK to WAStD keys."""
+    species = map_and_keep(SPECIES_CHOICES)
+    species.update({
+        # MWI < 0.4
+        'flatback': 'natator-depressus',
+        'green': 'chelonia-mydas',
+        'hawksbill': 'eretmochelys-imbricata',
+        'loggerhead': 'caretta-caretta',
+        'oliveridley': 'lepidochelys-olivacea',
+        'leatherback': 'dermochelys-coriacea',
+        'turtle': 'cheloniidae-fam',
+
+        # WAMTRAM
+        'FB': 'natator-depressus',
+        'GN': 'chelonia-mydas',
+        'HK': 'eretmochelys-imbricata',
+        'LO': 'caretta-caretta',
+        'OR': 'lepidochelys-olivacea',
+        'LB': 'dermochelys-coriacea',
+        '?': 'cheloniidae-fam',
+        '0': 'cheloniidae-fam',
+        })
+
+    habitat = map_and_keep(HABITAT_CHOICES)
+    habitat.update({
+        'abovehwm': 'beach-above-high-water',
+        'belowhwm': 'beach-below-high-water',
+        'edgeofvegetation': 'beach-edge-of-vegetation',
+        'vegetation': 'in-dune-vegetation',
+        'na': 'na',
+
+        # WAMTRAM BEACH_POSITION_CODE
+        'NA': 'na',
+        "?": "na",
+        "A": "beach-above-high-water",
+        "B": "beach-above-high-water",
+        "C": "beach-below-high-water",
+        "D": "beach-edge-of-vegetation",
+        "E": "in-dune-vegetation",
+    })
+
+    health = map_and_keep(HEALTH_CHOICES)
+    health.update({
+        "F": "dead-edible",     # Carcase - fresh
+        "G": "alive",           # Good - fat
+        "H": "alive",           # Live & fit
+        "I": "alive",           # Injured but OK
+        "M": "alive",           # Moribund
+        "P": "alive",           # Poor - thin
+        "NA": "na",
+    })
+
+    activity = map_and_keep(ACTIVITY_CHOICES)
+    activity.update({
+        "&": "captivity",       # Captive animal
+        "A": "arriving",        # Resting at waters edge - Nesting
+        "B": "arriving",        # Leaving water - Nesting
+        "C": "approaching",     # Climbing beach slope - Nesting
+        "D": "approaching",     # Moving over bare sand (=beach) - Nesting
+        "E": "digging-body-pit",  # Digging body hole - Nesting
+        "F": "excavating-egg-chamber",  # Excavating egg chamber - Nesting
+        "G": "laying-eggs",     # Laying eggs - confirmed observation - Nesting
+        "H": "filling-in-egg-chamber",  # Covering nest (filling in) - Nesting
+        "I": "returning-to-water",  # Returning to water - Nesting
+        # "J": "",              # Check/?edit these: only on VA records
+        "K": "non-breeding",    # Basking - on beach above waterline
+        "L": "arriving",        # Arriving - Nesting
+        "M": "other",           # Mating
+        "N": "other",           # Courting
+        "O": "non-breeding",    # Free at sea
+        "Q": "na",              # Not recorded in field
+        "R": "non-breeding",    # Released to wild
+        "S": "non-breeding",    # Rescued from stranding
+        "V": "non-breeding",    # Caught in fishing gear - Decd
+        "W": "non-breeding",    # Captured in water (reef or sea)
+        "X": "floating",        # Turtle dead
+        "Y": "floating",        # Caught in fishing gear - Relsd
+        "Z": "other",           # Hunted for food by Ab & others
+        })
+
+    yes_no = map_and_keep(OBSERVATION_CHOICES)
+    yes_no.update({
+        'Y': 'present',
+        'N': 'absent',
+        'U': 'na',
+        'NA': 'na',
+        'yes': 'present',
+        'no': 'absent',
+    })
+
+    confidence = map_and_keep(CONFIDENCE_CHOICES)
+    confidence.update({
+        "validate": "validated",
+    })
+
+    tag_status = map_and_keep(TAG_STATUS_CHOICES)
+    tag_status.update({
+        "#": 'resighted',
+        "OX": 'resighted',
+        "P": 'resighted',
+        "P_OK": 'resighted',
+        "RQ": 'resighted',
+        "P_ED": 'resighted',
+        "A1": 'applied-new',
+        "AE": 'applied-new',
+        "RC": 'reclinched',
+        "OO": 'removed',
+        "R": 'removed',
+        "Q": 'resighted',
+        'resighted': 'resighted'
+    })
+
+    return {
+        "nest_type": map_and_keep(NEST_TYPE_CHOICES),
+
+        "tag_status": map_and_keep(TAG_STATUS_CHOICES),
+        "maturity": map_and_keep(MATURITY_CHOICES),
+        "cause_of_death": map_and_keep(CAUSE_OF_DEATH_CHOICES),
+        "confidence": confidence,
+        "yes_no": yes_no,
+        "species": species,
+        "activity": activity,
+        "habitat": habitat,
+        "health": health,
+        "tag_status": tag_status,
+        "disturbance": yes_no,
+        "nesting": yes_no,
+
+        "overwrite": [t.source_id for t in Encounter.objects.filter(
+            source="odk", status=Encounter.STATUS_NEW)]
+        }
+
+# -----------------------------------------------------------------------------#
 # Main import call
 #
-def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
-    """Import ODK Track Count 0.10 data.
+def import_odk(datafile, 
+    flavour="odk-tt036", 
+    extradata=None, 
+    usercsv=None, 
+    mapping=make_mapping()):
+    """Import ODK data.
 
     Arguments
 
     datafile A filepath to the JSON exported from ODK Aggregate
     flavour The ODK form with version
 
-    flavour A string indicating the type of input
+    flavour A string indicating the type of input, see examples.
 
     extradata A second datafile (tags for WAMTRAM)
 
     usercsv A CSV file with columns "name" and "PERSON_ID"
+
+    mapping A dict mapping dropdown values from ODK to WAStD, default: ODK_MAPPING
 
     Preparation:
 
@@ -2718,190 +2272,35 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
 
     Example:
 
-        >>> from wastd.observations.utils import *
-        >>> import_odk('data/TrackCount_0_10_results.json', flavour="odk-tc010")
-        >>> import_odk('data/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
-        >>> import_odk('data/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
-        >>> import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
-        >>> import_odk('data/cetaceans.csv', flavour="cet")
-        >>> import_odk('data/wamtram_encounters.csv', flavour="wamtram", usercsv="data/wamtram_users.csv")
-        >>> import_odk('data/wamtram_tagobservations.csv', flavour="whambam")
-        >>> import_odk('data/Site_Visit_0_1_results.json', flavour="sitevisit")
+        from wastd.observations.utils import *
+        #import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
+        import_odk('data/cetaceans.csv', flavour="cet")
+        import_odk('data/wamtram_encounters.csv', flavour="wamtram", usercsv="data/wamtram_users.csv")
+        import_odk('data/wamtram_tagobservations.csv', flavour="whambam")
+        #import_odk('data/Site_Visit_0_1_results.json', flavour="sitevisit")
+
+        import_odk("data/latest/tt05.json", flavour="odk-tally05")
+        import_odk('data/latest/tt031.json', flavour="odk-tt031")
+        import_odk('data/latest/tt034.json', flavour="odk-tt034")
+        import_odk('data/latest/tt035.json', flavour="odk-tt036")
+        import_odk('data/latest/tt036.json', flavour="odk-tt036") 
+        import_odk('data/latest/fs03.json', flavour="odk-fs03")
+        import_odk('data/latest/mwi01.json', flavour="odk-mwi01")
 
 
     """
-    # Older ODK forms don't support dashes for choice fields and require mapping
-    ODK_MAPPING = {
-        # some values can be derived
-        "nest_type": map_values(NEST_TYPE_CHOICES),
-        "tag_status": map_values(TAG_STATUS_CHOICES),
 
-        "species": {
-            'flatback': 'natator-depressus',
-            'green': 'chelonia-mydas',
-            'hawksbill': 'eretmochelys-imbricata',
-            'loggerhead': 'caretta-caretta',
-            'oliveridley': 'lepidochelys-olivacea',
-            'leatherback': 'dermochelys-coriacea',
-            'turtle': 'cheloniidae-fam',
-
-            # WAMTRAM
-            'FB': 'natator-depressus',
-            'GN': 'chelonia-mydas',
-            'HK': 'eretmochelys-imbricata',
-            'LO': 'caretta-caretta',
-            'OR': 'lepidochelys-olivacea',
-            'LB': 'dermochelys-coriacea',
-            '?': 'cheloniidae-fam',
-            '0': 'cheloniidae-fam',
-            },
-
-        "activity": {
-            "&": "captivity",       # Captive animal
-            "A": "arriving",        # Resting at waters edge - Nesting
-            "B": "arriving",        # Leaving water - Nesting
-            "C": "approaching",     # Climbing beach slope - Nesting
-            "D": "approaching",     # Moving over bare sand (=beach) - Nesting
-            "E": "digging-body-pit",  # Digging body hole - Nesting
-            "F": "excavating-egg-chamber",  # Excavating egg chamber - Nesting
-            "G": "laying-eggs",     # Laying eggs - confirmed observation - Nesting
-            "H": "filling-in-egg-chamber",  # Covering nest (filling in) - Nesting
-            "I": "returning-to-water",  # Returning to water - Nesting
-            # "J": "",              # Check/?edit these: only on VA records
-            "K": "non-breeding",    # Basking - on beach above waterline
-            "L": "arriving",        # Arriving - Nesting
-            "M": "other",           # Mating
-            "N": "other",           # Courting
-            "O": "non-breeding",    # Free at sea
-            "Q": "na",              # Not recorded in field
-            "R": "non-breeding",    # Released to wild
-            "S": "non-breeding",    # Rescued from stranding
-            "V": "non-breeding",    # Caught in fishing gear - Decd
-            "W": "non-breeding",    # Captured in water (reef or sea)
-            "X": "floating",        # Turtle dead
-            "Y": "floating",        # Caught in fishing gear - Relsd
-            "Z": "other",           # Hunted for food by Ab & others
-            },
-
-        "health": {
-            "F": "dead-edible",     # Carcase - fresh
-            "G": "alive",           # Good - fat
-            "H": "alive",           # Live & fit
-            "I": "alive",           # Injured but OK
-            "M": "alive",           # Moribund
-            "P": "alive",           # Poor - thin
-            "NA": "na",
-            },
-
-        "tag_status": {
-            "#": 'resighted',
-            "OX": 'resighted',
-            "P": 'resighted',
-            "P_OK": 'resighted',
-            "RQ": 'resighted',
-            "P_ED": 'resighted',
-            "A1": 'applied-new',
-            "AE": 'applied-new',
-            "RC": 'reclinched',
-            "OO": 'removed',
-            "R": 'removed',
-            "Q": 'resighted',
-            'resighted': 'resighted'
-            },
-
-        "habitat": {
-            'abovehwm': 'beach-above-high-water',
-            'belowhwm': 'beach-below-high-water',
-            'edgeofvegetation': 'beach-edge-of-vegetation',
-            'vegetation': 'in-dune-vegetation',
-            'na': 'na',
-
-            # WAMTRAM BEACH_POSITION_CODE
-            'NA': 'na',
-            "?": "na",
-            "A": "beach-above-high-water",
-            "B": "beach-above-high-water",
-            "C": "beach-below-high-water",
-            "D": "beach-edge-of-vegetation",
-            "E": "in-dune-vegetation",
-            },
-
-        "disturbance": {
-            'yes': 'present',
-            'no': 'absent',
-            },
-
-        # WAMTRAM NESTING
-        "nesting": {
-            'Y': 'present',
-            'N': 'absent',
-            'U': 'na',
-            'NA': 'na',
-            },
-
-        # typo in Track or Treat 0.26: validate (missing "d")
-        "disturbance_cause_confidence": {
-            "na": "guess",
-            "guess": "guess",
-            "expertopinion": "expert-opinion",
-            "validated": "validated",
-            "validate": "validated",
-            },
-
-        "overwrite": [t.source_id for t in Encounter.objects.filter(
-            source="odk", status=Encounter.STATUS_NEW)]
-        }
-
-    if flavour == "odk-tc010":
-        print("Using flavour ODK Track Count 0.10...")
-        with open(datafile) as df:
-            d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")]
-
-        [import_one_record_tc010(r, ODK_MAPPING) for r in d
-         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
-        print("Done!")
-
-    elif flavour == "odk-tt026":
-        print("Using flavour ODK Track or Treat 0.26...")
-        with open(datafile) as df:
-            d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")]
-
-        [import_one_record_tt026(r, ODK_MAPPING) for r in d
-         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
-        print("Done!")
-
-    elif flavour == "odk-tt031":
-        print("Using flavour ODK Track or Treat 0.31...")
-        with open(datafile) as df:
-            d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")]
-
-        [import_one_record_tt031(r, ODK_MAPPING) for r in d
-         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
-        print("Done!")
-
-    elif flavour == "odk-tt034":
+    if flavour == "odk-tt034":
         print("Using flavour ODK Track or Treat 0.34...")
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
-        [import_one_record_tt034(r, ODK_MAPPING) for r in d
-         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        [import_one_record_tt034(r, mapping) for r in d
+         if r["instanceID"] not in mapping["keep"]]     # retain local edits
         print("Done!")
 
     elif flavour == "odk-tt036":
@@ -2909,12 +2308,12 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
-        [import_one_record_tt036(r, ODK_MAPPING) for r in d
-         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        [import_one_record_tt036(r, mapping) for r in d
+         if r["instanceID"] not in mapping["keep"]]     # retain local edits
         print("Done!")
 
     elif flavour == "odk-fs03":
@@ -2922,12 +2321,12 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
-        [import_one_record_fs03(r, ODK_MAPPING) for r in d
-         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        [import_one_record_fs03(r, mapping) for r in d
+         if r["instanceID"] not in mapping["keep"]]     # retain local edits
         print("Done!")
 
     elif flavour == "odk-mwi01":
@@ -2935,12 +2334,12 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
-        [import_one_record_mwi01(r, ODK_MAPPING) for r in d
-         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        [import_one_record_mwi01(r, mapping) for r in d
+         if r["instanceID"] not in mapping["keep"]]     # retain local edits
         print("Done!")
 
     elif flavour == "odk-tally05":
@@ -2948,31 +2347,31 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
-        [import_one_record_tt05(r, ODK_MAPPING) for r in d
-         if r["instanceID"] not in ODK_MAPPING["keep"]]     # retain local edits
+        [import_one_record_tt05(r, mapping) for r in d
+         if r["instanceID"] not in mapping["keep"]]     # retain local edits
         print("Done!")
 
     elif flavour == "cet":
         print("Using flavour Cetacean strandings...")
         # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="cet")]
-        ODK_MAPPING["overwrite"] = [t.source_id for t in Encounter.objects.filter(
+        mapping["overwrite"] = [t.source_id for t in Encounter.objects.filter(
             source="cet", status=Encounter.STATUS_NEW)]
 
         enc = csv.DictReader(open(datafile))
 
-        [import_one_record_cet(e, ODK_MAPPING) for e in enc
-         if e["Record No."] not in ODK_MAPPING["keep"]]
+        [import_one_record_cet(e, mapping) for e in enc
+         if e["Record No."] not in mapping["keep"]]
 
     elif flavour == "pin":
         print("Using flavour Pinniped strandings...")
-        # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+        # mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="pin")]
         enc = csv.DictReader(open(datafile))
         print("not impemented yet")
@@ -2986,14 +2385,14 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
         users = {user["PERSON_ID"]: update_wastd_user(user)
                  for user in wamtram_users if user["name"] != ""}
 
-        # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
-        ODK_MAPPING["keep"] = [t.source_id for t in Encounter.objects.exclude(
+        # mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="wamtram")]
-        ODK_MAPPING["overwrite"] = [t.source_id for t in Encounter.objects.filter(
+        mapping["overwrite"] = [t.source_id for t in Encounter.objects.filter(
             source="wamtram", status=Encounter.STATUS_NEW)]
 
-        [import_one_encounter_wamtram(e, ODK_MAPPING, users) for e in enc
-         if e["OBSERVATION_ID"] not in ODK_MAPPING["keep"]]
+        [import_one_encounter_wamtram(e, mapping, users) for e in enc
+         if e["OBSERVATION_ID"] not in mapping["keep"]]
 
         # if extradata:
         #   tags = csv.DictReader(open(extradata))
@@ -3007,7 +2406,7 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
         enc = [x["source_id"] for x in
                AnimalEncounter.objects.filter(source="wamtram").values("source_id")]
 
-        [import_one_tag(x, ODK_MAPPING) for x in tags
+        [import_one_tag(x, mapping) for x in tags
          if make_wamtram_source_id(x["observation_id"]) in enc]
 
     elif flavour == "sitevisit":
@@ -3015,11 +2414,11 @@ def import_odk(datafile, flavour="odk-tt034", extradata=None, usercsv=None):
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        ODK_MAPPING["users"] = {u: guess_user(u) for u in set(
+        mapping["users"] = {u: guess_user(u) for u in set(
             [r["reporter"] for r in d])}
 
-        [import_one_record_sv01(r, ODK_MAPPING) for r in d]     # retain local edits
+        [import_one_record_sv01(r, mapping) for r in d]     # retain local edits
         print("Done!")
 
     else:
-        print("Format not recognized. Exiting.")
+        print("Format {0} not recognized. Exiting.".format(flavour))

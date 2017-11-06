@@ -18,16 +18,30 @@ from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
 from wastd.observations.models import (
-    Area, Expedition, SiteVisit, FieldMediaAttachment,
-    Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
+    Area, 
+    Expedition, 
+    SiteVisit, 
+    FieldMediaAttachment,
+    Encounter, 
+    TurtleNestEncounter, 
+    AnimalEncounter, 
+    LoggerEncounter,
     LineTransectEncounter,
-    MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
-    TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
-    TurtleMorphometricObservation, HatchlingMorphometricObservation,
+    MediaAttachment, 
+    TagObservation, 
+    NestTagObservation, 
+    ManagementAction,
+    TrackTallyObservation, 
+    TurtleNestDisturbanceTallyObservation,
+    TurtleMorphometricObservation, 
+    HatchlingMorphometricObservation,
     DugongMorphometricObservation,
     TurtleDamageObservation,
-    TurtleNestObservation, TurtleNestDisturbanceObservation,
-    TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
+    TurtleNestObservation, 
+    TurtleNestDisturbanceObservation,
+    TemperatureLoggerSettings, 
+    DispatchRecord, 
+    TemperatureLoggerDeployment)
 from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
