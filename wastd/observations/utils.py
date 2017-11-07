@@ -302,13 +302,13 @@ def handle_media_attachment(e, photo_dict, title="Photo"):
 
     Arguments:
 
-    e An Encounter with a source_id at e.source_id
+    e An Encounter with an attribute "source_id" (e.source_id)
 
     {
-                "filename": "1485913363900.jpg",
-                "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-            }
+        "filename": "1485913363900.jpg",
+        "type": "image/jpeg",
+        "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+    }
     """
     if photo_dict is None:
         print("  ODK collect photo not taken, skipping {0}".format(title))
@@ -3014,7 +3014,7 @@ def import_odka_fs03(r):
         gimme_src_id(data),
         lon,
         lat,
-        acc,
+        "10",
         gimme(data, "observation_start_time"),
         gimme(data, "reporter"),
         gimme(data, "reporter"))
