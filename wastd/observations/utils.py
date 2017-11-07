@@ -2434,13 +2434,15 @@ def import_odk(datafile,
 # ---------------------------------------------------------------------------#
 # ODK Aggregate API helpers
 #
-def xmlelem_to_dict(t, ns="{http://opendatakit.org/submissions}"):
+def xmlelem_to_dict(t):
     """Convert a potentially nested XML Element to a dict, strip namespace.
 
     Source: https://stackoverflow.com/a/19557036/2813717
     Credit: https://stackoverflow.com/users/489638/s29
+
+    Note: creates some superfluous dicts and lists.
     """
-    return {t.tag.replace(ns, ""): map(xmlelem_to_dict, list(t)) or t.text}
+    return {t.tag.split("}")[-1]: map(xmlelem_to_dict, list(t)) or t.text}
 
 
 def odka_forms(url=env('ODKA_URL'),
@@ -2607,3 +2609,419 @@ def odka_submissions(form_id,
          for x in odka_submission_ids(form_id, url=url, un=un, pw=pw)]
     print("[odka_submissions] Done, retrieved {0} submissions.".format(len(d)))
     return d
+
+
+def save_odka(form_id,
+              path=".",
+              url=env('ODKA_URL'),
+              un=env('ODKA_UN'),
+              pw=env('ODKA_PW'),
+              verbose=False):
+    """Save all submissions for a given form_id as JSON to a given path.
+
+    Arguments:
+
+    form_id An existing form_id
+    path A locally existing path, default: "."
+    url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
+        default: the value of environment variable "ODKA_URL".
+    un A username that exists on the ODK-A instance.
+        Default: the value of environment variable "ODKA_UN".
+    pw The username's password.
+        Default: the value of environment variable "ODKA_PW".
+    verbose Whether to print verbose log messages, default: False.
+    """
+    with open('{0}/{1}.json'.format(path, form_id), 'w') as outfile:
+        json.dump(
+            odka_submissions(
+                form_id,
+                url=url,
+                un=un,
+                pw=pw,
+                verbose=verbose),
+            outfile
+        )
+
+
+def save_all_odka(path=".",
+                  url=env('ODKA_URL'),
+                  un=env('ODKA_UN'),
+                  pw=env('ODKA_PW'),
+                  verbose=False):
+    """Save all submissions for all forms of an odka instance.
+
+    Arguments:
+
+    path A locally existing path, default: "."
+    url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
+        default: the value of environment variable "ODKA_URL".
+    un A username that exists on the ODK-A instance.
+        Default: the value of environment variable "ODKA_UN".
+    pw The username's password.
+        Default: the value of environment variable "ODKA_PW".
+    verbose Whether to print verbose log messages, default: False.
+
+    Returns:
+    At the specified location (path) for each form, a file will be written
+    which containis all submissions (records) for that respective form.
+    """
+    [save_odka(
+        xform['formID'],
+        path=path,
+        url=url,
+        un=un,
+        pw=pw,
+        verbose=verbose)
+     for xform in odka_forms()]
+
+
+def make_datapackage_json(xform,
+                          path=".",
+                          url=env('ODKA_URL'),
+                          un=env('ODKA_UN'),
+                          pw=env('ODKA_PW'),
+                          verbose=False,
+                          download_submissions=False,
+                          download_config=False):
+    """Generate a datapacke.json config for a given xform dict.
+
+    Arguments:
+
+    xform An xform dict as produced by odka_forms()
+    path The local path to the downloaded submission JSON as produced by save_odka()
+    url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
+        default: the value of environment variable "ODKA_URL".
+    un A username that exists on the ODK-A instance.
+        Default: the value of environment variable "ODKA_UN".
+    pw The username's password.
+        Default: the value of environment variable "ODKA_PW".
+    verbose Whether to print verbose log messages, default: False.
+    download_submissions Whether to download submissions
+    download_config Whether to write the returned config to a local file
+
+    Returns:
+    A dict
+    """
+    fid = xform["formID"].lower()
+    datapackage_path = os.path.join(path, fid)
+
+    if not os.path.exists(datapackage_path):
+        os.makedirs(datapackage_path)
+
+    if download_submissions:
+        save_odka(
+            xform["formID"],
+            path=datapackage_path,
+            url=url,
+            un=un,
+            pw=pw,
+            verbose=verbose)
+
+    datapackage_config = {
+        "name": fid,
+        "title": xform["name"],
+        "description": "Hash: {0}\nversion: {1}\nmajorMinorVersion: {2}\ndownload URL: {3}".format(
+            xform["hash"], xform["version"], xform["majorMinorVersion"], xform["downloadUrl"]),
+        "licenses": [
+            {
+                "id": "odc-pddl",
+                "name": "Public Domain Dedication and License",
+                "version": "1.0",
+                "url": "http://opendatacommons.org/licenses/pddl/1.0/"
+            }
+        ],
+        "resources": [
+                {'encoding': 'utf-8',
+                 'format': 'json',
+                 'mediatype': 'text/json',
+                 'name': fid,
+                 'path': "{0}/{1}.json".format(datapackage_path, fid),
+                 'profile': 'data-resource'}
+        ]
+        }
+
+    if download_config:
+        with open('{0}/datapackage.json'.format(datapackage_path), 'w') as outfile:
+            json.dump(datapackage_config, outfile)
+
+    return datapackage_config
+
+
+# ---------------------------------------------------------------------------#
+# Munging JSON output from odka_*
+#
+def gimme_data(submission_dict):
+    """Return the data part of an ODKA submission."""
+    return submission_dict["submission"][0]["data"][0]["data"]
+
+
+def gimme_all(my_iterable, my_key):
+    """Return a list of all elements having at least my_key in a given iterable.
+
+    E.g.
+    r = {
+        "submission": [
+          {
+            "data": [
+              {
+                "data": [
+                  {
+                    "meta": [
+                      { "instanceID": "uuid:d7f96001-a126-410c-b33d-407decf068d1" }
+                    ]
+                  },
+                  { "observation_start_time": "2017-10-25T09:39:18.532Z" },
+                  { "reporter": "david_porteous" },
+                  {
+                    "disturbanceobservation": [
+                      {
+                        "location":
+                          "-20.7768750000 116.8622416667 -3.4000000000 4.9000000000"
+                      },
+                      { "photo_disturbance": "1508924412065.jpg" },
+                      { "disturbance_cause": "fox" },
+                      { "disturbance_cause_confidence": "expert-opinion" },
+                      { "comments": null }
+                    ]
+                  },
+                  { "observation_end_time": "2017-10-25T09:40:37.327Z" }
+                ]
+              }
+            ]
+          },
+          {
+            "mediaFile": [
+              { "filename": "1508924412065.jpg" },
+              { "hash": "md5:f4f0b5dea646865c27ca0c8c832c5800" },
+              {
+                "downloadUrl":
+                  "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+              }
+            ]
+          }
+        ]
+      }
+
+    gimme_all(gimme_data(r), "reporter")
+    ["david_porteous"]
+    """
+    return [element[my_key] for element in my_iterable if my_key in element]
+
+
+def gimme(my_iterable, my_key):
+    """Return the first match of gimme_all.
+
+    {
+        "submission": [
+          {
+            "data": [
+              {
+                "data": [
+                  {
+                    "meta": [
+                      { "instanceID": "uuid:d7f96001-a126-410c-b33d-407decf068d1" }
+                    ]
+                  },
+                  { "observation_start_time": "2017-10-25T09:39:18.532Z" },
+                  { "reporter": "david_porteous" },
+                  {
+                    "disturbanceobservation": [
+                      {
+                        "location":
+                          "-20.7768750000 116.8622416667 -3.4000000000 4.9000000000"
+                      },
+                      { "photo_disturbance": "1508924412065.jpg" },
+                      { "disturbance_cause": "fox" },
+                      { "disturbance_cause_confidence": "expert-opinion" },
+                      { "comments": null }
+                    ]
+                  },
+                  { "observation_end_time": "2017-10-25T09:40:37.327Z" }
+                ]
+              }
+            ]
+          },
+          {
+            "mediaFile": [
+              { "filename": "1508924412065.jpg" },
+              { "hash": "md5:f4f0b5dea646865c27ca0c8c832c5800" },
+              {
+                "downloadUrl":
+                  "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+              }
+            ]
+          }
+        ]
+      }
+
+    gimme(d, "reporter")
+    "david_porteous"
+    """
+    return gimme_all(my_iterable, my_key)[0]
+
+
+def gimme_src_id(r):
+    """Return the instanceID from an odka_submission."""
+    return gimme(r, "meta")[0]["instanceID"]
+
+
+def gimme_media(r):
+    """Return a list of {filename: downloadUrl} for all mediaFiles."""
+    return [{gimme(x["mediaFile"], "filename"): gimme(x["mediaFile"], "downloadUrl")}
+            for x in r["submission"]
+            if "mediaFile" in x]
+
+
+def create_update_skip(
+        source,
+        source_id,
+        lon,
+        lat,
+        acc,
+        when,
+        observer,
+        reporter):
+    """Create, update or skip Encounter.
+
+    From minimal required data, create (if not existing),
+    update (if unchanged) or skip (if changed) an Encounter.
+
+
+    Arguments:
+    source An existing WAStD data source, e.g. "odk"
+    source_id The unique source ID for a record, e.g. the instanceID of an ODK submission.
+    lon, lat, acc Coordinates (will be forced to float)
+    when observed_od, will be parsed to date
+    observer,
+    reporter: username for observer and reporter.
+
+    Returns:
+
+    If Encounter exists with STATUS_NEW, it already has been imported, but no
+    QA actions have updated the data, so the original data before import is
+    deemed the point of truth. The Encounter can safely be overwritten.
+    Returns updated Encounter and action verb "overwrite".
+
+    If Encounter exists with a status other than STATUS_NEW, this means that QA operators
+    have deemed this record the point of truth.
+    Returns the skipped Encounter and action verb "skip".
+
+    If the Encounter does not exist, it needs to be created.
+    Returns newly created Encounter and action verb "create".
+    """
+    new_data = dict(
+        source=source,
+        source_id=source_id,
+        where=Point(float(lon), float(lat)),
+        when=parse_datetime(when),
+        location_accuracy=acc,
+        observer=guess_user(observer),
+        reporter=guess_user(reporter)
+    )
+
+    enc = Encounter.objects.filter(source=source, source_id=source_id)
+    if enc.exists():
+        if enc.first().status == Encounter.STATUS_NEW:
+            msg = "Updating unchanged existing record {0}...".format(source_id)
+            action = "update"
+            enc.update(**new_data)
+            e = enc.first()
+            e.save()
+        else:
+            msg = "Skipping existing curated record {0}...".format(source_id)
+            action = "skip"
+            e = enc.first()
+    else:
+        msg = "Creating new record {0}...".format(source_id)
+        action = "create"
+        e = Encounter.objects.create(**new_data)
+        e.save()
+
+    print(msg)
+    return (e, action)
+
+
+# ---------------------------------------------------------------------------#
+# Fox Sake 0.3
+#
+def import_odka_fs03(r):
+    """Import one ODK Fox Sake 0.3 record from the OKA-A API into WAStD.
+
+    The following choices are now are identical to WAStD
+    and do not require a mapping any longer:
+
+    * disturbance evident
+    * disturbance_cause_confidence
+
+    Arguments
+
+    r The submission record as dict, e.g.
+
+      {
+        "submission": [
+          {
+            "data": [
+              {
+                "data": [
+                  {
+                    "meta": [
+                      { "instanceID": "uuid:d7f96001-a126-410c-b33d-407decf068d1" }
+                    ]
+                  },
+                  { "observation_start_time": "2017-10-25T09:39:18.532Z" },
+                  { "reporter": "david_porteous" },
+                  {
+                    "disturbanceobservation": [
+                      {
+                        "location":
+                          "-20.7768750000 116.8622416667 -3.4000000000 4.9000000000"
+                      },
+                      { "photo_disturbance": "1508924412065.jpg" },
+                      { "disturbance_cause": "fox" },
+                      { "disturbance_cause_confidence": "expert-opinion" },
+                      { "comments": null }
+                    ]
+                  },
+                  { "observation_end_time": "2017-10-25T09:40:37.327Z" }
+                ]
+              }
+            ]
+          },
+          {
+            "mediaFile": [
+              { "filename": "1508924412065.jpg" },
+              { "hash": "md5:f4f0b5dea646865c27ca0c8c832c5800" },
+              {
+                "downloadUrl":
+                  "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+              }
+            ]
+          }
+        ]
+      }
+
+    m The mapping of ODK to WAStD choices
+
+    Existing records will be overwritten.
+    Make sure to skip existing records which should be retained.
+    """
+    data = gimme_data(r)
+    media = gimme_media(r)
+    lat, lon, alt, acc = gimme(data, "disturbanceobservation")[0]["location"].split(" ")
+
+    enc, action = create_update_skip(
+        "odk",
+        gimme_src_id(data),
+        lon,
+        lat,
+        acc,
+        gimme(data, "observation_start_time"),
+        gimme(data, "reporter"),
+        gimme(data, "reporter"))
+
+    if action in ["overwrite", "create"]:
+        # handle_turtlenestdistobs31(r, e)
+        enc.save()
+
+    print(" Done: {0}\n".format(enc))
+    return enc
