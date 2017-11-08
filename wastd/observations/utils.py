@@ -3028,7 +3028,7 @@ def import_odka_fs03(r):
         photo = gimme(gimme(data, "disturbanceobservation"), "photo_disturbance")
 
         if photo:
-            photo_dict = dict(dict(filename=photo, url=media[photo]))
+            photo_dict = dict(filename=photo, url=gimme(media, photo))
         else:
             photo_dict = None
 
