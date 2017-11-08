@@ -3037,7 +3037,7 @@ def import_odka_fs03(r):
             dict(
                 disturbance_cause=gimme(distobs, "disturbance_cause"),
                 disturbance_cause_confidence=gimme(distobs, "disturbance_cause_confidence"),
-                disturbance_severity=gimme(distobs, "disturbance_severity"),
+                disturbance_severity="na",
                 photo_disturbance=photo_dict,
                 comments=gimme(distobs, "comments")
             ),
