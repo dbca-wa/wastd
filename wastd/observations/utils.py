@@ -3025,7 +3025,8 @@ def import_odka_fs03(r):
         gimme(data, "reporter"))
 
     if action in ["overwrite", "create"]:
-        photo = gimme(gimme(data, "disturbanceobservation"), "photo_disturbance")
+        distobs = gimme(data, "disturbanceobservation")
+        photo = gimme(distobs, "photo_disturbance")
 
         if photo:
             photo_dict = dict(filename=photo, url=gimme(media, photo))
@@ -3034,11 +3035,11 @@ def import_odka_fs03(r):
 
         handle_turtlenestdistobs31(
             dict(
-                disturbance_cause=gimme(data, "disturbance_cause"),
-                disturbance_cause_confidence=gimme(data, "disturbance_cause_confidence"),
-                disturbance_severity=gimme(data, "disturbance_severity"),
+                disturbance_cause=gimme(distobs, "disturbance_cause"),
+                disturbance_cause_confidence=gimme(distobs, "disturbance_cause_confidence"),
+                disturbance_severity=gimme(distobs, "disturbance_severity"),
                 photo_disturbance=photo_dict,
-                comments=gimme(data, "comments")
+                comments=gimme(distobs, "comments")
             ),
             enc)
 
