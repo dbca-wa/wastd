@@ -3024,7 +3024,7 @@ def import_odka_fs03(r):
         gimme(data, "reporter"),
         gimme(data, "reporter"))
 
-    if action in ["overwrite", "create"]:
+    if action in ["update", "create"]:
         distobs = gimme(data, "disturbanceobservation")
         photo = gimme(distobs, "photo_disturbance")
 
