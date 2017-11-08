@@ -269,7 +269,7 @@ def handle_photo(p, e, title="Track"):
     title The attachment's title (default: "Track")
     """
     # Does the file exist locally?
-    print("  Creating photo attachment...")
+    print("  Creating photo attachment at filepath {0} for encounter {1} with title {2}...".format(p, e.id, title))
     if os.path.exists(p):
         print("  File {0} exists".format(p))
         with open(p, 'rb') as photo:
@@ -289,7 +289,7 @@ def handle_photo(p, e, title="Track"):
                     action = "Created"
 
                 # Update the file
-                m.attachment.save(title, f, save=True)
+                m.attachment.save(p, f, save=True)
                 print("  Photo {0}: {1}".format(action, m))
             else:
                 print("  [ERROR] zero size file {0}".format(p))
@@ -313,12 +313,17 @@ def handle_media_attachment(e, photo_dict, title="Photo"):
     if photo_dict is None:
         print("  ODK collect photo not taken, skipping {0}".format(title))
         return
+
     pdir = make_photo_foldername(e.source_id)
     pname = os.path.join(pdir, photo_dict["filename"])
+    print("  Photo dir is {0}".format(pdir))
+    print("  Photo filepath is {0}".format(pname))
+
     dl_photo(
         e.source_id,
         photo_dict["url"],
         photo_dict["filename"])
+
     handle_photo(pname, e, title=title)
 
 
