@@ -10,6 +10,7 @@ from dateutil import parser
 # from pprint import pprint
 import requests
 import shutil
+import xmltodict
 
 from requests.auth import HTTPDigestAuth
 from xml.etree import ElementTree
@@ -2533,7 +2534,7 @@ def odka_submission_ids(form_id,
     ]
     """
     pars = {'formId': form_id, 'numEntries': limit}
-    api = "{0}/view/submissionList".format(url)
+    api = "{0}".format(url)
     au = HTTPDigestAuth(un, pw)
     print("[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(form_id))
     res = requests.get(api, auth=au, params=pars)
