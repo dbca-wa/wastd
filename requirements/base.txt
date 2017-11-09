@@ -19,7 +19,7 @@ django-grappelli==2.10.1
 
 # API
 # ------------------------------------------------
-djangorestframework
+djangorestframework==3.6.2
 djangorestframework-gis
 djangorestframework-csv
 djangorestframework-yaml
