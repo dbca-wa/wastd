@@ -110,7 +110,8 @@ TAG_TYPE_CHOICES = (
     ('narangebub-nickname', 'Narangebup rehab informal name'),  # RREC
     ('aqwa-nickname', 'AQWA informal name'),  # UWW, from former name UnderWater World
     ('atlantis-nickname', 'Atlantis informal name'),  # ATLANTIS
-    ('wa-museum-reptile-registration-number', 'WA Museum Natural History Reptiles Catalogue Registration Number'),  # WAMusR
+    ('wa-museum-reptile-registration-number',
+        'WA Museum Natural History Reptiles Catalogue Registration Number'),  # WAMusR
     ('genetic-tag', 'Genetic ID sequence'),
     ('other', 'Other'),)
 
@@ -263,11 +264,11 @@ SIRENIA_CHOICES = (
     )
 
 SPECIES_CHOICES = NA +\
- TURTLE_SPECIES_CHOICES +\
- CETACEAN_SPECIES_CHOICES +\
- SIRENIA_CHOICES +\
- PINNIPED_SPECIES_CHOICES +\
- SEASNAKE_SPECIES_CHOICES
+     TURTLE_SPECIES_CHOICES +\
+     CETACEAN_SPECIES_CHOICES +\
+     SIRENIA_CHOICES +\
+     PINNIPED_SPECIES_CHOICES +\
+     SEASNAKE_SPECIES_CHOICES
 
 SEX_CHOICES = (
     (NA_VALUE, "unknown sex"),
@@ -607,6 +608,7 @@ class Area(geo_models.Model):
     * northern extent: useful to sort by latitude
     * as html: an HTML map popup
     """
+
     AREATYPE_MPA = 'MPA'
     AREATYPE_LOCALITY = 'Locality'
     AREATYPE_SITE = 'Site'
@@ -2118,7 +2120,8 @@ class MediaAttachment(Observation):
     def __str__(self):
         """The unicode representation."""
         return "Media {0} {1} for {2}".format(
-            self.pk, self.title, self.encounter.__str__())
+            self.pk, self.title, self.encounter.__str__()
+            ).encode('utf-8').strip()
 
     @property
     def filepath(self):
@@ -2325,7 +2328,7 @@ class NestTagObservation(Observation):
         cl = reverse("admin:observations_nesttagobservation_changelist")
         if self.flipper_tag_id:
             return "{0}?q={1}".format(cl, urllib.quote_plus(self.flipper_tag_id))
-        else: 
+        else:
             return cl
 
     @property
