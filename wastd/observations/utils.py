@@ -2498,7 +2498,8 @@ def odka_submission_ids(form_id,
                         limit=10000,
                         url=env('ODKA_URL'),
                         un=env('ODKA_UN'),
-                        pw=env('ODKA_PW')):
+                        pw=env('ODKA_PW'), 
+                        verbose=False):
     """Return a list of submission IDs for a given ODKA formID.
 
     TODO: should lower numEntries
@@ -2534,9 +2535,11 @@ def odka_submission_ids(form_id,
     ]
     """
     pars = {'formId': form_id, 'numEntries': limit}
-    api = "{0}".format(url)
+    api = "{0}/view/submissionList".format(url)
     au = HTTPDigestAuth(un, pw)
     print("[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(form_id))
+    if verbose:
+        print("[odka_submission_ids] Retrieving submission IDs from '{0}'...".format(api))
     res = requests.get(api, auth=au, params=pars)
     el = ElementTree.fromstring(res.content)
     ids = [e.text for e in el.find('{http://opendatakit.org/submissions}idList')]
@@ -2612,7 +2615,7 @@ def odka_submissions(form_id,
     """
     print("[odka_submissions] Retrieving submissions for formID {0}...".format(form_id))
     d = [odka_submission(form_id, x, url=url, un=un, pw=pw, verbose=verbose)
-         for x in odka_submission_ids(form_id, url=url, un=un, pw=pw)]
+         for x in odka_submission_ids(form_id, url=url, un=un, pw=pw, verbose=verbose)]
     print("[odka_submissions] Done, retrieved {0} submissions.".format(len(d)))
     return d
 
@@ -3048,3 +3051,6 @@ def import_odka_fs03(r):
 
     print(" Done: {0}\n".format(enc))
     return enc
+
+
+# TODO try this https://pythonadventures.wordpress.com/2014/12/29/xml-to-dict-xml-to-json/

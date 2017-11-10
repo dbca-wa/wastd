@@ -76,3 +76,6 @@ config/wastd_uwsgi.ini
 
 # ingested data
 data/
+
+# iPython 
+docs/.ipynb_checkpoints/
