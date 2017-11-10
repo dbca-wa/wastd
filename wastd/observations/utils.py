@@ -2821,128 +2821,47 @@ def make_datapackage_json(xform,
 # ---------------------------------------------------------------------------#
 # Munging JSON output from odka_*
 #
-def gimme_data(submission_dict):
-    """Return the data part of an ODKA submission."""
-    return submission_dict["submission"][0]["data"][0]["data"]
+def make_media(submission):
+    """Return a dict of filename:downloadUrl of a mediaFile dict.
 
+    The mediaFile dict can be a list of file dicts or a single file dict.
 
-def gimme_all(my_iterable, my_key):
-    """Return a list of all elements having at least my_key in a given iterable.
+    Arguments:
+    mediafile A mediaFile node parsed with xmltojson.
 
-    E.g.
-    r = {
-        "submission": [
-          {
-            "data": [
-              {
-                "data": [
-                  {
-                    "meta": [
-                      { "instanceID": "uuid:d7f96001-a126-410c-b33d-407decf068d1" }
-                    ]
-                  },
-                  { "observation_start_time": "2017-10-25T09:39:18.532Z" },
-                  { "reporter": "david_porteous" },
-                  {
-                    "disturbanceobservation": [
-                      {
-                        "location":
-                          "-20.7768750000 116.8622416667 -3.4000000000 4.9000000000"
-                      },
-                      { "photo_disturbance": "1508924412065.jpg" },
-                      { "disturbance_cause": "fox" },
-                      { "disturbance_cause_confidence": "expert-opinion" },
-                      { "comments": null }
-                    ]
-                  },
-                  { "observation_end_time": "2017-10-25T09:40:37.327Z" }
-                ]
-              }
-            ]
-          },
-          {
-            "mediaFile": [
-              { "filename": "1508924412065.jpg" },
-              { "hash": "md5:f4f0b5dea646865c27ca0c8c832c5800" },
-              {
-                "downloadUrl":
-                  "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-              }
-            ]
-          }
-        ]
-      }
-
-    gimme_all(gimme_data(r), "reporter")
-    ["david_porteous"]
+    Returns:
+        A dict with zero to many filename:downloadUrl key-value pairs.
     """
-    return [element[my_key] for element in my_iterable if my_key in element]
+    if "mediaFile" in submission:
+        mf = submission["mediaFile"]
+        if "filename" in mf:
+            print("[make_media] found single mediaFile")
+            d = dict()
+            d[mf["filename"]] = mf["downloadUrl"]
+            return d
+        elif len(mf) > 0 and "filename" in mf[0]:
+            print("[make_media] found multiple mediaFiles")
+            return {x["filename"]: x["downloadUrl"] for x in mf}
+        else:
+            print("[make_media] WARNING unknown data: {0}".format(
+                json.dumps(mf, indent=2)))
+            return dict()
+    else:
+        print("[make_media] no mediaFile found")
+        return dict()
 
 
-def gimme(my_iterable, my_key):
-    """Return the first match of gimme_all.
-
-    {
-        "submission": [
-          {
-            "data": [
-              {
-                "data": [
-                  {
-                    "meta": [
-                      { "instanceID": "uuid:d7f96001-a126-410c-b33d-407decf068d1" }
-                    ]
-                  },
-                  { "observation_start_time": "2017-10-25T09:39:18.532Z" },
-                  { "reporter": "david_porteous" },
-                  {
-                    "disturbanceobservation": [
-                      {
-                        "location":
-                          "-20.7768750000 116.8622416667 -3.4000000000 4.9000000000"
-                      },
-                      { "photo_disturbance": "1508924412065.jpg" },
-                      { "disturbance_cause": "fox" },
-                      { "disturbance_cause_confidence": "expert-opinion" },
-                      { "comments": null }
-                    ]
-                  },
-                  { "observation_end_time": "2017-10-25T09:40:37.327Z" }
-                ]
-              }
-            ]
-          },
-          {
-            "mediaFile": [
-              { "filename": "1508924412065.jpg" },
-              { "hash": "md5:f4f0b5dea646865c27ca0c8c832c5800" },
-              {
-                "downloadUrl":
-                  "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-              }
-            ]
-          }
-        ]
-      }
-
-    gimme(d, "reporter")
-    "david_porteous"
-    """
-    return gimme_all(my_iterable, my_key)[0]
+def make_photo_dict(filename, media):
+    """Generate a photo dict (filename, url) as in the ODKA JSON export."""
+    if filename and filename in media:
+        return dict(filename=filename, url=media[filename])
+    else:
+        return None
 
 
-def gimme_src_id(r):
-    """Return the instanceID from an odka_submission."""
-    return gimme(r, "meta")[0]["instanceID"]
-
-
-def gimme_media(r):
-    """Return a list of {filename: downloadUrl} for all mediaFiles."""
-    return [{gimme(x["mediaFile"], "filename"): gimme(x["mediaFile"], "downloadUrl")}
-            for x in r["submission"]
-            if "mediaFile" in x]
-
-
+# ---------------------------------------------------------------------------#
+# Update logic for WAStD's custom QA django-fsm status
+#
 def create_update_skip(
         source,
         source_id,
@@ -2951,7 +2870,8 @@ def create_update_skip(
         acc,
         when,
         observer,
-        reporter):
+        reporter,
+        cls=Encounter):
     """Create, update or skip Encounter.
 
     From minimal required data, create (if not existing),
@@ -3005,11 +2925,78 @@ def create_update_skip(
     else:
         msg = "Creating new record {0}...".format(source_id)
         action = "create"
-        e = Encounter.objects.create(**new_data)
+        e = cls.objects.create(**new_data)
         e.save()
 
     print(msg)
     return (e, action)
+
+
+# ---------------------------------------------------------------------------#
+# WAStD data import logic
+#
+def handle_odka_disturbanceobservation(data, media, enc):
+    """Handle empty, one, or multiple TurtleNestDistObs."""
+    if "disturbanceobservation" not in data:
+        print("[handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
+        return None
+
+    distobs = data["disturbanceobservation"]
+
+    if distobs and "photo_disturbance" in distobs:
+        """
+        disturbanceobservation":
+            {
+                "photo_disturbance": "1510298200138.jpg",
+                "disturbance_cause": "vehicle",
+                "disturbance_cause_confidence": "guess",
+                "disturbance_severity": "completely",
+                "comments": "Yeah"
+            },
+        """
+        print("[handle_odka_disturbanceobservation] found one TurtleNestDisturbanceObservation")
+        handle_turtlenestdistobs31(
+            dict(
+                disturbance_cause=distobs["disturbance_cause"],
+                disturbance_cause_confidence=distobs["disturbance_cause_confidence"],
+                disturbance_severity="na" if "disturbance_severity" not in x else x["disturbance_severity"],
+                photo_disturbance=make_photo_dict(distobs["photo_disturbance"], media),
+                comments=distobs["comments"]
+            ),
+            enc)
+
+    elif distobs and len(distobs) > 0 and "disturbance_cause" in distobs[0]:
+        """
+        disturbanceobservation": [
+                    {
+                        "photo_disturbance": "1510298200138.jpg",
+                        "disturbance_cause": "vehicle",
+                        "disturbance_cause_confidence": "guess",
+                        "disturbance_severity": "completely",
+                        "comments": "Yeah"
+                    },
+                    {
+                        "photo_disturbance": "1510298254227.jpg",
+                        "disturbance_cause": "goanna",
+                        "disturbance_cause_confidence": "guess",
+                        "disturbance_severity": "partly",
+                        "comments": "Jup"
+                    }
+                ],
+        """
+        print("[handle_odka_disturbanceobservation] found multiple TurtleNestDisturbanceObservation")
+        [handle_turtlenestdistobs31(
+            dict(
+                disturbance_cause=x["disturbance_cause"],
+                disturbance_cause_confidence=x["disturbance_cause_confidence"],
+                disturbance_severity="na" if "disturbance_severity" not in x else x["disturbance_severity"],
+                photo_disturbance=make_photo_dict(x["photo_disturbance"], media),
+                comments=x["comments"]
+            ),
+            enc) for x in distobs]
+    else:
+        print("[handle_odka_disturbanceobservation] found invalid data: {0}".format(
+            json.dumps(distobs, indent=2)))
 
 
 # ---------------------------------------------------------------------------#
@@ -3076,14 +3063,8 @@ def import_odka_fs03(r):
         The WAStD Encounter object.
     """
     data = r["submission"]["data"]["data"]
+    media = make_media(r["submission"])
     lat, lon, alt, acc = data["disturbanceobservation"]["location"].split(" ")
-    if ("mediaFile" in r["submission"] and
-            data["disturbanceobservation"]["photo_disturbance"]):
-        photo_disturbance = dict(
-            filename=data["disturbanceobservation"]["photo_disturbance"],
-            url=r["submission"]["mediaFile"]["downloadUrl"])
-    else:
-        photo_disturbance = None
 
     enc, action = create_update_skip(
         "odk",
@@ -3093,20 +3074,11 @@ def import_odka_fs03(r):
         "10",
         data["observation_start_time"],
         data["reporter"],
-        data["reporter"])
+        data["reporter"],
+        cls=Encounter)
 
     if action in ["update", "create"]:
-        distobs = data["disturbanceobservation"]
-
-        handle_turtlenestdistobs31(
-            dict(
-                disturbance_cause=distobs["disturbance_cause"],
-                disturbance_cause_confidence=distobs["disturbance_cause_confidence"],
-                disturbance_severity="na",
-                photo_disturbance=photo_disturbance,
-                comments=distobs["comments"]
-            ),
-            enc)
+        handle_odka_disturbanceobservation(data, media, enc)
 
         enc.save()
 
@@ -3114,4 +3086,311 @@ def import_odka_fs03(r):
     return enc
 
 
-# TODO try this https://pythonadventures.wordpress.com/2014/12/29/xml-to-dict-xml-to-json/
+# ---------------------------------------------------------------------------#
+# Track or Treat 0.36-0.44
+#
+def import_odka_tt044(r):
+    """Import one ODK Track or Treat 0.44 record from the OKA-A API into WAStD.
+
+    This should work for versions 0.36, 0.44 and up.
+
+    Arguments
+
+    r The submission record as dict, e.g.
+
+    save_all_odka(path="data/odka")
+    from wastd.observations.utils import *
+
+    with open("data/odka/build_Track-or-Treat-0-44_1509422138.json") as df:
+        d = json.load(df)
+
+    print(json.dumps(d[0], indent=4))
+
+    {
+        "submission": {
+            "@xmlns": "http://opendatakit.org/submissions",
+            "@xmlns:orx": "http://openrosa.org/xforms",
+            "data": {
+                "data": {
+                    "@id": "build_Track-or-Treat-0-44_1509422138",
+                    "@instanceID": "uuid:e4106979-e2d8-4020-9bd7-49f47579dfb5",
+                    "@submissionDate": "2017-11-10T07:22:40.265Z",
+                    "@isComplete": "true",
+                    "@markedAsCompleteDate": "2017-11-10T07:22:40.265Z",
+                    "orx:meta": {
+                        "orx:instanceID": "uuid:e4106979-e2d8-4020-9bd7-49f47579dfb5"
+                    },
+                    "observation_start_time": "2017-11-10T07:15:43.160Z",
+                    "reporter": "Thevenard3",
+                    "device_id": "d0:f8:8c:78:f5:f0",
+                    "details": {
+                        "nest_age": "fresh",
+                        "species": "natator-depressus",
+                        "nest_type": "successful-crawl",
+                        "observed_at": "-31.9965742000 115.8842839000 0E-10 50.0000000000"
+                    },
+                    "track_photos": {
+                        "photo_track_1": null,
+                        "photo_track_2": null
+                    },
+                    "nest_photos": {
+                        "photo_nest_1": null,
+                        "photo_nest_2": null,
+                        "photo_nest_3": null
+                    },
+                    "nest": {
+                        "habitat": "in-dune-vegetation",
+                        "disturbance": "present",
+                        "nest_tagged": "yes",
+                        "logger_found": "yes",
+                        "eggs_counted": "yes",
+                        "hatchlings_measured": "yes",
+                        "fan_angles_measured": "yes"
+                    },
+                    "disturbanceobservation": [
+                        {
+                            "photo_disturbance": "1510298200138.jpg",
+                            "disturbance_cause": "vehicle",
+                            "disturbance_cause_confidence": "guess",
+                            "disturbance_severity": "completely",
+                            "comments": "Yeah"
+                        },
+                        {
+                            "photo_disturbance": "1510298254227.jpg",
+                            "disturbance_cause": "goanna",
+                            "disturbance_cause_confidence": "guess",
+                            "disturbance_severity": "partly",
+                            "comments": "Jup"
+                        }
+                    ],
+                    "egg_count": {
+                        "no_egg_shells": "60",
+                        "no_live_hatchlings": "5",
+                        "no_dead_hatchlings": "14",
+                        "no_undeveloped_eggs": "15",
+                        "no_unhatched_eggs": "5",
+                        "no_unhatched_term": "6",
+                        "no_depredated_eggs": "2",
+                        "nest_depth_top": "25",
+                        "nest_depth_bottom": "89"
+                    },
+                    "egg_photos": {
+                        "photo_eggs": "1510298324400.jpg"
+                    },
+                    "nest_tag": {
+                        "status": "resighted",
+                        "flipper_tag_id": "WA1234",
+                        "date_nest_laid": "2017-11-10",
+                        "tag_label": "Test3",
+                        "tag_comments": "Jup",
+                        "photo_tag": "1510298358979.jpg"
+                    },
+                    "hatchling_measurements": [
+                        {
+                            "straight_carapace_length_mm": "125",
+                            "straight_carapace_width_mm": "56",
+                            "body_weight_g": "12"
+                        },
+                        {
+                            "straight_carapace_length_mm": "145",
+                            "straight_carapace_width_mm": "16",
+                            "body_weight_g": "15"
+                        }
+                    ],
+                    "fan_angles": {
+                        "leftmost_track_auto": null,
+                        "rightmost_track_auto": null,
+                        "bearing_to_water_auto": null,
+                        "device_compass_present": "no",
+                        "no_tracks_main_group": "20",
+                        "outlier_tracks_present": "yes",
+                        "light_sources_present": "yes",
+                        "hatchling_emergence_time_known": "yes"
+                    },
+                    "hatchling_emergence_time_group": {
+                        "hatchling_emergence_time": "2017-11-10T07:21:00.000Z"
+                    },
+                    "fan_angles_manual": {
+                        "leftmost_track_manual": "230",
+                        "rightmost_track_manual": "356",
+                        "bearing_to_water_manual": "270"
+                    },
+                    "outlier_track": [
+                        {
+                            "track_bearing_auto": null,
+                            "track_bearing_manual": "53"
+                        },
+                        {
+                            "track_bearing_auto": null,
+                            "track_bearing_manual": "52"
+                        }
+                    ],
+                    "light_source": {
+                        "light_bearing_auto": null,
+                        "bearing_manual": "23",
+                        "light_source_type": "artificial",
+                        "light_source_description": "That's no moon!"
+                    },
+                    "observation_end_time": "2017-11-10T07:21:50.211Z"
+                }
+            },
+            "mediaFile": [
+                {
+                    "filename": "1510298200138.jpg",
+                    "hash": "md5:c4e49a94ba76623160fd2dbebf34eff2",
+                    "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
+                },
+                {
+                    "filename": "1510298254227.jpg",
+                    "hash": "md5:0da51be6b4e6fb3f0210d473c979d85c",
+                    "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
+                },
+                {
+                    "filename": "1510298324400.jpg",
+                    "hash": "md5:351d1043a5cc49c2fbf093e8d60508a1",
+                    "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
+                },
+                {
+                    "filename": "1510298358979.jpg",
+                    "hash": "md5:16b72612f5297b04846f4cba73bf0988",
+                    "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey="
+                }
+            ]
+        }
+    }
+
+
+    Existing records will be overwritten unless marked in WAStD as "proofread"
+    or higher levels of QA.
+
+    Important note: repeating groups with only one element are flattened into
+    a simple dict consisting of the element's keys.
+    Repeating groups with multiple elements consist of lists of dicts.
+    This is an artifact of the XML parser.
+
+    Returns:
+        The WAStD Encounter object.
+    """
+    data = r["submission"]["data"]["data"]
+    media = make_media(r["submission"])
+    lat, lon, alt, acc = data["details"]["observed_at"].split(" ")
+
+    enc, action = create_update_skip(
+        "odk",
+        data["@instanceID"],
+        lon,
+        lat,
+        "10",
+        data["observation_start_time"],
+        data["reporter"],
+        data["reporter"],
+        cls=TurtleNestEncounter)
+
+    if action in ["update", "create"]:
+
+        enc.nest_age = data["details"]["nest_age"]
+        enc.species = data["details"]["species"]
+        enc.nest_type = data["details"]["nest_type"]
+
+        enc.habitat = data["nest"]["habitat"] or "na"
+        enc.disturbance = data["nest"]["disturbance"] or "na"
+
+        """"
+        track_photos": {
+            "photo_track_1": null,
+            "photo_track_2": null
+        },
+        "nest_photos": {
+            "photo_nest_1": null,
+            "photo_nest_2": null,
+            "photo_nest_3": null
+        },
+        """
+
+        """TurtleNestObservation
+
+        "egg_count": {
+            "no_egg_shells": "60",
+            "no_live_hatchlings": "5",
+            "no_dead_hatchlings": "14",
+            "no_undeveloped_eggs": "15",
+            "no_unhatched_eggs": "5",
+            "no_unhatched_term": "6",
+            "no_depredated_eggs": "2",
+            "nest_depth_top": "25",
+            "nest_depth_bottom": "89"
+        },
+        """
+
+        """NestTagObservation
+        "nest_tag": {
+            "status": "resighted",
+            "flipper_tag_id": "WA1234",
+            "date_nest_laid": "2017-11-10",
+            "tag_label": "Test3",
+            "tag_comments": "Jup",
+            "photo_tag": "1510298358979.jpg"
+        },
+        """
+
+        """HatchlingMorphometricObservation
+        "hatchling_measurements": [
+            {
+                "straight_carapace_length_mm": "125",
+                "straight_carapace_width_mm": "56",
+                "body_weight_g": "12"
+            },
+            {
+                "straight_carapace_length_mm": "145",
+                "straight_carapace_width_mm": "16",
+                "body_weight_g": "15"
+            }
+        ],
+        """
+
+        """Fan angles TODO
+        "fan_angles": {
+            "leftmost_track_auto": null,
+            "rightmost_track_auto": null,
+            "bearing_to_water_auto": null,
+            "device_compass_present": "no",
+            "no_tracks_main_group": "20",
+            "outlier_tracks_present": "yes",
+            "light_sources_present": "yes",
+            "hatchling_emergence_time_known": "yes"
+        },
+        "hatchling_emergence_time_group": {
+            "hatchling_emergence_time": "2017-11-10T07:21:00.000Z"
+        },
+        "fan_angles_manual": {
+            "leftmost_track_manual": "230",
+            "rightmost_track_manual": "356",
+            "bearing_to_water_manual": "270"
+        },
+        "outlier_track": [
+            {
+                "track_bearing_auto": null,
+                "track_bearing_manual": "53"
+            },
+            {
+                "track_bearing_auto": null,
+                "track_bearing_manual": "52"
+            }
+        ],
+        "light_source": {
+            "light_bearing_auto": null,
+            "bearing_manual": "23",
+            "light_source_type": "artificial",
+            "light_source_description": "That's no moon!"
+        },
+
+        """
+
+        enc.save()
+
+        handle_odka_disturbanceobservation(data, media, enc)
+
+        enc.save()
+
+    print(" Done: {0}\n".format(enc))
+    return enc
