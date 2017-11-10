@@ -2959,7 +2959,7 @@ def handle_odka_disturbanceobservation(data, media, enc):
             dict(
                 disturbance_cause=distobs["disturbance_cause"],
                 disturbance_cause_confidence=distobs["disturbance_cause_confidence"],
-                disturbance_severity="na" if "disturbance_severity" not in x else x["disturbance_severity"],
+                disturbance_severity="na" if "disturbance_severity" not in distobs else distobs["disturbance_severity"],
                 photo_disturbance=make_photo_dict(distobs["photo_disturbance"], media),
                 comments=distobs["comments"]
             ),
