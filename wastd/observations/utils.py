@@ -13,7 +13,6 @@ import shutil
 import xmltodict
 
 from requests.auth import HTTPDigestAuth
-from xml.etree import ElementTree
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -2440,23 +2439,12 @@ def import_odk(datafile,
 # ---------------------------------------------------------------------------#
 # ODK Aggregate API helpers
 #
-def xmlelem_to_dict(t):
-    """Convert a potentially nested XML Element to a dict, strip namespace.
-
-    Source: https://stackoverflow.com/a/19557036/2813717
-    Credit: https://stackoverflow.com/users/489638/s29
-
-    Note: creates some superfluous dicts and lists.
-    """
-    return {t.tag.split("}")[-1]: map(xmlelem_to_dict, list(t)) or t.text}
-
-
 def odka_forms(url=env('ODKA_URL'),
                un=env('ODKA_UN'),
                pw=env('ODKA_PW')):
     """Return an OpenRosa xformsList XML response as list of dicts.
 
-    See https://groups.google.com/forum/#!topic/opendatakit-developers/rfjN1nwYRFY
+    See http://docs.opendatakit.org/openrosa-form-list/
 
     Arguments
 
@@ -2470,26 +2458,49 @@ def odka_forms(url=env('ODKA_URL'),
     Returns
     A list of dicts, each dict contains one xform:
 
-    [
-      {'downloadUrl': 'https://dpaw-data.appspot.com/formXml?formId=build_Site-Visit-Start-0-1_1490753483',
-       'formID': 'build_Site-Visit-Start-0-1_1490753483',
-       'hash': 'md5:c18c69c713c648bac240cbac9eee2d8a',
-       'majorMinorVersion': None,
-       'name': 'Site Visit Start 0.1',
-       'version': None},
-      {...repeat for each form...},
-    ]
+    forms = odka_forms()
+    print(json.dumps(forms, indent=4))
+
+
+    The whole response parses to:
+    res = {
+    "xforms": {
+        "@xmlns": "http://openrosa.org/xforms/xformsList",
+        "xform": [
+            {
+                "formID": "build_Track-Tally-0-5_1502342159",
+                "name": "Track Tally 0.5",
+                "majorMinorVersion": null,
+                "version": null,
+                "hash": "md5:2607df5d22571e1e55e1b90e90157473",
+                "downloadUrl": "https://dpaw-data.appspot.com/formXml?formId=build_Track-Tally-0-5_1502342159"
+            },
+            {... other form defs ...}
+            ]
+        }
+    }
+
+    This function returns res["xforms"]["xform"] and returns a list of dicts.
+        [
+            {
+                "formID": "build_Track-Tally-0-5_1502342159",
+                "name": "Track Tally 0.5",
+                "majorMinorVersion": null,
+                "version": null,
+                "hash": "md5:2607df5d22571e1e55e1b90e90157473",
+                "downloadUrl": "https://dpaw-data.appspot.com/formXml?formId=build_Track-Tally-0-5_1502342159"
+            },
+            {... other form defs ...}
+        ]
+
+    some_form_id = forms[0]["formID"]
     """
     api = "{0}/xformsList".format(url)
     au = HTTPDigestAuth(un, pw)
     print("[odka_forms] Retrieving xformsList from {0}...".format(url))
     res = requests.get(api, auth=au)
-    ns = "{http://openrosa.org/xforms/xformsList}"
-    xforms = ElementTree.fromstring(res.content)
-    forms = [{x.tag.replace(ns, ""): xform.find(x.tag).text for x in xform}
-             for xform in list(xforms)]
-    # not quite right:
-    # xforms_dict = [xmlelem_to_dict(xform, ns=ns) for xform in list(xforms)]
+    xforms = xmltodict.parse(res.content, xml_attribs=True)
+    forms = xforms["xforms"]["xform"]
     print("[odka_forms] Done, retrieved {0} forms.".format(len(forms)))
     return forms
 
@@ -2498,11 +2509,13 @@ def odka_submission_ids(form_id,
                         limit=10000,
                         url=env('ODKA_URL'),
                         un=env('ODKA_UN'),
-                        pw=env('ODKA_PW'), 
+                        pw=env('ODKA_PW'),
                         verbose=False):
     """Return a list of submission IDs for a given ODKA formID.
 
-    TODO: should lower numEntries
+    See http://docs.opendatakit.org/aggregate-use/#briefcase-aggregate-api
+
+    TODO: should lower numEntries and load in idChunks
 
     Arguments:
 
@@ -2537,12 +2550,26 @@ def odka_submission_ids(form_id,
     pars = {'formId': form_id, 'numEntries': limit}
     api = "{0}/view/submissionList".format(url)
     au = HTTPDigestAuth(un, pw)
+
     print("[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(form_id))
     if verbose:
         print("[odka_submission_ids] Retrieving submission IDs from '{0}'...".format(api))
+
     res = requests.get(api, auth=au, params=pars)
-    el = ElementTree.fromstring(res.content)
-    ids = [e.text for e in el.find('{http://opendatakit.org/submissions}idList')]
+    parsed = xmltodict.parse(res.content, xml_attribs=True)
+
+    if not parsed["idChunk"]["idList"]:
+        # No submissions.
+        ids = []
+    elif type(parsed["idChunk"]["idList"]["id"]) == unicode:
+        # One submission.
+        ids = [parsed["idChunk"]["idList"]["id"], ]
+    else:
+        # More than one submission.
+        ids = parsed["idChunk"]["idList"]["id"]
+
+    # resumption_cursor = parsed["idChunk"]["resumptionCursor"]
+
     print("[odka_submission_ids] Done, retrieved {0} submission IDs.".format(len(ids)))
     return ids
 
@@ -2553,7 +2580,9 @@ def odka_submission(form_id,
                     un=env('ODKA_UN'),
                     pw=env('ODKA_PW'),
                     verbose=False):
-    """Download one ODKA submission and return as ElementTree (goal: dict).
+    """Download one ODKA submission and return as dict.
+
+    See http://docs.opendatakit.org/aggregate-use/#briefcase-aggregate-api
 
     Arguments:
 
@@ -2571,12 +2600,45 @@ def odka_submission(form_id,
     verbose Whether to print verbose log messages, default: False.
 
     Returns
-    WIP - currently the submission as XML Element.
+        A dict with key "submission" containing "data" and "mediaFile".
 
     Example
     d = odka_submission('build_Site-Visit-Start-0-1_1490753483',
         'uuid:a9772680-b6f9-45c0-8ed4-189f5e722a6c')
-    list(d)
+    print(json.dumps(d, indent=4))
+    {
+        "submission": {
+            "@xmlns": "http://opendatakit.org/submissions",
+            "@xmlns:orx": "http://openrosa.org/xforms",
+            "data": {
+                "data": {
+                    "@id": "build_Site-Visit-Start-0-1_1490753483",
+                    "@instanceID": "uuid:a9772680-b6f9-45c0-8ed4-189f5e722a6c",
+                    "@submissionDate": "2017-11-05T23:37:49.829Z",
+                    "@isComplete": "true",
+                    "@markedAsCompleteDate": "2017-11-05T23:40:51.534Z",
+                    "orx:meta": {
+                        "orx:instanceID": "uuid:a9772680-b6f9-45c0-8ed4-189f5e722a6c"
+                    },
+                    "reporter": "ali_goss",
+                    "survey_start_time": "2017-11-05T22:02:51.121Z",
+                    "site_visit": {
+                        "location": "-20.3136817000 118.6444200000 -2.1000000000 4.8000000000",
+                        "site_conditions": "1509919398254.jpg",
+                        "comments": null
+                    }
+                }
+            },
+            "mediaFile": {
+                "filename": "1509919398254.jpg",
+                "hash": "md5:4c112a49ab99aa6a5166741ff9ba2ea2",
+                "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+            }
+        }
+    }
+
+    d["submission"]["data"]["data"]["@id"]
+    u'build_Site-Visit-Start-0-1_1490753483'
     """
     api = ("{0}/view/downloadSubmission?formId={1}"
            "[@version=null%20and%20@uiVersion=null]/data[@key={2}]").format(
@@ -2586,8 +2648,7 @@ def odka_submission(form_id,
     if verbose:
         print("[odka_submission] URL {0}".format(api))
     res = requests.get(api, auth=au)
-    el = ElementTree.fromstring(res.content)
-    return xmlelem_to_dict(el)
+    return xmltodict.parse(res.content, xml_attribs=True)
 
 
 def odka_submissions(form_id,
@@ -2648,7 +2709,8 @@ def save_odka(form_id,
                 un=un,
                 pw=pw,
                 verbose=verbose),
-            outfile
+            outfile,
+            indent=4
         )
 
 
@@ -2966,84 +3028,83 @@ def import_odka_fs03(r):
 
     r The submission record as dict, e.g.
 
-      {
-        "submission": [
-          {
-            "data": [
-              {
-                "data": [
-                  {
-                    "meta": [
-                      { "instanceID": "uuid:d7f96001-a126-410c-b33d-407decf068d1" }
-                    ]
-                  },
-                  { "observation_start_time": "2017-10-25T09:39:18.532Z" },
-                  { "reporter": "david_porteous" },
-                  {
-                    "disturbanceobservation": [
-                      {
-                        "location":
-                          "-20.7768750000 116.8622416667 -3.4000000000 4.9000000000"
-                      },
-                      { "photo_disturbance": "1508924412065.jpg" },
-                      { "disturbance_cause": "fox" },
-                      { "disturbance_cause_confidence": "expert-opinion" },
-                      { "comments": null }
-                    ]
-                  },
-                  { "observation_end_time": "2017-10-25T09:40:37.327Z" }
-                ]
-              }
-            ]
-          },
-          {
-            "mediaFile": [
-              { "filename": "1508924412065.jpg" },
-              { "hash": "md5:f4f0b5dea646865c27ca0c8c832c5800" },
-              {
-                "downloadUrl":
-                  "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-              }
-            ]
+    save_all_odka(path="data/odka")
+    with open("data/odka/build_Fox-Sake-0-3_1490757423.json") as df:
+        d = json.load(df)
+    r = d[1]
+
+    r
+
+    {
+      "submission": {
+        "@xmlns": "http://opendatakit.org/submissions",
+        "mediaFile": {
+          "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=...",
+          "hash": "md5:ed81ee17661c5abd50d1afcd8e286df1",
+          "filename": "1502766687358.jpg"
+        },
+        "data": {
+          "data": {
+            "@id": "build_Fox-Sake-0-3_1490757423",
+            "observation_end_time": "2017-08-15T03:12:40.171Z",
+            "reporter": null,
+            "@instanceID": "uuid:01c1d466-d759-4bea-a740-1dbf29031060",
+            "orx:meta": {
+              "orx:instanceID": "uuid:01c1d466-d759-4bea-a740-1dbf29031060"
+            },
+            "@submissionDate": "2017-08-23T03:45:56.782Z",
+            "disturbanceobservation": {
+              "disturbance_cause": "unknown",
+              "photo_disturbance": "1502766687358.jpg",
+              "location": "-15.7594300000 124.4009683333 57.1000000000 5.0000000000",
+              "comments": "Fire pits X 6",
+              "disturbance_cause_confidence": "expert-opinion"
+            },
+            "@isComplete": "true",
+            "observation_start_time": "2017-08-15T03:10:41.862Z",
+            "@markedAsCompleteDate": "2017-08-23T03:45:56.782Z"
           }
-        ]
+        },
+        "@xmlns:orx": "http://openrosa.org/xforms"
       }
+    }
 
-    m The mapping of ODK to WAStD choices
+    Existing records will be overwritten unless marked in WAStD as "proofread"
+    or higher levels of QA.
 
-    Existing records will be overwritten.
-    Make sure to skip existing records which should be retained.
+    Returns:
+        The WAStD Encounter object.
     """
-    data = gimme_data(r)
-    media = gimme_media(r)
-    lat, lon, alt, acc = gimme(data, "disturbanceobservation")[0]["location"].split(" ")
+    data = r["submission"]["data"]["data"]
+    lat, lon, alt, acc = data["disturbanceobservation"]["location"].split(" ")
+    if ("mediaFile" in r["submission"] and
+            data["disturbanceobservation"]["photo_disturbance"]):
+        photo_disturbance = dict(
+            filename=data["disturbanceobservation"]["photo_disturbance"],
+            url=r["submission"]["mediaFile"]["downloadUrl"])
+    else:
+        photo_disturbance = None
 
     enc, action = create_update_skip(
         "odk",
-        gimme_src_id(data),
+        data["@instanceID"],
         lon,
         lat,
         "10",
-        gimme(data, "observation_start_time"),
-        gimme(data, "reporter"),
-        gimme(data, "reporter"))
+        data["observation_start_time"],
+        data["reporter"],
+        data["reporter"])
 
     if action in ["update", "create"]:
-        distobs = gimme(data, "disturbanceobservation")
-        photo = gimme(distobs, "photo_disturbance")
-
-        if photo:
-            photo_dict = dict(filename=photo, url=gimme(media, photo))
-        else:
-            photo_dict = None
+        distobs = data["disturbanceobservation"]
 
         handle_turtlenestdistobs31(
             dict(
-                disturbance_cause=gimme(distobs, "disturbance_cause"),
-                disturbance_cause_confidence=gimme(distobs, "disturbance_cause_confidence"),
+                disturbance_cause=distobs["disturbance_cause"],
+                disturbance_cause_confidence=distobs["disturbance_cause_confidence"],
                 disturbance_severity="na",
-                photo_disturbance=photo_dict,
-                comments=gimme(distobs, "comments")
+                photo_disturbance=photo_disturbance,
+                comments=distobs["comments"]
             ),
             enc)
 
