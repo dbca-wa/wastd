@@ -510,23 +510,24 @@ def handle_turtlenestobs31(d, e):
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
         nest_position=d["habitat"],
-        no_egg_shells=d["no_egg_shells"] or 0,
-        no_live_hatchlings=d["no_live_hatchlings"] or 0,
-        no_dead_hatchlings=d["no_dead_hatchlings"] or 0,
-        no_undeveloped_eggs=d["no_undeveloped_eggs"] or 0,
-        no_unhatched_eggs=d["no_unhatched_eggs"] or 0,
-        no_unhatched_term=d["no_unhatched_term"] or 0,
-        no_depredated_eggs=d["no_depredated_eggs"] or 0,
-        nest_depth_top=d["nest_depth_top"] or 0,
-        nest_depth_bottom=d["nest_depth_bottom"] or 0
+        no_egg_shells=int(d["no_egg_shells"]) or 0,
+        no_live_hatchlings=int(d["no_live_hatchlings"]) or 0,
+        no_dead_hatchlings=int(d["no_dead_hatchlings"]) or 0,
+        no_undeveloped_eggs=int(d["no_undeveloped_eggs"]) or 0,
+        no_unhatched_eggs=int(d["no_unhatched_eggs"]) or 0,
+        no_unhatched_term=int(d["no_unhatched_term"]) or 0,
+        no_depredated_eggs=int(d["no_depredated_eggs"]) or 0,
+        nest_depth_top=int(d["nest_depth_top"]) or 0,
+        nest_depth_bottom=int(d["nest_depth_bottom"]) or 0
         )
     dd.save()
     action = "created" if created else "updated"
     print("  TurtleNestObservation {0}: {1}".format(action, dd))
 
-    for idx, ep in enumerate(d["egg_photos"]):
-        handle_media_attachment(
+    if "egg_photos" in d:
+        [handle_media_attachment(
             e, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1))
+            for idx, ep in enumerate(d["egg_photos"])]
 
 
 def handle_turtlenesttagobs(d, e, m):
@@ -2941,50 +2942,10 @@ def handle_odka_disturbanceobservation(data, media, enc):
         print("[handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
         return None
 
-    distobs = data["disturbanceobservation"]
+    distobs = listify(data["disturbanceobservation"])
 
-    if distobs and "photo_disturbance" in distobs:
-        """
-        disturbanceobservation":
-            {
-                "photo_disturbance": "1510298200138.jpg",
-                "disturbance_cause": "vehicle",
-                "disturbance_cause_confidence": "guess",
-                "disturbance_severity": "completely",
-                "comments": "Yeah"
-            },
-        """
-        print("[handle_odka_disturbanceobservation] found one TurtleNestDisturbanceObservation")
-        handle_turtlenestdistobs31(
-            dict(
-                disturbance_cause=distobs["disturbance_cause"],
-                disturbance_cause_confidence=distobs["disturbance_cause_confidence"],
-                disturbance_severity="na" if "disturbance_severity" not in distobs else distobs["disturbance_severity"],
-                photo_disturbance=make_photo_dict(distobs["photo_disturbance"], media),
-                comments=distobs["comments"]
-            ),
-            enc)
-
-    elif distobs and len(distobs) > 0 and "disturbance_cause" in distobs[0]:
-        """
-        disturbanceobservation": [
-                    {
-                        "photo_disturbance": "1510298200138.jpg",
-                        "disturbance_cause": "vehicle",
-                        "disturbance_cause_confidence": "guess",
-                        "disturbance_severity": "completely",
-                        "comments": "Yeah"
-                    },
-                    {
-                        "photo_disturbance": "1510298254227.jpg",
-                        "disturbance_cause": "goanna",
-                        "disturbance_cause_confidence": "guess",
-                        "disturbance_severity": "partly",
-                        "comments": "Jup"
-                    }
-                ],
-        """
-        print("[handle_odka_disturbanceobservation] found multiple TurtleNestDisturbanceObservation")
+    if distobs:
+        print("[handle_odka_disturbanceobservation] found {0} TurtleNestDisturbanceObservation(s)".format(len(distobs)))
         [handle_turtlenestdistobs31(
             dict(
                 disturbance_cause=x["disturbance_cause"],
@@ -3295,32 +3256,21 @@ def import_odka_tt044(r):
         enc.habitat = data["nest"]["habitat"] or "na"
         enc.disturbance = data["nest"]["disturbance"] or "na"
 
-        """"
-        track_photos": {
-            "photo_track_1": null,
-            "photo_track_2": null
-        },
-        "nest_photos": {
-            "photo_nest_1": null,
-            "photo_nest_2": null,
-            "photo_nest_3": null
-        },
-        """
+        handle_media_attachment_odka(enc, media, data["track_photos"]["photo_track_1"], title="Uptrack")
+        handle_media_attachment_odka(enc, media, data["track_photos"]["photo_track_2"], title="Downtrack")
+        handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_1"], title="Nest 1")
+        handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_2"], title="Nest 2")
+        handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_3"], title="Nest 3")
 
-        """TurtleNestObservation
+        if data["nest"]["eggs_counted"] == "yes":
+            nest_dict = data["egg_count"]
+            nest_dict["habitat"] = data["nest"]["habitat"]
+            handle_turtlenestobs31(nest_dict, enc)
 
-        "egg_count": {
-            "no_egg_shells": "60",
-            "no_live_hatchlings": "5",
-            "no_dead_hatchlings": "14",
-            "no_undeveloped_eggs": "15",
-            "no_unhatched_eggs": "5",
-            "no_unhatched_term": "6",
-            "no_depredated_eggs": "2",
-            "nest_depth_top": "25",
-            "nest_depth_bottom": "89"
-        },
-        """
+            if "egg_photos" in data and data["egg_photos"]:
+                [handle_media_attachment_odka(
+                    enc, media, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1))
+                    for idx, ep in enumerate(listify(data["egg_photos"]))]
 
         """NestTagObservation
         "nest_tag": {
@@ -3394,3 +3344,26 @@ def import_odka_tt044(r):
 
     print(" Done: {0}\n".format(enc))
     return enc
+
+
+def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
+    """Handle MediaAttachment for ODKA data."""
+    if not photo_filename:
+        print("[handle_media_attachment_odka] skipping empty photo {0}".format(title))
+        return None
+    handle_media_attachment(enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+    return None
+
+
+def listify(x):
+    """Wrap x in a list and return x if it already is a list or None.
+
+    This re-instates the incorrectly flattened lists with one element from xmltojson.
+    """
+    if x:
+        if type(x) == list:
+            return x
+        else:
+            return [x, ]
+    else:
+        return None
