@@ -3463,3 +3463,30 @@ def import_odka_tt044(r):
 
     print(" Done: {0}\n".format(enc))
     return enc
+
+
+def import_all_odka(path="."):
+    """Import all known ODKA data.
+
+    Example usage on shell_plus:
+
+    from wastd.observations.utils import *
+    save_all_odka(path="data/odka")
+    import_all_odka(path="data/odka")
+    """
+    with open(os.path.join(path, "build_Fox-Sake-0-3_1490757423.json")) as df:
+        fs03 = json.load(df)
+    fs03_enc = [import_odka_fs03(submission) for submission in fs03]
+
+    with open(os.path.join(path, "build_Track-or-Treat-0-44_1509422138.json")) as df:
+        tt44 = json.load(df)
+    tt44_enc = [import_odka_tt044(submission) for submission in tt44]
+
+    with open(os.path.join(path, "build_Track-or-Treat-0-36_1508561995.json")) as df:
+        tt36 = json.load(df)
+    tt36_enc = [import_odka_tt044(submission) for submission in tt36]
+
+    return dict(
+        fs03=fs03_enc,
+        tt44=tt44_enc,
+        tt36=tt36_enc)
