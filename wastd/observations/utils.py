@@ -530,7 +530,7 @@ def handle_turtlenestobs31(d, e):
             for idx, ep in enumerate(d["egg_photos"])]
 
 
-def handle_turtlenesttagobs(d, e, m):
+def handle_turtlenesttagobs(d, e, m=None):
     """Get or create a TagObservation and related MediaAttachments.
 
     Arguments
@@ -559,7 +559,7 @@ def handle_turtlenesttagobs(d, e, m):
     else:
         dd, created = NestTagObservation.objects.get_or_create(
             encounter=e,
-            status=m["tag_status"][d["status"]],
+            status=m["tag_status"][d["status"]] if m else d["status"],
             flipper_tag_id=d["flipper_tag_id"],
             date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
             tag_label=d["tag_label"])
@@ -584,11 +584,15 @@ def handle_hatchlingmorphometricobs(d, e):
     e The related TurtleNestEncounter (must exist)
     """
     print("  Creating Hatchling Obs...")
+    scl = int(d["straight_carapace_length_mm"]) if d["straight_carapace_length_mm"] else None
+    scw = int(d["straight_carapace_width_mm"]) if d["straight_carapace_width_mm"] else None
+    bwg = int(d["body_weight_g"]) if d["body_weight_g"] else None
+
     dd, created = HatchlingMorphometricObservation.objects.get_or_create(
         encounter=e,
-        straight_carapace_length_mm=d["straight_carapace_length_mm"],
-        straight_carapace_width_mm=d["straight_carapace_width_mm"],
-        body_weight_g=d["body_weight_g"]
+        straight_carapace_length_mm=scl,
+        straight_carapace_width_mm=scw,
+        body_weight_g=bwg
         )
     dd.save()
     action = "created" if created else "updated"
@@ -2860,6 +2864,27 @@ def make_photo_dict(filename, media):
         return None
 
 
+def listify(x):
+    """Wrap x in a list and return x if it already is a list or None.
+
+    This re-instates the incorrectly flattened lists with one element from xmltojson,
+    where repeating groups with only one element are flattened to a dict of the group.
+
+    Returns:
+
+    None > None
+    {} > [{}, ]
+    [] > []
+    """
+    if x:
+        if type(x) == list:
+            return x
+        else:
+            return [x, ]
+    else:
+        return None
+
+
 # ---------------------------------------------------------------------------#
 # Update logic for WAStD's custom QA django-fsm status
 #
@@ -2936,8 +2961,18 @@ def create_update_skip(
 # ---------------------------------------------------------------------------#
 # WAStD data import logic
 #
-def handle_odka_disturbanceobservation(data, media, enc):
-    """Handle empty, one, or multiple TurtleNestDistObs."""
+def handle_odka_disturbanceobservation(enc, media, data):
+    """Handle empty, one, or multiple TurtleNestDistObs.
+
+    Arguments:
+
+    enc A TurtleNestEncounter
+    media A dict of photo filename:url
+    data A "disturbance_observation" dict from ODK "Fox Sake 0.3" or "Track or Treat 0.36"
+
+    Returns
+    None
+    """
     if "disturbanceobservation" not in data:
         print("[handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
         return None
@@ -2958,6 +2993,62 @@ def handle_odka_disturbanceobservation(data, media, enc):
     else:
         print("[handle_odka_disturbanceobservation] found invalid data: {0}".format(
             json.dumps(distobs, indent=2)))
+    return None
+
+
+def handle_odka_nesttagobservation(enc, media, data):
+    """Handle empty, one, or multiple NestTagObservations.
+
+    Arguments:
+
+        enc A TurtleNestEncounter
+        media A dict of photo filename:url
+        data A "disturbance_observation" dict from ODK "Fox Sake 0.3" or "Track or Treat 0.36"
+
+    Returns:
+
+        None
+
+    "nest_tag": {
+        "status": "resighted",
+        "flipper_tag_id": "WA1234",
+        "date_nest_laid": "2017-11-10",
+        "tag_label": "Test3",
+        "tag_comments": "Jup",
+        "photo_tag": "1510298358979.jpg"
+    }
+    """
+    if "nest_tag" not in data:
+        print("[handle_odka_nesttagobservation] found no TurtleNestTagObservation")
+        return None
+
+    obs = listify(data["nest_tag"])
+
+    if obs:
+        print("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
+        [handle_turtlenesttagobs(
+            dict(
+                encounter=enc,
+                status=x["status"],
+                flipper_tag_id=x["flipper_tag_id"],
+                date_nest_laid=x["date_nest_laid"] if x["date_nest_laid"] else None,
+                tag_label=x["tag_label"],
+                photo_tag=make_photo_dict(x["photo_tag"], media)
+            ),
+            enc) for x in obs]
+    else:
+        print("[handle_odka_nesttagobservation] found invalid data: {0}".format(
+            json.dumps(obs, indent=2)))
+    return None
+
+
+def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
+    """Handle MediaAttachment for ODKA data."""
+    if not photo_filename:
+        print("[handle_media_attachment_odka] skipping empty photo {0}".format(title))
+        return None
+    handle_media_attachment(enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+    return None
 
 
 # ---------------------------------------------------------------------------#
@@ -3252,51 +3343,39 @@ def import_odka_tt044(r):
         enc.nest_age = data["details"]["nest_age"]
         enc.species = data["details"]["species"]
         enc.nest_type = data["details"]["nest_type"]
-
         enc.habitat = data["nest"]["habitat"] or "na"
         enc.disturbance = data["nest"]["disturbance"] or "na"
+        enc.save()
 
+        # Photos
         handle_media_attachment_odka(enc, media, data["track_photos"]["photo_track_1"], title="Uptrack")
         handle_media_attachment_odka(enc, media, data["track_photos"]["photo_track_2"], title="Downtrack")
         handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_1"], title="Nest 1")
         handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_2"], title="Nest 2")
         handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_3"], title="Nest 3")
 
-        if data["nest"]["eggs_counted"] == "yes":
+        # Turtle nest disturbance
+        handle_odka_disturbanceobservation(enc, media, data)
+
+        # Nest tag
+        handle_odka_nesttagobservation(enc, media, data)
+
+        # Egg count
+        if data["nest"]["eggs_counted"] == "yes" and "egg_count" in data:
             nest_dict = data["egg_count"]
             nest_dict["habitat"] = data["nest"]["habitat"]
             handle_turtlenestobs31(nest_dict, enc)
 
+            # Photos of excavated eggs
             if "egg_photos" in data and data["egg_photos"]:
                 [handle_media_attachment_odka(
                     enc, media, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1))
                     for idx, ep in enumerate(listify(data["egg_photos"]))]
 
-        """NestTagObservation
-        "nest_tag": {
-            "status": "resighted",
-            "flipper_tag_id": "WA1234",
-            "date_nest_laid": "2017-11-10",
-            "tag_label": "Test3",
-            "tag_comments": "Jup",
-            "photo_tag": "1510298358979.jpg"
-        },
-        """
-
-        """HatchlingMorphometricObservation
-        "hatchling_measurements": [
-            {
-                "straight_carapace_length_mm": "125",
-                "straight_carapace_width_mm": "56",
-                "body_weight_g": "12"
-            },
-            {
-                "straight_carapace_length_mm": "145",
-                "straight_carapace_width_mm": "16",
-                "body_weight_g": "15"
-            }
-        ],
-        """
+        # Hatchlings measured
+        if data["nest"]["hatchlings_measured"] == "yes" and "hatchling_measurements" in data:
+            [handle_hatchlingmorphometricobs(x, enc)
+             for x in listify(data["hatchling_measurements"])]
 
         """Fan angles TODO
         "fan_angles": {
@@ -3333,37 +3412,8 @@ def import_odka_tt044(r):
             "light_source_type": "artificial",
             "light_source_description": "That's no moon!"
         },
-
         """
-
-        enc.save()
-
-        handle_odka_disturbanceobservation(data, media, enc)
-
         enc.save()
 
     print(" Done: {0}\n".format(enc))
     return enc
-
-
-def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
-    """Handle MediaAttachment for ODKA data."""
-    if not photo_filename:
-        print("[handle_media_attachment_odka] skipping empty photo {0}".format(title))
-        return None
-    handle_media_attachment(enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
-    return None
-
-
-def listify(x):
-    """Wrap x in a list and return x if it already is a list or None.
-
-    This re-instates the incorrectly flattened lists with one element from xmltojson.
-    """
-    if x:
-        if type(x) == list:
-            return x
-        else:
-            return [x, ]
-    else:
-        return None
