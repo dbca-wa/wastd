@@ -2826,19 +2826,29 @@ def make_datapackage_json(xform,
 # ---------------------------------------------------------------------------#
 # Munging JSON output from odka_*
 #
-def make_media(submission):
-    """Return a dict of filename:downloadUrl of a mediaFile dict.
-
-    The mediaFile dict can be a list of file dicts or a single file dict.
+def make_data(odka_dict):
+    """Return a dict of filename:downloadUrl of an ODK-A submission dict.
 
     Arguments:
-    mediafile A mediaFile node parsed with xmltojson.
+    odka_dict An ODK-A submission parsed with xmltojson.
+
+    Returns:
+        The sub-node odka_dict["submission"]["data"]["data"]
+    """
+    return odka_dict["submission"]["data"]["data"]
+
+
+def make_media(odka_dict):
+    """Return a dict of filename:downloadUrl of an ODK-A submission dict.
+
+    Arguments:
+    odka_dict An ODK-A submission parsed with xmltojson.
 
     Returns:
         A dict with zero to many filename:downloadUrl key-value pairs.
     """
-    if "mediaFile" in submission:
-        mf = submission["mediaFile"]
+    if "mediaFile" in odka_dict["submission"]:
+        mf = odka_dict["submission"]["mediaFile"]
         if "filename" in mf:
             print("[make_media] found single mediaFile")
             d = dict()
@@ -2959,8 +2969,17 @@ def create_update_skip(
 
 
 # ---------------------------------------------------------------------------#
-# WAStD data import logic
+# WAStD data import helpers
 #
+def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
+    """Handle MediaAttachment for ODKA data."""
+    if not photo_filename:
+        print("[handle_media_attachment_odka] skipping empty photo {0}".format(title))
+        return None
+    handle_media_attachment(enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+    return None
+
+
 def handle_odka_disturbanceobservation(enc, media, data):
     """Handle empty, one, or multiple TurtleNestDistObs.
 
@@ -3003,7 +3022,7 @@ def handle_odka_nesttagobservation(enc, media, data):
 
         enc A TurtleNestEncounter
         media A dict of photo filename:url
-        data A "disturbance_observation" dict from ODK "Fox Sake 0.3" or "Track or Treat 0.36"
+        data A "data" dict from ODK "Track or Treat 0.36" ior higher.
 
     Returns:
 
@@ -3042,12 +3061,98 @@ def handle_odka_nesttagobservation(enc, media, data):
     return None
 
 
-def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
-    """Handle MediaAttachment for ODKA data."""
-    if not photo_filename:
-        print("[handle_media_attachment_odka] skipping empty photo {0}".format(title))
+def handle_odka_turtlenestobservation(enc, media, data):
+    """Handle empty, one, or multiple TurtleNestObservations.
+
+    Arguments:
+
+        enc A TurtleNestEncounter
+        media A dict of photo filename:url
+        data A "data" dict from ODK "Track or Treat 0.36" or higher, containing
+
+        "nest": {
+            "habitat": "in-dune-vegetation",
+            "disturbance": "present",
+            "nest_tagged": "yes",
+            "logger_found": "yes",
+            "eggs_counted": "yes",
+            "hatchlings_measured": "yes",
+            "fan_angles_measured": "yes"
+        },
+        "egg_count": {
+            "no_egg_shells": "60",
+            "no_live_hatchlings": "5",
+            "no_dead_hatchlings": "14",
+            "no_undeveloped_eggs": "15",
+            "no_unhatched_eggs": "5",
+            "no_unhatched_term": "6",
+            "no_depredated_eggs": "2",
+            "nest_depth_top": "25",
+            "nest_depth_bottom": "89"
+        },
+        "egg_photos": {
+            "photo_eggs": "1510298324400.jpg"
+        },
+
+    Returns:
+
+        None
+    """
+    if "egg_count" not in data:
+        print("[handle_odka_turtlenestobservation] found no TurtleNestObservation")
         return None
-    handle_media_attachment(enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+
+    if data["nest"]["eggs_counted"] == "yes":
+        nest_dict = data["egg_count"]
+        nest_dict["habitat"] = data["nest"]["habitat"]
+        handle_turtlenestobs31(nest_dict, enc)
+
+        # Photos of excavated eggs
+        if "egg_photos" in data and data["egg_photos"]:
+            [handle_media_attachment_odka(
+                enc, media, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1))
+                for idx, ep in enumerate(listify(data["egg_photos"]))]
+    return None
+
+
+def handle_odka_hatchlingmorphometricobservation(enc, media, data):
+    """Handle empty, one, or multiple TurtleNestObservations.
+
+    Arguments:
+
+        enc A TurtleNestEncounter
+        media A dict of photo filename:url
+        data A "data" dict from ODK "Track or Treat 0.36" or higher, containing
+
+        "nest": {
+            "habitat": "in-dune-vegetation",
+            "disturbance": "present",
+            "nest_tagged": "yes",
+            "logger_found": "yes",
+            "eggs_counted": "yes",
+            "hatchlings_measured": "yes",
+            "fan_angles_measured": "yes"
+        },
+        "hatchling_measurements": [
+            {
+                "straight_carapace_length_mm": "125",
+                "straight_carapace_width_mm": "56",
+                "body_weight_g": "12"
+            },
+            {
+                "straight_carapace_length_mm": "145",
+                "straight_carapace_width_mm": "16",
+                "body_weight_g": "15"
+            }
+        ],
+
+    Returns:
+
+        None
+    """
+    if data["nest"]["hatchlings_measured"] == "yes" and "hatchling_measurements" in data:
+        [handle_hatchlingmorphometricobs(x, enc)
+         for x in listify(data["hatchling_measurements"])]
     return None
 
 
@@ -3114,8 +3219,8 @@ def import_odka_fs03(r):
     Returns:
         The WAStD Encounter object.
     """
-    data = r["submission"]["data"]["data"]
-    media = make_media(r["submission"])
+    data = make_data(r)
+    media = make_media(r)
     lat, lon, alt, acc = data["disturbanceobservation"]["location"].split(" ")
 
     enc, action = create_update_skip(
@@ -3130,8 +3235,7 @@ def import_odka_fs03(r):
         cls=Encounter)
 
     if action in ["update", "create"]:
-        handle_odka_disturbanceobservation(data, media, enc)
-
+        handle_odka_disturbanceobservation(enc, media, data)
         enc.save()
 
     print(" Done: {0}\n".format(enc))
@@ -3323,8 +3427,8 @@ def import_odka_tt044(r):
     Returns:
         The WAStD Encounter object.
     """
-    data = r["submission"]["data"]["data"]
-    media = make_media(r["submission"])
+    data = make_data(r)
+    media = make_media(r)
     lat, lon, alt, acc = data["details"]["observed_at"].split(" ")
 
     enc, action = create_update_skip(
@@ -3339,80 +3443,22 @@ def import_odka_tt044(r):
         cls=TurtleNestEncounter)
 
     if action in ["update", "create"]:
-
         enc.nest_age = data["details"]["nest_age"]
         enc.species = data["details"]["species"]
         enc.nest_type = data["details"]["nest_type"]
         enc.habitat = data["nest"]["habitat"] or "na"
         enc.disturbance = data["nest"]["disturbance"] or "na"
         enc.save()
-
-        # Photos
         handle_media_attachment_odka(enc, media, data["track_photos"]["photo_track_1"], title="Uptrack")
         handle_media_attachment_odka(enc, media, data["track_photos"]["photo_track_2"], title="Downtrack")
         handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_1"], title="Nest 1")
         handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_2"], title="Nest 2")
         handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_3"], title="Nest 3")
-
-        # Turtle nest disturbance
         handle_odka_disturbanceobservation(enc, media, data)
-
-        # Nest tag
         handle_odka_nesttagobservation(enc, media, data)
-
-        # Egg count
-        if data["nest"]["eggs_counted"] == "yes" and "egg_count" in data:
-            nest_dict = data["egg_count"]
-            nest_dict["habitat"] = data["nest"]["habitat"]
-            handle_turtlenestobs31(nest_dict, enc)
-
-            # Photos of excavated eggs
-            if "egg_photos" in data and data["egg_photos"]:
-                [handle_media_attachment_odka(
-                    enc, media, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1))
-                    for idx, ep in enumerate(listify(data["egg_photos"]))]
-
-        # Hatchlings measured
-        if data["nest"]["hatchlings_measured"] == "yes" and "hatchling_measurements" in data:
-            [handle_hatchlingmorphometricobs(x, enc)
-             for x in listify(data["hatchling_measurements"])]
-
-        """Fan angles TODO
-        "fan_angles": {
-            "leftmost_track_auto": null,
-            "rightmost_track_auto": null,
-            "bearing_to_water_auto": null,
-            "device_compass_present": "no",
-            "no_tracks_main_group": "20",
-            "outlier_tracks_present": "yes",
-            "light_sources_present": "yes",
-            "hatchling_emergence_time_known": "yes"
-        },
-        "hatchling_emergence_time_group": {
-            "hatchling_emergence_time": "2017-11-10T07:21:00.000Z"
-        },
-        "fan_angles_manual": {
-            "leftmost_track_manual": "230",
-            "rightmost_track_manual": "356",
-            "bearing_to_water_manual": "270"
-        },
-        "outlier_track": [
-            {
-                "track_bearing_auto": null,
-                "track_bearing_manual": "53"
-            },
-            {
-                "track_bearing_auto": null,
-                "track_bearing_manual": "52"
-            }
-        ],
-        "light_source": {
-            "light_bearing_auto": null,
-            "bearing_manual": "23",
-            "light_source_type": "artificial",
-            "light_source_description": "That's no moon!"
-        },
-        """
+        handle_odka_turtlenestobservation(enc, media, data)
+        handle_odka_hatchlingmorphometricobservation(enc, media, data)
+        # handle_odka_fanangles(enc, media, data)
         enc.save()
 
     print(" Done: {0}\n".format(enc))
