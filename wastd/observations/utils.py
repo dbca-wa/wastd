@@ -3470,9 +3470,12 @@ def import_all_odka(path="."):
 
     Example usage on shell_plus:
 
+    import sys
+    reload(sys)
+    sys.setdefaultencoding('UTF8')
     from wastd.observations.utils import *
     save_all_odka(path="data/odka")
-    import_all_odka(path="data/odka")
+    enc = import_all_odka(path="data/odka")
     """
     with open(os.path.join(path, "build_Fox-Sake-0-3_1490757423.json")) as df:
         fs03 = json.load(df)
