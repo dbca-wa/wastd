@@ -3708,6 +3708,265 @@ def import_odka_tal05(r):
     return enc
 
 
+# ---------------------------------------------------------------------------#
+# Track or Treat 0.36-0.44
+#
+def import_odka_mwi04(r):
+    """
+    Import one ODK Marine Wildlife Incident 0.4 record from the OKA-A API into WAStD.
+
+    This should work for versions 0.4 and up.
+
+    Arguments
+
+    r The submission record as dict, e.g.
+
+    save_all_odka(path="data/odka")
+    from wastd.observations.utils import *
+
+    with open("data/odka/build_Marine-Wildlife-Incident-0-4_1509605702.json") as df:
+        d = json.load(df)
+
+    print(json.dumps(d[0], indent=4))
+
+    {
+    "submission": {
+      "@xmlns": "http://opendatakit.org/submissions",
+      "mediaFile": [
+        {
+          "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=...",
+          "hash": "md5:e35427a7fb6c390ac09ea53993be423a",
+          "filename": "1510473605661.jpg"
+        },
+        // more photos here
+      ],
+      "data": {
+        "data": {
+          "status": {
+            "behaviour": "behaviour comments",
+            "health": "dead-edible",
+            "activity": "beach-jumped"
+          },
+          "tag_observation": [
+            {
+              "photo_tag": "1510473657034.jpg",
+              "name": "WA1234",
+              "tag_status": "removed",
+              "tag_comments": "sample comments",
+              "tag_location": "eyes",
+              "tag_type": "flippertag"
+            },
+            {
+              "photo_tag": "1510473705773.jpg",
+              "name": "sample-dummy-1234",
+              "tag_status": "removed",
+              "tag_comments": "sample taken",
+              "tag_location": "whole",
+              "tag_type": "biopsysample"
+            }
+          ],
+          "habitat_photos": {
+            "photo_habitat_4": "1510473799846.jpg",
+            "photo_habitat_2": "1510473779822.jpg",
+            "photo_habitat_3": "1510473789319.jpg"
+          },
+          "photos_turtle": {
+            "photo_head_top": "1510473528078.jpg",
+            "photo_head_front": "1510473549896.jpg",
+            "photo_head_side": "1510473539111.jpg",
+            "photo_carapace_top": "1510473518698.jpg"
+          },
+          "death": {
+            "cause_of_death": "indeterminate-decomposed",
+            "cause_of_death_confidence": "expert-opinion"
+          },
+          "observation_end_time": "2017-11-12T08:04:08.485Z",
+          "@submissionDate": "2017-11-12T08:04:41.662Z",
+          "details": {
+            "maturity": "posthatchling",
+            "species": "flatback",
+            "sex": "male"
+          },
+          "observation_start_time": "2017-11-12T07:57:14.745Z",
+          "checks": {
+            "checked_for_flipper_tags": "present",
+            "samples_taken": "present",
+            "scanned_for_pit_tags": "present",
+            "checked_for_injuries": "present"
+          },
+          "phone_number": null,
+          "reporter": "FlorianM",
+          "@isComplete": "true",
+          "incident": {
+            "photo_habitat": "1510473498143.jpg",
+            "incident_time": "2017-11-11T08:54:00.000Z",
+            "observed_at": "-32.0586024000 115.7786325000 7.0000000000 5.0000000000",
+            "habitat": "openwater",
+            "location_comment": "location comment."
+          },
+          "@id": "build_Marine-Wildlife-Incident-0-4_1509605702",
+          "device_id": "354117073387056",
+          "damage_observation": [
+            {
+              "photo_damage": "1510473605661.jpg",
+              "body_part": "neck",
+              "description": "damage comments",
+              "damage_type": "amputatedentirely",
+              "damage_age": "healed-partially"
+            },
+            {
+              "photo_damage": "1510473630318.jpg",
+              "body_part": "eyes",
+              "description": "another comment",
+              "damage_type": "algal-growth",
+              "damage_age": "healed-entirely"
+            }
+          ],
+          "@instanceID": "uuid:613557e7-3217-4e2a-964e-f30aed5d9726",
+          "orx:meta": {
+            "orx:instanceID": "uuid:613557e7-3217-4e2a-964e-f30aed5d9726"
+          },
+          "animal_fate": {
+            "animal_fate_comment": "animal was detonated; detonation went far better than expected"
+          },
+          "morphometrics": {
+            "maximum_head_width_mm": "167",
+            "curved_carapace_width_accuracy": "5",
+            "curved_carapace_width_mm": "630",
+            "curved_carapace_length_mm": "950",
+            "curved_carapace_length_accuracy": "5",
+            "tail_length_carapace_mm": "125",
+            "maximum_head_width_accuracy": "1",
+            "tail_length_carapace_accuracy": "1"
+          },
+          "@markedAsCompleteDate": "2017-11-12T08:10:17.140Z"
+        }
+      },
+      "@xmlns:orx": "http://openrosa.org/xforms"
+    }
+    }
+
+
+    Existing records will be overwritten unless marked in WAStD as "proofread"
+    or higher levels of QA.
+
+    Important note: repeating groups with only one element are flattened into
+    a simple dict consisting of the element's keys.
+    Repeating groups with multiple elements consist of lists of dicts.
+    This is an artifact of the XML parser.
+
+    Returns:
+    The WAStD Encounter object.
+    """
+    data = make_data(r)
+    media = make_media(r)
+
+    enc, action = create_update_skip(
+        "odk",
+        data["@instanceID"],
+        data["incident"]["observed_at"],
+        data["incident"]["incident_time"],
+        data["reporter"],
+        data["reporter"],
+        cls=AnimalEncounter)
+
+    if action in ["update", "create"]:
+
+        # "status": {
+        #     "behaviour": "behaviour comments",
+        #     "health": "dead-edible",
+        #     "activity": "beach-jumped"
+        #   },
+        # "incident": {
+        #   "habitat": "openwater",
+        #   "location_comment": "location comment."
+        # },
+        #  "checks": {
+        #   "checked_for_flipper_tags": "present",
+        #   "samples_taken": "present",
+        #   "scanned_for_pit_tags": "present",
+        #   "checked_for_injuries": "present"
+        # },
+        # "details": {
+        #   "maturity": "posthatchling",
+        #   "species": "flatback",
+        #   "sex": "male"
+        # },
+        # "death": {
+        #   "cause_of_death": "indeterminate-decomposed",
+        #   "cause_of_death_confidence": "expert-opinion"
+        # },
+
+        enc.save()
+
+        # Photos
+        handle_media_attachment_odka(enc, media, data["incident"]["photo_habitat"], title="Initial photo of habitat")
+        handle_media_attachment_odka(enc, media, data["habitat_photos"]["photo_habitat_2"], title="Habitat 2")
+        handle_media_attachment_odka(enc, media, data["habitat_photos"]["photo_habitat_3"], title="Habitat 3")
+        handle_media_attachment_odka(enc, media, data["habitat_photos"]["photo_habitat_4"], title="Habitat 4")
+        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_top"], title="Turtle head top")
+        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_front"], title="Turtle head front")
+        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_side"], title="Turtle head side")
+        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
+
+        # TagObs
+        # "tag_observation": [
+        #   {
+        #     "photo_tag": "1510473657034.jpg",
+        #     "name": "WA1234",
+        #     "tag_status": "removed",
+        #     "tag_comments": "sample comments",
+        #     "tag_location": "eyes",
+        #     "tag_type": "flippertag"
+        #   },
+        #   {
+        #     "photo_tag": "1510473705773.jpg",
+        #     "name": "sample-dummy-1234",
+        #     "tag_status": "removed",
+        #     "tag_comments": "sample taken",
+        #     "tag_location": "whole",
+        #     "tag_type": "biopsysample"
+        #   }
+        # ],
+
+        # ManagementAction: data["animal_fate"]["animal_fate_comment"]
+
+        # TurtleMorphometrics
+        # "morphometrics": {
+        #   "maximum_head_width_mm": "167",
+        #   "curved_carapace_width_accuracy": "5",
+        #   "curved_carapace_width_mm": "630",
+        #   "curved_carapace_length_mm": "950",
+        #   "curved_carapace_length_accuracy": "5",
+        #   "tail_length_carapace_mm": "125",
+        #   "maximum_head_width_accuracy": "1",
+        #   "tail_length_carapace_accuracy": "1"
+        # },
+
+        # TurtleDamageObs
+        # "damage_observation": [
+        #   {
+        #     "photo_damage": "1510473605661.jpg",
+        #     "body_part": "neck",
+        #     "description": "damage comments",
+        #     "damage_type": "amputatedentirely",
+        #     "damage_age": "healed-partially"
+        #   },
+        #   {
+        #     "photo_damage": "1510473630318.jpg",
+        #     "body_part": "eyes",
+        #     "description": "another comment",
+        #     "damage_type": "algal-growth",
+        #     "damage_age": "healed-entirely"
+        #   }
+        # ],
+
+        enc.save()
+
+    print(" Done: {0}\n".format(enc))
+    return enc
+
+
 def import_all_odka(path="."):
     """Import all known ODKA data.
 
@@ -3736,8 +3995,13 @@ def import_all_odka(path="."):
         tal05 = json.load(df)
     tal05_enc = [import_odka_tal05(submission) for submission in tal05]
 
+    with open(os.path.join(path, "build_Marine-Wildlife-Incident-0-4_1509605702")) as df:
+        mwi04 = json.load(df)
+    mwi04_enc = [import_odka_mwi04(submission) for submission in mwi04]
+
     return dict(
         fs03=fs03_enc,
         tt44=tt44_enc,
         tt36=tt36_enc,
-        tal05=tal05_enc)
+        tal05=tal05_enc,
+        mwi04=mwi04_enc)
