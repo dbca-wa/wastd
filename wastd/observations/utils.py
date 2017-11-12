@@ -2656,11 +2656,35 @@ def odka_submission(form_id,
     return xmltodict.parse(res.content, xml_attribs=True)
 
 
+def downloaded_data_filename(form_id, path):
+    """Generate a filename for a form_id in format path/form_id.json."""
+    return os.path.join(path, form_id) + ".json"
+
+
+def downloaded_data_exists(form_id, path):
+    """Whether data already was downloaded at path/form_id.json."""
+    return os.path.exists(downloaded_data_filename(form_id, path))
+
+
+def downloaded_data(form_id, path):
+    """Return downloaded data for form_id stored at path as parsed JSON or an empty list."""
+    if downloaded_data_exists(form_id, path):
+        print("[downloaded_data] Parsing {0}".format(downloaded_data_filename(form_id, path)))
+        with open(downloaded_data_filename(form_id, path)) as df:
+            data = json.load(df)
+    else:
+        data = []
+    return data
+
+
 def odka_submissions(form_id,
+                     path=".",
                      url=env('ODKA_URL'),
                      un=env('ODKA_UN'),
                      pw=env('ODKA_PW'),
-                     verbose=False):
+                     verbose=False,
+                     append=True
+                     ):
     """Retrieve a list of all submissions for a given formID.
 
     Arguments:
@@ -2674,16 +2698,30 @@ def odka_submissions(form_id,
     pw The username's password.
         Default: the value of environment variable "ODKA_PW".
     verbose Whether to print verbose log messages, default: False.
+    append Whether to retain already downloaded data and append new data, or
+        to overwrite all already downloaded data and download all data again.
 
     Example
     forms = odka_forms()
     data = odka_submissions(forms[6]["formID"])
     """
     print("[odka_submissions] Retrieving submissions for formID {0}...".format(form_id))
-    d = [odka_submission(form_id, x, url=url, un=un, pw=pw, verbose=verbose)
-         for x in odka_submission_ids(form_id, url=url, un=un, pw=pw, verbose=verbose)]
-    print("[odka_submissions] Done, retrieved {0} submissions.".format(len(d)))
-    return d
+
+    old_data = downloaded_data(form_id, path)
+    print("[odka_submissions] Found {0} already downloaded submissions.".format(len(old_data)))
+    if append:
+        old_ids = [make_data(x)["@instanceID"] for x in old_data]
+        action = "retained"
+    else:
+        old_ids = []
+        action = "overwrote"
+
+    new_data = [odka_submission(form_id, x, url=url, un=un, pw=pw, verbose=verbose)
+                for x in odka_submission_ids(form_id, url=url, un=un, pw=pw, verbose=verbose)
+                if x not in old_ids]
+    print("[odka_submissions] Done, retrieved {0} new submissions, {1} {2} already downloaded submissions.".format(
+        len(new_data), action, len(old_data)))
+    return old_data + new_data
 
 
 def save_odka(form_id,
@@ -2691,7 +2729,8 @@ def save_odka(form_id,
               url=env('ODKA_URL'),
               un=env('ODKA_UN'),
               pw=env('ODKA_PW'),
-              verbose=False):
+              verbose=False,
+              append=True):
     """Save all submissions for a given form_id as JSON to a given path.
 
     Arguments:
@@ -2705,25 +2744,27 @@ def save_odka(form_id,
     pw The username's password.
         Default: the value of environment variable "ODKA_PW".
     verbose Whether to print verbose log messages, default: False.
+    append Whether to retain already downloaded data and append new data, or
+        to overwrite all already downloaded data and download all data again.
     """
-    with open('{0}/{1}.json'.format(path, form_id), 'w') as outfile:
-        json.dump(
-            odka_submissions(
-                form_id,
-                url=url,
-                un=un,
-                pw=pw,
-                verbose=verbose),
-            outfile,
-            indent=4
-        )
+    data = odka_submissions(
+        form_id,
+        path=path,
+        url=url,
+        un=un,
+        pw=pw,
+        verbose=verbose,
+        append=append)
+    with open(downloaded_data_filename(form_id, path), 'w') as outfile:
+        json.dump(data, outfile, indent=2)
 
 
 def save_all_odka(path=".",
                   url=env('ODKA_URL'),
                   un=env('ODKA_UN'),
                   pw=env('ODKA_PW'),
-                  verbose=False):
+                  verbose=False,
+                  append=True):
     """Save all submissions for all forms of an odka instance.
 
     Arguments:
@@ -2736,6 +2777,8 @@ def save_all_odka(path=".",
     pw The username's password.
         Default: the value of environment variable "ODKA_PW".
     verbose Whether to print verbose log messages, default: False.
+    append Whether to retain already downloaded data and append new data, or
+        to overwrite all already downloaded data and download all data again.
 
     Returns:
     At the specified location (path) for each form, a file will be written
@@ -2747,7 +2790,8 @@ def save_all_odka(path=".",
         url=url,
         un=un,
         pw=pw,
-        verbose=verbose)
+        verbose=verbose,
+        append=append)
      for xform in odka_forms()]
 
 
