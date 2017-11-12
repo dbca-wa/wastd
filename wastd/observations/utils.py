@@ -657,7 +657,7 @@ def handle_loggerenc(d, e):
         print("  NestTag Observation {0} for {1}".format(action, nto))
 
 
-def handle_turtlenestdisttallyobs(d, e, m):
+def handle_turtlenestdisttallyobs(d, e, m=None):
     """Get or create a TurtleNestDisturbanceObservation.
 
     Arguments
@@ -2901,9 +2901,7 @@ def listify(x):
 def create_update_skip(
         source,
         source_id,
-        lon,
-        lat,
-        acc,
+        where,
         when,
         observer,
         reporter,
@@ -2939,19 +2937,22 @@ def create_update_skip(
     new_data = dict(
         source=source,
         source_id=source_id,
-        where=Point(float(lon), float(lat)),
+        where=odk_linestring_as_point(where),
         when=parse_datetime(when),
-        location_accuracy=acc,
+        location_accuracy="10",
         observer=guess_user(observer),
         reporter=guess_user(reporter)
     )
+    if cls == LineTransectEncounter:
+        new_data["transect"] = read_odk_linestring(where)
 
     enc = Encounter.objects.filter(source=source, source_id=source_id)
     if enc.exists():
         if enc.first().status == Encounter.STATUS_NEW:
             msg = "Updating unchanged existing record {0}...".format(source_id)
             action = "update"
-            enc.update(**new_data)
+            instantiated = cls.objects.filter(pk=enc.first().pk)
+            instantiated.update(**new_data)
             e = enc.first()
             e.save()
         else:
@@ -2992,11 +2993,13 @@ def handle_odka_disturbanceobservation(enc, media, data):
     Returns
     None
     """
-    if "disturbanceobservation" not in data:
+    if "disturbanceobservation" in data:
+        distobs = listify(data["disturbanceobservation"])
+    elif "disturbance" in data:
+        distobs = listify(data["disturbance"])
+    else:
         print("[handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
         return None
-
-    distobs = listify(data["disturbanceobservation"])
 
     if distobs:
         print("[handle_odka_disturbanceobservation] found {0} TurtleNestDisturbanceObservation(s)".format(len(distobs)))
@@ -3221,14 +3224,11 @@ def import_odka_fs03(r):
     """
     data = make_data(r)
     media = make_media(r)
-    lat, lon, alt, acc = data["disturbanceobservation"]["location"].split(" ")
 
     enc, action = create_update_skip(
         "odk",
         data["@instanceID"],
-        lon,
-        lat,
-        "10",
+        data["disturbanceobservation"]["location"],
         data["observation_start_time"],
         data["reporter"],
         data["reporter"],
@@ -3429,14 +3429,11 @@ def import_odka_tt044(r):
     """
     data = make_data(r)
     media = make_media(r)
-    lat, lon, alt, acc = data["details"]["observed_at"].split(" ")
 
     enc, action = create_update_skip(
         "odk",
         data["@instanceID"],
-        lon,
-        lat,
-        "10",
+        data["details"]["observed_at"],
         data["observation_start_time"],
         data["reporter"],
         data["reporter"],
@@ -3459,6 +3456,208 @@ def import_odka_tt044(r):
         handle_odka_turtlenestobservation(enc, media, data)
         handle_odka_hatchlingmorphometricobservation(enc, media, data)
         # handle_odka_fanangles(enc, media, data)
+        enc.save()
+
+    print(" Done: {0}\n".format(enc))
+    return enc
+
+
+# ---------------------------------------------------------------------------#
+# Track Tally 0.5
+#
+def import_odka_tal05(r):
+    """Import one ODK Track or Treat 0.44 record from the OKA-A API into WAStD.
+
+    This should work for versions 0.36, 0.44 and up.
+
+    Arguments
+
+    r The submission record as dict, e.g.
+
+    save_all_odka(path="data/odka")
+    from wastd.observations.utils import *
+
+    with open("data/odka/build_Track-Tally-0-5_1502342159.json") as df:
+        tal05 = json.load(df)
+
+    print(json.dumps(tal05[0], indent=4))
+
+    {
+        "submission": {
+            "@xmlns": "http://opendatakit.org/submissions",
+            "@xmlns:orx": "http://openrosa.org/xforms",
+            "data": {
+                "data": {
+                    "@id": "build_Track-Tally-0-5_1502342159",
+                    "@instanceID": "uuid:a0954e6a-14ff-4099-9bae-0b1bdc466675",
+                    "@submissionDate": "2017-10-12T08:20:06.257Z",
+                    "@isComplete": "true",
+                    "@markedAsCompleteDate": "2017-10-12T08:20:06.257Z",
+                    "orx:meta": {
+                        "orx:instanceID": "uuid:a0954e6a-14ff-4099-9bae-0b1bdc466675"
+                    },
+                    "observation_start_time": "2017-10-12T08:13:41.990Z",
+                    "reporter": "SarahM",
+                    "overview": {
+                        "location": "-17.97119 122.23269499999999 0.0 0.0;
+                        -17.971113333333335 122.23275333333335 0.0 0.0;
+                        -17.970951666666668 122.23281166666666 0.0 0.0;
+                        -17.970821666666666 122.232755 0.0 0.0;
+                        -17.970818333333334 122.23259166666666 0.0 0.0;
+                        -17.970824999999998 122.23257666666665",
+                        "fb_evidence": "present",
+                        "gn_evidence": "absent",
+                        "hb_evidence": "absent",
+                        "lh_evidence": "absent",
+                        "or_evidence": "absent",
+                        "unk_evidence": "absent",
+                        "predation_evidence": "present"
+                    },
+                    "fb": {
+                        "fb_no_old_tracks": "0",
+                        "fb_no_fresh_successful_crawls": "1",
+                        "fb_no_fresh_false_crawls": "0",
+                        "fb_no_fresh_tracks_unsure": "0",
+                        "fb_no_fresh_tracks_not_assessed": "0",
+                        "fb_no_hatched_nests": "2"
+                    },
+                    "gn": {
+                        "gn_no_old_tracks": null,
+                        "gn_no_fresh_successful_crawls": null,
+                        "gn_no_fresh_false_crawls": null,
+                        "gn_no_fresh_tracks_unsure": null,
+                        "gn_no_fresh_tracks_not_assessed": null,
+                        "gn_no_hatched_nests": null
+                    },
+                    "hb": {
+                        "hb_no_old_tracks": null,
+                        "hb_no_fresh_successful_crawls": null,
+                        "hb_no_fresh_false_crawls": null,
+                        "hb_no_fresh_tracks_unsure": null,
+                        "hb_no_fresh_tracks_not_assessed": null,
+                        "hb_no_hatched_nests": null
+                    },
+                    "lh": {
+                        "lh_no_old_tracks": null,
+                        "lh_no_fresh_successful_crawls": null,
+                        "lh_no_fresh_false_crawls": null,
+                        "lh_no_fresh_tracks_unsure": null,
+                        "lh_no_fresh_tracks_not_assessed": null,
+                        "lh_no_hatched_nests": null
+                    },
+                    "or": {
+                        "or_no_old_tracks": null,
+                        "or_no_fresh_successful_crawls": null,
+                        "or_no_fresh_false_crawls": null,
+                        "or_no_fresh_tracks_unsure": null,
+                        "or_no_fresh_tracks_not_assessed": null,
+                        "or_no_hatched_nests": null
+                    },
+                    "unk": {
+                        "unk_no_old_tracks": null,
+                        "unk_no_fresh_successful_crawls": null,
+                        "unk_no_fresh_false_crawls": null,
+                        "unk_no_fresh_tracks_unsure": null,
+                        "unk_no_fresh_tracks_not_assessed": null,
+                        "unk_no_hatched_nests": null
+                    },
+                    "disturbance": {
+                        "disturbance_cause": "vehicle",
+                        "no_nests_disturbed": "1",
+                        "no_tracks_encountered": null,
+                        "disturbance_comments": null
+                    },
+                    "observation_end_time": "2017-10-12T08:20:04.296Z"
+                }
+            }
+        }
+    }
+    Existing records will be overwritten unless marked in WAStD as "proofread"
+    or higher levels of QA.
+
+    Important note: repeating groups with only one element are flattened into
+    a simple dict consisting of the element's keys.
+    Repeating groups with multiple elements consist of lists of dicts.
+    This is an artifact of the XML parser.
+
+    Returns:
+        The WAStD Encounter object.
+    """
+    data = make_data(r)
+    # media = make_media(r)
+
+    enc, action = create_update_skip(
+        "odk",
+        data["@instanceID"],
+        data["overview"]["location"],
+        data["observation_start_time"],
+        data["reporter"],
+        data["reporter"],
+        cls=LineTransectEncounter)
+
+    if action in ["update", "create"]:
+
+        # enc.save()
+
+        # TurtleNestDisturbanceTallyObservation
+        [handle_turtlenestdisttallyobs(distobs, enc)
+         for distobs in listify(data["disturbance"])
+         if len(listify(data["disturbance"])) > 0]
+
+        #  TrackTallyObservations
+        FB = "natator-depressus"
+        GN = "chelonia-mydas"
+        HB = "eretmochelys-imbricata"
+        LH = "caretta-caretta"
+        OR = "lepidochelys-olivacea"
+        UN = "cheloniidae-fam"
+
+        tally_mapping = [
+            [FB, "old",   "track-not-assessed",     data["fb"]["fb_no_old_tracks"] or 0],
+            [FB, "fresh", "successful-crawl",       data["fb"]["fb_no_fresh_successful_crawls"] or 0],
+            [FB, "fresh", "false-crawl",            data["fb"]["fb_no_fresh_false_crawls"] or 0],
+            [FB, "fresh", "track-unsure",           data["fb"]["fb_no_fresh_tracks_unsure"] or 0],
+            [FB, "fresh", "track-not-assessed",     data["fb"]["fb_no_fresh_tracks_not_assessed"] or 0],
+            [FB, "fresh", "hatched-nest",           data["fb"]["fb_no_hatched_nests"] or 0],
+
+            [GN, "old",     "track-not-assessed",   data["gn"]["gn_no_old_tracks"] or 0],
+            [GN, "fresh",   "successful-crawl",     data["gn"]["gn_no_fresh_successful_crawls"] or 0],
+            [GN, "fresh",   "false-crawl",          data["gn"]["gn_no_fresh_false_crawls"] or 0],
+            [GN, "fresh",   "track-unsure",         data["gn"]["gn_no_fresh_tracks_unsure"] or 0],
+            [GN, "fresh",   "track-not-assessed",   data["gn"]["gn_no_fresh_tracks_not_assessed"] or 0],
+            [GN, "fresh",   "hatched-nest",         data["gn"]["gn_no_hatched_nests"] or 0],
+
+            [HB, "old",     "track-not-assessed",   data["hb"]["hb_no_old_tracks"] or 0],
+            [HB, "fresh",   "successful-crawl",     data["hb"]["hb_no_fresh_successful_crawls"] or 0],
+            [HB, "fresh",   "false-crawl",          data["hb"]["hb_no_fresh_false_crawls"] or 0],
+            [HB, "fresh",   "track-unsure",         data["hb"]["hb_no_fresh_tracks_unsure"] or 0],
+            [HB, "fresh",   "track-not-assessed",   data["hb"]["hb_no_fresh_tracks_not_assessed"] or 0],
+            [HB, "fresh",   "hatched-nest",         data["hb"]["hb_no_hatched_nests"] or 0],
+
+            [LH, "old",     "track-not-assessed",   data["lh"]["lh_no_old_tracks"] or 0],
+            [LH, "fresh",   "successful-crawl",     data["lh"]["lh_no_fresh_successful_crawls"] or 0],
+            [LH, "fresh",   "false-crawl",          data["lh"]["lh_no_fresh_false_crawls"] or 0],
+            [LH, "fresh",   "track-unsure",         data["lh"]["lh_no_fresh_tracks_unsure"] or 0],
+            [LH, "fresh",   "track-not-assessed",   data["lh"]["lh_no_fresh_tracks_not_assessed"] or 0],
+            [LH, "fresh",   "hatched-nest",         data["lh"]["lh_no_hatched_nests"] or 0],
+
+            [OR, "old",     "track-not-assessed",   data["or"]["or_no_old_tracks"] or 0],
+            [OR, "fresh",   "successful-crawl",     data["or"]["or_no_fresh_successful_crawls"] or 0],
+            [OR, "fresh",   "false-crawl",          data["or"]["or_no_fresh_false_crawls"] or 0],
+            [OR, "fresh",   "track-unsure",         data["or"]["or_no_fresh_tracks_unsure"] or 0],
+            [OR, "fresh",   "track-not-assessed",   data["or"]["or_no_fresh_tracks_not_assessed"] or 0],
+            [OR, "fresh",   "hatched-nest",         data["or"]["or_no_hatched_nests"] or 0],
+
+            [UN, "old",     "track-not-assessed",   data["unk"]["unk_no_old_tracks"] or 0],
+            [UN, "fresh",   "successful-crawl",     data["unk"]["unk_no_fresh_successful_crawls"] or 0],
+            [UN, "fresh",   "false-crawl",          data["unk"]["unk_no_fresh_false_crawls"] or 0],
+            [UN, "fresh",   "track-unsure",         data["unk"]["unk_no_fresh_tracks_unsure"] or 0],
+            [UN, "fresh",   "track-not-assessed",   data["unk"]["unk_no_fresh_tracks_not_assessed"] or 0],
+            [UN, "fresh",   "hatched-nest",         data["unk"]["unk_no_hatched_nests"] or 0],
+            ]
+
+        [make_tallyobs(enc, x[0], x[1], x[2], x[3]) for x in tally_mapping]
+
         enc.save()
 
     print(" Done: {0}\n".format(enc))
@@ -3489,7 +3688,12 @@ def import_all_odka(path="."):
         tt36 = json.load(df)
     tt36_enc = [import_odka_tt044(submission) for submission in tt36]
 
+    with open(os.path.join(path, "build_Track-Tally-0-5_1502342159.json")) as df:
+        tal05 = json.load(df)
+    tal05_enc = [import_odka_tal05(submission) for submission in tal05]
+
     return dict(
         fs03=fs03_enc,
         tt44=tt44_enc,
-        tt36=tt36_enc)
+        tt36=tt36_enc,
+        tal05=tal05_enc)
