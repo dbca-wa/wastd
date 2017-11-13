@@ -2123,9 +2123,7 @@ class MediaAttachment(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return u"Media {0} {1} for {2}".format(
-            self.pk, self.title, self.encounter.__str__()
-            )
+        return u"Media {0} for {1}".format(self.pk, self.encounter.__str__())
 
     @property
     def filepath(self):
