@@ -3709,11 +3709,11 @@ def import_odka_tal05(r):
 
 
 # ---------------------------------------------------------------------------#
-# Track or Treat 0.36-0.44
+# Marine Wildlife Incident 0.5
 #
-def import_odka_mwi04(r):
+def import_odka_mwi05(r):
     """
-    Import one ODK Marine Wildlife Incident 0.4 record from the OKA-A API into WAStD.
+    Import one ODK Marine Wildlife Incident 0.5 record from the OKA-A API into WAStD.
 
     This should work for versions 0.4 and up.
 
@@ -3730,121 +3730,85 @@ def import_odka_mwi04(r):
     print(json.dumps(d[0], indent=4))
 
     {
-    "submission": {
-      "@xmlns": "http://opendatakit.org/submissions",
-      "mediaFile": [
-        {
-          "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=...",
-          "hash": "md5:e35427a7fb6c390ac09ea53993be423a",
-          "filename": "1510473605661.jpg"
-        },
-        // more photos here
-      ],
-      "data": {
-        "data": {
-          "status": {
-            "behaviour": "behaviour comments",
-            "health": "dead-edible",
-            "activity": "beach-jumped"
-          },
-          "tag_observation": [
-            {
-              "photo_tag": "1510473657034.jpg",
-              "name": "WA1234",
-              "tag_status": "removed",
-              "tag_comments": "sample comments",
-              "tag_location": "eyes",
-              "tag_type": "flippertag"
-            },
-            {
-              "photo_tag": "1510473705773.jpg",
-              "name": "sample-dummy-1234",
-              "tag_status": "removed",
-              "tag_comments": "sample taken",
-              "tag_location": "whole",
-              "tag_type": "biopsysample"
+        "submission": {
+          "@xmlns": "http://opendatakit.org/submissions",
+          "@xmlns:orx": "http://openrosa.org/xforms",
+          "data": {
+            "data": {
+              "@id": "build_Marine-Wildlife-Incident-0-5_1510547403",
+              "@instanceID": "uuid:a9cf803b-174f-44a9-a0e9-5dff96ddc3c3",
+              "@submissionDate": "2017-11-13T04:33:07.558Z",
+              "@isComplete": "true",
+              "@markedAsCompleteDate": "2017-11-13T04:33:07.558Z",
+              "orx:meta": {
+                "orx:instanceID": "uuid:a9cf803b-174f-44a9-a0e9-5dff96ddc3c3"
+              },
+              "observation_start_time": "2017-11-13T04:30:32.482Z",
+              "reporter": "Thevenard3",
+              "device_id": "d0:f8:8c:78:f5:f0",
+              "phone_number": null,
+              "incident": {
+                "observed_at": "-31.9966218000 115.8843043000 0E-10 50.0000000000",
+                "location_comment": null,
+                "incident_time": "2017-11-13T04:30:00.000Z",
+                "habitat": "below-mshwm",
+                "photo_habitat": "1510547487217.jpg"
+              },
+              "details": {
+                "taxon": "Cheloniidae",
+                "species": "caretta-caretta",
+                "maturity": "na",
+                "sex": "na"
+              },
+              "photos_turtle": {
+                "photo_carapace_top": null,
+                "photo_head_top": null,
+                "photo_head_side": null,
+                "photo_head_front": null
+              },
+              "status": {
+                "activity": "beach-washed",
+                "health": "dead-advanced",
+                "behaviour": null
+              },
+              "death": {
+                "cause_of_death": "drowned-entangled-infrastructure",
+                "cause_of_death_confidence": "expert-opinion"
+              },
+              "checks": {
+                "checked_for_injuries": "na",
+                "scanned_for_pit_tags": "na",
+                "checked_for_flipper_tags": "na",
+                "samples_taken": "na"
+              },
+              "morphometrics": {
+                "curved_carapace_length_mm": null,
+                "curved_carapace_length_accuracy": "10",
+                "curved_carapace_width_mm": null,
+                "curved_carapace_width_accuracy": "10",
+                "tail_length_carapace_mm": null,
+                "tail_length_carapace_accuracy": "10",
+                "maximum_head_width_mm": null,
+                "maximum_head_width_accuracy": "10"
+              },
+              "habitat_photos": {
+                "photo_habitat_2": null,
+                "photo_habitat_3": null,
+                "photo_habitat_4": null
+              },
+              "animal_fate": {
+                "animal_fate_comment": "Detonation"
+              },
+              "observation_end_time": "2017-11-13T04:33:01.780Z"
             }
-          ],
-          "habitat_photos": {
-            "photo_habitat_4": "1510473799846.jpg",
-            "photo_habitat_2": "1510473779822.jpg",
-            "photo_habitat_3": "1510473789319.jpg"
           },
-          "photos_turtle": {
-            "photo_head_top": "1510473528078.jpg",
-            "photo_head_front": "1510473549896.jpg",
-            "photo_head_side": "1510473539111.jpg",
-            "photo_carapace_top": "1510473518698.jpg"
-          },
-          "death": {
-            "cause_of_death": "indeterminate-decomposed",
-            "cause_of_death_confidence": "expert-opinion"
-          },
-          "observation_end_time": "2017-11-12T08:04:08.485Z",
-          "@submissionDate": "2017-11-12T08:04:41.662Z",
-          "details": {
-            "maturity": "posthatchling",
-            "species": "flatback",
-            "sex": "male"
-          },
-          "observation_start_time": "2017-11-12T07:57:14.745Z",
-          "checks": {
-            "checked_for_flipper_tags": "present",
-            "samples_taken": "present",
-            "scanned_for_pit_tags": "present",
-            "checked_for_injuries": "present"
-          },
-          "phone_number": null,
-          "reporter": "FlorianM",
-          "@isComplete": "true",
-          "incident": {
-            "photo_habitat": "1510473498143.jpg",
-            "incident_time": "2017-11-11T08:54:00.000Z",
-            "observed_at": "-32.0586024000 115.7786325000 7.0000000000 5.0000000000",
-            "habitat": "openwater",
-            "location_comment": "location comment."
-          },
-          "@id": "build_Marine-Wildlife-Incident-0-4_1509605702",
-          "device_id": "354117073387056",
-          "damage_observation": [
-            {
-              "photo_damage": "1510473605661.jpg",
-              "body_part": "neck",
-              "description": "damage comments",
-              "damage_type": "amputatedentirely",
-              "damage_age": "healed-partially"
-            },
-            {
-              "photo_damage": "1510473630318.jpg",
-              "body_part": "eyes",
-              "description": "another comment",
-              "damage_type": "algal-growth",
-              "damage_age": "healed-entirely"
-            }
-          ],
-          "@instanceID": "uuid:613557e7-3217-4e2a-964e-f30aed5d9726",
-          "orx:meta": {
-            "orx:instanceID": "uuid:613557e7-3217-4e2a-964e-f30aed5d9726"
-          },
-          "animal_fate": {
-            "animal_fate_comment": "animal was detonated; detonation went far better than expected"
-          },
-          "morphometrics": {
-            "maximum_head_width_mm": "167",
-            "curved_carapace_width_accuracy": "5",
-            "curved_carapace_width_mm": "630",
-            "curved_carapace_length_mm": "950",
-            "curved_carapace_length_accuracy": "5",
-            "tail_length_carapace_mm": "125",
-            "maximum_head_width_accuracy": "1",
-            "tail_length_carapace_accuracy": "1"
-          },
-          "@markedAsCompleteDate": "2017-11-12T08:10:17.140Z"
+          "mediaFile": {
+            "filename": "1510547487217.jpg",
+            "hash": "md5:3fc23a100c0767bcff56420648d9ecc7",
+            "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+          }
         }
-      },
-      "@xmlns:orx": "http://openrosa.org/xforms"
-    }
-    }
+      }
 
 
     Existing records will be overwritten unless marked in WAStD as "proofread"
@@ -3878,7 +3842,7 @@ def import_odka_mwi04(r):
         #     "activity": "beach-jumped"
         #   },
         # "incident": {
-        #   "habitat": "openwater",
+        #   "habitat": "open-water",
         #   "location_comment": "location comment."
         # },
         #  "checks": {
@@ -3888,7 +3852,7 @@ def import_odka_mwi04(r):
         #   "checked_for_injuries": "present"
         # },
         # "details": {
-        #   "maturity": "posthatchling",
+        #   "maturity": "post-hatchling",
         #   "species": "flatback",
         #   "sex": "male"
         # },
@@ -3907,7 +3871,8 @@ def import_odka_mwi04(r):
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_top"], title="Turtle head top")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_front"], title="Turtle head front")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_side"], title="Turtle head side")
-        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
+        handle_media_attachment_odka(
+            enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
 
         # TagObs
         # "tag_observation": [
@@ -3995,7 +3960,7 @@ def import_all_odka(path="."):
         tal05 = json.load(df)
     tal05_enc = [import_odka_tal05(submission) for submission in tal05]
 
-    with open(os.path.join(path, "build_Marine-Wildlife-")) as df:
+    with open(os.path.join(path, "build_Marine-Wildlife-Incident-0-5_1510547403.json")) as df:
         mwi05 = json.load(df)
     mwi05_enc = [import_odka_mwi05(submission) for submission in mwi05]
 
@@ -4004,5 +3969,4 @@ def import_all_odka(path="."):
         tt44=tt44_enc,
         tt36=tt36_enc,
         tal05=tal05_enc,
-        mwi05=mwi05_enc
-        )
+        mwi05=mwi05_enc)
