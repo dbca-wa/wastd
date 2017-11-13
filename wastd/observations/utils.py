@@ -2,6 +2,7 @@
 """Observation untilities."""
 import csv
 import json
+import io
 import os
 
 from confy import env
@@ -2670,7 +2671,7 @@ def downloaded_data(form_id, path):
     """Return downloaded data for form_id stored at path as parsed JSON or an empty list."""
     if downloaded_data_exists(form_id, path):
         print("[downloaded_data] Parsing {0}".format(downloaded_data_filename(form_id, path)))
-        with open(downloaded_data_filename(form_id, path)) as df:
+        with io.open(downloaded_data_filename(form_id, path), mode="r", encoding="utf-8") as df:
             data = json.load(df)
     else:
         data = []
@@ -3019,7 +3020,7 @@ def create_update_skip(
 def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
     """Handle MediaAttachment for ODKA data."""
     if not photo_filename:
-        print("[handle_media_attachment_odka] skipping empty photo {0}".format(title))
+        print("  [handle_media_attachment_odka] skipping empty photo {0}".format(title))
         return None
     handle_media_attachment(enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
     return None
@@ -3944,29 +3945,11 @@ def import_all_odka(path="."):
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")
     """
-    with open(os.path.join(path, "build_Fox-Sake-0-3_1490757423.json")) as df:
-        fs03 = json.load(df)
-    fs03_enc = [import_odka_fs03(submission) for submission in fs03]
-
-    with open(os.path.join(path, "build_Track-or-Treat-0-44_1509422138.json")) as df:
-        tt44 = json.load(df)
-    tt44_enc = [import_odka_tt044(submission) for submission in tt44]
-
-    with open(os.path.join(path, "build_Track-or-Treat-0-36_1508561995.json")) as df:
-        tt36 = json.load(df)
-    tt36_enc = [import_odka_tt044(submission) for submission in tt36]
-
-    with open(os.path.join(path, "build_Track-Tally-0-5_1502342159.json")) as df:
-        tal05 = json.load(df)
-    tal05_enc = [import_odka_tal05(submission) for submission in tal05]
-
-    with open(os.path.join(path, "build_Marine-Wildlife-Incident-0-5_1510547403.json")) as df:
-        mwi05 = json.load(df)
-    mwi05_enc = [import_odka_mwi05(submission) for submission in mwi05]
-
     return dict(
-        fs03=fs03_enc,
-        tt44=tt44_enc,
-        tt36=tt36_enc,
-        tal05=tal05_enc,
-        mwi05=mwi05_enc)
+        fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423.json", path)],
+        tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138.json", path)],
+        tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995.json", path)],
+        tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159.json", path)],
+        mwi05=[import_odka_mwi05(x)
+               for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403.json", path)]
+    )
