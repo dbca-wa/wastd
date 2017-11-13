@@ -3946,10 +3946,9 @@ def import_all_odka(path="."):
     enc = import_all_odka(path="data/odka")
     """
     return dict(
-        fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423.json", path)],
-        tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138.json", path)],
-        tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995.json", path)],
-        tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159.json", path)],
-        mwi05=[import_odka_mwi05(x)
-               for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403.json", path)]
+        fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
+        tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
+        tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
+        tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
+        mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)]
     )
