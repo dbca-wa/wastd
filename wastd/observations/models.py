@@ -2043,7 +2043,7 @@ class Observation(PolymorphicModel, models.Model):
 
     def __str__(self):
         """The unicode representation."""
-        return "Obs {0} for {1}".format(self.pk, self.encounter.__str__())
+        return u"Obs {0} for {1}".format(self.pk, self.encounter.__str__())
 
     @property
     def as_html(self):
@@ -2230,7 +2230,7 @@ class TagObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "{0} {1} {2} on {3}".format(
+        return u"{0} {1} {2} on {3}".format(
             self.get_tag_type_display(),
             self.name,
             self.get_status_display(),
@@ -2322,7 +2322,7 @@ class NestTagObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "{0} ({1})".format(self.name, self.get_status_display())
+        return u"{0} ({1})".format(self.name, self.get_status_display())
 
     @property
     def history_url(self):
@@ -2363,7 +2363,7 @@ class ManagementAction(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Management Action {0} of {1}".format(
+        return u"Management Action {0} of {1}".format(
             self.pk, self.encounter.__str__())
 
 
@@ -2510,7 +2510,7 @@ class TurtleMorphometricObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        tpl = "Turtle Morphometrics {0} CCL {1} CCW {2} for Encounter {3}"
+        tpl = u"Turtle Morphometrics {0} CCL {1} CCW {2} for Encounter {3}"
         return tpl.format(
             self.pk,
             self.curved_carapace_length_mm,
@@ -2539,7 +2539,7 @@ class HatchlingMorphometricObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        tpl = "{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
+        tpl = u"{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
         return tpl.format(
             self.pk,
             self.encounter.species,
@@ -2577,7 +2577,7 @@ class DugongMorphometricObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        tpl = "{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
+        tpl = u"{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
         return tpl.format(
             self.pk,
             self.encounter.species,
@@ -2619,7 +2619,7 @@ class TurtleDamageObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "{0}: {1} {2}".format(
+        return u"{0}: {1} {2}".format(
             self.get_body_part_display(),
             self.get_damage_age_display(),
             self.get_damage_type_display(), )
@@ -2657,7 +2657,7 @@ class TrackTallyObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        t1 = ('TrackTally: {0} {1} {2}s of {3}')
+        t1 = (u'TrackTally: {0} {1} {2}s of {3}')
         return t1.format(self.tally, self.nest_age, self.nest_type, self.species)
 
 
@@ -2696,8 +2696,8 @@ class TurtleNestDisturbanceTallyObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        t1 = ('Nest Damage Tally: {0} nests of {1} showing disturbance by {2} '
-              '({3} disturbance signs sighted)')
+        t1 = (u'Nest Damage Tally: {0} nests of {1} showing disturbance by {2} '
+              u'({3} disturbance signs sighted)')
         return t1.format(self.no_nests_disturbed, self.species,
                          self.disturbance_cause, self.no_tracks_encountered)
 
@@ -2816,7 +2816,7 @@ class TurtleNestObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Nest Obs {0} eggs, hatching succ {1}, emerg succ {2}".format(
+        return u"Nest Obs {0} eggs, hatching succ {1}, emerg succ {2}".format(
             self.egg_count, self.hatching_success, self.emergence_success)
 
     # TODO custom save()
@@ -2922,7 +2922,7 @@ class TurtleNestDisturbanceObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Nest Disturbance {0} {1}".format(
+        return u"Nest Disturbance {0} {1}".format(
             self.disturbance_cause, self.disturbance_severity)
 
 # TODO add CecaceanMorphometricObservation for cetacean strandings
@@ -2954,7 +2954,7 @@ class TemperatureLoggerSettings(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Sampling starting on {0} with rate {1}".format(
+        return u"Sampling starting on {0} with rate {1}".format(
             self.recording_start, self.logging_interval)
 
 
@@ -2976,7 +2976,7 @@ class DispatchRecord(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Sent on {0} to {1}".format(self.encounter.when, self.sent_to)
+        return u"Sent on {0} to {1}".format(self.encounter.when, self.sent_to)
 
 
 @python_2_unicode_compatible
@@ -3028,4 +3028,4 @@ class TemperatureLoggerDeployment(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        return "Logger at {0} mm depth".format(self.depth_mm)
+        return u"Logger at {0} mm depth".format(self.depth_mm)
