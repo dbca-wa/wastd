@@ -2757,7 +2757,8 @@ def save_odka(form_id,
         verbose=verbose,
         append=append)
     with io.open(downloaded_data_filename(form_id, path), mode="w", encoding="utf-8") as outfile:
-        json.dump(data, outfile, indent=2)
+        data = json.dumps(data, indent=2, ensure_ascii=False, encoding="utf-8")
+        outfile.write(unicode(data))
 
 
 def save_all_odka(path=".",
