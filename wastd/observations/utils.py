@@ -3995,13 +3995,14 @@ def import_all_odka(path="."):
         tal05 = json.load(df)
     tal05_enc = [import_odka_tal05(submission) for submission in tal05]
 
-    with open(os.path.join(path, "build_Marine-Wildlife-Incident-0-4_1509605702")) as df:
-        mwi04 = json.load(df)
-    mwi04_enc = [import_odka_mwi04(submission) for submission in mwi04]
+    with open(os.path.join(path, "build_Marine-Wildlife-")) as df:
+        mwi05 = json.load(df)
+    mwi05_enc = [import_odka_mwi05(submission) for submission in mwi05]
 
     return dict(
         fs03=fs03_enc,
         tt44=tt44_enc,
         tt36=tt36_enc,
         tal05=tal05_enc,
-        mwi04=mwi04_enc)
+        mwi05=mwi05_enc
+        )

@@ -102,7 +102,8 @@ TAG_TYPE_CHOICES = (
     ('qld-titanium-k-flipper-tag', 'QLD Titanium Series K flipper tag'),         # TRT_IDENTIFICATION_TYPES K
     ('qld-titanium-t-flipper-tag', 'QLD Titanium Series T flipper tag'),         # TRT_IDENTIFICATION_TYPES T
     ('acoustic-tag', 'Acoustic tag'),                           # Acoustic
-    ('commonwealth-titanium-flipper-tag', 'Commonwealth titanium flipper tag'),      # CA
+    ('commonwealth-titanium-flipper-tag', 'Commonwealth titanium flipper tag (old db value)'),      # CA cmlth
+    ('cmlth-titanium-flipper-tag', 'Commonwealth titanium flipper tag'),      # CA cmlth
     ('cayman-juvenile-tag', 'Cayman juvenile tag'),   # CT
     ('hawaii-inconel-flipper-tag', 'Hawaii Inst Mar Biol Inconel tag'),  # I
     ('ptt', 'Platform Transmitter Terminal (PTT)'),  # PTT
@@ -111,6 +112,8 @@ TAG_TYPE_CHOICES = (
     ('aqwa-nickname', 'AQWA informal name'),  # UWW, from former name UnderWater World
     ('atlantis-nickname', 'Atlantis informal name'),  # ATLANTIS
     ('wa-museum-reptile-registration-number',
+        'WA Museum Natural History Reptiles Catalogue Registration Number (old db value)'),  # WAMusR
+    ('wam-reptile-registration-number',
         'WA Museum Natural History Reptiles Catalogue Registration Number'),  # WAMusR
     ('genetic-tag', 'Genetic ID sequence'),
     ('other', 'Other'),)
