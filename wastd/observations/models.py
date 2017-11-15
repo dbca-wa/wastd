@@ -733,21 +733,67 @@ class Area(geo_models.Model):
 
 
 @python_2_unicode_compatible
+class SiteVisitStartEnd(geo_models.Model):
+    """A start or end point to a site visit."""
+
+    source = models.CharField(
+        max_length=300,
+        verbose_name=_("Data Source"),
+        default=SOURCE_DEFAULT,
+        choices=SOURCE_CHOICES,
+        help_text=_("Where was this record captured initially?"), )
+
+    source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID"),
+        help_text=_("The ID of the record in the original source, or "
+                    "a newly allocated ID if left blank. Delete and save "
+                    "to regenerate this ID."), )
+
+    datetime = models.DateTimeField(
+        verbose_name=_("Observation time"),
+        help_text=_("Local time (no daylight savings), stored as UTC."))
+
+    location = geo_models.PointField(
+        srid=4326,
+        verbose_name=_("Location"),
+        help_text=_("The observation location as point in WGS84"))
+
+    type = models.CharField(
+        max_length=300,
+        verbose_name=_("Type"),
+        choices=(("start", "start"), ("end", "end")),
+        default="start",
+        help_text=_("Start of end of site visit?"),)
+
+    # media attachment
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Site visit start or end on {0}".format(
+            self.datetime.isoformat())
+
+
+@python_2_unicode_compatible
 class Expedition(PolymorphicModel, geo_models.Model):
     """An endeavour of a team to a location within a defined time range."""
 
     site = models.ForeignKey(
         Area,
+        blank=True, null=True,
         verbose_name=_("Surveyed area"),
         help_text=_("The entire surveyed area."), )
 
     started_on = models.DateTimeField(
         verbose_name=_("Site entered on"),
+        blank=True, null=True,
         help_text=_("The datetime of entering the site, shown as local time "
                     "(no daylight savings), stored as UTC."))
 
     finished_on = models.DateTimeField(
         verbose_name=_("Site left on"),
+        blank=True, null=True,
         help_text=_("The datetime of leaving the site, shown as local time "
                     "(no daylight savings), stored as UTC."))
 
@@ -759,15 +805,14 @@ class Expedition(PolymorphicModel, geo_models.Model):
 
     team = models.ManyToManyField(
         User,
-        blank=True, null=True,
         related_name="expedition_team")
 
     def __str__(self):
         """The unicode representation."""
         return "Expedition to {0} from {1} to {2}".format(
-            self.site.name,
-            self.started_on.isoformat(),
-            self.finished_on.isoformat())
+            self.site.name or "unknown site",
+            self.started_on.isoformat() or "na",
+            self.finished_on.isoformat() or "na")
 
     @property
     def site_visits(self):
@@ -793,9 +838,29 @@ class SiteVisit(Expedition):
         max_length=1000,
         blank=True, null=True,
         verbose_name=_("Source ID"),
+        help_text=_("The ID of the start point in the original source, or "
+                    "a newly allocated ID if left blank. Delete and save "
+                    "to regenerate this ID."), )
+
+    end_source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID of end point"),
         help_text=_("The ID of the record in the original source, or "
                     "a newly allocated ID if left blank. Delete and save "
                     "to regenerate this ID."), )
+
+    start_location = geo_models.PointField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Start location"),
+        help_text=_("The start location as point in WGS84"))
+
+    end_location = geo_models.PointField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("End location"),
+        help_text=_("The end location as point in WGS84"))
 
     transect = geo_models.LineStringField(
         srid=4326,
@@ -821,6 +886,10 @@ class SiteVisit(Expedition):
     def claim_encounters(self):
         """Update Encounters within this SiteVisit with reference to self."""
         self.encounters.update(site_visit=self)
+
+    def claim_end_points(self):
+        """TODO Claim SiteVisitEnd."""
+        pass
 
 
 @python_2_unicode_compatible

@@ -228,6 +228,12 @@ def odk_linestring_as_point(odk_str):
     return Point(float(point_str[1]), float(point_str[0]))
 
 
+def odk_point_as_point(odk_str):
+    """Return an ODK Point location as Django Point."""
+    point_str = odk_str.split(" ")
+    return Point(float(point_str[1]), float(point_str[0]))
+
+
 def make_photo_foldername(photo_id):
     """Return a foldername for a given photo ID underneath MEDIA_ROOT."""
     return os.path.join(settings.MEDIA_ROOT, "photos", photo_id)
@@ -2945,13 +2951,11 @@ def listify(x):
 # Update logic for WAStD's custom QA django-fsm status
 #
 def create_update_skip(
-        source,
-        source_id,
-        where,
-        when,
-        observer,
-        reporter,
-        cls=Encounter):
+        unique_data,
+        extra_data=dict(),
+        cls=Encounter,
+        base_cls=Encounter,
+        retain_qa=True):
     """Create, update or skip Encounter.
 
     From minimal required data, create (if not existing),
@@ -2961,10 +2965,16 @@ def create_update_skip(
     Arguments:
     source An existing WAStD data source, e.g. "odk"
     source_id The unique source ID for a record, e.g. the instanceID of an ODK submission.
-    lon, lat, acc Coordinates (will be forced to float)
-    when observed_od, will be parsed to date
-    observer,
-    reporter: username for observer and reporter.
+    unique_data A dict of arguments to base_cls.objects.filter(**unique_data), as
+        defined in base_cls.meta.unique_together or as unique=true on fields.
+    extra_data A dict of required fields to create a minimum new cls instance.
+        Default: dict()
+    cls The class to instantiate. Default: Encounter.
+    base_cls The base class to filter for unique_data.
+        This is required for polymorphic classes.
+        Default: Encounter.
+    retain_qa Whether to retain qa'd instances (proofread or higher Encounters).
+        Default: True. Set to false for models without QA status.
 
     Returns:
 
@@ -2980,36 +2990,26 @@ def create_update_skip(
     If the Encounter does not exist, it needs to be created.
     Returns newly created Encounter and action verb "create".
     """
-    new_data = dict(
-        source=source,
-        source_id=source_id,
-        where=odk_linestring_as_point(where),
-        when=parse_datetime(when),
-        location_accuracy="10",
-        observer=guess_user(observer),
-        reporter=guess_user(reporter)
-    )
-    if cls == LineTransectEncounter:
-        new_data["transect"] = read_odk_linestring(where)
-
-    enc = Encounter.objects.filter(source=source, source_id=source_id)
+    enc = base_cls.objects.filter(**unique_data)
     if enc.exists():
-        if enc.first().status == Encounter.STATUS_NEW:
-            msg = "Updating unchanged existing record {0}...".format(source_id)
+        if (not retain_qa) or (enc.first().status == Encounter.STATUS_NEW):
             action = "update"
             instantiated = cls.objects.filter(pk=enc.first().pk)
-            instantiated.update(**new_data)
+            instantiated.update(**extra_data)
             e = enc.first()
+            msg = "Updating unchanged existing record {0}...".format(e.__str__())
             e.save()
         else:
-            msg = "Skipping existing curated record {0}...".format(source_id)
             action = "skip"
             e = enc.first()
+            msg = "Skipping existing curated record {0}...".format(e.__str__())
     else:
-        msg = "Creating new record {0}...".format(source_id)
         action = "create"
-        e = cls.objects.create(**new_data)
+        data = unique_data
+        data.update(extra_data)
+        e = cls.objects.create(**data)
         e.save()
+        msg = "Created new record {0}".format(e.__str__())
 
     print(msg)
     return (e, action)
@@ -3271,14 +3271,24 @@ def import_odka_fs03(r):
     data = make_data(r)
     media = make_media(r)
 
+    unique_data = dict(
+        source="odk",
+        source_id=data["@instanceID"])
+    extra_data = dict(
+        where=odk_point_as_point(data["disturbanceobservation"]["location"]),
+        when=parse_datetime(data["observation_start_time"]),
+        location_accuracy="10",
+        observer=guess_user(data["reporter"]),
+        reporter=guess_user(data["reporter"]))
+
+    # if cls == LineTransectEncounter:
+    #     extra_data["transect"] = read_odk_linestring(where)
+
     enc, action = create_update_skip(
-        "odk",
-        data["@instanceID"],
-        data["disturbanceobservation"]["location"],
-        data["observation_start_time"],
-        data["reporter"],
-        data["reporter"],
-        cls=Encounter)
+        unique_data,
+        extra_data,
+        cls=Encounter,
+        base_cls=Encounter)
 
     if action in ["update", "create"]:
         handle_odka_disturbanceobservation(enc, media, data)
@@ -3476,14 +3486,21 @@ def import_odka_tt044(r):
     data = make_data(r)
     media = make_media(r)
 
+    unique_data = dict(
+        source="odk",
+        source_id=data["@instanceID"])
+    extra_data = dict(
+        where=odk_point_as_point(data["details"]["observed_at"]),
+        when=parse_datetime(data["observation_start_time"]),
+        location_accuracy="10",
+        observer=guess_user(data["reporter"]),
+        reporter=guess_user(data["reporter"]))
+
     enc, action = create_update_skip(
-        "odk",
-        data["@instanceID"],
-        data["details"]["observed_at"],
-        data["observation_start_time"],
-        data["reporter"],
-        data["reporter"],
-        cls=TurtleNestEncounter)
+        unique_data,
+        extra_data,
+        cls=TurtleNestEncounter,
+        base_cls=Encounter)
 
     if action in ["update", "create"]:
         enc.nest_age = data["details"]["nest_age"]
@@ -3632,18 +3649,24 @@ def import_odka_tal05(r):
     data = make_data(r)
     # media = make_media(r)
 
+    unique_data = dict(
+        source="odk",
+        source_id=data["@instanceID"])
+    extra_data = dict(
+        where=odk_point_as_point(data["overview"]["location"]),
+        transect=read_odk_linestring(data["overview"]["location"]),
+        when=parse_datetime(data["observation_start_time"]),
+        location_accuracy="10",
+        observer=guess_user(data["reporter"]),
+        reporter=guess_user(data["reporter"]))
+
     enc, action = create_update_skip(
-        "odk",
-        data["@instanceID"],
-        data["overview"]["location"],
-        data["observation_start_time"],
-        data["reporter"],
-        data["reporter"],
-        cls=LineTransectEncounter)
+        unique_data,
+        extra_data,
+        cls=LineTransectEncounter,
+        base_cls=Encounter)
 
     if action in ["update", "create"]:
-
-        # enc.save()
 
         # TurtleNestDisturbanceTallyObservation
         [handle_turtlenestdisttallyobs(distobs, enc)
@@ -3827,14 +3850,21 @@ def import_odka_mwi05(r):
     data = make_data(r)
     media = make_media(r)
 
+    unique_data = dict(
+        source="odk",
+        source_id=data["@instanceID"])
+    extra_data = dict(
+        where=odk_point_as_point(data["incident"]["observed_at"]),
+        when=parse_datetime(data["incident"]["incident_time"]),
+        location_accuracy="10",
+        observer=guess_user(data["reporter"]),
+        reporter=guess_user(data["reporter"]))
+
     enc, action = create_update_skip(
-        "odk",
-        data["@instanceID"],
-        data["incident"]["observed_at"],
-        data["incident"]["incident_time"],
-        data["reporter"],
-        data["reporter"],
-        cls=AnimalEncounter)
+        unique_data,
+        extra_data,
+        cls=AnimalEncounter,
+        base_cls=Encounter)
 
     if action in ["update", "create"]:
 
@@ -3950,6 +3980,7 @@ def import_all_odka(path="."):
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
         tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
         tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
+        tt35=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)],
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)]
     )
