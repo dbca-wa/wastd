@@ -147,9 +147,9 @@ def update_names(request):
 def import_odka(request):
     """Download and import new ODKA submissions."""
     from wastd.observations.utils import save_all_odka, import_all_odka
-    # import sys
-    # reload(sys)
-    # sys.setdefaultencoding('UTF8')
+    import sys
+    reload(sys)
+    sys.setdefaultencoding('UTF8')
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")
     msg = "New ODK submissions imported"
