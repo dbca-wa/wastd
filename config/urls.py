@@ -24,7 +24,7 @@ from rest_framework.documentation import include_docs_urls
 from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
-    schema_view, update_names,
+    schema_view, update_names, import_odka,
     HomeView, EncounterTableView, AnimalEncounterTableView)
 
 # register all adminactions
@@ -102,6 +102,8 @@ urlpatterns = [
 
     # Update animal names for all Encounters
     url(r'^action/update-names/$', update_names, name="update-names"),
+    url(r'^action/import-odka/$', import_odka, name="import-odka"),
+
 
     url(r'^400/$', default_views.bad_request,
         kwargs={'exception': Exception('Bad Request!')}),
