@@ -3271,6 +3271,7 @@ def import_odka_fs03(r):
     data = make_data(r)
     media = make_media(r)
 
+    print("Found Fox Sake...")
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3294,7 +3295,7 @@ def import_odka_fs03(r):
         handle_odka_disturbanceobservation(enc, media, data)
         enc.save()
 
-    print(" Done: {0}\n".format(enc))
+    print("Done: {0}\n".format(enc))
     return enc
 
 
@@ -3485,7 +3486,7 @@ def import_odka_tt044(r):
     """
     data = make_data(r)
     media = make_media(r)
-
+    print("Found Track or Treat...")
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3521,7 +3522,7 @@ def import_odka_tt044(r):
         # handle_odka_fanangles(enc, media, data)
         enc.save()
 
-    print(" Done: {0}\n".format(enc))
+    print("Done: {0}\n".format(enc))
     return enc
 
 
@@ -3648,7 +3649,7 @@ def import_odka_tal05(r):
     """
     data = make_data(r)
     # media = make_media(r)
-
+    print("Found Track Tally...")
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3729,7 +3730,7 @@ def import_odka_tal05(r):
 
         enc.save()
 
-    print(" Done: {0}\n".format(enc))
+    print("Done: {0}\n".format(enc))
     return enc
 
 
@@ -3849,7 +3850,7 @@ def import_odka_mwi05(r):
     """
     data = make_data(r)
     media = make_media(r)
-
+    print("Found Marine Wildlife Incident...")
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3868,30 +3869,25 @@ def import_odka_mwi05(r):
 
     if action in ["update", "create"]:
 
-        # "status": {
-        #     "behaviour": "behaviour comments",
-        #     "health": "dead-edible",
-        #     "activity": "beach-jumped"
-        #   },
-        # "incident": {
-        #   "habitat": "open-water",
-        #   "location_comment": "location comment."
-        # },
+        enc.taxon = data["details"]["taxon"]
+        enc.species = data["details"]["species"]
+        enc.maturity = data["details"]["maturity"]
+        enc.sex = data["details"]["sex"]
+        enc.health = data["status"]["health"]
+        enc.activity = data["status"]["activity"]
+        enc.behaviour = "Behaviour: {0}\nLocation: {1}".format(
+            data["status"]["behaviour"] or '',
+            data["incident"]["location_comment"] or '')
+        enc.habitat = data["incident"]["habitat"]
+        enc.nesting_event = False
+        enc.checked_for_injuries = data["checks"]["checked_for_injuries"]
+        enc.scanned_for_pit_tags = data["checks"]["scanned_for_pit_tags"]
+        enc.checked_for_flipper_tags = data["checks"]["checked_for_flipper_tags"]
+        enc.cause_of_death = data["death"]["cause_of_death"]
+        enc.cause_of_death_confidence = data["death"]["cause_of_death_confidence"]
+
         #  "checks": {
-        #   "checked_for_flipper_tags": "present",
         #   "samples_taken": "present",
-        #   "scanned_for_pit_tags": "present",
-        #   "checked_for_injuries": "present"
-        # },
-        # "details": {
-        #   "maturity": "post-hatchling",
-        #   "species": "flatback",
-        #   "sex": "male"
-        # },
-        # "death": {
-        #   "cause_of_death": "indeterminate-decomposed",
-        #   "cause_of_death_confidence": "expert-opinion"
-        # },
 
         enc.save()
 
@@ -3960,7 +3956,7 @@ def import_odka_mwi05(r):
 
         enc.save()
 
-    print(" Done: {0}\n".format(enc))
+    print("Done: {0}\n".format(enc))
     return enc
 
 
@@ -3977,10 +3973,10 @@ def import_all_odka(path="."):
     enc = import_all_odka(path="data/odka")
     """
     return dict(
+        mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
         tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
         tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
         tt35=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)],
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
-        mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)]
     )
