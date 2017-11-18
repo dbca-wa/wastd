@@ -318,10 +318,10 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PARSER_CLASSES': (
     # 'rest_framework_yaml.parsers.YAMLParser',
     # ),
-    # 'DEFAULT_FILTER_BACKENDS': (
-    #     'django_filters.rest_framework.DjangoFilterBackend',
-    #     # 'rest_framework_gis.filters.InBBoxFilter',
-    #     ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        # 'rest_framework_gis.filters.InBBoxFilter',
+        ),
 
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
