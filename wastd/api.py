@@ -627,6 +627,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   #  'as_html', 'as_latex',
                   'observation_set', )
+        filter_fields = ('when', 'observer', 'reporter', 'status', 'source', 'site_visit')
         geo_field = "where"
         id_field = "source_id"
 
@@ -708,6 +709,9 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'cause_of_death', 'cause_of_death_confidence',
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
+        filter_fields = ('when', 'observer', 'reporter', 'status', 'source', 'site_visit',
+            'taxon', 'species', 'health', 'sex', 'habitat', 'activity', 'nesting_event',
+            'cause_of_death', 'cause_of_death_confidence')
         geo_field = "where"
         id_field = "source_id"
 
@@ -729,6 +733,8 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set',
                   )
+        filter_fields = ('when', 'observer', 'reporter', 'status', 'source', 'site_visit',
+            'nest_age', 'nest_type', 'taxon', 'species', 'habitat', 'disturbance')
         # read_only = ('photographs',)
         geo_field = "where"
 
