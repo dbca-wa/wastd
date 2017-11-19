@@ -3277,10 +3277,10 @@ def import_odka_fs03(r):
     Returns:
         The WAStD Encounter object.
     """
+    print("Found Fox Sake...")
     data = make_data(r)
     media = make_media(r)
 
-    print("Found Fox Sake...")
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3493,9 +3493,9 @@ def import_odka_tt044(r):
     Returns:
         The WAStD Encounter object.
     """
+    print("Found Track or Treat...")
     data = make_data(r)
     media = make_media(r)
-    print("Found Track or Treat...")
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3656,9 +3656,9 @@ def import_odka_tal05(r):
     Returns:
         The WAStD Encounter object.
     """
+    print("Found Track Tally...")
     data = make_data(r)
     # media = make_media(r)
-    print("Found Track Tally...")
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3857,9 +3857,9 @@ def import_odka_mwi05(r):
     Returns:
     The WAStD Encounter object.
     """
+    print("Found Marine Wildlife Incident...")
     data = make_data(r)
     media = make_media(r)
-    print("Found Marine Wildlife Incident...")
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3983,13 +3983,13 @@ def import_all_odka(path="."):
     """
     print("[import_all_odka] Starting import of all downloaded ODKA data...")
     results = dict(
-        mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
         tt35=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)],
         tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
         tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
         tt45=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-45_1511079712", path)],
+        mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
 
 
     )
