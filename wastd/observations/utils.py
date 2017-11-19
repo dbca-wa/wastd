@@ -3972,7 +3972,8 @@ def import_all_odka(path="."):
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")
     """
-    return dict(
+    print("[import_all_odka] Starting import of all downloaded ODKA data...")
+    results = dict(
         mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
@@ -3980,3 +3981,11 @@ def import_all_odka(path="."):
         tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
         tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
     )
+    print("[import_all_odka] Finished import. Stats:")
+    print("[import_all_odka]  Imported {0} MWI05".format(len(results["mwi05"])))
+    print("[import_all_odka]  Imported {0} FS03".format(len(results["fs03"])))
+    print("[import_all_odka]  Imported {0} TAL05".format(len(results["tal05"])))
+    print("[import_all_odka]  Imported {0} TT035".format(len(results["tt35"])))
+    print("[import_all_odka]  Imported {0} TT036".format(len(results["tt36"])))
+    print("[import_all_odka]  Imported {0} TT044".format(len(results["tt44"])))
+    return results
