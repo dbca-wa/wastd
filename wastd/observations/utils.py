@@ -459,15 +459,15 @@ def handle_turtlenestobs(d, e, m):
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
         nest_position=m["habitat"][d["habitat"]],
-        no_egg_shells=d["no_egg_shells"] or 0,
-        no_live_hatchlings=d["no_live_hatchlings"] or 0,
-        no_dead_hatchlings=d["no_dead_hatchlings"] or 0,
-        no_undeveloped_eggs=d["no_undeveloped_eggs"] or 0,
-        no_unhatched_eggs=d["no_unhatched_eggs"] or 0,
-        no_unhatched_term=d["no_unhatched_term"] or 0,
-        no_depredated_eggs=d["no_depredated_eggs"] or 0,
-        nest_depth_top=d["nest_depth_top"] or 0,
-        nest_depth_bottom=d["nest_depth_bottom"] or 0
+        no_egg_shells=d["no_egg_shells"],
+        no_live_hatchlings=d["no_live_hatchlings"],
+        no_dead_hatchlings=d["no_dead_hatchlings"],
+        no_undeveloped_eggs=d["no_undeveloped_eggs"],
+        no_unhatched_eggs=d["no_unhatched_eggs"],
+        no_unhatched_term=d["no_unhatched_term"],
+        no_depredated_eggs=d["no_depredated_eggs"],
+        nest_depth_top=d["nest_depth_top"],
+        nest_depth_bottom=d["nest_depth_bottom"]
         )
     dd.save()
     action = "created" if created else "updated"
@@ -517,15 +517,15 @@ def handle_turtlenestobs31(d, e):
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
         nest_position=d["habitat"],
-        no_egg_shells=int(d["no_egg_shells"]) or 0,
-        no_live_hatchlings=int(d["no_live_hatchlings"]) or 0,
-        no_dead_hatchlings=int(d["no_dead_hatchlings"]) or 0,
-        no_undeveloped_eggs=int(d["no_undeveloped_eggs"]) or 0,
-        no_unhatched_eggs=int(d["no_unhatched_eggs"]) or 0,
-        no_unhatched_term=int(d["no_unhatched_term"]) or 0,
-        no_depredated_eggs=int(d["no_depredated_eggs"]) or 0,
-        nest_depth_top=int(d["nest_depth_top"]) or 0,
-        nest_depth_bottom=int(d["nest_depth_bottom"]) or 0
+        no_egg_shells=int_or_none(d["no_egg_shells"]),
+        no_live_hatchlings=int_or_none(d["no_live_hatchlings"]),
+        no_dead_hatchlings=int_or_none(d["no_dead_hatchlings"]),
+        no_undeveloped_eggs=int_or_none(d["no_undeveloped_eggs"]),
+        no_unhatched_eggs=int_or_none(d["no_unhatched_eggs"]),
+        no_unhatched_term=int_or_none(d["no_unhatched_term"]),
+        no_depredated_eggs=int_or_none(d["no_depredated_eggs"]),
+        nest_depth_top=int_or_none(d["nest_depth_top"]),
+        nest_depth_bottom=int_or_none(d["nest_depth_bottom"])
         )
     dd.save()
     action = "created" if created else "updated"
@@ -2997,22 +2997,31 @@ def create_update_skip(
             instantiated = cls.objects.filter(pk=enc.first().pk)
             instantiated.update(**extra_data)
             e = enc.first()
-            msg = "Updating unchanged existing record {0}...".format(e.__str__())
+            msg = "[create_update_skip] Updating unchanged existing record {0}...".format(e.__str__())
             e.save()
         else:
             action = "skip"
             e = enc.first()
-            msg = "Skipping existing curated record {0}...".format(e.__str__())
+            msg = "[create_update_skip] Skipping existing curated record {0}...".format(e.__str__())
     else:
         action = "create"
         data = unique_data
         data.update(extra_data)
         e = cls.objects.create(**data)
         e.save()
-        msg = "Created new record {0}".format(e.__str__())
+        msg = "[create_update_skip] Created new record {0}".format(e.__str__())
 
     print(msg)
+    print("[create_update_skip] Done, returning record.")
     return (e, action)
+
+
+def int_or_none(value):
+    """Return int(value) or None."""
+    try:
+        return int(value)
+    except:
+        return None
 
 
 # ---------------------------------------------------------------------------#
@@ -3883,8 +3892,8 @@ def import_odka_mwi05(r):
         enc.checked_for_injuries = data["checks"]["checked_for_injuries"]
         enc.scanned_for_pit_tags = data["checks"]["scanned_for_pit_tags"]
         enc.checked_for_flipper_tags = data["checks"]["checked_for_flipper_tags"]
-        enc.cause_of_death = data["death"]["cause_of_death"]
-        enc.cause_of_death_confidence = data["death"]["cause_of_death_confidence"]
+        enc.cause_of_death = data["death"]["cause_of_death"] or 'na'
+        enc.cause_of_death_confidence = data["death"]["cause_of_death_confidence"] or 'na'
 
         #  "checks": {
         #   "samples_taken": "present",
@@ -3980,6 +3989,9 @@ def import_all_odka(path="."):
         tt35=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)],
         tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
         tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
+        tt45=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-45_1511079712", path)],
+
+
     )
     print("[import_all_odka] Finished import. Stats:")
     print("[import_all_odka]  Imported {0} MWI05".format(len(results["mwi05"])))
@@ -3988,4 +4000,5 @@ def import_all_odka(path="."):
     print("[import_all_odka]  Imported {0} TT035".format(len(results["tt35"])))
     print("[import_all_odka]  Imported {0} TT036".format(len(results["tt36"])))
     print("[import_all_odka]  Imported {0} TT044".format(len(results["tt44"])))
+    print("[import_all_odka]  Imported {0} TT045".format(len(results["tt45"])))
     return results
