@@ -483,9 +483,10 @@ HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
 
 NEST_AGE_DEFAULT = "unknown"
 NEST_AGE_CHOICES = (
-    ("old", "(O) old"),
-    ("fresh", "(F) fresh"),
+    ("old", "(O) old, made before last night"),
+    ("fresh", "(F) fresh, made last night"),
     (NEST_AGE_DEFAULT, "(U) unknown age"),
+    ("missed", "(M) missed turtle, made within past hours"),
     )
 
 NEST_TYPE_DEFAULT = "track-not-assessed"
