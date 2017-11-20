@@ -3883,7 +3883,7 @@ def import_odka_mwi05(r):
         enc.maturity = data["details"]["maturity"]
         enc.sex = data["details"]["sex"]
         enc.health = data["status"]["health"]
-        enc.activity = data["status"]["activity"]
+        enc.activity = data["status"]["activity"].replace("beachwashed", "beach-washed")
         enc.behaviour = "Behaviour: {0}\nLocation: {1}".format(
             data["status"]["behaviour"] or '',
             data["incident"]["location_comment"] or '')

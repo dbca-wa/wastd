@@ -370,7 +370,8 @@ NESTING_ACTIVITY_CHOICES = (
     ("excavating-egg-chamber", "excavating egg chamber"),
     ("laying-eggs", "laying eggs"),
     ("filling-in-egg-chamber", "filling in egg chamber"),
-    ("camouflaging-egg-chamber", "camouflaging egg chamber"),
+    ("filling-in-nest", "filling in nest"),
+    ("camouflaging-nest", "camouflaging nest"),
     ("returning-to-water", "returning to water"),
     )
 
