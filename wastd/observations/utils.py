@@ -3215,6 +3215,129 @@ def handle_odka_hatchlingmorphometricobservation(enc, media, data):
 
 
 # ---------------------------------------------------------------------------#
+# Site Visit Start 0.1-0.2
+#
+def import_odka_svs02(r):
+    """Import one ODK Site Visit Start 0.1 or 0.2 record from the OKA-A API into WAStD.
+
+    The start point becomes a SiteVisit, the end point can be matched to the
+    corresponding SiteVisit (containing start point) later.
+
+    Arguments
+
+    r The submission record as dict, e.g.
+
+    save_all_odka(path="data/odka")
+    with open("data/odka/build_Site-Visit-Start-0-1_1490753483.json") as df:
+        d = json.load(df)
+    r = d[1]
+
+    r
+
+    {
+    "submission": {
+      "@xmlns": "http://opendatakit.org/submissions",
+      "@xmlns:orx": "http://openrosa.org/xforms",
+      "data": {
+        "data": {
+          "reporter": null,
+          "@instanceID": "uuid:d8decc72-a789-411a-b071-aabc871965a5",
+          "orx:meta": {
+            "orx:instanceID": "uuid:d8decc72-a789-411a-b071-aabc871965a5"
+          },
+          "@submissionDate": "2017-08-23T03:46:26.706Z",
+          "survey_start_time": "2017-08-15T03:40:57.512Z",
+          "@isComplete": "true",
+          "@markedAsCompleteDate": "2017-08-23T03:46:26.706Z",
+          "site_visit": {
+            "location": "-15.7113833333 124.3992633333 8.5000000000 4.9000000000",
+            "comments": null,
+            "site_conditions": "1502768495317.jpg"
+          },
+          "@id": "build_Site-Visit-Start-0-1_1490753483"
+            }
+          },
+      "mediaFile": {
+        "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=...",
+        "hash": "md5:9fcf6ae0ffb8676c933ee43027b45dae",
+        "filename": "1502768495317.jpg"
+        }
+      }
+    }
+
+
+    with open("data/odka/build_Site-Visit-Start-0-2_1510716686.json") as df:
+        d = json.load(df)
+    r = d[1]
+
+    r
+
+    {
+    "submission": {
+      "@xmlns": "http://opendatakit.org/submissions",
+      "@xmlns:orx": "http://openrosa.org/xforms",
+      "data": {
+        "data": {
+          "reporter": "sam_pegg",
+          "@instanceID": "uuid:c58fe0d6-179a-47b6-af1d-508555fbd1b9",
+          "@isComplete": "true",
+          "@submissionDate": "2017-11-15T11:42:52.444Z",
+          "survey_start_time": "2017-11-15T11:41:27.652Z",
+          "orx:meta": {
+            "orx:instanceID": "uuid:c58fe0d6-179a-47b6-af1d-508555fbd1b9"
+          },
+          "@markedAsCompleteDate": "2017-11-15T11:42:52.444Z",
+          "site_visit": {
+            "location": "-17.9711817000 122.2323750000 17.4000000000 11.2000000000",
+            "comments": "Training with tash and matt",
+            "site_conditions": "1510746110532.jpg"
+          },
+          "@id": "build_Site-Visit-Start-0-2_1510716686",
+          "device_id": "febd1d3515c97a61"
+        }
+      },
+      "mediaFile": {
+        "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=b...",
+        "hash": "md5:6f60589b2d3fd5bb118c0287382ee734",
+        "filename": "1510746110532.jpg"
+          }
+        }
+      },
+
+    Existing records will be overwritten unless marked in WAStD as "proofread"
+    or higher levels of QA.
+
+    Returns:
+        The WAStD Site Visit object.
+    """
+    print("Found Site Visit Start...")
+    data = make_data(r)
+    media = make_media(r)
+
+    unique_data = dict(
+        source="odk",
+        source_id=data["@instanceID"])
+    extra_data = dict(
+        start_location=odk_point_as_point(data["site_visit"]["location"]),
+        started_on=parse_datetime(data["survey_start_time"]))
+
+    enc, action = create_update_skip(
+        unique_data,
+        extra_data,
+        cls=SiteVisit,
+        base_cls=SiteVisit,
+        retain_qa=False)
+
+    if action in ["update", "create"]:
+        handle_odka_disturbanceobservation(enc, media, data)
+        enc.save()
+        # TODO add data["reporter"] to enc.team
+
+    print("Done: {0}\n".format(enc))
+    return enc
+
+
+# ---------------------------------------------------------------------------#
 # Fox Sake 0.3
 #
 def import_odka_fs03(r):
@@ -3990,6 +4113,8 @@ def import_all_odka(path="."):
         tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
         tt45=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-45_1511079712", path)],
         mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
+        svs01=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-1_1490753483", path)],
+        svs02=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-2_1510716686", path)]
 
 
     )
@@ -4001,4 +4126,6 @@ def import_all_odka(path="."):
     print("[import_all_odka]  Imported {0} TT036".format(len(results["tt36"])))
     print("[import_all_odka]  Imported {0} TT044".format(len(results["tt44"])))
     print("[import_all_odka]  Imported {0} TT045".format(len(results["tt45"])))
+    print("[import_all_odka]  Imported {0} SVS01".format(len(results["svs01"])))
+    print("[import_all_odka]  Imported {0} SVS02".format(len(results["svs02"])))
     return results

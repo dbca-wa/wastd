@@ -373,6 +373,7 @@ NESTING_ACTIVITY_CHOICES = (
     ("filling-in-nest", "filling in nest"),
     ("camouflaging-nest", "camouflaging nest"),
     ("returning-to-water", "returning to water"),
+    ("general-breeding-activity", "general breeding activity"),
     )
 
 STRANDING_ACTIVITY_CHOICES = (
@@ -811,10 +812,11 @@ class Expedition(PolymorphicModel, geo_models.Model):
 
     def __str__(self):
         """The unicode representation."""
-        return "Expedition to {0} from {1} to {2}".format(
-            self.site.name or "unknown site",
-            self.started_on.isoformat() or "na",
-            self.finished_on.isoformat() or "na")
+        return "Expedition {0} to {1} from {2} to {3}".format(
+            self.pk,
+            "unknown site" if not self.site else self.site.name,
+            "na" if not self.started_on else self.started_on.isoformat(),
+            "na" if not self.finished_on else self.finished_on.isoformat())
 
     @property
     def site_visits(self):
@@ -872,10 +874,11 @@ class SiteVisit(Expedition):
 
     def __str__(self):
         """The unicode representation."""
-        return "Survey of {0} from {1} to {2}".format(
-            self.site.name,
-            self.started_on.isoformat(),
-            self.finished_on.isoformat())
+        return "Site Visit {0} of {1} from {2} to {3}".format(
+            self.pk,
+            "unknown site" if not self.site else self.site.name,
+            "na" if not self.started_on else self.started_on.isoformat(),
+            "na" if not self.finished_on else self.finished_on.isoformat())
 
     @property
     def encounters(self):
