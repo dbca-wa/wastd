@@ -43,7 +43,7 @@ def allocate_animal_names():
     * For each new capture, get the primary flipper tag name as animal name
     * Set the animal name of this and all related Encounters
     """
-    [s.claim_encounters for s in SiteVisit.objects.all()]
+    [s.claim_encounters for s in Survey.objects.all()]
     ae = [a.set_name_and_propagate(a.primary_flipper_tag.name)
           for a in AnimalEncounter.objects.all() if a.is_new_capture]
     le = [a.save() for a in LoggerEncounter.objects.all()]
@@ -266,7 +266,7 @@ def dl_photo(photo_id, photo_url, photo_filename):
         print("  Found file {0}".format(pname))
 
 
-def handle_photo(p, e, title="Track"):
+def handle_photo(p, e, title="Track", enc=True):
     """Create a MediaAttachment of photo p to Encounter e with a given title.
 
     Arguments
@@ -274,9 +274,14 @@ def handle_photo(p, e, title="Track"):
     p The filepath of a locally accessible photograph
     e The related encounter (must exist)
     title The attachment's title (default: "Track")
+    enc Whether to use Encounter / MediaAttachment (true, default) or
+        Expedition / FieldMediaAttachment
     """
     # Does the file exist locally?
-    print("  Creating photo attachment at filepath {0} for encounter {1} with title {2}...".format(p, e.id, title))
+    print(
+        "  Creating photo attachment at filepath"
+        " {0} for encounter {1} with title {2}...".format(p, e.id, title))
+
     if os.path.exists(p):
         print("  File {0} exists".format(p))
         with open(p, 'rb') as photo:
@@ -285,15 +290,27 @@ def handle_photo(p, e, title="Track"):
             if f.size > 0:
                 print("  File size is {0}".format(f.size))
 
-                # Does the MediaAttachment exist already?
-                if MediaAttachment.objects.filter(
-                        encounter=e, title=title).exists():
-                    m = MediaAttachment.objects.filter(
-                        encounter=e, title=title)[0]
-                    action = "updated"
+                if enc:
+
+                    # Does the MediaAttachment exist already?
+                    if MediaAttachment.objects.filter(
+                            encounter=e, title=title).exists():
+                        m = MediaAttachment.objects.filter(
+                            encounter=e, title=title)[0]
+                        action = "updated"
+                    else:
+                        m = MediaAttachment(encounter=e, title=title)
+                        action = "Created"
                 else:
-                    m = MediaAttachment(encounter=e, title=title)
-                    action = "Created"
+                    # Does the MediaAttachment exist already?
+                    if FieldMediaAttachment.objects.filter(
+                            expedition=e, title=title).exists():
+                        m = FieldMediaAttachment.objects.filter(
+                            expedition=e, title=title)[0]
+                        action = "updated"
+                    else:
+                        m = FieldMediaAttachment(expedition=e, title=title)
+                        action = "Created"
 
                 # Update the file
                 m.attachment.save(p, f, save=True)
@@ -331,7 +348,37 @@ def handle_media_attachment(e, photo_dict, title="Photo"):
         photo_dict["url"],
         photo_dict["filename"])
 
-    handle_photo(pname, e, title=title)
+    handle_photo(pname, e, title=title, enc=True)
+
+
+def handle_fieldmedia_attachment(e, photo_dict, title="Photo"):
+    """Download unless already done, then create or update a photo.
+
+    Arguments:
+
+    e A Survey with an attribute "source_id" (e.source_id)
+
+    {
+        "filename": "1485913363900.jpg",
+        "type": "image/jpeg",
+        "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+    }
+    """
+    if photo_dict is None:
+        print("  ODK collect photo not taken, skipping {0}".format(title))
+        return
+
+    pdir = make_photo_foldername(e.source_id)
+    pname = os.path.join(pdir, photo_dict["filename"])
+    print("  Photo dir is {0}".format(pdir))
+    print("  Photo filepath is {0}".format(pname))
+
+    dl_photo(
+        e.source_id,
+        photo_dict["url"],
+        photo_dict["filename"])
+
+    handle_photo(pname, e, title=title, enc=False)
 
 
 def handle_turtlenestdistobs(d, e, m):
@@ -1175,7 +1222,7 @@ def import_one_record_sv01(r, m):
     All existing records will be updated.
     Make sure to skip existing records which should be retained unchanged.
 
-    Creates a SiteVisit, e.g.
+    Creates a Survey, e.g.
     {
      'started_on': datetime.datetime(2017, 1, 31, 16, 0, tzinfo=<UTC>),
      'finished_on': datetime.datetime(2017, 2, 4, 16, 0, tzinfo=<UTC>),
@@ -1191,7 +1238,7 @@ def import_one_record_sv01(r, m):
     new_data = dict(
         source="odk",
         source_id=src_id,
-        site_id=17,  # TODO: reconstruct site on SiteVisit if not given
+        site_id=17,  # TODO: reconstruct site on Survey if not given
         transect=read_odk_linestring(r["transect"]),
         started_on=parse_datetime(r["observation_start_time"]),
         finished_on=parse_datetime(r["observation_end_time"]),
@@ -1199,13 +1246,13 @@ def import_one_record_sv01(r, m):
         comments=r["comments"]
         )
 
-    if SiteVisit.objects.filter(source_id=src_id).exists():
+    if Survey.objects.filter(source_id=src_id).exists():
         print("Updating unchanged existing record {0}...".format(src_id))
-        SiteVisit.objects.filter(source_id=src_id).update(**new_data)
-        e = SiteVisit.objects.get(source_id=src_id)
+        Survey.objects.filter(source_id=src_id).update(**new_data)
+        e = Survey.objects.get(source_id=src_id)
     else:
         print("Creating new record {0}...".format(src_id))
-        e = SiteVisit.objects.create(**new_data)
+        e = Survey.objects.create(**new_data)
 
     e.save()
 
@@ -3036,6 +3083,15 @@ def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
     return None
 
 
+def handle_fieldmedia_attachment_odka(exp, media, photo_filename, title="Photo"):
+    """Handle MediaAttachment for ODKA data."""
+    if not photo_filename:
+        print("  [handle_fieldmedia_attachment_odka] skipping empty photo {0}".format(title))
+        return None
+    handle_fieldmedia_attachment(exp, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+    return None
+
+
 def handle_odka_disturbanceobservation(enc, media, data):
     """Handle empty, one, or multiple TurtleNestDistObs.
 
@@ -3057,12 +3113,15 @@ def handle_odka_disturbanceobservation(enc, media, data):
         return None
 
     if distobs:
-        print("[handle_odka_disturbanceobservation] found {0} TurtleNestDisturbanceObservation(s)".format(len(distobs)))
+        print(
+            "[handle_odka_disturbanceobservation] found "
+            "{0} TurtleNestDisturbanceObservation(s)".format(len(distobs)))
         [handle_turtlenestdistobs31(
             dict(
                 disturbance_cause=x["disturbance_cause"],
                 disturbance_cause_confidence=x["disturbance_cause_confidence"],
-                disturbance_severity="na" if "disturbance_severity" not in x else x["disturbance_severity"],
+                disturbance_severity="na"
+                if "disturbance_severity" not in x else x["disturbance_severity"],
                 photo_disturbance=make_photo_dict(x["photo_disturbance"], media),
                 comments=x["comments"]
             ),
@@ -3220,8 +3279,8 @@ def handle_odka_hatchlingmorphometricobservation(enc, media, data):
 def import_odka_svs02(r):
     """Import one ODK Site Visit Start 0.1 or 0.2 record from the OKA-A API into WAStD.
 
-    The start point becomes a SiteVisit, the end point can be matched to the
-    corresponding SiteVisit (containing start point) later.
+    The start point becomes a Survey, the end point can be matched to the
+    corresponding Survey (containing start point) later.
 
     Arguments
 
@@ -3319,19 +3378,25 @@ def import_odka_svs02(r):
         source_id=data["@instanceID"])
     extra_data = dict(
         start_location=odk_point_as_point(data["site_visit"]["location"]),
-        started_on=parse_datetime(data["survey_start_time"]))
+        started_on=parse_datetime(data["survey_start_time"]),
+        reporter=guess_user(data["reporter"]),
+        device_id=None if "device_id" not in data else data["device_id"],
+        )
 
     enc, action = create_update_skip(
         unique_data,
         extra_data,
-        cls=SiteVisit,
-        base_cls=SiteVisit,
+        cls=Survey,
+        base_cls=Survey,
         retain_qa=False)
 
     if action in ["update", "create"]:
-        handle_odka_disturbanceobservation(enc, media, data)
+        # handle_fieldmedia_attachment_odka(
+        #     enc,
+        #     media,
+        #     data["site_visit"]["site_conditions"],
+        #     title="Site conditions at start")
         enc.save()
-        # TODO add data["reporter"] to enc.team
 
     print("Done: {0}\n".format(enc))
     return enc
@@ -4097,9 +4162,7 @@ def import_all_odka(path="."):
 
     Example usage on shell_plus:
 
-    import sys
-    reload(sys)
-    sys.setdefaultencoding('UTF8')
+    import sys; reload(sys); sys.setdefaultencoding('UTF8')
     from wastd.observations.utils import *
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")

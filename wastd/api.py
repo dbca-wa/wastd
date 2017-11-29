@@ -620,7 +620,9 @@ class EncounterSerializer(GeoFeatureModelSerializer):
 
         model = Encounter
         name = 'encounter'
-        fields = ('pk', 'site_visit', 'where', 'location_accuracy', 'when',
+        fields = ('pk',
+            #'site_visit',
+            'where', 'location_accuracy', 'when',
                   'name', 'observer', 'reporter',
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
@@ -696,7 +698,9 @@ class AnimalEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = AnimalEncounter
-        fields = ('pk', 'site_visit', 'source', 'source_id',
+        fields = ('pk',
+            #'site_visit',
+            'source', 'source_id',
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
@@ -709,7 +713,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'cause_of_death', 'cause_of_death_confidence',
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
-        filter_fields = ('when', 'observer', 'reporter', 'status', 'source', 'site_visit',
+        filter_fields = ('when', 'observer', 'reporter', 'status', 'source', #'site_visit',
             'taxon', 'species', 'health', 'sex', 'habitat', 'activity', 'nesting_event',
             'cause_of_death', 'cause_of_death_confidence')
         geo_field = "where"
@@ -723,7 +727,8 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = TurtleNestEncounter
-        fields = ('pk', 'site_visit', 'source', 'source_id',
+        fields = ('pk', #'site_visit',
+            'source', 'source_id',
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
@@ -733,7 +738,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set',
                   )
-        filter_fields = ('when', 'observer', 'reporter', 'status', 'source', 'site_visit',
+        filter_fields = ('when', 'observer', 'reporter', 'status', 'source', #'site_visit',
             'nest_age', 'nest_type', 'taxon', 'species', 'habitat', 'disturbance')
         # read_only = ('photographs',)
         geo_field = "where"
@@ -746,7 +751,9 @@ class LoggerEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = LoggerEncounter
-        fields = ('pk', 'site_visit', 'source', 'source_id',
+        fields = ('pk',
+            #'site_visit',
+            'source', 'source_id',
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
@@ -784,7 +791,8 @@ class EncounterViewSet(viewsets.ModelViewSet):
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'site_visit', 'source', 'source_id',
+        'encounter_type', 'status', #'site_visit',
+        'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter', ]
     bbox_filter_field = 'where'
     # bbox_filter_include_overlapping = True
@@ -804,7 +812,8 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'site_visit', 'source', 'source_id',
+        'encounter_type', 'status', #'site_visit',
+        'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source']
     pagination_class = MyGeoJsonPagination
@@ -822,7 +831,8 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'site_visit', 'source', 'source_id',
+        'encounter_type', 'status', #'site_visit',
+        'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'taxon', 'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
@@ -842,7 +852,8 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'site_visit', 'source', 'source_id',
+        'encounter_type', 'status', #'site_visit',
+        'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'deployment_status', 'comments']
     pagination_class = MyGeoJsonPagination

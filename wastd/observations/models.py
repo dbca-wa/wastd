@@ -942,6 +942,137 @@ class FieldMediaAttachment(models.Model):
         return str(self.attachment.file)
 
 
+@python_2_unicode_compatible
+class Survey(geo_models.Model):
+    """A visit to one site by a team of field workers collecting data."""
+
+    source = models.CharField(
+        max_length=300,
+        verbose_name=_("Data Source"),
+        default=SOURCE_DEFAULT,
+        choices=SOURCE_CHOICES,
+        help_text=_("Where was this record captured initially?"), )
+
+    source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID"),
+        help_text=_("The ID of the start point in the original source."), )
+
+    device_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Device ID"),
+        help_text=_("The ID of the recording device, if available."), )
+
+    site = models.ForeignKey(
+        Area,
+        blank=True, null=True,
+        verbose_name=_("Surveyed area"),
+        help_text=_("The entire surveyed area."), )
+
+    transect = geo_models.LineStringField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Transect line"),
+        help_text=_("The surveyed path as LineString in WGS84, optional."))
+
+    reporter = models.ForeignKey(
+        User,
+        verbose_name=_("Recorded by"),
+        blank=True, null=True,
+        help_text=_("The person who captured the start point."))
+
+    start_location = geo_models.PointField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Start location"),
+        help_text=_("The start location as point in WGS84"))
+
+    start_time = models.DateTimeField(
+        verbose_name=_("Site entered on"),
+        blank=True, null=True,
+        help_text=_("The datetime of entering the site, shown as local time "
+                    "(no daylight savings), stored as UTC."))
+
+    start_photo = models.FileField(
+        upload_to=expedition_media,
+        max_length=500,
+        verbose_name=_("Site conditions at start of survey"),
+        help_text=_("Upload the file"),)
+
+    start_comments = models.TextField(
+        verbose_name=_("Comments at start"),
+        blank=True, null=True,
+        help_text=_("Describe any circumstances affecting data collection, "
+                    "e.g. days without surveys."), )
+
+    end_source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID of end point"),
+        help_text=_("The ID of the record in the original source."), )
+
+    end_location = geo_models.PointField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("End location"),
+        help_text=_("The end location as point in WGS84"))
+
+    end_time = models.DateTimeField(
+        verbose_name=_("Site left on"),
+        blank=True, null=True,
+        help_text=_("The datetime of leaving the site, shown as local time "
+                    "(no daylight savings), stored as UTC."))
+
+    end_photo = models.FileField(
+        upload_to=expedition_media,
+        max_length=500,
+        verbose_name=_("Site conditions at end of survey"),
+        help_text=_("Upload the file"),)
+
+    end_comments = models.TextField(
+        verbose_name=_("Comments at finish"),
+        blank=True, null=True,
+        help_text=_("Describe any circumstances affecting data collection, "
+                    "e.g. days without surveys."), )
+
+    team = models.ManyToManyField(
+        User,
+        related_name="survey_team")
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["start_location", "start_time"]
+        unique_together = ("source", "source_id")
+
+    def __str__(self):
+        """The unicode representation."""
+        return "Survey {0} of {1} from {2} to {3}".format(
+            self.pk,
+            "unknown site" if not self.site else self.site.name,
+            "na" if not self.start_time else self.start_time.isoformat(),
+            "na" if not self.end_time else self.end_time.isoformat())
+
+    @property
+    def encounters(self):
+        """Return the QuerySet of all Encounters within this SiteVisit."""
+        return Encounter.objects.filter(
+            where__contained=self.site.geom,
+            when__gte=self.started_on,
+            when__lte=self.finished_on)
+
+    def claim_encounters(self):
+        """Update Encounters within this SiteVisit with reference to self."""
+        # self.encounters.update(survey=self)
+        pass
+
+    def claim_end_points(self):
+        """TODO Claim SiteVisitEnd."""
+        pass
+
+
 # Utilities ------------------------------------------------------------------#
 @receiver(pre_delete)
 def delete_observations(sender, instance, **kwargs):
