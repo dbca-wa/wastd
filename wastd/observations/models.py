@@ -939,6 +939,7 @@ class FieldMediaAttachment(models.Model):
 
     @property
     def filepath(self):
+        """Path to file."""
         return str(self.attachment.file)
 
 

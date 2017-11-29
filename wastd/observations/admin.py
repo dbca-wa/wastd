@@ -21,6 +21,7 @@ from wastd.observations.models import (
     Area,
     Expedition,
     SiteVisit,
+    Survey,
     FieldMediaAttachment,
     Encounter,
     TurtleNestEncounter,
@@ -259,7 +260,6 @@ leaflet_settings = {
         'map_srid': 4326, })}
 
 
-
 class FieldMediaAttachmentInline(admin.TabularInline):
     """TabularInlineAdmin for FieldMediaAttachment."""
 
@@ -285,6 +285,26 @@ class ExpeditionAdmin(admin.ModelAdmin):
 @admin.register(SiteVisit)
 class SiteVisitAdmin(ExpeditionAdmin):
     form = SiteVisitForm
+
+
+@admin.register(Survey)
+class SurveyAdmin(VersionAdmin, admin.ModelAdmin):
+    # form = s2form(Survey, attrs=S2ATTRS)
+    date_hierarchy = 'start_time'
+    list_display = (
+        'source',
+        'source_id',
+        'device_id',
+        'site',
+        'reporter',
+        'start_location',
+        'start_time',
+        'start_comments',
+        'end_source_id',
+        'end_location',
+        'end_time',
+        'end_comments'
+    )
 
 
 @admin.register(Area)
