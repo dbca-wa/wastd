@@ -1215,6 +1215,12 @@ class Encounter(PolymorphicModel, geo_models.Model):
         verbose_name=_("Site Visit"),
         help_text=_("The Site Visit during which this encounter happened."),)
 
+    survey = models.ForeignKey(
+        Survey,
+        null=True, blank=True,
+        verbose_name=_("Survey"),
+        help_text=_("The survey during which this encounter happened."),)
+
     source = models.CharField(
         max_length=300,
         verbose_name=_("Data Source"),

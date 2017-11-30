@@ -62,6 +62,10 @@ from wastd.observations.filters import AreaFilter
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
+
+# def symlink_resources(a,b,c):
+#     pass
+
 # from django.conf import settings
 
 # from synctool.routing import Route as SynctoolRoute
