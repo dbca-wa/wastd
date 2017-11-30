@@ -1080,10 +1080,14 @@ class Survey(geo_models.Model):
     @property
     def encounters(self):
         """Return the QuerySet of all Encounters within this SiteVisit."""
-        return Encounter.objects.filter(
-            where__contained=self.site.geom,
-            when__gte=self.start_time,
-            when__lte=self.end_time)
+        if not self.end_time:
+            print("[wastd.observations.survey.encounters] No end_time set, can't filter Encounters")
+            return None
+        else:
+            return Encounter.objects.filter(
+                where__contained=self.site.geom,
+                when__gte=self.start_time,
+                when__lte=self.end_time)
 
     def guess_site(self):
         """Return the first Area containing the start_location or None."""
@@ -1099,6 +1103,81 @@ class Survey(geo_models.Model):
     def claim_end_points(self):
         """TODO Claim SiteVisitEnd."""
         pass
+
+
+@python_2_unicode_compatible
+class SurveyEnd(geo_models.Model):
+    """A visit to one site by a team of field workers collecting data."""
+
+    source = models.CharField(
+        max_length=300,
+        verbose_name=_("Data Source"),
+        default=SOURCE_DEFAULT,
+        choices=SOURCE_CHOICES,
+        help_text=_("Where was this record captured initially?"), )
+
+    source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID"),
+        help_text=_("The ID of the start point in the original source."), )
+
+    device_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Device ID"),
+        help_text=_("The ID of the recording device, if available."), )
+
+    reporter = models.ForeignKey(
+        User,
+        verbose_name=_("Recorded by"),
+        blank=True, null=True,
+        help_text=_(
+            "The person who captured the start point, "
+            "ideally this person also recoreded the encounters and end point."))
+
+    end_location = geo_models.PointField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Survey end point"),
+        help_text=_("The end location as point in WGS84."))
+
+    end_time = models.DateTimeField(
+        verbose_name=_("Survey end time"),
+        blank=True, null=True,
+        help_text=_("The datetime of leaving the site, shown as local time "
+                    "(no daylight savings), stored as UTC."
+                    " The time of 'feet in the sand, done recording encounters.'"))
+
+    end_photo = models.FileField(
+        upload_to=survey_media,
+        max_length=500,
+        verbose_name=_("Site photo end"),
+        help_text=_("Site conditions at end of survey."),)
+
+    end_comments = models.TextField(
+        verbose_name=_("Comments at finish"),
+        blank=True, null=True,
+        help_text=_("Describe any circumstances affecting data collection, "
+                    "e.g. days without surveys."), )
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["end_location", "end_time"]
+        unique_together = ("source", "source_id")
+
+    def save(self, *args, **kwargs):
+        """Guess site."""
+        self.site = self.guess_site()
+        super(Survey, self).save(*args, **kwargs)
+
+    def __str__(self):
+        """The unicode representation."""
+        return "SurveyEnd {0} from {1} to {2}".format(
+            self.pk,
+            "na" if not self.start_time else self.start_time.isoformat(),
+            "na" if not self.end_time else self.end_time.isoformat())
 
 
 # Utilities ------------------------------------------------------------------#
