@@ -3392,12 +3392,6 @@ def import_odka_svs02(r):
         retain_qa=False)
 
     if action in ["update", "create"]:
-        # handle_fieldmedia_attachment_odka(
-        #     enc,
-        #     media,
-        #     data["site_visit"]["site_conditions"],
-        #     title="Site conditions at start")
-        # start_photo
         enc.save()
 
         fname = data["site_visit"]["site_conditions"]
@@ -3422,6 +3416,7 @@ def import_odka_svs02(r):
                         print("  [ERROR] zero size file {0}".format(p))
             else:
                 print("  [ERROR] missing file {0}".format(p))
+
             enc.save()
 
     print("Done: {0}\n".format(enc))
