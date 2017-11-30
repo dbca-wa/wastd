@@ -597,6 +597,13 @@ def expedition_media(instance, filename):
     return 'expedition/{0}/{1}'.format(instance.expedition.id, filename)
 
 
+def survey_media(instance, filename):
+    """Return an upload path for survey media."""
+    if not instance.id:
+        instance.save()
+    return 'survey/{0}/{1}'.format(instance.id, filename)
+
+
 # Spatial models -------------------------------------------------------------#
 @python_2_unicode_compatible
 class Area(geo_models.Model):
@@ -657,7 +664,7 @@ class Area(geo_models.Model):
 
     geom = geo_models.PolygonField(
         srid=4326,
-        verbose_name=_("Observed at"),
+        verbose_name=_("Location"),
         help_text=_("The exact extent of the area as polygon in WGS84."))
 
     class Meta:
@@ -695,7 +702,7 @@ class Area(geo_models.Model):
     def get_popup(self):
         """Generate HTML popup content."""
         t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
-        c = Context({"original": self})
+        c = dict(original=self)
         return mark_safe(t.render(c))
 
     @property
@@ -969,38 +976,43 @@ class Survey(geo_models.Model):
     site = models.ForeignKey(
         Area,
         blank=True, null=True,
-        verbose_name=_("Surveyed area"),
-        help_text=_("The entire surveyed area."), )
+        verbose_name=_("Surveyed site"),
+        help_text=_("The surveyed site, if known."), )
 
     transect = geo_models.LineStringField(
         srid=4326,
         blank=True, null=True,
         verbose_name=_("Transect line"),
-        help_text=_("The surveyed path as LineString in WGS84, optional."))
+        help_text=_(
+            "The surveyed path as LineString in WGS84, optional."
+            " E.g. automatically captured by form Track Tally."))
 
     reporter = models.ForeignKey(
         User,
         verbose_name=_("Recorded by"),
         blank=True, null=True,
-        help_text=_("The person who captured the start point."))
+        help_text=_(
+            "The person who captured the start point, "
+            "ideally this person also recoreded the encounters and end point."))
 
     start_location = geo_models.PointField(
         srid=4326,
         blank=True, null=True,
-        verbose_name=_("Start location"),
-        help_text=_("The start location as point in WGS84"))
+        verbose_name=_("Survey start point"),
+        help_text=_("The start location as point in WGS84."))
 
     start_time = models.DateTimeField(
-        verbose_name=_("Site entered on"),
+        verbose_name=_("Survey start time"),
         blank=True, null=True,
         help_text=_("The datetime of entering the site, shown as local time "
-                    "(no daylight savings), stored as UTC."))
+                    "(no daylight savings), stored as UTC."
+                    " The time of 'feet in the sand, start recording encounters'."))
 
     start_photo = models.FileField(
-        upload_to=expedition_media,
+        upload_to=survey_media,
         max_length=500,
-        verbose_name=_("Site conditions at start of survey"),
-        help_text=_("Upload the file"),)
+        verbose_name=_("Site photo start"),
+        help_text=_("Site conditions at start of survey."),)
 
     start_comments = models.TextField(
         verbose_name=_("Comments at start"),
@@ -1017,20 +1029,21 @@ class Survey(geo_models.Model):
     end_location = geo_models.PointField(
         srid=4326,
         blank=True, null=True,
-        verbose_name=_("End location"),
-        help_text=_("The end location as point in WGS84"))
+        verbose_name=_("Survey end point"),
+        help_text=_("The end location as point in WGS84."))
 
     end_time = models.DateTimeField(
-        verbose_name=_("Site left on"),
+        verbose_name=_("Survey end time"),
         blank=True, null=True,
         help_text=_("The datetime of leaving the site, shown as local time "
-                    "(no daylight savings), stored as UTC."))
+                    "(no daylight savings), stored as UTC."
+                    " The time of 'feet in the sand, done recording encounters.'"))
 
     end_photo = models.FileField(
         upload_to=expedition_media,
         max_length=500,
-        verbose_name=_("Site conditions at end of survey"),
-        help_text=_("Upload the file"),)
+        verbose_name=_("Site photo end"),
+        help_text=_("Site conditions at end of survey."),)
 
     end_comments = models.TextField(
         verbose_name=_("Comments at finish"),
@@ -1040,13 +1053,21 @@ class Survey(geo_models.Model):
 
     team = models.ManyToManyField(
         User,
-        related_name="survey_team")
+        related_name="survey_team",
+        help_text=_(
+            "Additional field workers, apart from the reporter,"
+            " who assisted with data collection."))
 
     class Meta:
         """Class options."""
 
         ordering = ["start_location", "start_time"]
         unique_together = ("source", "source_id")
+
+    def save(self, *args, **kwargs):
+        """Guess site."""
+        self.site = self.guess_site()
+        super(Survey, self).save(*args, **kwargs)
 
     def __str__(self):
         """The unicode representation."""
@@ -1061,13 +1082,19 @@ class Survey(geo_models.Model):
         """Return the QuerySet of all Encounters within this SiteVisit."""
         return Encounter.objects.filter(
             where__contained=self.site.geom,
-            when__gte=self.started_on,
-            when__lte=self.finished_on)
+            when__gte=self.start_time,
+            when__lte=self.end_time)
+
+    def guess_site(self):
+        """Return the first Area containing the start_location or None."""
+        candidates = Area.objects.filter(
+            area_type=Area.AREATYPE_SITE,
+            geom__contains=self.start_location)
+        return None if not candidates else candidates.first()
 
     def claim_encounters(self):
         """Update Encounters within this SiteVisit with reference to self."""
-        # self.encounters.update(survey=self)
-        pass
+        self.encounters.update(survey=self)
 
     def claim_end_points(self):
         """TODO Claim SiteVisitEnd."""

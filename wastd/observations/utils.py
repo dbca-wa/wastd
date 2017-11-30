@@ -3378,7 +3378,8 @@ def import_odka_svs02(r):
         source_id=data["@instanceID"])
     extra_data = dict(
         start_location=odk_point_as_point(data["site_visit"]["location"]),
-        started_on=parse_datetime(data["survey_start_time"]),
+        start_time=parse_datetime(data["survey_start_time"]),
+        start_comments=data["site_visit"]["comments"],
         reporter=guess_user(data["reporter"]),
         device_id=None if "device_id" not in data else data["device_id"],
         )
@@ -3396,7 +3397,32 @@ def import_odka_svs02(r):
         #     media,
         #     data["site_visit"]["site_conditions"],
         #     title="Site conditions at start")
+        # start_photo
         enc.save()
+
+        fname = data["site_visit"]["site_conditions"]
+        if fname:
+            print(" Found start_photo.")
+            pdir = make_photo_foldername(enc.source_id)
+            pname = os.path.join(pdir, fname)
+            print("  Photo dir is {0}".format(pdir))
+            print("  Photo filepath is {0}".format(pname))
+
+            dl_photo(enc.source_id, media[fname], fname)
+            print("  Downloaded start_photo.")
+
+            if os.path.exists(pname):
+                print("  File {0} exists".format(pname))
+                with open(pname, 'rb') as photo:
+                    f = File(photo)
+                    if f.size > 0:
+                        enc.start_photo.save(pname, f, save=True)
+                        print("  Attached start_photo.")
+                    else:
+                        print("  [ERROR] zero size file {0}".format(p))
+            else:
+                print("  [ERROR] missing file {0}".format(p))
+            enc.save()
 
     print("Done: {0}\n".format(enc))
     return enc

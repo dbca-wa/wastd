@@ -289,7 +289,8 @@ class SiteVisitAdmin(ExpeditionAdmin):
 
 @admin.register(Survey)
 class SurveyAdmin(VersionAdmin, admin.ModelAdmin):
-    # form = s2form(Survey, attrs=S2ATTRS)
+    form = s2form(Survey, attrs=S2ATTRS)
+    # model = Survey
     date_hierarchy = 'start_time'
     list_display = (
         'source',
@@ -305,6 +306,15 @@ class SurveyAdmin(VersionAdmin, admin.ModelAdmin):
         'end_time',
         'end_comments'
     )
+    exclude = (
+        # 'end_location',
+        # 'transect',
+        # 'start_location'
+        )
+    formfield_overrides = {
+        geo_models.PointField: leaflet_settings,
+        geo_models.LineStringField: leaflet_settings,
+        }
 
 
 @admin.register(Area)
