@@ -307,6 +307,8 @@ class SurveyAdmin(VersionAdmin, admin.ModelAdmin):
         'end_time',
         'end_comments'
     )
+    list_filter = ('device_id', 'site', 'reporter')
+    search_fields = ('start_comments', 'end_comments')
     exclude = (
         # 'end_location',
         # 'transect',
