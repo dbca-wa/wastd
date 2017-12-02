@@ -26,16 +26,18 @@ from __future__ import unicode_literals, absolute_import
 import itertools
 import urllib
 import slugify
+from datetime import timedelta
+from dateutil import tz
 
 # from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
 from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
 from django.core.urlresolvers import reverse
 from rest_framework.reverse import reverse as rest_reverse
-from django.template import Context, loader
+from django.template import loader
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
@@ -1064,18 +1066,13 @@ class Survey(geo_models.Model):
         ordering = ["start_location", "start_time"]
         unique_together = ("source", "source_id")
 
-    def save(self, *args, **kwargs):
-        """Guess site."""
-        self.site = self.guess_site
-        super(Survey, self).save(*args, **kwargs)
-
     def __str__(self):
         """The unicode representation."""
         return "Survey {0} of {1} from {2} to {3}".format(
             self.pk,
             "unknown site" if not self.site else self.site.name,
-            "na" if not self.start_time else self.start_time.isoformat(),
-            "na" if not self.end_time else self.end_time.isoformat())
+            "na" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            "na" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M"))
 
     @property
     def encounters(self):
@@ -1083,27 +1080,70 @@ class Survey(geo_models.Model):
         if not self.end_time:
             print("[wastd.observations.survey.encounters] No end_time set, can't filter Encounters")
             return None
+        elif not self.site:
+            print("[wastd.observations.survey.encounters] No site set, can't filter Encounters")
+            return None
         else:
             return Encounter.objects.filter(
                 where__contained=self.site.geom,
                 when__gte=self.start_time,
                 when__lte=self.end_time)
 
-    @property
-    def guess_site(self):
-        """Return the first Area containing the start_location or None."""
-        candidates = Area.objects.filter(
-            area_type=Area.AREATYPE_SITE,
-            geom__contains=self.start_location)
-        return None if not candidates else candidates.first()
 
-    def claim_encounters(self):
-        """Update Encounters within this SiteVisit with reference to self."""
-        self.encounters.update(survey=self)
+def guess_site(survey_instance):
+    """Return the first Area containing the start_location or None."""
+    s = Area.objects.filter(
+        area_type=Area.AREATYPE_SITE,
+        geom__contains=survey_instance.start_location).first()
+    if s:
+        survey_instance.site = s
+        # survey_instance.save(update_fields=['site'])
 
-    def claim_end_points(self):
-        """TODO Claim SurveyEnd."""
-        pass
+
+def claim_end_points(survey_instance):
+    """Claim SurveyEnd.
+
+    The first match is chosed of a SurveyEnd with the same site, device_id,
+    end_time within five hours after start_time.
+    """
+    se = SurveyEnd.objects.filter(
+        site=survey_instance.site,
+        device_id=survey_instance.device_id,
+        end_time__gte=survey_instance.start_time,
+        end_time__lte=survey_instance.start_time + timedelta(hours=5)
+        ).first()
+    if se:
+        survey_instance.end_location = se.end_location
+        survey_instance.end_time = se.end_time
+        survey_instance.end_comments = se.end_comments
+        survey_instance.end_photo = se.end_photo
+        survey_instance.end_source_id = se.source_id
+        # survey_instance.save(update_fields=[
+        #         'end_location',
+        #         'end_time',
+        #         'end_photo',
+        #         'end_comments',
+        #         'end_source_id'])
+
+
+def claim_encounters(survey_instance):
+    """Update Encounters within this Survey to reference survey=self."""
+    enc = survey_instance.encounters
+    if enc:
+        enc.update(survey=survey_instance)
+
+
+@receiver(pre_save, sender=Survey)
+def survey_pre_save(sender, instance, *args, **kwargs):
+    """Survey: Claim site, end point."""
+    guess_site(instance)
+    claim_end_points(instance)
+
+
+@receiver(post_save, sender=Survey)
+def survey_post_save(sender, instance, *args, **kwargs):
+    """Survey: Claim encounters."""
+    claim_encounters(instance)
 
 
 @python_2_unicode_compatible
@@ -1468,7 +1508,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         animals of the same species and deadness.
         """
         return slugify.slugify("-".join([
-            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
+            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-"),
             ]))
@@ -1971,7 +2011,7 @@ class AnimalEncounter(Encounter):
         tpl = "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
         return tpl.format(
             self.pk,
-            self.when.strftime('%d/%m/%Y %H:%M:%S %Z'),
+            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
             self.observer.name,
             self.get_species_display(),
             self.get_health_display(),
@@ -2021,7 +2061,7 @@ class AnimalEncounter(Encounter):
         animals of the same species and deadness.
         """
         nameparts = [
-            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
+            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-"),
             self.health,
@@ -2157,7 +2197,7 @@ class TurtleNestEncounter(Encounter):
         The short_name could be non-unique.
         """
         nameparts = [
-            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
+            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-"),
             self.nest_age,
@@ -2234,7 +2274,7 @@ class LineTransectEncounter(Encounter):
         The short_name could be non-unique.
         """
         nameparts = [
-            self.when.strftime("%Y-%m-%d-%H-%M-%S"),
+            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-")
             ]
@@ -2670,9 +2710,9 @@ class NestTagObservation(Observation):
     def name(self):
         """Return the nest tag name according to the naming scheme."""
         return "_".join([
-            (self.flipper_tag_id if self.flipper_tag_id else '').upper().replace(" ", ""),
-            self.date_nest_laid.strftime('%Y-%m-%d') if self.date_nest_laid else '',
-            self.tag_label.upper().replace(" ", "") if self.tag_label else '',
+            ('' if not self.flipper_tag_id else self.flipper_tag_id).upper().replace(" ", ""),
+            '' if not self.date_nest_laid else self.date_nest_laid.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            '' if not self.tag_label else self.tag_label.upper().replace(" ", ""),
             ])
 
 

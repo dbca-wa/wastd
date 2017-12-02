@@ -293,6 +293,7 @@ class SurveyAdmin(VersionAdmin, admin.ModelAdmin):
     # model = Survey
     date_hierarchy = 'start_time'
     list_display = (
+        '__str__',
         'source',
         'source_id',
         'device_id',
@@ -337,8 +338,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     """
 
     # Grappelli User lookup overrides select2 select widget
-    raw_id_fields = ('site_visit', 'observer', 'reporter')
-    autocomplete_lookup_fields = {'fk': ['site_visit', 'observer', 'reporter']}
+    raw_id_fields = ('survey', 'observer', 'reporter')
+    autocomplete_lookup_fields = {'fk': ['survey', 'observer', 'reporter']}
     change_list_filter_template = "admin/filter_listing.html"
 
     # select2 widgets for searchable dropdowns
@@ -355,11 +356,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 
     # Filters for change_list
     list_filter = (LocationListFilter,
-                   'site_visit', 'status', 'observer', 'reporter',
+                   'survey', 'status', 'observer', 'reporter',
                    'location_accuracy', 'encounter_type', 'source')
 
     # Columns for change_list, allow re-use and inserting fields
-    FIRST_COLS = ('when', 'site_visit', 'latitude', 'longitude',
+    FIRST_COLS = ('when', 'survey', 'latitude', 'longitude',
                   'location_accuracy', 'name')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
                  'status', 'encounter_type')
@@ -382,7 +383,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 
     # Change_view form layout
     fieldsets = (('Encounter', {'fields': (
-        'site_visit', 'where', 'location_accuracy', 'when',
+        'survey', 'where', 'location_accuracy', 'when',
         'observer', 'reporter', 'source', 'source_id', )}),)
 
     # Change_view inlines
