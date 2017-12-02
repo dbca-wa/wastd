@@ -605,11 +605,10 @@ def handle_turtlenesttagobs(d, e, m=None):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    if (d["status"] is None and
-            d["flipper_tag_id"] is None and
+    if (d["flipper_tag_id"] is None and
             d["date_nest_laid"] is None and
             d["tag_label"] is None):
-        return
+        return None
     else:
         dd, created = NestTagObservation.objects.get_or_create(
             encounter=e,
@@ -3158,28 +3157,23 @@ def handle_odka_nesttagobservation(enc, media, data):
         print("[handle_odka_nesttagobservation] found no TurtleNestTagObservation")
         return None
 
-    try:
-        obs = listify(data["nest_tag"])
+    obs = listify(data["nest_tag"])
 
-        if obs:
-            print("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
-            [handle_turtlenesttagobs(
-                dict(
-                    encounter=enc,
-                    status=x["status"],
-                    flipper_tag_id=x["flipper_tag_id"],
-                    date_nest_laid=x["date_nest_laid"] if x["date_nest_laid"] else None,
-                    tag_label=x["tag_label"],
-                    photo_tag=make_photo_dict(x["photo_tag"], media)
-                ),
-                enc) for x in obs]
-        else:
-            print("[handle_odka_nesttagobservation] found no data.")
-
-    except:
-        print("[handle_odka_nesttagobservation] failed!")
+    if obs:
+        print("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
+        [handle_turtlenesttagobs(
+            dict(
+                encounter=enc,
+                status=x["status"],
+                flipper_tag_id=x["flipper_tag_id"],
+                date_nest_laid=None if not x["date_nest_laid"] else x["date_nest_laid"],
+                tag_label=x["tag_label"],
+                photo_tag=make_photo_dict(x["photo_tag"], media)
+            ),
+            enc) for x in obs]
+    else:
         print("[handle_odka_nesttagobservation] found invalid data:\n{0}".format(
-                json.dumps(data, indent=2)))
+                json.dumps(obs, indent=2)))
 
     return None
 
