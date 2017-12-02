@@ -1535,12 +1535,21 @@ class Encounter(PolymorphicModel, geo_models.Model):
             self.source_id = self.short_name
         if (not self.name) and self.inferred_name:
             self.name = self.inferred_name
+        self.site = self.guess_site
         self.encounter_type = self.get_encounter_type
         self.as_html = self.get_popup()
         self.as_latex = self.get_latex()
         super(Encounter, self).save(*args, **kwargs)
 
     # Name -------------------------------------------------------------------#
+    @property
+    def guess_site(self):
+        """Return the first Area containing the start_location or None."""
+        candidates = Area.objects.filter(
+            area_type=Area.AREATYPE_SITE,
+            geom__contains=self.where)
+        return None if not candidates else candidates.first()
+
     def set_name(self, name):
         """Set the animal name to a given value."""
         self.name = name
@@ -1873,21 +1882,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         Embargoed data is marked as curated, but not ready for release.
         """
         return
-
-
-def guess_encounter_site(instance):
-    """Return the first Area containing the start_location or None."""
-    s = Area.objects.filter(
-        area_type=Area.AREATYPE_SITE,
-        geom__contains=instance.where).first()
-    if s:
-        instance.site = s
-
-
-@receiver(pre_save, sender=Encounter)
-def encounter_pre_save(sender, instance, *args, **kwargs):
-    """Encounter: Claim site."""
-    guess_encounter_site(instance)
 
 
 @python_2_unicode_compatible
