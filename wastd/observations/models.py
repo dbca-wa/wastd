@@ -1066,7 +1066,7 @@ class Survey(geo_models.Model):
 
     def save(self, *args, **kwargs):
         """Guess site."""
-        self.site = self.guess_site()
+        self.site = self.guess_site
         super(Survey, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -1089,6 +1089,7 @@ class Survey(geo_models.Model):
                 when__gte=self.start_time,
                 when__lte=self.end_time)
 
+    @property
     def guess_site(self):
         """Return the first Area containing the start_location or None."""
         candidates = Area.objects.filter(
@@ -1101,7 +1102,7 @@ class Survey(geo_models.Model):
         self.encounters.update(survey=self)
 
     def claim_end_points(self):
-        """TODO Claim SiteVisitEnd."""
+        """TODO Claim SurveyEnd."""
         pass
 
 
@@ -1136,6 +1137,12 @@ class SurveyEnd(geo_models.Model):
             "The person who captured the start point, "
             "ideally this person also recoreded the encounters and end point."))
 
+    site = models.ForeignKey(
+        Area,
+        blank=True, null=True,
+        verbose_name=_("Surveyed site"),
+        help_text=_("The surveyed site, if known."), )
+
     end_location = geo_models.PointField(
         srid=4326,
         blank=True, null=True,
@@ -1169,15 +1176,23 @@ class SurveyEnd(geo_models.Model):
 
     def save(self, *args, **kwargs):
         """Guess site."""
-        self.site = self.guess_site()
-        super(Survey, self).save(*args, **kwargs)
+        self.site = self.guess_site
+        super(SurveyEnd, self).save(*args, **kwargs)
 
     def __str__(self):
         """The unicode representation."""
-        return "SurveyEnd {0} from {1} to {2}".format(
+        return "SurveyEnd {0} at {1} on {2}".format(
             self.pk,
-            "na" if not self.start_time else self.start_time.isoformat(),
+            "na" if not self.site else self.site,
             "na" if not self.end_time else self.end_time.isoformat())
+
+    @property
+    def guess_site(self):
+        """Return the first Area containing the start_location or None."""
+        candidates = Area.objects.filter(
+            area_type=Area.AREATYPE_SITE,
+            geom__contains=self.end_location)
+        return None if not candidates else candidates.first()
 
 
 # Utilities ------------------------------------------------------------------#

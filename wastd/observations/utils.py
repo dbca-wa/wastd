@@ -3367,7 +3367,7 @@ def import_odka_svs02(r):
     or higher levels of QA.
 
     Returns:
-        The WAStD Site Visit object.
+        The WAStD Survey object.
     """
     print("Found Site Visit Start...")
     data = make_data(r)
@@ -3412,6 +3412,184 @@ def import_odka_svs02(r):
                     if f.size > 0:
                         enc.start_photo.save(pname, f, save=True)
                         print("  Attached start_photo.")
+                    else:
+                        print("  [ERROR] zero size file {0}".format(p))
+            else:
+                print("  [ERROR] missing file {0}".format(p))
+
+            enc.save()
+
+    print("Done: {0}\n".format(enc))
+    return enc
+
+
+# ---------------------------------------------------------------------------#
+# Site Visit End 0.1-0.2
+#
+def import_odka_sve02(r):
+    """Import one ODK Site Visit End 0.1 or 0.2 record from the OKA-A API into WAStD.
+
+    Arguments
+
+    r The submission record as dict, e.g.
+
+    save_all_odka(path="data/odka")
+    with open("data/odka/build_Site-Visit-Start-0-1_1490753483.json") as df:
+        d = json.load(df)
+    r = d[1]
+
+    r
+
+    { # SVE01
+        "submission": {
+          "@xmlns": "http://opendatakit.org/submissions",
+          "@xmlns:orx": "http://openrosa.org/xforms",
+          "data": {
+            "data": {
+              "@id": "build_Site-Visit-End-0-1_1490756971",
+              "@instanceID": "uuid:bd16c5b0-dcf2-4ef2-b3bf-ccf0ac7f9a4b",
+              "@submissionDate": "2017-08-23T03:46:20.663Z",
+              "@isComplete": "true",
+              "@markedAsCompleteDate": "2017-08-23T03:46:20.663Z",
+              "orx:meta": {
+                "orx:instanceID": "uuid:bd16c5b0-dcf2-4ef2-b3bf-ccf0ac7f9a4b"
+              },
+              "reporter": null,
+              "survey_end_time": "2017-08-15T03:17:22.024Z",
+              "site_visit": {
+                "location": "-15.7593433333 124.4011133333 50.0000000000 5.0000000000",
+                "site_conditions": "1502767093482.jpg",
+                "comments": null
+              }
+            }
+          },
+          "mediaFile": {
+            "filename": "1502767093482.jpg",
+            "hash": "md5:5c837c90b20bf3cc49c43c32605fdb62",
+            "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+          }
+        }
+      },
+        { #SVE02
+        "submission": {
+          "@xmlns": "http://opendatakit.org/submissions",
+          "@xmlns:orx": "http://openrosa.org/xforms",
+          "data": {
+            "data": {
+              "@id": "build_Site-Visit-End-0-2_1510716716",
+              "@instanceID": "uuid:d6ca6ab9-e4ed-461f-9449-e52248c05ff0",
+              "@submissionDate": "2017-11-15T11:49:31.694Z",
+              "@isComplete": "true",
+              "@markedAsCompleteDate": "2017-11-15T11:49:31.694Z",
+              "orx:meta": {
+                "orx:instanceID": "uuid:d6ca6ab9-e4ed-461f-9449-e52248c05ff0"
+              },
+              "reporter": "jessamy_ham",
+              "survey_end_time": "2017-11-15T09:33:05.370Z",
+              "device_id": "febd1d3515c97a61",
+              "site_visit": {
+                "location": "-17.9711717000 122.2326200000 1.2000000000 4.7000000000",
+                "site_conditions": "1510746532962.jpg",
+                "comments": "Training"
+              }
+            }
+          },
+          "mediaFile": {
+            "filename": "1510746532962.jpg",
+            "hash": "md5:b3320f6a4425d711c6c0546d740ae07c",
+            "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+          }
+        }
+      },
+
+
+    with open("data/odka/build_Site-Visit-Start-0-2_1510716686.json") as df:
+        d = json.load(df)
+    r = d[1]
+
+    r
+
+    {
+    "submission": {
+      "@xmlns": "http://opendatakit.org/submissions",
+      "@xmlns:orx": "http://openrosa.org/xforms",
+      "data": {
+        "data": {
+          "reporter": "sam_pegg",
+          "@instanceID": "uuid:c58fe0d6-179a-47b6-af1d-508555fbd1b9",
+          "@isComplete": "true",
+          "@submissionDate": "2017-11-15T11:42:52.444Z",
+          "survey_start_time": "2017-11-15T11:41:27.652Z",
+          "orx:meta": {
+            "orx:instanceID": "uuid:c58fe0d6-179a-47b6-af1d-508555fbd1b9"
+          },
+          "@markedAsCompleteDate": "2017-11-15T11:42:52.444Z",
+          "site_visit": {
+            "location": "-17.9711817000 122.2323750000 17.4000000000 11.2000000000",
+            "comments": "Training with tash and matt",
+            "site_conditions": "1510746110532.jpg"
+          },
+          "@id": "build_Site-Visit-Start-0-2_1510716686",
+          "device_id": "febd1d3515c97a61"
+        }
+      },
+      "mediaFile": {
+        "downloadUrl": "https://dpaw-data.appspot.com/view/binaryData?blobKey=b...",
+        "hash": "md5:6f60589b2d3fd5bb118c0287382ee734",
+        "filename": "1510746110532.jpg"
+          }
+        }
+      },
+
+    Existing records will be overwritten unless marked in WAStD as "proofread"
+    or higher levels of QA.
+
+    Returns:
+        The WAStD SurveyEnd object.
+    """
+    print("Found Site Visit End...")
+    data = make_data(r)
+    media = make_media(r)
+
+    unique_data = dict(
+        source="odk",
+        source_id=data["@instanceID"])
+    extra_data = dict(
+        end_location=odk_point_as_point(data["site_visit"]["location"]),
+        end_time=parse_datetime(data["survey_end_time"]),
+        end_comments=data["site_visit"]["comments"],
+        reporter=guess_user(data["reporter"]),
+        device_id=None if "device_id" not in data else data["device_id"],
+        )
+
+    enc, action = create_update_skip(
+        unique_data,
+        extra_data,
+        cls=SurveyEnd,
+        base_cls=SurveyEnd,
+        retain_qa=False)
+
+    if action in ["update", "create"]:
+        enc.save()
+
+        fname = data["site_visit"]["site_conditions"]
+        if fname:
+            print(" Found end_photo.")
+            pdir = make_photo_foldername(enc.source_id)
+            pname = os.path.join(pdir, fname)
+            print("  Photo dir is {0}".format(pdir))
+            print("  Photo filepath is {0}".format(pname))
+
+            dl_photo(enc.source_id, media[fname], fname)
+            print("  Downloaded end_photo.")
+
+            if os.path.exists(pname):
+                print("  File {0} exists".format(pname))
+                with open(pname, 'rb') as photo:
+                    f = File(photo)
+                    if f.size > 0:
+                        enc.end_photo.save(pname, f, save=True)
+                        print("  Attached end_photo.")
                     else:
                         print("  [ERROR] zero size file {0}".format(p))
             else:
@@ -4198,9 +4376,9 @@ def import_all_odka(path="."):
         tt45=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-45_1511079712", path)],
         mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
         svs01=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-1_1490753483", path)],
-        svs02=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-2_1510716686", path)]
-
-
+        svs02=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-2_1510716686", path)],
+        sve01=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-1_1490756971", path)],
+        sve02=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-2_1510716716", path)],
     )
     print("[import_all_odka] Finished import. Stats:")
     print("[import_all_odka]  Imported {0} MWI05".format(len(results["mwi05"])))
