@@ -604,6 +604,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     observation_set = ObservationSerializer(many=True, read_only=False)
     observer = UserSerializer(many=False, read_only=True)
     reporter = UserSerializer(many=False, read_only=True)
+    site = AreaSerializer(many=False, read_only=True)
     # observer = serializers.StringRelatedField(read_only=True)
     # reporter = serializers.StringRelatedField(read_only=True)
     # where = PointField(required=True)   ## THIS BREAKS GEOJSON OUTPUT
@@ -624,14 +625,14 @@ class EncounterSerializer(GeoFeatureModelSerializer):
 
         model = Encounter
         name = 'encounter'
-        fields = ('pk', 'survey', 'where', 'location_accuracy', 'when',
+        fields = ('pk', 'site', 'survey', 'where', 'location_accuracy', 'when',
                   'name', 'observer', 'reporter',
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   #  'as_html', 'as_latex',
                   'observation_set', )
-        filter_fields = ('when', 'observer', 'reporter', 'status', 'source', 'survey')
+        filter_fields = ('site', 'when', 'observer', 'reporter', 'status', 'source', 'survey')
         geo_field = "where"
         id_field = "source_id"
 
@@ -700,7 +701,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = AnimalEncounter
-        fields = ('pk', 'survey', 'source', 'source_id',
+        fields = ('pk', 'site', 'survey', 'source', 'source_id',
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
@@ -714,7 +715,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
         filter_fields = (
-            'when', 'observer', 'reporter', 'status', 'source', 'survey',
+            'site', 'when', 'observer', 'reporter', 'status', 'source', 'survey',
             'taxon', 'species', 'health', 'sex', 'habitat', 'activity', 'nesting_event',
             'cause_of_death', 'cause_of_death_confidence')
         geo_field = "where"
@@ -728,7 +729,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = TurtleNestEncounter
-        fields = ('pk', 'survey', 'source', 'source_id',
+        fields = ('pk', 'site', 'survey', 'source', 'source_id',
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
@@ -739,7 +740,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'observation_set',
                   )
         filter_fields = (
-            'when', 'observer', 'reporter', 'status', 'source', 'survey',
+            'site', 'when', 'observer', 'reporter', 'status', 'source', 'survey',
             'nest_age', 'nest_type', 'taxon', 'species', 'habitat', 'disturbance')
         # read_only = ('photographs',)
         geo_field = "where"
@@ -752,7 +753,7 @@ class LoggerEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = LoggerEncounter
-        fields = ('pk', 'survey', 'source', 'source_id',
+        fields = ('pk', 'site', 'survey', 'source', 'source_id',
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
