@@ -1343,17 +1343,17 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ENCOUNTER_OTHER: 'purple'
         }
 
-    site_visit = models.ForeignKey(
-        SiteVisit,
-        null=True, blank=True,
-        verbose_name=_("Site Visit"),
-        help_text=_("The Site Visit during which this encounter happened."),)
-
     survey = models.ForeignKey(
         Survey,
         null=True, blank=True,
         verbose_name=_("Survey"),
         help_text=_("The survey during which this encounter happened."),)
+
+    site = models.ForeignKey(
+        Area,
+        blank=True, null=True,
+        verbose_name=_("Surveyed site"),
+        help_text=_("The surveyed site, if known."), )
 
     source = models.CharField(
         max_length=300,
@@ -1873,6 +1873,21 @@ class Encounter(PolymorphicModel, geo_models.Model):
         Embargoed data is marked as curated, but not ready for release.
         """
         return
+
+
+def guess_encounter_site(instance):
+    """Return the first Area containing the start_location or None."""
+    s = Area.objects.filter(
+        area_type=Area.AREATYPE_SITE,
+        geom__contains=instance.where).first()
+    if s:
+        instance.site = s
+
+
+@receiver(pre_save, sender=Encounter)
+def encounter_pre_save(sender, instance, *args, **kwargs):
+    """Encounter: Claim site."""
+    guess_encounter_site(instance)
 
 
 @python_2_unicode_compatible
