@@ -2711,7 +2711,7 @@ class NestTagObservation(Observation):
         """Return the nest tag name according to the naming scheme."""
         return "_".join([
             ('' if not self.flipper_tag_id else self.flipper_tag_id).upper().replace(" ", ""),
-            '' if not self.date_nest_laid else self.date_nest_laid.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            '' if not self.date_nest_laid else self.date_nest_laid.strftime("%Y-%m-%d %Z"),
             '' if not self.tag_label else self.tag_label.upper().replace(" ", ""),
             ])
 
