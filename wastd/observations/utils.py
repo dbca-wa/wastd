@@ -3158,11 +3158,11 @@ def handle_odka_nesttagobservation(enc, media, data):
         print("[handle_odka_nesttagobservation] found no TurtleNestTagObservation")
         return None
 
-    obs = listify(data["nest_tag"])
+    try:
+        obs = listify(data["nest_tag"])
 
-    if obs:
-        print("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
-        try:
+        if obs:
+            print("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
             [handle_turtlenesttagobs(
                 dict(
                     encounter=enc,
@@ -3173,11 +3173,14 @@ def handle_odka_nesttagobservation(enc, media, data):
                     photo_tag=make_photo_dict(x["photo_tag"], media)
                 ),
                 enc) for x in obs]
-        except:
-            print("[handle_odka_nesttagobservation] failed!")
-    else:
-        print("[handle_odka_nesttagobservation] found invalid data: {0}".format(
-            json.dumps(obs, indent=2)))
+        else:
+            print("[handle_odka_nesttagobservation] found no data.")
+
+    except:
+        print("[handle_odka_nesttagobservation] failed!")
+        print("[handle_odka_nesttagobservation] found invalid data:\n{0}".format(
+                json.dumps(data, indent=2)))
+
     return None
 
 
