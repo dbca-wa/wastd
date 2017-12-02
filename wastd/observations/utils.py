@@ -605,22 +605,30 @@ def handle_turtlenesttagobs(d, e, m=None):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
+    print("[handle_turtlenesttagobs] start")
     if (d["flipper_tag_id"] is None and
             d["date_nest_laid"] is None and
             d["tag_label"] is None):
         return None
+
     else:
+        print("[handle_turtlenesttagobs] looks like we have required fields")
         dd, created = NestTagObservation.objects.get_or_create(
             encounter=e,
             status=m["tag_status"][d["status"]] if m else d["status"],
             flipper_tag_id=d["flipper_tag_id"],
             date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
             tag_label=d["tag_label"])
+        print("[handle_turtlenesttagobs] created new NTO")
         dd.save()
+        print("[handle_turtlenesttagobs] saved NTO")
         action = "created" if created else "updated"
         print("  NestTagObservation {0}: {1}".format(action, dd))
 
+    print("[handle_turtlenesttagobs] handle photo")
     handle_media_attachment(e, d["photo_tag"], title="Nest tag photo")
+    print("[handle_turtlenesttagobs] done!")
+    return None
 
 
 def handle_hatchlingmorphometricobs(d, e):
