@@ -3139,7 +3139,7 @@ def handle_odka_nesttagobservation(enc, media, data):
 
         enc A TurtleNestEncounter
         media A dict of photo filename:url
-        data A "data" dict from ODK "Track or Treat 0.36" ior higher.
+        data A "data" dict from ODK "Track or Treat 0.36" or higher.
 
     Returns:
 
@@ -3162,16 +3162,19 @@ def handle_odka_nesttagobservation(enc, media, data):
 
     if obs:
         print("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
-        [handle_turtlenesttagobs(
-            dict(
-                encounter=enc,
-                status=x["status"],
-                flipper_tag_id=x["flipper_tag_id"],
-                date_nest_laid=x["date_nest_laid"] if x["date_nest_laid"] else None,
-                tag_label=x["tag_label"],
-                photo_tag=make_photo_dict(x["photo_tag"], media)
-            ),
-            enc) for x in obs]
+        try:
+            [handle_turtlenesttagobs(
+                dict(
+                    encounter=enc,
+                    status=x["status"],
+                    flipper_tag_id=x["flipper_tag_id"],
+                    date_nest_laid=x["date_nest_laid"] if x["date_nest_laid"] else None,
+                    tag_label=x["tag_label"],
+                    photo_tag=make_photo_dict(x["photo_tag"], media)
+                ),
+                enc) for x in obs]
+        except:
+            print("[handle_odka_nesttagobservation] failed!")
     else:
         print("[handle_odka_nesttagobservation] found invalid data: {0}".format(
             json.dumps(obs, indent=2)))
