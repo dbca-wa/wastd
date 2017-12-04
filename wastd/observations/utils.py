@@ -28,6 +28,20 @@ from wastd.observations.models import *
 from wastd.users.models import User
 
 
+def set_site(sites, encounter):
+    encounter.site = sites.filter(geom__contains=encounter.where).first() or None
+    encounter.save(update_fields=["site"])
+    print("Found encounter {0} at site {1}".format(encounter, encounter.site))
+
+
+def set_sites():
+    sites = Area.objects.filter(area_type=Area.AREATYPE_SITE)
+    enc = Encounter.objects.filter(status=Encounter.STATUS_NEW, site=None)
+    print("[wastd.observations.utils.set_sites] Found {0} encounters without site".format(enc.count()))
+    [set_site(sites, e) for e in enc]
+    return enc
+
+
 def allocate_animal_names():
     """Reconstruct names of Animals from their first allocated Flipper Tag.
 

@@ -1535,7 +1535,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
             self.source_id = self.short_name
         if (not self.name) and self.inferred_name:
             self.name = self.inferred_name
-        self.site = self.guess_site
+        if not self.site:
+            self.site = self.guess_site
         self.encounter_type = self.get_encounter_type
         self.as_html = self.get_popup()
         self.as_latex = self.get_latex()
