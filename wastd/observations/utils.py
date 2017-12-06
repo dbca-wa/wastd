@@ -158,6 +158,7 @@ def make_user(name, email, phone=None, role=None):
 
     if not usr.email and email:
         usr.email = email
+        msg += ", email updated"
 
     if not usr.phone and phone:
         usr.phone = phone
