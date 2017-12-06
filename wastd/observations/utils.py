@@ -29,17 +29,19 @@ from wastd.users.models import User
 
 
 def set_site(sites, encounter):
+    """Set the site for an Encounter from a list of sites."""
     encounter.site = sites.filter(geom__contains=encounter.where).first() or None
     encounter.save(update_fields=["site"])
     print("Found encounter {0} at site {1}".format(encounter, encounter.site))
+    return enc
 
 
 def set_sites():
+    """Set the site where missing for all NEW Encounters."""
     sites = Area.objects.filter(area_type=Area.AREATYPE_SITE)
     enc = Encounter.objects.filter(status=Encounter.STATUS_NEW, site=None)
     print("[wastd.observations.utils.set_sites] Found {0} encounters without site".format(enc.count()))
-    [set_site(sites, e) for e in enc]
-    return enc
+    return [set_site(sites, e) for e in enc]
 
 
 def allocate_animal_names():
@@ -119,6 +121,60 @@ def symlink_resources(t_dir, data):
 # Data import from ODK Aggregate
 # TODO create and use writable API
 #
+def lowersnake(unsafe_string):
+    """Slugify an unsafe string, e.g. turn a full name into a username."""
+    return unsafe_string.replace(" ", "_").replace(".", "_").lower()
+
+
+def upperwhite(safe_string):
+    """Return a username as full name."""
+    return safe_string.replace("_", " ").title()
+
+
+def make_user(name, email, phone=None, role=None):
+    """Get or create a user.
+
+    Arguments:
+
+    name A human readable full name, required.
+        The unique username will be inferred through lowersnake(name).
+    email A valid email, required.
+    phone A phone number, optional.
+    role A role description, optional.
+
+    Usage:
+    import sys; reload(sys); sys.setdefaultencoding('UTF8')
+    from wastd.observations.utils import *; import csv
+    with open("data/staff.csv") as df:
+        [make_user(u["name"], u["email"], phone=u["phone"], role=u["role"]) for u in csv.DictReader(df)]
+
+    """
+    usermodel = get_user_model()
+    un = lowersnake(name)
+
+    usr, created = usermodel.objects.get_or_create(username=un)
+    action = "created" if created else "found"
+    msg = "[make_user] {0} username {1}".format(action, un)
+
+    if not usr.email and email:
+        usr.email = email
+
+    if not usr.phone and phone:
+        usr.phone = phone
+        msg += ", phone updated"
+
+    if not usr.role and role:
+        usr.role = role
+        msg += ", role updated"
+
+    if created:
+        usr.set_password(settings.DEFAULT_USER_PASSWORD)
+
+    usr.save()
+    print(msg)
+    return usr
+
+
 def guess_user(un, default_username="florianm"):
     """Find exact or fuzzy match of username, or create User.
 

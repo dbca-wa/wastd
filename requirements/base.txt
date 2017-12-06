@@ -1,6 +1,6 @@
 # Django
 # ------------------------------------------------
-django>=1.11
+django>=1.11.7,<2.0
 django-extensions==1.7.9
 
 # breaking django-1.10:
@@ -19,12 +19,12 @@ django-grappelli==2.10.1
 
 # API
 # ------------------------------------------------
-djangorestframework==3.6.2
+djangorestframework==3.7.3
 djangorestframework-gis
 djangorestframework-csv
 djangorestframework-yaml
 djangorestframework-jsonp
-djangorestframework-filters
+djangorestframework-filters==0.10.2
 django-url-filter
 dynamic-rest
 rest-framework-latex

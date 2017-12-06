@@ -3,8 +3,9 @@
 from django.contrib.admin import SimpleListFilter
 from django.utils.translation import ugettext_lazy as _
 
-import django_filters
-from django_filters import filters, widgets
+# import django_filters
+import rest_framework_filters as filters
+from django_filters import widgets
 from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis import filters as gis_filters
 
@@ -59,19 +60,19 @@ class LocationListFilter(SimpleListFilter):
         fields = ['name', ]
 
 
-class EncounterFilter(django_filters.FilterSet):
+class EncounterFilter(filters.FilterSet):
     """Encounter Filter.
 
     https://django-filter.readthedocs.io/en/latest/usage.html
     """
-    name = django_filters.CharFilter(
-        lookup_expr='icontains',
-        help_text=_("Name supports partial match, e.g. searching for "
-                    "WA12 will return encounters with WA123 and WA124."))
-    source_id = django_filters.CharFilter(
-        lookup_expr='icontains',
-        help_text=_("Source ID supports partial match.")
-        )
+    # name = filters.CharFilter(
+    #     lookup_expr='icontains',
+    #     help_text=_("Name supports partial match, e.g. searching for "
+    #                 "WA12 will return encounters with WA123 and WA124."))
+    # source_id = filters.CharFilter(
+    #     lookup_expr='icontains',
+    #     help_text=_("Source ID supports partial match.")
+    #     )
     when = filters.DateFromToRangeFilter(
         help_text="Date format: YYYY-mm-dd, e.g. 2015-12-31",
         widget=widgets.RangeWidget(attrs={'placeholder': 'YYYY-mm-dd'}))
@@ -87,6 +88,7 @@ class EncounterFilter(django_filters.FilterSet):
         """Options for EncounterFilter."""
 
         model = Encounter
+        # fields = ['when', ]
         exclude = ['where', ]
 
 

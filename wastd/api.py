@@ -29,7 +29,7 @@ This API is built using:
 * coreapi
 * coreapi-cli (complementary CLI for coreapi)
 """
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.db import models as django_models
 from rest_framework import serializers, viewsets, routers
 # from rest_framework.renderers import BrowsableAPIRenderer
@@ -40,11 +40,14 @@ from drf_extra_fields.geo_fields import PointField
 
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from rest_framework_gis.pagination import GeoJsonPagination
-from rest_framework import filters
+
+# from rest_framework import filters
+# import django_filters
+# from django_filters.rest_framework import DjangoFilterBackend
+import rest_framework_filters as filters
+
 from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis.filters import GeometryFilter, InBBoxFilter
-import django_filters
-from django_filters.rest_framework import DjangoFilterBackend
 
 from wastd.observations.models import (
     Area, SiteVisit,
@@ -58,7 +61,7 @@ from wastd.observations.models import (
     TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
-from wastd.observations.filters import AreaFilter
+from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
@@ -77,7 +80,7 @@ from wastd.users.models import User
 
 from django.template import Context, Template
 from rest_framework_gis.filters import InBBoxFilter
-from django_filters.rest_framework import DjangoFilterBackend
+# from django_filters.rest_framework import DjangoFilterBackend
 
 from collections import OrderedDict
 from rest_framework import pagination
@@ -176,21 +179,6 @@ class InBBoxHTMLMixin:
 
 class CustomBBoxFilter(InBBoxHTMLMixin, InBBoxFilter):
     bbox_param = 'in_bbox'
-
-
-class CustomDateFilter(filters.FilterSet):
-
-    on_day = django_filters.DateFilter(name="when", lookup_expr="exact")
-
-    class Meta:
-
-        model = Encounter
-        fields = ['when', ]
-        filter_overrides = {
-            django_models.DateTimeField: {
-                'filter_class': django_filters.IsoDateTimeFilter
-                },
-        }
 
 
 # Serializers ----------------------------------------------------------------#
@@ -778,27 +766,79 @@ class AreaViewSet(viewsets.ModelViewSet):
 
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
-    filter_fields = ["area_type", ]
+    filter_fields = ['area_type', ]
     bbox_filter_field = 'geom'
     pagination_class = MyGeoJsonPagination
-    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
 
 class EncounterViewSet(viewsets.ModelViewSet):
-    """Encounter view set."""
+    """Encounter view set.
+
+
+    Filters
+    =======
+    Combine arguments with &, e.g.
+    `/api/1/encounters/?source=odk&encounter_type=tracks </api/1/encounters/?source=odk&encounter_type=tracks>`_
+
+    source
+    ------
+    * `/api/1/encounters/?source=direct </api/1/encounters/?source=direct>`_ (direct entry)
+    * `/api/1/encounters/?source=paper </api/1/encounters/?source=paper>`_ (typed off datasheet)
+    * `/api/1/encounters/?source=odk </api/1/encounters/?source=odk>`_ (imported from OpenDataKit digital data capture)
+    * `/api/1/encounters/?source=wamtram </api/1/encounters/?source=wamtram>`_ (imported from WAMTRAM turtle tagging database)
+    * `/api/1/encounters/?source=ntp-exmouth </api/1/encounters/?source=ntp-exmouth>`_ (imported from MS Access Exmouth tracks database)
+    * `/api/1/encounters/?source=ntp-broome </api/1/encounters/?source=ntp-broome>`_ (imported from MS Access Broome tracks database)
+    * `/api/1/encounters/?source=cet </api/1/encounters/?source=cet>`_ (imported from FileMaker Pro Cetacean strandings database)
+    * `/api/1/encounters/?source=pin </api/1/encounters/?source=pin>`_ (imported from FileMaker Pro Pinnniped strandings database)
+
+    encounter_type
+    --------------
+    * `/api/1/encounters/?encounter_type=stranding </api/1/encounters/?encounter_type=stranding>`_ (strandings)
+    * `/api/1/encounters/?encounter_type=tagging </api/1/encounters/?encounter_type=tagging>`_ (turtle tagging)
+    * `/api/1/encounters/?encounter_type=inwater </api/1/encounters/?encounter_type=inwater>`_ (in water encounter)
+    * `/api/1/encounters/?encounter_type=nest </api/1/encounters/?encounter_type=nest>`_ (track census, turtle nest)
+    * `/api/1/encounters/?encounter_type=tracks </api/1/encounters/?encounter_type=tracks>`_ (track census, track without nest)
+    * `/api/1/encounters/?encounter_type=tag-management </api/1/encounters/?encounter_type=tag-management>`_ (admin, tag or sensor asset management task)
+    * `/api/1/encounters/?encounter_type=logger </api/1/encounters/?encounter_type=logger>`_ (tag or logger encounter)
+    * `/api/1/encounters/?encounter_type=other </api/1/encounters/?encounter_type=other>`_ (anything not in above)
+
+
+    status
+    ------
+    * /api/1/encounters/?status=new (Records freshly created or imported)
+    * /api/1/encounters/?status=proofread (Records marked as proofread = as on paper datasheet)
+    * /api/1/encounters/?status=curated (Records marked as curated = as true as we can make it)
+    * /api/1/encounters/?status=published (Records marked ready for public release)
+
+    location_accuracy
+    -----------------
+    * `/api/1/encounters/?location_accuracy=10 </api/1/encounters/?location_accuracy=10>`_ (captured via GPS)
+    * `/api/1/encounters/?location_accuracy=10 </api/1/encounters/?location_accuracy=1000>`_ (captured as site name)
+    * `/api/1/encounters/?location_accuracy=10 </api/1/encounters/?location_accuracy=10000>`_ (rough guess)
+
+    Search fields: case-sensitive partial match of name or source_id - not working yet
+
+    * /api/1/encounters/?search=WA123
+    """
 
     latex_name = 'latex/encounter.tex'
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
+    search_fields = ('name', 'source_id', )
     filter_fields = [
-        'encounter_type', 'status', 'survey',
+        'encounter_type', 'status',
+        # 'survey',
         'source', 'source_id',
-        'location_accuracy', 'when', 'name', 'observer', 'reporter', ]
+        'location_accuracy', 'when', 'name',
+        # 'observer', 'reporter',
+        ]
     bbox_filter_field = 'where'
     # bbox_filter_include_overlapping = True
     pagination_class = MyGeoJsonPagination
-    filter_class = CustomDateFilter
-    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_class = EncounterFilter # enabling this breaks the filter backend
+    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (filters.backends.DjangoFilterBackend,)
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -817,7 +857,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source']
     pagination_class = MyGeoJsonPagination
-    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -838,7 +878,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
         'cause_of_death', 'cause_of_death_confidence']
     pagination_class = MyGeoJsonPagination
-    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -857,7 +897,7 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'deployment_status', 'comments']
     pagination_class = MyGeoJsonPagination
-    filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -876,7 +916,7 @@ class MediaAttachmentViewSet(viewsets.ModelViewSet):
 
     queryset = MediaAttachment.objects.all()
     serializer_class = MediaAttachmentSerializer
-    filter_backends = (DjangoFilterBackend, )
+    # filter_backends = (DjangoFilterBackend, )
 
 
 class TagObservationViewSet(viewsets.ModelViewSet):
@@ -885,7 +925,7 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     queryset = TagObservation.objects.all()
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
-    filter_backends = (DjangoFilterBackend, )
+    # filter_backends = (DjangoFilterBackend, )
 
 
 class NestTagObservationViewSet(viewsets.ModelViewSet):
@@ -895,10 +935,10 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = NestTagObservationEncounterSerializer
     filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
                      'comments']
-    filter_backends = (DjangoFilterBackend, )
+    # filter_backends = (DjangoFilterBackend, )
 
 # Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter(schema_title='WAStD API')
+router = routers.DefaultRouter()
 # router.register(r'users', UserViewSet)
 router.register(r'areas', AreaViewSet)
 router.register(r'encounters', EncounterViewSet)

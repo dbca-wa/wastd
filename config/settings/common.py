@@ -119,6 +119,7 @@ CACHES = {
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env('DJANGO_DEBUG', default=False)
+DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -319,12 +320,13 @@ REST_FRAMEWORK = {
     # 'rest_framework_yaml.parsers.YAMLParser',
     # ),
     'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
+        # 'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework_filters.backends.DjangoFilterBackend',
         # 'rest_framework_gis.filters.InBBoxFilter',
         ),
 
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
     'PAGE_SIZE': 100,
     }
 
