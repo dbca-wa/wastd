@@ -62,12 +62,12 @@ from wastd.observations.models import (
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
 from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
-# from wastd.observations.utils import symlink_resources
+from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
 
-def symlink_resources(a,b,c):
-    pass
+# def symlink_resources(a,b,c):
+#     pass
 
 # from django.conf import settings
 
