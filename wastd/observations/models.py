@@ -1545,6 +1545,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
             self.name = self.inferred_name
         if not self.site:
             self.site = self.guess_site
+        if not self.area:
+            self.area = self.guess_area
         self.encounter_type = self.get_encounter_type
         self.as_html = self.get_popup()
         self.as_latex = self.get_latex()
@@ -1556,6 +1558,14 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Return the first Area containing the start_location or None."""
         candidates = Area.objects.filter(
             area_type=Area.AREATYPE_SITE,
+            geom__contains=self.where)
+        return None if not candidates else candidates.first()
+
+    @property
+    def guess_area(self):
+        """Return the first Area containing the start_location or None."""
+        candidates = Area.objects.filter(
+            area_type=Area.AREATYPE_LOCALITY,
             geom__contains=self.where)
         return None if not candidates else candidates.first()
 

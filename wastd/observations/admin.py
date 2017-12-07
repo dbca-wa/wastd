@@ -358,11 +358,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 
     # Filters for change_list
     list_filter = (LocationListFilter,
-                   'site', 'survey', 'status', 'observer', 'reporter',
+                   'area', 'site', 'survey', 'status', 'observer', 'reporter',
                    'location_accuracy', 'encounter_type', 'source')
 
     # Columns for change_list, allow re-use and inserting fields
-    FIRST_COLS = ('when', 'site', 'survey', 'latitude', 'longitude',
+    FIRST_COLS = ('when', 'area', 'site', 'survey', 'latitude', 'longitude',
                   'location_accuracy', 'name')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
                  'status', 'encounter_type')
@@ -385,7 +385,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 
     # Change_view form layout
     fieldsets = (('Encounter', {'fields': (
-        'site', 'survey', 'where', 'location_accuracy', 'when',
+        'area', 'site', 'survey', 'where', 'location_accuracy', 'when',
         'observer', 'reporter', 'source', 'source_id', )}),)
 
     # Change_view inlines
