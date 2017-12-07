@@ -1349,10 +1349,18 @@ class Encounter(PolymorphicModel, geo_models.Model):
         verbose_name=_("Survey"),
         help_text=_("The survey during which this encounter happened."),)
 
+    area = models.ForeignKey(
+        Area,
+        blank=True, null=True,
+        verbose_name=_("Area"),
+        related_name="encounter_area",
+        help_text=_("The general area this encounter took place in."), )
+
     site = models.ForeignKey(
         Area,
         blank=True, null=True,
         verbose_name=_("Surveyed site"),
+        related_name="encounter_site",
         help_text=_("The surveyed site, if known."), )
 
     source = models.CharField(
