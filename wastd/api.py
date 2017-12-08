@@ -771,10 +771,8 @@ class AreaViewSet(viewsets.ModelViewSet):
     ### area_type
 
     * [/api/1/areas/?area_type=MPA](/api/1/areas/?area_type=MPA) Marine Protected Areas
-    * [/api/1/areas/?area_type=Locality] Localities (typically containing multiple surveyed sites)
-    * [/api/1/areas/?area_type=Site] Sites (surveyed)
-
-
+    * [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality) Localities (typically containing multiple surveyed sites)
+    * [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site) Sites (where Surveys are conducted)
     """
 
     queryset = Area.objects.all()
@@ -787,6 +785,13 @@ class AreaViewSet(viewsets.ModelViewSet):
 
 class EncounterViewSet(viewsets.ModelViewSet):
     """Encounter view set.
+
+    Encounters are a common, minimal, shared set of data about
+
+    * Strandings (turtles, dugong, ceataceans (pre-QA raw import), pinnipeds (coming soon), sea snakes)
+    * Turtle tagging (if and where imported as copy from WAMTRAM 2)
+    * Turtle track counts (all)
+    * Random encounters of animals
 
     # Filters
     Combine arguments with &, e.g.
@@ -801,8 +806,10 @@ class EncounterViewSet(viewsets.ModelViewSet):
       [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality)
     * Find your Site's ID in
       [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site)
-    * All Encounters at Locality 19 ("Cable Beach Broome"):
-      [/api/1/encounters/?area=19](/api/1/encounters/?area=19)
+    * [/api/1/encounters/?area=19](/api/1/encounters/?area=19) Cable Beach Broome
+    * [/api/1/encounters/?area=13](/api/1/encounters/?area=13) Port Hedland
+    * [/api/1/encounters/?area=13](/api/1/encounters/?area=16) Karratha (Rosemary Is, Burrup)
+    * [/api/1/encounters/?area=17](/api/1/encounters/?area=17) Thevenard Island
     * All Encounters within Site 31 ("Broome DBCA Office and Training Area"):
       [/api/1/encounters/?site=31](/api/1/encounters/?site=31)
 
@@ -877,16 +884,67 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
-    """TurtleNestEncounter view set."""
+    """TurtleNestEncounter view set.
 
-    latex_name = 'latex/encounter.tex'
+    TNE are turtle tracks with or without nests.
+
+    # Filters
+    In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
+
+    ### nest_age
+    * [/api/1/turtle-nest-encounters/?nest_age=fresh](/api/1/turtle-nest-encounters/?nest_age=fresh)
+      observed in the morning, made the night before (same turtle date)
+    * [/api/1/turtle-nest-encounters/?nest_age=old](/api/1/turtle-nest-encounters/?nest_age=old)
+      older than a day (previous turtle date)
+    * [/api/1/turtle-nest-encounters/?nest_age=unknown](/api/1/turtle-nest-encounters/?nest_age=unknown)
+      unknown
+    * [/api/1/turtle-nest-encounters/?nest_age=missed](/api/1/turtle-nest-encounters/?nest_age=missed)
+      missed turtle during turtle tagging, track observed and made within same night (same turtle date)
+
+    ### nest_type
+    * [/api/1/turtle-nest-encounters/?nest_type=track-not-assessed](/api/1/turtle-nest-encounters/?nest_type=track-not-assessed) track, not checked for nest
+    * [/api/1/turtle-nest-encounters/?nest_type=false-crawl](/api/1/turtle-nest-encounters/?nest_type=false-crawl) track without nest
+    * [/api/1/turtle-nest-encounters/?nest_type=successful-crawl](/api/1/turtle-nest-encounters/?nest_type=successful-crawl) track with nest
+    * [/api/1/turtle-nest-encounters/?nest_type=track-unsure](/api/1/turtle-nest-encounters/?nest_type=track-unsure) track, checked for nest, unsure if nest
+    * [/api/1/turtle-nest-encounters/?nest_type=nest](/api/1/turtle-nest-encounters/?nest_type=nest) nest, unhatched, no track
+    * [/api/1/turtle-nest-encounters/?nest_type=hatched-nest](/api/1/turtle-nest-encounters/?nest_type=hatched-nest) nest, hatched
+    * [/api/1/turtle-nest-encounters/?nest_type=body-pit](/api/1/turtle-nest-encounters/?nest_type=body-pit) body pit, no track
+
+    ### species
+    ('natator-depressus', 'Natator depressus (Flatback turtle)'),
+    ('chelonia-mydas', 'Chelonia mydas (Green turtle)'),
+    ('eretmochelys-imbricata', 'Eretmochelys imbricata (Hawksbill turtle)'),
+    ('caretta-caretta', 'Caretta caretta (Loggerhead turtle)'),
+    ('lepidochelys-olivacea', 'Lepidochelys olivacea (Olive ridley turtle)'),
+    ('corolla-corolla', 'Corolla corolla (Hatchback turtle)'),
+
+
+    ### habitat
+    * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
+    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](/api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
+    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](/api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
+    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
+    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
+
+    ### disturbance
+    Indicates whether disturbance observation is attached.
+    * present
+    * absent
+    * na
+
+    ### name
+    * Turtle name if known
+
+    """
+
+    latex_name = 'latex/turtlenestencounter.tex'
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'survey',
-        'source', 'source_id',
+        'encounter_type', 'status', 'survey', 'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
-        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', 'source']
+        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', ]
+    search_fields = ('name', 'source_id', )
     pagination_class = MyGeoJsonPagination
     # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
@@ -896,18 +954,47 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
 
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
-    """AnimalEncounter view set."""
+    """AnimalEncounter view set.\
 
-    latex_name = 'latex/encounter.tex'
+    # Filters
+    In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
+
+
+    ### taxon
+    * [/api/1/turtle-nest-encounters/?taxon=Cheloniidae](/api/1/turtle-nest-encounters/?taxon=Cheloniidae) Marine Turtles
+    * [/api/1/turtle-nest-encounters/?taxon=Cetacea](/api/1/turtle-nest-encounters/?taxon=Cetacea) Whales and Dolphins
+    * [/api/1/turtle-nest-encounters/?taxon=Pinnipedia](/api/1/turtle-nest-encounters/?taxon=Pinnipedia) Seals
+    * [/api/1/turtle-nest-encounters/?taxon=Sirenia](/api/1/turtle-nest-encounters/?taxon=Sirenia) Dugongs
+    * [/api/1/turtle-nest-encounters/?taxon=Elasmobranchii](/api/1/turtle-nest-encounters/?taxon=Elasmobranchii) Sharks and Rays
+    * [/api/1/turtle-nest-encounters/?taxon=Hydrophiinae](/api/1/turtle-nest-encounters/?taxon=Hydrophiinae) Sea snakes and kraits
+
+    # Other filters
+    Other enabled filters (typically these categories will be used later during analysis):
+    'species', 'health', 'sex', 'maturity',
+    'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
+    'cause_of_death', 'cause_of_death_confidence'
+
+
+    ### habitat
+    * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
+    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](/api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
+    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](/api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
+    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
+    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
+    * plus all other habitat choices.
+
+    """
+
+    latex_name = 'latex/animalencounter.tex'
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'survey',
-        'source', 'source_id',
+        'encounter_type', 'status', 'survey', 'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
-        'taxon', 'species', 'health', 'sex', 'maturity', 'habitat', 'behaviour',
+        'taxon', 'species', 'health', 'sex', 'maturity', 'habitat',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
         'cause_of_death', 'cause_of_death_confidence']
+    search_fields = ('name', 'source_id', 'behaviour', )
     pagination_class = MyGeoJsonPagination
     # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
@@ -919,14 +1006,14 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 class LoggerEncounterViewSet(viewsets.ModelViewSet):
     """LoggerEncounter view set."""
 
-    latex_name = 'latex/encounter.tex'
+    latex_name = 'latex/loggerencounter.tex'
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'survey',
-        'source', 'source_id',
-        'location_accuracy', 'when', 'name', 'observer', 'reporter',
+        'encounter_type', 'status', 'survey', 'source', 'source_id',
+        'location_accuracy', 'when', 'observer', 'reporter',
         'deployment_status', 'comments']
+    search_fields = ('name', 'source_id', )
     pagination_class = MyGeoJsonPagination
     # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
@@ -956,6 +1043,7 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     queryset = TagObservation.objects.all()
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
+    search_fields = ('name', 'comments', )
     # filter_backends = (DjangoFilterBackend, )
 
 
