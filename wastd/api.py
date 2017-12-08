@@ -43,7 +43,7 @@ from rest_framework_gis.pagination import GeoJsonPagination
 
 # from rest_framework import filters
 # import django_filters
-# from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 import rest_framework_filters as filters
 
 from rest_framework_gis.filterset import GeoFilterSet
@@ -189,7 +189,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = ('username', 'name', 'email', 'phone', )
+        fields = ('pk', 'username', 'name', 'role', 'email', 'phone', )
 
     def create(self, validated_data):
         u = validated_data["username"]
@@ -561,7 +561,7 @@ class AreaSerializer(GeoFeatureModelSerializer):
 
         model = Area
         geo_field = "geom"
-        fields = ("area_type", "name", "geom", "northern_extent", "centroid", )
+        fields = ("pk", "area_type", "name", "geom", "northern_extent", "centroid", )
 
 
 class EncounterSerializer(GeoFeatureModelSerializer):
@@ -592,7 +592,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     observation_set = ObservationSerializer(many=True, read_only=False)
     observer = UserSerializer(many=False, read_only=True)
     reporter = UserSerializer(many=False, read_only=True)
-    site = AreaSerializer(many=False, read_only=True)
+    # site = AreaSerializer(many=False, read_only=True)
     # observer = serializers.StringRelatedField(read_only=True)
     # reporter = serializers.StringRelatedField(read_only=True)
     # where = PointField(required=True)   ## THIS BREAKS GEOJSON OUTPUT
@@ -764,7 +764,18 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class AreaViewSet(viewsets.ModelViewSet):
-    """Area view set."""
+    """Area view set.
+
+    # Filters
+
+    ### area_type
+
+    * [/api/1/areas/?area_type=MPA](/api/1/areas/?area_type=MPA) Marine Protected Areas
+    * [/api/1/areas/?area_type=Locality] Localities (typically containing multiple surveyed sites)
+    * [/api/1/areas/?area_type=Site] Sites (surveyed)
+
+
+    """
 
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
@@ -777,51 +788,70 @@ class AreaViewSet(viewsets.ModelViewSet):
 class EncounterViewSet(viewsets.ModelViewSet):
     """Encounter view set.
 
-
-    Filters
-    =======
+    # Filters
     Combine arguments with &, e.g.
-    `/api/1/encounters/?source=odk&encounter_type=tracks </api/1/encounters/?source=odk&encounter_type=tracks>`_
+    [/api/1/encounters/?source=odk&encounter_type=tracks](/api/1/encounters/?source=odk&encounter_type=tracks)
 
-    source
-    ------
-    * `/api/1/encounters/?source=direct </api/1/encounters/?source=direct>`_ (direct entry)
-    * `/api/1/encounters/?source=paper </api/1/encounters/?source=paper>`_ (typed off datasheet)
-    * `/api/1/encounters/?source=odk </api/1/encounters/?source=odk>`_ (imported from OpenDataKit digital data capture)
-    * `/api/1/encounters/?source=wamtram </api/1/encounters/?source=wamtram>`_ (imported from WAMTRAM turtle tagging database)
-    * `/api/1/encounters/?source=ntp-exmouth </api/1/encounters/?source=ntp-exmouth>`_ (imported from MS Access Exmouth tracks database)
-    * `/api/1/encounters/?source=ntp-broome </api/1/encounters/?source=ntp-broome>`_ (imported from MS Access Broome tracks database)
-    * `/api/1/encounters/?source=cet </api/1/encounters/?source=cet>`_ (imported from FileMaker Pro Cetacean strandings database)
-    * `/api/1/encounters/?source=pin </api/1/encounters/?source=pin>`_ (imported from FileMaker Pro Pinnniped strandings database)
+    ### area and site
+    For convenience and performance, every Encounter links to the general area of its occurrence (Locality)
+    as well as the site it was observed in, if known.
+    Encounters can filtered to a Locality or Site via the respective area's ID.
 
-    encounter_type
-    --------------
-    * `/api/1/encounters/?encounter_type=stranding </api/1/encounters/?encounter_type=stranding>`_ (strandings)
-    * `/api/1/encounters/?encounter_type=tagging </api/1/encounters/?encounter_type=tagging>`_ (turtle tagging)
-    * `/api/1/encounters/?encounter_type=inwater </api/1/encounters/?encounter_type=inwater>`_ (in water encounter)
-    * `/api/1/encounters/?encounter_type=nest </api/1/encounters/?encounter_type=nest>`_ (track census, turtle nest)
-    * `/api/1/encounters/?encounter_type=tracks </api/1/encounters/?encounter_type=tracks>`_ (track census, track without nest)
-    * `/api/1/encounters/?encounter_type=tag-management </api/1/encounters/?encounter_type=tag-management>`_ (admin, tag or sensor asset management task)
-    * `/api/1/encounters/?encounter_type=logger </api/1/encounters/?encounter_type=logger>`_ (tag or logger encounter)
-    * `/api/1/encounters/?encounter_type=other </api/1/encounters/?encounter_type=other>`_ (anything not in above)
+    * Find your Locality's ID in
+      [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality)
+    * Find your Site's ID in
+      [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site)
+    * All Encounters at Locality 19 ("Cable Beach Broome"):
+      [/api/1/encounters/?area=19](/api/1/encounters/?area=19)
+    * All Encounters within Site 31 ("Broome DBCA Office and Training Area"):
+      [/api/1/encounters/?site=31](/api/1/encounters/?site=31)
 
 
-    status
-    ------
-    * /api/1/encounters/?status=new (Records freshly created or imported)
-    * /api/1/encounters/?status=proofread (Records marked as proofread = as on paper datasheet)
-    * /api/1/encounters/?status=curated (Records marked as curated = as true as we can make it)
-    * /api/1/encounters/?status=published (Records marked ready for public release)
+    ### source
 
-    location_accuracy
-    -----------------
-    * `/api/1/encounters/?location_accuracy=10 </api/1/encounters/?location_accuracy=10>`_ (captured via GPS)
-    * `/api/1/encounters/?location_accuracy=10 </api/1/encounters/?location_accuracy=1000>`_ (captured as site name)
-    * `/api/1/encounters/?location_accuracy=10 </api/1/encounters/?location_accuracy=10000>`_ (rough guess)
+    * [/api/1/encounters/?source=direct](/api/1/encounters/?source=direct) (direct entry)
+    * [/api/1/encounters/?source=paper](/api/1/encounters/?source=paper) (typed off datasheet)
+    * [/api/1/encounters/?source=odk](/api/1/encounters/?source=odk) (imported from OpenDataKit digital data capture)
+    * [/api/1/encounters/?source=wamtram](/api/1/encounters/?source=wamtram) (imported from WAMTRAM turtle tagging database)
+    * [/api/1/encounters/?source=ntp-exmouth](/api/1/encounters/?source=ntp-exmouth) (imported from MS Access Exmouth tracks database)
+    * [/api/1/encounters/?source=ntp-broome](/api/1/encounters/?source=ntp-broome) (imported from MS Access Broome tracks database)
+    * [/api/1/encounters/?source=cet](/api/1/encounters/?source=cet) (imported from FileMaker Pro Cetacean strandings database)
+    * [/api/1/encounters/?source=pin](/api/1/encounters/?source=pin) (imported from FileMaker Pro Pinnniped strandings database)
 
-    Search fields: case-sensitive partial match of name or source_id - not working yet
+    ### encounter_type
 
-    * /api/1/encounters/?search=WA123
+    * [/api/1/encounters/?encounter_type=stranding](/api/1/encounters/?encounter_type=stranding) (strandings)
+    * [/api/1/encounters/?encounter_type=tagging](/api/1/encounters/?encounter_type=tagging) (turtle tagging)
+    * [/api/1/encounters/?encounter_type=inwater](/api/1/encounters/?encounter_type=inwater) (in water encounter)
+    * [/api/1/encounters/?encounter_type=nest](/api/1/encounters/?encounter_type=nest) (track census, turtle nest)
+    * [/api/1/encounters/?encounter_type=tracks](/api/1/encounters/?encounter_type=tracks) (track census, track without nest)
+    * [/api/1/encounters/?encounter_type=tag-management](/api/1/encounters/?encounter_type=tag-management) (admin, tag or sensor asset management task)
+    * [/api/1/encounters/?encounter_type=logger](/api/1/encounters/?encounter_type=logger) (tag or logger encounter)
+    * [/api/1/encounters/?encounter_type=other](/api/1/encounters/?encounter_type=other) (anything not in above)
+
+
+    ### status
+
+    * [/api/1/encounters/?status=new](/api/1/encounters/?status=new) (Records freshly created or imported)
+    * [/api/1/encounters/?status=proofread](/api/1/encounters/?status=proofread) (Records marked as proofread = as on paper datasheet)
+    * [/api/1/encounters/?status=curated](/api/1/encounters/?status=curated) (Records marked as curated = as true as we can make it)
+    * [/api/1/encounters/?status=published](/api/1/encounters/?status=published) (Records marked ready for public release)
+
+    ### location_accuracy
+
+    * [/api/1/encounters/?location_accuracy=10](/api/1/encounters/?location_accuracy=10) (captured via GPS)
+    * [/api/1/encounters/?location_accuracy=10](/api/1/encounters/?location_accuracy=10) (captured as site name)
+    * [/api/1/encounters/?location_accuracy=10000](/api/1/encounters/?location_accuracy=10000) (rough guess)
+
+    ### observer and reporter
+
+    * [/api/1/encounters/?observer=100](/api/1/encounters/?observer=100) Observer with ID 100
+    * [/api/1/encounters/?observer=100](/api/1/encounters/?reporter=100) Reporter with ID 100
+
+    # Search
+    Case-sensitive partial match of `name` or `source_id`. Not working yet.
+
+    * [/api/1/encounters/?search=WA123](/api/1/encounters/?search=WA123)
     """
 
     latex_name = 'latex/encounter.tex'
@@ -830,17 +860,15 @@ class EncounterViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'source_id', )
     filter_fields = [
         'encounter_type', 'status',
-        # 'survey',
-        'area', 'site',
-        'source', 'source_id',
+        'area', 'site', 'survey', 'source',
         'location_accuracy', 'when', 'name',
-        # 'observer', 'reporter',
+        'observer', 'reporter',
         ]
     bbox_filter_field = 'where'
     # bbox_filter_include_overlapping = True
     pagination_class = MyGeoJsonPagination
     # filter_class = EncounterFilter # enabling this breaks the filter backend
-    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (DjangoFilterBackend, ) # default from settings
     # filter_backends = (filters.backends.DjangoFilterBackend,)
 
     def pre_latex(view, t_dir, data):
@@ -942,7 +970,7 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-# router.register(r'users', UserViewSet)
+router.register(r'users', UserViewSet)
 router.register(r'areas', AreaViewSet)
 router.register(r'encounters', EncounterViewSet)
 router.register(r'animal-encounters', AnimalEncounterViewSet)

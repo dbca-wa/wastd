@@ -320,8 +320,8 @@ REST_FRAMEWORK = {
     # 'rest_framework_yaml.parsers.YAMLParser',
     # ),
     'DEFAULT_FILTER_BACKENDS': (
-        # 'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework_filters.backends.DjangoFilterBackend',
+        # 'rest_framework_filters.backends.DjangoFilterBackend', # deprecated!
+        'django_filters.rest_framework.DjangoFilterBackend',
         # 'rest_framework_gis.filters.InBBoxFilter',
         ),
 
