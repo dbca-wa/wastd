@@ -555,6 +555,18 @@ class AreaSerializer(GeoFeatureModelSerializer):
         fields = ("pk", "area_type", "name", "geom", "northern_extent", "centroid", )
 
 
+class FastAreaSerializer(GeoFeatureModelSerializer):
+    # serializers.ModelSerializer
+    """Area serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = Area
+        geo_field = "geom"
+        fields = ("pk", "area_type", "name", )
+
+
 class EncounterSerializer(GeoFeatureModelSerializer):
     """Encounter serializer.
 
@@ -583,8 +595,8 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     observation_set = ObservationSerializer(many=True, read_only=False)
     observer = UserSerializer(many=False, read_only=True)
     reporter = UserSerializer(many=False, read_only=True)
-    area = AreaSerializer(many=False, read_only=True)
-    site = AreaSerializer(many=False, read_only=True)
+    area = FastAreaSerializer(many=False, read_only=True)
+    site = FastAreaSerializer(many=False, read_only=True)
     # observer = serializers.StringRelatedField(read_only=True)
     # reporter = serializers.StringRelatedField(read_only=True)
     # where = PointField(required=True)   ## THIS BREAKS GEOJSON OUTPUT
