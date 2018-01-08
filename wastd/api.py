@@ -63,10 +63,10 @@ from wastd.observations.models import (
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
 # from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
-# from wastd.observations.utils import symlink_resources
+from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
-def symlink_resources(a,b,c):
-    pass
+# def symlink_resources(a,b,c):
+#     pass
 
 # from django.conf import settings
 
@@ -608,7 +608,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
         name = 'encounter'
         fields = ('pk', 'area', 'site', 'survey',
                   'where', 'location_accuracy', 'when',
-                  'name', 'observer', 'reporter',
+                  'name', 'observer', 'reporter', 'comments',
                   'status', 'source', 'source_id', 'encounter_type',
                   'leaflet_title', 'latitude', 'longitude', 'crs',
                   'absolute_admin_url', 'photographs', 'tx_logs',
@@ -686,7 +686,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
         model = AnimalEncounter
         fields = ('pk', 'area', 'site', 'survey', 'source', 'source_id',
                   'encounter_type', 'leaflet_title',
-                  'status', 'observer', 'reporter',
+                  'status', 'observer', 'reporter', 'comments',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
                   'when',
                   'name', 'taxon', 'species', 'health', 'sex', 'behaviour',
@@ -710,7 +710,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         model = TurtleNestEncounter
         fields = ('pk', 'area', 'site', 'survey', 'source', 'source_id',
                   'encounter_type', 'leaflet_title',
-                  'status', 'observer', 'reporter',
+                  'status', 'observer', 'reporter', 'comments',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
                   'when',
                   'nest_age', 'nest_type', 'species', 'habitat', 'disturbance',
@@ -731,7 +731,7 @@ class LoggerEncounterSerializer(EncounterSerializer):
         model = LoggerEncounter
         fields = ('pk', 'area', 'site', 'survey', 'source', 'source_id',
                   'encounter_type', 'leaflet_title',
-                  'status', 'observer', 'reporter',
+                  'status', 'observer', 'reporter', 'comments',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
                   'when',
                   'deployment_status', 'comments',
@@ -802,6 +802,7 @@ class EncounterFilter(filters.FilterSet):
             'source_id': ['exact', 'iexact', 'in', 'startswith', 'endswith', 'contains', 'icontains'],
             'observer': ['exact', 'in', ],
             'reporter': ['exact', 'in', ],
+            'comments': ['icontains', 'startswith', 'endswith']
             }
 
 
@@ -851,6 +852,19 @@ class EncounterViewSet(viewsets.ModelViewSet):
     ### source_id
     The source_id is constructed from coordinates, date, entity and other properties.
     Filter options and examples: see name, substitute "name" with "source_id" and choose appropriate filter string values.
+
+    ### comments
+    Where data are captured digitally, the username is guessed from data collecctors' supplied names.
+    This process sometimes goes wrong, and a log is kept in comments.
+
+    * [/api/1/encounters/?comments__icontains=QA](/api/1/encounters/?comments__icontains=QA) These encounters require proofreading of usernames.
+
+    Process:
+
+    * Curators can filter Encounters with "TODO" in comments further down to their area, of which they know the data collection team.
+    * Where the username has no match, the curator can add a new user (with username: givenname_surname) at [/admin/users/user/](/admin/users/user/).
+    * Where there are multiple matches, the curator can set the correct user at [/admin/observations/encounter/](/admin/observations/encounter/)
+      plus the Encounter ID and then mark the Encounter as "proofread" to protect the change from being overwritten through repeated data imports.
 
     ### source
 
@@ -932,6 +946,7 @@ class TurtleNestEncounterFilter(filters.FilterSet):
             'species': ['exact', 'in', ],
             'habitat': ['exact', 'in', ],
             'disturbance': ['exact', 'in', ],
+            'comments': ['icontains', 'startswith', 'endswith'],
             }
 
 

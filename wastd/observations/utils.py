@@ -3633,6 +3633,7 @@ def import_odka_sve02(r):
     print("Found Site Visit End...")
     data = make_data(r)
     media = make_media(r)
+    reporter_match = guess_user(data["reporter"])
 
     unique_data = dict(
         source="odk",
@@ -3640,8 +3641,8 @@ def import_odka_sve02(r):
     extra_data = dict(
         end_location=odk_point_as_point(data["site_visit"]["location"]),
         end_time=parse_datetime(data["survey_end_time"]),
-        end_comments=data["site_visit"]["comments"],
-        reporter=guess_user(data["reporter"]),
+        end_comments="{0}\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
+        reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
         )
 
@@ -3750,6 +3751,7 @@ def import_odka_fs03(r):
     print("Found Fox Sake...")
     data = make_data(r)
     media = make_media(r)
+    reporter_match = guess_user(data["reporter"])
 
     unique_data = dict(
         source="odk",
@@ -3758,8 +3760,10 @@ def import_odka_fs03(r):
         where=odk_point_as_point(data["disturbanceobservation"]["location"]),
         when=parse_datetime(data["observation_start_time"]),
         location_accuracy="10",
-        observer=guess_user(data["reporter"]),
-        reporter=guess_user(data["reporter"]))
+        observer=reporter_match["user"],
+        reporter=reporter_match["user"],
+        comments=reporter_match["message"],
+        )
 
     # if cls == LineTransectEncounter:
     #     extra_data["transect"] = read_odk_linestring(where)
@@ -3966,6 +3970,8 @@ def import_odka_tt044(r):
     print("Found Track or Treat...")
     data = make_data(r)
     media = make_media(r)
+    usr = guess_user(data["reporter"])
+
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -3973,8 +3979,10 @@ def import_odka_tt044(r):
         where=odk_point_as_point(data["details"]["observed_at"]),
         when=parse_datetime(data["observation_start_time"]),
         location_accuracy="10",
-        observer=guess_user(data["reporter"]),
-        reporter=guess_user(data["reporter"]))
+        observer=usr["user"],
+        reporter=usr["user"],
+        comments=usr["message"],
+        )
 
     enc, action = create_update_skip(
         unique_data,
@@ -4129,6 +4137,8 @@ def import_odka_tal05(r):
     print("Found Track Tally...")
     data = make_data(r)
     # media = make_media(r)
+    usr = guess_user(data["reporter"])
+
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -4137,8 +4147,10 @@ def import_odka_tal05(r):
         transect=read_odk_linestring(data["overview"]["location"]),
         when=parse_datetime(data["observation_start_time"]),
         location_accuracy="10",
-        observer=guess_user(data["reporter"]),
-        reporter=guess_user(data["reporter"]))
+        observer=usr["user"],
+        reporter=usr["user"],
+        comments=usr["message"],
+        )
 
     enc, action = create_update_skip(
         unique_data,
@@ -4330,6 +4342,8 @@ def import_odka_mwi05(r):
     print("Found Marine Wildlife Incident...")
     data = make_data(r)
     media = make_media(r)
+    usr = guess_user(data["reporter"])
+
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -4337,8 +4351,10 @@ def import_odka_mwi05(r):
         where=odk_point_as_point(data["incident"]["observed_at"]),
         when=parse_datetime(data["incident"]["incident_time"]),
         location_accuracy="10",
-        observer=guess_user(data["reporter"]),
-        reporter=guess_user(data["reporter"]))
+        observer=usr["user"],
+        reporter=usr["user"],
+        comments=usr["message"]
+        )
 
     enc, action = create_update_skip(
         unique_data,

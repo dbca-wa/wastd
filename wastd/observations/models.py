@@ -2730,6 +2730,13 @@ class NestTagObservation(Observation):
         """The unicode representation."""
         return u"{0} ({1})".format(self.name, self.get_status_display())
 
+    def save(self, *args, **kwargs):
+        """Cache centroid and northern extent."""
+        if self.encounter.status == Encounter.STATUS_NEW and (not self.encounter.name):
+            self.encounter.name = self.name
+            self.encounter.save(update_fields=['name', ])
+        super(NestTagObservation, self).save(*args, **kwargs)
+
     @property
     def history_url(self):
         """The list view of all observations of this tag."""
