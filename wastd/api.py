@@ -1122,7 +1122,7 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     queryset = NestTagObservation.objects.all()
     serializer_class = NestTagObservationEncounterSerializer
     filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments']
-
+    pagination_class = pagination.LimitOffsetPagination
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
