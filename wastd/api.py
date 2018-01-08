@@ -936,7 +936,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'survey', 'source', 'source_id',
+        'encounter_type', 'status', 'area', 'site', 'survey', 'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', ]
     search_fields = ('name', 'source_id', )
@@ -984,7 +984,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'survey', 'source', 'source_id',
+        'encounter_type', 'status', 'area', 'site', 'survey', 'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'taxon', 'species', 'health', 'sex', 'maturity', 'habitat',
         'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
@@ -1005,7 +1005,7 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'survey', 'source', 'source_id',
+        'encounter_type', 'status', 'area', 'site', 'survey', 'source', 'source_id',
         'location_accuracy', 'when', 'observer', 'reporter',
         'deployment_status', 'comments']
     search_fields = ('name', 'source_id', )
