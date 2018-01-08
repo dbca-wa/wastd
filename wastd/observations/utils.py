@@ -192,7 +192,10 @@ def guess_user(un, default_username="florianm"):
     default_username The default username if un is None
 
     Returns
-    An instance of settings.AUTH_USER_MODEL
+    A dict of
+
+    user: An instance of settings.AUTH_USER_MODEL
+    message: The deug message
     """
     usermodel = get_user_model()
 
@@ -202,8 +205,8 @@ def guess_user(un, default_username="florianm"):
     print("Guessing User for {0}...".format(un))
 
     try:
-        usr = usermodel.objects.get(username=un.replace(" ", "_"))
-        msg = "   Username {0} found by exact match: returning {1}"
+        usr = usermodel.objects.get(username=un.replace(" ", "_").replace(".", "_"))
+        msg = "[guess_user][exact match] Username {0} found by exact match: returning {1}"
 
     except ObjectDoesNotExist:
         try:
@@ -211,23 +214,23 @@ def guess_user(un, default_username="florianm"):
 
             if usrs.count() == 0:
                 usr = usermodel.objects.create(username=un, name=un)
-                msg = "  Username {0} not found: created {1}"
+                msg = "[guess_user][NEEDS QA][not found] Username {0} not found: created {1}"
 
             elif usrs.count() == 1:
                 usr = usrs[0]
-                msg = "  Username {0} found by fuzzy match: only match is {1}"
+                msg = "[guess_user][NEEDS QA][fuzzy match] Username {0} found by fuzzy match: only match is {1}"
                 usr = usrs[0]
 
             else:
                 usr = usrs[0]
-                msg = "  [WARNING] Username {0} returned multiple matches, choosing {1}"
+                msg = "[guess_user][NEEDS QA][multiple matches] Username {0} returned multiple matches, choosing {1}"
 
         except TypeError:
             usr = usermodel.objects.first()
-            msg = "  [WARNING] Username not given, using admin {1}"
+            msg = "[guess_user][NEEDS QA][default] Username not given, using admin {1}"
 
     print(msg.format(un, usr))
-    return usr
+    return {'user': usr, 'message': msg.format(un, usr)}
 
 
 def map_values(d):
@@ -2444,7 +2447,7 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
@@ -2457,7 +2460,7 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
@@ -2470,7 +2473,7 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
@@ -2483,7 +2486,7 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
@@ -2496,7 +2499,7 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
@@ -2506,7 +2509,7 @@ def import_odk(datafile,
 
     elif flavour == "cet":
         print("Using flavour Cetacean strandings...")
-        # ODK_MAPPING["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        # ODK_MAPPING["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="cet")]
         mapping["overwrite"] = [t.source_id for t in Encounter.objects.filter(
@@ -2519,7 +2522,7 @@ def import_odk(datafile,
 
     elif flavour == "pin":
         print("Using flavour Pinniped strandings...")
-        # mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        # mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="pin")]
         enc = csv.DictReader(open(datafile))
@@ -2534,7 +2537,7 @@ def import_odk(datafile,
         users = {user["PERSON_ID"]: update_wastd_user(user)
                  for user in wamtram_users if user["name"] != ""}
 
-        # mapping["users"] = {u: guess_user(u) for u in set([r["reporter"] for r in d])}
+        # mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="wamtram")]
         mapping["overwrite"] = [t.source_id for t in Encounter.objects.filter(
@@ -2563,7 +2566,7 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             print("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u) for u in set(
+        mapping["users"] = {u: guess_user(u)["user"] for u in set(
             [r["reporter"] for r in d])}
 
         [import_one_record_sv01(r, mapping) for r in d]     # retain local edits
@@ -3451,6 +3454,7 @@ def import_odka_svs02(r):
     print("Found Site Visit Start...")
     data = make_data(r)
     media = make_media(r)
+    reporter_match = guess_user(data["reporter"])
 
     unique_data = dict(
         source="odk",
@@ -3458,8 +3462,8 @@ def import_odka_svs02(r):
     extra_data = dict(
         start_location=odk_point_as_point(data["site_visit"]["location"]),
         start_time=parse_datetime(data["survey_start_time"]),
-        start_comments=data["site_visit"]["comments"],
-        reporter=guess_user(data["reporter"]),
+        start_comments="{0}\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
+        reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
         )
 

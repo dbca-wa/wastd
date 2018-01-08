@@ -1439,6 +1439,11 @@ class Encounter(PolymorphicModel, geo_models.Model):
         choices=ENCOUNTER_TYPES,
         help_text=_("The primary concern of this encounter."), )
 
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Comments"), )
+
     class Meta:
         """Class options."""
 
@@ -2178,11 +2183,11 @@ class TurtleNestEncounter(Encounter):
         choices=OBSERVATION_CHOICES,
         default=NA_VALUE,
         help_text=_("Is there evidence of predation or other disturbance?"),)
-
-    comments = models.TextField(
-        verbose_name=_("Comments"),
-        blank=True, null=True,
-        help_text=_("Comments"), )
+    #
+    # comments = models.TextField(
+    #     verbose_name=_("Comments"),
+    #     blank=True, null=True,
+    #     help_text=_("Comments"), )
 
     class Meta:
         """Class options."""
@@ -2365,10 +2370,10 @@ class LoggerEncounter(Encounter):
         verbose_name=_("Logger ID"),
         help_text=_("The ID of a logger must be unique within the tag type."),)
 
-    comments = models.TextField(
-        verbose_name=_("Comment"),
-        blank=True, null=True,
-        help_text=_("Comments"), )
+    # comments = models.TextField(
+    #     verbose_name=_("Comment"),
+    #     blank=True, null=True,
+    #     help_text=_("Comments"), )
 
     class Meta:
         """Class options."""
