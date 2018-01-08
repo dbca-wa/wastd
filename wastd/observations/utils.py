@@ -4374,8 +4374,7 @@ def import_odka_mwi05(r):
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_top"], title="Turtle head top")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_front"], title="Turtle head front")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_side"], title="Turtle head side")
-        handle_media_attachment_odka(
-            enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
+        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
 
         # TagObs
         # "tag_observation": [
