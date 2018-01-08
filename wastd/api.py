@@ -614,8 +614,6 @@ class EncounterSerializer(GeoFeatureModelSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   #  'as_html', 'as_latex',
                   'observation_set', )
-        filter_fields = (
-            'area', 'site', 'when', 'observer', 'reporter', 'status', 'source', 'survey')
         geo_field = "where"
         id_field = "source_id"
 
@@ -688,7 +686,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter', 'comments',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
-                  'when',
+                  'when', 'name',
                   'name', 'taxon', 'species', 'health', 'sex', 'behaviour',
                   'habitat', 'activity', 'nesting_event',
                   'checked_for_injuries',
@@ -712,7 +710,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter', 'comments',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
-                  'when',
+                  'when', 'name',
                   'nest_age', 'nest_type', 'species', 'habitat', 'disturbance',
                   'comments',
                   'absolute_admin_url', 'photographs', 'tx_logs',
@@ -733,7 +731,7 @@ class LoggerEncounterSerializer(EncounterSerializer):
                   'encounter_type', 'leaflet_title',
                   'status', 'observer', 'reporter', 'comments',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
-                  'when',
+                  'when', 'name',
                   'deployment_status', 'comments',
                   'comments',
                   'absolute_admin_url', 'photographs', 'tx_logs',
