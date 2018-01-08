@@ -544,7 +544,6 @@ class DugongMorphometricObservationSerializer(serializers.ModelSerializer):
 
 
 class AreaSerializer(GeoFeatureModelSerializer):
-    # serializers.ModelSerializer
     """Area serializer."""
 
     class Meta:
@@ -555,9 +554,8 @@ class AreaSerializer(GeoFeatureModelSerializer):
         fields = ("pk", "area_type", "name", "geom", "northern_extent", "centroid", )
 
 
-class FastAreaSerializer(GeoFeatureModelSerializer):
-    # serializers.ModelSerializer
-    """Area serializer."""
+class FastAreaSerializer(serializers.ModelSerializer):
+    """Minimal Area serializer."""
 
     class Meta:
         """Class options."""
