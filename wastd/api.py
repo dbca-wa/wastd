@@ -193,6 +193,16 @@ class UserSerializer(serializers.ModelSerializer):
         return usr
 
 
+class FastUserSerializer(serializers.ModelSerializer):
+    """Minimal User serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = User
+        fields = ('pk', 'username', 'name',)
+
+
 class ObservationSerializer(serializers.ModelSerializer):
     """The Observation serializer resolves its polymorphic subclasses.
 
@@ -591,8 +601,8 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     """
 
     observation_set = ObservationSerializer(many=True, read_only=False)
-    observer = UserSerializer(many=False, read_only=True)
-    reporter = UserSerializer(many=False, read_only=True)
+    observer = FastUserSerializer(many=False, read_only=True)
+    reporter = FastUserSerializer(many=False, read_only=True)
     area = FastAreaSerializer(many=False, read_only=True)
     site = FastAreaSerializer(many=False, read_only=True)
     # observer = serializers.StringRelatedField(read_only=True)
