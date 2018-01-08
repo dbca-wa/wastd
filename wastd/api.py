@@ -501,25 +501,6 @@ class NestTagObservationSerializer(serializers.ModelSerializer):
                   )
 
 
-class NestTagObservationEncounterSerializer(serializers.ModelSerializer):
-    """NestTagObservationSerializer."""
-
-    # as_latex = serializers.ReadOnlyField()
-
-    class Meta:
-        """Class options."""
-
-        model = NestTagObservation
-        fields = ('observation_name',  # 'as_latex', #
-                  'encounter',
-                  'status',
-                  'flipper_tag_id',
-                  'date_nest_laid',
-                  'tag_label',
-                  'comments',
-                  )
-
-
 class HatchlingMorphometricObservationSerializer(serializers.ModelSerializer):
     """HatchlingMorphometricObservationSerializer."""
 
@@ -929,6 +910,31 @@ class EncounterViewSet(viewsets.ModelViewSet):
         symlink_resources(t_dir, data)
 
 
+class TurtleNestEncounterFilter(filters.FilterSet):
+
+    class Meta:
+        model = TurtleNestEncounter
+        fields = {
+            'area': ['exact', 'in'],
+            'encounter_type': ['exact', 'in', 'startswith'],
+            'status': ['exact', 'in', 'startswith'],
+            'site': ['exact', 'in', ],
+            'survey': ['exact', 'in', ],
+            'source': ['exact', 'in', ],
+            'source_id': ['exact', 'iexact', 'in', 'startswith', 'endswith', 'contains', 'icontains'],
+            'location_accuracy': ['exact', 'in', ],
+            'when': ['exact', 'in', ],
+            'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
+            'observer': ['exact', 'in', ],
+            'reporter': ['exact', 'in', ],
+            'nest_age': ['exact', 'in', ],
+            'nest_type': ['exact', 'in', ],
+            'species': ['exact', 'in', ],
+            'habitat': ['exact', 'in', ],
+            'disturbance': ['exact', 'in', ],
+            }
+
+
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     """TurtleNestEncounter view set.
 
@@ -981,13 +987,9 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     latex_name = 'latex/turtlenestencounter.tex'
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
-    filter_fields = (
-        'encounter_type', 'status', 'area', 'site', 'survey', 'source', 'source_id',
-        'location_accuracy', 'when', 'name', 'observer', 'reporter',
-        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', )
-    search_fields = ('name', 'source_id', )
+    filter_class = TurtleNestEncounterFilter
     pagination_class = MyGeoJsonPagination
-    # filter_backends = (CustomBBoxFilter, filters.DjangoFilterBackend, )
+
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -1009,12 +1011,21 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/turtle-nest-encounters/?taxon=Elasmobranchii](/api/1/turtle-nest-encounters/?taxon=Elasmobranchii) Sharks and Rays
     * [/api/1/turtle-nest-encounters/?taxon=Hydrophiinae](/api/1/turtle-nest-encounters/?taxon=Hydrophiinae) Sea snakes and kraits
 
+    ### species
+    * [/api/1/turtle-nest-encounters/?species=natator-depressus](/api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
+    * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](/api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
+    * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
+    * [/api/1/turtle-nest-encounters/?species=caretta-caretta](/api/1/turtle-nest-encounters/?species=caretta-caretta) Loggerhead turtle
+    * [/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea](/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea) Olive ridley turtle
+    * [/api/1/turtle-nest-encounters/?species=corolla-corolla](/api/1/turtle-nest-encounters/?species=corolla-corolla) Hatchback turtle (training dummy)
+
+
     # Other filters
     Other enabled filters (typically these categories will be used later during analysis):
-    'species', 'health', 'sex', 'maturity',
+
+    'health', 'sex', 'maturity',
     'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
     'cause_of_death', 'cause_of_death_confidence'
-
 
     ### habitat
     * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
@@ -1083,6 +1094,26 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
     search_fields = ('name', 'comments', )
+
+
+class NestTagObservationEncounterSerializer(serializers.ModelSerializer):
+    """NestTagObservationSerializer."""
+
+    # as_latex = serializers.ReadOnlyField()
+    encounter = EncounterSerializer(many=False, read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = NestTagObservation
+        fields = ('observation_name',  # 'as_latex', #
+                  'encounter',
+                  'status',
+                  'flipper_tag_id',
+                  'date_nest_laid',
+                  'tag_label',
+                  'comments',
+                  )
 
 
 class NestTagObservationViewSet(viewsets.ModelViewSet):
