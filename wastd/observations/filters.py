@@ -4,13 +4,13 @@ from django.contrib.admin import SimpleListFilter
 from django.utils.translation import ugettext_lazy as _
 
 # import django_filters
-import rest_framework_filters as filters
+
 from django_filters import widgets
 from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis import filters as gis_filters
 
 # from leaflet.forms.widgets import LeafletWidget
-
+import rest_framework_filters as filters
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 
 

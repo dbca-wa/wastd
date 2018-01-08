@@ -19,7 +19,6 @@ This API is built using:
 * djangorestframework-csv
 * `djangorestframework-yaml <http://www.django-rest-framework.org/api-guide/renderers/#yaml>`_ (TODO support geo field)
 * djangorestframework-jsonp
-* djangorestframework-filters
 * django-url-filter
 * dynamic-rest (not used)
 * rest-framework-latex
@@ -30,20 +29,22 @@ This API is built using:
 * coreapi-cli (complementary CLI for coreapi)
 """
 # from django.shortcuts import render
+from collections import OrderedDict
+
 from django.db import models as django_models
-from rest_framework import serializers, viewsets, routers
+from django.template import Context, Template
+
+from rest_framework import serializers, viewsets, routers, pagination
+from rest_framework.response import Response as RestResponse
+
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
-# import rest_framework_filters as filters
 # from dynamic_rest import serializers as ds, viewsets as dv
 from drf_extra_fields.geo_fields import PointField
 
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from rest_framework_gis.pagination import GeoJsonPagination
 
-# from rest_framework import filters
-# import django_filters
-from django_filters.rest_framework import DjangoFilterBackend
 import rest_framework_filters as filters
 
 from rest_framework_gis.filterset import GeoFilterSet
@@ -61,11 +62,9 @@ from wastd.observations.models import (
     TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
-from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
+# from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
-
-
 # def symlink_resources(a,b,c):
 #     pass
 
@@ -77,14 +76,6 @@ from wastd.users.models import User
 # sync_route = SynctoolRoute()
 # @sync_route.app("users", "users")
 # @sync_route.app("observations", "observations")
-
-from django.template import Context, Template
-from rest_framework_gis.filters import InBBoxFilter
-# from django_filters.rest_framework import DjangoFilterBackend
-
-from collections import OrderedDict
-from rest_framework import pagination
-from rest_framework.response import Response as RestResponse
 
 
 class MyGeoJsonPagination(pagination.LimitOffsetPagination):
@@ -592,7 +583,8 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     observation_set = ObservationSerializer(many=True, read_only=False)
     observer = UserSerializer(many=False, read_only=True)
     reporter = UserSerializer(many=False, read_only=True)
-    # site = AreaSerializer(many=False, read_only=True)
+    area = AreaSerializer(many=False, read_only=True)
+    site = AreaSerializer(many=False, read_only=True)
     # observer = serializers.StringRelatedField(read_only=True)
     # reporter = serializers.StringRelatedField(read_only=True)
     # where = PointField(required=True)   ## THIS BREAKS GEOJSON OUTPUT
@@ -704,10 +696,6 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'cause_of_death', 'cause_of_death_confidence',
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
-        filter_fields = (
-            'area', 'site', 'when', 'observer', 'reporter', 'status', 'source', 'survey',
-            'taxon', 'species', 'health', 'sex', 'habitat', 'activity', 'nesting_event',
-            'cause_of_death', 'cause_of_death_confidence')
         geo_field = "where"
         id_field = "source_id"
 
@@ -729,9 +717,6 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set',
                   )
-        filter_fields = (
-            'area', 'site', 'when', 'observer', 'reporter', 'status', 'source', 'survey',
-            'nest_age', 'nest_type', 'taxon', 'species', 'habitat', 'disturbance')
         # read_only = ('photographs',)
         geo_field = "where"
 
@@ -763,10 +748,25 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
+class AreaFilter(filters.FilterSet):
+    class Meta:
+        model = Area
+        fields = {
+            'area_type': ['exact', 'in', 'startswith'],
+            'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
+        }
+
+
 class AreaViewSet(viewsets.ModelViewSet):
     """Area view set.
 
     # Filters
+
+    ### name
+    * [/api/1/areas/?name__startswith=Broome](/api/1/areas/?name__startswith=Broome) Areas starting with "Broome"
+    * [/api/1/areas/?name__icontains=sector](/api/1/areas/?name__icontains=Sector) Areas containing (case-insensitive) "sector"
+    * [/api/1/areas/?name=Cable Beach Broome Sector 3](/api/1/areas/?name=Cable Beach Broome Sector 3) Area with exact name (case sensitive)
+
 
     ### area_type
 
@@ -777,10 +777,31 @@ class AreaViewSet(viewsets.ModelViewSet):
 
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
-    filter_fields = ['area_type', ]
+    filter_class = AreaFilter
     bbox_filter_field = 'geom'
     pagination_class = MyGeoJsonPagination
-    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (CustomBBoxFilter, filters.DjangoFilterBackend, )
+
+
+class EncounterFilter(filters.FilterSet):
+    # area = filters.RelatedFilter(AreaFilter, name="area", queryset=Area.objects.all())
+
+    class Meta:
+        model = Encounter
+        fields = {
+            'area': ['exact', 'in'],
+            'encounter_type': ['exact', 'in', 'startswith'],
+            'status': ['exact', 'in', 'startswith'],
+            'site': ['exact', 'in', ],
+            'survey': ['exact', 'in', ],
+            'source': ['exact', 'in', ],
+            'location_accuracy': ['exact', 'in', ],
+            'when': ['exact', 'in', ],
+            'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
+            'source_id': ['exact', 'iexact', 'in', 'startswith', 'endswith', 'contains', 'icontains'],
+            'observer': ['exact', 'in', ],
+            'reporter': ['exact', 'in', ],
+            }
 
 
 class EncounterViewSet(viewsets.ModelViewSet):
@@ -813,6 +834,22 @@ class EncounterViewSet(viewsets.ModelViewSet):
     * All Encounters within Site 31 ("Broome DBCA Office and Training Area"):
       [/api/1/encounters/?site=31](/api/1/encounters/?site=31)
 
+
+    ### name
+    The derived name of an encountered entity (e.g. animal or logger) is the first associated ID, such as a turtle flipper tag.
+    Filter options:
+
+    * exact (case sensitive and case insensitive)
+    * contains (case sensitive and case insensitive)
+    * startswith / endwith
+
+    * [/api/1/encounters/?name=WA49138](/api/1/encounters/?name=WA49138) Encounters with name "WA49138"
+    * [/api/1/encounters/?name__startswith=WA49](/api/1/encounters/?name__startswith=WA49) Encounters with name starting with "WA49"
+    * [/api/1/encounters/?name__icontains=4913](/api/1/encounters/?name__icontains=4913) Encounters with name containing (case-insensitive) "4913"
+
+    ### source_id
+    The source_id is constructed from coordinates, date, entity and other properties.
+    Filter options and examples: see name, substitute "name" with "source_id" and choose appropriate filter string values.
 
     ### source
 
@@ -854,29 +891,18 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
     * [/api/1/encounters/?observer=100](/api/1/encounters/?observer=100) Observer with ID 100
     * [/api/1/encounters/?observer=100](/api/1/encounters/?reporter=100) Reporter with ID 100
-
-    # Search
-    Case-sensitive partial match of `name` or `source_id`. Not working yet.
-
-    * [/api/1/encounters/?search=WA123](/api/1/encounters/?search=WA123)
     """
 
     latex_name = 'latex/encounter.tex'
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
     search_fields = ('name', 'source_id', )
-    filter_fields = [
-        'encounter_type', 'status',
-        'area', 'site', 'survey', 'source',
-        'location_accuracy', 'when', 'name',
-        'observer', 'reporter',
-        ]
+
     bbox_filter_field = 'where'
     # bbox_filter_include_overlapping = True
     pagination_class = MyGeoJsonPagination
-    # filter_class = EncounterFilter # enabling this breaks the filter backend
-    # filter_backends = (DjangoFilterBackend, ) # default from settings
-    # filter_backends = (filters.backends.DjangoFilterBackend,)
+    filter_class = EncounterFilter
+
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -935,13 +961,13 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     latex_name = 'latex/turtlenestencounter.tex'
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
-    filter_fields = [
+    filter_fields = (
         'encounter_type', 'status', 'area', 'site', 'survey', 'source', 'source_id',
         'location_accuracy', 'when', 'name', 'observer', 'reporter',
-        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', ]
+        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance', )
     search_fields = ('name', 'source_id', )
     pagination_class = MyGeoJsonPagination
-    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (CustomBBoxFilter, filters.DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -991,7 +1017,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
         'cause_of_death', 'cause_of_death_confidence']
     search_fields = ('name', 'source_id', 'behaviour', )
     pagination_class = MyGeoJsonPagination
-    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
+    # filter_backends = (CustomBBoxFilter, filters.DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -1006,11 +1032,10 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
     serializer_class = LoggerEncounterSerializer
     filter_fields = [
         'encounter_type', 'status', 'area', 'site', 'survey', 'source', 'source_id',
-        'location_accuracy', 'when', 'observer', 'reporter',
+        'location_accuracy', 'when', 'name', 'observer', 'reporter',
         'deployment_status', 'comments']
     search_fields = ('name', 'source_id', )
     pagination_class = MyGeoJsonPagination
-    # filter_backends = (CustomBBoxFilter, DjangoFilterBackend, )
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
@@ -1029,7 +1054,6 @@ class MediaAttachmentViewSet(viewsets.ModelViewSet):
 
     queryset = MediaAttachment.objects.all()
     serializer_class = MediaAttachmentSerializer
-    # filter_backends = (DjangoFilterBackend, )
 
 
 class TagObservationViewSet(viewsets.ModelViewSet):
@@ -1039,7 +1063,6 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
     search_fields = ('name', 'comments', )
-    # filter_backends = (DjangoFilterBackend, )
 
 
 class NestTagObservationViewSet(viewsets.ModelViewSet):
@@ -1047,9 +1070,8 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
 
     queryset = NestTagObservation.objects.all()
     serializer_class = NestTagObservationEncounterSerializer
-    filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
-                     'comments']
-    # filter_backends = (DjangoFilterBackend, )
+    filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments']
+
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
