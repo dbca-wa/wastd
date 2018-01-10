@@ -522,3 +522,25 @@ Data collected digitally enters the system as "proofread", eliminating two labor
 and error-prone steps requiring human interaction.
 In addition, the data is available to QA straight away, possibly creating a
 tighter error-checking loop.
+
+Re-visiting existing points
+===========================
+This is the rough-and-ready process to re-visit existing encounters, e.g. tagged nests.
+
+* Download `MapIt <https://play.google.com/store/apps/dev?id=9214118068832022925&hl=en>`_ to a tablet.
+* Download `Dropbox <https://play.google.com/store/apps/details?id=com.dropbox.android&hl=en>`_
+  to the same tablet and login with your account.
+* Open MapIt and visit all areas of interest to cache the offline maps.
+* Download the data from WAStD: e.g. Tracks and nests at Cable Beach Broome:
+  Save `https://strandings.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&format=json <https://strandings.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&format=json>`_
+  to your Dropbo on a local computer or on the tablet.
+  The file **must** be in a subfolder inside your Dropbox folder called ``Apps/MapIt`` and have the file extension ``.geojson`` (not ``.json`` as WAStD saves).
+* Open MapIt on your tablet while online.
+* Menu (cheeseburger icon top left) > Manage layers > Add layer icon (red plus sign bottom right) > Name the layer as you like ("Nests" or so).
+* Tap on the new layer ("Nests"), then the "add data" icon (down arrow icon top right), tab "Dropbox", tap "Geojson files" to expand the files, tap on the ``.geojson`` file saved from WAStD.
+* Use back arrow to go back to map.
+
+Now the map (the areas you have visited while online at the respective zoom level)
+should be saved for offline use, and the layer "Nests" should show turtle tracks and nests.
+Nest tags are shown as labels on the map where given.
+The map has a live mode where it follows the current position.
