@@ -260,6 +260,7 @@ If you come across a hatched nest with visible hatchling tracks:
 * Type: "nest, hatched".
 * Other measurements as applicable.
 * Fan angles measured:
+
   * "No" if fewer than 5 tracks are visible, record the nest as mark the nest with a nest tag and monitor the nest daily.
   * "No" if there is more than one other hatched nest within a 5 m radius and hatchling tracks overlap.
   * "Yes" if there are 5 or more clearly visible hatchling tracks.
