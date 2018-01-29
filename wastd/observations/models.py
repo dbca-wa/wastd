@@ -2731,7 +2731,7 @@ class NestTagObservation(Observation):
         return u"{0} ({1})".format(self.name, self.get_status_display())
 
     def save(self, *args, **kwargs):
-        """Cache centroid and northern extent."""
+        """Cache name, centroid and northern extent."""
         if self.encounter.status == Encounter.STATUS_NEW and (not self.encounter.name):
             self.encounter.name = self.name
             self.encounter.save(update_fields=['name', ])

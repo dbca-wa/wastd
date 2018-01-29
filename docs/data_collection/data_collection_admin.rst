@@ -5,7 +5,7 @@ Data collection administrators
 ==============================
 
 This chapter provides all required knowledge for data collection admins.
-The admins form a bridge between the ODK data maintainer (Florian Mayer) 
+The admins form a bridge between the ODK data maintainer (Florian Mayer)
 and the data collectors (staff and volunteers).
 
 Tasks covered:
@@ -18,7 +18,7 @@ Tasks covered:
 Admin: First time setup
 =======================
 
-These steps have to be run once per new tablet. 
+These steps have to be run once per new tablet.
 They are the minimum steps to provide a production ready data collection tablet.
 
 Setup the tablet
@@ -27,7 +27,7 @@ Setup the tablet
 * Start fully charged, plug into charger to lengthen screen timeout
 * Language: English / Australia
 * Wifi: do not use DBCA's Wongi, use guest.dbca.wa.gov.au
-* Sign into a work-only Google account - all tablets handed out from turtle program are linked to florianm.dec@gmail.com. 
+* Sign into a work-only Google account - all tablets handed out from turtle program are linked to florianm.dec@gmail.com.
   If you are not Florian Mayer, use your own work-only Google account.
 * If you have other tablets already set up and linked against your Google account, let the tablet restore from backup (installs apps).
 * Google services: untick "help improve..." options. Keep "Back up apps etc" and "Location services" option.
@@ -43,7 +43,7 @@ Device settings:
 App settings:
 
 * Camera: Enable location capture, so that all photos are geo-referenced with
-  the coordinates they were taken at. This turns the camera into a generic 
+  the coordinates they were taken at. This turns the camera into a generic
   data collection form (image, time, location).
 * Google Photos: auto-backup all photos in original resolution to Google Photos.
 
@@ -66,19 +66,19 @@ Requirements:
   `ODK Collect <https://play.google.com/store/apps/details?id=org.odk.collect.android>`_
 * Drop a shortcut to ODK Collect onto the home screen.
 * In ODK Collect > Settings (three dots top or bottom right) > General Settings > Server >
-  
+
   * URL: https://dpaw-data.appspot.com
-  * username and password as provided to you by the ODK data maintainer. 
-  
+  * username and password as provided to you by the ODK data maintainer.
+
   These credentials determine whether you can retrieve new
   forms and submit data, and the username will be automatically recorded when
   collecting data. It is crucial to spell the credentials exactly as provided.
 * Form management:
   * Auto send: "WiFi only" if few data points are collected.
-    Disable for vigorous data collection in remote areas with limited bandwidth 
+    Disable for vigorous data collection in remote areas with limited bandwidth
     provided by WiFi hotspots - don't swamp the WiFi hotspot by auto-uploading data with photos.
   * Delete after send: yes.
-* User and device identity > Form metadata > Username: set to the data collector's username. 
+* User and device identity > Form metadata > Username: set to the data collector's username.
   This name will be automatically recorded in ODK forms as "observed by".
 * ODK Collect > Settings > Admin settings > User settings: de-select all but "Form metadata".
 * ODK Collect > Settings > Admin settings > Admin password: set and remember.
@@ -90,7 +90,7 @@ are competent and comfortable with the hardware and software.
 
 Admin: Prepare devices pre survey
 =================================
-If the logistics allow, the admin handing out the Android device will execute the steps of 
+If the logistics allow, the admin handing out the Android device will execute the steps of
 :ref:`dct-pre-survey` together with the data collector.
 
 Admin: Prepare a length reference pre survey
@@ -101,7 +101,7 @@ Having a length reference in the photos helps the reviewer immensely with specie
 
 A simple and cheap length reference for tricky turtle tracks
 can be fabricated from a  foldable wooden rule (2m folding into 20cm segments),
-marked with goloured duct tape ($5 per roll) at the minimum and maximum track width 
+marked with goloured duct tape ($5 per roll) at the minimum and maximum track width
 for each turtle species expected to occur in the surveyed area.
 
 Tomato stick prototype:
@@ -111,21 +111,21 @@ Tomato stick prototype:
     :alt: Turtle track length reference
 
 The reference can be simplified, e.g. if only green and flatback turtles are expected,
-a stick can be cut to the maximum flatback track width, with one marking for the 
+a stick can be cut to the maximum flatback track width, with one marking for the
 minimum green track width.
 
 Additional length markings, e.g. intervals of 10cm, can be added as required.
 
-This method is preferred over the use of a measuring tape as length reference in 
+This method is preferred over the use of a measuring tape as length reference in
 photos of tracks of unknown species for the following reasons:
 
-* A rigid rule will lay on top of sand ripples, 
+* A rigid rule will lay on top of sand ripples,
   while measuring tape will distort measurement by bending over them.
-* The coloured, centimeter-wide markings on the rule will be visible at lower image quality 
+* The coloured, centimeter-wide markings on the rule will be visible at lower image quality
   than the millimeter-wide centimeter markings on a measuring tape.
-* The coloured tape wraps around the rule and is thereby visible from any angle, 
+* The coloured tape wraps around the rule and is thereby visible from any angle,
   while tape can flip over and hide its markings.
-* By reducing length references to relevant lengths, cognitive load is taken off the data collector. 
+* By reducing length references to relevant lengths, cognitive load is taken off the data collector.
   One can simply read off the markings which species' track width range a given track falls into.
 
 Prepare one length reference per data collection team.
@@ -158,7 +158,7 @@ of WiFi and power points daily, data can be uploaded directly to the clearinghou
 * Turn on the device's WiFi.
 
 With "Auto-send in WiFi" settings enabled, the device will automatically upload
-all data marked as "finalized". 
+all data marked as "finalized".
 This will leave all non-finalised forms requiring review in "Edit Saved Forms".
 Review each form and "save as finalized".
 
@@ -169,23 +169,23 @@ ODK data is located in either internal or SD storage in ``odk/instances``.
 Each form will be stored in a separate folder, containing both the filled in form
 as XML file, and all related pictures and media.
 
-Simplest backup: periodically take a copy of ``odk/instances``. 
-If data upload works at the end, no further steps have to be taken and the copy of 
+Simplest backup: periodically take a copy of ``odk/instances``.
+If data upload works at the end, no further steps have to be taken and the copy of
 ``odk/instances`` can be archived.
 
 Where's the data now?
 =====================
 ODK Collect uploads data to the specified ODK Aggregate clearinghouse.
-In our case, we run ODK Aggregate at 
+In our case, we run ODK Aggregate at
 `https://dpaw-data.appspot.com/ <https://dpaw-data.appspot.com/>`_.
 
 A synchronised copy of the data is streamed to Google Fusion Tables (GFT)
-for immediate visualization. 
+for immediate visualization.
 A confidential link is shared with admins on request.
-DBCA staff can find the links to the data 
+DBCA staff can find the links to the data
 `here <https://confluence.dpaw.wa.gov.au/display/MSIM/ODK+data+views>`_.
 
-After each field trip, data from ODK Aggregate are exported (as JSON) and ingested into WAStD by the maintainer (FM). 
+After each field trip, data from ODK Aggregate are exported (as JSON) and ingested into WAStD by the maintainer (FM).
 The process can be repeated; data that has been changed in WAStD and
 marked as "proofread" or even "curated" will not be overwritten.
 
@@ -194,20 +194,66 @@ WAStD becomes the point of truth, as proofreading and curation (e.g.
 double-checking species ID based on submitted photos) can change the data compared to the initial submission on ODK Aggregate.
 
 Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
-`https://strandings.dpaw.wa.gov.au/ <https://strandings.dpaw.wa.gov.au/>`_. 
+`https://strandings.dpaw.wa.gov.au/ <https://strandings.dpaw.wa.gov.au/>`_.
 See chapter "Data consumers" for working examples.
 
-The final analysis consumes curated data through the WAStD API using the R package 
-``wastdR``. Working examples can be found at the 
+The final analysis consumes curated data through the WAStD API using the R package
+``wastdR``. Working examples can be found at the
 `wastdr documentation <https://parksandwildlife.github.io/wastdr/index.html>`_.
 
 Admin: Update forms
 ===================
-From time to time the forms might be updated. 
-In this case, all data collection admins (and volunteers using their private devices) will be notified, 
+From time to time the forms might be updated.
+In this case, all data collection admins (and volunteers using their private devices) will be notified,
 and each of their tablets need to run through the following steps:
 
 * ODK Collect > Get blank form > (the new forms should already be selected, e.g. Track or Treat 0.36) > Get selected forms
 * ODK Collect > Delete saved form > Blank forms > select the old form (e.g. Track or Treat 0.35) > delete
 * Once all tablets are updated, notify the maintainer (Florian Mayer).
 * Once all devices are updated, the old form version can be retired.
+
+Admin: Form versions and change log
+===================================
+Always use the latest available version of a form.
+Some older forms may be available for download - this is to allow import to WAStD.
+
+Process to upgrade:
+
+* Send all unsent forms
+* Delete saved form > Blank forms > Delete all
+* Get blank form > get latest version of each form
+
+Site Visit Start
+----------------
+* 0.2 (2017-11-16) Auto-capture device ID
+
+Site Visit End
+--------------
+* 0.2 (2017-11-16) Auto-capture device ID
+
+Track or Treat
+--------------
+* 0.51 (2018-01-29) Bug fix: cloud cover now includes 0 (clear sky)
+* 0.50 (2018-01-27) Add informative prompts for missing required fields, simplify bearing measurements (hand-held compass only)
+* 0.49 (2018-01-18)
+* 0.47 (2017-12-05)
+* 0.46 (2017-12-01)
+* 0.45 (2017-11-19)
+* 0.44 (2017-10-31) Add fan angles (early version)
+
+
+Turtle Tagging
+--------------
+* 0.2 (2018-01-29) Allow capturing location as "here" or manual entry (if not on site) - animal first encountered at, nest location
+
+
+Fox Sake
+--------
+* 0.3
+
+Marine Wildlife Incident
+------------------------
+* 0.6 (2018-01-29) Allow capturing location as "here" or manual entry (if not on site)
+
+
+

@@ -219,11 +219,19 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
 class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     """Admin for NestTagObservation"""
     save_on_top = True
-    date_hierarchy = 'date_nest_laid'
-    list_display = ('tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
-                    'status_display', 'encounter_link', 'comments')
-    list_filter = ('flipper_tag_id', 'tag_label', 'status')
+    date_hierarchy = 'encounter__when'
+    list_display = (
+        'pk', 'area',
+        'latitude', 'longitude',  'date',
+        'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
+        'status_display', 'encounter_link', 'comments')
+    list_filter = ('encounter__area', 'flipper_tag_id', 'tag_label', 'status')
     search_fields = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
+
+    def area(self, obj):
+        """Make data source readable."""
+        return obj.encounter.area
+    area.short_description = 'Area'
 
     def tag_name(self, obj):
         """Nest tag name."""
@@ -234,6 +242,21 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
         """Make health status human readable."""
         return obj.get_status_display()
     status_display.short_description = 'Status'
+
+    def latitude(self, obj):
+        """Make data source readable."""
+        return obj.encounter.where.get_y()
+    latitude.short_description = 'Latitude'
+
+    def longitude(self, obj):
+        """Make data source readable."""
+        return obj.encounter.where.get_x()
+    longitude.short_description = 'Longitude'
+
+    def date(self, obj):
+        """Make data source readable."""
+        return obj.encounter.when
+    date.short_description = 'Date'
 
     def encounter_link(self, obj):
         """A link to the encounter."""
