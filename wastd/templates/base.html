@@ -37,7 +37,7 @@
     <div class="m-b">
       <nav class="navbar navbar-dark navbar-fixed-top bg-inverse" id="navBar">
         <div class="container">
-          <a class="navbar-brand" href="/">WA Strandings Database</a>
+          <a class="navbar-brand" href="/">WA Threatened Species</a>
           <button type="button"
             class="navbar-toggler hidden-sm-up pull-xs-right"
             data-toggle="collapse" data-target="#bs-navbar-collapse-1">
@@ -52,6 +52,13 @@
                         <i class="fa fa-table"></i>&nbsp;Encounters
                     </a>
                   </li> -->
+                  <li class="nav-item">
+                    <a class="nav-link"
+                        href="{% url 'dashboard' %}"
+                        title="Browse, filter and search threatened species and communities">
+                        <i class="fa fa-table"></i>&nbsp;Dashboard
+                    </a>
+                  </li>
                   <li class="nav-item">
                     <a class="nav-link"
                         href="{% url 'animalencounter_list' %}"
