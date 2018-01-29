@@ -309,7 +309,9 @@ Thevenard observers can use codes for the four major known artificial light sour
 * **J** Thevenard Jetty
 
 Screen "Other light source":
+
 This screen is a reminder to capture all known light sources as "Light source" in the previous screen.
+
 * If there are any other known light sources, swipe back and add them as individual "Light source".
 * If there were no other light sources, select "No".
 * If the presence or absence of other light sources is unknown, select "Unknown".
