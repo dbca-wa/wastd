@@ -244,6 +244,7 @@ Track or Treat
 
 Turtle Tagging
 --------------
+* 0.3 (2018-01-29) Manual location capture uses map widget (needs to be online to show background maps)
 * 0.2 (2018-01-29) Allow capturing location as "here" or manual entry (if not on site) - animal first encountered at, nest location
 
 
