@@ -250,20 +250,19 @@ At the end of the survey, turn off location services, and hand the device back t
 Protocol "fan angles"
 ---------------------
 This protocol measures hatchling tracks. The operator will require a hand-held compass
-(and knowledge how to use it), a length reference (e.g. wooden folding ruler),
-in addition to the marked chopping board (for egg counts) and nest tags (optional).
+(and knowledge how to use it), a length reference (e.g. wooden folding ruler).
 
 If you come across hatchling tracks but cannot locate the nest they hatched from, ignore them and proceed the survey.
 
 If you come across a hatched nest with visible hatchling tracks:
 
-* Species: OK to keep at unknown (unless identifiable hatchlings are found)
-* Type: "nest, hatched"
-* Other measurements as applicable (disturbance, nest tags, eggs, hatchlings)
+* Species: OK to keep at unknown (unless identifiable hatchlings are found).
+* Type: "nest, hatched".
+* Other measurements as applicable.
 * Fan angles measured:
-  * "No" if fewer than 10 tracks are visible, record the nest as mark the nest with a nest tag and monitor the nest daily.
+  * "No" if fewer than 5 tracks are visible, record the nest as mark the nest with a nest tag and monitor the nest daily.
   * "No" if there is more than one other hatched nest within a 5 m radius and hatchling tracks overlap.
-  * "Yes" if there are more than 10 clearly visible hatchling tracks.
+  * "Yes" if there are 5 or more clearly visible hatchling tracks.
 
 Screen "Hatchling track fan angles":
 
@@ -296,9 +295,9 @@ Screen "Weather during hatchling emergence":
 Screen "Light source" (repeat as required):
 
 * If light source is visible (at night) or discernible (at day),
-  take a picture of light source or general direction of source
-* Measure bearing to light source or provide best estimate
-* Type of light source
+  take a picture of light source or general direction of source.
+* Measure bearing to light source or provide best estimate.
+* Type of light source.
 * Description:
 
 Thevenard observers can use codes for the four major known artificial light sources:
@@ -306,13 +305,15 @@ Thevenard observers can use codes for the four major known artificial light sour
 * **W** Wheatstone
 * **O** Onslow
 * **R** Resort
-* **S** Salt works
+* **J** Thevenard Jetty
 
 Screen "Other light source":
+This screen is a reminder to capture all known light sources as "Light source" in the previous screen.
+* If there are any other known light sources, swipe back and add them as individual "Light source".
+* If there were no other light sources, select "No".
+* If the presence or absence of other light sources is unknown, select "Unknown".
 
-If there are any other known light sources, swipe back and add them. Otherwise, proceed.
-
-Screen "Outlier track group":
+Screen "Outlier track group" (repeat as required):
 
 For each single outlier track, or groups of outlier tracks sharing a similar path (and bearing):
 
