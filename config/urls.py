@@ -31,20 +31,9 @@ from wastd.observations.views import (
 actions.add_to_site(site)
 
 urlpatterns = [
-    url(r'^$',
-        # TemplateView.as_view(template_name='pages/home.html'),
-        HomeView.as_view(),
-        name='home'),
-
-    url(r'^dashboard/$',
-        TemplateView.as_view(template_name='pages/dashboard.html'),
-        # HomeView.as_view(),
-        name='dashboard'),
-
-
-    url(r'^about/$',
-        TemplateView.as_view(template_name='pages/about.html'),
-        name='about'),
+    url(r'^$', HomeView.as_view(), name='home'),
+    url(r'^dashboard/$', TemplateView.as_view(template_name='pages/dashboard.html'), name='dashboard'),
+    url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 
     url(r'^grappelli/', include('grappelli.urls')),  # grappelli URLS
     # Django Admin, use {% url 'admin:index' %}
@@ -55,13 +44,8 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
 
     # Encounters
-    url(r'^encounters/$',
-        EncounterTableView.as_view(),
-        name="encounter_list"),
-
-    url(r'^animal-encounters/$',
-        AnimalEncounterTableView.as_view(),
-        name="animalencounter_list"),
+    url(r'^encounters/$', EncounterTableView.as_view(), name="encounter_list"),
+    url(r'^animal-encounters/$', AnimalEncounterTableView.as_view(), name="animalencounter_list"),
 
     # API
     url(r'^api/1/swagger/$', schema_view, name="api-docs"),
@@ -96,7 +80,11 @@ urlpatterns = [
     url(r'^data/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
         TiledGeoJSONLayerView.as_view(
             model=AnimalEncounter,
-            properties=('as_html', 'leaflet_title', 'leaflet_icon', 'leaflet_colour'),
+            properties=(
+                'as_html',
+                'leaflet_title',
+                'leaflet_icon',
+                'leaflet_colour'),
             geometry_field="where"),
         name='encounter-tiled-geojson'),
 
