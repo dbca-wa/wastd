@@ -229,3 +229,30 @@ Pressing "Update Names" will reconstruct names for all animals.
 Three simple lines of R code will consume Animal Encounters from the WAStD API
 and transform them into the format required for e.g. program MARK.
 A working example is published `here <http://rpubs.com/florian_mayer/wastd-mark>`_.
+
+Re-visiting existing points
+===========================
+This is the rough-and-ready process to re-visit existing encounters, e.g. tagged nests.
+
+* Download `MapIt <https://play.google.com/store/apps/dev?id=9214118068832022925&hl=en>`_ to a tablet.
+* Download `Dropbox <https://play.google.com/store/apps/details?id=com.dropbox.android&hl=en>`_
+  to the same tablet and login with your account.
+* Open MapIt and visit all areas of interest to cache the offline maps.
+* Download the data from WAStD: e.g. Tracks and nests at Cable Beach Broome:
+  Save `https://strandings.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&format=json <https://strandings.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&format=json>`_
+  to your Dropbox on a local computer or on the tablet as ``nests.geojson``.
+  The file **must** be in a subfolder inside your Dropbox folder called ``Apps/MapIt`` and have the file extension ``.geojson`` (not ``.json`` as WAStD saves). The filename (``nests``) is arbitrary.
+  If you have WAStD open in your browser (and are authenticated), the API should not ask for authentication.
+* Open MapIt on your tablet while online.
+* Menu (cheeseburger icon top left) > Manage layers > Add layer icon (red plus sign bottom right) > Name the layer as you like ("Nests" or so).
+* Tap on the new layer ("Nests"), then the "add data" icon (down arrow icon top right), tab "Dropbox", tap "Geojson files" to expand the files, tap on the ``nests.geojson`` file saved from WAStD.
+* Use back arrow to go back to map.
+
+Now the map (the areas you have visited while online at the respective zoom level)
+should be saved for offline use, and the layer "Nests" should show turtle tracks and nests.
+Nest tags are shown as labels on the map where given.
+The map has a live mode where it follows the current position.
+
+To re-run the process with fresher data:
+* Download the data again and save over the file ``Dropbox/Apps/MapIt/nests.geojson``.
+* On the tablet, open MapIt, Manage layers, select the "Nests" layer, in options (three vertical dots top right) select "clear" and confirm to remove existing records from the layer, then "import" the fresher data from Dropbox again.

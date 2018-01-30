@@ -36,6 +36,12 @@ urlpatterns = [
         HomeView.as_view(),
         name='home'),
 
+    url(r'^dashboard$',
+        TemplateView.as_view(template_name='pages/dashboard.html'),
+        # HomeView.as_view(),
+        name='dashboard'),
+
+
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'),
         name='about'),
 

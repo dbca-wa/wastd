@@ -112,11 +112,13 @@ function map_init(map, options) {
     //     {style: style, pointToLayer: ptl, onEachFeature: oef}
     // ).addTo(map);
 
-    L.geoJson(
+    var markers = L.markerClusterGroup();
+    var gj_markers = L.geoJson(
         {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
         // {clipTiles: true, unique: getUnique},
-        {style: style, pointToLayer: ptl, onEachFeature: oef}
-    ).addTo(map);
+        {style: style, pointToLayer: ptl, onEachFeature: oef});
+    markers.addLayer(gj_markers);
+    map.addLayer(markers);
 
     /*
      * Option 2: GeoJSON view

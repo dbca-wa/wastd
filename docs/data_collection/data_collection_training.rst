@@ -15,15 +15,15 @@ This chapter provides the training resources for prospective data collectors.
 Preparing a device pre survey
 =============================
 Run through this section every time before heading out to collect data.
-Ideally, the admin handing out the Android device will double-check these settings 
+Ideally, the admin handing out the Android device will double-check these settings
 together with the data collector.
 
 * Settings > General Settings > User and device identity > Form metadata > Username:
-  * This username will be recorded during data collection - 
+  * This username will be recorded during data collection -
     we need this so we can say "thank you".
-  * For volunteers, this should be firstname_lastname, e.g. florian_mayer in all 
+  * For volunteers, this should be firstname_lastname, e.g. florian_mayer in all
     lower case and underscore separated.
-  * For DBCA staff, this should be the DBCA username, e.g. FlorianM or JoanneKi, 
+  * For DBCA staff, this should be the DBCA username, e.g. FlorianM or JoanneKi,
     with initials capitalised and last name abbreviated.
 * **Battery** Make sure the battery is full before you head out.
   Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
@@ -31,7 +31,7 @@ together with the data collector.
 * **Length reference** A stick with markings for the minimum and maximum track width
   for each expected species.
 
-**Note** While a typo in the username will not break anything (but make our life harder), 
+**Note** While a typo in the username will not break anything (but make our life harder),
 exact spelling would be greatly appreciated.
 Exact spelling includes capitalisation, interpunctuation and whitespace.
 E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
@@ -65,14 +65,14 @@ Device checkin Kimberley - Anna Plains
 
 Length reference
 ================
-Take a length reference, such as a stake marked with coloured tape at minimum and 
+Take a length reference, such as a stake marked with coloured tape at minimum and
 maximum track width for all expected turtle species.
 
 Collecting turtle data
 ======================
 
 This section runs through all possible scenarios of turtle data collection.
-The data collector should already be trained to recognise species from tracks, as well as 
+The data collector should already be trained to recognise species from tracks, as well as
 identify turtle nests and body pits.
 
 Data collection protocol overview
@@ -130,20 +130,20 @@ Hatchling tracks:
 
 You should at least set species and GeoPoint, if the other value defaults are correct.
 
-If you were unsure about the species and have therefore kept the default "Turtle", 
-you will be shown a subsequent screen "Unsure about species", where you can take photos 
+If you were unsure about the species and have therefore kept the default "Turtle",
+you will be shown a subsequent screen "Unsure about species", where you can take photos
 of both the uptrack (water towards land) and the downtrack (returning from land to water).
 
 * Landscape format is preferred, but choose aspect at your own discretion.
 * Flip device into landscape **before** tapping "take photo" (else it forgets the first photo taken).
-* Place a length reference (measuring tape or marked stick) across the whole track, 
-  lining up the end with the edge of the track. 
+* Place a length reference (measuring tape or marked stick) across the whole track,
+  lining up the end with the edge of the track.
   This allows reviewers to easily gauge the track width from the photo.
 * Select angle of camera, sun and track so that both track and length reference are clearly visible.
 
 Review the data, then swipe right to finish the form.
 
-If you are sure of species ID and presence or absence of nest, 
+If you are sure of species ID and presence or absence of nest,
 keep "Mark form as finalized" ticked and "Save Form and Exit".
 
 **If tablets are left unsupervised** E.g. West Pilbara, Cable Beach - simply save and let it upload.
@@ -153,7 +153,7 @@ Supervisors will QA the data later.
 This gives the field supervisors a chance to review and possibly determine species ID
 (based on the photo taken) before uploading.
 
-This form will take a trained operator about 13 taps and swipes over 
+This form will take a trained operator about 13 taps and swipes over
 about 15 seconds plus the time to take a photo.
 
 Repeat for each track / nest.
@@ -246,7 +246,89 @@ This is the end of the form. Proceed to the next track or nest and repeat.
 
 At the end of the survey, turn off location services, and hand the device back to the admin.
 
-Track tally
+
+Protocol "fan angles"
+---------------------
+This protocol measures hatchling tracks. The operator will require a hand-held compass
+(and knowledge how to use it), a length reference (e.g. wooden folding ruler).
+
+If you come across hatchling tracks but cannot locate the nest they hatched from, ignore them and proceed the survey.
+
+If you come across a hatched nest with visible hatchling tracks:
+
+* Species: OK to keep at unknown (unless identifiable hatchlings are found).
+* Type: "nest, hatched".
+* Other measurements as applicable.
+* Fan angles measured:
+
+  * "No" if fewer than 5 tracks are visible, record the nest as mark the nest with a nest tag and monitor the nest daily.
+  * "No" if there is more than one other hatched nest within a 5 m radius and hatchling tracks overlap.
+  * "Yes" if there are 5 or more clearly visible hatchling tracks.
+
+Screen "Hatchling track fan angles":
+
+* (If daytime) Take a photo from behind the nest towards the sea. You should show the nest,
+  the main track fan, and the approach to the water line. Stand 1m behind the nest.
+* (If daytime) Take a second picture, this time choose your position to the nest and your camera height
+  to maximise contrast and detail.
+* Measure the bearing to water as the compass bearing from the nest
+  to the closest point on the high water mark (HWM).
+* Identify the densest cluster (fan) of hatchling tracks. This is called the main fan.
+* Measure the bearing of the left- and rightmost tracks from the nest to
+  exactly 5m away from the nest or to the HWM, whichever is closest.
+* Count (if possible) or estimate the number of tracks in the main fan and also
+  provide upper and lower estimates.
+* If any other individual tracks or groups of tracks exist outside the main, select "outlier tracks present".
+* Describe the hatchlings' path to sea by selecting all applicable options. You can select multiple options and add free text comments.
+* Is hatchling emergence time known? (e.g. when observing at night)
+* Is cloud cover at emergence time known?
+* Were light sources present during emergence?
+
+Screen "Hatchling emergece time":
+
+* Best estimate for date and time
+* Accuracy of estimate
+
+Screen "Weather during hatchling emergence":
+
+* Could cover in eighths: 0/8 is clear sky, 8/8 is entirely overcast
+
+Screen "Light source" (repeat as required):
+
+* If light source is visible (at night) or discernible (at day),
+  take a picture of light source or general direction of source.
+* Measure bearing to light source or provide best estimate.
+* Type of light source.
+* Description:
+
+Thevenard observers can use codes for the four major known artificial light sources:
+
+* **W** Wheatstone
+* **O** Onslow
+* **R** Resort
+* **J** Thevenard Jetty
+
+Screen "Other light source":
+
+This screen is a reminder to capture all known light sources as "Light source" in the previous screen.
+
+* If there are any other known light sources, swipe back and add them as individual "Light source".
+* If there were no other light sources, select "No".
+* If the presence or absence of other light sources is unknown, select "Unknown".
+
+Screen "Outlier track group" (repeat as required):
+
+For each single outlier track, or groups of outlier tracks sharing a similar path (and bearing):
+
+* Take a picture of the track or the group
+* Measure bearing from nest to track 5 m away from nest or high water mark
+* Count number of tracks in group (default: 1)
+* Add comments only if deemed necessary
+
+You have reached the end of protocol "Fan angles".
+Circle nest with your foot to mark as observed.
+Drag a line with your foot across the hatchling tracks above the high water mark.
+
 
 .. _dct-stranding-report:
 
@@ -296,14 +378,16 @@ You'll need:
     :target: https://www.lucidchart.com/publicSegments/view/97f2cc34-d19b-403d-a349-814390f3b6c4/image.png
     :alt: Example nesting beach
 
+**Important notice** Please **never** conduct training on a nesting beach. Instead:
+
+* Collect as many records as you wish on any place outside the actual nesting beaches.
+* Use the species "Hatchback turtle (Corolla corolla)" when training.
+
 Training walk-through
 ---------------------
 
-
-
 0 Pre survey
 ^^^^^^^^^^^^
-
 * Battery full?
 * WiFi off
 * GPS on
