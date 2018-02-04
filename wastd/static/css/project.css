@@ -29,6 +29,9 @@ html, body {height: 100%; width: 100%;
 #mapholder {height:100%; width: 100%;}
 #wastdmap {width: auto; height: 100%;}
 
+#searchmapholder {width: 18rem; height: 18rem;}
+#searchmap {height:100%; width: auto;}
+
 /* Leaflet popup fixed width */
 .leaflet-popup-content {min-width: 540px; padding: 10px;}
 /*.leaflet-popup-content-wrapper {max-height: 500px;}*/
@@ -61,6 +64,10 @@ html, body {height: 100%; width: 100%;
 /* Leaflet popup twitter-bootstrap image carousel: lower indicators 10px */
 /*#popup-image-indicators {bottom: -10px;}*/
 
+.leaflet-control-attribution {
+  max-height: 12px;
+  max-width: 200px;
+}
 
 /* Table width */
 .table {width:100%;}

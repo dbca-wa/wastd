@@ -1,15 +1,388 @@
 {% extends "base.html" %}
-{% load leaflet_tags geojson_tags %}
+{% load staticfiles leaflet_tags geojson_tags %}
 
 {% block content %}
-<div id="dash-data" class="col-md-9 col-sm-6 col-xs-12">
-    <h3>Data</h3>
+<div class="row">
+    <!-- Data -->
+    <div id="dash-data" class="col-md-9 col-sm-6 col-12">
+        <h3>Threatened Species and Communities</h3>
+
+<div class="row">
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-danger">T</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+        <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+    </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-danger">CR</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-warning">EN</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-warning">VU</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-secondary">EX</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-info">IA</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-primary">CD</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-success">OS</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-primary">P1</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-primary">P2</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-primary">P3</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
+
+  <div class="card" style="width: 16rem;">
+    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+    <div class="card-body">
+        <h5 class="card-title">Species name <span class="badge badge-primary">P4</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+    </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+        </ul>
+    <div class="card-footer">
+        <a href="#" class="card-link">View details</a>
+        <a href="#" class="card-link">Export PDF</a>
+    </div>
+  </div>
 </div>
-<div id="dash-filters" class="col-md-3 col-sm-6 col-xs-12">
-    <h3>Filters</h3>
-    <p>Type</p>
-    <p>Name</p>
-    <p>Group</p>
-    <p>Location</p>
+
+
+
+    </div><!-- /#dash-data -->
+
+    <div id="dash-filters" class="col-md-3 col-sm-6 col-12">
+        <h3>Search</h3>
+        <form>
+            <div class="form-group">
+                <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
+            </div>
+
+            <div class="form-group">
+                <input class="form-control" type="search" placeholder="Species or Communities" aria-label="Search">
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="type-species">
+                    <label class="form-check-label" for="type-species">Species</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="type-communities">
+                    <label class="form-check-label" for="type-communities">Communities</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary mb-2">Go</button>
+            </div>
+        </form>
+    </div><!-- /#dash-filters -->
 </div>
 {% endblock content %}
+
+{% block css%}
+{{ block.super }}
+{% leaflet_css plugins="draw" %}
+{% endblock %}
+
+{% block javascript%}
+{{ block.super }}
+{% leaflet_js plugins="draw" %}
+<script type="text/javascript">
+function map_init(map, options) {
+
+    map.setZoom(3);
+
+    /* Helper functions */
+
+    /* Point style */
+    var style = {
+        "clickable": true
+    }
+
+    /* Polygon style */
+    var polystyle = {
+        "color": "#0009ff",
+        "weight": 1,
+        "opacity": 0.65
+    }
+
+    /* Map a feature to an icon class */
+    function getIcon(feature){
+        if (feature.properties.leaflet_icon){
+            return feature.properties.leaflet_icon
+        } else {
+            return "question-circle-o"
+        }
+    }
+
+    /* Map a feature to an marker colour */
+    function getMarkerColor(feature){
+        if (feature.properties.leaflet_colour){
+            return feature.properties.leaflet_colour
+        } else {
+            return "red"
+        }
+    }
+
+    /* Use FontAwesome icons for Leafet.awesome-markers */
+    L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
+
+    /* Return a grouping variable - using feature.id disables grouping */
+    function getUnique(feature){return feature.id}
+
+    /* Override default Marker, set colour, symbol; add mouse hover title */
+    function ptl(feature, latlng) {
+        /* https://github.com/lvoogdt/Leaflet.awesome-markers */
+        var icon = new L.AwesomeMarkers.icon({
+            icon: getIcon(feature),
+            iconColor: 'white',
+            markerColor: getMarkerColor(feature),
+            // prefix: 'fa',
+            // spin:false
+        });
+
+        return L.marker(latlng, {icon: icon});
+        //title: feature.properties.leaflet_title,
+
+    }
+
+    /* Actions taken when highlighting feature */
+    function highlightFeature(e) {
+        var layer = e.target;
+        info.update(layer.feature.properties);
+    }
+
+    /* Actions taken when resetting highlight on feature */
+    function resetHighlight(e) {
+        info.update();
+    }
+
+    /* Actions taken on each feature: title, popup, info preview */
+    function oef (feature, layer) {
+        layer.bindLabel(feature.properties.leaflet_title);
+        layer.bindPopup(feature.properties.as_html);
+        layer.on({mouseover: highlightFeature, click: resetHighlight});
+    }
+
+    // /* Preview window called "info" */
+    // var info = L.control();
+
+    // info.onAdd = function (map) {
+    //     this._div = L.DomUtil.create('div', 'info');
+    //     this.update();
+    //     return this._div;
+    // };
+    // info.update = function (props) {
+    //     this._div.innerHTML = props ? props.as_html: 'Hover to preview, click to inspect';
+    // };
+
+    // info.addTo(map);
+
+    /* Data loading */
+
+    /*
+     * Option 1: List view queryset plus djgeojson filter tag = GeoJSON
+     * Ideal for filters with sensible defaults (e.g. show only current year)
+     * https://github.com/makinacorpus/django-geojson#geojson-template-filter
+     */
+    // L.geoJson(
+    //     {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
+    //     // {clipTiles: true, unique: getUnique},
+    //     {style: style, pointToLayer: ptl, onEachFeature: oef}
+    // ).addTo(map);
+
+    // var markers = L.markerClusterGroup();
+    // var gj_markers = L.geoJson(
+    //     {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
+    //     // {clipTiles: true, unique: getUnique},
+    //     {style: style, pointToLayer: ptl, onEachFeature: oef});
+    // markers.addLayer(gj_markers);
+    // map.addLayer(markers);
+
+    /*
+     * Option 2: GeoJSON view
+     * The quick and dirty way to dump all (whoa) data into one layer
+     * https://github.com/makinacorpus/django-geojson#geojson-layer-view
+     * We'll use this method to load area polygons.
+     */
+    // $.getJSON("{% url 'areas-geojson' %}", function (data) {
+    //     L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
+    // });
+
+    /*
+     * Option 3: Tiled GeoJSON      ...because we can, baby
+     * Most performant solution
+     * https://github.com/glenrobertson/leaflet-tilelayer-geojson/
+     * TODO filters or clustering
+     * getUnique returns grouping variable (using feature.id disables grouping)
+     * ptl overrides default marker with AwesomeMarker
+     * oef binds popup to marker
+     */
+    // var geojsonTileLayer = new L.TileLayer.GeoJSON(
+    //     'data/{z}/{x}/{y}.geojson',
+    //     {clipTiles: true, unique: getUnique},
+    //     {style: style, pointToLayer: ptl, onEachFeature: oef}
+    // ).addTo(map);
+
+
+}
+</script>
+{% endblock %}
