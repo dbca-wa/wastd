@@ -38,6 +38,20 @@ class HomeView(ListView):
         return AnimalEncounter.objects.filter(taxon="Cheloniidae")
 
 
+class DashboardView(ListView):
+
+    model = Encounter
+    template_name = "pages/dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
+
+    def get_queryset(self, **kwargs):
+        return Encounter.objects.all()[1:100]
+
+
 # Encounters -----------------------------------------------------------------#
 # https://kuttler.eu/en/post/using-django-tables2-filters-crispy-forms-together/
 # http://stackoverflow.com/questions/25256239/

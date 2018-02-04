@@ -1,0 +1,15 @@
+{% load staticfiles %}
+<div class="card" style="width: 16rem;">
+  <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+  <div class="card-body">
+    <h5 class="card-title">{{ original.get_species_display }} <span class="badge badge-danger">T</span></h5>
+    <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
+    <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
+  </ul>
+  <div class="card-footer">
+    <a href="{% url 'admin:observations_encounter_change' original.pk %}" class="btn btn-info" target="_" rel="nofollow">View details</a>
+  </div>
+</div>

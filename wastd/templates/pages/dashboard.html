@@ -3,239 +3,75 @@
 
 {% block content %}
 <div class="row">
-    <!-- Data -->
-    <div id="dash-data" class="col-md-9 col-sm-6 col-12">
-        <h3>Threatened Species and Communities</h3>
 
-<div class="row">
-
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-danger">T</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-        <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-    </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <strong>Page under construction</strong>
+    Let's pretend that we're looking at species level summaries,
+    not at individual species occurrences.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-danger">CR</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
+  <!-- Data -->
+  <div id="dash-data" class="col-md-9 col-sm-6 col-12">
 
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-warning">EN</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
+    <h3>Threatened Species and Communities</h3>
 
+    <div class="row">
 
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-warning">VU</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
+      {% for original in object_list %}
+      {% include "cards/encounter.html" with original=original %}
+      {% endfor %}
 
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-secondary">EX</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-info">IA</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-primary">CD</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-success">OS</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-primary">P1</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-primary">P2</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-primary">P3</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 16rem;">
-    <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map">
-    <div class="card-body">
-        <h5 class="card-title">Species name <span class="badge badge-primary">P4</span></h5>
-        <h6 class="card-subtitle mb-2 text-muted">Conservation status</h6>
-    </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Management Plan <span class="badge badge-info">PDF</span></li>
-            <li class="list-group-item">Attachment 1 <span class="badge badge-info">PDF</span></li>
-        </ul>
-    <div class="card-footer">
-        <a href="#" class="card-link">View details</a>
-        <a href="#" class="card-link">Export PDF</a>
-    </div>
-  </div>
 </div>
 
 
 
-    </div><!-- /#dash-data -->
+  </div><!-- /#dash-data -->
 
-    <div id="dash-filters" class="col-md-3 col-sm-6 col-12">
-        <h3>Search</h3>
-        <form>
-            <div class="form-group">
-                <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
-            </div>
+  <div id="dash-filters" class="col-md-3 col-sm-6 col-12">
+    <h3>Search</h3>
+    <form>
+      <div class="form-group">
+        <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
+      </div>
 
-            <div class="form-group">
-                <input class="form-control" style="width:18rem;" type="search" placeholder="Species or Communities" aria-label="Search">
-            </div>
+      <div class="form-group">
+        <input class="form-control" style="width:18rem;" type="search" placeholder="Species or Communities" aria-label="Search">
+      </div>
 
-            <div class="form-group">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="type-species">
-                    <label class="form-check-label" for="type-species">Species</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="type-communities">
-                    <label class="form-check-label" for="type-communities">Communities</label>
-                </div>
-            </div>
+      <div class="form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="type-species">
+          <label class="form-check-label" for="type-species">Species</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="type-communities">
+          <label class="form-check-label" for="type-communities">Communities</label>
+        </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary mb-2">Go</button>
-            </div>
-        </form>
-    </div><!-- /#dash-filters -->
+        <span class="badge badge-danger">T</span>
+        <span class="badge badge-danger">CR</span>
+        <span class="badge badge-warning">EN</span>
+        <span class="badge badge-warning">VU</span>
+        <span class="badge badge-secondary">EX</span>
+        <span class="badge badge-info">IA</span>
+        <span class="badge badge-primary">CD</span>
+        <span class="badge badge-success">OS</span>
+        <span class="badge badge-primary">P1</span>
+        <span class="badge badge-primary">P2</span>
+        <span class="badge badge-primary">P3</span>
+        <span class="badge badge-primary">P4</span>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary mb-2">Go</button>
+      </div>
+    </form>
+  </div><!-- /#dash-filters -->
 </div>
-{% endblock content %}
+{% endblock %}
 
 {% block css%}
 {{ block.super }}
@@ -246,7 +82,7 @@
 {{ block.super }}
 {% leaflet_js plugins="draw" %}
 <script type="text/javascript">
-function map_init(map, options) {
+  function map_init(map, options) {
 
     map.setZoom(3);
 
@@ -254,32 +90,32 @@ function map_init(map, options) {
 
     /* Point style */
     var style = {
-        "clickable": true
+      "clickable": true
     }
 
     /* Polygon style */
     var polystyle = {
-        "color": "#0009ff",
-        "weight": 1,
-        "opacity": 0.65
+      "color": "#0009ff",
+      "weight": 1,
+      "opacity": 0.65
     }
 
     /* Map a feature to an icon class */
     function getIcon(feature){
-        if (feature.properties.leaflet_icon){
-            return feature.properties.leaflet_icon
-        } else {
-            return "question-circle-o"
-        }
+      if (feature.properties.leaflet_icon){
+        return feature.properties.leaflet_icon
+      } else {
+        return "question-circle-o"
+      }
     }
 
     /* Map a feature to an marker colour */
     function getMarkerColor(feature){
-        if (feature.properties.leaflet_colour){
-            return feature.properties.leaflet_colour
-        } else {
-            return "red"
-        }
+      if (feature.properties.leaflet_colour){
+        return feature.properties.leaflet_colour
+      } else {
+        return "red"
+      }
     }
 
     /* Use FontAwesome icons for Leafet.awesome-markers */
@@ -290,37 +126,37 @@ function map_init(map, options) {
 
     /* Override default Marker, set colour, symbol; add mouse hover title */
     function ptl(feature, latlng) {
-        /* https://github.com/lvoogdt/Leaflet.awesome-markers */
-        var icon = new L.AwesomeMarkers.icon({
-            icon: getIcon(feature),
-            iconColor: 'white',
-            markerColor: getMarkerColor(feature),
+      /* https://github.com/lvoogdt/Leaflet.awesome-markers */
+      var icon = new L.AwesomeMarkers.icon({
+        icon: getIcon(feature),
+        iconColor: 'white',
+        markerColor: getMarkerColor(feature),
             // prefix: 'fa',
             // spin:false
-        });
+          });
 
-        return L.marker(latlng, {icon: icon});
+      return L.marker(latlng, {icon: icon});
         //title: feature.properties.leaflet_title,
 
-    }
+      }
 
-    /* Actions taken when highlighting feature */
-    function highlightFeature(e) {
+      /* Actions taken when highlighting feature */
+      function highlightFeature(e) {
         var layer = e.target;
         info.update(layer.feature.properties);
-    }
+      }
 
-    /* Actions taken when resetting highlight on feature */
-    function resetHighlight(e) {
+      /* Actions taken when resetting highlight on feature */
+      function resetHighlight(e) {
         info.update();
-    }
+      }
 
-    /* Actions taken on each feature: title, popup, info preview */
-    function oef (feature, layer) {
+      /* Actions taken on each feature: title, popup, info preview */
+      function oef (feature, layer) {
         layer.bindLabel(feature.properties.leaflet_title);
         layer.bindPopup(feature.properties.as_html);
         layer.on({mouseover: highlightFeature, click: resetHighlight});
-    }
+      }
 
     // /* Preview window called "info" */
     // var info = L.control();
@@ -383,6 +219,6 @@ function map_init(map, options) {
     // ).addTo(map);
 
 
-}
+  }
 </script>
 {% endblock %}

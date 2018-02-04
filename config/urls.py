@@ -25,14 +25,14 @@ from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
     schema_view, update_names, import_odka,
-    HomeView, EncounterTableView, AnimalEncounterTableView)
+    HomeView, DashboardView, EncounterTableView, AnimalEncounterTableView)
 
 # register all adminactions
 actions.add_to_site(site)
 
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^dashboard/$', TemplateView.as_view(template_name='pages/dashboard.html'), name='dashboard'),
+    url(r'^data/$', DashboardView.as_view(), name='dashboard'),
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 
     url(r'^grappelli/', include('grappelli.urls')),  # grappelli URLS
