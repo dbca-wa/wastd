@@ -37,7 +37,7 @@
 
   <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-darkblue">
       <a class="navbar-brand" href="#"><img
               src="{% static 'images/tt.png' %}"
               class="brandimg"
@@ -67,11 +67,11 @@
                                <span class="align-middle">API</span>
                            </a>
                            <a class="dropdown-item" href="{% url 'api-docs' %}" target="_">
-                               <i class="fa fa-info align-middle"></i>
+                               <i class="fa fa-book align-middle"></i>
                                <span class="align-middle">API Docs (Swagger)</span>
                            </a>
                            <a class="dropdown-item" href="/api/1/docs" target="_">
-                               <i class="fa fa-info align-middle"></i>
+                               <i class="fa fa-book align-middle"></i>
                                <span class="align-middle">API Docs (DRF)</span>
                            </a>
                            {% if request.user.is_authenticated %}

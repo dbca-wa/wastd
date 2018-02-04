@@ -19,6 +19,7 @@ html, body {height: 100%; width: 100%;
     /*overflow: hidden;*/
 }
 
+.bg-darkblue {background-color: #000035;}
 /* body is padded-top with navbar height */
 /*body {padding-top: 54px;}*/
 
@@ -33,7 +34,7 @@ html, body {height: 100%; width: 100%;
 /*.leaflet-popup-content-wrapper {max-height: 500px;}*/
 
 /* popup image margins */
-.popupimage {margin-top: 15px; margin-bottom: 15px;}
+/*.popupimage {margin-top: 15px; margin-bottom: 15px;}*/
 
 .info {
     margin: 10px;
@@ -48,20 +49,22 @@ html, body {height: 100%; width: 100%;
 .info h4 { margin: 0 0 5px; color: #777; }
 
 /* popup image limited height */
-.carousel-inner img {
-    max-height: 300px; /* limit popup height */
-    width: 100% auto; /* allow less than 100% width */
-    margin: auto; /* center image */
+.carousel-item img {
+    max-height: 300px;  /* limit popup height*/
+   width: 100% auto; /* allow less than 100% width */
+  margin: auto; /* center image */
 }
 
 /* Leaflet popup link colour */
 .leaflet-container a {color: #0a4077;}
 
 /* Leaflet popup twitter-bootstrap image carousel: lower indicators 10px */
-#popup-image-indicators {bottom: -10px;}
+/*#popup-image-indicators {bottom: -10px;}*/
 
 
 /* Table width */
 .table {width:100%;}
 
-.pagination{margin-left:105px; padding-left:15px;}
+.pagination {margin-left:105px; padding-left:15px;}
+
+.text-shadow {text-shadow: 1px 1px #000000;}

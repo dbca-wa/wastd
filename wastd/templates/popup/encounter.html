@@ -2,8 +2,9 @@
 {% with original as o %}
 <!-- Heading -->
 <div class="row">
-    <h5>{% block title %}{{ o.leaflet_title }}{% endblock %}
-    <span class="pull-xs-right">
+  <h5>
+    <span class="col">{% block title %}{{ o.leaflet_title }}{% endblock %}</span>
+    <span class="col float-right">
     {% if o.name %}
     <a href="{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}"
         class="btn btn-primary btn-sm"
@@ -17,34 +18,34 @@
         <i class="fa fa-fw fa-file-pdf-o"></i>
     </a>
     {% endif%}
-    <a href="{{ o.absolute_admin_url }}"
-        class="btn btn-{{ o.status|tb_status_icon }} btn-sm"
-        target="_" titile="Edit Encounter in new tab">
-        <i class="fa fa-fw fa-pencil"></i>
-        {{ o.get_status_display }}
-    </a>
-    </span>
-    </h5>
+  <a href="{{ o.absolute_admin_url }}"
+      class="btn btn-{{ o.status|tb_status_icon }} btn-sm"
+      target="_" title="Edit Encounter in new tab">
+      <i class="fa fa-fw fa-pencil"></i>
+      {{ o.get_status_display }}
+  </a>
+  </span>
+  </h5>
 </div>
 
 <!-- Time and location -->
 <div class="row">
-    <i class="fa fa-fw fa-calendar"></i>
-    {{ o.when|date:"r" }}
-    <i class="fa fa-fw fa-map-marker"></i>
-        Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
-        ({{ o.crs }}) &plusmn; {{ o.location_accuracy }} m WGS 84
+  <i class="fa fa-fw fa-calendar"></i>
+  {{ o.when|date:"r" }}
+  <i class="fa fa-fw fa-map-marker"></i>
+      Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
+      ({{ o.crs }}) &plusmn; {{ o.location_accuracy }} m WGS 84
 </div>
 
 <!-- Observer -->
 <div class="row">
-    <i class="fa fa-fw fa-eye"></i>
-    <a href="mailto:{{ o.observer.email }}"
-    title="Send email to {{ o.observer.fullname }}">{{ o.observer.name }}</a>
+  <i class="fa fa-fw fa-eye"></i>
+  <a href="mailto:{{ o.observer.email }}"
+  title="Send email to {{ o.observer.fullname }}">{{ o.observer.name }}</a>
 
-    <i class="fa fa-fw fa-pencil"></i>
-    <a href="mailto:{{ o.reporter.email }}"
-    title="Send email to {{ o.reporter.fullname }}">{{ o.reporter.name }}</a>
+  <i class="fa fa-fw fa-pencil"></i>
+  <a href="mailto:{{ o.reporter.email }}"
+  title="Send email to {{ o.reporter.fullname }}">{{ o.reporter.name }}</a>
 </div><!-- /.row -->
 
 {% block headlines %}{% endblock %}
@@ -53,36 +54,40 @@
 <!-- Optional photos -->
 {% if o.photographs %}
 <div class="row popupimage">
-    <div id="slideshow-bob" class="carousel slide" data-ride="carousel">
-      {% if o.photographs|length > 1 %}
-      <ol id="popup-image-indicators" class="carousel-indicators">
-        {% for p in o.photographs %}
-        <li data-target="#carousel-example-generic"
-            data-slide-to="{{ forloop.counter }}"
-            {% if forloop.first %}class="active"{% endif %}></li>
-        {% endfor %}
-      </ol>
-      {% endif %}
-      <div class="carousel-inner" role="listbox">
+
+  <div id="slideshow-bob" class="carousel slide mx-auto" data-ride="carousel">
+    {% if o.photographs|length > 1 %}
+    <ol class="carousel-indicators">
+      {% for p in o.photographs %}
+      <li data-target="#slideshow-bob" data-slide-to="{{ forloop.counter }}"
+          {% if forloop.first %}class="active"{% endif %}></li>
+      {% endfor %}
+    </ol>
+    {% endif %}
+
+    <div class="carousel-inner">
           {% for p in o.photographs %}
-        <div class="carousel-item{% if forloop.first %} active{% endif %} img-rounded">
-          <img src="{{ p.attachment.url }}" class="img-rounded" alt="{{ p.title }}">
-        </div>
-        {% endfor %}
-      </div>
-      {% if o.photographs|length > 1 %}
-      <a class="left carousel-control" href="#slideshow-bob"
-         role="button" data-slide="prev">
-        <span class="icon-prev" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-      </a>
-      <a class="right carousel-control" href="#slideshow-bob"
-         role="button" data-slide="next">
-        <span class="icon-next" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-      </a>
-      {% endif %}
+          <div class="carousel-item{% if forloop.first %} active{% endif %}">
+            <img src="{{ p.attachment.url }}" class="d-block w-100 rounded" alt="{{ p.title }}">
+            <div class="carousel-caption d-none d-md-block">
+              <h5 class="text-shadow">{{ p.title }}</h5>
+            </div>
+          </div>
+          {% endfor %}
     </div>
+     {% if o.photographs|length > 1 %}
+
+    <a class="carousel-control-prev" href="#slideshow-bob" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#slideshow-bob" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+    {% endif %}
+  </div>
+
 </div><!-- /.row.margin-top-15 -->
 {% endif %}
 <!-- /Optional photos -->
