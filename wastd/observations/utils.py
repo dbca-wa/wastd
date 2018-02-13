@@ -4344,6 +4344,19 @@ def import_odka_mwi05(r):
     media = make_media(r)
     usr = guess_user(data["reporter"])
 
+    # Older versions of this form use the dashless, pardon, dash-less keys
+    # required for older versions of ODK Collect.
+    # We'll build lookup dicts with current and dash-less keys,
+    # but we'll do so programmatically because we're not savages.
+    health_dict = {x[0].replace("-", ""): x[0] for x in HEALTH_CHOICES}
+    health_dict.update({x[0]: x[0] for x in HEALTH_CHOICES})
+
+    habitat_dict = {x[0].replace("-", ""): x[0] for x in HABITAT_CHOICES}
+    habitat_dict.update({x[0]: x[0] for x in HABITAT_CHOICES})
+
+    activity_dict = {x[0].replace("-", ""): x[0] for x in ACTIVITY_CHOICES}
+    activity_dict.update({x[0]: x[0] for x in ACTIVITY_CHOICES})
+
     unique_data = dict(
         source="odk",
         source_id=data["@instanceID"])
@@ -4364,17 +4377,17 @@ def import_odka_mwi05(r):
 
     if action in ["update", "create"]:
 
-        enc.taxon = data["details"]["taxon"]
+        enc.taxon = "na" if "taxon" not in data["details"] else data["details"]["taxon"]
         enc.species = data["details"]["species"]
         enc.maturity = data["details"]["maturity"]
         enc.sex = data["details"]["sex"]
-        enc.health = data["status"]["health"]
-        enc.activity = data["status"]["activity"].replace("beachwashed", "beach-washed")
+        enc.health = health_dict[data["status"]["health"]]  # for 0.1
+        enc.activity = activity_dict[data["status"]["activity"]]
         enc.behaviour = "Behaviour: {0}\nLocation: {1}".format(
             data["status"]["behaviour"] or '',
             data["incident"]["location_comment"] or '')
-        enc.habitat = data["incident"]["habitat"]
-        enc.nesting_event = False
+        enc.habitat = habitat_dict[data["incident"]["habitat"]]  # for 0.1 - 0.4
+        enc.nesting_event = "absent"
         enc.checked_for_injuries = data["checks"]["checked_for_injuries"]
         enc.scanned_for_pit_tags = data["checks"]["scanned_for_pit_tags"]
         enc.checked_for_flipper_tags = data["checks"]["checked_for_flipper_tags"]
@@ -4385,6 +4398,7 @@ def import_odka_mwi05(r):
         #   "samples_taken": "present",
 
         enc.save()
+        enc.full_clean()
 
         # Photos
         handle_media_attachment_odka(enc, media, data["incident"]["photo_habitat"], title="Initial photo of habitat")
@@ -4394,7 +4408,8 @@ def import_odka_mwi05(r):
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_top"], title="Turtle head top")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_front"], title="Turtle head front")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_side"], title="Turtle head side")
-        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
+        handle_media_attachment_odka(
+            enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
 
         # TagObs
         # "tag_observation": [
@@ -4459,7 +4474,7 @@ def import_all_odka(path="."):
 
     Example usage on shell_plus:
 
-    import sys; reload(sys); sys.setdefaultencoding('UTF8')
+    import sys; reload(sys); sys.setdefaultencoding('UTF8'); path="data/odka"
     from wastd.observations.utils import *
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")
@@ -4468,30 +4483,26 @@ def import_all_odka(path="."):
     results = dict(
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
+
         tt35=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)],
         tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
         tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
         tt45=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-45_1511079712", path)],
         tt46=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-46_1512095567", path)],
         tt47=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-47_1512461621", path)],
+        tt50=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-50_1516929392", path)],
+        tt51=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-51_1517196378", path)],
+
+        mwi01=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-1_1502342347", path)],
+        mwi04=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-4_1509605702", path)],
         mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
+        mwi06=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-6_1517197224", path)],
+
         sve01=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-1_1490756971", path)],
         sve02=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-2_1510716716", path)],
         svs01=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-1_1490753483", path)],
         svs02=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-2_1510716686", path)],
     )
     print("[import_all_odka] Finished import. Stats:")
-    print("[import_all_odka]  Imported {0} MWI05".format(len(results["mwi05"])))
-    print("[import_all_odka]  Imported {0} FS03".format(len(results["fs03"])))
-    print("[import_all_odka]  Imported {0} TAL05".format(len(results["tal05"])))
-    print("[import_all_odka]  Imported {0} TT035".format(len(results["tt35"])))
-    print("[import_all_odka]  Imported {0} TT036".format(len(results["tt36"])))
-    print("[import_all_odka]  Imported {0} TT044".format(len(results["tt44"])))
-    print("[import_all_odka]  Imported {0} TT045".format(len(results["tt45"])))
-    print("[import_all_odka]  Imported {0} TT046".format(len(results["tt46"])))
-    print("[import_all_odka]  Imported {0} TT047".format(len(results["tt47"])))
-    print("[import_all_odka]  Imported {0} SVE01".format(len(results["sve01"])))
-    print("[import_all_odka]  Imported {0} SVE02".format(len(results["sve02"])))
-    print("[import_all_odka]  Imported {0} SVS01".format(len(results["svs01"])))
-    print("[import_all_odka]  Imported {0} SVS02".format(len(results["svs02"])))
+    print("\n".join(["[import_all_odka]  Imported {0} {1}".format(len(results[x]), x.upper()) for x in results]))
     return results
