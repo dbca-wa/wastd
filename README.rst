@@ -6,23 +6,23 @@ WA Stranding Database
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/
      :alt: Built with Cookiecutter Django
-.. image:: https://circleci.com/gh/parksandwildlife/wastd.svg?style=svg
-     :target: https://circleci.com/gh/parksandwildlife/wastd
+.. image:: https://circleci.com/gh/dbca-wa/wastd.svg?style=svg
+     :target: https://circleci.com/gh/dbca-wa/wastd
      :alt: Test status
-.. image:: https://coveralls.io/repos/github/parksandwildlife/wastd/badge.svg?branch=master
-     :target: https://coveralls.io/github/parksandwildlife/wastd?branch=master
+.. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
+     :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
-.. image:: https://landscape.io/github/parksandwildlife/wastd/master/landscape.svg?style=flat
-     :target: https://landscape.io/github/parksandwildlife/wastd/master
+.. image:: https://landscape.io/github/dbca-wa/wastd/master/landscape.svg?style=flat
+     :target: https://landscape.io/github/dbca-wa/wastd/master
      :alt: Code Health
-.. image:: https://requires.io/github/parksandwildlife/wastd/requirements.svg?branch=master
-     :target: https://requires.io/github/parksandwildlife/wastd/requirements/?branch=master
+.. image:: https://requires.io/github/dbca-wa/wastd/requirements.svg?branch=master
+     :target: https://requires.io/github/dbca-wa/wastd/requirements/?branch=master
      :alt: Requirements Status
 .. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
      :target: http://wastd.readthedocs.io/
      :alt: Documentation Status
-.. image:: https://badge.waffle.io/parksandwildlife/wastd.svg?label=ready&title=Ready
-     :target: https://waffle.io/parksandwildlife/wastd
+.. image:: https://badge.waffle.io/dbca-wa/wastd.svg?label=ready&title=Ready
+     :target: https://waffle.io/dbca-wa/wastd
      :alt: Open Issues
 
 Note: A bug in the version of functools used by the continuous integration provider
