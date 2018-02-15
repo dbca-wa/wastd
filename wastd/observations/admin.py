@@ -453,7 +453,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
 
     form = AnimalEncounterForm
     list_display = EncounterAdmin.FIRST_COLS + (
-        'species', 'health_display',
+        'taxon', 'species', 'health_display',
         'cause_of_death', 'cause_of_death_confidence',
         'maturity_display', 'sex_display', 'behaviour',
         'habitat_display',

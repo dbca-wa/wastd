@@ -89,13 +89,13 @@ class MyGeoJsonPagination(pagination.LimitOffsetPagination):
 
     def get_paginated_response(self, data):
         return RestResponse(OrderedDict([
-                ('type', 'FeatureCollection'),
-                ('count', self.count),
-                ('next', self.get_next_link()),
-                ('previous', self.get_previous_link()),
-                ('features', data['features']),
-                # ('data', data),
-                ]))
+            ('type', 'FeatureCollection'),
+            ('count', self.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('features', data['features']),
+            # ('data', data),
+        ]))
 
 
 class InBBoxHTMLMixin:
@@ -394,7 +394,7 @@ class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TurtleNestDisturbanceObservation
-        fields = ('observation_name', # 'as_latex',
+        fields = ('observation_name',  # 'as_latex',
                   'disturbance_cause', 'disturbance_cause_confidence',
                   'disturbance_severity', 'comments', )
 
@@ -687,7 +687,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   'status', 'observer', 'reporter', 'comments',
                   'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
                   'when', 'name',
-                  'name', 'taxon', 'species', 'health', 'sex', 'behaviour',
+                  'name', 'taxon', 'species', 'health', 'sex', 'maturity', 'behaviour',
                   'habitat', 'activity', 'nesting_event',
                   'checked_for_injuries',
                   'scanned_for_pit_tags',
@@ -748,6 +748,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class AreaFilter(filters.FilterSet):
+
     class Meta:
         model = Area
         fields = {
@@ -801,7 +802,7 @@ class EncounterFilter(filters.FilterSet):
             'observer': ['exact', 'in', ],
             'reporter': ['exact', 'in', ],
             'comments': ['icontains', 'startswith', 'endswith']
-            }
+        }
 
 
 class EncounterViewSet(viewsets.ModelViewSet):
@@ -916,7 +917,6 @@ class EncounterViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
     filter_class = EncounterFilter
 
-
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
@@ -945,7 +945,7 @@ class TurtleNestEncounterFilter(filters.FilterSet):
             'habitat': ['exact', 'in', ],
             'disturbance': ['exact', 'in', ],
             'comments': ['icontains', 'startswith', 'endswith'],
-            }
+        }
 
 
 class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
@@ -1002,7 +1002,6 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     serializer_class = TurtleNestEncounterSerializer
     filter_class = TurtleNestEncounterFilter
     pagination_class = MyGeoJsonPagination
-
 
     def pre_latex(view, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
