@@ -3260,6 +3260,104 @@ def handle_odka_nesttagobservation(enc, media, data):
     return None
 
 
+def handle_odka_tagsobs(enc, media, data):
+    """Handle empty, one, or multiple TagObservations.
+
+    Arguments:
+
+        enc An AnimalEncounter
+        media A dict of photo filename:url
+        data A "data" dict from ODK "Marine Wildlife Incident 0.1" or higher, can contain
+
+        No tagobs: key "tag_observation" missing from data.
+
+        One tagobs:
+        "tag_observation": {
+            "photo_tag": "1511046895915.jpg",
+            "name": "Wb6653",
+            "tag_status": "resighted",
+            "tag_comments": null,
+            "tag_location": "flipper-front-left-1",
+            "tag_type": "flipper-tag"
+          }
+
+        Multiple tagobs:
+        "tag_observation": [
+            {
+              "photo_tag": "1511005364137.jpg",
+              "name": "900119000520181",
+              "tag_status": "resighted",
+              "tag_comments": "applied-new",
+              "tag_location": "neck",
+              "tag_type": "pit-tag"
+            },
+            {
+              "photo_tag": "1511005464946.jpg",
+              "name": "wb14638",
+              "tag_status": "resighted",
+              "tag_comments": "applied-new",
+              "tag_location": "flipper-front-right-1",
+              "tag_type": "flipper-tag"
+            },
+            {
+              "photo_tag": "1511005522216.jpg",
+              "name": "f8904",
+              "tag_status": "removed",
+              "tag_comments": null,
+              "tag_location": "flipper-rear-left",
+              "tag_type": "biopsy-sample"
+            }
+          ]
+
+    Returns:
+
+        None
+    """
+    if "tag_observation" in data and data["tag_observation"]:
+
+        tag_type_dict = map_and_keep(TAG_TYPE_CHOICES)
+        tag_location_dict = map_and_keep(TURTLE_BODY_PART_CHOICES)
+        tag_status_dict = map_and_keep(TAG_STATUS_CHOICES)
+
+        for obs in listify(data["tag_observation"]):
+            # 0. Lookups
+            tag_name = sanitize_tag_name(obs["name"])
+            tag_type = tag_type_dict[obs["tag_type"]]
+
+            # 1. TagObservation
+            new_data = dict(
+                encounter_id=enc.id,
+                tag_type=tag_type,
+                handler_id=enc.observer_id,
+                recorder_id=enc.reporter_id,
+                name=tag_name,
+                tag_location=tag_location_dict[obs["tag_location"]],
+                status=tag_status_dict[obs["tag_status"]],
+                comments=obs["tag_comments"]
+            )
+
+            criteria = dict(encounter=enc, tag_type=tag_type, name=tag_name)
+            target = TagObservation.objects.filter(**criteria)
+            if target.exists():
+                print("  [handle_odka_tagsobs] Updating existing tag obs {0}...".format(tag_name))
+                e = target.update(**new_data)
+                e = TagObservation.objects.get(**criteria)
+
+            else:
+                print("  [handle_odka_tagsobs] Creating new tag obs {0}...".format(tag_name))
+                e = TagObservation.objects.create(**new_data)
+
+            # 2. Photo of tag
+            if obs["photo_tag"]:
+                handle_media_attachment_odka(
+                    enc, media, obs["photo_tag"], title="Photo {0}".format(e.__str__()))
+
+    else:
+        print("  [handle_odka_tagsobs] found no TagObservation")
+
+    return None
+
+
 def handle_odka_turtlenestobservation(enc, media, data):
     """Handle empty, one, or multiple TurtleNestObservations.
 
@@ -3298,7 +3396,7 @@ def handle_odka_turtlenestobservation(enc, media, data):
         None
     """
     if "egg_count" not in data:
-        print("[handle_odka_turtlenestobservation] found no TurtleNestObservation")
+        print("  [handle_odka_turtlenestobservation] found no TurtleNestObservation")
         return None
 
     if data["nest"]["eggs_counted"] == "yes":
@@ -4348,14 +4446,20 @@ def import_odka_mwi05(r):
     # required for older versions of ODK Collect.
     # We'll build lookup dicts with current and dash-less keys,
     # but we'll do so programmatically because we're not savages.
-    health_dict = {x[0].replace("-", ""): x[0] for x in HEALTH_CHOICES}
-    health_dict.update({x[0]: x[0] for x in HEALTH_CHOICES})
-
-    habitat_dict = {x[0].replace("-", ""): x[0] for x in HABITAT_CHOICES}
-    habitat_dict.update({x[0]: x[0] for x in HABITAT_CHOICES})
-
-    activity_dict = {x[0].replace("-", ""): x[0] for x in ACTIVITY_CHOICES}
-    activity_dict.update({x[0]: x[0] for x in ACTIVITY_CHOICES})
+    health_dict = map_and_keep(HEALTH_CHOICES)
+    habitat_dict = map_and_keep(HABITAT_CHOICES)
+    activity_dict = map_and_keep(ACTIVITY_CHOICES)
+    maturity_dict = map_and_keep(MATURITY_CHOICES)
+    species_dict = map_and_keep(SPECIES_CHOICES)
+    species_dict.update({
+        'turtle': 'cheloniidae-fam',
+        'flatback': 'natator-depressus',
+        'green': 'chelonia-mydas',
+        'hawksbill': 'eretmochelys-imbricata',
+        'loggerhead': 'caretta-caretta',
+        'oliveridley': 'lepidochelys-olivacea',
+        'leatherback': 'dermochelys-coriacea'
+    })
 
     unique_data = dict(
         source="odk",
@@ -4378,15 +4482,15 @@ def import_odka_mwi05(r):
     if action in ["update", "create"]:
 
         enc.taxon = "na" if "taxon" not in data["details"] else data["details"]["taxon"]
-        enc.species = data["details"]["species"]
-        enc.maturity = data["details"]["maturity"]
+        enc.species = species_dict[data["details"]["species"]]
+        enc.maturity = maturity_dict[data["details"]["maturity"]]
         enc.sex = data["details"]["sex"]
-        enc.health = health_dict[data["status"]["health"]]  # for 0.1
+        enc.health = health_dict[data["status"]["health"]]
         enc.activity = activity_dict[data["status"]["activity"]]
         enc.behaviour = "Behaviour: {0}\nLocation: {1}".format(
             data["status"]["behaviour"] or '',
             data["incident"]["location_comment"] or '')
-        enc.habitat = habitat_dict[data["incident"]["habitat"]]  # for 0.1 - 0.4
+        enc.habitat = habitat_dict[data["incident"]["habitat"]]
         enc.nesting_event = "absent"
         enc.checked_for_injuries = data["checks"]["checked_for_injuries"]
         enc.scanned_for_pit_tags = data["checks"]["scanned_for_pit_tags"]
@@ -4398,7 +4502,6 @@ def import_odka_mwi05(r):
         #   "samples_taken": "present",
 
         enc.save()
-        enc.full_clean()
 
         # Photos
         handle_media_attachment_odka(enc, media, data["incident"]["photo_habitat"], title="Initial photo of habitat")
@@ -4411,25 +4514,7 @@ def import_odka_mwi05(r):
         handle_media_attachment_odka(
             enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
 
-        # TagObs
-        # "tag_observation": [
-        #   {
-        #     "photo_tag": "1510473657034.jpg",
-        #     "name": "WA1234",
-        #     "tag_status": "removed",
-        #     "tag_comments": "sample comments",
-        #     "tag_location": "eyes",
-        #     "tag_type": "flippertag"
-        #   },
-        #   {
-        #     "photo_tag": "1510473705773.jpg",
-        #     "name": "sample-dummy-1234",
-        #     "tag_status": "removed",
-        #     "tag_comments": "sample taken",
-        #     "tag_location": "whole",
-        #     "tag_type": "biopsysample"
-        #   }
-        # ],
+        handle_odka_tagsobs(enc, media, data)
 
         # ManagementAction: data["animal_fate"]["animal_fate_comment"]
 
@@ -4445,6 +4530,7 @@ def import_odka_mwi05(r):
         #   "tail_length_carapace_accuracy": "1"
         # },
 
+        # lookups for body_part, datage_type, damage_age
         # TurtleDamageObs
         # "damage_observation": [
         #   {
@@ -4474,8 +4560,7 @@ def import_all_odka(path="."):
 
     Example usage on shell_plus:
 
-    import sys; reload(sys); sys.setdefaultencoding('UTF8'); path="data/odka"
-    from wastd.observations.utils import *
+    import sys; reload(sys); sys.setdefaultencoding('UTF8'); path="data/odka"; from wastd.observations.utils import *
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")
     """
