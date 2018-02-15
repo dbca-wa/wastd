@@ -2817,7 +2817,7 @@ class TurtleMorphometricObservation(Observation):
         max_length=300,
         blank=True, null=True,
         choices=ACCURACY_CHOICES,
-        verbose_name=_("Curved carapace width c"),
+        verbose_name=_("Curved carapace width (mm)"),
         help_text=_("The expected measurement accuracy."),)
 
     tail_length_carapace_mm = models.PositiveIntegerField(

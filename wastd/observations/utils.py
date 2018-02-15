@@ -3159,8 +3159,9 @@ def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
     """Handle MediaAttachment for ODKA data."""
     if not photo_filename:
         print("  [handle_media_attachment_odka] skipping empty photo {0}".format(title))
-        return None
-    handle_media_attachment(enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+    else:
+        handle_media_attachment(
+            enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
     return None
 
 
@@ -3168,8 +3169,9 @@ def handle_fieldmedia_attachment_odka(exp, media, photo_filename, title="Photo")
     """Handle MediaAttachment for ODKA data."""
     if not photo_filename:
         print("  [handle_fieldmedia_attachment_odka] skipping empty photo {0}".format(title))
-        return None
-    handle_fieldmedia_attachment(exp, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+    else:
+        handle_fieldmedia_attachment(
+            exp, dict(filename=photo_filename, url=media[photo_filename]), title=title)
     return None
 
 
@@ -3190,12 +3192,12 @@ def handle_odka_disturbanceobservation(enc, media, data):
     elif "disturbance" in data:
         distobs = listify(data["disturbance"])
     else:
-        print("[handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
+        print("  [handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
         return None
 
     if distobs:
         print(
-            "[handle_odka_disturbanceobservation] found "
+            "  [handle_odka_disturbanceobservation] found "
             "{0} TurtleNestDisturbanceObservation(s)".format(len(distobs)))
         [handle_turtlenestdistobs31(
             dict(
@@ -3208,7 +3210,7 @@ def handle_odka_disturbanceobservation(enc, media, data):
             ),
             enc) for x in distobs]
     else:
-        print("[handle_odka_disturbanceobservation] found invalid data: {0}".format(
+        print("  [handle_odka_disturbanceobservation] found invalid data: {0}".format(
             json.dumps(distobs, indent=2)))
     return None
 
@@ -3412,6 +3414,44 @@ def handle_odka_turtlenestobservation(enc, media, data):
     return None
 
 
+def handle_odka_managementaction(enc, media, data):
+    """Handle empty, one, or multiple ManagementAction.
+
+    Arguments:
+
+        enc An AnimalEncounter
+        media A dict of photo filename:url
+        data A "data" dict from ODK "Marine Wildlife Incident 0.1" or higher, can contain
+
+        data["animal_fate"]["animal_fate_comment"]
+
+    Returns:
+
+        None
+    """
+    if "animal_fate" not in data:
+        msg = "  [handle_odka_managementaction] found no ManagementAction"
+    else:
+        new_data = dict(
+            encounter_id=enc.id,
+            management_actions=data["animal_fate"]["animal_fate_comment"]
+        )
+
+        criteria = dict(encounter=enc, management_actions=data["animal_fate"]["animal_fate_comment"])
+        target = ManagementAction.objects.filter(**criteria)
+        if target.exists():
+            e = target.update(**new_data)
+            e = ManagementAction.objects.get(**criteria)
+            msg = "  [handle_odka_managementaction] Updated existing {0}".format(e)
+
+        else:
+            e = ManagementAction.objects.create(**new_data)
+            msg = "  [handle_odka_managementaction] Created new {0}".format(e)
+
+    print(msg)
+    return None
+
+
 def handle_odka_hatchlingmorphometricobservation(enc, media, data):
     """Handle empty, one, or multiple TurtleNestObservations.
 
@@ -3450,6 +3490,150 @@ def handle_odka_hatchlingmorphometricobservation(enc, media, data):
     if data["nest"]["hatchlings_measured"] == "yes" and "hatchling_measurements" in data:
         [handle_hatchlingmorphometricobs(x, enc)
          for x in listify(data["hatchling_measurements"])]
+    return None
+
+
+def handle_odka_turtlemorph(enc, media, data):
+    """Handle empty or one TurtleMorphometricObservation.
+
+    ODK forms collect up to one TurtleMorphometricObservation.
+    Records imported from ODK are assumed to be new.
+    Therefore, there can be up to one TurtleMorphometricObservation per AnimalEncounter via ODK.
+
+    Arguments:
+
+        enc An AnimalEncounter
+        media A dict of photo filename:url
+        data A "data" dict from ODK "Marine Wildlife Incident 0.1" or higher, can contain
+
+        "morphometrics": {
+            "maximum_head_width_mm": "167",
+            "curved_carapace_width_accuracy": "5",
+            "curved_carapace_width_mm": "630",
+            "curved_carapace_length_mm": "950",
+            "curved_carapace_length_accuracy": "5",
+            "tail_length_carapace_mm": "125",
+            "maximum_head_width_accuracy": "1",
+            "tail_length_carapace_accuracy": "1"
+        },
+
+    Returns:
+
+        None
+    """
+    if "morphometrics" not in data:
+        msg = "  [handle_odka_turtlemorph] found no TurtleMorphometricObservation"
+    else:
+        obs = data["morphometrics"]
+        new_data = dict(
+            encounter_id=enc.id,
+            curved_carapace_length_mm=int_or_none(obs.get("curved_carapace_length_mm", None)),
+            curved_carapace_length_accuracy=obs.get("curved_carapace_length_accuracy", None),
+            curved_carapace_width_mm=int_or_none(obs.get("curved_carapace_width_mm", None)),
+            curved_carapace_width_accuracy=obs.get("curved_carapace_width_accuracy", None),
+            tail_length_carapace_mm=int_or_none(obs.get("tail_length_carapace_mm", None)),
+            tail_length_carapace_accuracy=obs.get("tail_length_carapace_accuracy", None),
+            maximum_head_width_mm=int_or_none(obs.get("maximum_head_width_mm", None)),
+            maximum_head_width_accuracy=obs.get("maximum_head_width_accuracy", None),
+            handler_id=enc.observer_id,
+            recorder_id=enc.reporter_id,
+        )
+
+        criteria = dict(encounter=enc)
+        target = TurtleMorphometricObservation.objects.filter(**criteria)
+        if target.exists():
+            e = target.update(**new_data)
+            e = TurtleMorphometricObservation.objects.get(**criteria)
+            msg = "  [handle_odka_turtlemorph] Updated existing {0}".format(e)
+
+        else:
+            e = TurtleMorphometricObservation.objects.create(**new_data)
+            msg = "  [handle_odka_turtlemorph] Created new {0}".format(e)
+
+    print(msg)
+    return None
+
+
+def handle_odka_turtledamageobs(enc, media, data):
+    """Handle empty, one, or multiple TurtleDamageObservation.
+
+    Arguments:
+
+        enc An AnimalEncounter
+        media A dict of photo filename:url
+        data A "data" dict from ODK "Marine Wildlife Incident 0.1" or higher, can contain
+
+        No tagobs: key "damage_observation" missing from data.
+
+        One damageobs:
+        "damage_observation":
+          {
+            "photo_damage": "1510473605661.jpg",
+            "body_part": "neck",
+            "description": "damage comments",
+            "damage_type": "amputatedentirely",
+            "damage_age": "healed-partially"
+          },
+
+        Multiple damageobs:
+
+        "damage_observation": [
+          {
+            "photo_damage": "1510473605661.jpg",
+            "body_part": "neck",
+            "description": "damage comments",
+            "damage_type": "amputatedentirely",
+            "damage_age": "healed-partially"
+          },
+          {
+            "photo_damage": "1510473630318.jpg",
+            "body_part": "eyes",
+            "description": "another comment",
+            "damage_type": "algal-growth",
+            "damage_age": "healed-entirely"
+          }
+        ],
+
+    Returns:
+
+        None
+    """
+    if "damage_observation" in data and data["damage_observation"]:
+
+        body_part_dict = map_and_keep(TURTLE_BODY_PART_CHOICES)
+        damage_type_dict = map_and_keep(DAMAGE_TYPE_CHOICES)
+        damage_age_dict = map_and_keep(DAMAGE_AGE_CHOICES)
+
+        for obs in listify(data["damage_observation"]):
+
+            # 1. DamageObservation
+            new_data = dict(
+                encounter_id=enc.id,
+                body_part=body_part_dict[obs["body_part"]],
+                damage_type=damage_type_dict[obs["damage_type"]],
+                damage_age=damage_age_dict[obs["damage_age"]],
+                description=obs["description"]
+            )
+
+            criteria = new_data
+            target = TurtleDamageObservation.objects.filter(**criteria)
+            if target.exists():
+                e = target.update(**new_data)
+                e = TurtleDamageObservation.objects.get(**criteria)
+                print("  [handle_odka_turtledamageobs] Updated existing {0}...".format(e.__str__()))
+
+            else:
+                e = TurtleDamageObservation.objects.create(**new_data)
+                print("  [handle_odka_turtledamageobs] Created new {0}...".format(e.__str__()))
+
+            # 2. Photo
+            if obs["photo_damage"]:
+                handle_media_attachment_odka(
+                    enc, media, obs["photo_damage"], title="Photo {0}".format(e.__str__()))
+
+    else:
+        print("  [handle_odka_turtledamageobs] found no TurtleDamageObservation")
+
     return None
 
 
@@ -4481,15 +4665,15 @@ def import_odka_mwi05(r):
 
     if action in ["update", "create"]:
 
-        enc.taxon = "na" if "taxon" not in data["details"] else data["details"]["taxon"]
+        enc.taxon = data["details"].get("taxon", "Cheloniidae")
         enc.species = species_dict[data["details"]["species"]]
         enc.maturity = maturity_dict[data["details"]["maturity"]]
         enc.sex = data["details"]["sex"]
         enc.health = health_dict[data["status"]["health"]]
         enc.activity = activity_dict[data["status"]["activity"]]
         enc.behaviour = "Behaviour: {0}\nLocation: {1}".format(
-            data["status"]["behaviour"] or '',
-            data["incident"]["location_comment"] or '')
+            data["status"]["behaviour"] or "",
+            data["incident"]["location_comment"] or "")
         enc.habitat = habitat_dict[data["incident"]["habitat"]]
         enc.nesting_event = "absent"
         enc.checked_for_injuries = data["checks"]["checked_for_injuries"]
@@ -4515,39 +4699,9 @@ def import_odka_mwi05(r):
             enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
 
         handle_odka_tagsobs(enc, media, data)
-
-        # ManagementAction: data["animal_fate"]["animal_fate_comment"]
-
-        # TurtleMorphometrics
-        # "morphometrics": {
-        #   "maximum_head_width_mm": "167",
-        #   "curved_carapace_width_accuracy": "5",
-        #   "curved_carapace_width_mm": "630",
-        #   "curved_carapace_length_mm": "950",
-        #   "curved_carapace_length_accuracy": "5",
-        #   "tail_length_carapace_mm": "125",
-        #   "maximum_head_width_accuracy": "1",
-        #   "tail_length_carapace_accuracy": "1"
-        # },
-
-        # lookups for body_part, datage_type, damage_age
-        # TurtleDamageObs
-        # "damage_observation": [
-        #   {
-        #     "photo_damage": "1510473605661.jpg",
-        #     "body_part": "neck",
-        #     "description": "damage comments",
-        #     "damage_type": "amputatedentirely",
-        #     "damage_age": "healed-partially"
-        #   },
-        #   {
-        #     "photo_damage": "1510473630318.jpg",
-        #     "body_part": "eyes",
-        #     "description": "another comment",
-        #     "damage_type": "algal-growth",
-        #     "damage_age": "healed-entirely"
-        #   }
-        # ],
+        handle_odka_managementaction(enc, media, data)
+        handle_odka_turtlemorph(enc, media, data)
+        handle_odka_turtledamageobs(enc, media, data)
 
         enc.save()
 
