@@ -38,7 +38,7 @@ DJANGO_APPS = (
     'django.contrib.staticfiles',
     'grappelli',
     'django.contrib.admin',
-    )
+)
 
 THIRD_PARTY_APPS = (
     'django_extensions',            # shell_plus and others
@@ -66,7 +66,7 @@ THIRD_PARTY_APPS = (
     'rest_framework_latex',         # API latex renderer
     # 'dynamic_rest',                 # Parameterised API queries
 
-    )
+)
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
@@ -74,7 +74,8 @@ LOCAL_APPS = (
     'wastd.users.apps.UsersConfig',
     # Your stuff: custom apps go here
     'wastd.observations.apps.ObservationsConfig',
-    )
+    'taxonomy.apps.TaxonomyConfig',
+)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -91,13 +92,13 @@ MIDDLEWARE_CLASSES = (
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'dpaw_utils.middleware.SSOLoginMiddleware',
-    )
+)
 
 # MIGRATIONS CONFIGURATION
 # ------------------------------------------------------------------------------
 MIGRATION_MODULES = {
     'sites': 'wastd.contrib.sites.migrations'
-    }
+}
 
 
 # CACHES
@@ -126,7 +127,7 @@ DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
 FIXTURE_DIRS = (
     str(APPS_DIR.path('fixtures')),
-    )
+)
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -143,7 +144,7 @@ DEFAULT_FROM_EMAIL = '"WA Strandings DB" <strandings-noreply@dpaw.wa.gov.au>'
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (
     ("Florian Mayer", 'Florian.Mayer@dpaw.wa.gov.au'),
-    )
+)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
@@ -195,7 +196,7 @@ TEMPLATES = [
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
-                ],
+            ],
             # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -206,10 +207,10 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                ],
-            },
+            ],
         },
-    ]
+    },
+]
 
 # See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -225,7 +226,7 @@ STATIC_URL = '/static/'
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = (
     str(APPS_DIR.path('static')),
-    )
+)
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
@@ -237,7 +238,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder'
-    )
+)
 
 # django-compressor
 # ------------------------------------------------------------------------------
@@ -266,7 +267,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-    )
+)
 
 # Some really nice defaults
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
@@ -300,14 +301,14 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        ),
+    ),
 
     # http://www.django-rest-framework.org/api-guide/permissions/
     'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.IsAuthenticated',
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'rest_framework.permissions.IsAdminUser',
-        ],
+    ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
@@ -315,7 +316,7 @@ REST_FRAMEWORK = {
         # 'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework_yaml.renderers.YAMLRenderer',
         'rest_framework_latex.renderers.LatexRenderer',
-        ),
+    ),
     # 'DEFAULT_PARSER_CLASSES': (
     # 'rest_framework_yaml.parsers.YAMLParser',
     # ),
@@ -323,12 +324,12 @@ REST_FRAMEWORK = {
         # 'django_filters.rest_framework.DjangoFilterBackend',
         # 'rest_framework_gis.filters.InBBoxFilter',
         'rest_framework_filters.backends.DjangoFilterBackend',
-        ),
+    ),
 
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
     'PAGE_SIZE': 100,
-    }
+}
 
 # Shared Latex resources for DRF-latex
 # http://drf-latex.readthedocs.io/en/latest/
@@ -365,7 +366,7 @@ LEAFLET_CONFIG = {
         #     'js': '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/leaflet.markercluster.js',
         #     'auto-include': False,
         #     },
-        },
+    },
 
     'TILES': [
         ('Aerial Image',
@@ -387,7 +388,7 @@ LEAFLET_CONFIG = {
         ('Bathymetry',
          '//server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}',
          {'attribution': 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
-          'maxZoom': 13,}),
+          'maxZoom': 13, }),
 
         ('Real time true colour',
          '//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
@@ -418,8 +419,8 @@ LEAFLET_CONFIG = {
           'format': 'jpg',
           'time': '',
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
-        ]
-    }
+    ]
+}
 
 
 # Synctool
