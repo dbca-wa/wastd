@@ -84,12 +84,12 @@ class Taxon(models.Model):
         "family_code": "008",
         "family_nid": 22721,
         "name": "Paraceterach",
+        "full_name": "Paraceterach\nCopel.",
         "author": "Copel.",
         "reference": "Gen.Fil.\n75\n(1947)",
         "editor": null,
         "vernacular": null,
         "all_vernaculars": null,
-        "full_name": "Paraceterach\nCopel.",
         "linear_sequence": null,
         "md5_rowhash": "f3e900990365c28fc9d15fe5e4090aa1"
       }
@@ -99,41 +99,47 @@ class Taxon(models.Model):
     name_id = models.BigIntegerField(
         unique=True,
         verbose_name=_("Name ID"),
-        help_text=_("WACensus Name ID"),
+        help_text=_("WACensus Name ID, formerly known as Taxon ID. "
+                    "Assigned by WACensus."),
     )
 
     name = models.CharField(
         max_length=1000,
         blank=True, null=True,
         verbose_name=_("Name"),
-        help_text=_("Taxonomic Name"),
+        help_text=_(
+            "Full taxonomic name without author. Different concepts "
+            "(defined by different authors) can have identical names."),
     )
 
     full_name = models.CharField(
         max_length=1000,
         blank=True, null=True,
         verbose_name=_("Full Name"),
-        help_text=_("Taxonomic Full Name"),
+        help_text=_(
+            "Full taxonomic name including author. Different concepts "
+            "(defined by different authors) will have different Full Names."),
     )
 
     vernacular = models.CharField(
         max_length=1000,
         blank=True, null=True,
-        verbose_name=_("Vernacular Name"),
-        help_text=_("Vernacular Name"),
+        verbose_name=_("Preferred Vernacular Name"),
+        help_text=_("Preferred Vernacular Name."),
     )
 
     all_vernaculars = models.TextField(
         blank=True, null=True,
         verbose_name=_("All Vernacular Names"),
-        help_text=_("All Vernacular Names"),
+        help_text=_("All Vernacular Names in order of preference."),
     )
 
     kingdom_id = models.BigIntegerField(
         # refactor: FK Kingdom
+        # default: request.user.default_kingdom
         blank=True, null=True,
         verbose_name=_("Kingdom ID"),
-        help_text=_("WACensus Kingdom ID"),
+        help_text=_("WACensus Kingdom ID."),
     )
 
     family_code = models.CharField(
@@ -153,14 +159,14 @@ class Taxon(models.Model):
     rank_id = models.BigIntegerField(
         blank=True, null=True,
         verbose_name=_("Rank ID"),
-        help_text=_("WACensus Rank ID"),
+        help_text=_("WACensus Taxonomic Rank ID."),
     )
 
     rank_name = models.CharField(
         max_length=500,
         blank=True, null=True,
         verbose_name=_("Rank Name"),
-        help_text=_("Taxonomic Rank Name"),
+        help_text=_("WACensus Taxonomic Rank Name."),
     )
 
     name1 = models.CharField(
@@ -245,31 +251,131 @@ class Taxon(models.Model):
         help_text=_("WACensus Publication Year"),
     )
 
-    #    "form_desc_yr": null,
-    #    "form_desc_mn": null,
-    #    "form_desc_dy": null,
+    form_desc_yr = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("Described on (year)"),
+        help_text=_("Year of first description"),
+    )
 
-    is_current = models.NullBooleanField(
+    form_desc_mn = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("Described on (month)"),
+        help_text=_("Month of first description"),
+    )
+
+    form_desc_dy = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("Described on (day)"),
+        help_text=_("Day of first description"),
+    )
+
+    is_current = models.CharField(
+        max_length=100,
         blank=True, null=True,
         verbose_name=_("Is name current?"),
         help_text=_("WACensus currency status"),
     )
 
-    #    "origin": null,
-    #    "naturalised_status": null,
-    #    "naturalised_certainty": null,
-    #    "is_eradicated": null,
-    #    "naturalised_comments": null,
-    #    "informal": null,
+    origin = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("origin"),
+        help_text=_("origin"),
+    )
 
-    #    "comments": null,
-    #    "added_by": "HERBIE",
-    #    "added_on": "2004-12-09Z",
-    #    "updated_by": "SUEC",
-    #    "updated_on": "2010-02-03Z",
+    naturalised_status = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("naturalised status"),
+        help_text=_("naturalised_status"),
+    )
+
+    naturalised_certainty = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("naturalised certainty"),
+        help_text=_("naturalised_certainty"),
+    )
+
+    naturalised_comments = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("naturalised_comments"),
+        help_text=_("naturalised_comments"),
+    )
+
+    is_eradicated = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("is_eradicated"),
+        help_text=_("is_eradicated"),
+    )
+
+    informal = models.CharField(
+        max_length=500,
+        blank=True, null=True,
+        verbose_name=_("Name approval status"),
+        help_text=_("The approval status indicates whether a taxonomic name"
+                    " is a phrase name (PN), manuscript name (MS) or published (blank)."),
+    )
+
+    comments = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Comments"),
+        help_text=_("Comments are words to clarify things."),
+    )
+
+    added_by = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("Added by"),
+        help_text=_("The person or system who added this record to WACensus."),
+    )
+
+    added_on = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("WACensus added on"),
+        help_text=_("Date on which this record was added to WACensus."),
+    )
+
+    updated_by = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("Updated by"),
+        help_text=_("The person or system who updated this record last in WACensus."),
+    )
+
+    updated_on = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("WACensus updated on"),
+        help_text=_("Date on which this record was updated in WACensus."),
+    )
 
     #    "linear_sequence": null,
+    linear_sequence = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Linear sequence"),
+        help_text=_(""),
+    )
+
     #    "md5_rowhash": "f3e900990365c28fc9d15fe5e4090aa1"
+    md5_rowhash = models.CharField(
+        max_length=500,
+        blank=True, null=True,
+        verbose_name=_("GeoServer MD5 rowhash"),
+        help_text=_("An MD5 hash of the record, used to indicate updates."),
+    )
+
+    ogc_fid = models.CharField(
+        max_length=500,
+        blank=True, null=True,
+        verbose_name=_("GeoServer OGC FeatureID"),
+        help_text=_("The OCG Feature ID of the record, used to identify the record."),
+    )
 
     class Meta:
         """Class options."""
@@ -281,7 +387,7 @@ class Taxon(models.Model):
 
     def __str__(self):
         """The full taxonomic name."""
-        return "[{0}] {1}".format(self.name_id, self.full_name)
+        return "[{0}] {1} ({2})".format(self.name_id, self.full_name, self.vernacular)
 
     def taxonomic_synonyms(self):
         """TODO Return all taxonomic synonyms."""

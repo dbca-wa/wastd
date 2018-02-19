@@ -26,55 +26,22 @@ TokenAdmin.raw_id_fields = ('user',)
 
 @admin.register(Taxon)
 class TaxonAdmin(VersionAdmin, admin.ModelAdmin):
-    """Admin for Taxon.
-
-"name_id": 20887,
-        "kingdom_id": 3,
-        "rank_id": 180,
-        "rank_name": "Genus",
-        "name1": "Paraceterach",
-        "name2": null,
-        "rank3": null,
-        "name3": null,
-        "rank4": null,
-        "name4": null,
-        "pub_id": 582,
-        "vol_info": "75",
-        "pub_year": 1947,
-        "is_current": "Y",
-        "origin": null,
-        "naturalised_status": null,
-        "naturalised_certainty": null,
-        "is_eradicated": null,
-        "naturalised_comments": null,
-        "informal": null,
-        "form_desc_yr": null,
-        "form_desc_mn": null,
-        "form_desc_dy": null,
-        "comments": null,
-        "added_by": "HERBIE",
-        "added_on": "2004-12-09Z",
-        "updated_by": "SUEC",
-        "updated_on": "2010-02-03Z",
-        "family_code": "008",
-        "family_nid": 22721,
-        "name": "Paraceterach",
-        "author": "Copel.",
-        "reference": "Gen.Fil.\n75\n(1947)",
-        "editor": null,
-        "vernacular": null,
-        "all_vernaculars": null,
-        "full_name": "Paraceterach\nCopel.",
-    """
+    """Admin for Taxon."""
 
     save_on_top = True
     # date_hierarchy = 'datetime'
-    list_display = ('name_id', 'name', 'full_name',
-                    'vernacular', 'kingdom_id', 'rank_id', 'rank_name',
-                    'family_code', 'family_nid', 'author', 'reference')
-    list_filter = ('kingdom_id', 'rank_id', 'rank_name',
-                   'family_code', 'family_nid', 'author',)
-    search_fields = ('name_id', 'name', 'full_name',)
+    list_display = (
+        'name_id', 'rank_name', 'full_name', 'vernacular', 'all_vernaculars',
+        'author', 'reference', 'naturalised_status', 'naturalised_certainty',
+        'is_eradicated', 'informal', 'is_current', 'comments',
+        'added_by', 'added_on', 'updated_by', 'updated_on',
+    )
+    list_filter = (
+        'rank_name', 'is_current', 'naturalised_status', 'naturalised_certainty',
+        'is_eradicated', 'informal',
+    )
+    search_fields = (
+        'name_id', 'name', 'full_name', 'vernacular', 'all_vernaculars', 'author')
     # autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
 
     # def type_display(self, obj):

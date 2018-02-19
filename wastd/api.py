@@ -34,7 +34,7 @@ from collections import OrderedDict
 from django.db import models as django_models
 from django.template import Context, Template
 
-from rest_framework import serializers, viewsets, routers, pagination
+from rest_framework import serializers, viewsets, routers, pagination, status
 from rest_framework.response import Response as RestResponse
 
 # from rest_framework.renderers import BrowsableAPIRenderer
@@ -65,6 +65,8 @@ from wastd.observations.models import (
 # from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
+
+from taxonomy.models import Taxon
 # def symlink_resources(a,b,c):
 #     pass
 
@@ -1148,3 +1150,46 @@ router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
 router.register(r'tag-observations', TagObservationViewSet)
 router.register(r'nesttag-observations', NestTagObservationViewSet)
+
+
+# Taxonomy -------------------------------------------------------------------#
+class TaxonSerializer(serializers.ModelSerializer):
+    """Serializer for Taxon."""
+
+    class Meta:
+        """Opts."""
+
+        model = Taxon
+        fields = '__all__'
+
+
+class TaxonViewSet(viewsets.ModelViewSet):
+    """View set for Taxon.
+
+    POST is custom implemented as create or update.
+    """
+
+    queryset = Taxon.objects.all()
+    serializer_class = TaxonSerializer
+    # filter_fields = []
+    pagination_class = pagination.LimitOffsetPagination
+
+    def create(self, request):
+        """POST: Create or update a Taxon."""
+        name_id = request.data['name_id']
+        if Taxon.objects.filter(name_id=name_id).exists():
+            # print("[TaxonViewSet] partial update")
+            taxon = Taxon.objects.get(name_id=name_id)
+            serializer = TaxonSerializer(taxon, data=request.data)
+
+        else:
+            # print("[TaxonViewSet] create")
+            serializer = TaxonSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return RestResponse(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+router.register("taxonomy", TaxonViewSet)

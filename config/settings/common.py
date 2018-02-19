@@ -163,6 +163,16 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'Australia/Perth'
+# DATE_FORMAT = "Y-m-d"
+# DATE_INPUT_FORMATS = [
+#     '%Y-%m-%d',      # '2006-10-25'
+#     '%Y-%m-%dZ',     # '2006-10-25Z' from WACensus via KMI GeoServer
+#     '%m/%d/%Y',      # '10/25/2006'
+#     '%m/%d/%y',
+
+
+# ]      # '10/25/06'
+
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = 'en-us'
