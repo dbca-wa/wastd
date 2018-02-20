@@ -104,7 +104,7 @@ class InBBoxHTMLMixin:
     template = Template("""
     {% load i18n %}
     <style type="text/css">
-    #geofilter input[type="text"]{
+    # geofilter input[type="text"]{
         width: 100px;
     }
     </style>
@@ -764,14 +764,14 @@ class AreaViewSet(viewsets.ModelViewSet):
 
     # Filters
 
-    ### name
+    # name
 
     * [/api/1/areas/?name__startswith=Broome](/api/1/areas/?name__startswith=Broome) Areas starting with "Broome"
     * [/api/1/areas/?name__icontains=sector](/api/1/areas/?name__icontains=Sector) Areas containing (case-insensitive) "sector"
     * [/api/1/areas/?name=Cable Beach Broome Sector 3](/api/1/areas/?name=Cable Beach Broome Sector 3) Area with exact name (case sensitive)
 
 
-    ### area_type
+    # area_type
 
     * [/api/1/areas/?area_type=MPA](/api/1/areas/?area_type=MPA) Marine Protected Areas
     * [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality) Localities (typically containing multiple surveyed sites)
@@ -822,7 +822,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     Combine arguments with &, e.g.
     [/api/1/encounters/?source=odk&encounter_type=tracks](/api/1/encounters/?source=odk&encounter_type=tracks)
 
-    ### area and site
+    # area and site
     For convenience and performance, every Encounter links to the general area of its occurrence (Locality)
     as well as the site it was observed in, if known.
     Encounters can filtered to a Locality or Site via the respective area's ID.
@@ -839,7 +839,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
       [/api/1/encounters/?site=31](/api/1/encounters/?site=31)
 
 
-    ### name
+    # name
     The derived name of an encountered entity (e.g. animal or logger) is the first associated ID, such as a turtle flipper tag.
     Filter options:
 
@@ -851,11 +851,11 @@ class EncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/encounters/?name__startswith=WA49](/api/1/encounters/?name__startswith=WA49) Encounters with name starting with "WA49"
     * [/api/1/encounters/?name__icontains=4913](/api/1/encounters/?name__icontains=4913) Encounters with name containing (case-insensitive) "4913"
 
-    ### source_id
+    # source_id
     The source_id is constructed from coordinates, date, entity and other properties.
     Filter options and examples: see name, substitute "name" with "source_id" and choose appropriate filter string values.
 
-    ### comments
+    # comments
     Where data are captured digitally, the username is guessed from data collecctors' supplied names.
     This process sometimes goes wrong, and a log is kept in comments.
 
@@ -868,7 +868,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     * Where there are multiple matches, the curator can set the correct user at [/admin/observations/encounter/](/admin/observations/encounter/)
       plus the Encounter ID and then mark the Encounter as "proofread" to protect the change from being overwritten through repeated data imports.
 
-    ### source
+    # source
 
     * [/api/1/encounters/?source=direct](/api/1/encounters/?source=direct) (direct entry)
     * [/api/1/encounters/?source=paper](/api/1/encounters/?source=paper) (typed off datasheet)
@@ -879,7 +879,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/encounters/?source=cet](/api/1/encounters/?source=cet) (imported from FileMaker Pro Cetacean strandings database)
     * [/api/1/encounters/?source=pin](/api/1/encounters/?source=pin) (imported from FileMaker Pro Pinnniped strandings database)
 
-    ### encounter_type
+    # encounter_type
 
     * [/api/1/encounters/?encounter_type=stranding](/api/1/encounters/?encounter_type=stranding) (strandings)
     * [/api/1/encounters/?encounter_type=tagging](/api/1/encounters/?encounter_type=tagging) (turtle tagging)
@@ -891,20 +891,20 @@ class EncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/encounters/?encounter_type=other](/api/1/encounters/?encounter_type=other) (anything not in above)
 
 
-    ### status
+    # status
 
     * [/api/1/encounters/?status=new](/api/1/encounters/?status=new) (Records freshly created or imported)
     * [/api/1/encounters/?status=proofread](/api/1/encounters/?status=proofread) (Records marked as proofread = as on paper datasheet)
     * [/api/1/encounters/?status=curated](/api/1/encounters/?status=curated) (Records marked as curated = as true as we can make it)
     * [/api/1/encounters/?status=published](/api/1/encounters/?status=published) (Records marked ready for public release)
 
-    ### location_accuracy
+    # location_accuracy
 
     * [/api/1/encounters/?location_accuracy=10](/api/1/encounters/?location_accuracy=10) (captured via GPS)
     * [/api/1/encounters/?location_accuracy=10](/api/1/encounters/?location_accuracy=10) (captured as site name)
     * [/api/1/encounters/?location_accuracy=10000](/api/1/encounters/?location_accuracy=10000) (rough guess)
 
-    ### observer and reporter
+    # observer and reporter
 
     * [/api/1/encounters/?observer=100](/api/1/encounters/?observer=100) Observer with ID 100
     * [/api/1/encounters/?observer=100](/api/1/encounters/?reporter=100) Reporter with ID 100
@@ -959,13 +959,13 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     # Filters
     In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
 
-    ### nest_age
+    # nest_age
     * [/api/1/turtle-nest-encounters/?nest_age=fresh](/api/1/turtle-nest-encounters/?nest_age=fresh) observed in the morning, made the night before (same turtle date)
     * [/api/1/turtle-nest-encounters/?nest_age=old](/api/1/turtle-nest-encounters/?nest_age=old) older than a day (previous turtle date)
     * [/api/1/turtle-nest-encounters/?nest_age=unknown](/api/1/turtle-nest-encounters/?nest_age=unknown) unknown
     * [/api/1/turtle-nest-encounters/?nest_age=missed](/api/1/turtle-nest-encounters/?nest_age=missed) missed turtle during turtle tagging, track observed and made within same night (same turtle date)
 
-    ### nest_type
+    # nest_type
     * [/api/1/turtle-nest-encounters/?nest_type=track-not-assessed](/api/1/turtle-nest-encounters/?nest_type=track-not-assessed) track, not checked for nest
     * [/api/1/turtle-nest-encounters/?nest_type=false-crawl](/api/1/turtle-nest-encounters/?nest_type=false-crawl) track without nest
     * [/api/1/turtle-nest-encounters/?nest_type=successful-crawl](/api/1/turtle-nest-encounters/?nest_type=successful-crawl) track with nest
@@ -974,7 +974,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/turtle-nest-encounters/?nest_type=hatched-nest](/api/1/turtle-nest-encounters/?nest_type=hatched-nest) nest, hatched
     * [/api/1/turtle-nest-encounters/?nest_type=body-pit](/api/1/turtle-nest-encounters/?nest_type=body-pit) body pit, no track
 
-    ### species
+    # species
     * [/api/1/turtle-nest-encounters/?species=natator-depressus](/api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
     * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](/api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
     * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
@@ -982,21 +982,21 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea](/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea) Olive ridley turtle
     * [/api/1/turtle-nest-encounters/?species=corolla-corolla](/api/1/turtle-nest-encounters/?species=corolla-corolla) Hatchback turtle (training dummy)
 
-    ### habitat
+    # habitat
     * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
     * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](/api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
     * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](/api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
     * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
     * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
 
-    ### disturbance
+    # disturbance
     Indicates whether disturbance observation is attached.
 
     * [/api/1/turtle-nest-encounters/?disturbance=present](/api/1/turtle-nest-encounters/?disturbance=present) present
     * [/api/1/turtle-nest-encounters/?disturbance=absent](/api/1/turtle-nest-encounters/?disturbance=absent) absent
     * [/api/1/turtle-nest-encounters/?disturbance=na](/api/1/turtle-nest-encounters/?disturbance=na) na
 
-    ### name
+    # name
     * [/api/1/turtle-nest-encounters/?name=WA1234](/api/1/turtle-nest-encounters/?name=WA1234) Turtle name if known
     """
 
@@ -1018,7 +1018,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
 
 
-    ### taxon
+    # taxon
     * [/api/1/turtle-nest-encounters/?taxon=Cheloniidae](/api/1/turtle-nest-encounters/?taxon=Cheloniidae) Marine Turtles
     * [/api/1/turtle-nest-encounters/?taxon=Cetacea](/api/1/turtle-nest-encounters/?taxon=Cetacea) Whales and Dolphins
     * [/api/1/turtle-nest-encounters/?taxon=Pinnipedia](/api/1/turtle-nest-encounters/?taxon=Pinnipedia) Seals
@@ -1026,7 +1026,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/turtle-nest-encounters/?taxon=Elasmobranchii](/api/1/turtle-nest-encounters/?taxon=Elasmobranchii) Sharks and Rays
     * [/api/1/turtle-nest-encounters/?taxon=Hydrophiinae](/api/1/turtle-nest-encounters/?taxon=Hydrophiinae) Sea snakes and kraits
 
-    ### species
+    # species
     * [/api/1/turtle-nest-encounters/?species=natator-depressus](/api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
     * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](/api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
     * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
@@ -1042,7 +1042,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
     'cause_of_death', 'cause_of_death_confidence'
 
-    ### habitat
+    # habitat
     * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
     * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](/api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
     * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](/api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
@@ -1211,7 +1211,7 @@ class TaxonViewSet(viewsets.ModelViewSet):
 
     Learn more about filter usage at [django-rest-framework-filters](https://github.com/philipn/django-rest-framework-filters).
 
-    ### Search names
+    # Search names
     Search `name`, `name_id`, `full_name`, `vernacular`, `all_vernaculars`, `author` as follows:
 
     * [/api/1/taxonomy/?full_name__icontains=acacia](/api/1/taxonomy/?full_name__icontains=acacia)
@@ -1219,7 +1219,7 @@ class TaxonViewSet(viewsets.ModelViewSet):
     * Substitute `full_name` for any of name, full_name, vernacular, all_vernaculars, author.
     * Substitute icontains for any of `exact`, `iexact`, `in`, `startswith`, `istartswith`, `contains`.
 
-    ### Taxonomic rank
+    # Taxonomic rank
 
     * [/api/1/taxonomy/?rank_name=Kingdom](/api/1/taxonomy/?rank_name=Kingdom) Taxa of exact, case-sensitive rank_name "Kingdom".
     * [/api/1/taxonomy/?rank_name__startswith=King](/api/1/taxonomy/?rank_name__startswith=King)
@@ -1227,20 +1227,20 @@ class TaxonViewSet(viewsets.ModelViewSet):
     * Other ranks available: Division, Phylum, Class, Subclass, Order, Family, Subfamily,
       Genus, Species, Subspecies, Variety, Form
 
-    ### Current
+    # Current
     Whether the taxon is current or not:
 
     * [/api/1/taxonomy/?is_current=Y](/api/1/taxonomy/?is_current=Y) Only current names
     * [/api/1/taxonomy/?is_current=N](/api/1/taxonomy/?is_current=N) Only non-current names
 
-    ### Name approval status
+    # Name approval status
     Whether the name is a phrase name, manuscript name, or approved:
 
     * [/api/1/taxonomy/?rank_name=PN](/api/1/taxonomy/?rank_name=PN) Phrase Name
     * [/api/1/taxonomy/?rank_name=MS](/api/1/taxonomy/?rank_name=MS) Manuscript Name
     * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) Approved Name
 
-    ### Naturalised
+    # Naturalised
     Whether the taxon is naturalised in WA:
 
     * [/api/1/taxonomy/?rank_name=A](/api/1/taxonomy/?rank_name=A) A
@@ -1248,12 +1248,12 @@ class TaxonViewSet(viewsets.ModelViewSet):
     * [/api/1/taxonomy/?rank_name=N](/api/1/taxonomy/?rank_name=N) N
     * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
 
-    ### Naturalised certainty
+    # Naturalised certainty
     * [/api/1/taxonomy/?rank_name=N](/api/1/taxonomy/?rank_name=N) N
     * [/api/1/taxonomy/?rank_name=Y](/api/1/taxonomy/?rank_name=Y) Y
     * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
 
-    ### Eradicated
+    # Eradicated
     * [/api/1/taxonomy/?rank_name=Y](/api/1/taxonomy/?rank_name=Y) Y
     * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
     """
@@ -1264,22 +1264,47 @@ class TaxonViewSet(viewsets.ModelViewSet):
     filter_class = TaxonFilter
     pagination_class = pagination.LimitOffsetPagination
 
-    def create(self, request):
-        """POST: Create or update a Taxon."""
-        name_id = request.data['name_id']
+    def create_one(self, data):
+        """POST: Create or update exactly one Taxon."""
+        name_id = data['name_id']
+
         if Taxon.objects.filter(name_id=name_id).exists():
-            # print("[TaxonViewSet] partial update")
+            print("[TaxonViewSet] update name_id {0}".format(name_id))
             taxon = Taxon.objects.get(name_id=name_id)
-            serializer = TaxonSerializer(taxon, data=request.data)
+            serializer = TaxonSerializer(taxon, data=data)
+            st = status.HTTP_200_OK
 
         else:
-            # print("[TaxonViewSet] create")
-            serializer = TaxonSerializer(data=request.data)
+            print("[TaxonViewSet] create name_id {0}".format(name_id))
+            serializer = TaxonSerializer(data=data)
+            st = status.HTTP_201_CREATED
+
         if serializer.is_valid():
             serializer.save()
-            return RestResponse(serializer.data, status=status.HTTP_201_CREATED)
+            return RestResponse(serializer.data, status=st)
         else:
             return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        """POST: Create or update one or many Taxa.
+
+        If a Taxon with `name_id` exists, it will be updated,
+        otherwise a new Taxon will be created.
+
+        request.data must be:
+
+        * a dict, e.g. containing the GeoJSON props of KMI WACensus
+        * a list of KMI props dicts.
+        """
+        if 'name_id' in request.data:
+            res = self.create_one(request.data)
+            return res
+        else:
+            try:
+                res = [self.create_one(x) for x in request.data]
+                return res[0]
+            except:
+                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
 
 
 router.register("taxonomy", TaxonViewSet)

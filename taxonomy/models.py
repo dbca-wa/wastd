@@ -387,7 +387,10 @@ class Taxon(models.Model):
 
     def __str__(self):
         """The full taxonomic name."""
-        return "[{0}] {1} ({2})".format(self.name_id, self.full_name, self.vernacular)
+        return "[{0}] {1} ({2})".format(
+            self.name_id,
+            self.full_name,
+            self.vernacular or "")
 
     def taxonomic_synonyms(self):
         """TODO Return all taxonomic synonyms."""

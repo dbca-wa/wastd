@@ -1,0 +1,29 @@
+{% load staticfiles %}
+<div class="card" style="width: 16rem; margin: 0.2rem;">
+  <img class="card-img-top"
+    src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+  <div class="card-body">
+    <h5 class="card-title">
+      {{ original }}
+    </h5>
+    <h6 class="card-subtitle mb-2 text-muted">
+      Conservation status <span class="badge badge-danger">T</span>
+    </h6>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+      Management Plan <span class="badge badge-info">PDF</span>
+    </li>
+    <li class="list-group-item">
+      Attachment 1 <span class="badge badge-info">PDF</span>
+    </li>
+  </ul>
+  <div class="card-footer">
+    <div class="text-right">
+    <a href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
+      class="btn btn-info btn-sm" target="_" rel="nofollow">
+      View details
+    </a>
+  </div>
+  </div>
+</div>

@@ -4,24 +4,15 @@
 {% block content %}
 <div class="row">
 
-  <div class="alert alert-info alert-dismissible fade show" role="alert">
-    <strong>Page under construction</strong>
-    Let's pretend that we're looking at species level summaries,
-    not at individual species occurrences.
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-
   <!-- Data -->
   <div id="dash-data" class="col-md-9 col-sm-6 col-12">
 
-    <h3>Threatened Species and Communities</h3>
+    <h3>Threatened Species and Communities Occurrence</h3>
 
     <div class="row">
 
       {% for original in object_list %}
-      {% include "cards/encounter.html" with original=original %}
+      {% include "cards/taxon.html" with original=original %}
       {% endfor %}
 
 </div>
@@ -38,7 +29,12 @@
       </div>
 
       <div class="form-group">
-        <input class="form-control" style="width:18rem;" type="search" placeholder="Species or Communities" aria-label="Search">
+        <input
+        class="form-control"
+        style="width:18rem;"
+        type="search"
+        placeholder="Species or Communities"
+        aria-label="Search">
       </div>
 
       <div class="form-group">
@@ -180,14 +176,14 @@
      * https://github.com/makinacorpus/django-geojson#geojson-template-filter
      */
     // L.geoJson(
-    //     {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
+    //     {# object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe #},
     //     // {clipTiles: true, unique: getUnique},
     //     {style: style, pointToLayer: ptl, onEachFeature: oef}
     // ).addTo(map);
 
     // var markers = L.markerClusterGroup();
     // var gj_markers = L.geoJson(
-    //     {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
+    //     {# object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe #},
     //     // {clipTiles: true, unique: getUnique},
     //     {style: style, pointToLayer: ptl, onEachFeature: oef});
     // markers.addLayer(gj_markers);
