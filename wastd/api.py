@@ -1236,26 +1236,26 @@ class TaxonViewSet(viewsets.ModelViewSet):
     # Name approval status
     Whether the name is a phrase name, manuscript name, or approved:
 
-    * [/api/1/taxonomy/?rank_name=PN](/api/1/taxonomy/?rank_name=PN) Phrase Name
-    * [/api/1/taxonomy/?rank_name=MS](/api/1/taxonomy/?rank_name=MS) Manuscript Name
-    * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) Approved Name
+    * [/api/1/taxonomy/?informal=PN](/api/1/taxonomy/?informal=PN) Phrase Name
+    * [/api/1/taxonomy/?informal=MS](/api/1/taxonomy/?informal=MS) Manuscript Name
+    * [/api/1/taxonomy/?informal=-](/api/1/taxonomy/?informal=-) Approved Name
 
     # Naturalised
     Whether the taxon is naturalised in WA:
 
-    * [/api/1/taxonomy/?rank_name=A](/api/1/taxonomy/?rank_name=A) A
-    * [/api/1/taxonomy/?rank_name=M](/api/1/taxonomy/?rank_name=M) M
-    * [/api/1/taxonomy/?rank_name=N](/api/1/taxonomy/?rank_name=N) N
-    * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
+    * [/api/1/taxonomy/?naturalised_status=A](/api/1/taxonomy/?naturalised_status=A) A
+    * [/api/1/taxonomy/?naturalised_status=M](/api/1/taxonomy/?naturalised_status=M) M
+    * [/api/1/taxonomy/?naturalised_status=N](/api/1/taxonomy/?naturalised_status=N) N
+    * [/api/1/taxonomy/?naturalised_status=-](/api/1/taxonomy/?naturalised_status=-) -
 
     # Naturalised certainty
-    * [/api/1/taxonomy/?rank_name=N](/api/1/taxonomy/?rank_name=N) N
-    * [/api/1/taxonomy/?rank_name=Y](/api/1/taxonomy/?rank_name=Y) Y
-    * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
+    * [/api/1/taxonomy/?naturalised_certainty=N](/api/1/taxonomy/?naturalised_certainty=N) N
+    * [/api/1/taxonomy/?naturalised_certainty=Y](/api/1/taxonomy/?naturalised_certainty=Y) Y
+    * [/api/1/taxonomy/?naturalised_certainty=-](/api/1/taxonomy/?naturalised_certainty=-) -
 
     # Eradicated
-    * [/api/1/taxonomy/?rank_name=Y](/api/1/taxonomy/?rank_name=Y) Y
-    * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
+    * [/api/1/taxonomy/?is_eradicated=Y](/api/1/taxonomy/?is_eradicated=Y) Y
+    * [/api/1/taxonomy/?is_eradicated=-](/api/1/taxonomy/?is_eradicated=-) -
     """
 
     queryset = Taxon.objects.all()
