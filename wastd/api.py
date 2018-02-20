@@ -765,6 +765,7 @@ class AreaViewSet(viewsets.ModelViewSet):
     # Filters
 
     ### name
+
     * [/api/1/areas/?name__startswith=Broome](/api/1/areas/?name__startswith=Broome) Areas starting with "Broome"
     * [/api/1/areas/?name__icontains=sector](/api/1/areas/?name__icontains=Sector) Areas containing (case-insensitive) "sector"
     * [/api/1/areas/?name=Cable Beach Broome Sector 3](/api/1/areas/?name=Cable Beach Broome Sector 3) Area with exact name (case sensitive)
@@ -1163,15 +1164,104 @@ class TaxonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TaxonFilter(filters.FilterSet):
+
+    class Meta:
+        model = Taxon
+        filter_args = ['exact', 'iexact', 'in', 'startswith', 'istartswith', 'contains', 'icontains']
+        fields = {
+            'rank_name': filter_args,
+            'is_current': filter_args,
+            'naturalised_status': filter_args,
+            'naturalised_certainty': filter_args,
+            'is_eradicated': filter_args,
+            'informal': filter_args,
+
+            'name': filter_args,
+            'name_id': filter_args,
+            'full_name': filter_args,
+            'vernacular': filter_args,
+            'all_vernaculars': filter_args,
+            'author': filter_args,
+        }
+
+
 class TaxonViewSet(viewsets.ModelViewSet):
     """View set for Taxon.
 
-    POST is custom implemented as create or update.
+    # Custom features
+    POST a GeoJSON feature properties dict to create or update the corresponding Taxon.
+
+    # Pagination: LimitOffset
+    The results have four top-level keys:
+
+    * `count` Total number of features
+    * `next` URL to next batch. `null` in last page.
+    * `previous` URL to previous batch. `null` in first page.
+
+    You can subset your own page with GET parameters `limit` and `offset`, e.g.
+    [/api/1/taxonomy/?limit=100&offset=100](/api/1/taxonomy/?limit=100&offset=100).
+
+    # Search and filter
+
+    The following fields offer search filters `exact`, `iexact`, `in`, `startswith`, `istartswith`, `contains`, `icontains`:
+
+    `rank_name`,  `is_current`, `naturalised_status`, ` naturalised_certainty`,
+    `is_eradicated`, `informal`, `name`, `name_id`, `full_name`, `vernacular`, `all_vernaculars`, `author`.
+
+    Learn more about filter usage at [django-rest-framework-filters](https://github.com/philipn/django-rest-framework-filters).
+
+    ### Search names
+    Search `name`, `name_id`, `full_name`, `vernacular`, `all_vernaculars`, `author` as follows:
+
+    * [/api/1/taxonomy/?full_name__icontains=acacia](/api/1/taxonomy/?full_name__icontains=acacia)
+      Any taxon with case-insensitive phrase "acacia" in field `full_name`.
+    * Substitute `full_name` for any of name, full_name, vernacular, all_vernaculars, author.
+    * Substitute icontains for any of `exact`, `iexact`, `in`, `startswith`, `istartswith`, `contains`.
+
+    ### Taxonomic rank
+
+    * [/api/1/taxonomy/?rank_name=Kingdom](/api/1/taxonomy/?rank_name=Kingdom) Taxa of exact, case-sensitive rank_name "Kingdom".
+    * [/api/1/taxonomy/?rank_name__startswith=King](/api/1/taxonomy/?rank_name__startswith=King)
+      Taxa of rank_names starting with the exact, case-sensitive phrase "King".
+    * Other ranks available: Division, Phylum, Class, Subclass, Order, Family, Subfamily,
+      Genus, Species, Subspecies, Variety, Form
+
+    ### Current
+    Whether the taxon is current or not:
+
+    * [/api/1/taxonomy/?is_current=Y](/api/1/taxonomy/?is_current=Y) Only current names
+    * [/api/1/taxonomy/?is_current=N](/api/1/taxonomy/?is_current=N) Only non-current names
+
+    ### Name approval status
+    Whether the name is a phrase name, manuscript name, or approved:
+
+    * [/api/1/taxonomy/?rank_name=PN](/api/1/taxonomy/?rank_name=PN) Phrase Name
+    * [/api/1/taxonomy/?rank_name=MS](/api/1/taxonomy/?rank_name=MS) Manuscript Name
+    * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) Approved Name
+
+    ### Naturalised
+    Whether the taxon is naturalised in WA:
+
+    * [/api/1/taxonomy/?rank_name=A](/api/1/taxonomy/?rank_name=A) A
+    * [/api/1/taxonomy/?rank_name=M](/api/1/taxonomy/?rank_name=M) M
+    * [/api/1/taxonomy/?rank_name=N](/api/1/taxonomy/?rank_name=N) N
+    * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
+
+    ### Naturalised certainty
+    * [/api/1/taxonomy/?rank_name=N](/api/1/taxonomy/?rank_name=N) N
+    * [/api/1/taxonomy/?rank_name=Y](/api/1/taxonomy/?rank_name=Y) Y
+    * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
+
+    ### Eradicated
+    * [/api/1/taxonomy/?rank_name=Y](/api/1/taxonomy/?rank_name=Y) Y
+    * [/api/1/taxonomy/?rank_name=-](/api/1/taxonomy/?rank_name=-) -
     """
 
     queryset = Taxon.objects.all()
     serializer_class = TaxonSerializer
-    # filter_fields = []
+    pagination_class = MyGeoJsonPagination
+    filter_class = TaxonFilter
     pagination_class = pagination.LimitOffsetPagination
 
     def create(self, request):

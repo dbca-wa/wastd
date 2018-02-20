@@ -255,62 +255,62 @@ class Taxon(models.Model):
         max_length=100,
         blank=True, null=True,
         verbose_name=_("Described on (year)"),
-        help_text=_("Year of first description"),
+        help_text=_("Year of first description."),
     )
 
     form_desc_mn = models.CharField(
         max_length=100,
         blank=True, null=True,
         verbose_name=_("Described on (month)"),
-        help_text=_("Month of first description"),
+        help_text=_("Month of first description."),
     )
 
     form_desc_dy = models.CharField(
         max_length=100,
         blank=True, null=True,
         verbose_name=_("Described on (day)"),
-        help_text=_("Day of first description"),
+        help_text=_("Day of first description."),
     )
 
     is_current = models.CharField(
         max_length=100,
         blank=True, null=True,
         verbose_name=_("Is name current?"),
-        help_text=_("WACensus currency status"),
+        help_text=_("WACensus currency status."),
     )
 
     origin = models.CharField(
         max_length=1000,
         blank=True, null=True,
-        verbose_name=_("origin"),
-        help_text=_("origin"),
+        verbose_name=_("Origin"),
+        help_text=_("Origin."),
     )
 
     naturalised_status = models.CharField(
         max_length=100,
         blank=True, null=True,
-        verbose_name=_("naturalised status"),
-        help_text=_("naturalised_status"),
+        verbose_name=_("Naturalisation status"),
+        help_text=_("Naturalisation status."),
     )
 
     naturalised_certainty = models.CharField(
         max_length=100,
         blank=True, null=True,
-        verbose_name=_("naturalised certainty"),
-        help_text=_("naturalised_certainty"),
+        verbose_name=_("Naturalisation certainty"),
+        help_text=_("Naturalisation certainty."),
     )
 
     naturalised_comments = models.TextField(
         blank=True, null=True,
-        verbose_name=_("naturalised_comments"),
-        help_text=_("naturalised_comments"),
+        verbose_name=_("Naturalisation comments"),
+        help_text=_("Naturalisation comments."),
     )
 
     is_eradicated = models.CharField(
         max_length=100,
         blank=True, null=True,
-        verbose_name=_("is_eradicated"),
-        help_text=_("is_eradicated"),
+        verbose_name=_("Is eradicated?"),
+        help_text=_("Whether taxon is eradicated or not."),
     )
 
     informal = models.CharField(
