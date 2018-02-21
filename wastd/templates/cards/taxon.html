@@ -3,25 +3,67 @@
   <img class="card-img-top"
     src="{% static 'images/map_example.png' %}" alt="Occurrence map">
   <div class="card-body">
-    <h5 class="card-title">
-      {{ original }}
-    </h5>
+
     <h6 class="card-subtitle mb-2 text-muted">
-      Conservation status <span class="badge badge-danger">T</span>
+    <!-- Name ID -->
+    <span class="badge badge-info">Name ID {{original.name_id}}</span>
+
+    <!-- Conservation status -->
+    <span class="badge badge-danger"><span class="oi oi-pulse" title="Conservation Status" aria-hidden="true"></span>T</span>
+
+    <!-- Taxonomic status -->
+    {% if original.is_current == 'Y' %}
+    <span class="badge badge-success"><span class="oi oi-thumb-up" title="Name is current" aria-hidden="true"></span></span>
+    {% else %}
+    <span class="badge badge-secondary"><span class="oi oi-thumb-down" title="Name is non current" aria-hidden="true"></span></span>
+    {% endif %}
     </h6>
+
+    <h5 class="card-title {% if original.is_current == 'N' %}text-muted{% endif %}">
+      {{ original.name }}
+    </h5>
+
+    <!-- Author -->
+    {% if original.author %}
+    <h6 class="card-subtitle mb-2 text-muted">
+      <span class="oi oi-pencil" title="Author" aria-hidden="true"></span>
+      {{original.author}}
+    </h6>
+    {% endif %}
+
+    <!-- Vernacular names -->
+    {% if original.all_vernaculars %}
+    <h6 class="card-subtitle mb-2 text-muted">
+      <span class="oi oi-tags" title="Vernacular names" aria-hidden="true"></span>
+      {{original.all_vernaculars}}
+    </h6>
+    {% endif %}
+
   </div>
+
   <ul class="list-group list-group-flush">
     <li class="list-group-item">
-      Management Plan <span class="badge badge-info">PDF</span>
+      <span class="badge badge-info">
+        <span class="oi oi-document" title="PDF document" aria-hidden="true"></span>
+        PDF
+      </span>
+      Management Plan
     </li>
+
     <li class="list-group-item">
-      Attachment 1 <span class="badge badge-info">PDF</span>
+      <span class="badge badge-info">
+        <span class="oi oi-document" title="PDF document" aria-hidden="true"></span>
+        PDF
+      </span>
+      Attachment
     </li>
   </ul>
+
   <div class="card-footer">
     <div class="text-right">
     <a href="{% url 'admin:taxonomy_hbvtaxon_change' original.pk %}"
-      class="btn btn-info btn-sm" target="_" rel="nofollow">
+      class="btn btn-primary btn-sm" target="_" rel="nofollow">
+      <span class="oi oi-eye" title="View and update details" aria-hidden="true"></span>
       View details
     </a>
   </div>

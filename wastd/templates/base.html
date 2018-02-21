@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="{% static 'css/leaflet.awesome-markers.css' %}">
     <link rel="stylesheet" href="{% static 'css/leaflet.markercluster.css' %}">
     <link rel="stylesheet" href="{% static 'css/leaflet.markercluster.default.css' %}">
+    <link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/project.css' %}">
     {% endcompress %}
     {% endblock %}
@@ -53,7 +54,7 @@
             <a class="nav-link"
             href="{% url 'dashboard' %}"
             title="Browse, filter and search threatened species and communities">
-            <i class="fa fa-table"></i>&nbsp;Dashboard
+            <span class="oi oi-dashboard" title="Species and Communities Dashboard" aria-hidden="true"></span>&nbsp;Dashboard
             </a>
           </li>
 

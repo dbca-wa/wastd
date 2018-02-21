@@ -36,6 +36,113 @@ from django.utils.translation import ugettext_lazy as _
 
 
 @python_2_unicode_compatible
+class HbvGroup(models.Model):
+    r"""Taxonomic groups.
+
+    {//group
+      "ogc_fid": 0,
+      "class_id": "MONOCOT",
+      "name_id": 828,
+      "updated_by": "HERBIE",
+      "updated_on": "2011-04-10Z",
+      "rank_name": "Species",
+      "name": "Eleocharis pallens",
+      "md5_rowhash": "fa190f8247844ef8d2a94f73b961ed69"
+    }
+    """
+
+    def __str__(self):
+        """The full taxonomic name."""
+        return ""
+
+
+@python_2_unicode_compatible
+class HbvFamily(models.Model):
+    r"""Taxonomic nodes from Families and up from HBVFamilies.
+
+    {
+      "ogc_fid": 0,
+      "name_id": 23206,
+      "kingdom_id": 4,
+      "rank_id": 140,
+      "rank_name": "Family",
+      "family_name": "Phragmopelthecaceae",
+      "is_current": "Y",
+      "informal": null,
+      "comments": null,
+      "family_code": "762",
+      "linear_sequence": null,
+      "order_nid": null,
+      "order_name": null,
+      "class_nid": null,
+      "class_name": null,
+      "division_nid": null,
+      "division_name": null,
+      "kingdom_name": "Fungi",
+      "author": "L.Xavier",
+      "editor": null,
+      "reference":
+        "Phragmopeltecaceae uma Nova Familia de Microascoliquens 42 (1976)",
+      "supra_code": "LICHEN",
+      "added_on": "2004-12-09Z",
+      "updated_on": "2016-08-30Z",
+      "md5_rowhash": "2b9aaba4c145701f540c40db4fde6071"
+    }
+    """
+
+    def __str__(self):
+        """The full taxonomic name."""
+        return ""
+
+
+@python_2_unicode_compatible
+class HbvSpecies(models.Model):
+    r"""Taxonomic species names.
+
+    {
+      "ogc_fid": 1,
+      "name_id": 11724,
+      "kingdom_id": 3,
+      "rank_id": 240,
+      "rank_name": "Variety",
+      "family_code": "162",
+      "family_nid": 34857,
+      "genus": "Pultenaea",
+      "species": "verruculosa",
+      "infra_rank": "var.",
+      "infra_name": "verruculosa",
+      "infra_rank2": null,
+      "infra_name2": null,
+      "author": "Turcz.",
+      "editor": null,
+      "reference": null,
+      "comments": null,
+      "vernacular": null,
+      "all_vernaculars": null,
+      "species_name": "Pultenaea verruculosa var. verruculosa",
+      "species_code": "PULVERVER",
+      "is_current": "N",
+      "naturalised": null,
+      "naturalised_status": "N",
+      "naturalised_certainty": null,
+      "is_eradicated": null,
+      "naturalised_comments": null,
+      "informal": null,
+      "added_on": "1991-12-31Z",
+      "updated_on": "2004-12-09Z",
+      "consv_code": null,
+      "ranking": null,
+      "linear_sequence": null,
+      "md5_rowhash": "387d5ee88472d3f6f300f3b677ae475a"
+    }
+    """
+
+    def __str__(self):
+        """The full taxonomic name."""
+        return ""
+
+
+@python_2_unicode_compatible
 class HbvTaxon(models.Model):
     r"""Taxonomic Names from HBVnames.
 
@@ -405,5 +512,31 @@ class HbvTaxon(models.Model):
         return self.__str__()
 
 # TODO: class Xrefs (taxonomic events)
+
+
+@python_2_unicode_compatible
+class HbvXrefs(models.Model):
+    r"""Taxonomic operations on name IDs.
+
+    {//xrefs
+      "ogc_fid": 0,
+      "xref_id": 1,
+      "old_name_id": 8288,
+      "new_name_id": null,
+      "xref_type": "EXC",
+      "active": "Y",
+      "authorised_by": null,
+      "authorised_on": "        ",
+      "comments": null,
+      "added_on": "1990-12-03Z",
+      "updated_on": null,
+      "md5_rowhash": "8a0bb19a2dad98dbe92dbc0caad58eb9"
+    }
+    """
+
+    def __str__(self):
+        """The full taxonomic name."""
+        return ""
+
 # TODO: class Parents (taxonomic parents)
 # TODO: class ParaphyleticGroups
