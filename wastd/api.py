@@ -1271,12 +1271,12 @@ class HbvTaxonViewSet(viewsets.ModelViewSet):
         if HbvTaxon.objects.filter(name_id=name_id).exists():
             print("[TaxonViewSet] update name_id {0}".format(name_id))
             taxon = HbvTaxon.objects.get(name_id=name_id)
-            serializer = TaxonSerializer(taxon, data=data)
+            serializer = HbvTaxonSerializer(taxon, data=data)
             st = status.HTTP_200_OK
 
         else:
             print("[TaxonViewSet] create name_id {0}".format(name_id))
-            serializer = TaxonSerializer(data=data)
+            serializer = HbvTaxonSerializer(data=data)
             st = status.HTTP_201_CREATED
 
         if serializer.is_valid():
