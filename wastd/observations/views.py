@@ -20,7 +20,7 @@ from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
 from wastd.observations.forms import (
     EncounterListFormHelper, AnimalEncounterListFormHelper)
 
-from taxonomy.models import Taxon
+from taxonomy.models import HbvTaxon
 
 from django.views.generic.list import ListView
 from django.utils import timezone
@@ -42,7 +42,7 @@ class HomeView(ListView):
 
 class DashboardView(ListView):
 
-    model = Taxon
+    model = HbvTaxon
     template_name = "pages/dashboard.html"
 
     def get_context_data(self, **kwargs):
@@ -51,7 +51,7 @@ class DashboardView(ListView):
         return context
 
     def get_queryset(self, **kwargs):
-        return Taxon.objects.all()[1:100]
+        return HbvTaxon.objects.all()[1:100]
 
 
 # Encounters -----------------------------------------------------------------#

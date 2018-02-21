@@ -36,7 +36,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 @python_2_unicode_compatible
-class Taxon(models.Model):
+class HbvTaxon(models.Model):
     r"""Taxonomic Names from HBVnames.
 
     Each Taxon has a unique, never re-used, ``name_id``.
@@ -381,8 +381,8 @@ class Taxon(models.Model):
         """Class options."""
 
         ordering = ["kingdom_id", "family_nid", "name_id"]
-        verbose_name = "Taxon"
-        verbose_name_plural = "Taxa"
+        verbose_name = "HBV Taxon"
+        verbose_name_plural = "HBV Taxa"
         # get_latest_by = "added_on"
 
     def __str__(self):

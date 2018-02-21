@@ -66,7 +66,7 @@ from wastd.observations.models import (
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
-from taxonomy.models import Taxon
+from taxonomy.models import HbvTaxon
 # def symlink_resources(a,b,c):
 #     pass
 
@@ -1154,20 +1154,20 @@ router.register(r'nesttag-observations', NestTagObservationViewSet)
 
 
 # Taxonomy -------------------------------------------------------------------#
-class TaxonSerializer(serializers.ModelSerializer):
+class HbvTaxonSerializer(serializers.ModelSerializer):
     """Serializer for Taxon."""
 
     class Meta:
         """Opts."""
 
-        model = Taxon
+        model = HbvTaxon
         fields = '__all__'
 
 
-class TaxonFilter(filters.FilterSet):
+class HbvTaxonFilter(filters.FilterSet):
 
     class Meta:
-        model = Taxon
+        model = HbvTaxon
         filter_args = ['exact', 'iexact', 'in', 'startswith', 'istartswith', 'contains', 'icontains']
         fields = {
             'rank_name': filter_args,
@@ -1186,8 +1186,8 @@ class TaxonFilter(filters.FilterSet):
         }
 
 
-class TaxonViewSet(viewsets.ModelViewSet):
-    """View set for Taxon.
+class HbvTaxonViewSet(viewsets.ModelViewSet):
+    """View set for HbvTaxon.
 
     # Custom features
     POST a GeoJSON feature properties dict to create or update the corresponding Taxon.
@@ -1258,19 +1258,19 @@ class TaxonViewSet(viewsets.ModelViewSet):
     * [/api/1/taxonomy/?is_eradicated=-](/api/1/taxonomy/?is_eradicated=-) -
     """
 
-    queryset = Taxon.objects.all()
-    serializer_class = TaxonSerializer
+    queryset = HbvTaxon.objects.all()
+    serializer_class = HbvTaxonSerializer
     pagination_class = MyGeoJsonPagination
-    filter_class = TaxonFilter
+    filter_class = HbvTaxonFilter
     pagination_class = pagination.LimitOffsetPagination
 
     def create_one(self, data):
-        """POST: Create or update exactly one Taxon."""
+        """POST: Create or update exactly one HbvTaxon."""
         name_id = data['name_id']
 
-        if Taxon.objects.filter(name_id=name_id).exists():
+        if HbvTaxon.objects.filter(name_id=name_id).exists():
             print("[TaxonViewSet] update name_id {0}".format(name_id))
-            taxon = Taxon.objects.get(name_id=name_id)
+            taxon = HbvTaxon.objects.get(name_id=name_id)
             serializer = TaxonSerializer(taxon, data=data)
             st = status.HTTP_200_OK
 
@@ -1288,8 +1288,8 @@ class TaxonViewSet(viewsets.ModelViewSet):
     def create(self, request):
         """POST: Create or update one or many Taxa.
 
-        If a Taxon with `name_id` exists, it will be updated,
-        otherwise a new Taxon will be created.
+        If a HbvTaxon with `name_id` exists, it will be updated,
+        otherwise a new HbvTaxon will be created.
 
         request.data must be:
 
@@ -1307,4 +1307,4 @@ class TaxonViewSet(viewsets.ModelViewSet):
                 return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
 
 
-router.register("taxonomy", TaxonViewSet)
+router.register("taxonomy", HbvTaxonViewSet)
