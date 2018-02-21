@@ -169,8 +169,6 @@ TIME_ZONE = 'Australia/Perth'
 #     '%Y-%m-%dZ',     # '2006-10-25Z' from WACensus via KMI GeoServer
 #     '%m/%d/%Y',      # '10/25/2006'
 #     '%m/%d/%y',
-
-
 # ]      # '10/25/06'
 
 
