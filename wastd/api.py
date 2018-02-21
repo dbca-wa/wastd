@@ -66,7 +66,7 @@ from wastd.observations.models import (
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
-from taxonomy.models import HbvTaxon
+from taxonomy.models import HbvName
 # def symlink_resources(a,b,c):
 #     pass
 
@@ -1154,20 +1154,20 @@ router.register(r'nesttag-observations', NestTagObservationViewSet)
 
 
 # Taxonomy -------------------------------------------------------------------#
-class HbvTaxonSerializer(serializers.ModelSerializer):
+class HbvNameSerializer(serializers.ModelSerializer):
     """Serializer for Taxon."""
 
     class Meta:
         """Opts."""
 
-        model = HbvTaxon
+        model = HbvName
         fields = '__all__'
 
 
-class HbvTaxonFilter(filters.FilterSet):
+class HbvNameFilter(filters.FilterSet):
 
     class Meta:
-        model = HbvTaxon
+        model = HbvName
         filter_args = ['exact', 'iexact', 'in', 'startswith', 'istartswith', 'contains', 'icontains']
         fields = {
             'rank_name': filter_args,
@@ -1186,8 +1186,8 @@ class HbvTaxonFilter(filters.FilterSet):
         }
 
 
-class HbvTaxonViewSet(viewsets.ModelViewSet):
-    """View set for HbvTaxon.
+class HbvNameViewSet(viewsets.ModelViewSet):
+    """View set for HbvName.
 
     # Custom features
     POST a GeoJSON feature properties dict to create or update the corresponding Taxon.
@@ -1258,25 +1258,25 @@ class HbvTaxonViewSet(viewsets.ModelViewSet):
     * [/api/1/taxonomy/?is_eradicated=-](/api/1/taxonomy/?is_eradicated=-) -
     """
 
-    queryset = HbvTaxon.objects.all()
-    serializer_class = HbvTaxonSerializer
+    queryset = HbvName.objects.all()
+    serializer_class = HbvNameSerializer
     pagination_class = MyGeoJsonPagination
-    filter_class = HbvTaxonFilter
+    filter_class = HbvNameFilter
     pagination_class = pagination.LimitOffsetPagination
 
     def create_one(self, data):
-        """POST: Create or update exactly one HbvTaxon."""
+        """POST: Create or update exactly one HbvName."""
         name_id = data['name_id']
 
-        if HbvTaxon.objects.filter(name_id=name_id).exists():
-            print("[TaxonViewSet] update name_id {0}".format(name_id))
-            taxon = HbvTaxon.objects.get(name_id=name_id)
-            serializer = HbvTaxonSerializer(taxon, data=data)
+        if HbvName.objects.filter(name_id=name_id).exists():
+            print("[NameViewSet] update name_id {0}".format(name_id))
+            taxon = HbvName.objects.get(name_id=name_id)
+            serializer = HbvNameSerializer(taxon, data=data)
             st = status.HTTP_200_OK
 
         else:
-            print("[TaxonViewSet] create name_id {0}".format(name_id))
-            serializer = HbvTaxonSerializer(data=data)
+            print("[NameViewSet] create name_id {0}".format(name_id))
+            serializer = HbvNameSerializer(data=data)
             st = status.HTTP_201_CREATED
 
         if serializer.is_valid():
@@ -1288,8 +1288,8 @@ class HbvTaxonViewSet(viewsets.ModelViewSet):
     def create(self, request):
         """POST: Create or update one or many Taxa.
 
-        If a HbvTaxon with `name_id` exists, it will be updated,
-        otherwise a new HbvTaxon will be created.
+        If a HbvName with `name_id` exists, it will be updated,
+        otherwise a new HbvName will be created.
 
         request.data must be:
 
@@ -1307,4 +1307,4 @@ class HbvTaxonViewSet(viewsets.ModelViewSet):
                 return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
 
 
-router.register("taxonomy", HbvTaxonViewSet)
+router.register("names", HbvNameViewSet)

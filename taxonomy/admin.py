@@ -17,16 +17,16 @@ from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
-from taxonomy.models import HbvTaxon
+from taxonomy.models import HbvName
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
 TokenAdmin.raw_id_fields = ('user',)
 
 
-@admin.register(HbvTaxon)
-class HbvTaxonAdmin(VersionAdmin, admin.ModelAdmin):
-    """Admin for HbvTaxon."""
+@admin.register(HbvName)
+class HbvNameAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvName."""
 
     save_on_top = True
     # date_hierarchy = 'datetime'
