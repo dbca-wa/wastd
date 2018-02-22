@@ -67,7 +67,8 @@ from wastd.observations.models import (
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
-from taxonomy.models import HbvName, HbvSupra
+from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily, 
+HbvGenus, HbvSpecies, HbvVernacular, HbvXref)
 # def symlink_resources(a,b,c):
 #     pass
 
@@ -1155,6 +1156,16 @@ router.register(r'nesttag-observations', NestTagObservationViewSet)
 
 
 # Taxonomy: Serializers -------------------------------------------------------------------#
+class HbvNameSerializer(serializers.ModelSerializer):
+    """Serializer for HBVName."""
+
+    class Meta:
+        """Opts."""
+
+        model = HbvName
+        fields = '__all__'
+
+
 class HbvSupraSerializer(serializers.ModelSerializer):
     """Serializer for HbvSupra."""
 
@@ -1165,29 +1176,67 @@ class HbvSupraSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class HbvNameSerializer(serializers.ModelSerializer):
-    """Serializer for HBVName."""
+class HbvGroupSerializer(serializers.ModelSerializer):
+    """Serializer for HbvGroup."""
 
     class Meta:
         """Opts."""
 
-        model = HbvName
+        model = HbvGroup
         fields = '__all__'
 
-# Taxonomy: Filters -------------------------------------------------------------------#
-class HbvSupraFilter(filters.FilterSet):
+
+class HbvFamilySerializer(serializers.ModelSerializer):
+    """Serializer for HbvFamily."""
 
     class Meta:
-        model = HbvSupra
-        fields = {
-            'ogc_fid': '__all__',
-            'supra_code': '__all__',
-            'supra_name': '__all__',
-            'updated_on': '__all__',
-            'md5_rowhash': '__all__',
-            }
+        """Opts."""
+
+        model = HbvFamily
+        fields = '__all__'
 
 
+class HbvGenusSerializer(serializers.ModelSerializer):
+    """Serializer for HbvGenus."""
+
+    class Meta:
+        """Opts."""
+
+        model = HbvGenus
+        fields = '__all__'
+
+
+class HbvSpeciesSerializer(serializers.ModelSerializer):
+    """Serializer for HbvSpecies."""
+
+    class Meta:
+        """Opts."""
+
+        model = HbvSpecies
+        fields = '__all__'
+
+
+class HbvVernacularSerializer(serializers.ModelSerializer):
+    """Serializer for HbvVernacular."""
+
+    class Meta:
+        """Opts."""
+
+        model = HbvVernacular
+        fields = '__all__'
+
+
+class HbvXrefSerializer(serializers.ModelSerializer):
+    """Serializer for HbvXref."""
+
+    class Meta:
+        """Opts."""
+
+        model = HbvXref
+        fields = '__all__' 
+
+
+# Taxonomy: Filters -------------------------------------------------------------------#
 class HbvNameFilter(filters.FilterSet):
 
     class Meta:
@@ -1205,9 +1254,216 @@ class HbvNameFilter(filters.FilterSet):
             'vernacular': '__all__',
             'all_vernaculars': '__all__',
             'author': '__all__',
+            "ogc_fid": '__all__',
+            "name_id": '__all__',
+            "kingdom_id": '__all__',
+            "rank_id": '__all__',
+            "rank_name": '__all__',
+            "name1": '__all__',
+            "name2": '__all__',
+            "rank3": '__all__',
+            "name3": '__all__',
+            "rank4": '__all__',
+            "name4": '__all__',
+            "pub_id": '__all__',
+            "vol_info": '__all__',
+            "pub_year": '__all__',
+            "is_current": '__all__',
+            "origin": '__all__',
+            "naturalised_status": '__all__',
+            "naturalised_certainty": '__all__',
+            "is_eradicated": '__all__',
+            "naturalised_comments": '__all__',
+            "informal": '__all__',
+            "form_desc_yr": '__all__',
+            "form_desc_mn": '__all__',
+            "form_desc_dy":'__all__',
+            "comments": '__all__',
+            "added_by": '__all__',
+            "added_on": '__all__',
+            "updated_by": '__all__',
+            "updated_on": '__all__',
+            "family_code": '__all__',
+            "family_nid": '__all__',
+            "name": '__all__',
+            "full_name": '__all__',
+            "author": '__all__',
+            "reference": '__all__',
+            "editor": '__all__',
+            "vernacular": '__all__',
+            "all_vernaculars": '__all__',
+            "linear_sequence": '__all__',
+            "md5_rowhash": '__all__',
         }
 
 
+class HbvSupraFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvSupra
+        fields = {
+            'ogc_fid': '__all__',
+            'supra_code': '__all__',
+            'supra_name': '__all__',
+            'updated_on': '__all__',
+            'md5_rowhash': '__all__',
+            }
+
+class HbvGroupFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvGroup
+        fields = {
+            'ogc_fid': '__all__',
+            'class_id': '__all__',
+            'name_id': '__all__',
+            'updated_by': '__all__',
+            'updated_on': '__all__',
+            'rank_name': '__all__',
+            'name': '__all__',
+            'md5_rowhash': '__all__',
+            }
+
+
+class HbvFamilyFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvFamily
+        fields = {
+            "ogc_fid": '__all__',
+            "name_id": '__all__',
+            "kingdom_id": '__all__',
+            "rank_id": '__all__',
+            "rank_name": '__all__',
+            "family_name": '__all__',
+            "is_current": '__all__',
+            "informal": '__all__',
+            "comments": '__all__',
+            "family_code": '__all__',
+            "linear_sequence": '__all__',
+            "order_nid": '__all__',
+            "order_name": '__all__',
+            "class_nid": '__all__',
+            "class_name": '__all__',
+            "division_nid": '__all__',
+            "division_name": '__all__',
+            "kingdom_name": '__all__',
+            "author": '__all__',
+            "editor": '__all__',
+            "reference": '__all__',
+            "supra_code": '__all__',
+            "added_on": '__all__',
+            "updated_on": '__all__',
+            "md5_rowhash": '__all__',
+            }
+
+
+class HbvGenusFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvGenus
+        fields = {
+            'ogc_fid': '__all__',
+            "name_id": '__all__',
+            "kingdom_id": '__all__',
+            "rank_id": '__all__',
+            "rank_name": '__all__',
+            "genus": '__all__',
+            "is_current": '__all__',
+            "informal": '__all__',
+            "comments": '__all__',
+            "family_code": '__all__',
+            "family_nid": '__all__',
+            "author": '__all__',
+            "editor": '__all__',
+            "reference": '__all__',
+            "genusid": '__all__',
+            "added_on": '__all__',
+            "updated_on": '__all__',
+            "md5_rowhash": '__all__',
+            }
+
+
+class HbvSpeciesFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvSpecies
+        fields = {
+            'ogc_fid': '__all__',
+            "name_id": '__all__',
+            "kingdom_id": '__all__',
+            "rank_id": '__all__',
+            "rank_name": '__all__',
+            "family_code": '__all__',
+            "family_nid": '__all__',
+            "genus": '__all__',
+            "species": '__all__',
+            "infra_rank": '__all__',
+            "infra_name": '__all__',
+            "infra_rank2": '__all__',
+            "infra_name2": '__all__',
+            "author": '__all__',
+            "editor": '__all__',
+            "reference": '__all__',
+            "comments": '__all__',
+            "vernacular": '__all__',
+            "all_vernaculars": '__all__',
+            "species_name": '__all__',
+            "species_code": '__all__',
+            "is_current": '__all__',
+            "naturalised": '__all__',
+            "naturalised_status": '__all__',
+            "naturalised_certainty": '__all__',
+            "is_eradicated": '__all__',
+            "naturalised_comments": '__all__',
+            "informal": '__all__',
+            "added_on": '__all__',
+            "updated_on": '__all__',
+            "consv_code": '__all__',
+            'md5_rowhash': '__all__',
+            }
+
+
+class HbvVernacularFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvVernacular
+        fields = {
+            'ogc_fid': '__all__',
+            "name_id": '__all__',
+            "name": '__all__',
+            "vernacular": '__all__',
+            "language": '__all__',
+            "lang_pref": '__all__',
+            "preferred": '__all__',
+            "source": '__all__',
+            "updated_by": '__all__',
+            "updated_on": '__all__',
+            "md5_rowhash": '__all__',
+            }
+
+
+class HbvXrefFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvXref
+        fields = {
+            'ogc_fid': '__all__',
+            "xref_id": '__all__',
+            "old_name_id": '__all__',
+            "new_name_id": '__all__',
+            "xref_type": '__all__',
+            "active": '__all__',
+            "authorised_by": '__all__',
+            "authorised_on": '__all__',
+            "comments": '__all__',
+            "added_on": '__all__',
+            "updated_on": '__all__',
+            'md5_rowhash': '__all__',
+            }
+
+
+# Taxonomy: Viewsets -------------------------------------------------------------------#
 class HbvNameViewSet(viewsets.ModelViewSet):
     """View set for HbvName.
 
@@ -1325,24 +1581,7 @@ router.register("names", HbvNameViewSet)
 
 
 class HbvSupraViewSet(viewsets.ModelViewSet):
-    """View set for HbvSupra.
-
-    # Custom features
-    POST a GeoJSON feature properties dict to create or update the corresponding Taxon.
-
-    # Pagination: LimitOffset
-    The results have four top-level keys:
-
-    * `count` Total number of features
-    * `next` URL to next batch. `null` in last page.
-    * `previous` URL to previous batch. `null` in first page.
-
-    You can subset your own page with GET parameters `limit` and `offset`, e.g.
-    [/api/1/taxonomy/?limit=100&offset=100](/api/1/taxonomy/?limit=100&offset=100).
-
-    # Search and filter
-    All filters are enables for all fields. See HBV Names for details.
-    """
+    """View set for HbvSupra. See HBV Names for details and usage examples."""
 
     queryset = HbvSupra.objects.all()
     serializer_class = HbvSupraSerializer
@@ -1386,3 +1625,285 @@ class HbvSupraViewSet(viewsets.ModelViewSet):
                 return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
 
 router.register("supra", HbvSupraViewSet)
+
+
+class HbvGroupViewSet(viewsets.ModelViewSet):
+    """View set for HbvGroup.See HBV Names for details and usage examples."""
+
+    queryset = HbvGroup.objects.all()
+    serializer_class = HbvGroupSerializer
+    filter_class = HbvGroupFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "name_id"
+    model = HbvGroup
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+
+        obj, created = self.model.objects.get_or_create(
+            name_id = data[self.uid_field], defaults = data)
+
+        serializer = self.serializer_class(obj, data=data)
+
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+
+        if serializer.is_valid():
+            serializer.save()
+            return RestResponse(serializer.data, status=st)
+        else:
+            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        else:
+            try:
+                res = [self.create_one(data) for data in request.data]
+                return res[0]
+            except:
+                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+
+router.register("groups", HbvGroupViewSet)
+
+
+class HbvFamilyViewSet(viewsets.ModelViewSet):
+    """View set for HbvFamily. See HBV Names for details and usage examples."""
+
+    queryset = HbvFamily.objects.all()
+    serializer_class = HbvFamilySerializer
+    filter_class = HbvFamilyFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "name_id"
+    model = HbvFamily
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+
+        obj, created = self.model.objects.get_or_create(
+            name_id = data[self.uid_field], defaults = data)
+
+        serializer = self.serializer_class(obj, data=data)
+
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+
+        if serializer.is_valid():
+            serializer.save()
+            return RestResponse(serializer.data, status=st)
+        else:
+            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        else:
+            try:
+                res = [self.create_one(data) for data in request.data]
+                return res[0]
+            except:
+                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+
+router.register("families", HbvFamilyViewSet)
+
+
+class HbvGenusViewSet(viewsets.ModelViewSet):
+    """View set for HbvGenus. See HBV Names for details and usage examples."""
+
+    queryset = HbvGenus.objects.all()
+    serializer_class = HbvGenusSerializer
+    filter_class = HbvGenusFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "name_id"
+    model = HbvGenus
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+
+        obj, created = self.model.objects.get_or_create(
+            name_id = data[self.uid_field], defaults = data)
+
+        serializer = self.serializer_class(obj, data=data)
+
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+
+        if serializer.is_valid():
+            serializer.save()
+            return RestResponse(serializer.data, status=st)
+        else:
+            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        else:
+            try:
+                res = [self.create_one(data) for data in request.data]
+                return res[0]
+            except:
+                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+
+router.register("genera", HbvGenusViewSet)
+
+
+class HbvSpeciesViewSet(viewsets.ModelViewSet):
+    """View set for HbvSpecies. See HBV Names for details and usage examples."""
+
+    queryset = HbvSpecies.objects.all()
+    serializer_class = HbvSpeciesSerializer
+    filter_class = HbvSpeciesFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "name_id"
+    model = HbvSpecies
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+
+        obj, created = self.model.objects.get_or_create(
+            name_id = data[self.uid_field], defaults = data)
+
+        serializer = self.serializer_class(obj, data=data)
+
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+
+        if serializer.is_valid():
+            serializer.save()
+            return RestResponse(serializer.data, status=st)
+        else:
+            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        else:
+            try:
+                res = [self.create_one(data) for data in request.data]
+                return res[0]
+            except:
+                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+
+router.register("species", HbvSpeciesViewSet)
+
+
+class HbvVernacularViewSet(viewsets.ModelViewSet):
+    """View set for HbvVernacular. See HBV Names for details and usage examples."""
+
+    queryset = HbvVernacular.objects.all()
+    serializer_class = HbvVernacularSerializer
+    filter_class = HbvVernacularFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "ogc_fid"
+    model = HbvVernacular
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+
+        obj, created = self.model.objects.get_or_create(
+            ogc_fid = data[self.uid_field], defaults = data)
+
+        serializer = self.serializer_class(obj, data=data)
+
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+
+        if serializer.is_valid():
+            serializer.save()
+            return RestResponse(serializer.data, status=st)
+        else:
+            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        else:
+            try:
+                res = [self.create_one(data) for data in request.data]
+                return res[0]
+            except:
+                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+
+router.register("vernaculars", HbvVernacularViewSet)
+
+
+class HbvXrefViewSet(viewsets.ModelViewSet):
+    """View set for HbvXref. See HBV Names for details and usage examples."""
+
+    queryset = HbvXref.objects.all()
+    serializer_class = HbvXrefSerializer
+    filter_class = HbvXrefFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "xref_id"
+    model = HbvXref
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+
+        obj, created = self.model.objects.get_or_create(
+            xref_id = data[self.uid_field], defaults = data)
+
+        serializer = self.serializer_class(obj, data=data)
+
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+
+        if serializer.is_valid():
+            serializer.save()
+            return RestResponse(serializer.data, status=st)
+        else:
+            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        else:
+            try:
+                res = [self.create_one(data) for data in request.data]
+                return res[0]
+            except:
+                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+
+router.register("xrefs", HbvXrefViewSet)

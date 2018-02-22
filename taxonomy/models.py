@@ -157,7 +157,7 @@ class HbvGroup(models.Model):
     name = models.CharField(
         max_length=1000,
         blank=True, null=True,
-        verbose_name=_(""),
+        verbose_name=_("Name"),
         help_text=_("."),
     )
 
@@ -206,8 +206,7 @@ class HbvFamily(models.Model):
       "kingdom_name": "Fungi",
       "author": "L.Xavier",
       "editor": null,
-      "reference":
-        "Phragmopeltecaceae uma Nova Familia de Microascoliquens 42 (1976)",
+      "reference": "Phragmopeltecaceae uma ...",
       "supra_code": "LICHEN",
       "added_on": "2004-12-09Z",
       "updated_on": "2016-08-30Z",
@@ -218,7 +217,8 @@ class HbvFamily(models.Model):
     ogc_fid = models.BigIntegerField(
         blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
-        help_text=_("The OCG Feature ID of the record, used to identify the record."),
+        help_text=_("The OCG Feature ID of the record, "
+        "used to identify the record."),
     )
 
     name_id = models.BigIntegerField(
@@ -261,11 +261,13 @@ class HbvFamily(models.Model):
         help_text=_("The approval status indicates whether a taxonomic name"
                     " is a phrase name (PN), manuscript name (MS) or published (blank)."),
     )
+
     comments = models.TextField(
         blank=True, null=True,
         verbose_name=_("Comments"),
         help_text=_("Comments about the name."),
     )
+
     family_code = models.CharField(
         max_length=1000,
         blank=True, null=True,
@@ -279,8 +281,8 @@ class HbvFamily(models.Model):
         help_text=_("Always populated for plant families, may be blank for other names."),
     )
 
-    order_name_id = models.BigIntegerField(
-        unique=True,
+    order_nid = models.BigIntegerField(
+        blank=True, null=True,
         verbose_name=_("Order NameID"),
         help_text=_("WACensus NameID, assigned by WACensus."),
     )
@@ -292,8 +294,8 @@ class HbvFamily(models.Model):
         help_text=_(""),
     )
 
-    class_name_id = models.BigIntegerField(
-        unique=True,
+    class_nid = models.BigIntegerField(
+        blank=True, null=True,
         verbose_name=_("Class NameID"),
         help_text=_("WACensus NameID, assigned by WACensus."),
     )
@@ -305,8 +307,8 @@ class HbvFamily(models.Model):
         help_text=_(""),
     )
 
-    division_name_id = models.BigIntegerField(
-        unique=True,
+    division_nid = models.BigIntegerField(
+        blank=True, null=True,
         verbose_name=_("Division NameID"),
         help_text=_("WACensus NameID, assigned by WACensus."),
     )
@@ -316,6 +318,12 @@ class HbvFamily(models.Model):
         blank=True, null=True,
         verbose_name=_("Order Name"),
         help_text=_(""),
+    )
+
+    kingdom_id = models.BigIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Kingdom NameID"),
+        help_text=_("WACensus NameID, assigned by WACensus."),
     )
 
     kingdom_name = models.CharField(
@@ -449,8 +457,8 @@ class HbvGenus(models.Model):
     genus = models.CharField(
         max_length=1000,
         blank=True, null=True,
-        verbose_name=_(""),
-        help_text=_("."),
+        verbose_name=_("Genus"),
+        help_text=_("The Genus name."),
     )
     is_current = models.CharField(
         max_length=100,
@@ -507,7 +515,7 @@ class HbvGenus(models.Model):
         help_text=_("The citation for the reference article this name was published in."),
     )
 
-    genus_id = models.BigIntegerField(
+    genusid = models.BigIntegerField(
         # refactor: FK Family
         blank=True, null=True,
         verbose_name=_("Genus ID"),
@@ -538,7 +546,7 @@ class HbvGenus(models.Model):
     class Meta:
         """Class options."""
 
-        ordering = ["genus", ]
+        ordering = ['kingdom_id', "genus", ]
         verbose_name = "HBV Genus"
         verbose_name_plural = "HBV Genera"
         # get_latest_by = "added_on"
@@ -1142,7 +1150,8 @@ class HbvName(models.Model):
         blank=True, null=True,
         verbose_name=_("Name approval status"),
         help_text=_("The approval status indicates whether a taxonomic name"
-                    " is a phrase name (PN), manuscript name (MS) or published (blank)."),
+                    " is a phrase name (PN), manuscript name (MS) or "
+                    "published (blank)."),
     )
 
     comments = models.TextField(
@@ -1169,7 +1178,8 @@ class HbvName(models.Model):
         max_length=100,
         blank=True, null=True,
         verbose_name=_("Updated by"),
-        help_text=_("The person or system who updated this record last in WACensus."),
+        help_text=_("The person or system who updated this record "
+        "last in WACensus."),
     )
 
     updated_on = models.CharField(
@@ -1182,7 +1192,8 @@ class HbvName(models.Model):
     linear_sequence = models.BigIntegerField(
         blank=True, null=True,
         verbose_name=_("Linear sequence"),
-        help_text=_("Always populated for plant families, may be blank for other names."),
+        help_text=_("Always populated for plant families,"
+        " may be blank for other names."),
     )
 
     #    "md5_rowhash": "f3e900990365c28fc9d15fe5e4090aa1"
@@ -1196,7 +1207,8 @@ class HbvName(models.Model):
     ogc_fid = models.BigIntegerField(
         blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
-        help_text=_("The OCG Feature ID of the record, used to identify the record."),
+        help_text=_("The OCG Feature ID of the record, used to "
+        "identify the record."),
     )
 
     class Meta:
@@ -1247,9 +1259,11 @@ class HbvVernacular(models.Model):
     """
 
     ogc_fid = models.BigIntegerField(
+        unique=True,
         blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
-        help_text=_("The OCG Feature ID of the record, used to identify the record."),
+        help_text=_("The OCG Feature ID of the record, used to "
+        "identify the record."),
     )
 
     name_id = models.BigIntegerField(
@@ -1309,7 +1323,8 @@ class HbvVernacular(models.Model):
         max_length=100,
         blank=True, null=True,
         verbose_name=_("Updated by"),
-        help_text=_("The person or system who updated this record last in WACensus."),
+        help_text=_("The person or system who updated this record "
+        "last in WACensus."),
     )
 
     updated_on = models.CharField(
@@ -1326,13 +1341,21 @@ class HbvVernacular(models.Model):
         help_text=_("An MD5 hash of the record, used to indicate updates."),
     )
 
+    class Meta:
+        """Class options."""
+
+        # ordering = ["kingdom_id", "family_nid", "name_id"]
+        verbose_name = "HBV Vernacular Name"
+        verbose_name_plural = "HBV Vernacular Name"
+        # get_latest_by = "added_on"
+
     def __str__(self):
         """The full name."""
-        return ""
+        return self.vernacular
 
 
 @python_2_unicode_compatible
-class HbvXrefs(models.Model):
+class HbvXref(models.Model):
     r"""Taxonomic operations on NameIDs.
 
     {//xrefs
@@ -1354,23 +1377,26 @@ class HbvXrefs(models.Model):
     ogc_fid = models.BigIntegerField(
         blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
-        help_text=_("The OCG Feature ID of the record, used to identify the record in GeoServer."),
+        help_text=_("The OCG Feature ID of the record, used to "
+        "identify the record in GeoServer."),
     )
 
     xref_id = models.BigIntegerField(
+        unique=True,
         blank=True, null=True,
         verbose_name=_("WACensus xref ID"),
-        help_text=_("The WACensus xref ID of the record, used to identify the record in WACensus."),
+        help_text=_("The WACensus xref ID of the record, used to "
+        "identify the record in WACensus."),
     )
 
     old_name_id = models.BigIntegerField(
-        unique=True,
+        blank=True, null=True,
         verbose_name=_("Old NameID"),
         help_text=_("WACensus NameID, assigned by WACensus."),
     )
 
     new_name_id = models.BigIntegerField(
-        unique=True,
+        blank=True, null=True,
         verbose_name=_("New NameID"),
         help_text=_("WACensus NameID, assigned by WACensus."),
     )
@@ -1386,7 +1412,8 @@ class HbvXrefs(models.Model):
             ("FOR", "Formal description"),
             ("OGV", "Orthographic variant"),
             ("ERR", "Name in error"),
-            ("ISY", "Informal Synonym"),  # non-current name pointing to another non-current name
+            ("ISY", "Informal Synonym"),  
+            # ISY: non-current name pointing to another non-current name
         ),
         blank=True, null=True,
         verbose_name=_("Type"),
@@ -1404,7 +1431,8 @@ class HbvXrefs(models.Model):
         max_length=100,
         blank=True, null=True,
         verbose_name=_("WACensus authorised by"),
-        help_text=_("The person or system who authorised this record last in WACensus."),
+        help_text=_("The person or system who authorised this record "
+        "last in WACensus."),
     )
 
     authorised_on = models.CharField(
@@ -1441,6 +1469,18 @@ class HbvXrefs(models.Model):
         help_text=_("An MD5 hash of the record, used to indicate updates."),
     )
 
+    class Meta:
+        """Class options."""
+
+        ordering = ["authorised_on", ]
+        verbose_name = "HBV Crossreference"
+        verbose_name_plural = "HBV Crossreferences"
+        # get_latest_by = "added_on"
+
     def __str__(self):
         """The full name."""
-        return ""
+        return "{0} {1} {2} on {3}".format(
+            self.old_name_id, 
+            self.xref_type, 
+            self.new_name_id, 
+            self.authorised_on)

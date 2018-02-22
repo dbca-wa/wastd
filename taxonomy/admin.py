@@ -17,7 +17,8 @@ from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
-from taxonomy.models import HbvName, HbvSupra
+from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily, 
+HbvGenus, HbvSpecies, HbvVernacular, HbvXref)
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
@@ -60,3 +61,118 @@ class HbvSupraAdmin(VersionAdmin, admin.ModelAdmin):
     # list_filter = ('rank_name', )
     search_fields = ('supra_name', 'supra_code', )
  
+
+@admin.register(HbvGroup)
+class HbvGroupAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvGroup."""
+
+    save_on_top = True
+    # date_hierarchy = 'updated_on'
+    list_display = ('class_id', 'rank_name', 'name', 'name_id', 
+    'updated_by', 'updated_on', 'ogc_fid', 'md5_rowhash')
+    list_filter = ('class_id', )
+    search_fields = ('rank_name', 'name', 'name_id',)
+
+
+@admin.register(HbvFamily)
+class HbvFamilyAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvFamily."""
+
+    save_on_top = True
+    # date_hierarchy = 'updated_on'
+    list_display = ('name_id', 
+        'kingdom_name', 'division_name', 
+        'class_name', 'order_name', 'family_name',
+        'author','editor','reference', 'comments',
+        'is_current', 'informal', 'added_on', 'updated_on', 
+        'ogc_fid', 'md5_rowhash')
+    list_filter = ('is_current', 'informal', )
+    search_fields = ('kingdom_name', 'division_name', 
+        'class_name', 'order_name', 'family_name', 'name_id', )
+
+
+@admin.register(HbvGenus)
+class HbvGenusAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvGenus."""
+
+    save_on_top = True
+    # date_hierarchy = 'updated_on'
+    list_display = ('name_id', 
+        'genusid', 'rank_name', 'genus', 'kingdom_id',  
+        'author','editor','reference', 'comments',
+        'is_current', 'informal', 
+        'added_on', 'updated_on', 
+        'ogc_fid', 'md5_rowhash')
+    list_filter = ('is_current', 'informal', 'kingdom_id',)
+    search_fields = ('genus', 'name_id', )
+
+
+@admin.register(HbvSpecies)
+class HbvSpeciesAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvSpecies."""
+
+    save_on_top = True
+    # date_hierarchy = 'updated_on'
+    list_display = ('name_id', 
+        "species_name", "species_code", 
+        "consv_code", "ranking",
+        'genus', 'species', 'infra_rank', 'infra_name',  
+        'infra_rank2','infra_name2',
+        "vernacular", "all_vernaculars",
+        'author', 'editor', 'reference', 'comments',
+        'is_current', 'informal', 
+        'added_on', 'updated_on', 
+        'ogc_fid', 'md5_rowhash')
+    list_filter = (
+        'kingdom_id', 'rank_name',
+        'is_current', 'informal', "naturalised",)
+    search_fields = (
+        'genus', 'species', 
+        'infra_rank', 'infra_name',  
+        'infra_rank2','infra_name2',
+        "vernacular", "all_vernaculars",)
+
+@admin.register(HbvVernacular)
+class HbvVernacularAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvVernacular."""
+
+    save_on_top = True
+    # date_hierarchy = 'updated_on'
+    list_display = (
+        "name_id",
+        "name",
+        "vernacular",
+        "language",
+        "lang_pref",
+        "preferred",
+        "source",
+        "updated_by",
+        'updated_on', 
+        'ogc_fid', 
+        'md5_rowhash')
+    list_filter = ('language', 'lang_pref', 'preferred',)
+    search_fields = ('name', 'vernacular', 'source', )
+
+
+@admin.register(HbvXref)
+class HbvXrefAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvXref."""
+
+    save_on_top = True
+    # date_hierarchy = 'updated_on'
+    list_display = (
+        "xref_id",
+        "old_name_id",
+        "new_name_id",
+        "xref_type",
+        "active",
+        "authorised_by",
+        "authorised_on",
+        "comments",
+        "added_on",
+        'updated_on', 
+        'ogc_fid', 
+        'md5_rowhash')
+    list_filter = ('xref_type', 'active', )
+    search_fields = ('old_name_id', 'new_name_id', )
+
