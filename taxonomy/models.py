@@ -56,16 +56,17 @@ class HbvSupra(models.Model):
 
     supra_code = models.CharField(
         max_length=1000,
+        unique=True,
         blank=True, null=True,
         verbose_name=_("HBV Suprafamily Group Code"),
-        help_text=_(""),
+        help_text=_("A short code."),
     )
 
     supra_name = models.CharField(
         max_length=1000,
         blank=True, null=True,
         verbose_name=_("HBV Suprafamily Group Name"),
-        help_text=_(""),
+        help_text=_("The group's name."),
     )
 
     updated_on = models.CharField(

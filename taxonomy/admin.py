@@ -17,7 +17,7 @@ from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
-from taxonomy.models import HbvName
+from taxonomy.models import HbvName, HbvSupra
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
@@ -48,3 +48,15 @@ class HbvNameAdmin(VersionAdmin, admin.ModelAdmin):
     #     """Make tag type human readable."""
     #     return obj.get_tag_type_display()
     # type_display.short_description = 'Tag Type'
+
+
+@admin.register(HbvSupra)
+class HbvSupraAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvSupra."""
+
+    save_on_top = True
+    # date_hierarchy = 'updated_on'
+    list_display = ('supra_code', 'supra_name', 'updated_on', 'ogc_fid', )
+    # list_filter = ('rank_name', )
+    search_fields = ('supra_name', 'supra_code', )
+ 

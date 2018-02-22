@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""The WAStD API moduleprovides command-line access to:
+"""The WAStD API module provides access to:
 
 * Encouter and subclasses: AnimalEncounter, TurtleNestEncounter
 * Encounter Inlines: Observation subclasses
-* Separate TagObservation serializer to retrieve a Tag history.
+* Separate TagObservation serializer to retrieve a Tag history
+* Taxonomic names
 
 This API outputs:
 
@@ -66,7 +67,7 @@ from wastd.observations.models import (
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
-from taxonomy.models import HbvName
+from taxonomy.models import HbvName, HbvSupra
 # def symlink_resources(a,b,c):
 #     pass
 
@@ -1153,9 +1154,19 @@ router.register(r'tag-observations', TagObservationViewSet)
 router.register(r'nesttag-observations', NestTagObservationViewSet)
 
 
-# Taxonomy -------------------------------------------------------------------#
+# Taxonomy: Serializers -------------------------------------------------------------------#
+class HbvSupraSerializer(serializers.ModelSerializer):
+    """Serializer for HbvSupra."""
+
+    class Meta:
+        """Opts."""
+
+        model = HbvSupra
+        fields = '__all__'
+
+
 class HbvNameSerializer(serializers.ModelSerializer):
-    """Serializer for Taxon."""
+    """Serializer for HBVName."""
 
     class Meta:
         """Opts."""
@@ -1163,26 +1174,37 @@ class HbvNameSerializer(serializers.ModelSerializer):
         model = HbvName
         fields = '__all__'
 
+# Taxonomy: Filters -------------------------------------------------------------------#
+class HbvSupraFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvSupra
+        fields = {
+            'ogc_fid': '__all__',
+            'supra_code': '__all__',
+            'supra_name': '__all__',
+            'updated_on': '__all__',
+            'md5_rowhash': '__all__',
+            }
+
 
 class HbvNameFilter(filters.FilterSet):
 
     class Meta:
         model = HbvName
-        filter_args = ['exact', 'iexact', 'in', 'startswith', 'istartswith', 'contains', 'icontains']
         fields = {
-            'rank_name': filter_args,
-            'is_current': filter_args,
-            'naturalised_status': filter_args,
-            'naturalised_certainty': filter_args,
-            'is_eradicated': filter_args,
-            'informal': filter_args,
-
-            'name': filter_args,
-            'name_id': filter_args,
-            'full_name': filter_args,
-            'vernacular': filter_args,
-            'all_vernaculars': filter_args,
-            'author': filter_args,
+            'rank_name': '__all__',
+            'is_current': '__all__',
+            'naturalised_status': '__all__',
+            'naturalised_certainty': '__all__',
+            'is_eradicated': '__all__',
+            'informal': '__all__',
+            'name': '__all__',
+            'name_id': '__all__',
+            'full_name': '__all__',
+            'vernacular': '__all__',
+            'all_vernaculars': '__all__',
+            'author': '__all__',
         }
 
 
@@ -1260,24 +1282,20 @@ class HbvNameViewSet(viewsets.ModelViewSet):
 
     queryset = HbvName.objects.all()
     serializer_class = HbvNameSerializer
-    pagination_class = MyGeoJsonPagination
     filter_class = HbvNameFilter
     pagination_class = pagination.LimitOffsetPagination
-
+    uid_field = "name_id"
+    model = HbvName   
+    
     def create_one(self, data):
-        """POST: Create or update exactly one HbvName."""
-        name_id = data['name_id']
+        """POST: Create or update exactly one model instance."""
 
-        if HbvName.objects.filter(name_id=name_id).exists():
-            print("[NameViewSet] update name_id {0}".format(name_id))
-            taxon = HbvName.objects.get(name_id=name_id)
-            serializer = HbvNameSerializer(taxon, data=data)
-            st = status.HTTP_200_OK
+        obj, created = self.model.objects.get_or_create(
+            name_id = data[self.uid_field], defaults = data)
 
-        else:
-            print("[NameViewSet] create name_id {0}".format(name_id))
-            serializer = HbvNameSerializer(data=data)
-            st = status.HTTP_201_CREATED
+        serializer = self.serializer_class(obj, data=data)
+
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
         if serializer.is_valid():
             serializer.save()
@@ -1286,25 +1304,85 @@ class HbvNameViewSet(viewsets.ModelViewSet):
             return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
-        """POST: Create or update one or many Taxa.
-
-        If a HbvName with `name_id` exists, it will be updated,
-        otherwise a new HbvName will be created.
+        """POST: Create or update one or many model instances.
 
         request.data must be:
 
-        * a dict, e.g. containing the GeoJSON props of KMI WACensus
-        * a list of KMI props dicts.
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
         """
-        if 'name_id' in request.data:
+        if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
         else:
             try:
-                res = [self.create_one(x) for x in request.data]
+                res = [self.create_one(data) for data in request.data]
                 return res[0]
             except:
                 return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
 
-
 router.register("names", HbvNameViewSet)
+
+
+class HbvSupraViewSet(viewsets.ModelViewSet):
+    """View set for HbvSupra.
+
+    # Custom features
+    POST a GeoJSON feature properties dict to create or update the corresponding Taxon.
+
+    # Pagination: LimitOffset
+    The results have four top-level keys:
+
+    * `count` Total number of features
+    * `next` URL to next batch. `null` in last page.
+    * `previous` URL to previous batch. `null` in first page.
+
+    You can subset your own page with GET parameters `limit` and `offset`, e.g.
+    [/api/1/taxonomy/?limit=100&offset=100](/api/1/taxonomy/?limit=100&offset=100).
+
+    # Search and filter
+    All filters are enables for all fields. See HBV Names for details.
+    """
+
+    queryset = HbvSupra.objects.all()
+    serializer_class = HbvSupraSerializer
+    filter_class = HbvSupraFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "supra_code"
+    model = HbvSupra
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+
+        obj, created = self.model.objects.get_or_create(
+            supra_code = data[self.uid_field], defaults = data)
+
+        serializer = self.serializer_class(obj, data=data)
+
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+
+        if serializer.is_valid():
+            serializer.save()
+            return RestResponse(serializer.data, status=st)
+        else:
+            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        else:
+            try:
+                res = [self.create_one(data) for data in request.data]
+                return res[0]
+            except:
+                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+
+router.register("supra", HbvSupraViewSet)
