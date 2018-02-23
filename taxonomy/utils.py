@@ -1,6 +1,6 @@
 """Helpers for Taxonomy module."""
 import logging
-import pdb
+from pdb import set_trace
 from taxonomy.models import (Taxon, HbvName, HbvFamily)  # HbvGenus, HbvSpecies, HbvXref)
 
 logger = logging.getLogger(__name__)
@@ -22,27 +22,36 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
         lowest_parent = kingdom_dict[fam.kingdom_id]
 
         if fam.division_nid:
-            division, division_created = Taxon.objects.get_or_create(
+            dd = dict(
                 name_id=fam.division_nid,
                 name=fam.division_name,
                 rank=Taxon.RANK_DIVISION,
                 parent=lowest_parent)
+            division, division_created = Taxon.objects.get_or_create(
+                name_id=fam.division_nid,
+                defaults=dd)
             lowest_parent = division
 
         if fam.class_nid:
-            clazz, clazz_created = Taxon.objects.get_or_create(
+            dd = dict(
                 name_id=fam.class_nid,
                 name=fam.class_name,
                 rank=Taxon.RANK_CLASS,
                 parent=lowest_parent)
+            clazz, clazz_created = Taxon.objects.get_or_create(
+                name_id=fam.class_nid,
+                defaults=dd)
             lowest_parent = clazz
 
         if fam.order_nid:
-            order, order_created = Taxon.objects.get_or_create(
+            dd = dict(
                 name_id=fam.order_nid,
                 name=fam.order_name,
                 rank=Taxon.RANK_ORDER,
                 parent=lowest_parent)
+            order, order_created = Taxon.objects.get_or_create(
+                name_id=fam.order_nid,
+                defaults=dd)
             lowest_parent = order
 
         fdict = dict(name_id=fam.name_id,
@@ -57,7 +66,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
             name_id=fam.name_id, defaults=fdict)
 
     except:
-        pdb.set_trace()
+        set_trace()
 
     logger.info("[make_family] Created family {0}.".format(family))
     return family
