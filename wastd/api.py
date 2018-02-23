@@ -1572,15 +1572,16 @@ class HbvNameViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
 
-        serializer = self.serializer_class(obj, data=data)
+        # serializer = self.serializer_class(obj, data=data)
 
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        if serializer.is_valid():
-            serializer.save()
-            return RestResponse(serializer.data, status=st)
-        else:
-            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return RestResponse(serializer.data, status=st)
+        # else:
+        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -1619,15 +1620,16 @@ class HbvSupraViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(
             supra_code=data[self.uid_field], defaults=data)
 
-        serializer = self.serializer_class(obj, data=data)
+        # serializer = self.serializer_class(obj, data=data)
 
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        if serializer.is_valid():
-            serializer.save()
-            return RestResponse(serializer.data, status=st)
-        else:
-            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return RestResponse(serializer.data, status=st)
+        # else:
+        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -1666,15 +1668,16 @@ class HbvGroupViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
 
-        serializer = self.serializer_class(obj, data=data)
+        # serializer = self.serializer_class(obj, data=data)
 
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        if serializer.is_valid():
-            serializer.save()
-            return RestResponse(serializer.data, status=st)
-        else:
-            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return RestResponse(serializer.data, status=st)
+        # else:
+        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -1713,15 +1716,16 @@ class HbvFamilyViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
 
-        serializer = self.serializer_class(obj, data=data)
+        # serializer = self.serializer_class(obj, data=data)
 
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        if serializer.is_valid():
-            serializer.save()
-            return RestResponse(serializer.data, status=st)
-        else:
-            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return RestResponse(serializer.data, status=st)
+        # else:
+        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -1760,15 +1764,16 @@ class HbvGenusViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
 
-        serializer = self.serializer_class(obj, data=data)
+        # serializer = self.serializer_class(obj, data=data)
 
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        if serializer.is_valid():
-            serializer.save()
-            return RestResponse(serializer.data, status=st)
-        else:
-            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return RestResponse(serializer.data, status=st)
+        # else:
+        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -1807,15 +1812,16 @@ class HbvSpeciesViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
 
-        serializer = self.serializer_class(obj, data=data)
+        # serializer = self.serializer_class(obj, data=data)
 
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        if serializer.is_valid():
-            serializer.save()
-            return RestResponse(serializer.data, status=st)
-        else:
-            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return RestResponse(serializer.data, status=st)
+        # else:
+        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -1854,15 +1860,16 @@ class HbvVernacularViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(
             ogc_fid=data[self.uid_field], defaults=data)
 
-        serializer = self.serializer_class(obj, data=data)
+        # serializer = self.serializer_class(obj, data=data)
 
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        if serializer.is_valid():
-            serializer.save()
-            return RestResponse(serializer.data, status=st)
-        else:
-            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return RestResponse(serializer.data, status=st)
+        # else:
+        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -1901,15 +1908,16 @@ class HbvXrefViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(
             xref_id=data[self.uid_field], defaults=data)
 
-        serializer = self.serializer_class(obj, data=data)
+        # serializer = self.serializer_class(obj, data=data)
 
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        if serializer.is_valid():
-            serializer.save()
-            return RestResponse(serializer.data, status=st)
-        else:
-            return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return RestResponse(serializer.data, status=st)
+        # else:
+        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
