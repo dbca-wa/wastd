@@ -158,8 +158,7 @@ LOGGING = {
     },
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s '
-                      '%(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(message)s'
         },
     },
     'handlers': {
@@ -184,7 +183,17 @@ LOGGING = {
             'level': 'INFO',
             'handlers': ['console', 'mail_admins'],
             'propagate': True
-        }
+        },
+        'wastd.observations': {
+            'level': 'INFO',
+            'handlers': ['console', ],
+            'propagate': False,
+        },
+        'taxonomy': {
+            'level': 'DEBUG',
+            'handlers': ['console', ],
+            'propagate': False,
+        },
     }
 }
 

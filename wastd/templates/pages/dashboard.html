@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles leaflet_tags geojson_tags %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags %}
 
 {% block content %}
 <div class="row">
@@ -10,8 +10,7 @@
     <h3>Threatened Species and Communities Occurrence</h3>
 
     <div class="row">
-
-      {% for original in object_list %}
+      {% for original in nodes %}
       {% include "cards/taxon.html" with original=original %}
       {% endfor %}
 
@@ -65,6 +64,22 @@
         <button type="submit" class="btn btn-primary mb-2">Go</button>
       </div>
     </form>
+
+    <h3>Taxa</h3>
+    <small>
+    <ul>
+    {% recursetree nodes %}
+        <li>
+            {{ node }}
+            {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+    </ul>
+    </small>
   </div><!-- /#dash-filters -->
 </div>
 {% endblock %}

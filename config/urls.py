@@ -26,6 +26,7 @@ from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
     schema_view, update_names, import_odka,
     HomeView, DashboardView, EncounterTableView, AnimalEncounterTableView)
+from taxonomy.views import update_taxon
 
 # register all adminactions
 actions.add_to_site(site)
@@ -98,6 +99,8 @@ urlpatterns = [
     # Update animal names for all Encounters
     url(r'^action/update-names/$', update_names, name="update-names"),
     url(r'^action/import-odka/$', import_odka, name="import-odka"),
+    url(r'^action/update-taxon/$', update_taxon, name="update-taxon"),
+
 
 
     url(r'^400/$', default_views.bad_request,
@@ -112,7 +115,7 @@ urlpatterns = [
     # url(r'^500/$', default_views.server_error,
     #     kwargs={'exception': Exception('Infernal Server Error')}),
 
-    ] +\
+] +\
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
     staticfiles_urlpatterns()
 

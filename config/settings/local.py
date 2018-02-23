@@ -39,8 +39,8 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': ''
-        }
     }
+}
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
@@ -51,14 +51,14 @@ INTERNAL_IPS = ['127.0.0.1', '10.0.2.2', ]
 # tricks to have debug toolbar when developing with docker
 if os.environ.get('USE_DOCKER') == 'yes':
     ip = socket.gethostbyname(socket.gethostname())
-    INTERNAL_IPS += [ip[:-1]+"1"]
+    INTERNAL_IPS += [ip[:-1] + "1"]
 
 DEBUG_TOOLBAR_CONFIG = {
     'DISABLE_PANELS': [
         'debug_toolbar.panels.redirects.RedirectsPanel',
-        ],
+    ],
     'SHOW_TEMPLATE_CONTEXT': True,
-    }
+}
 
 # django-extensions
 # ------------------------------------------------------------------------------
@@ -81,8 +81,7 @@ LOGGING = {
     },
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s '
-                      '%(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(message)s'
         },
     },
     'handlers': {
@@ -92,21 +91,31 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins', 'console'],
-            'level': 'DEBUG',
+            'handlers': ['mail_admins'],
+            'level': 'INFO',
             'propagate': True
         },
         'django.security.DisallowedHost': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'handlers': ['console', 'mail_admins'],
             'propagate': True
-        }
+        },
+        'wastd.observations': {
+            'level': 'INFO',
+            'handlers': ['console', ],
+            'propagate': False,
+        },
+        'taxonomy': {
+            'level': 'DEBUG',
+            'handlers': ['console', ],
+            'propagate': False,
+        },
     }
 }

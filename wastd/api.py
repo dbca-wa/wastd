@@ -67,8 +67,8 @@ from wastd.observations.models import (
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
-from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily, 
-HbvGenus, HbvSpecies, HbvVernacular, HbvXref)
+from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily,
+                             HbvGenus, HbvSpecies, HbvVernacular, HbvXref, Taxon)
 # def symlink_resources(a,b,c):
 #     pass
 
@@ -1233,7 +1233,17 @@ class HbvXrefSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvXref
-        fields = '__all__' 
+        fields = '__all__'
+
+
+class TaxonSerializer(serializers.ModelSerializer):
+    """Serializer for HbvXref."""
+
+    class Meta:
+        """Opts."""
+
+        model = Taxon
+        fields = ('name_id', 'name', 'rank', 'parent')
 
 
 # Taxonomy: Filters -------------------------------------------------------------------#
@@ -1277,7 +1287,7 @@ class HbvNameFilter(filters.FilterSet):
             "informal": '__all__',
             "form_desc_yr": '__all__',
             "form_desc_mn": '__all__',
-            "form_desc_dy":'__all__',
+            "form_desc_dy": '__all__',
             "comments": '__all__',
             "added_by": '__all__',
             "added_on": '__all__',
@@ -1307,7 +1317,8 @@ class HbvSupraFilter(filters.FilterSet):
             'supra_name': '__all__',
             'updated_on': '__all__',
             'md5_rowhash': '__all__',
-            }
+        }
+
 
 class HbvGroupFilter(filters.FilterSet):
 
@@ -1322,7 +1333,7 @@ class HbvGroupFilter(filters.FilterSet):
             'rank_name': '__all__',
             'name': '__all__',
             'md5_rowhash': '__all__',
-            }
+        }
 
 
 class HbvFamilyFilter(filters.FilterSet):
@@ -1355,7 +1366,7 @@ class HbvFamilyFilter(filters.FilterSet):
             "added_on": '__all__',
             "updated_on": '__all__',
             "md5_rowhash": '__all__',
-            }
+        }
 
 
 class HbvGenusFilter(filters.FilterSet):
@@ -1381,7 +1392,7 @@ class HbvGenusFilter(filters.FilterSet):
             "added_on": '__all__',
             "updated_on": '__all__',
             "md5_rowhash": '__all__',
-            }
+        }
 
 
 class HbvSpeciesFilter(filters.FilterSet):
@@ -1421,7 +1432,7 @@ class HbvSpeciesFilter(filters.FilterSet):
             "updated_on": '__all__',
             "consv_code": '__all__',
             'md5_rowhash': '__all__',
-            }
+        }
 
 
 class HbvVernacularFilter(filters.FilterSet):
@@ -1440,7 +1451,7 @@ class HbvVernacularFilter(filters.FilterSet):
             "updated_by": '__all__',
             "updated_on": '__all__',
             "md5_rowhash": '__all__',
-            }
+        }
 
 
 class HbvXrefFilter(filters.FilterSet):
@@ -1460,7 +1471,19 @@ class HbvXrefFilter(filters.FilterSet):
             "added_on": '__all__',
             "updated_on": '__all__',
             'md5_rowhash': '__all__',
-            }
+        }
+
+
+class TaxonFilter(filters.FilterSet):
+
+    class Meta:
+        model = Taxon
+        fields = {
+            'name_id': '__all__',
+            'name': '__all__',
+            'rank': '__all__',
+            'parent': '__all__',
+        }
 
 
 # Taxonomy: Viewsets -------------------------------------------------------------------#
@@ -1541,13 +1564,13 @@ class HbvNameViewSet(viewsets.ModelViewSet):
     filter_class = HbvNameFilter
     pagination_class = pagination.LimitOffsetPagination
     uid_field = "name_id"
-    model = HbvName   
-    
+    model = HbvName
+
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
 
         obj, created = self.model.objects.get_or_create(
-            name_id = data[self.uid_field], defaults = data)
+            name_id=data[self.uid_field], defaults=data)
 
         serializer = self.serializer_class(obj, data=data)
 
@@ -1594,7 +1617,7 @@ class HbvSupraViewSet(viewsets.ModelViewSet):
         """POST: Create or update exactly one model instance."""
 
         obj, created = self.model.objects.get_or_create(
-            supra_code = data[self.uid_field], defaults = data)
+            supra_code=data[self.uid_field], defaults=data)
 
         serializer = self.serializer_class(obj, data=data)
 
@@ -1641,7 +1664,7 @@ class HbvGroupViewSet(viewsets.ModelViewSet):
         """POST: Create or update exactly one model instance."""
 
         obj, created = self.model.objects.get_or_create(
-            name_id = data[self.uid_field], defaults = data)
+            name_id=data[self.uid_field], defaults=data)
 
         serializer = self.serializer_class(obj, data=data)
 
@@ -1688,7 +1711,7 @@ class HbvFamilyViewSet(viewsets.ModelViewSet):
         """POST: Create or update exactly one model instance."""
 
         obj, created = self.model.objects.get_or_create(
-            name_id = data[self.uid_field], defaults = data)
+            name_id=data[self.uid_field], defaults=data)
 
         serializer = self.serializer_class(obj, data=data)
 
@@ -1735,7 +1758,7 @@ class HbvGenusViewSet(viewsets.ModelViewSet):
         """POST: Create or update exactly one model instance."""
 
         obj, created = self.model.objects.get_or_create(
-            name_id = data[self.uid_field], defaults = data)
+            name_id=data[self.uid_field], defaults=data)
 
         serializer = self.serializer_class(obj, data=data)
 
@@ -1782,7 +1805,7 @@ class HbvSpeciesViewSet(viewsets.ModelViewSet):
         """POST: Create or update exactly one model instance."""
 
         obj, created = self.model.objects.get_or_create(
-            name_id = data[self.uid_field], defaults = data)
+            name_id=data[self.uid_field], defaults=data)
 
         serializer = self.serializer_class(obj, data=data)
 
@@ -1829,7 +1852,7 @@ class HbvVernacularViewSet(viewsets.ModelViewSet):
         """POST: Create or update exactly one model instance."""
 
         obj, created = self.model.objects.get_or_create(
-            ogc_fid = data[self.uid_field], defaults = data)
+            ogc_fid=data[self.uid_field], defaults=data)
 
         serializer = self.serializer_class(obj, data=data)
 
@@ -1876,7 +1899,7 @@ class HbvXrefViewSet(viewsets.ModelViewSet):
         """POST: Create or update exactly one model instance."""
 
         obj, created = self.model.objects.get_or_create(
-            xref_id = data[self.uid_field], defaults = data)
+            xref_id=data[self.uid_field], defaults=data)
 
         serializer = self.serializer_class(obj, data=data)
 
@@ -1907,3 +1930,16 @@ class HbvXrefViewSet(viewsets.ModelViewSet):
                 return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
 
 router.register("xrefs", HbvXrefViewSet)
+
+
+class TaxonViewSet(viewsets.ModelViewSet):
+    """View set for Taxon. See HBV Names for details and usage examples."""
+
+    queryset = Taxon.objects.all()
+    serializer_class = TaxonSerializer
+    filter_class = TaxonFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "name_id"
+    model = Taxon
+
+router.register("taxa", TaxonViewSet)

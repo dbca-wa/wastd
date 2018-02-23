@@ -139,7 +139,15 @@
                   href="{% url 'import-odka' %}"
                   title="Import new OpenDataKit submissions">
                   <i class="fa fa-refresh"></i> Import ODK Submissions
-                </a>
+                  </a>
+
+                  <a class="dropdown-item"
+                  href="{% url 'update-taxon' %}"
+                  title="Update taxon names">
+                  <i class="fa fa-refresh"></i> Update Taxon Names
+                  </a>
+
+
 
                 <a class="dropdown-item"
                 href="/api/1/animal-encounters/?format=latex"

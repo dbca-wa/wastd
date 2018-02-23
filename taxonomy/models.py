@@ -219,7 +219,7 @@ class HbvFamily(models.Model):
         blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
         help_text=_("The OCG Feature ID of the record, "
-        "used to identify the record."),
+                    "used to identify the record."),
     )
 
     name_id = models.BigIntegerField(
@@ -304,7 +304,7 @@ class HbvFamily(models.Model):
     class_name = models.CharField(
         max_length=1000,
         blank=True, null=True,
-        verbose_name=_("Class Name"),
+        verbose_name=_("Class"),
         help_text=_(""),
     )
 
@@ -317,20 +317,20 @@ class HbvFamily(models.Model):
     division_name = models.CharField(
         max_length=1000,
         blank=True, null=True,
-        verbose_name=_("Order Name"),
+        verbose_name=_("Division"),
         help_text=_(""),
     )
 
     kingdom_id = models.BigIntegerField(
         blank=True, null=True,
-        verbose_name=_("Kingdom NameID"),
-        help_text=_("WACensus NameID, assigned by WACensus."),
+        verbose_name=_("Kingdom ID"),
+        help_text=_("WACensus Kingdom ID."),
     )
 
     kingdom_name = models.CharField(
         max_length=1000,
         blank=True, null=True,
-        verbose_name=_("Kingdom Name"),
+        verbose_name=_("Kingdom"),
         help_text=_(""),
     )
 
@@ -1185,7 +1185,7 @@ class HbvName(models.Model):
         blank=True, null=True,
         verbose_name=_("Updated by"),
         help_text=_("The person or system who updated this record "
-        "last in WACensus."),
+                    "last in WACensus."),
     )
 
     updated_on = models.CharField(
@@ -1199,7 +1199,7 @@ class HbvName(models.Model):
         blank=True, null=True,
         verbose_name=_("Linear sequence"),
         help_text=_("Always populated for plant families,"
-        " may be blank for other names."),
+                    " may be blank for other names."),
     )
 
     #    "md5_rowhash": "f3e900990365c28fc9d15fe5e4090aa1"
@@ -1214,7 +1214,7 @@ class HbvName(models.Model):
         blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
         help_text=_("The OCG Feature ID of the record, used to "
-        "identify the record."),
+                    "identify the record."),
     )
 
     class Meta:
@@ -1269,7 +1269,7 @@ class HbvVernacular(models.Model):
         blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
         help_text=_("The OCG Feature ID of the record, used to "
-        "identify the record."),
+                    "identify the record."),
     )
 
     name_id = models.BigIntegerField(
@@ -1330,7 +1330,7 @@ class HbvVernacular(models.Model):
         blank=True, null=True,
         verbose_name=_("Updated by"),
         help_text=_("The person or system who updated this record "
-        "last in WACensus."),
+                    "last in WACensus."),
     )
 
     updated_on = models.CharField(
@@ -1384,7 +1384,7 @@ class HbvXref(models.Model):
         blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
         help_text=_("The OCG Feature ID of the record, used to "
-        "identify the record in GeoServer."),
+                    "identify the record in GeoServer."),
     )
 
     xref_id = models.BigIntegerField(
@@ -1392,7 +1392,7 @@ class HbvXref(models.Model):
         blank=True, null=True,
         verbose_name=_("WACensus xref ID"),
         help_text=_("The WACensus xref ID of the record, used to "
-        "identify the record in WACensus."),
+                    "identify the record in WACensus."),
     )
 
     old_name_id = models.BigIntegerField(
@@ -1418,7 +1418,7 @@ class HbvXref(models.Model):
             ("FOR", "Formal description"),
             ("OGV", "Orthographic variant"),
             ("ERR", "Name in error"),
-            ("ISY", "Informal Synonym"),  
+            ("ISY", "Informal Synonym"),
             # ISY: non-current name pointing to another non-current name
         ),
         blank=True, null=True,
@@ -1438,7 +1438,7 @@ class HbvXref(models.Model):
         blank=True, null=True,
         verbose_name=_("WACensus authorised by"),
         help_text=_("The person or system who authorised this record "
-        "last in WACensus."),
+                    "last in WACensus."),
     )
 
     authorised_on = models.CharField(
@@ -1486,9 +1486,9 @@ class HbvXref(models.Model):
     def __str__(self):
         """The full name."""
         return "{0} {1} {2} on {3}".format(
-            self.old_name_id, 
-            self.xref_type, 
-            self.new_name_id, 
+            self.old_name_id,
+            self.xref_type,
+            self.new_name_id,
             self.authorised_on)
 
 
@@ -1498,14 +1498,14 @@ class Taxon(MPTTModel):
     """A taxonomic name at any taxonomic rank.
 
     A taxonomy is a directed graph with exactly one root node (Domain) and
-    child nodes at every known rank. Each node has exactly one parent node, 
+    child nodes at every known rank. Each node has exactly one parent node,
     and can thus infer its taxonomic parentage.
 
     Each rank can build its correct name based on different rules for each rank.
     Ranks are stored as SmallIntegerField, so that lookups against ranks are fast.
 
     Status contains the taxon name's life cycle:
-    
+
     * A phrase name is created for possibly unknown specimens.
     * A manuscript name is <insert definition>.
     * A formally published name is current.
@@ -1513,10 +1513,10 @@ class Taxon(MPTTModel):
     * Taxonomic events can involve more than one name.
 
     A legally gazetted name is published every year for names with conservation status.
-    The gazettal process can lag behind the publication process by up to a year at the 
+    The gazettal process can lag behind the publication process by up to a year at the
     current rate of gazettal (annual).
-    
-    TODO: define business logic, then implement status.
+
+    Get Parents: https://stackoverflow.com/a/6565577/2813717
     """
 
     RANK_DOMAIN = 0
@@ -1571,29 +1571,32 @@ class Taxon(MPTTModel):
         (RANK_SUBVARIETY, "Subvariety"),
         (RANK_FORMA, "Forma"),
         (RANK_SUBFORMA, "Subforma")
-    
+
+    )
+
+    PUBLICATION_STATUS_PHRASE_NAME = 0
+    PUBLICATION_STATUS_MANUSCRIPT_NAME = 1
+    PUBLICATION_STATUS_PUBLISHED_NAME = 2
+
+    PUBLICATION_STATUS = (
+        (PUBLICATION_STATUS_PHRASE_NAME, "Phrase Name"),
+        (PUBLICATION_STATUS_MANUSCRIPT_NAME, "Manuscript Name"),
+        (PUBLICATION_STATUS_PUBLISHED_NAME, "Published Name"),
     )
 
     name_id = models.BigIntegerField(
         unique=True,
         verbose_name=_("NameID"),
         help_text=_("WACensus NameID, assigned by WACensus."),
-        )
+    )
 
     parent = TreeForeignKey(
-        'self', 
-        null=True, blank=True, 
-        related_name='children', 
+        'self',
+        null=True, blank=True,
+        related_name='children',
         db_index=True,
         verbose_name=_('Parent Taxon'),
         help_text=_('The lowest known parent taxon.'),
-        )
-
-    name = models.CharField(
-        max_length=1000,
-        blank=True, null=True,
-        verbose_name=_("Taxon Name"),
-        help_text=_("The taxon name.")
     )
 
     rank = models.PositiveSmallIntegerField(
@@ -1603,17 +1606,52 @@ class Taxon(MPTTModel):
         help_text=_("The taxonomic rank of the taxon."),
     )
 
-    # Status FSM: life cycle of phrase name, ms name, authorised name, gazetted name, non-current name
-    # status = 
+    name = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Taxon Name"),
+        help_text=_("The taxon name.")
+    )
+
+    author = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Author"),
+        help_text=_("Taxonomic Author"),
+    )
+
+    publication_status = models.PositiveSmallIntegerField(
+        choices=PUBLICATION_STATUS,
+        default=PUBLICATION_STATUS_PUBLISHED_NAME,
+        verbose_name=_("Publication Status"),
+        help_text=_("On what level the name is published."),
+    )
+
+    current = models.BooleanField(
+        default=False,
+        verbose_name=_("Is current"),
+        help_text=_("Whether the name is current."),
+    )
+
+    # QA Status FSM: new, proofread
+    # status = FSMField(default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name=_("QA Status"))
 
     class MPTTMeta:
+        """MPTT Class options."""
+
         order_insertion_by = ['name_id']
 
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Taxon"
+        verbose_name_plural = "Taxa"
+
     def __str__(self):
-        """The full name. 
-        
+        """The full name.
+
         TODO: make rank-sensitive.
-        
+
         * Anything above species: [NameID] RANK NAME
         * Species: [NameID] RANK GENUS (SPECIES)NAME
         * Subspecies: [NameID] RANK GENUS SPECIES (SUBSPECIES)NAME subsp.

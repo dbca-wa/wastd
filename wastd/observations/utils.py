@@ -9,6 +9,7 @@ from confy import env
 from datetime import datetime
 from dateutil import parser
 # from pprint import pprint
+import logging
 import requests
 import shutil
 import xmltodict
@@ -27,12 +28,14 @@ from django.utils.dateparse import parse_datetime
 from wastd.observations.models import *
 from wastd.users.models import User
 
+logger = logging.getLogger(__name__)
+
 
 def set_site(sites, encounter):
     """Set the site for an Encounter from a list of sites."""
     encounter.site = sites.filter(geom__contains=encounter.where).first() or None
     encounter.save(update_fields=["site"])
-    print("Found encounter {0} at site {1}".format(encounter, encounter.site))
+    logger.info("Found encounter {0} at site {1}".format(encounter, encounter.site))
     return enc
 
 
@@ -40,7 +43,7 @@ def set_sites():
     """Set the site where missing for all NEW Encounters."""
     sites = Area.objects.filter(area_type=Area.AREATYPE_SITE)
     enc = Encounter.objects.filter(status=Encounter.STATUS_NEW, site=None)
-    print("[wastd.observations.utils.set_sites] Found {0} encounters without site".format(enc.count()))
+    logger.info("[wastd.observations.utils.set_sites] Found {0} encounters without site".format(enc.count()))
     return [set_site(sites, e) for e in enc]
 
 
@@ -71,10 +74,10 @@ def symlink_one_resource(t_dir, rj):
     if "photographs" in rj and len(rj["photographs"]) > 0:
         # Once per encounter, create temp_dir/media_path
         media_path = os.path.split(rj["photographs"][0]["attachment"])[0]
-        print("pre_latex symlinking {0}".format(media_path))
+        logger.info("pre_latex symlinking {0}".format(media_path))
         dest_dir = os.path.join(t_dir, "tex", media_path)
         os.makedirs(dest_dir)
-        print("pre_latex created {0}".format(str(dest_dir)))
+        logger.info("pre_latex created {0}".format(str(dest_dir)))
 
         for photo in rj["photographs"]:
             # Once per photo, symlink file to temp_dir
@@ -86,7 +89,7 @@ def symlink_one_resource(t_dir, rj):
                 os.remove(dest)
             os.symlink(src, dest)
     else:
-        print("No photographs found.")
+        logger.info("No photographs found.")
 
 
 def symlink_resources(t_dir, data):
@@ -102,18 +105,18 @@ def symlink_resources(t_dir, data):
     if "type" in d.keys():
 
         if d["type"] == "FeatureCollection":
-            print("Symlinking photographs of a GeoJSON FeatureCollection")
+            logger.info("Symlinking photographs of a GeoJSON FeatureCollection")
             [symlink_one_resource(t_dir, f["properties"]) for f in d["features"]]
 
         elif d["type"] == "Feature":
-            print("Symlinking photographs of a GeoJSON Feature")
+            logger.info("Symlinking photographs of a GeoJSON Feature")
             symlink_one_resource(t_dir, d["properties"])
 
     elif "photographs" in d.keys():
-        print("Symlinking photographs of a JSON object")
+        logger.info("Symlinking photographs of a JSON object")
         symlink_one_resource(t_dir, d)
     else:
-        print("Symlinking photographs of a list of JSON objects")
+        logger.info("Symlinking photographs of a list of JSON objects")
         [symlink_one_resource(t_dir, enc) for enc in d]
 
 
@@ -202,7 +205,7 @@ def guess_user(un, default_username="florianm"):
     if un is None:
         un = default_username
 
-    print("Guessing User for {0}...".format(un))
+    logger.info("Guessing User for {0}...".format(un))
 
     try:
         usr = usermodel.objects.get(username=un.replace(" ", "_").replace(".", "_"))
@@ -229,7 +232,7 @@ def guess_user(un, default_username="florianm"):
             usr = usermodel.objects.first()
             msg = "[guess_user][NEEDS QA][default] Username not given, using admin {1}"
 
-    print(msg.format(un, usr))
+    logger.info(msg.format(un, usr))
     return {'user': usr, 'message': msg.format(un, usr)}
 
 
@@ -293,7 +296,7 @@ def read_odk_linestring(odk_str):
           for p in odk_str.split(";")
           if len(p) > 0]
          ]
-        )
+    )
 
 
 def odk_linestring_as_point(odk_str):
@@ -482,7 +485,7 @@ def handle_turtlenestdistobs(d, e, m):
         disturbance_cause_confidence=m["confidence"][d["disturbance_cause_confidence"]],
         disturbance_severity=d["disturbance_severity"],
         comments=d["comments"]
-        )
+    )
     dd.save()
     action = "created" if created else "updated"
     print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
@@ -528,7 +531,7 @@ def handle_turtlenestdistobs31(d, e):
         disturbance_cause=d["disturbance_cause"],
         disturbance_cause_confidence=d["disturbance_cause_confidence"],
         comments=d["comments"]
-        )
+    )
     if "disturbance_severity" in d:
         dd.disturbance_severity = d["disturbance_severity"]
     dd.save()
@@ -589,7 +592,7 @@ def handle_turtlenestobs(d, e, m):
         no_depredated_eggs=d["no_depredated_eggs"],
         nest_depth_top=d["nest_depth_top"],
         nest_depth_bottom=d["nest_depth_bottom"]
-        )
+    )
     dd.save()
     action = "created" if created else "updated"
     print("  TurtleNestObservation {0}: {1}".format(action, dd))
@@ -647,7 +650,7 @@ def handle_turtlenestobs31(d, e):
         no_depredated_eggs=int_or_none(d["no_depredated_eggs"]),
         nest_depth_top=int_or_none(d["nest_depth_top"]),
         nest_depth_bottom=int_or_none(d["nest_depth_bottom"])
-        )
+    )
     dd.save()
     action = "created" if created else "updated"
     print("  TurtleNestObservation {0}: {1}".format(action, dd))
@@ -728,7 +731,7 @@ def handle_hatchlingmorphometricobs(d, e):
         straight_carapace_length_mm=scl,
         straight_carapace_width_mm=scw,
         body_weight_g=bwg
-        )
+    )
     dd.save()
     action = "created" if created else "updated"
     print("  Hatchling Obs {0}: {1}".format(action, dd))
@@ -786,7 +789,7 @@ def handle_loggerenc(d, e):
             flipper_tag_id=nto.flipper_tag_id,
             date_nest_laid=nto.date_nest_laid,
             tag_label=nto.tag_label,
-            )
+        )
         nto.save()
         action = "created" if created else "updated"
         print("  NestTag Observation {0} for {1}".format(action, nto))
@@ -815,7 +818,7 @@ def handle_turtlenestdisttallyobs(d, e, m=None):
         no_nests_disturbed=d["no_nests_disturbed"] or 0,
         no_tracks_encountered=d["no_tracks_encountered"] or 0,
         comments=d["disturbance_comments"]
-        )
+    )
     dd.save()
     action = "created" if created else "updated"
     print("  Disturbance observation {0}: {1}".format(action, dd))
@@ -859,7 +862,7 @@ def import_one_record_tt034(r, m):
         nest_type=m["nest_type"][r["nest_type"]],
         species=m["species"][r["species"]],
         # comments
-        )
+    )
     if r["nest_type"] in ["successfulcrawl", "nest", "hatchednest"]:
         new_data["habitat"] = m["habitat"][r["habitat"]]
         new_data["disturbance"] = r["disturbance"]
@@ -943,7 +946,7 @@ def import_one_record_tt036(r, m):
         nest_type=r["nest_type"],
         species=r["species"],
         # comments
-        )
+    )
     if r["nest_type"] in ["successful-crawl", "nest", "hatched-nest"]:
         new_data["habitat"] = r["habitat"]
         new_data["disturbance"] = r["disturbance"]
@@ -1020,7 +1023,7 @@ def import_one_record_fs03(r, m):
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
         reporter=m["users"][r["reporter"]]
-        )
+    )
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -1228,7 +1231,7 @@ def import_one_record_mwi01(r, m):
         scanned_for_pit_tags=m["yes_no"][r["scanned_for_pit_tags"]],
         checked_for_flipper_tags=m["yes_no"][r["checked_for_flipper_tags"]],
         # comments
-        )
+    )
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -1325,7 +1328,7 @@ def import_one_record_sv01(r, m):
         finished_on=parse_datetime(r["observation_end_time"]),
         # m["users"][r["reporter"]],  # add to team
         comments=r["comments"]
-        )
+    )
 
     if Survey.objects.filter(source_id=src_id).exists():
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -1354,7 +1357,7 @@ def make_tallyobs(encounter, species, nest_age, nest_type, tally_number):
         nest_age=nest_age,
         nest_type=nest_type,
         tally=tally_number
-        )
+    )
     print('  Tally (created: {0}) {1}'.format(created, t))
 
 
@@ -1441,7 +1444,7 @@ def import_one_record_tt05(r, m):
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
         reporter=m["users"][r["reporter"]],
-        )
+    )
 
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -1507,7 +1510,7 @@ def import_one_record_tt05(r, m):
         [UN, "fresh",   "track-unsure",         r["unk_no_fresh_tracks_unsure"] or 0],
         [UN, "fresh",   "track-not-assessed",   r["unk_no_fresh_tracks_not_assessed"] or 0],
         [UN, "fresh",   "hatched-nest",         r["unk_no_hatched_nests"] or 0],
-        ]
+    ]
 
     [make_tallyobs(e, x[0], x[1], x[2], x[3]) for x in tally_mapping]
 
@@ -1709,7 +1712,7 @@ def import_one_encounter_wamtram(r, m, u):
         health=m["health"][r['CONDITION_CODE']],
         habitat=m["habitat"][r["BEACH_POSITION_CODE"]],
         nesting_event=m["nesting"][r["CLUTCH_COMPLETED"]],
-        )
+    )
 
     """
     TODO create mapping for:
@@ -1750,13 +1753,13 @@ def make_tag_side(side, position):
         "NA": "left",
         "L": "left",
         "R": "right"
-        }
+    }
     pos_dict = {
         "NA": "1",
         "1": "1",
         "2": "2",
         "3": "3"
-        }
+    }
     return "flipper-front-{0}-{1}".format(side_dict[side], pos_dict[position])
 
 
@@ -1806,7 +1809,7 @@ def import_one_tag(t, m):
         tag_location=make_tag_side(t["attached_on_side"], t["tag_position"]),
         status=m["tag_status"][t["tag_state"]],
         comments='{0}{1}'.format(t["comments"], t["tag_label"]),
-        )
+    )
 
     if TagObservation.objects.filter(encounter=enc, name=tag_name).exists():
         print("Updating existing tag obs {0}...".format(tag_name))
@@ -1983,7 +1986,7 @@ def import_one_record_cet(r, m):
         'sousa-chinensis': 'sousa-sahulensis',
         'orcaella-heinsohni-x': "orcaella-heinsohni",
         'stenella--sp-(coeruleoalba)': "stenella-sp",
-        }
+    }
     species.update(happy_little_mistakes)
 
     cod = {
@@ -2022,7 +2025,7 @@ def import_one_record_cet(r, m):
         'Unkown': "na",
         '': "na",
         'Weapon (gun, spear etc)': "trauma-human-induced",
-        }
+    }
 
     src_id = "cet-{0}".format(r["Record No."])
 
@@ -2088,7 +2091,7 @@ def import_one_record_cet(r, m):
 
             'Site',
             'Location',
-            ]]),
+        ]]),
         'cause_of_death': cod[r["Cause of Death _drop down_"]],
         'cause_of_death_confidence': u'na',  # TODO
         'checked_for_flipper_tags': u'na',  # TODO
@@ -2104,7 +2107,7 @@ def import_one_record_cet(r, m):
         'sex': infer_cetacean_sex(r["F"], r["M"]),
         'source': u'cet',
         'source_id': src_id,
-        }
+    }
     # check if src_id exists
     if src_id in m["overwrite"]:
         print("Updating unchanged existing record {0}...".format(src_id))
@@ -2278,7 +2281,7 @@ def make_mapping():
         'LB': 'dermochelys-coriacea',
         '?': 'cheloniidae-fam',
         '0': 'cheloniidae-fam',
-        })
+    })
 
     habitat = map_and_keep(HABITAT_CHOICES)
     habitat.update({
@@ -2335,7 +2338,7 @@ def make_mapping():
         "X": "floating",        # Turtle dead
         "Y": "floating",        # Caught in fishing gear - Relsd
         "Z": "other",           # Hunted for food by Ab & others
-        })
+    })
 
     yes_no = map_and_keep(OBSERVATION_CHOICES)
     yes_no.update({
@@ -2387,7 +2390,7 @@ def make_mapping():
 
         "overwrite": [t.source_id for t in Encounter.objects.filter(
             source="odk", status=Encounter.STATUS_NEW)]
-        }
+    }
 
 
 # -----------------------------------------------------------------------------#
@@ -2428,11 +2431,11 @@ def import_odk(datafile,
     Example:
 
         from wastd.observations.utils import *
-        #import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
+        # import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
         import_odk('data/cetaceans.csv', flavour="cet")
         import_odk('data/wamtram_encounters.csv', flavour="wamtram", usercsv="data/wamtram_users.csv")
         import_odk('data/wamtram_tagobservations.csv', flavour="whambam")
-        #import_odk('data/Site_Visit_0_1_results.json', flavour="sitevisit")
+        # import_odk('data/Site_Visit_0_1_results.json', flavour="sitevisit")
 
         import_odk("data/latest/tt05.json", flavour="odk-tally05")
         import_odk('data/latest/tt031.json', flavour="odk-tt031")
@@ -2637,11 +2640,11 @@ def odka_forms(url=env('ODKA_URL'),
     """
     api = "{0}/xformsList".format(url)
     au = HTTPDigestAuth(un, pw)
-    print("[odka_forms] Retrieving xformsList from {0}...".format(url))
+    logger.info("[odka_forms] Retrieving xformsList from {0}...".format(url))
     res = requests.get(api, auth=au)
     xforms = xmltodict.parse(res.content, xml_attribs=True)
     forms = xforms["xforms"]["xform"]
-    print("[odka_forms] Done, retrieved {0} forms.".format(len(forms)))
+    logger.info("[odka_forms] Done, retrieved {0} forms.".format(len(forms)))
     return forms
 
 
@@ -2691,9 +2694,8 @@ def odka_submission_ids(form_id,
     api = "{0}/view/submissionList".format(url)
     au = HTTPDigestAuth(un, pw)
 
-    print("[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(form_id))
-    if verbose:
-        print("[odka_submission_ids] Retrieving submission IDs from '{0}'...".format(api))
+    logger.info("[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(form_id))
+    logger.debug("[odka_submission_ids] Retrieving submission IDs from '{0}'...".format(api))
 
     res = requests.get(api, auth=au, params=pars)
     parsed = xmltodict.parse(res.content, xml_attribs=True)
@@ -2710,7 +2712,7 @@ def odka_submission_ids(form_id,
 
     # resumption_cursor = parsed["idChunk"]["resumptionCursor"]
 
-    print("[odka_submission_ids] Done, retrieved {0} submission IDs.".format(len(ids)))
+    logger.info("[odka_submission_ids] Done, retrieved {0} submission IDs.".format(len(ids)))
     return ids
 
 
@@ -2784,9 +2786,9 @@ def odka_submission(form_id,
            "[@version=null%20and%20@uiVersion=null]/data[@key={2}]").format(
         url, form_id, submission_id)
     au = HTTPDigestAuth(un, pw)
-    print("[odka_submission] Retrieving {0}".format(submission_id))
+    logger.info("[odka_submission] Retrieving {0}".format(submission_id))
     if verbose:
-        print("[odka_submission] URL {0}".format(api))
+        logger.info("[odka_submission] URL {0}".format(api))
     res = requests.get(api, auth=au)
     return xmltodict.parse(res.content, xml_attribs=True)
 
@@ -2804,7 +2806,7 @@ def downloaded_data_exists(form_id, path):
 def downloaded_data(form_id, path):
     """Return downloaded data for form_id stored at path as parsed JSON or an empty list."""
     if downloaded_data_exists(form_id, path):
-        print("[downloaded_data] Parsing {0}".format(downloaded_data_filename(form_id, path)))
+        logger.info("[downloaded_data] Parsing {0}".format(downloaded_data_filename(form_id, path)))
         with io.open(downloaded_data_filename(form_id, path), mode="r", encoding="utf-8") as df:
             data = json.load(df)
     else:
@@ -2840,10 +2842,10 @@ def odka_submissions(form_id,
     forms = odka_forms()
     data = odka_submissions(forms[6]["formID"])
     """
-    print("[odka_submissions] Retrieving submissions for formID {0}...".format(form_id))
+    logger.info("[odka_submissions] Retrieving submissions for formID {0}...".format(form_id))
 
     old_data = downloaded_data(form_id, path)
-    print("[odka_submissions] Found {0} already downloaded submissions.".format(len(old_data)))
+    logger.info("[odka_submissions] Found {0} already downloaded submissions.".format(len(old_data)))
     if append:
         old_ids = [make_data(x)["@instanceID"] for x in old_data]
         action = "retained"
@@ -2854,8 +2856,9 @@ def odka_submissions(form_id,
     new_data = [odka_submission(form_id, x, url=url, un=un, pw=pw, verbose=verbose)
                 for x in odka_submission_ids(form_id, url=url, un=un, pw=pw, verbose=verbose)
                 if x not in old_ids]
-    print("[odka_submissions] Done, retrieved {0} new submissions, {1} {2} already downloaded submissions.".format(
-        len(new_data), action, len(old_data)))
+    logger.info("[odka_submissions] Done, retrieved {0} new submissions, "
+                "{1} {2} already downloaded submissions.".format(
+                    len(new_data), action, len(old_data)))
     return old_data + new_data
 
 
@@ -2987,14 +2990,14 @@ def make_datapackage_json(xform,
             }
         ],
         "resources": [
-                {'encoding': 'utf-8',
-                 'format': 'json',
-                 'mediatype': 'text/json',
-                 'name': fid,
-                 'path': "{0}/{1}.json".format(datapackage_path, fid),
-                 'profile': 'data-resource'}
+            {'encoding': 'utf-8',
+             'format': 'json',
+             'mediatype': 'text/json',
+             'name': fid,
+             'path': "{0}/{1}.json".format(datapackage_path, fid),
+             'profile': 'data-resource'}
         ]
-        }
+    }
 
     if download_config:
         with open('{0}/datapackage.json'.format(datapackage_path), 'w') as outfile:
@@ -3030,19 +3033,19 @@ def make_media(odka_dict):
     if "mediaFile" in odka_dict["submission"]:
         mf = odka_dict["submission"]["mediaFile"]
         if "filename" in mf:
-            print("[make_media] found single mediaFile")
+            logger.debug("[make_media] found single mediaFile")
             d = dict()
             d[mf["filename"]] = mf["downloadUrl"]
             return d
         elif len(mf) > 0 and "filename" in mf[0]:
-            print("[make_media] found multiple mediaFiles")
+            logger.debug("[make_media] found multiple mediaFiles")
             return {x["filename"]: x["downloadUrl"] for x in mf}
         else:
-            print("[make_media] WARNING unknown data: {0}".format(
+            logger.debug("[make_media] WARNING unknown data: {0}".format(
                 json.dumps(mf, indent=2)))
             return dict()
     else:
-        print("[make_media] no mediaFile found")
+        logger.debug("[make_media] no mediaFile found")
         return dict()
 
 
@@ -3139,8 +3142,8 @@ def create_update_skip(
         e.save()
         msg = "[create_update_skip] Created new record {0}".format(e.__str__())
 
-    print(msg)
-    print("[create_update_skip] Done, returning record.")
+    logger.debug(msg)
+    logger.debug("[create_update_skip] Done, returning record.")
     return (e, action)
 
 
@@ -3158,7 +3161,7 @@ def int_or_none(value):
 def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
     """Handle MediaAttachment for ODKA data."""
     if not photo_filename:
-        print("  [handle_media_attachment_odka] skipping empty photo {0}".format(title))
+        logger.debug("  [handle_media_attachment_odka] skipping empty photo {0}".format(title))
     else:
         handle_media_attachment(
             enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
@@ -3168,7 +3171,7 @@ def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
 def handle_fieldmedia_attachment_odka(exp, media, photo_filename, title="Photo"):
     """Handle MediaAttachment for ODKA data."""
     if not photo_filename:
-        print("  [handle_fieldmedia_attachment_odka] skipping empty photo {0}".format(title))
+        logger.debug("  [handle_fieldmedia_attachment_odka] skipping empty photo {0}".format(title))
     else:
         handle_fieldmedia_attachment(
             exp, dict(filename=photo_filename, url=media[photo_filename]), title=title)
@@ -3192,11 +3195,11 @@ def handle_odka_disturbanceobservation(enc, media, data):
     elif "disturbance" in data:
         distobs = listify(data["disturbance"])
     else:
-        print("  [handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
+        logger.debug("  [handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
         return None
 
     if distobs:
-        print(
+        logger.debug(
             "  [handle_odka_disturbanceobservation] found "
             "{0} TurtleNestDisturbanceObservation(s)".format(len(distobs)))
         [handle_turtlenestdistobs31(
@@ -3210,7 +3213,7 @@ def handle_odka_disturbanceobservation(enc, media, data):
             ),
             enc) for x in distobs]
     else:
-        print("  [handle_odka_disturbanceobservation] found invalid data: {0}".format(
+        logger.debug("  [handle_odka_disturbanceobservation] found invalid data: {0}".format(
             json.dumps(distobs, indent=2)))
     return None
 
@@ -3238,13 +3241,13 @@ def handle_odka_nesttagobservation(enc, media, data):
     }
     """
     if "nest_tag" not in data:
-        print("[handle_odka_nesttagobservation] found no TurtleNestTagObservation")
+        logger.debug("[handle_odka_nesttagobservation] found no TurtleNestTagObservation")
         return None
 
     obs = listify(data["nest_tag"])
 
     if obs:
-        print("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
+        logger.debug("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
         [handle_turtlenesttagobs(
             dict(
                 encounter=enc,
@@ -3256,8 +3259,8 @@ def handle_odka_nesttagobservation(enc, media, data):
             ),
             enc) for x in obs]
     else:
-        print("[handle_odka_nesttagobservation] found invalid data:\n{0}".format(
-                json.dumps(obs, indent=2)))
+        logger.debug("[handle_odka_nesttagobservation] found invalid data:\n{0}".format(
+            json.dumps(obs, indent=2)))
 
     return None
 
@@ -3341,12 +3344,12 @@ def handle_odka_tagsobs(enc, media, data):
             criteria = dict(encounter=enc, tag_type=tag_type, name=tag_name)
             target = TagObservation.objects.filter(**criteria)
             if target.exists():
-                print("  [handle_odka_tagsobs] Updating existing tag obs {0}...".format(tag_name))
+                logger.debug("  [handle_odka_tagsobs] Updating existing tag obs {0}...".format(tag_name))
                 e = target.update(**new_data)
                 e = TagObservation.objects.get(**criteria)
 
             else:
-                print("  [handle_odka_tagsobs] Creating new tag obs {0}...".format(tag_name))
+                logger.debug("  [handle_odka_tagsobs] Creating new tag obs {0}...".format(tag_name))
                 e = TagObservation.objects.create(**new_data)
 
             # 2. Photo of tag
@@ -3355,7 +3358,7 @@ def handle_odka_tagsobs(enc, media, data):
                     enc, media, obs["photo_tag"], title="Photo {0}".format(e.__str__()))
 
     else:
-        print("  [handle_odka_tagsobs] found no TagObservation")
+        logger.debug("  [handle_odka_tagsobs] found no TagObservation")
 
     return None
 
@@ -3398,7 +3401,7 @@ def handle_odka_turtlenestobservation(enc, media, data):
         None
     """
     if "egg_count" not in data:
-        print("  [handle_odka_turtlenestobservation] found no TurtleNestObservation")
+        logger.debug("  [handle_odka_turtlenestobservation] found no TurtleNestObservation")
         return None
 
     if data["nest"]["eggs_counted"] == "yes":
@@ -3448,7 +3451,7 @@ def handle_odka_managementaction(enc, media, data):
             e = ManagementAction.objects.create(**new_data)
             msg = "  [handle_odka_managementaction] Created new {0}".format(e)
 
-    print(msg)
+    logger.debug(msg)
     return None
 
 
@@ -3550,7 +3553,7 @@ def handle_odka_turtlemorph(enc, media, data):
             e = TurtleMorphometricObservation.objects.create(**new_data)
             msg = "  [handle_odka_turtlemorph] Created new {0}".format(e)
 
-    print(msg)
+    logger.debug(msg)
     return None
 
 
@@ -3620,11 +3623,11 @@ def handle_odka_turtledamageobs(enc, media, data):
             if target.exists():
                 e = target.update(**new_data)
                 e = TurtleDamageObservation.objects.get(**criteria)
-                print("  [handle_odka_turtledamageobs] Updated existing {0}...".format(e.__str__()))
+                logger.debug("  [handle_odka_turtledamageobs] Updated existing {0}...".format(e.__str__()))
 
             else:
                 e = TurtleDamageObservation.objects.create(**new_data)
-                print("  [handle_odka_turtledamageobs] Created new {0}...".format(e.__str__()))
+                logger.debug("  [handle_odka_turtledamageobs] Created new {0}...".format(e.__str__()))
 
             # 2. Photo
             if obs["photo_damage"]:
@@ -3632,7 +3635,7 @@ def handle_odka_turtledamageobs(enc, media, data):
                     enc, media, obs["photo_damage"], title="Photo {0}".format(e.__str__()))
 
     else:
-        print("  [handle_odka_turtledamageobs] found no TurtleDamageObservation")
+        logger.debug("  [handle_odka_turtledamageobs] found no TurtleDamageObservation")
 
     return None
 
@@ -3733,7 +3736,7 @@ def import_odka_svs02(r):
     Returns:
         The WAStD Survey object.
     """
-    print("Found Site Visit Start...")
+    logger.info("Found Site Visit Start...")
     data = make_data(r)
     media = make_media(r)
     reporter_match = guess_user(data["reporter"])
@@ -3747,7 +3750,7 @@ def import_odka_svs02(r):
         start_comments="{0}\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
         reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
-        )
+    )
 
     enc, action = create_update_skip(
         unique_data,
@@ -3761,30 +3764,30 @@ def import_odka_svs02(r):
 
         fname = data["site_visit"]["site_conditions"]
         if fname:
-            print(" Found start_photo.")
+            logger.debug(" Found start_photo.")
             pdir = make_photo_foldername(enc.source_id)
             pname = os.path.join(pdir, fname)
-            print("  Photo dir is {0}".format(pdir))
-            print("  Photo filepath is {0}".format(pname))
+            logger.debug("  Photo dir is {0}".format(pdir))
+            logger.debug("  Photo filepath is {0}".format(pname))
 
             dl_photo(enc.source_id, media[fname], fname)
-            print("  Downloaded start_photo.")
+            logger.debug("  Downloaded start_photo.")
 
             if os.path.exists(pname):
-                print("  File {0} exists".format(pname))
+                logger.debug("  File {0} exists".format(pname))
                 with open(pname, 'rb') as photo:
                     f = File(photo)
                     if f.size > 0:
                         enc.start_photo.save(pname, f, save=True)
-                        print("  Attached start_photo.")
+                        logger.debug("  Attached start_photo.")
                     else:
-                        print("  [ERROR] zero size file {0}".format(p))
+                        logger.debug("  [ERROR] zero size file {0}".format(p))
             else:
-                print("  [ERROR] missing file {0}".format(p))
+                logger.debug("  [ERROR] missing file {0}".format(p))
 
             enc.save()
 
-    print("Done: {0}\n".format(enc))
+    logger.info("Done: {0}\n".format(enc))
     return enc
 
 
@@ -3912,7 +3915,7 @@ def import_odka_sve02(r):
     Returns:
         The WAStD SurveyEnd object.
     """
-    print("Found Site Visit End...")
+    logger.info("Found Site Visit End...")
     data = make_data(r)
     media = make_media(r)
     reporter_match = guess_user(data["reporter"])
@@ -3926,7 +3929,7 @@ def import_odka_sve02(r):
         end_comments="{0}\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
         reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
-        )
+    )
 
     enc, action = create_update_skip(
         unique_data,
@@ -3940,30 +3943,30 @@ def import_odka_sve02(r):
 
         fname = data["site_visit"]["site_conditions"]
         if fname:
-            print(" Found end_photo.")
+            logger.debug(" Found end_photo.")
             pdir = make_photo_foldername(enc.source_id)
             pname = os.path.join(pdir, fname)
-            print("  Photo dir is {0}".format(pdir))
-            print("  Photo filepath is {0}".format(pname))
+            logger.debug("  Photo dir is {0}".format(pdir))
+            logger.debug("  Photo filepath is {0}".format(pname))
 
             dl_photo(enc.source_id, media[fname], fname)
-            print("  Downloaded end_photo.")
+            logger.debug("  Downloaded end_photo.")
 
             if os.path.exists(pname):
-                print("  File {0} exists".format(pname))
+                logger.debug("  File {0} exists".format(pname))
                 with open(pname, 'rb') as photo:
                     f = File(photo)
                     if f.size > 0:
                         enc.end_photo.save(pname, f, save=True)
-                        print("  Attached end_photo.")
+                        logger.debug("  Attached end_photo.")
                     else:
-                        print("  [ERROR] zero size file {0}".format(p))
+                        logger.debug("  [ERROR] zero size file {0}".format(p))
             else:
-                print("  [ERROR] missing file {0}".format(p))
+                logger.debug("  [ERROR] missing file {0}".format(p))
 
             enc.save()
 
-    print("Done: {0}\n".format(enc))
+    logger.info("Done: {0}\n".format(enc))
     return enc
 
 
@@ -4030,7 +4033,7 @@ def import_odka_fs03(r):
     Returns:
         The WAStD Encounter object.
     """
-    print("Found Fox Sake...")
+    logger.info("Found Fox Sake...")
     data = make_data(r)
     media = make_media(r)
     reporter_match = guess_user(data["reporter"])
@@ -4045,7 +4048,7 @@ def import_odka_fs03(r):
         observer=reporter_match["user"],
         reporter=reporter_match["user"],
         comments=reporter_match["message"],
-        )
+    )
 
     # if cls == LineTransectEncounter:
     #     extra_data["transect"] = read_odk_linestring(where)
@@ -4060,7 +4063,7 @@ def import_odka_fs03(r):
         handle_odka_disturbanceobservation(enc, media, data)
         enc.save()
 
-    print("Done: {0}\n".format(enc))
+    logger.info("Done: {0}\n".format(enc))
     return enc
 
 
@@ -4249,7 +4252,7 @@ def import_odka_tt044(r):
     Returns:
         The WAStD Encounter object.
     """
-    print("Found Track or Treat...")
+    logger.info("Found Track or Treat...")
     data = make_data(r)
     media = make_media(r)
     usr = guess_user(data["reporter"])
@@ -4264,7 +4267,7 @@ def import_odka_tt044(r):
         observer=usr["user"],
         reporter=usr["user"],
         comments=usr["message"],
-        )
+    )
 
     enc, action = create_update_skip(
         unique_data,
@@ -4420,7 +4423,7 @@ def import_odka_tt044(r):
 
         enc.save()
 
-    print("Done: {0}\n".format(enc))
+    logger.info("Done: {0}\n".format(enc))
     return enc
 
 
@@ -4545,7 +4548,7 @@ def import_odka_tal05(r):
     Returns:
         The WAStD Encounter object.
     """
-    print("Found Track Tally...")
+    logger.info("Found Track Tally...")
     data = make_data(r)
     # media = make_media(r)
     usr = guess_user(data["reporter"])
@@ -4561,7 +4564,7 @@ def import_odka_tal05(r):
         observer=usr["user"],
         reporter=usr["user"],
         comments=usr["message"],
-        )
+    )
 
     enc, action = create_update_skip(
         unique_data,
@@ -4626,13 +4629,13 @@ def import_odka_tal05(r):
             [UN, "fresh",   "track-unsure",         data["unk"]["unk_no_fresh_tracks_unsure"] or 0],
             [UN, "fresh",   "track-not-assessed",   data["unk"]["unk_no_fresh_tracks_not_assessed"] or 0],
             [UN, "fresh",   "hatched-nest",         data["unk"]["unk_no_hatched_nests"] or 0],
-            ]
+        ]
 
         [make_tallyobs(enc, x[0], x[1], x[2], x[3]) for x in tally_mapping]
 
         enc.save()
 
-    print("Done: {0}\n".format(enc))
+    logger.info("Done: {0}\n".format(enc))
     return enc
 
 
@@ -4750,7 +4753,7 @@ def import_odka_mwi05(r):
     Returns:
     The WAStD Encounter object.
     """
-    print("Found Marine Wildlife Incident...")
+    logger.info("Found Marine Wildlife Incident...")
     data = make_data(r)
     media = make_media(r)
     usr = guess_user(data["reporter"])
@@ -4784,7 +4787,7 @@ def import_odka_mwi05(r):
         observer=usr["user"],
         reporter=usr["user"],
         comments=usr["message"]
-        )
+    )
 
     enc, action = create_update_skip(
         unique_data,
@@ -4834,7 +4837,7 @@ def import_odka_mwi05(r):
 
         enc.save()
 
-    print("Done: {0}\n".format(enc))
+    logger.info("Done: {0}\n".format(enc))
     return enc
 
 
@@ -4852,7 +4855,7 @@ def import_all_odka(path="."):
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")
     """
-    print("[import_all_odka] Starting import of all downloaded ODKA data...")
+    logger.info("[import_all_odka] Starting import of all downloaded ODKA data...")
     results = dict(
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
@@ -4876,6 +4879,6 @@ def import_all_odka(path="."):
         svs01=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-1_1490753483", path)],
         svs02=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-2_1510716686", path)],
     )
-    print("[import_all_odka] Finished import. Stats:")
-    print("\n".join(["[import_all_odka]  Imported {0} {1}".format(len(results[x]), x.upper()) for x in results]))
+    logger.info("[import_all_odka] Finished import. Stats:")
+    logger.info("\n".join(["[import_all_odka]  Imported {0} {1}".format(len(results[x]), x.upper()) for x in results]))
     return results

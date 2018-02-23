@@ -8,6 +8,7 @@ from leaflet.forms.widgets import LeafletWidget
 # from django import forms as django_forms
 import floppyforms as ff
 from django.contrib import admin
+from mptt.admin import MPTTModelAdmin, TreeRelatedFieldListFilter
 # from django.contrib.gis import forms
 from django.contrib.gis.db import models as geo_models
 
@@ -17,8 +18,8 @@ from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
-from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily, 
-HbvGenus, HbvSpecies, HbvVernacular, HbvXref)
+from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily,
+                             HbvGenus, HbvSpecies, HbvVernacular, HbvXref, Taxon)
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
@@ -60,7 +61,7 @@ class HbvSupraAdmin(VersionAdmin, admin.ModelAdmin):
     list_display = ('supra_code', 'supra_name', 'updated_on', 'ogc_fid', )
     # list_filter = ('rank_name', )
     search_fields = ('supra_name', 'supra_code', )
- 
+
 
 @admin.register(HbvGroup)
 class HbvGroupAdmin(VersionAdmin, admin.ModelAdmin):
@@ -68,8 +69,8 @@ class HbvGroupAdmin(VersionAdmin, admin.ModelAdmin):
 
     save_on_top = True
     # date_hierarchy = 'updated_on'
-    list_display = ('class_id', 'rank_name', 'name', 'name_id', 
-    'updated_by', 'updated_on', 'ogc_fid', 'md5_rowhash')
+    list_display = ('class_id', 'rank_name', 'name', 'name_id',
+                    'updated_by', 'updated_on', 'ogc_fid', 'md5_rowhash')
     list_filter = ('class_id', )
     search_fields = ('rank_name', 'name', 'name_id',)
 
@@ -80,15 +81,15 @@ class HbvFamilyAdmin(VersionAdmin, admin.ModelAdmin):
 
     save_on_top = True
     # date_hierarchy = 'updated_on'
-    list_display = ('name_id', 
-        'kingdom_name', 'division_name', 
-        'class_name', 'order_name', 'family_name',
-        'author','editor','reference', 'comments',
-        'is_current', 'informal', 'added_on', 'updated_on', 
-        'ogc_fid', 'md5_rowhash')
+    list_display = ('name_id',
+                    'kingdom_name', 'division_name',
+                    'class_name', 'order_name', 'family_name',
+                    'author', 'editor', 'reference', 'comments',
+                    'is_current', 'informal', 'added_on', 'updated_on',
+                    'ogc_fid', 'md5_rowhash')
     list_filter = ('is_current', 'informal', )
-    search_fields = ('kingdom_name', 'division_name', 
-        'class_name', 'order_name', 'family_name', 'name_id', )
+    search_fields = ('kingdom_name', 'division_name',
+                     'class_name', 'order_name', 'family_name', 'name_id', )
 
 
 @admin.register(HbvGenus)
@@ -97,12 +98,12 @@ class HbvGenusAdmin(VersionAdmin, admin.ModelAdmin):
 
     save_on_top = True
     # date_hierarchy = 'updated_on'
-    list_display = ('name_id', 
-        'genusid', 'rank_name', 'genus', 'kingdom_id',  
-        'author','editor','reference', 'comments',
-        'is_current', 'informal', 
-        'added_on', 'updated_on', 
-        'ogc_fid', 'md5_rowhash')
+    list_display = ('name_id',
+                    'genusid', 'rank_name', 'genus', 'kingdom_id',
+                    'author', 'editor', 'reference', 'comments',
+                    'is_current', 'informal',
+                    'added_on', 'updated_on',
+                    'ogc_fid', 'md5_rowhash')
     list_filter = ('is_current', 'informal', 'kingdom_id',)
     search_fields = ('genus', 'name_id', )
 
@@ -113,24 +114,25 @@ class HbvSpeciesAdmin(VersionAdmin, admin.ModelAdmin):
 
     save_on_top = True
     # date_hierarchy = 'updated_on'
-    list_display = ('name_id', 
-        "species_name", "species_code", 
-        "consv_code", "ranking",
-        'genus', 'species', 'infra_rank', 'infra_name',  
-        'infra_rank2','infra_name2',
-        "vernacular", "all_vernaculars",
-        'author', 'editor', 'reference', 'comments',
-        'is_current', 'informal', 
-        'added_on', 'updated_on', 
-        'ogc_fid', 'md5_rowhash')
+    list_display = ('name_id',
+                    "species_name", "species_code",
+                    "consv_code", "ranking",
+                    'genus', 'species', 'infra_rank', 'infra_name',
+                    'infra_rank2', 'infra_name2',
+                    "vernacular", "all_vernaculars",
+                    'author', 'editor', 'reference', 'comments',
+                    'is_current', 'informal',
+                    'added_on', 'updated_on',
+                    'ogc_fid', 'md5_rowhash')
     list_filter = (
         'kingdom_id', 'rank_name',
         'is_current', 'informal', "naturalised",)
     search_fields = (
-        'genus', 'species', 
-        'infra_rank', 'infra_name',  
-        'infra_rank2','infra_name2',
+        'genus', 'species',
+        'infra_rank', 'infra_name',
+        'infra_rank2', 'infra_name2',
         "vernacular", "all_vernaculars",)
+
 
 @admin.register(HbvVernacular)
 class HbvVernacularAdmin(VersionAdmin, admin.ModelAdmin):
@@ -147,8 +149,8 @@ class HbvVernacularAdmin(VersionAdmin, admin.ModelAdmin):
         "preferred",
         "source",
         "updated_by",
-        'updated_on', 
-        'ogc_fid', 
+        'updated_on',
+        'ogc_fid',
         'md5_rowhash')
     list_filter = ('language', 'lang_pref', 'preferred',)
     search_fields = ('name', 'vernacular', 'source', )
@@ -170,9 +172,20 @@ class HbvXrefAdmin(VersionAdmin, admin.ModelAdmin):
         "authorised_on",
         "comments",
         "added_on",
-        'updated_on', 
-        'ogc_fid', 
+        'updated_on',
+        'ogc_fid',
         'md5_rowhash')
     list_filter = ('xref_type', 'active', )
     search_fields = ('old_name_id', 'new_name_id', )
 
+
+@admin.register(Taxon)
+class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
+    """Admin for Taxon."""
+    list_filter = (
+        'rank',
+        'publication_status',
+        'current',
+        ('parent', TreeRelatedFieldListFilter),
+
+    )
