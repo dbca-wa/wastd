@@ -9,18 +9,27 @@
     <span class="badge badge-info">Name ID {{original.name_id}}</span>
 
     <!-- Conservation status -->
-    <span class="badge badge-danger"><span class="oi oi-pulse" title="Conservation Status" aria-hidden="true"></span>T</span>
+    {% if original.consv_code %}
+    <span class="badge badge-danger">
+      <span class="oi oi-pulse" title="Conservation Status" aria-hidden="true"></span>
+      {{ original.consv_code }} {{ original.ranking }}
+    </span>
+    {% endif %}
 
     <!-- Taxonomic status -->
     {% if original.is_current == 'Y' %}
-    <span class="badge badge-success"><span class="oi oi-thumb-up" title="Name is current" aria-hidden="true"></span></span>
+    <span class="badge badge-success">
+      <span class="oi oi-thumb-up" title="Name is current" aria-hidden="true"></span>
+    </span>
     {% else %}
-    <span class="badge badge-secondary"><span class="oi oi-thumb-down" title="Name is non current" aria-hidden="true"></span></span>
+    <span class="badge badge-secondary">
+      <span class="oi oi-thumb-down" title="Name is non current" aria-hidden="true"></span>
+    </span>
     {% endif %}
     </h6>
 
     <h5 class="card-title {% if original.is_current == 'N' %}text-muted{% endif %}">
-      {{ original.name }}
+      {{ original.species_name }}
     </h5>
 
     <!-- Author -->

@@ -14,6 +14,7 @@ from __future__ import unicode_literals, absolute_import
 
 # from django.core.urlresolvers import reverse
 from django.db import models
+from mptt.models import MPTTModel, TreeForeignKey
 # from django.db.models.signals import pre_delete, pre_save, post_save
 # from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
@@ -860,7 +861,12 @@ class HbvSpecies(models.Model):
 
     def __str__(self):
         """The full name."""
-        return self.species_name
+        return "[{0}] {1} {2} ({3})".format(
+            self.name_id,
+            self.species_name,
+            self.author,
+            self.species_code
+        )
 
 
 @python_2_unicode_compatible
@@ -1484,3 +1490,137 @@ class HbvXref(models.Model):
             self.xref_type, 
             self.new_name_id, 
             self.authorised_on)
+
+
+# django-mptt tree models ----------------------------------------------------#
+@python_2_unicode_compatible
+class Taxon(MPTTModel):
+    """A taxonomic name at any taxonomic rank.
+
+    A taxonomy is a directed graph with exactly one root node (Domain) and
+    child nodes at every known rank. Each node has exactly one parent node, 
+    and can thus infer its taxonomic parentage.
+
+    Each rank can build its correct name based on different rules for each rank.
+    Ranks are stored as SmallIntegerField, so that lookups against ranks are fast.
+
+    Status contains the taxon name's life cycle:
+    
+    * A phrase name is created for possibly unknown specimens.
+    * A manuscript name is <insert definition>.
+    * A formally published name is current.
+    * Taxonomic events (xref types) can render a name non-current.
+    * Taxonomic events can involve more than one name.
+
+    A legally gazetted name is published every year for names with conservation status.
+    The gazettal process can lag behind the publication process by up to a year at the 
+    current rate of gazettal (annual).
+    
+    TODO: define business logic, then implement status.
+    """
+
+    RANK_DOMAIN = 0
+    RANK_KINGDOM = 10
+    RANK_SUBKINGDOM = 20
+    RANK_DIVISION = 30
+    RANK_SUBDIVISION = 40
+    RANK_CLASS = 50
+    RANK_SUBCLASS = 60
+    RANK_ORDER = 70
+    RANK_SUBORDER = 80
+    RANK_FAMILY = 90
+    RANK_SUBFAMILY = 100
+    RANK_TRIBE = 110
+    RANK_SUBTRIBE = 120
+    RANK_GENUS = 130
+    RANK_SUBGENUS = 140
+    RANK_SECTION = 150
+    RANK_SUBSECTION = 160
+    RANK_SERIES = 170
+    RANK_SUBSERIES = 180
+    RANK_SPECIES = 190
+    RANK_SUBSPECIES = 200
+    RANK_VARIETY = 210
+    RANK_SUBVARIETY = 220
+    RANK_FORMA = 230
+    RANK_SUBFORMA = 240
+
+    RANKS = (
+        (RANK_DOMAIN, "Domain"),
+        (RANK_KINGDOM, "Kingdom"),
+        (RANK_SUBKINGDOM, "Subkingdom"),
+        (RANK_DIVISION, "Division"),
+        (RANK_SUBDIVISION, "Subivision"),
+        (RANK_CLASS, "Class"),
+        (RANK_SUBCLASS, "Subclass"),
+        (RANK_ORDER, "Order"),
+        (RANK_SUBORDER, "Suborder"),
+        (RANK_FAMILY, "Family"),
+        (RANK_SUBFAMILY, "Subfamily"),
+        (RANK_TRIBE, "Tribe"),
+        (RANK_SUBTRIBE, "Subtribe"),
+        (RANK_GENUS, "Genus"),
+        (RANK_SUBGENUS, "Subgenus"),
+        (RANK_SECTION, "Section"),
+        (RANK_SUBSECTION, "Subsection"),
+        (RANK_SERIES, "Series"),
+        (RANK_SUBSERIES, "Subseries"),
+        (RANK_SPECIES, "Species"),
+        (RANK_SUBSPECIES, "Subspecies"),
+        (RANK_VARIETY, "Variety"),
+        (RANK_SUBVARIETY, "Subvariety"),
+        (RANK_FORMA, "Forma"),
+        (RANK_SUBFORMA, "Subforma")
+    
+    )
+
+    name_id = models.BigIntegerField(
+        unique=True,
+        verbose_name=_("NameID"),
+        help_text=_("WACensus NameID, assigned by WACensus."),
+        )
+
+    parent = TreeForeignKey(
+        'self', 
+        null=True, blank=True, 
+        related_name='children', 
+        db_index=True,
+        verbose_name=_('Parent Taxon'),
+        help_text=_('The lowest known parent taxon.'),
+        )
+
+    name = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Taxon Name"),
+        help_text=_("The taxon name.")
+    )
+
+    rank = models.PositiveSmallIntegerField(
+        choices=RANKS,
+        blank=True, null=True,
+        verbose_name=_("Taxonomic Rank"),
+        help_text=_("The taxonomic rank of the taxon."),
+    )
+
+    # Status FSM: life cycle of phrase name, ms name, authorised name, gazetted name, non-current name
+    # status = 
+
+    class MPTTMeta:
+        order_insertion_by = ['name_id']
+
+    def __str__(self):
+        """The full name. 
+        
+        TODO: make rank-sensitive.
+        
+        * Anything above species: [NameID] RANK NAME
+        * Species: [NameID] RANK GENUS (SPECIES)NAME
+        * Subspecies: [NameID] RANK GENUS SPECIES (SUBSPECIES)NAME subsp.
+        * and so on down to subforma.
+        """
+        if self.rank == self.RANK_SPECIES:
+            genus = "GENUS" if not self.parent else self.parent.name
+            return "[{0}] ({1}) {2} {3}".format(self.name_id, genus, self.name)
+        else:
+            return "[{0}] ({1}) {2}".format(self.name_id, self.get_rank_display(), self.name)

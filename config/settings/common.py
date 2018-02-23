@@ -65,6 +65,7 @@ THIRD_PARTY_APPS = (
     'rest_framework_swagger',       # API docs
     'rest_framework_latex',         # API latex renderer
     # 'dynamic_rest',                 # Parameterised API queries
+    'mptt',                         # Graph database: tree models
 
 )
 
