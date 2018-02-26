@@ -24,6 +24,7 @@ actions:
 from __future__ import unicode_literals, absolute_import
 
 import itertools
+import logging
 import urllib
 import slugify
 from datetime import timedelta
@@ -51,6 +52,8 @@ from polymorphic.models import PolymorphicModel
 
 from wastd.users.models import User
 
+logger = logging.getLogger(__name__)
+
 # Lookups --------------------------------------------------------------------#
 
 SOURCE_DEFAULT = "direct"
@@ -63,7 +66,7 @@ SOURCE_CHOICES = (
     ("ntp-broome", _("NTP Access DB Broome")),
     ("cet", _("Cetacean strandings DB")),
     ("pin", _("Pinniped strandings DB")),
-    )
+)
 
 BODY_PART_DEFAULT = "whole"
 TURTLE_BODY_PART_CHOICES = (
@@ -143,7 +146,7 @@ TAG_STATUS_ON_ANIMAL = (TAG_STATUS_APPLIED_NEW, TAG_STATUS_RESIGHTED)
 NEST_TAG_STATUS_CHOICES = (
     (TAG_STATUS_APPLIED_NEW, 'applied new'),
     (TAG_STATUS_DEFAULT, 're-sighted associated with nest'),
-    )
+)
 
 
 NA_VALUE = "na"
@@ -173,7 +176,7 @@ TURTLE_SPECIES_CHOICES = (
     # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
     # Natator depressus x Caretta caretta (Hybrid turtle)
     # Natator depressus x Chelonia mydas (Hybrid turtle)
-    )
+)
 CETACEAN_SPECIES_CHOICES = (
     # dolphins
     ("delphinus-delphis", "Delphinus delphis (Short-beaked common dolphin)"),
@@ -240,7 +243,7 @@ PINNIPED_SPECIES_CHOICES = (
     ("lobodon-carcinophagus", "Lobodon carcinophagus (Crabeater seal)"),
     ("mirounga-leonina", "Mirounga leonina (Southern elephant seal)"),
     (PINNIPED_SPECIES_DEFAULT, "Unidentified pinniped"),
-    )
+)
 
 SEASNAKE_SPECIES_DEFAULT = 'hydrophiinae-subfam'
 SEASNAKE_SPECIES_CHOICES = (
@@ -262,18 +265,18 @@ SEASNAKE_SPECIES_CHOICES = (
     ("pelamis-sp", "Pelamis sp. (Yellow-bellied sea snake)"),
     ("praescutata-sp", "Praescutata sp. (Sea snake)"),
     ("thalassophis-sp", "Thalassophis sp. (Sea snake)"),
-    )
+)
 
 SIRENIA_CHOICES = (
     ("dugong-dugon", "Dugong dugon (Dugong)"),
-    )
+)
 
 SPECIES_CHOICES = NA +\
-     TURTLE_SPECIES_CHOICES +\
-     CETACEAN_SPECIES_CHOICES +\
-     SIRENIA_CHOICES +\
-     PINNIPED_SPECIES_CHOICES +\
-     SEASNAKE_SPECIES_CHOICES
+    TURTLE_SPECIES_CHOICES +\
+    CETACEAN_SPECIES_CHOICES +\
+    SIRENIA_CHOICES +\
+    PINNIPED_SPECIES_CHOICES +\
+    SEASNAKE_SPECIES_CHOICES
 
 SEX_CHOICES = (
     (NA_VALUE, "unknown sex"),
@@ -317,7 +320,7 @@ HEALTH_CHOICES = (
     (HEALTH_D5, 'D5 (dead, mummified)'),
     (HEALTH_D6, 'D6 (dead, disarticulated)'),
     ('other', 'other'),
-    )
+)
 
 # StrandNet: same as above
 # some health status options are confused with management actions
@@ -357,13 +360,13 @@ CAUSE_OF_DEATH_CHOICES = NA + (
     ("euthanasia-implosion", "Euthanasia by implosion"),
     ("euthanasia", "Euthanasia"),
     ("predation", "Predation"),
-    )
+)
 
 CONFIDENCE_CHOICES = NA + (
     ("guess", "Guess based on insuffient evidence"),
     ("expert-opinion", "Expert opinion based on available evidence"),
     ("validated", "Validated by authoritative source"),
-    )
+)
 
 NESTING_ACTIVITY_CHOICES = (
     ("arriving", "arriving on beach"),
@@ -376,7 +379,7 @@ NESTING_ACTIVITY_CHOICES = (
     ("camouflaging-nest", "camouflaging nest"),
     ("returning-to-water", "returning to water"),
     ("general-breeding-activity", "general breeding activity"),
-    )
+)
 
 STRANDING_ACTIVITY_CHOICES = (
     ("floating", "floating (dead, sick, unable to dive, drifting in water)"),
@@ -387,7 +390,7 @@ STRANDING_ACTIVITY_CHOICES = (
     ("captivity", "in captivity"),
     ("non-breeding", "general non-breeding activity (swimming, sleeping, feeding, etc.)"),
     ("other", "other activity"),
-    )
+)
 
 ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 # primary activity
@@ -466,7 +469,8 @@ HABITAT_CHOICES = BEACH_POSITION_CHOICES + (
     ("slope-grass", "slope, grass area"),
     ("slope-bare-sand", "slope, bare sand area"),
     ("slope-beneath-vegetation", "slope, beneath tree or shrub"),
-    ("below-mean-spring-high-water-mark", "below the mean spring high water line or current level of inundation (old db value)"),
+    ("below-mean-spring-high-water-mark",
+        "below the mean spring high water line or current level of inundation (old db value)"),
     ("below-mshwm", "below the mean spring high water line or current level of inundation"),
     ("lagoon-patch-reef", "lagoon, patch reef"),
     ("lagoon-open-sand", "lagoon, open sand areas"),
@@ -479,7 +483,7 @@ HABITAT_CHOICES = BEACH_POSITION_CHOICES + (
     ("open-water", "open water"),
     ("harbour", "harbour"),
     ("boat-ramp", "boat ramp"),
-    )
+)
 
 HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                  "reef-coral", "reef-crest-front-slope", "reef-flat",
@@ -491,7 +495,7 @@ NEST_AGE_CHOICES = (
     ("fresh", "(F) fresh, made last night"),
     (NEST_AGE_DEFAULT, "(U) unknown age"),
     ("missed", "(M) missed turtle, made within past hours"),
-    )
+)
 
 NEST_TYPE_DEFAULT = "track-not-assessed"
 NEST_TYPE_CHOICES = (
@@ -502,13 +506,13 @@ NEST_TYPE_CHOICES = (
     ("nest", "nest, unhatched, no track"),         # egg counts, putting eggs back
     ("hatched-nest", "nest, hatched"),   # hatching and emergence success
     ("body-pit", "body pit, no track"),
-    )
+)
 
 OBSERVATION_CHOICES = (
     (NA_VALUE, "NA"),
     ("absent", "Confirmed absent"),
     ("present", "Confirmed present"),
-    )
+)
 
 OBSERVATION_ICONS = {
     NA_VALUE: "fa fa-question-circle-o",
@@ -528,7 +532,7 @@ ACCURACY_CHOICES = (
     ("100", "To nearest 10 cm"),            # Default for stranding "estimated"
     ("1000", "To nearest 1 m or 1 kg"),
     ("10000", "To nearest 10 m or 10 kg"),
-    )
+)
 
 DAMAGE_TYPE_CHOICES = (
     # Amputations
@@ -561,7 +565,7 @@ DAMAGE_AGE_CHOICES = (
     ("healed-entirely", "entirely healed"),
     ("healed-partially", "partially healed"),
     ("fresh", "fresh"),
-    )
+)
 
 NEST_DAMAGE_DEFAULT = "turtle"
 NEST_DAMAGE_CHOICES = (
@@ -581,7 +585,7 @@ NEST_DAMAGE_CHOICES = (
     ("vehicle", "(V)ehicle damage"),
     ("unknown", "(U)nknown"),
     ("other", "(O)ther identifiable (see comments)"),
-    )
+)
 # End lookups ----------------------------------------------------------------#
 
 
@@ -709,6 +713,7 @@ class Area(geo_models.Model):
 
     @property
     def leaflet_title(self):
+        """A title for leaflet map markers."""
         return self.__str__()
 
     @property
@@ -719,10 +724,12 @@ class Area(geo_models.Model):
 
     @property
     def all_encounters_url(self):
+        """All Encounters within this Area."""
         return '/admin/observations/encounter/?where={0}'.format(self.pk)
 
     @property
     def animal_encounters_url(self):
+        """The admin URL for AnimalEncounters within this Area."""
         return '/admin/observations/animalencounter/?where={0}'.format(self.pk)
 
     def make_rest_listurl(self, format='json'):
@@ -1078,10 +1085,10 @@ class Survey(geo_models.Model):
     def encounters(self):
         """Return the QuerySet of all Encounters within this SiteVisit."""
         if not self.end_time:
-            print("[wastd.observations.survey.encounters] No end_time set, can't filter Encounters")
+            logger.info("[wastd.observations.survey.encounters] No end_time set, can't filter Encounters")
             return None
         elif not self.site:
-            print("[wastd.observations.survey.encounters] No site set, can't filter Encounters")
+            logger.info("[wastd.observations.survey.encounters] No site set, can't filter Encounters")
             return None
         else:
             return Encounter.objects.filter(
@@ -1111,7 +1118,7 @@ def claim_end_points(survey_instance):
         device_id=survey_instance.device_id,
         end_time__gte=survey_instance.start_time,
         end_time__lte=survey_instance.start_time + timedelta(hours=5)
-        ).first()
+    ).first()
     if se:
         survey_instance.end_location = se.end_location
         survey_instance.end_time = se.end_time
@@ -1319,7 +1326,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         (ENCOUNTER_TAG, "Tag Management"),
         (ENCOUNTER_LOGGER, "Logger"),
         (ENCOUNTER_OTHER, "Other")
-        )
+    )
 
     LEAFLET_ICON = {
         ENCOUNTER_STRANDING: "exclamation-circle",
@@ -1330,7 +1337,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ENCOUNTER_INWATER: "tint",
         ENCOUNTER_LOGGER: "tablet",
         ENCOUNTER_OTHER: "question-circle"
-        }
+    }
 
     LEAFLET_COLOUR = {
         ENCOUNTER_STRANDING: 'darkred',
@@ -1341,7 +1348,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         ENCOUNTER_TAG: 'darkpuple',
         ENCOUNTER_LOGGER: 'orange',
         ENCOUNTER_OTHER: 'purple'
-        }
+    }
 
     survey = models.ForeignKey(
         Survey,
@@ -1524,7 +1531,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-"),
-            ]))
+        ]))
 
     def save(self, *args, **kwargs):
         """Cache popup, encounter type and source ID.
@@ -1578,7 +1585,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """Set the animal name to a given value."""
         self.name = name
         self.save()
-        print("{0} name set to {1}".format(self.__str__(), name))
+        logger.info("{0} name set to {1}".format(self.__str__(), name))
 
     @property
     def inferred_name(self):
@@ -1776,7 +1783,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             explanation=("This record is a faithful representation of the "
                          "data sheet."),
             notify=True,)
-        )
+    )
     def proofread(self, by=None):
         """Mark encounter as proof-read.
 
@@ -1803,7 +1810,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             explanation=("This record deviates from the data source and "
                          "requires proofreading."),
             notify=True,)
-        )
+    )
     def require_proofreading(self, by=None):
         """Mark encounter as having typos, requiring more proofreading.
 
@@ -1827,7 +1834,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             verbose="Mark as trustworthy",
             explanation=("This record is deemed trustworthy."),
             notify=True,)
-        )
+    )
     def curate(self, by=None):
         """Mark encounter as curated.
 
@@ -1851,7 +1858,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             explanation=("This record cannot be true. This record requires"
                          " review by a subject matter expert."),
             notify=True,)
-        )
+    )
     def flag(self, by=None):
         """Flag as requiring changes to data.
 
@@ -1875,7 +1882,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             verbose="Publish",
             explanation=("This record is fit for release."),
             notify=True,)
-        )
+    )
     def publish(self, by=None):
         """Mark encounter as ready to be published.
 
@@ -1898,7 +1905,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             verbose="Embargo",
             explanation=("This record is not fit for release."),
             notify=True,)
-        )
+    )
     def embargo(self, by=None):
         """Mark encounter as NOT ready to be published.
 
@@ -2101,7 +2108,7 @@ class AnimalEncounter(Encounter):
             self.maturity,
             self.sex,
             self.species,
-            ]
+        ]
         if self.name is not None:
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
@@ -2235,7 +2242,7 @@ class TurtleNestEncounter(Encounter):
             str(round(self.where.get_y(), 4)).replace(".", "-"),
             self.nest_age,
             self.species,
-            ]
+        ]
         if self.name is not None:
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
@@ -2279,7 +2286,7 @@ class LineTransectEncounter(Encounter):
         """The unicode representation."""
         return "Line tx {0}".format(
             self.pk
-            )
+        )
 
     @property
     def get_encounter_type(self):
@@ -2310,7 +2317,7 @@ class LineTransectEncounter(Encounter):
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
             str(round(self.where.get_x(), 4)).replace(".", "-"),
             str(round(self.where.get_y(), 4)).replace(".", "-")
-            ]
+        ]
         if self.name is not None:
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
@@ -2332,12 +2339,13 @@ class LoggerEncounter(Encounter):
     The life cycle can be repeated. The logger can be downloaded, reprogrammed
     and deployed again in situ.
     """
+
     LOGGER_TYPE_DEFAULT = 'temperature-logger'
     LOGGER_TYPE_CHOICES = (
         (LOGGER_TYPE_DEFAULT, 'Temperature Logger'),
         ('data-logger', 'Data Logger'),
         ('ctd-data-logger', 'Conductivity, Temperature, Depth SR data logger'),
-        )
+    )
 
     LOGGER_STATUS_DEFAULT = 'resighted'
     LOGGER_STATUS_NEW = "programmed"
@@ -2348,7 +2356,7 @@ class LoggerEncounter(Encounter):
         ("resighted", "resighted in situ"),
         ("retrieved", "retrieved in situ"),
         ("downloaded", "downloaded"),
-        )
+    )
 
     logger_type = models.CharField(
         max_length=300,
@@ -2390,7 +2398,7 @@ class LoggerEncounter(Encounter):
             self.get_logger_type_display(),
             self.name or '',
             self.get_deployment_status_display(),
-            )
+        )
 
     @property
     def get_encounter_type(self):
@@ -2417,7 +2425,7 @@ class LoggerEncounter(Encounter):
             self.logger_type,
             self.deployment_status,
             self.logger_id
-            ]
+        ]
         if self.name is not None:
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
@@ -2533,6 +2541,7 @@ class MediaAttachment(Observation):
 
     @property
     def filepath(self):
+        """The path to attached file."""
         return str(self.attachment.file)
 
 
@@ -2678,7 +2687,7 @@ class TagObservation(Observation):
 
 @python_2_unicode_compatible
 class NestTagObservation(Observation):
-    """Turtle Nest Tag Observation
+    """Turtle Nest Tag Observation.
 
     TNTs consist of three components, which are all optional:
 
@@ -2695,6 +2704,7 @@ class NestTagObservation(Observation):
 
     E.g.: WA1234_2017-12-31_M1
     """
+
     status = models.CharField(
         max_length=300,
         verbose_name=_("Tag status"),
@@ -2753,7 +2763,7 @@ class NestTagObservation(Observation):
             ('' if not self.flipper_tag_id else self.flipper_tag_id).upper().replace(" ", ""),
             '' if not self.date_nest_laid else self.date_nest_laid.strftime("%Y-%m-%d"),
             '' if not self.tag_label else self.tag_label.upper().replace(" ", ""),
-            ])
+        ])
 
 
 @python_2_unicode_compatible
@@ -2959,7 +2969,7 @@ class HatchlingMorphometricObservation(Observation):
             self.straight_carapace_length_mm,
             self.straight_carapace_width_mm,
             self.body_weight_g,
-            )
+        )
 
 
 @python_2_unicode_compatible
@@ -2997,7 +3007,7 @@ class DugongMorphometricObservation(Observation):
             self.body_length_mm,
             self.body_girth_mm,
             self.tail_fluke_width_mm,
-            )
+        )
 
 
 @python_2_unicode_compatible
@@ -3243,7 +3253,9 @@ class TurtleNestObservation(Observation):
 
     @property
     def egg_count_calculated(self):
-        """The calculated egg count from nest excavations is:
+        """The calculated egg count from nest excavations.
+
+        Calculated as:
 
         no_egg_shells + no_undeveloped_eggs + no_unhatched_eggs +
         no_unhatched_term + no_depredated_eggs
@@ -3288,7 +3300,8 @@ class TurtleNestObservation(Observation):
                 (self.no_egg_shells or 0) -
                 (self.no_live_hatchlings or 0) -
                 (self.no_dead_hatchlings or 0)
-                ) / self.egg_count_calculated
+            ) / self.egg_count_calculated
+
 
 @python_2_unicode_compatible
 class TurtleNestDisturbanceObservation(Observation):
@@ -3306,7 +3319,7 @@ class TurtleNestDisturbanceObservation(Observation):
         ("partly", "nest partly destroyed"),
         ("completely", "nest completely destroyed"),
         (NA_VALUE, "nest in indeterminate condition"),
-        )
+    )
 
     disturbance_cause = models.CharField(
         max_length=300,

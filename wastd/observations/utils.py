@@ -134,14 +134,16 @@ def upperwhite(safe_string):
     return safe_string.replace("_", " ").title()
 
 
-def make_user(name, email, phone=None, role=None):
+def make_user(d):
     """Get or create a user.
 
     Arguments:
 
+    d A Dict with keys:
+
     name A human readable full name, required.
         The unique username will be inferred through lowersnake(name).
-    email A valid email, required.
+    email A valid email, optional.
     phone A phone number, optional.
     role A role description, optional.
 
@@ -149,33 +151,32 @@ def make_user(name, email, phone=None, role=None):
     import sys; reload(sys); sys.setdefaultencoding('UTF8')
     from wastd.observations.utils import *; import csv
     with open("data/staff.csv") as df:
-        [make_user(u["name"], u["email"], phone=u["phone"], role=u["role"]) for u in csv.DictReader(df)]
+        [make_user(u) for u in csv.DictReader(df)]
 
     """
     usermodel = get_user_model()
-    un = lowersnake(name)
+    un = lowersnake(d["name"])
 
     usr, created = usermodel.objects.get_or_create(username=un)
     action = "created" if created else "found"
-    msg = "[make_user] {0} username {1}".format(action, un)
+    msg = "[make_user] {0} {1} ({2})".format(action, d["name"], un)
 
-    if not usr.email and email:
-        usr.email = email
-        msg += ", email updated"
+    usr.name = d["name"]
 
-    if not usr.phone and phone:
-        usr.phone = phone
-        msg += ", phone updated"
+    usr.phone = d["phone"].replace(" ", "")
+    msg += ", phone updated"
 
-    if not usr.role and role:
-        usr.role = role
-        msg += ", role updated"
+    usr.email = d["email"]
+    msg += ", email updated"
+
+    usr.role = d["role"]
+    msg += ", role updated"
 
     if created:
         usr.set_password(settings.DEFAULT_USER_PASSWORD)
 
     usr.save()
-    print(msg)
+    logger.info(msg)
     return usr
 
 
@@ -2446,72 +2447,72 @@ def import_odk(datafile,
         import_odk('data/latest/mwi01.json', flavour="odk-mwi01")
     """
     if flavour == "odk-tt034":
-        print("Using flavour ODK Track or Treat 0.34...")
+        logger.info("Using flavour ODK Track or Treat 0.34...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
+            logger.info("Loaded {0} records from {1}".format(len(d), datafile))
         mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
         [import_one_record_tt034(r, mapping) for r in d
          if r["instanceID"] not in mapping["keep"]]     # retain local edits
-        print("Done!")
+        logger.info("Done!")
 
     elif flavour == "odk-tt036":
-        print("Using flavour ODK Track or Treat 0.35-0.36...")
+        logger.info("Using flavour ODK Track or Treat 0.35-0.36...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
+            logger.info("Loaded {0} records from {1}".format(len(d), datafile))
         mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
         [import_one_record_tt036(r, mapping) for r in d
          if r["instanceID"] not in mapping["keep"]]     # retain local edits
-        print("Done!")
+        logger.info("Done!")
 
     elif flavour == "odk-fs03":
-        print("Using flavour ODK Fox Sake 0.3...")
+        logger.info("Using flavour ODK Fox Sake 0.3...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
+            logger.info("Loaded {0} records from {1}".format(len(d), datafile))
         mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
         [import_one_record_fs03(r, mapping) for r in d
          if r["instanceID"] not in mapping["keep"]]     # retain local edits
-        print("Done!")
+        logger.info("Done!")
 
     elif flavour == "odk-mwi01":
-        print("Using flavour ODK Marine Wildlife Incident 0.1...")
+        logger.info("Using flavour ODK Marine Wildlife Incident 0.1...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
+            logger.info("Loaded {0} records from {1}".format(len(d), datafile))
         mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
         [import_one_record_mwi01(r, mapping) for r in d
          if r["instanceID"] not in mapping["keep"]]     # retain local edits
-        print("Done!")
+        logger.info("Done!")
 
     elif flavour == "odk-tally05":
-        print("Using flavour ODK Track Tally 0.5...")
+        logger.info("Using flavour ODK Track Tally 0.5...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
+            logger.info("Loaded {0} records from {1}".format(len(d), datafile))
         mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="odk")]
 
         [import_one_record_tt05(r, mapping) for r in d
          if r["instanceID"] not in mapping["keep"]]     # retain local edits
-        print("Done!")
+        logger.info("Done!")
 
     elif flavour == "cet":
-        print("Using flavour Cetacean strandings...")
+        logger.info("Using flavour Cetacean strandings...")
         # ODK_MAPPING["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="cet")]
@@ -2524,15 +2525,15 @@ def import_odk(datafile,
          if e["Record No."] not in mapping["keep"]]
 
     elif flavour == "pin":
-        print("Using flavour Pinniped strandings...")
+        logger.info("Using flavour Pinniped strandings...")
         # mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="pin")]
         enc = csv.DictReader(open(datafile))
-        print("not impemented yet")
+        logger.info("not impemented yet")
 
     elif flavour == "wamtram":
-        print("ALL ABOARD THE WAMTRAM!!!")
+        logger.info("ALL ABOARD THE WAMTRAM!!!")
         enc = csv.DictReader(open(datafile))
         wamtram_users = csv.DictReader(open(usercsv))
 
@@ -2554,10 +2555,10 @@ def import_odk(datafile,
         # [import_one_tag_wamtram(t, ODK_MAPPING) for t in tags]
 
     elif flavour == "whambam":
-        print("thank you ma'am")
+        logger.info("thank you ma'am")
         tags = csv.DictReader(open(datafile))
 
-        print("  Caching tagging encounters...")
+        logger.info("  Caching tagging encounters...")
         enc = [x["source_id"] for x in
                AnimalEncounter.objects.filter(source="wamtram").values("source_id")]
 
@@ -2565,18 +2566,18 @@ def import_odk(datafile,
          if make_wamtram_source_id(x["observation_id"]) in enc]
 
     elif flavour == "sitevisit":
-        print("Loading Site Visits...")
+        logger.info("Loading Site Visits...")
         with open(datafile) as df:
             d = json.load(df)
-            print("Loaded {0} records from {1}".format(len(d), datafile))
+            logger.info("Loaded {0} records from {1}".format(len(d), datafile))
         mapping["users"] = {u: guess_user(u)["user"] for u in set(
             [r["reporter"] for r in d])}
 
         [import_one_record_sv01(r, mapping) for r in d]     # retain local edits
-        print("Done!")
+        logger.info("Done!")
 
     else:
-        print("Format {0} not recognized. Exiting.".format(flavour))
+        logger.info("Format {0} not recognized. Exiting.".format(flavour))
 
 
 # ---------------------------------------------------------------------------#
