@@ -175,24 +175,29 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True
         },
         'django.security.DisallowedHost': {
             'level': 'INFO',
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console', ],
             'propagate': True
         },
         'wastd.observations': {
             'level': 'INFO',
             'handlers': ['console', ],
-            'propagate': False,
+            'propagate': True,
+        },
+        'wastd.api': {
+            'level': 'INFO',
+            'handlers': ['console', ],
+            'propagate': True,
         },
         'taxonomy': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'handlers': ['console', ],
-            'propagate': False,
+            'propagate': True,
         },
     }
 }

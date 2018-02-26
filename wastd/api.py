@@ -220,6 +220,8 @@ class UserViewSet(viewsets.ModelViewSet):
         un = lowersnake(data["name"])
         logger.debug("[UserViewSet][create_one] username", un)
         obj, created = self.model.objects.get_or_create(username=un, defaults=data)
+        if not created:
+            self.model.objects.filter(username=un).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
