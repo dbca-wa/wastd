@@ -32,7 +32,10 @@ This API is built using:
 # from django.shortcuts import render
 from collections import OrderedDict
 
-from django.db import models as django_models
+import logging
+import pdb
+
+# from django.db import models as django_models
 from django.template import Context, Template
 
 from rest_framework import serializers, viewsets, routers, pagination, status
@@ -41,10 +44,10 @@ from rest_framework.response import Response as RestResponse
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
 # from dynamic_rest import serializers as ds, viewsets as dv
-from drf_extra_fields.geo_fields import PointField
+# from drf_extra_fields.geo_fields import PointField
 
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from rest_framework_gis.pagination import GeoJsonPagination
+# from rest_framework_gis.pagination import GeoJsonPagination
 
 import rest_framework_filters as filters
 
@@ -69,6 +72,9 @@ from wastd.users.models import User
 
 from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily,
                              HbvGenus, HbvSpecies, HbvVernacular, HbvXref, Taxon)
+
+logger = logging.getLogger(__name__)
+
 # def symlink_resources(a,b,c):
 #     pass
 
@@ -176,7 +182,7 @@ class CustomBBoxFilter(InBBoxHTMLMixin, InBBoxFilter):
     bbox_param = 'in_bbox'
 
 
-# Serializers ----------------------------------------------------------------#
+# User ----------------------------------------------------------------#
 class UserSerializer(serializers.ModelSerializer):
     """User serializer."""
 
@@ -185,16 +191,6 @@ class UserSerializer(serializers.ModelSerializer):
 
         model = User
         fields = ('pk', 'username', 'name', 'role', 'email', 'phone', )
-
-    def create(self, validated_data):
-        u = validated_data["username"]
-        print("UserSerializer called for {0}".format(u))
-        usr = User.objects.filter(username=u)
-        if usr.exists():
-            usr = User.objects.get(username=u)
-        else:
-            usr = User.objects.create(**validated_data)
-        return usr
 
 
 class FastUserSerializer(serializers.ModelSerializer):
@@ -207,6 +203,45 @@ class FastUserSerializer(serializers.ModelSerializer):
         fields = ('pk', 'username', 'name',)
 
 
+# ViewSets define the view behavior.
+class UserViewSet(viewsets.ModelViewSet):
+    """User view set."""
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "username"
+    model = User
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+        from wastd.observations.utils import lowersnake
+
+        un = lowersnake(data["name"])
+        logger.debug("[UserViewSet][create_one] username", un)
+        obj, created = self.model.objects.get_or_create(username=un, defaults=data)
+        return RestResponse(data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        # pdb.set_trace()
+        if 'name' in request.data:
+            res = self.create_one(request.data)
+            return res
+        elif type(request.data) == list and 'name' in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
+        else:
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Observations ----------------------------------------------------------------#
 class ObservationSerializer(serializers.ModelSerializer):
     """The Observation serializer resolves its polymorphic subclasses.
 
@@ -741,14 +776,6 @@ class LoggerEncounterSerializer(EncounterSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
         geo_field = "where"
-
-
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    """User view set."""
-
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
 
 class AreaFilter(filters.FilterSet):

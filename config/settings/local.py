@@ -110,12 +110,17 @@ LOGGING = {
         'wastd.observations': {
             'level': 'DEBUG',
             'handlers': ['console', ],
-            'propagate': False,
+            'propagate': True,
+        },
+        'wastd.api': {
+            'level': 'DEBUG',
+            'handlers': ['console', ],
+            'propagate': True,
         },
         'taxonomy': {
             'level': 'DEBUG',
             'handlers': ['console', ],
-            'propagate': False,
+            'propagate': True,
         },
     }
 }
