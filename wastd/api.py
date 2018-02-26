@@ -1600,16 +1600,8 @@ class HbvNameViewSet(viewsets.ModelViewSet):
 
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
-
-        # serializer = self.serializer_class(obj, data=data)
-
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return RestResponse(serializer.data, status=st)
-        # else:
-        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not created:
+            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
@@ -1623,12 +1615,11 @@ class HbvNameViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            try:
-                res = [self.create_one(data) for data in request.data]
-                return res[0]
-            except:
-                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("names", HbvNameViewSet)
 
@@ -1648,16 +1639,8 @@ class HbvSupraViewSet(viewsets.ModelViewSet):
 
         obj, created = self.model.objects.get_or_create(
             supra_code=data[self.uid_field], defaults=data)
-
-        # serializer = self.serializer_class(obj, data=data)
-
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return RestResponse(serializer.data, status=st)
-        # else:
-        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not created:
+            self.model.objects.filter(supra_code=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
@@ -1671,12 +1654,11 @@ class HbvSupraViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            try:
-                res = [self.create_one(data) for data in request.data]
-                return res[0]
-            except:
-                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("supra", HbvSupraViewSet)
 
@@ -1696,16 +1678,8 @@ class HbvGroupViewSet(viewsets.ModelViewSet):
 
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
-
-        # serializer = self.serializer_class(obj, data=data)
-
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return RestResponse(serializer.data, status=st)
-        # else:
-        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not created:
+            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
@@ -1719,12 +1693,11 @@ class HbvGroupViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            try:
-                res = [self.create_one(data) for data in request.data]
-                return res[0]
-            except:
-                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("groups", HbvGroupViewSet)
 
@@ -1744,16 +1717,8 @@ class HbvFamilyViewSet(viewsets.ModelViewSet):
 
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
-
-        # serializer = self.serializer_class(obj, data=data)
-
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return RestResponse(serializer.data, status=st)
-        # else:
-        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not created:
+            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
@@ -1767,12 +1732,11 @@ class HbvFamilyViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            try:
-                res = [self.create_one(data) for data in request.data]
-                return res[0]
-            except:
-                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("families", HbvFamilyViewSet)
 
@@ -1792,16 +1756,8 @@ class HbvGenusViewSet(viewsets.ModelViewSet):
 
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
-
-        # serializer = self.serializer_class(obj, data=data)
-
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return RestResponse(serializer.data, status=st)
-        # else:
-        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not created:
+            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
@@ -1815,12 +1771,11 @@ class HbvGenusViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            try:
-                res = [self.create_one(data) for data in request.data]
-                return res[0]
-            except:
-                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("genera", HbvGenusViewSet)
 
@@ -1840,16 +1795,8 @@ class HbvSpeciesViewSet(viewsets.ModelViewSet):
 
         obj, created = self.model.objects.get_or_create(
             name_id=data[self.uid_field], defaults=data)
-
-        # serializer = self.serializer_class(obj, data=data)
-
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return RestResponse(serializer.data, status=st)
-        # else:
-        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not created:
+            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
@@ -1863,12 +1810,11 @@ class HbvSpeciesViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            try:
-                res = [self.create_one(data) for data in request.data]
-                return res[0]
-            except:
-                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("species", HbvSpeciesViewSet)
 
@@ -1885,19 +1831,10 @@ class HbvVernacularViewSet(viewsets.ModelViewSet):
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
-
         obj, created = self.model.objects.get_or_create(
             ogc_fid=data[self.uid_field], defaults=data)
-
-        # serializer = self.serializer_class(obj, data=data)
-
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return RestResponse(serializer.data, status=st)
-        # else:
-        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not created:
+            self.model.objects.filter(ogc_fid=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
@@ -1911,12 +1848,11 @@ class HbvVernacularViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            try:
-                res = [self.create_one(data) for data in request.data]
-                return res[0]
-            except:
-                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("vernaculars", HbvVernacularViewSet)
 
@@ -1933,19 +1869,10 @@ class HbvXrefViewSet(viewsets.ModelViewSet):
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
-
         obj, created = self.model.objects.get_or_create(
             xref_id=data[self.uid_field], defaults=data)
-
-        # serializer = self.serializer_class(obj, data=data)
-
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return RestResponse(serializer.data, status=st)
-        # else:
-        #     return RestResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not created:
+            self.model.objects.filter(xref_id=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
@@ -1959,12 +1886,11 @@ class HbvXrefViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            try:
-                res = [self.create_one(data) for data in request.data]
-                return res[0]
-            except:
-                return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("xrefs", HbvXrefViewSet)
 
