@@ -55,15 +55,13 @@ from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis.filters import GeometryFilter, InBBoxFilter
 
 from wastd.observations.models import (
-    Area, SiteVisit,
+    Area, SiteVisit, Survey,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
-    LineTransectEncounter,
-    Observation,
+    LineTransectEncounter, Observation,
     MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
     TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
     TurtleMorphometricObservation, HatchlingMorphometricObservation,
-    DugongMorphometricObservation,
-    TurtleDamageObservation,
+    DugongMorphometricObservation, TurtleDamageObservation,
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
 # from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
@@ -243,7 +241,32 @@ class UserViewSet(viewsets.ModelViewSet):
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Observations ----------------------------------------------------------------#
+# Surveys --------------------------------------------------------------------#
+class SurveySerializer(serializers.ModelSerializer):
+    """Survey serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = Survey
+        fields = '__all__'
+
+
+class FastSurveySerializer(serializers.ModelSerializer):
+    """Survey serializer."""
+
+    reporter = FastUserSerializer(many=False, read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = Survey
+        fields = ['id', 'start_time', 'end_time', 'start_comments', 'end_comments', 'reporter', ]
+
+
+# Observations ---------------------------------------------------------------#
+
+
 class ObservationSerializer(serializers.ModelSerializer):
     """The Observation serializer resolves its polymorphic subclasses.
 
@@ -627,6 +650,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     reporter = FastUserSerializer(many=False, read_only=True)
     area = FastAreaSerializer(many=False, read_only=True)
     site = FastAreaSerializer(many=False, read_only=True)
+    survey = FastSurveySerializer(many=False, read_only=True)
     # observer = serializers.StringRelatedField(read_only=True)
     # reporter = serializers.StringRelatedField(read_only=True)
     # where = PointField(required=True)   ## THIS BREAKS GEOJSON OUTPUT
