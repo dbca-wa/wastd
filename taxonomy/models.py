@@ -1662,6 +1662,14 @@ class Taxon(MPTTModel):
                 self.get_rank_display(),
                 "GENUS" if not self.parent else self.parent.name,
                 self.name)
+
+        elif self.rank == self.RANK_SUBSPECIES:
+            return "[{0}] ({1}) {2} {3} {4}".format(
+                self.name_id,
+                self.get_rank_display(),
+                self.parent.parent.name,
+                self.parent.name,
+                self.name)
         else:
             return "[{0}] ({1}) {2}".format(
                 self.name_id,

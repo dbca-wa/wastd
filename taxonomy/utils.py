@@ -92,7 +92,7 @@ def make_genus(x, current_dict, publication_dict):
     return obj
 
 
-def make_species(x, current_dict, publication_dict):
+def make_species(x, current_dict, publication_dict, genus_dict):
     """Create or update a Taxon of rank Species.
 
     Arguments
@@ -100,6 +100,7 @@ def make_species(x, current_dict, publication_dict):
     x An instance of HbvSpecies, rank_name "Species"
     current_dict A lookup dict for is_current
     publication_dict A lookup dict for publication_status
+    genus_dict A lookup dict of Genus name to Taxon instance
 
     Return The created or updated instance of Taxon.
     """
@@ -107,7 +108,7 @@ def make_species(x, current_dict, publication_dict):
         name=x.species,
         rank=Taxon.RANK_SPECIES,
         current=current_dict[x.is_current],
-        parent=Taxon.objects.get(name=x.genus),
+        parent=genus_dict[x.genus],
         author=x.author
     )
     if x.informal is not None:
@@ -117,6 +118,35 @@ def make_species(x, current_dict, publication_dict):
     action = "Created" if created else "Updated"
 
     logger.info("[make_species] {0} {1}.".format(action, obj))
+    return obj
+
+
+def make_subspecies(x, current_dict, publication_dict, species_dict):
+    """Create or update a Taxon of rank Subspecies.
+
+    Arguments
+
+    x An instance of HbvSpecies, rank_name "Species"
+    current_dict A lookup dict for is_current
+    publication_dict A lookup dict for publication_status
+    species_dict A lookup dict for species name to Taxon instance
+
+    Return The created or updated instance of Taxon.
+    """
+    dd = dict(
+        name=x.infra_name,
+        rank=Taxon.RANK_SUBSPECIES,
+        current=current_dict[x.is_current],
+        parent=species_dict[x.species],
+        author=x.author
+    )
+    if x.informal is not None:
+        dd['publication_status'] = publication_dict[x.informal]
+
+    obj, created = Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
+    action = "Created" if created else "Updated"
+
+    logger.info("[make_subspecies] {0} {1}.".format(action, obj))
     return obj
 
 
@@ -138,19 +168,29 @@ def update_taxon():
     KINGDOM_ID_NAME = {x['kingdom_id']: x['kingdom_name']
                        for x in HbvFamily.objects.values('kingdom_id', 'kingdom_name')}
     KINGDOM_ID_TAXA = {x[0]: Taxon.objects.get(name=x[1]) for x in KINGDOM_ID_NAME.items()}
-
     CURRENT = {'N': False, 'Y': True}
     PUBLICATION = {'PN': 0, 'MS': 1, '-': 2}
-    families = [make_family(x, KINGDOM_ID_TAXA, CURRENT, PUBLICATION) for x in HbvFamily.objects.all()]
+    families = [make_family(x, KINGDOM_ID_TAXA, CURRENT, PUBLICATION)
+                for x in HbvFamily.objects.all()]
 
     # Genera
     logger.info("[update_taxon] Creating/updating genera...")
     genera = [make_genus(x, CURRENT, PUBLICATION) for x in HbvGenus.objects.all()]
 
+    # Species
     logger.info("[update_taxon] Creating/updating species...")
-    species = [make_species(x, CURRENT, PUBLICATION) for x in HbvSpecies.objects.filter(rank_name="Species")]
+    GENUS = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_GENUS)}
+    species = [make_species(x, CURRENT, PUBLICATION, GENUS)
+               for x in HbvSpecies.objects.filter(rank_name="Species")]
 
-    msg = "[update_taxon] Updated {0} kingdoms, {1} families and their parentage, {2} genera, {3} species.".format(
-        len(kingdoms), len(families), len(genera), len(species))
+    # Subspecies
+    logger.info("[update_taxon] Creating/updating subspecies...")
+    SPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SPECIES)}
+    subspecies = [make_subspecies(x, CURRENT, PUBLICATION, SPECIES)
+                  for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
+
+    msg = ("[update_taxon] Updated {0} kingdoms, {1} families "
+           "and their parentage, {2} genera, {3} species, {4} subspecies.").format(
+        len(kingdoms), len(families), len(genera), len(species), len(subspecies))
     logger.info(msg)
     return msg
