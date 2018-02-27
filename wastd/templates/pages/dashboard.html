@@ -6,17 +6,12 @@
 
   <!-- Data -->
   <div id="dash-data" class="col-md-9 col-sm-6 col-12">
-
     <h3>Threatened Species and Communities</h3>
-
     <div class="row">
-<!--       {% for original in object_list %}
+      {% for original in object_list %}
       {% include "cards/taxon.html" with original=original %}
-      {% endfor %} -->
-</div>
-
-
-
+      {% endfor %}
+    </div>
   </div><!-- /#dash-data -->
 
   <div id="dash-filters" class="col-md-3 col-sm-6 col-12">
@@ -64,7 +59,7 @@
       </div>
     </form>
 
-    <h3>Taxa</h3>
+    <!-- <h3>Taxa</h3>
     <small>
     <ul>
     {% recursetree nodes %}
@@ -78,7 +73,7 @@
         </li>
     {% endrecursetree %}
     </ul>
-    </small>
+    </small> -->
   </div><!-- /#dash-filters -->
 </div>
 {% endblock %}
