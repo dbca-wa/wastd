@@ -43,7 +43,10 @@
         src="{% static 'images/tt.png' %}"
         class="brandimg"
         alt="Threatened Things"></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button"
+          data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -54,7 +57,9 @@
             <a class="nav-link"
             href="{% url 'dashboard' %}"
             title="Browse, filter and search threatened species and communities">
-            <span class="oi oi-dashboard" title="Species and Communities Dashboard" aria-hidden="true"></span>&nbsp;Dashboard
+            <span class="oi oi-dashboard"
+            title="Species and Communities Dashboard" aria-hidden="true"></span>
+            Dashboard
             </a>
           </li>
 
@@ -66,90 +71,84 @@
             aria-haspopup="true"
             aria-expanded="false">
             Analysts
-          </a>
-          <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
-            <a class="dropdown-item" href="http://wastd.readthedocs.io/data_consumers.html" target="_">
-              <i class="fa fa-book align-middle"></i>
-              <span class="align-middle">Data Analysts' Manual</span>
             </a>
-            <a class="dropdown-item" href="/api/1/" target="_">
-             <i class="fa fa-database align-middle"></i>
-             <span class="align-middle">API</span>
-           </a>
-           <a class="dropdown-item" href="{% url 'api-docs' %}" target="_">
-             <i class="fa fa-book align-middle"></i>
-             <span class="align-middle">API Docs (Swagger)</span>
-           </a>
-           <a class="dropdown-item" href="/api/1/docs" target="_">
-             <i class="fa fa-book align-middle"></i>
-             <span class="align-middle">API Docs (DRF)</span>
-           </a>
-           {% if request.user.is_authenticated %}
-           <a class="dropdown-item" href="{% url 'users:detail' request.user.username  %}">
-            <i class="fa fa-user align-middle"></i>
-            <span class="align-middle">My API Authentication</span>
-          </a>
-          {% endif %}
-                        <!--
-                          <a class="dropdown-menu" href="{% url 'encounter_list' %}" target="_">
-                              <i class="fa fa-table"></i>&nbsp;Encounters
-                          </a>
+            <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
+              <a class="dropdown-item" href="http://wastd.readthedocs.io/data_consumers.html" target="_">
+                <i class="fa fa-book align-middle"></i>
+                <span class="align-middle">Data Analysts' Manual</span>
+              </a>
+              <a class="dropdown-item" href="/api/1/" target="_">
+               <i class="fa fa-database align-middle"></i>
+               <span class="align-middle">API</span>
+             </a>
+             <a class="dropdown-item" href="{% url 'api-docs' %}" target="_">
+               <i class="fa fa-book align-middle"></i>
+               <span class="align-middle">API Docs (Swagger)</span>
+             </a>
+             <a class="dropdown-item" href="/api/1/docs" target="_">
+               <i class="fa fa-book align-middle"></i>
+               <span class="align-middle">API Docs (DRF)</span>
+             </a>
+             {% if request.user.is_authenticated %}
+             <a class="dropdown-item" href="{% url 'users:detail' request.user.username  %}">
+              <i class="fa fa-user align-middle"></i>
+              <span class="align-middle">My API Authentication</span>
+              </a>
+              {% endif %}
+              <!--
+                <a class="dropdown-menu" href="{% url 'encounter_list' %}" target="_">
+                    <i class="fa fa-table"></i>&nbsp;Encounters
+                </a>
 
-                          <a class="dropdown-menu"
-                              href="{% url 'animalencounter_list' %}"
-                              title="Browse, filter and search animal encounters">
-                              <i class="fa fa-table"></i>&nbsp;Animal Encounters
-                          </a>
-                        -->
-                      </div>
-                    </li>
-
-
-
-                    {% if request.user.is_staff %}
-                    <li class="nav-item dropdown">
-                      <a  class="nav-link dropdown-toggle"
-                      href="/"
-                      id="nav-li-curators"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                      Curators
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="nav-li-curators">
-                      <a class="dropdown-item" href="http://wastd.readthedocs.io/data_curators.html" target="_">
-                        <i class="fa fa-book"></i>&nbsp;Data Curators' Manual
-                      </a>
-
-
-                      <a class="dropdown-item"
-                      href="{% url 'admin:index' %}"
-                      target="_"
-                      title="Data entry and curation area">
-                      <i class="fa fa-cog"></i>&nbsp;Curate Data
-                    </a>
-
-                    {% if request.user.is_superuser %}
-                    <a class="dropdown-item"
-                    href="{% url 'update-names' %}"
-                    title="Reconstruct animal identities">
-                    <i class="fa fa-refresh"></i> Reconstruct Names
-                  </a>
-                  <a class="dropdown-item"
-                  href="{% url 'import-odka' %}"
-                  title="Import new OpenDataKit submissions">
-                  <i class="fa fa-refresh"></i> Import ODK Submissions
-                  </a>
-
-                  <a class="dropdown-item"
-                  href="{% url 'update-taxon' %}"
-                  title="Update taxon names">
-                  <i class="fa fa-refresh"></i> Update Taxon Names
-                  </a>
+                <a class="dropdown-menu"
+                    href="{% url 'animalencounter_list' %}"
+                    title="Browse, filter and search animal encounters">
+                    <i class="fa fa-table"></i>&nbsp;Animal Encounters
+                </a>
+              -->
+            </div>
+          </li>
 
 
 
-                <a class="dropdown-item"
+          {% if request.user.is_staff %}
+          <li class="nav-item dropdown">
+            <a  class="nav-link dropdown-toggle"
+              href="/"
+              id="nav-li-curators"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false">
+              Curators
+            </a>
+            <div class="dropdown-menu" aria-labelledby="nav-li-curators">
+              <a class="dropdown-item" href="http://wastd.readthedocs.io/data_curators.html" target="_">
+                <i class="fa fa-book"></i>&nbsp;Data Curators' Manual
+              </a>
+              <a class="dropdown-item"
+                href="{% url 'admin:index' %}"
+                target="_"
+                title="Data entry and curation area">
+                <i class="fa fa-cog"></i>&nbsp;Curate Data
+              </a>
+
+              {% if request.user.is_superuser %}
+              <a class="dropdown-item"
+                href="{% url 'update-names' %}"
+                title="Reconstruct animal identities">
+                <i class="fa fa-refresh"></i> Reconstruct Names
+              </a>
+              <a class="dropdown-item"
+                href="{% url 'import-odka' %}"
+                title="Import new OpenDataKit submissions">
+                <i class="fa fa-refresh"></i> Import ODK Submissions
+              </a>
+              <a class="dropdown-item"
+                href="{% url 'update-taxon' %}"
+                title="Update taxon names">
+                <i class="fa fa-refresh"></i> Update Taxon Names
+              </a>
+              <a class="dropdown-item"
                 href="/api/1/animal-encounters/?format=latex"
                 target="_"
                 title="Export all Animal Encounters as PDF">
@@ -164,14 +163,26 @@
            <a class="nav-link" href="http://wastd.readthedocs.io/" target="_">
              <i class="fa fa-book"></i>&nbsp;Manual
            </a>
-         </li>
+          </li>
 
-         <li class="nav-item">
-           {% block extranav %}{% endblock extranav %}
-         </li>
+          <li class="nav-item">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% block extranav %}{% endblock extranav %}
+          </li>
        </ul>
        <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Species or Communities" aria-label="Search">
+        <input class="form-control mr-sm-2" type="search"
+          placeholder="Species or Communities" aria-label="Search">
         <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search
         </button>
       </form>
@@ -197,24 +208,12 @@
         {% endif %}
       </ul>
     </div>
-
-      {% if messages %}
-    <div class="row">
-      {% for message in messages %}
-      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        {{ message }}
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
   </nav>
 
   <div class="container">
     {% block content %}{% endblock content %}
   </div>
+
   {% block fullwidthcontent %}{% endblock %}
   {% block map %}{% endblock %}
   {% block modal %}{% endblock modal %}
