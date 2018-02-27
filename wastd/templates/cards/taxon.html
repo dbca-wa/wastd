@@ -12,7 +12,7 @@
     {% if original.consv_code %}
     <span class="badge badge-danger">
       <span class="oi oi-pulse" title="Conservation Status" aria-hidden="true"></span>
-      {{ original.consv_code }} {{ original.ranking }}
+      {{ original.consv_code }} {% if original.ranking %}{{ original.ranking }}{% endif %}
     </span>
     {% endif %}
 

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Forms for WAStD Observations."""
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (
-    Layout, ButtonHolder, Submit, Div, Field)  # Fieldset, MultiField
+from crispy_forms.layout import (Layout, ButtonHolder, Submit)  # Div, Field, Fieldset, MultiField
 
 from wastd.observations.models import Encounter, AnimalEncounter
 
@@ -18,9 +17,7 @@ class EncounterListFormHelper(FormHelper):
         'source_id',
         'when',
         ButtonHolder(Submit('submit', 'Filter', css_class='button white right')),
-        )
-
-
+    )
 
 
 class AnimalEncounterListFormHelper(EncounterListFormHelper):

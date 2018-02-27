@@ -67,7 +67,7 @@ class HbvSupra(models.Model):
         max_length=1000,
         blank=True, null=True,
         verbose_name=_("HBV Suprafamily Group Name"),
-        help_text=_("The group's name."),
+        help_text=_("The group name."),
     )
 
     updated_on = models.CharField(
@@ -517,7 +517,6 @@ class HbvGenus(models.Model):
     )
 
     genusid = models.BigIntegerField(
-        # refactor: FK Family
         blank=True, null=True,
         verbose_name=_("Genus ID"),
         help_text=_("WACensus Genus ID"),
@@ -547,7 +546,7 @@ class HbvGenus(models.Model):
     class Meta:
         """Class options."""
 
-        ordering = ['kingdom_id', "genus", ]
+        ordering = ["kingdom_id", "family_nid", "genusid", ]
         verbose_name = "HBV Genus"
         verbose_name_plural = "HBV Genera"
         # get_latest_by = "added_on"
@@ -1504,7 +1503,7 @@ class Taxon(MPTTModel):
     Each rank can build its correct name based on different rules for each rank.
     Ranks are stored as SmallIntegerField, so that lookups against ranks are fast.
 
-    Status contains the taxon name's life cycle:
+    Status contains the taxon name"s life cycle:
 
     * A phrase name is created for possibly unknown specimens.
     * A manuscript name is <insert definition>.
@@ -1591,12 +1590,12 @@ class Taxon(MPTTModel):
     )
 
     parent = TreeForeignKey(
-        'self',
+        "self",
         null=True, blank=True,
-        related_name='children',
+        related_name="children",
         db_index=True,
-        verbose_name=_('Parent Taxon'),
-        help_text=_('The lowest known parent taxon.'),
+        verbose_name=_("Parent Taxon"),
+        help_text=_("The lowest known parent taxon."),
     )
 
     rank = models.PositiveSmallIntegerField(
@@ -1639,7 +1638,7 @@ class Taxon(MPTTModel):
     class MPTTMeta:
         """MPTT Class options."""
 
-        order_insertion_by = ['name_id']
+        order_insertion_by = ["name_id"]
 
     class Meta:
         """Class options."""

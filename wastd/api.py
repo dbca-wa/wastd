@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The WAStD API module provides access to:
+"""The WAStD API.
 
 * Encouter and subclasses: AnimalEncounter, TurtleNestEncounter
 * Encounter Inlines: Observation subclasses
@@ -33,7 +33,7 @@ This API is built using:
 from collections import OrderedDict
 
 import logging
-import pdb
+from pdb import set_trace
 
 # from django.db import models as django_models
 from django.template import Context, Template
@@ -55,9 +55,9 @@ from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis.filters import GeometryFilter, InBBoxFilter
 
 from wastd.observations.models import (
-    Area, SiteVisit, Survey,
+    Area, Survey,  # SiteVisit,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
-    LineTransectEncounter, Observation,
+    Observation,  # LineTransectEncounter
     MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
     TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
     TurtleMorphometricObservation, HatchlingMorphometricObservation,
@@ -261,7 +261,8 @@ class FastSurveySerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = Survey
-        fields = ['id', 'start_time', 'end_time', 'start_comments', 'end_comments', 'reporter', ]
+        fields = ['id', 'start_time', 'end_time',
+                  'start_comments', 'end_comments', 'reporter', ]
 
 
 # Observations ---------------------------------------------------------------#

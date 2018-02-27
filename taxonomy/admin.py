@@ -99,13 +99,13 @@ class HbvGenusAdmin(VersionAdmin, admin.ModelAdmin):
     save_on_top = True
     # date_hierarchy = 'updated_on'
     list_display = ('name_id',
-                    'genusid', 'rank_name', 'genus', 'kingdom_id',
+                    'kingdom_id', 'family_nid', 'genus',
                     'author', 'editor', 'reference', 'comments',
                     'is_current', 'informal',
                     'added_on', 'updated_on',
                     'ogc_fid', 'md5_rowhash')
     list_filter = ('is_current', 'informal', 'kingdom_id',)
-    search_fields = ('genus', 'name_id', )
+    search_fields = ('genus', 'name_id', 'author')
 
 
 @admin.register(HbvSpecies)
