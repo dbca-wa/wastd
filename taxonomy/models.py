@@ -1657,7 +1657,13 @@ class Taxon(MPTTModel):
         * and so on down to subforma.
         """
         if self.rank == self.RANK_SPECIES:
-            genus = "GENUS" if not self.parent else self.parent.name
-            return "[{0}] ({1}) {2} {3}".format(self.name_id, genus, self.name)
+            return "[{0}] ({1}) {2} {3}".format(
+                self.name_id,
+                self.get_rank_display(),
+                "GENUS" if not self.parent else self.parent.name,
+                self.name)
         else:
-            return "[{0}] ({1}) {2}".format(self.name_id, self.get_rank_display(), self.name)
+            return "[{0}] ({1}) {2}".format(
+                self.name_id,
+                self.get_rank_display(),
+                self.name)
