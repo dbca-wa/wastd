@@ -104,11 +104,17 @@ def make_species(x, current_dict, publication_dict, genus_dict):
 
     Return The created or updated instance of Taxon.
     """
+    try:
+        parent = genus_dict[x.genus]
+    except KeyError:
+        parent = Taxon.objects.get(name_id=x.family_nid)
+        logger.warn("[make_species] Genus {0} not found, using family {1} as parent for species {2}".format(
+            x.genus, parent, x.species))
     dd = dict(
         name=x.species,
         rank=Taxon.RANK_SPECIES,
         current=current_dict[x.is_current],
-        parent=genus_dict[x.genus],
+        parent=parent,
         author=x.author
     )
     if x.informal is not None:
