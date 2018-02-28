@@ -138,6 +138,11 @@ def make_subspecies(x, current_dict, publication_dict, taxon_dict):
 
     Return The created or updated instance of Taxon.
     """
+    try:
+        parent = taxon_dict[x.species]
+    except KeyError:
+        logger.warn("[make_subspecies] Couldn't find record for species {0}, using genus {1} as parent".format(x.species, x.genus))
+        parent = Taxon.objects.get(name=x.genus)
     dd = dict(
         name=x.infra_name,
         rank=Taxon.RANK_SUBSPECIES,
