@@ -147,7 +147,7 @@ def make_subspecies(x, current_dict, publication_dict, taxon_dict):
         name=x.infra_name,
         rank=Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
-        parent=taxon_dict[x.species],
+        parent=parent,
         author=x.author
     )
     if x.informal is not None:
@@ -203,7 +203,9 @@ def update_taxon():
     # Subspecies
     logger.info("[update_taxon] Creating/updating subspecies...")
     SPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SPECIES)}
-    subspecies = [make_subspecies(x, CURRENT, PUBLICATION, SPECIES)
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            subspecies = [make_subspecies(x, CURRENT, PUBLICATION, SPECIES)
                   for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
 
     msg = ("[update_taxon] Updated {0} kingdoms, {1} families "
