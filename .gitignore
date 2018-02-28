@@ -79,3 +79,6 @@ data/
 
 # iPython 
 docs/.ipynb_checkpoints/
+
+# local admin scripts
+dbperf
