@@ -244,48 +244,48 @@ def update_taxon():
         for x in HbvName.objects.filter(rank_name='Kingdom')]
 
     # Divisions, Classes, Orders, Families
-    # logger.info("[update_taxon] Creating/updating divisions, classes, orders, families...")
-    # # ORM kung-fu to get Kingdom ID:Taxon lookup dict
-    # KINGDOM_ID_NAME = {x['kingdom_id']: x['kingdom_name']
-    #                    for x in HbvFamily.objects.values('kingdom_id', 'kingdom_name')}
-    # KINGDOM_ID_TAXA = {x[0]: Taxon.objects.get(name=x[1]) for x in KINGDOM_ID_NAME.items()}
+    logger.info("[update_taxon] Creating/updating divisions, classes, orders, families...")
+    # ORM kung-fu to get Kingdom ID:Taxon lookup dict
+    KINGDOM_ID_NAME = {x['kingdom_id']: x['kingdom_name']
+                       for x in HbvFamily.objects.values('kingdom_id', 'kingdom_name')}
+    KINGDOM_ID_TAXA = {x[0]: Taxon.objects.get(name=x[1]) for x in KINGDOM_ID_NAME.items()}
     CURRENT = {'N': False, 'Y': True}
     PUBLICATION = {'PN': 0, 'MS': 1, '-': 2}
-    # with transaction.atomic():
-    #     with Taxon.objects.delay_mptt_updates():
-    #         families = [make_family(x, KINGDOM_ID_TAXA, CURRENT, PUBLICATION)
-    #                     for x in HbvFamily.objects.all()]
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            families = [make_family(x, KINGDOM_ID_TAXA, CURRENT, PUBLICATION)
+                        for x in HbvFamily.objects.all()]
 
     # Genera
-    # logger.info("[update_taxon] Creating/updating genera...")
-    # FAM = {x.name_id: x for x in Taxon.objects.filter(rank=Taxon.RANK_FAMILY)}
-    # with transaction.atomic():
-    #     with Taxon.objects.delay_mptt_updates():
-    #         genera = [make_genus(x, CURRENT, PUBLICATION, FAM) for x in HbvGenus.objects.all()]
+    logger.info("[update_taxon] Creating/updating genera...")
+    FAM = {x.name_id: x for x in Taxon.objects.filter(rank=Taxon.RANK_FAMILY)}
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            genera = [make_genus(x, CURRENT, PUBLICATION, FAM) for x in HbvGenus.objects.all()]
 
-    # # Species
-    # logger.info("[update_taxon] Creating/updating species...")
-    # GENUS = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_GENUS)}
-    # with transaction.atomic():
-    #     with Taxon.objects.delay_mptt_updates():
-    #         species = [make_species(x, CURRENT, PUBLICATION, GENUS)
-    #                    for x in HbvSpecies.objects.filter(rank_name="Species")]
+    # Species
+    logger.info("[update_taxon] Creating/updating species...")
+    GENUS = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_GENUS)}
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            species = [make_species(x, CURRENT, PUBLICATION, GENUS)
+                       for x in HbvSpecies.objects.filter(rank_name="Species")]
 
     # # Subspecies
-    # logger.info("[update_taxon] Creating/updating subspecies...")
+    logger.info("[update_taxon] Creating/updating subspecies...")
     SPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SPECIES)}
-    # with transaction.atomic():
-    #     with Taxon.objects.delay_mptt_updates():
-    #         subspecies = [make_subspecies(x, CURRENT, PUBLICATION, SPECIES)
-    #                       for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            subspecies = [make_subspecies(x, CURRENT, PUBLICATION, SPECIES)
+                          for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
 
-    # # Varieties
-    # logger.info("[update_taxon] Creating/updating varieties...")
-    # # SUBSPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SUBSPECIES)}
-    # with transaction.atomic():
-    #     with Taxon.objects.delay_mptt_updates():
-    #         varieties = [make_variety(x, CURRENT, PUBLICATION, SPECIES)
-    #                      for x in HbvSpecies.objects.filter(rank_name="Variety")]
+    # Varieties
+    logger.info("[update_taxon] Creating/updating varieties...")
+    # SUBSPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SUBSPECIES)}
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            varieties = [make_variety(x, CURRENT, PUBLICATION, SPECIES)
+                         for x in HbvSpecies.objects.filter(rank_name="Variety")]
 
     # Forms
     logger.info("[update_taxon] Creating/updating forms...")
@@ -298,11 +298,11 @@ def update_taxon():
            "and their parentage, {2} genera, {3} species, {4} subspecies, "
            "{5} varieties, {6} forms.").format(
         len(kingdoms),
-        0,  # len(families),
-        0,  # len(genera),
-        0,  # len(species),
-        0,  # len(subspecies),
-        0,  # len(varieties),
+        len(families),
+        len(genera),
+        len(species),
+        len(subspecies),
+        len(varieties),
         len(forms))
     logger.info(msg)
     return msg
