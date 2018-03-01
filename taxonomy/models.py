@@ -1649,26 +1649,27 @@ class Taxon(MPTTModel):
     def __str__(self):
         """The full name.
 
-        TODO: make rank-sensitive.
-
         * Anything above species: [NameID] RANK NAME
         * Species: [NameID] RANK GENUS (SPECIES)NAME
-        * Subspecies: [NameID] RANK GENUS SPECIES (SUBSPECIES)NAME subsp.
-        * and so on down to subforma.
+        * Subspecies and lower: [NameID] RANK GENUS SPECIES RANK (SUBSPECIES)NAME
         """
         if self.rank == self.RANK_SPECIES:
+            genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
             return "[{0}] ({1}) {2} {3}".format(
                 self.name_id,
                 self.get_rank_display(),
-                "GENUS" if not self.parent else self.parent.name,
+                "GENUS" if not genus else genus.name,
                 self.name)
 
-        elif self.rank == self.RANK_SUBSPECIES:
-            return "[{0}] ({1}) {2} {3} {4}".format(
+        elif self.rank > self.RANK_SPECIES:
+            genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
+            species = self.get_ancestors().filter(rank=Taxon.RANK_SPECIES).first()
+            return "[{0}] ({1}) {2} {3} {4} {5}".format(
                 self.name_id,
                 self.get_rank_display(),
-                self.parent.parent.name,
-                self.parent.name,
+                "GENUS" if not genus else genus.name,
+                "SPECIES" if not species else species.name,
+                self.get_rank_display().lower(),
                 self.name)
         else:
             return "[{0}] ({1}) {2}".format(
