@@ -1333,7 +1333,7 @@ class HbvXrefSerializer(serializers.ModelSerializer):
 
 
 class TaxonSerializer(serializers.ModelSerializer):
-    """Serializer for HbvXref."""
+    """Serializer for Taxon."""
 
     class Meta:
         """Opts."""
