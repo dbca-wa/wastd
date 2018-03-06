@@ -308,7 +308,7 @@ router.register(r'areas', AreaViewSet)
 
 
 # Surveys --------------------------------------------------------------------#
-class SurveySerializer(serializers.ModelSerializer):
+class SurveySerializer(GeoFeatureModelSerializer):
     """Survey serializer."""
 
     reporter = FastUserSerializer(many=False, read_only=True)
@@ -318,6 +318,7 @@ class SurveySerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = Survey
+        geo_field = "start_location"
         fields = '__all__'
 
 
