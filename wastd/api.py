@@ -365,7 +365,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
     filter_class = SurveyFilter
-    pagination_class = pagination.LimitOffsetPagination
+    # pagination_class = pagination.LimitOffsetPagination # provides results$features
+    pagination_class = MyGeoJsonPagination  # provides top level features
 
 router.register("surveys", SurveyViewSet)
 
