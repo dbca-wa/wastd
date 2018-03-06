@@ -85,6 +85,9 @@ logger = logging.getLogger(__name__)
 # @sync_route.app("users", "users")
 # @sync_route.app("observations", "observations")
 
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+
 
 class MyGeoJsonPagination(pagination.LimitOffsetPagination):
     """
@@ -180,7 +183,7 @@ class CustomBBoxFilter(InBBoxHTMLMixin, InBBoxFilter):
     bbox_param = 'in_bbox'
 
 
-# User ----------------------------------------------------------------#
+# Users ----------------------------------------------------------------#
 class UserSerializer(serializers.ModelSerializer):
     """User serializer."""
 
@@ -241,9 +244,75 @@ class UserViewSet(viewsets.ModelViewSet):
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
+router.register(r'users', UserViewSet)
+
+
+# Areas --------------------------------------------------------------------#
+class AreaSerializer(GeoFeatureModelSerializer):
+    """Area serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = Area
+        geo_field = "geom"
+        fields = ("pk", "area_type", "name", "geom", "northern_extent", "centroid", )
+
+
+class FastAreaSerializer(serializers.ModelSerializer):
+    """Minimal Area serializer."""
+
+    class Meta:
+        """Class options."""
+
+        model = Area
+        geo_field = "geom"
+        fields = ("pk", "area_type", "name", )
+
+
+class AreaFilter(filters.FilterSet):
+
+    class Meta:
+        model = Area
+        fields = {
+            'area_type': ['exact', 'in', 'startswith'],
+            'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
+        }
+
+
+class AreaViewSet(viewsets.ModelViewSet):
+    """Area view set.
+
+    # Filters
+
+    # name
+    * [/api/1/areas/?name__startswith=Broome](/api/1/areas/?name__startswith=Broome) Areas starting with "Broome"
+    * [/api/1/areas/?name__icontains=sector](/api/1/areas/?name__icontains=Sector) Areas containing (case-insensitive) "sector"
+    * [/api/1/areas/?name=Cable Beach Broome Sector 3](/api/1/areas/?name=Cable Beach Broome Sector 3) Area with exact name (case sensitive)
+
+
+    # area_type
+    * [/api/1/areas/?area_type=MPA](/api/1/areas/?area_type=MPA) Marine Protected Areas
+    * [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality) Localities (typically containing multiple surveyed sites)
+    * [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site) Sites (where Surveys are conducted)
+    """
+
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+    filter_class = AreaFilter
+    bbox_filter_field = 'geom'
+    pagination_class = MyGeoJsonPagination
+
+
+router.register(r'areas', AreaViewSet)
+
+
 # Surveys --------------------------------------------------------------------#
 class SurveySerializer(serializers.ModelSerializer):
     """Survey serializer."""
+
+    reporter = FastUserSerializer(many=False, read_only=True)
+    site = FastAreaSerializer(many=False, read_only=True)
 
     class Meta:
         """Class options."""
@@ -256,18 +325,51 @@ class FastSurveySerializer(serializers.ModelSerializer):
     """Survey serializer."""
 
     reporter = FastUserSerializer(many=False, read_only=True)
+    site = FastAreaSerializer(many=False, read_only=True)
 
     class Meta:
         """Class options."""
 
         model = Survey
-        fields = ['id', 'start_time', 'end_time',
+        fields = ['id', 'site', 'start_time', 'end_time',
                   'start_comments', 'end_comments', 'reporter', ]
 
 
+class SurveyFilter(filters.FilterSet):
+    """Survey Filter. All filter methods available on all fields except location and team."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Survey
+        fields = {
+            'id': '__all__',
+            'start_time': '__all__',
+            'end_time': '__all__',
+            'start_comments': '__all__',
+            'end_comments': '__all__',
+            'reporter': '__all__',
+            'device_id': '__all__',
+            'source_id': '__all__',
+            'end_source_id': '__all__',
+        }
+
+
+class SurveyViewSet(viewsets.ModelViewSet):
+    """Survey ModelViewSet.
+
+    All filters are available on all fields except location and team.
+    """
+
+    queryset = Survey.objects.all()
+    serializer_class = SurveySerializer
+    filter_class = SurveyFilter
+    pagination_class = pagination.LimitOffsetPagination
+
+router.register("surveys", SurveyViewSet)
+
+
 # Observations ---------------------------------------------------------------#
-
-
 class ObservationSerializer(serializers.ModelSerializer):
     """The Observation serializer resolves its polymorphic subclasses.
 
@@ -599,28 +701,6 @@ class DugongMorphometricObservationSerializer(serializers.ModelSerializer):
                   )
 
 
-class AreaSerializer(GeoFeatureModelSerializer):
-    """Area serializer."""
-
-    class Meta:
-        """Class options."""
-
-        model = Area
-        geo_field = "geom"
-        fields = ("pk", "area_type", "name", "geom", "northern_extent", "centroid", )
-
-
-class FastAreaSerializer(serializers.ModelSerializer):
-    """Minimal Area serializer."""
-
-    class Meta:
-        """Class options."""
-
-        model = Area
-        geo_field = "geom"
-        fields = ("pk", "area_type", "name", )
-
-
 class EncounterSerializer(GeoFeatureModelSerializer):
     """Encounter serializer.
 
@@ -803,43 +883,6 @@ class LoggerEncounterSerializer(EncounterSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
         geo_field = "where"
-
-
-class AreaFilter(filters.FilterSet):
-
-    class Meta:
-        model = Area
-        fields = {
-            'area_type': ['exact', 'in', 'startswith'],
-            'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
-        }
-
-
-class AreaViewSet(viewsets.ModelViewSet):
-    """Area view set.
-
-    # Filters
-
-    # name
-
-    * [/api/1/areas/?name__startswith=Broome](/api/1/areas/?name__startswith=Broome) Areas starting with "Broome"
-    * [/api/1/areas/?name__icontains=sector](/api/1/areas/?name__icontains=Sector) Areas containing (case-insensitive) "sector"
-    * [/api/1/areas/?name=Cable Beach Broome Sector 3](/api/1/areas/?name=Cable Beach Broome Sector 3) Area with exact name (case sensitive)
-
-
-    # area_type
-
-    * [/api/1/areas/?area_type=MPA](/api/1/areas/?area_type=MPA) Marine Protected Areas
-    * [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality) Localities (typically containing multiple surveyed sites)
-    * [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site) Sites (where Surveys are conducted)
-    """
-
-    queryset = Area.objects.all()
-    serializer_class = AreaSerializer
-    filter_class = AreaFilter
-    bbox_filter_field = 'geom'
-    pagination_class = MyGeoJsonPagination
-    # filter_backends = (CustomBBoxFilter, filters.DjangoFilterBackend, )
 
 
 class EncounterFilter(filters.FilterSet):
@@ -1195,10 +1238,7 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments']
     pagination_class = pagination.LimitOffsetPagination
 
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
-router.register(r'areas', AreaViewSet)
+
 router.register(r'encounters', EncounterViewSet)
 router.register(r'animal-encounters', AnimalEncounterViewSet)
 router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
