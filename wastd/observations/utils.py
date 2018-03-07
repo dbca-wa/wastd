@@ -62,11 +62,11 @@ def allocate_animal_names():
     * For each new capture, get the primary flipper tag name as animal name
     * Set the animal name of this and all related Encounters
     """
-    [s.claim_encounters for s in Survey.objects.all()]
+    ss = [s.save() for s in Survey.objects.all()]
     ae = [a.set_name_and_propagate(a.primary_flipper_tag.name)
           for a in AnimalEncounter.objects.all() if a.is_new_capture]
     le = [a.save() for a in LoggerEncounter.objects.all()]
-    return [ae, le]
+    return [ss, ae, le]
 
 
 def symlink_one_resource(t_dir, rj):

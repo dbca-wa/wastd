@@ -11,8 +11,9 @@ Production Configurations
 """
 from __future__ import absolute_import, unicode_literals
 
-from boto.s3.connection import OrdinaryCallingFormat, SubdomainCallingFormat
-from django.utils import six
+import os
+# from boto.s3.connection import OrdinaryCallingFormat, SubdomainCallingFormat
+# from django.utils import six
 from confy import env, database
 
 from .common import *  # noqa
@@ -56,7 +57,9 @@ X_FRAME_OPTIONS = 'DENY'
 # See https://docs.djangoproject.com/en/1.6/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['localhost',
                  'strandings-test.dpaw.wa.gov.au',
-                 'strandings.dpaw.wa.gov.au', ]
+                 'strandings.dpaw.wa.gov.au',
+                 'strandings.dbca.wa.gov.au',
+                 'tsc.dbca.wa.gov.au']
 # env('DJANGO_ALLOWED_HOSTS')
 # END SITE CONFIGURATION
 
@@ -140,70 +143,7 @@ CACHES = {
 }
 
 
-# LOGGING CONFIGURATION
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(message)s'
-        },
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True
-        },
-        'django.security.DisallowedHost': {
-            'level': 'INFO',
-            'handlers': ['console', ],
-            'propagate': True
-        },
-        'wastd.observations': {
-            'level': 'INFO',
-            'handlers': ['console', ],
-            'propagate': True,
-        },
-        'wastd.api': {
-            'level': 'INFO',
-            'handlers': ['console', ],
-            'propagate': True,
-        },
-        'taxonomy': {
-            'level': 'INFO',
-            'handlers': ['console', ],
-            'propagate': True,
-        },
-    }
-}
-
 # Custom Admin URL, use {% url 'admin:index' %}
 # ADMIN_URL = env('DJANGO_ADMIN_URL')
-
 
 # Your production stuff: Below this line define 3rd party library settings

@@ -1,6 +1,6 @@
-==================
-WA Sea Turtle Data
-==================
+=====================================================================
+WAStD - WA Sea Turtle Data / TSC - Threatened Species and Communities
+=====================================================================
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/
@@ -24,6 +24,7 @@ WA Sea Turtle Data
 .. "WA STD - now you've got it, too"
 
 "Strandings are red, tagged ones are blue, nests are green and tracks are there, too"
+
 
 If anyone were to build a data clearinghouse for Western Australian
 sea turtle data, it might look something like this. Or totally different.
@@ -109,22 +110,22 @@ WAStD's design philosophy follows
 
 The journey so far:
 
-* April 2016: Requirements Analysis (during SDIS main sprint)
+* April 2016: Requirements Analysis
 * July 2016: Implementation
 * August - Sept 2016: Agile iterations, weekly stakeholder workshops to refine
-  requirements and update business processes understanding and requirements (during SDIS/ARAR cycle)
+  requirements and update business processes understanding and requirements
 * Oct 2016: Production deployment, start of turtle stranding data entry,
   "dog fooding" the data entry manual, usability improvements, working on datasheets.
 * Nov 2016: Development of digital data capture for turtle tracks. Form revised 10 times.
 * Nov/Dec 2016: 2300+ tracks recorded digitally, replacing paper forms.
 * Dec 2016: Track app deployed to two more field teams (Karratha, Broome).
-* Jan 2016: Automated pipeline from digital capture to WAStD.
-* Jan 2016: Digital form for tracks revised 15 more times to include nest tags,
+* Jan 2017: Automated pipeline from digital capture to WAStD.
+* Jan 2017: Digital form for tracks revised 15 more times to include nest tags,
   egg, hatchling and logger measurements.
-* Feb 2016: Revised tracks form used in field.
+* Feb 2017: Revised tracks form used in field.
+* Season 2017/2018: Six regions join digital data collection of turtle track census.
 
-By sharing technology and architecture with BioSys, WAStD is part of the BioSys
-ecosystem of data warehousing, data curation, data exchange standards and
+WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange standards and
 analytical knowledge pipelines.
 
 WAStD data flow as implemented

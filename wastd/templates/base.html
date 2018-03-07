@@ -134,16 +134,6 @@
 
               {% if request.user.is_superuser %}
               <a class="dropdown-item"
-                href="{% url 'update-names' %}"
-                title="Reconstruct animal identities">
-                <i class="fa fa-refresh"></i> Reconstruct Names
-              </a>
-              <a class="dropdown-item"
-                href="{% url 'import-odka' %}"
-                title="Import new OpenDataKit submissions">
-                <i class="fa fa-refresh"></i> Import ODK Submissions
-              </a>
-              <a class="dropdown-item"
                 href="{% url 'update-taxon' %}"
                 title="Update taxon names">
                 <i class="fa fa-refresh"></i> Update Taxon Names

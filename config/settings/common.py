@@ -14,6 +14,7 @@ from confy import env, database
 from unipath import Path
 
 import confy
+import os
 
 try:
     confy.read_environment_file(".env")
@@ -66,7 +67,7 @@ THIRD_PARTY_APPS = (
     'rest_framework_latex',         # API latex renderer
     # 'dynamic_rest',                 # Parameterised API queries
     'mptt',                         # Graph database: tree models
-
+    'background_task',              # Job queue
 )
 
 # Apps specific for this project go here.
@@ -449,3 +450,77 @@ GRAPHENE = {
 
 # Guardian permissions, django-polymorphic integration
 GUARDIAN_GET_CONTENT_TYPE = 'polymorphic.contrib.guardian.get_polymorphic_base_content_type'
+
+
+# LOGGING CONFIGURATION
+# ------------------------------------------------------------------------------
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
+# A sample logging configuration. The only tangible logging
+# performed by this configuration is to send an email to
+# the site admins on every HTTP 500 error when DEBUG=False.
+# See http://docs.djangoproject.com/en/dev/topics/logging for
+# more details on how to customize your logging configuration.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)-.19s [%(process)d] [%(levelname)s]  %(message)s'
+        },
+        'simple': {
+            'format': '[%(levelname)s] %(message)s',
+
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/wastd.log'),
+            'formatter': 'simple',
+            'maxBytes': '16777216'
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True
+        },
+        'django.security.DisallowedHost': {
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True
+        },
+        'wastd': {
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
+        'taxonomy': {
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
+        "background_task": {
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
+    }
+}

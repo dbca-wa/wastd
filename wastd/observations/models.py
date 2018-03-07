@@ -1085,39 +1085,44 @@ class Survey(geo_models.Model):
     def encounters(self):
         """Return the QuerySet of all Encounters within this SiteVisit."""
         if not self.end_time:
-            logger.info("[wastd.observations.survey.encounters] No end_time set, can't filter Encounters")
+            logger.info("[wastd.observations.models.survey.encounters] No end_time set, can't filter Encounters")
             return None
         elif not self.site:
-            logger.info("[wastd.observations.survey.encounters] No site set, can't filter Encounters")
+            logger.info("[wastd.observations.models.survey.encounters] No site set, can't filter Encounters")
             return None
         else:
-            return Encounter.objects.filter(
+            e = Encounter.objects.filter(
                 where__contained=self.site.geom,
                 when__gte=self.start_time,
                 when__lte=self.end_time)
+            logger.info(
+                "[wastd.observations.models.survey.encounters] Survey {0} found {1} Encounters".format(self, len(e)))
+            return e
 
 
 def guess_site(survey_instance):
     """Return the first Area containing the start_location or None."""
-    s = Area.objects.filter(
+    return Area.objects.filter(
         area_type=Area.AREATYPE_SITE,
         geom__contains=survey_instance.start_location).first()
-    if s:
-        survey_instance.site = s
-        # survey_instance.save(update_fields=['site'])
 
 
 def claim_end_points(survey_instance):
     """Claim SurveyEnd.
 
-    The first match is chosed of a SurveyEnd with the same site, device_id,
-    end_time within five hours after start_time.
+    The first SurveyEnd with the matching site, device_id,
+    and an end_time within six hours after start_time is used
+    to set corresponding end_location, end_time, end_comments,
+    end_photo and end_source_id.
+
+    If no SurveyEnd is found and no end_time is set, the end_time is set to
+    start_time plus six hours. This should allow the survey to claim its Encounters.
     """
     se = SurveyEnd.objects.filter(
         site=survey_instance.site,
         device_id=survey_instance.device_id,
         end_time__gte=survey_instance.start_time,
-        end_time__lte=survey_instance.start_time + timedelta(hours=5)
+        end_time__lte=survey_instance.start_time + timedelta(hours=6)
     ).first()
     if se:
         survey_instance.end_location = se.end_location
@@ -1125,12 +1130,12 @@ def claim_end_points(survey_instance):
         survey_instance.end_comments = se.end_comments
         survey_instance.end_photo = se.end_photo
         survey_instance.end_source_id = se.source_id
-        # survey_instance.save(update_fields=[
-        #         'end_location',
-        #         'end_time',
-        #         'end_photo',
-        #         'end_comments',
-        #         'end_source_id'])
+    else:
+        if not survey_instance.end_time:
+            survey_instance.end_time = survey_instance.start_time + timedelta(hours=6)
+            survey_instance.end_comments = "[Needs QA][Missing SiteVisitEnd] Survey end guessed."
+            logger.info("[wastd.observations.models.claim_end_points] "
+                        "Missing SiteVisitEnd for Survey {0}".format(survey_instance))
 
 
 def claim_encounters(survey_instance):
@@ -1138,12 +1143,14 @@ def claim_encounters(survey_instance):
     enc = survey_instance.encounters
     if enc:
         enc.update(survey=survey_instance)
+        logger.info("[wastd.observations.models.claim_encounters] "
+                    "Survey {0} claimed {1} Encounters".format(survey_instance, len(enc)))
 
 
 @receiver(pre_save, sender=Survey)
 def survey_pre_save(sender, instance, *args, **kwargs):
     """Survey: Claim site, end point."""
-    guess_site(instance)
+    instance.site = guess_site(instance)
     claim_end_points(instance)
 
 

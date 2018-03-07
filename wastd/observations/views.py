@@ -2,6 +2,7 @@
 # from django.shortcuts import render
 # from rest_framework.decorators import api_view, renderer_classes, permission_classes
 # from rest_framework import response, schemas, permissions
+from background_task import background
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from rest_framework.renderers import CoreJSONRenderer
@@ -19,7 +20,7 @@ from wastd.observations.models import Encounter, AnimalEncounter
 from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
 from wastd.observations.forms import (
     EncounterListFormHelper, AnimalEncounterListFormHelper)
-
+from wastd.observations.tasks import update_names as task_update_names
 from taxonomy.models import HbvSpecies, Taxon
 
 from django.views.generic.list import ListView
@@ -146,29 +147,3 @@ class AnimalEncounterTableView(EncounterTableView):
 schema_view = get_schema_view(
     title='WAStD API',
     renderer_classes=[OpenAPIRenderer, CoreJSONRenderer, SwaggerUIRenderer])
-
-
-# Utilities ------------------------------------------------------------------#
-@csrf_exempt
-def update_names(request):
-    """Update cached names on Encounters and Loggers."""
-    from wastd.observations.utils import allocate_animal_names
-    no_names, no_loggers = allocate_animal_names()
-    msg = "{0} animal names reconstructed, {1} logger names set".format(
-        len(no_names), len(no_loggers))
-    messages.success(request, msg)
-    return HttpResponseRedirect("/")
-
-
-@csrf_exempt
-def import_odka(request):
-    """Download and import new ODKA submissions."""
-    from wastd.observations.utils import save_all_odka, import_all_odka
-    import sys
-    reload(sys)
-    sys.setdefaultencoding('UTF8')
-    save_all_odka(path="data/odka")
-    enc = import_all_odka(path="data/odka")
-    msg = "New ODK submissions imported"
-    messages.success(request, msg)
-    return HttpResponseRedirect("/")
