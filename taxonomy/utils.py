@@ -138,11 +138,17 @@ def make_subspecies(x, current_dict, publication_dict, taxon_dict):
 
     Return The created or updated instance of Taxon.
     """
+    try:
+        parent = taxon_dict[x.species]
+    except KeyError:
+        logger.warn("[make_variety] Couldn't find record for subspecies "
+                    "{0}, using genus {1} as parent".format(x.infra_name, x.genus))
+        parent = Taxon.objects.get(name=x.genus)
     dd = dict(
         name=x.infra_name,
         rank=Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
-        parent=Taxon.objects.get(genus=x.genus, species=x.species),
+        parent=parent,
         author=x.author
     )
     if x.informal is not None:
@@ -167,11 +173,17 @@ def make_variety(x, current_dict, publication_dict, taxon_dict):
 
     Return The created or updated instance of Taxon.
     """
+    try:
+        parent = taxon_dict[x.species]
+    except KeyError:
+        logger.warn("[make_variety] Couldn't find record for subspecies "
+                    "{0}, using genus {1} as parent".format(x.infra_name, x.genus))
+        parent = Taxon.objects.get(name=x.genus)
     dd = dict(
         name=x.infra_name,
         rank=Taxon.RANK_VARIETY,
         current=current_dict[x.is_current],
-        parent=Taxon.objects.get(genus=x.genus, species=x.species),  # TODO should be the variety above
+        parent=parent,
         author=x.author
     )
     if x.informal is not None:
@@ -259,39 +271,41 @@ def update_taxon():
             species = [make_species(x, CURRENT, PUBLICATION, GENUS)
                        for x in HbvSpecies.objects.filter(rank_name="Species")]
 
-    # # Subspecies
-    logger.info("[update_taxon] Creating/updating subspecies...")
-    SPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SPECIES)}
-    with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            subspecies = [make_subspecies(x, CURRENT, PUBLICATION, SPECIES)
-                          for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
+    # # # Subspecies
+    # logger.info("[update_taxon] Creating/updating subspecies...")
+    # SPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SPECIES)}
+    # with transaction.atomic():
+    #     with Taxon.objects.delay_mptt_updates():
+    #         subspecies = [make_subspecies(x, CURRENT, PUBLICATION, SPECIES)
+    #                       for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
 
-    # Varieties
-    logger.info("[update_taxon] Creating/updating varieties...")
-    # SUBSPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SUBSPECIES)}
-    with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            varieties = [make_variety(x, CURRENT, PUBLICATION, SPECIES)
-                         for x in HbvSpecies.objects.filter(rank_name="Variety")]
+    # # Varieties
+    # logger.info("[update_taxon] Creating/updating varieties...")
+    # # SUBSPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SUBSPECIES)}
+    # with transaction.atomic():
+    #     with Taxon.objects.delay_mptt_updates():
+    #         varieties = [make_variety(x, CURRENT, PUBLICATION, SPECIES)
+    #                      for x in HbvSpecies.objects.filter(rank_name="Variety")]
 
-    # Forms
-    logger.info("[update_taxon] Creating/updating forms...")
-    with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            forms = [make_form(x, CURRENT, PUBLICATION, SPECIES)
-                     for x in HbvSpecies.objects.filter(rank_name="Form")]
+    # # Forms
+    # logger.info("[update_taxon] Creating/updating forms...")
+    # with transaction.atomic():
+    #     with Taxon.objects.delay_mptt_updates():
+    #         forms = [make_form(x, CURRENT, PUBLICATION, SPECIES)
+    #                  for x in HbvSpecies.objects.filter(rank_name="Form")]
 
     msg = ("[update_taxon] Updated {0} kingdoms, {1} families "
-           "and their parentage, {2} genera, {3} species, {4} subspecies, "
-           "{5} varieties, {6} forms.").format(
+           "and their parentage, {2} genera, {3} species"
+           # ", {4} subspecies, {5} varieties, {6} forms."
+           ).format(
         len(kingdoms),
         len(families),
         len(genera),
         len(species),
-        len(subspecies),
-        len(varieties),
-        len(forms))
+        # len(subspecies),
+        # len(varieties),
+        # len(forms)
+    )
     logger.info(msg)
     return msg
 
