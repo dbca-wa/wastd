@@ -470,7 +470,7 @@ LOGGING = {
     },
     'formatters': {
         'verbose': {
-            'format': '%(asctime)-.19s [%(process)d] [%(levelname)s]  %(message)s'
+            'format': '%(asctime)-.19s [%(levelname)s]  %(message)s'
         },
         'simple': {
             'format': '[%(levelname)s] %(message)s',
@@ -492,7 +492,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'logs/wastd.log'),
-            'formatter': 'simple',
+            'formatter': 'verbose',
             'maxBytes': '16777216'
         },
     },
