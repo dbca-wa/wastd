@@ -5,21 +5,14 @@
   <div class="card-body">
 
     <h6 class="card-subtitle mb-2 text-muted">
-    <!-- Name ID -->
-    <span class="badge badge-info">Name ID {{original.name_id}}</span>
-
-    <!-- Conservation status -->
-    {% if original.consv_code %}
-    <span class="badge badge-danger">
-      <span class="oi oi-pulse" title="Conservation Status" aria-hidden="true"></span>
-      {{ original.consv_code }} {% if original.ranking %}{{ original.ranking }}{% endif %}
-    </span>
-    {% endif %}
 
     <!-- Rank -->
     <span class="badge badge-primary">
       {{ original.get_rank_display }}
     </span>
+
+    <!-- Name ID -->
+    <span class="badge badge-primary">{{original.name_id}}</span>
 
     <!-- Taxonomic status -->
     {% if original.current == True %}
@@ -31,7 +24,23 @@
       <span class="oi oi-thumb-down" title="Name is non current" aria-hidden="true"></span>
     </span>
     {% endif %}
+
+    <!-- Publication status -->
+    {% if original.publication_status < 2 %}
+    <span class="badge badge-secondary">
+      {{ original.get_publication_status_display }}
+    </span>
+    {% endif %}
+
     </h6>
+
+    <!-- Conservation status -->
+    {% if original.consv_code %}
+    <span class="badge badge-danger">
+      <span class="oi oi-pulse" title="Conservation Status" aria-hidden="true"></span>
+      {{ original.consv_code }} {% if original.ranking %}{{ original.ranking }}{% endif %}
+    </span>
+    {% endif %}
 
     <h5 class="card-title {% if original.is_current == 'N' %}text-muted{% endif %}">
       {{ original.taxonomic_name }}
@@ -78,11 +87,11 @@
   <div class="card-footer">
 
     <!-- Admin link: Taxon change -->
-    <button type="button" href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
+    <a href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
       class="btn btn-primary btn-sm btn-block" target="_" rel="nofollow">
       <span class="oi oi-eye" title="View and update details" aria-hidden="true"></span>
       View details
-    </button>
+    </a>
 
   </div>
 </div>

@@ -14,15 +14,15 @@ from django_tables2 import RequestConfig, SingleTableView, tables
 # from django.views.decorators.csrf import csrf_exempt
 # from django.views.generic import ListView, TemplateView
 # from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic.list import ListView
+from django.utils import timezone
 
 from wastd.observations.models import Encounter, AnimalEncounter
 from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
 from wastd.observations.forms import (
     EncounterListFormHelper, AnimalEncounterListFormHelper)
 from taxonomy.models import HbvSpecies, Taxon
-
-from django.views.generic.list import ListView
-from django.utils import timezone
 
 
 class HomeView(ListView):
@@ -39,19 +39,18 @@ class HomeView(ListView):
         return AnimalEncounter.objects.filter(taxon="Cheloniidae")
 
 
-class DashboardView(ListView):
+class TaxonListView(ListView):
 
-    model = HbvSpecies
+    model = Taxon
     template_name = "pages/dashboard.html"
+    paginate_by = 12
+    queryset = Taxon.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super(DashboardView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        context['nodes'] = Taxon.objects.all()[1:100]
-        return context
-
-    def get_queryset(self, **kwargs):
-        return Taxon.objects.all()[1:100]
+    # def get_context_data(self, **kwargs):
+    #     context = super(TaxonListView, self).get_context_data(**kwargs)
+    #     context['now'] = timezone.now()
+    #     # context['nodes'] = Taxon.objects.all()
+    #     return context
 
 
 # Encounters -----------------------------------------------------------------#

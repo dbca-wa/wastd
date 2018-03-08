@@ -24,7 +24,7 @@ from rest_framework.documentation import include_docs_urls
 from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
-    schema_view, HomeView, DashboardView, EncounterTableView, AnimalEncounterTableView)
+    schema_view, HomeView, TaxonListView, EncounterTableView, AnimalEncounterTableView)
 from taxonomy.views import update_taxon
 
 # register all adminactions
@@ -32,7 +32,7 @@ actions.add_to_site(site)
 
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^data/$', DashboardView.as_view(), name='dashboard'),
+    url(r'^data/$', TaxonListView.as_view(), name='dashboard'),
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 
     url(r'^grappelli/', include('grappelli.urls')),  # grappelli URLS
