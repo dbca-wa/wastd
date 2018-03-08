@@ -451,6 +451,12 @@ GRAPHENE = {
 # Guardian permissions, django-polymorphic integration
 GUARDIAN_GET_CONTENT_TYPE = 'polymorphic.contrib.guardian.get_polymorphic_base_content_type'
 
+# Background tasks
+# ------------------------------------------------------------------------------
+BACKGROUND_TASK_RUN_ASYNC = True
+MAX_ATTEMPTS = 5
+MAX_RUN_TIME = 7200  # 2h
+
 
 # LOGGING CONFIGURATION
 # ------------------------------------------------------------------------------
