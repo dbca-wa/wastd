@@ -2,7 +2,6 @@
 # from django.shortcuts import render
 # from rest_framework.decorators import api_view, renderer_classes, permission_classes
 # from rest_framework import response, schemas, permissions
-from background_task import background
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from rest_framework.renderers import CoreJSONRenderer
@@ -11,16 +10,15 @@ from rest_framework.renderers import CoreJSONRenderer
 # Tables
 from django_tables2 import RequestConfig, SingleTableView, tables
 
-from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
+# from django.contrib import messages
+# from django.views.decorators.csrf import csrf_exempt
 # from django.views.generic import ListView, TemplateView
-from django.http import HttpResponseRedirect
+# from django.http import HttpResponseRedirect
 
 from wastd.observations.models import Encounter, AnimalEncounter
 from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
 from wastd.observations.forms import (
     EncounterListFormHelper, AnimalEncounterListFormHelper)
-from wastd.observations.tasks import update_names as task_update_names
 from taxonomy.models import HbvSpecies, Taxon
 
 from django.views.generic.list import ListView
