@@ -16,8 +16,13 @@
     </span>
     {% endif %}
 
+    <!-- Rank -->
+    <span class="badge badge-primary">
+      {{ original.get_rank_display }}
+    </span>
+
     <!-- Taxonomic status -->
-    {% if original.is_current == 'Y' %}
+    {% if original.current == True %}
     <span class="badge badge-success">
       <span class="oi oi-thumb-up" title="Name is current" aria-hidden="true"></span>
     </span>
@@ -29,7 +34,7 @@
     </h6>
 
     <h5 class="card-title {% if original.is_current == 'N' %}text-muted{% endif %}">
-      {{ original.species_name }}
+      {{ original.taxonomic_name }}
     </h5>
 
     <!-- Author -->
@@ -50,6 +55,7 @@
 
   </div>
 
+  <!-- Management plan placeholder -->
   <ul class="list-group list-group-flush">
     <li class="list-group-item">
       <span class="badge badge-info">
@@ -59,6 +65,7 @@
       Management Plan
     </li>
 
+    <!-- Attachment placeholder -->
     <li class="list-group-item">
       <span class="badge badge-info">
         <span class="oi oi-document" title="PDF document" aria-hidden="true"></span>
@@ -69,12 +76,13 @@
   </ul>
 
   <div class="card-footer">
-    <div class="text-right">
-    <a href="{% url 'admin:taxonomy_hbvname_change' original.pk %}"
-      class="btn btn-primary btn-sm" target="_" rel="nofollow">
+
+    <!-- Admin link: Taxon change -->
+    <button type="button" href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
+      class="btn btn-primary btn-sm btn-block" target="_" rel="nofollow">
       <span class="oi oi-eye" title="View and update details" aria-hidden="true"></span>
       View details
-    </a>
-  </div>
+    </button>
+
   </div>
 </div>

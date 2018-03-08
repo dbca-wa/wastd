@@ -51,7 +51,7 @@ class DashboardView(ListView):
         return context
 
     def get_queryset(self, **kwargs):
-        return HbvSpecies.objects.all()[1:100]
+        return Taxon.objects.all()[1:100]
 
 
 # Encounters -----------------------------------------------------------------#

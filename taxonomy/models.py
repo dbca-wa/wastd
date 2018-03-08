@@ -1646,33 +1646,31 @@ class Taxon(MPTTModel):
         verbose_name = "Taxon"
         verbose_name_plural = "Taxa"
 
-    def __str__(self):
-        """The full name.
+    @property
+    def taxonomic_name(self):
+        """The taxonomic name.
 
-        * Anything above species: [NameID] RANK NAME
+        * Anything above species:
         * Species: [NameID] RANK GENUS (SPECIES)NAME
         * Subspecies and lower: [NameID] RANK GENUS SPECIES RANK (SUBSPECIES)NAME
         """
         if self.rank == self.RANK_SPECIES:
             genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
-            return "[{0}] ({1}) {2} {3}".format(
-                self.name_id,
-                self.get_rank_display(),
+            return "{0} {1}".format(
                 "GENUS" if not genus else genus.name,
                 self.name)
 
         elif self.rank > self.RANK_SPECIES:
             genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
             species = self.get_ancestors().filter(rank=Taxon.RANK_SPECIES).first()
-            return "[{0}] ({1}) {2} {3} {4} {5}".format(
-                self.name_id,
-                self.get_rank_display(),
+            return "{0} {1} {2} {3}".format(
                 "GENUS" if not genus else genus.name,
                 "SPECIES" if not species else species.name,
                 self.get_rank_display().lower(),
                 self.name)
         else:
-            return "[{0}] ({1}) {2}".format(
-                self.name_id,
-                self.get_rank_display(),
-                self.name)
+            return self.name
+
+    def __str__(self):
+        """The full name: [NameID] (RANK) TAXONOMIC NAME."""
+        return "[{0}] ({1}) {2}".format(self.name_id, self.get_rank_display(), self.taxonomic_name)
