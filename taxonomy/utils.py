@@ -138,17 +138,11 @@ def make_subspecies(x, current_dict, publication_dict, taxon_dict):
 
     Return The created or updated instance of Taxon.
     """
-    try:
-        parent = taxon_dict[x.species]
-    except KeyError:
-        logger.warn("[make_subspecies] Couldn't find record for species {0}, using genus {1} as parent".format(
-            x.species, x.genus))
-        parent = Taxon.objects.get(name=x.genus)
     dd = dict(
         name=x.infra_name,
         rank=Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
-        parent=parent,
+        parent=Taxon.objects.get(genus=x.genus, species=x.species),
         author=x.author
     )
     if x.informal is not None:
@@ -173,17 +167,11 @@ def make_variety(x, current_dict, publication_dict, taxon_dict):
 
     Return The created or updated instance of Taxon.
     """
-    try:
-        parent = taxon_dict[x.species]  # TODO
-    except KeyError:
-        logger.warn("[make_variety] Couldn't find record for subspecies {0}, using genus {1} as parent".format(
-            x.infra_name, x.genus))
-        parent = Taxon.objects.get(name=x.genus)
     dd = dict(
         name=x.infra_name,
         rank=Taxon.RANK_VARIETY,
         current=current_dict[x.is_current],
-        parent=parent,
+        parent=Taxon.objects.get(genus=x.genus, species=x.species),  # TODO should be the variety above
         author=x.author
     )
     if x.informal is not None:
@@ -307,16 +295,19 @@ def update_taxon():
     logger.info(msg)
     return msg
 
-# WARNING 2018-03-01 11:42:44,128 [make_subspecies] Couldn't find record for species virdis, using genus Anigozanthos as parent
+# WARNING 2018-03-01 11:42:44,128 [make_subspecies]
+# Couldn't find record for species virdis, using genus Anigozanthos as parent
 # INFO 2018-03-01 11:42:44,714 [make_subspecies] Updated [11249]
 # (Subspecies) Anigozanthos SPECIES subspecies terraspectans.
 
-# WARNING 2018-03-01 11:43:44,291 [make_subspecies] Couldn't find record for species petiolata, using genus Decaisnina as parent
+# WARNING 2018-03-01 11:43:44,291 [make_subspecies] Couldn't find record for species petiolata, using genus Decaisnina
 # INFO 2018-03-01 11:43:44,986 [make_subspecies] Updated [11398] (Subspecies) Decaisnina SPECIES subspecies angustata.
 
-# WARNING 2018-03-01 11:45:19,554 [make_subspecies] Couldn't find record for species shuttleworthina, using genus Grevillea as parent
+# WARNING 2018-03-01 11:45:19,554 [make_subspecies] Couldn't find record for species shuttleworthina,
+# using genus Grevillea
 # INFO 2018-03-01 11:45:20,331 [make_subspecies] Updated [15768] (Subspecies) Grevillea SPECIES subspecies canarina.
 
-# WARNING 2018-03-01 11:49:36,794 [make_variety] Couldn't find record for subspecies A Kimberley Flora (K.F. Kenneally 5452), using genus Brunonia as parent
+# WARNING 2018-03-01 11:49:36,794 [make_variety] Couldn't find record for subspecies A Kimberley Flora
+# (K.F. Kenneally 5452), using genus Brunonia as parent
 # INFO 2018-03-01 11:49:37,844 [make_variety] Updated [15247] (Variety)
 # Brunonia SPECIES variety A Kimberley Flora (K.F. Kenneally 5452).
