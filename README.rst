@@ -119,15 +119,12 @@ Source: `SO <https://stackoverflow.com/a/805453/2813717>`_.
 See also `this post <https://stackoverflow.com/a/16409205/2813717>`_.
 
 
-Set permissions to 775 for directories, 664 for files::
+Chown the entire project to the webserver's user and group and
+set permissions to 775 for directories, 664 for files::
 
+    sudo chown -R www-data:www-data .
     find . -type d -exec sudo chmod 775 {} \;
     find . -type f -exec sudo chmod 664 {} \;
 
-Chown the entire project to the webserver's user and group::
-
-    sudo chown -R www-data:www-data .
-
 This lets the server admin run commands and edit files
 as long as the admin is in the same group as the webserver, e.g. www-data.
-
