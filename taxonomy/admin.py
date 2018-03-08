@@ -3,23 +3,24 @@
 from __future__ import absolute_import, unicode_literals
 
 # from leaflet.admin import LeafletGeoAdmin
-from leaflet.forms.widgets import LeafletWidget
+# from leaflet.forms.widgets import LeafletWidget
 
 # from django import forms as django_forms
-import floppyforms as ff
+# import floppyforms as ff
 from django.contrib import admin
 from mptt.admin import MPTTModelAdmin, TreeRelatedFieldListFilter
 # from django.contrib.gis import forms
-from django.contrib.gis.db import models as geo_models
+# from django.contrib.gis.db import models as geo_models
 
-from django.utils.translation import ugettext_lazy as _
-from easy_select2 import select2_modelform as s2form
+# from django.utils.translation import ugettext_lazy as _
+# from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
-from fsm_admin.mixins import FSMTransitionMixin
+# from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
-from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily,
-                             HbvGenus, HbvSpecies, HbvVernacular, HbvXref, Taxon)
+from taxonomy.models import (
+    HbvName, HbvSupra, HbvGroup, HbvFamily,
+    HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent, Taxon)
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
@@ -177,6 +178,24 @@ class HbvXrefAdmin(VersionAdmin, admin.ModelAdmin):
         'md5_rowhash')
     list_filter = ('xref_type', 'active', )
     search_fields = ('old_name_id', 'new_name_id', )
+
+
+@admin.register(HbvParent)
+class HbvParentAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for HbvParent."""
+
+    save_on_top = True
+    # date_hierarchy = 'updated_on'
+    list_display = (
+        "name_id",
+        "class_id",
+        "parent_nid",
+        "updated_by",
+        "updated_on",
+        'ogc_fid',
+        'md5_rowhash')
+    # list_filter = ('xref_type', 'active', )
+    search_fields = ('name_id', 'parent_nid', )
 
 
 @admin.register(Taxon)

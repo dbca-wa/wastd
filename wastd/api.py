@@ -68,8 +68,9 @@ from wastd.observations.models import (
 from wastd.observations.utils import symlink_resources
 from wastd.users.models import User
 
-from taxonomy.models import (HbvName, HbvSupra, HbvGroup, HbvFamily,
-                             HbvGenus, HbvSpecies, HbvVernacular, HbvXref, Taxon)
+from taxonomy.models import (
+    HbvName, HbvSupra, HbvGroup, HbvFamily,
+    HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent, Taxon)
 
 logger = logging.getLogger(__name__)
 
@@ -1332,6 +1333,16 @@ class HbvXrefSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class HbvParentSerializer(serializers.ModelSerializer):
+    """Serializer for HbvParent."""
+
+    class Meta:
+        """Opts."""
+
+        model = HbvParent
+        fields = '__all__'
+
+
 class TaxonSerializer(serializers.ModelSerializer):
     """Serializer for Taxon."""
 
@@ -1565,6 +1576,21 @@ class HbvXrefFilter(filters.FilterSet):
             "authorised_on": '__all__',
             "comments": '__all__',
             "added_on": '__all__',
+            "updated_on": '__all__',
+            'md5_rowhash': '__all__',
+        }
+
+
+class HbvParentFilter(filters.FilterSet):
+
+    class Meta:
+        model = HbvParent
+        fields = {
+            'ogc_fid': '__all__',
+            "name_id": '__all__',
+            "class_id": '__all__',
+            "parent_nid": '__all__',
+            "updated_by": '__all__',
             "updated_on": '__all__',
             'md5_rowhash': '__all__',
         }
@@ -1960,6 +1986,44 @@ class HbvXrefViewSet(viewsets.ModelViewSet):
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("xrefs", HbvXrefViewSet)
+
+
+class HbvParentViewSet(viewsets.ModelViewSet):
+    """View set for HbvParent. See HBV Names for details and usage examples."""
+
+    queryset = HbvParent.objects.all()
+    serializer_class = HbvParentSerializer
+    filter_class = HbvParentFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "ogc_fid"
+    model = HbvParent
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+        obj, created = self.model.objects.get_or_create(
+            ogc_fid=data[self.uid_field], defaults=data)
+        if not created:
+            self.model.objects.filter(ogc_fid=data[self.ogc_fid]).update(**data)
+        return RestResponse(data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
+        else:
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
+
+router.register("parents", HbvParentViewSet)
 
 
 class TaxonViewSet(viewsets.ModelViewSet):

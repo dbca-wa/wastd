@@ -1491,7 +1491,90 @@ class HbvXref(models.Model):
             self.authorised_on)
 
 
+@python_2_unicode_compatible
+class HbvParent(models.Model):
+    r"""Taxonomic inheritance: name_id is child of parent_nid.
+
+    {"ogc_fid": 0,
+    "name_id": 1,
+    "class_id": "WAH",
+    "parent_nid": 20872,
+    "updated_by": "HERBIE",
+    "updated_on": "2004-12-09Z",
+    "md5_rowhash": "dea886a27ece6a629387fc3ba34392ef"}
+
+    """
+
+    ogc_fid = models.BigIntegerField(
+        blank=True, null=True,
+        unique=True,
+        db_index=True,
+        verbose_name=_("GeoServer OGC FeatureID"),
+        help_text=_("The OCG Feature ID of the record, used to "
+                    "identify the record in GeoServer."),
+    )
+
+    name_id = models.BigIntegerField(
+        blank=True, null=True,
+        db_index=True,
+        verbose_name=_("NameID"),
+        help_text=_("WACensus NameID, assigned by WACensus."),
+    )
+
+    class_id = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("WACensus ClassID"),
+        help_text=_(""),
+    )
+
+    parent_nid = models.BigIntegerField(
+        blank=True, null=True,
+        db_index=True,
+        verbose_name=_("NameID"),
+        help_text=_("WACensus NameID, assigned by WACensus."),
+    )
+
+    updated_by = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("Updated by"),
+        help_text=_("The person or system who updated this record "
+                    "last in WACensus."),
+    )
+
+    updated_on = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("WACensus updated on"),
+        help_text=_("Date on which this record was updated in WACensus."),
+    )
+
+    md5_rowhash = models.CharField(
+        max_length=500,
+        blank=True, null=True,
+        verbose_name=_("GeoServer MD5 rowhash"),
+        help_text=_("An MD5 hash of the record, used to indicate updates."),
+    )
+
+    class Meta:
+        """Class options."""
+
+        ordering = ["ogc_fid", ]
+        verbose_name = "HBV Parent"
+        verbose_name_plural = "HBV Parents"
+        # get_latest_by = "added_on"
+
+    def __str__(self):
+        """The full name."""
+        return "{0} is child of {1}".format(
+            self.name_id,
+            self.parent_nid)
+
+
 # django-mptt tree models ----------------------------------------------------#
+
+
 @python_2_unicode_compatible
 class Taxon(MPTTModel):
     """A taxonomic name at any taxonomic rank.
