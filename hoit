@@ -1,9 +1,9 @@
 echo "Rolling out update to WAStD production deployment"
-echo "Refreshing staticfiles..."
-sudo rm -rf staticfiles
-mkdir staticfiles
-fab static
-sudo chown -R www-data:www-data staticfiles wastd/media
+# echo "Refreshing staticfiles..."
+# sudo rm -rf staticfiles
+# mkdir staticfiles
+# fab static
+# sudo chown -R www-data:www-data staticfiles wastd/media
 echo "Restarting uwsgi process..."
 sudo kill -9 $(ps aux | grep '[8]220' | awk '{print $2}')
 sudo kill -9 $(ps aux | grep '[8]220' | awk '{print $2}')
