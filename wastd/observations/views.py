@@ -2,6 +2,8 @@
 # from django.shortcuts import render
 # from rest_framework.decorators import api_view, renderer_classes, permission_classes
 # from rest_framework import response, schemas, permissions
+from itertools import chain
+
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from rest_framework.renderers import CoreJSONRenderer
@@ -45,7 +47,6 @@ class TaxonListView(ListView):
     model = Taxon
     template_name = "pages/dashboard.html"
     paginate_by = 12
-    queryset = Taxon.objects.all()
 
     def get_context_data(self, **kwargs):
         """Add extra items to context."""
@@ -53,6 +54,13 @@ class TaxonListView(ListView):
         context['now'] = timezone.now()
         # context['nodes'] = Taxon.objects.all()
         return context
+
+    def get_queryset(self):
+        queryset = Taxon.objects.all()
+        if self.request.GET.get('name_id'):
+            t = Taxon.objects.filter(name_id=self.request.GET.get('name_id'))
+            queryset = list(chain(t.first().get_ancestors(), t, t.first().get_children()))
+        return queryset
 
 
 # Encounters -----------------------------------------------------------------#

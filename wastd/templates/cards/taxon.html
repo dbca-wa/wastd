@@ -86,6 +86,12 @@
 
   <div class="card-footer">
 
+    <a href="?name_id={{ original.name_id }}"
+      class="btn btn-primary btn-sm btn-block" target="_" rel="nofollow">
+      <span class="oi oi-eye" title="Explore {{ original.taxonomic_name }}" aria-hidden="true"></span>
+      Explore {{ original.taxonomic_name }}
+    </a>
+
     <!-- Admin link: Taxon change -->
     <a href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
       class="btn btn-primary btn-sm btn-block" target="_" rel="nofollow">
