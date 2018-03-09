@@ -2,7 +2,7 @@
 import logging
 # from pdb import set_trace
 from django.db import transaction
-from taxonomy.models import (Taxon, HbvName, HbvFamily, HbvGenus, HbvSpecies)  # HbvXref
+from taxonomy.models import (Taxon, HbvName, HbvFamily, HbvGenus, HbvSpecies, HbvParent)  # HbvXref
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
     return family
 
 
-def make_genus(x, current_dict, publication_dict, taxon_dict):
+def make_genus(x, current_dict, publication_dict):
     """Create or update a Taxon of rank Genus.
 
     Arguments
@@ -82,7 +82,7 @@ def make_genus(x, current_dict, publication_dict, taxon_dict):
         name=x.genus,
         rank=Taxon.RANK_GENUS,
         current=current_dict[x.is_current],
-        parent=taxon_dict[x.family_nid],
+        parent=Taxon.objects.get(name_id=x.family_nid),
         author=x.author
     )
     if x.informal is not None:
@@ -97,7 +97,7 @@ def make_genus(x, current_dict, publication_dict, taxon_dict):
     return obj
 
 
-def make_species(x, current_dict, publication_dict, taxon_dict):
+def make_species(x, current_dict, publication_dict):
     """Create or update a Taxon of rank Species.
 
     Arguments
@@ -113,7 +113,7 @@ def make_species(x, current_dict, publication_dict, taxon_dict):
         name=x.species,
         rank=Taxon.RANK_SPECIES,
         current=current_dict[x.is_current],
-        parent=taxon_dict[x.genus],
+        parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
         author=x.author
     )
     if x.informal is not None:
@@ -126,7 +126,7 @@ def make_species(x, current_dict, publication_dict, taxon_dict):
     return obj
 
 
-def make_subspecies(x, current_dict, publication_dict, taxon_dict):
+def make_subspecies(x, current_dict, publication_dict):
     """Create or update a Taxon of rank Subspecies.
 
     Arguments
@@ -134,21 +134,14 @@ def make_subspecies(x, current_dict, publication_dict, taxon_dict):
     x An instance of HbvSpecies, rank_name "Subspecies"
     current_dict A lookup dict for is_current
     publication_dict A lookup dict for publication_status
-    taxon_dict A lookup dict for parent species name to Taxon instance
 
     Return The created or updated instance of Taxon.
     """
-    try:
-        parent = taxon_dict[x.species]
-    except KeyError:
-        logger.warn("[make_variety] Couldn't find record for subspecies "
-                    "{0}, using genus {1} as parent".format(x.infra_name, x.genus))
-        parent = Taxon.objects.get(name=x.genus)
     dd = dict(
         name=x.infra_name,
         rank=Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
-        parent=parent,
+        parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
         author=x.author
     )
     if x.informal is not None:
@@ -161,7 +154,7 @@ def make_subspecies(x, current_dict, publication_dict, taxon_dict):
     return obj
 
 
-def make_variety(x, current_dict, publication_dict, taxon_dict):
+def make_variety(x, current_dict, publication_dict):
     """Create or update a Taxon of rank Variety.
 
     Arguments
@@ -173,17 +166,11 @@ def make_variety(x, current_dict, publication_dict, taxon_dict):
 
     Return The created or updated instance of Taxon.
     """
-    try:
-        parent = taxon_dict[x.species]
-    except KeyError:
-        logger.warn("[make_variety] Couldn't find record for subspecies "
-                    "{0}, using genus {1} as parent".format(x.infra_name, x.genus))
-        parent = Taxon.objects.get(name=x.genus)
     dd = dict(
         name=x.infra_name,
         rank=Taxon.RANK_VARIETY,
         current=current_dict[x.is_current],
-        parent=parent,
+        parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
         author=x.author
     )
     if x.informal is not None:
@@ -196,7 +183,7 @@ def make_variety(x, current_dict, publication_dict, taxon_dict):
     return obj
 
 
-def make_form(x, current_dict, publication_dict, taxon_dict):
+def make_form(x, current_dict, publication_dict):
     """Create or update a Taxon of rank Form.
 
     Arguments
@@ -208,17 +195,11 @@ def make_form(x, current_dict, publication_dict, taxon_dict):
 
     Return The created or updated instance of Taxon.
     """
-    try:
-        parent = taxon_dict[x.species]
-    except KeyError:
-        logger.warn("[make_variety] Couldn't find record for subspecies "
-                    "{0}, using genus {1} as parent".format(x.infra_name, x.genus))
-        parent = Taxon.objects.get(name=x.genus)
     dd = dict(
         name=x.infra_name2 or x.infra_name,
         rank=Taxon.RANK_FORMA,
         current=current_dict[x.is_current],
-        parent=parent,
+        parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
         author=x.author
     )
     if x.informal is not None:
@@ -232,7 +213,12 @@ def make_form(x, current_dict, publication_dict, taxon_dict):
 
 
 def update_taxon():
-    """Update Taxon from Hbv data."""
+    """Update Taxon from local copy of WACensus data.
+
+    See also
+    http://django-mptt.readthedocs.io/en/latest/mptt.managers.html#mptt.managers.TreeManager.disable_mptt_updates
+
+    """
     # Domain
     logger.info("[update_taxon] Creating/updating domains...")
     domain, created = Taxon.objects.update_or_create(name_id=0, name="Eukarya", rank=Taxon.RANK_DOMAIN)
@@ -249,79 +235,57 @@ def update_taxon():
     KINGDOM_ID_NAME = {x['kingdom_id']: x['kingdom_name']
                        for x in HbvFamily.objects.values('kingdom_id', 'kingdom_name')}
     KINGDOM_ID_TAXA = {x[0]: Taxon.objects.get(name=x[1]) for x in KINGDOM_ID_NAME.items()}
-    CURRENT = {'N': False, 'Y': True}
-    PUBLICATION = {'PN': 0, 'MS': 1, '-': 2}
+    CUR = {'N': False, 'Y': True}
+    PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
         with Taxon.objects.delay_mptt_updates():
-            families = [make_family(x, KINGDOM_ID_TAXA, CURRENT, PUBLICATION)
-                        for x in HbvFamily.objects.all()]
+            families = [make_family(x, KINGDOM_ID_TAXA, CUR, PUB) for x in HbvFamily.objects.all()]
 
     # Genera
     logger.info("[update_taxon] Creating/updating genera...")
-    FAM = {x.name_id: x for x in Taxon.objects.filter(rank=Taxon.RANK_FAMILY)}
     with transaction.atomic():
         with Taxon.objects.delay_mptt_updates():
-            genera = [make_genus(x, CURRENT, PUBLICATION, FAM) for x in HbvGenus.objects.all()]
+            genera = [make_genus(x, CUR, PUB) for x in HbvGenus.objects.all()]
 
     # Species
     logger.info("[update_taxon] Creating/updating species...")
-    GENUS = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_GENUS)}
     with transaction.atomic():
         with Taxon.objects.delay_mptt_updates():
-            species = [make_species(x, CURRENT, PUBLICATION, GENUS)
-                       for x in HbvSpecies.objects.filter(rank_name="Species")]
+            species = [make_species(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Species")]
 
-    # # # Subspecies
-    # logger.info("[update_taxon] Creating/updating subspecies...")
-    # SPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SPECIES)}
-    # with transaction.atomic():
-    #     with Taxon.objects.delay_mptt_updates():
-    #         subspecies = [make_subspecies(x, CURRENT, PUBLICATION, SPECIES)
-    #                       for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
+    # Subspecies
+    logger.info("[update_taxon] Creating/updating subspecies...")
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            subspecies = [make_subspecies(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
 
-    # # Varieties
-    # logger.info("[update_taxon] Creating/updating varieties...")
-    # # SUBSPECIES = {x.name: x for x in Taxon.objects.filter(rank=Taxon.RANK_SUBSPECIES)}
-    # with transaction.atomic():
-    #     with Taxon.objects.delay_mptt_updates():
-    #         varieties = [make_variety(x, CURRENT, PUBLICATION, SPECIES)
-    #                      for x in HbvSpecies.objects.filter(rank_name="Variety")]
+    # Varieties
+    logger.info("[update_taxon] Creating/updating varieties...")
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            varieties = [make_variety(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Variety")]
 
-    # # Forms
-    # logger.info("[update_taxon] Creating/updating forms...")
-    # with transaction.atomic():
-    #     with Taxon.objects.delay_mptt_updates():
-    #         forms = [make_form(x, CURRENT, PUBLICATION, SPECIES)
-    #                  for x in HbvSpecies.objects.filter(rank_name="Form")]
+    # Forms
+    logger.info("[update_taxon] Creating/updating forms...")
+    with transaction.atomic():
+        with Taxon.objects.delay_mptt_updates():
+            forms = [make_form(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Form")]
+
+    logger.info("[update_taxon] Rebuilding taxonomic tree - this could take a while.")
+    Taxon.objects.rebuild()
+    logger.info("[update_taxon] Taxonomic tree rebuilt.")
 
     msg = ("[update_taxon] Updated {0} kingdoms, {1} families "
            "and their parentage, {2} genera, {3} species"
-           # ", {4} subspecies, {5} varieties, {6} forms."
+           ", {4} subspecies, {5} varieties, {6} forms."
            ).format(
         len(kingdoms),
         len(families),
         len(genera),
         len(species),
-        # len(subspecies),
-        # len(varieties),
-        # len(forms)
+        len(subspecies),
+        len(varieties),
+        len(forms)
     )
     logger.info(msg)
     return msg
-
-# WARNING 2018-03-01 11:42:44,128 [make_subspecies]
-# Couldn't find record for species virdis, using genus Anigozanthos as parent
-# INFO 2018-03-01 11:42:44,714 [make_subspecies] Updated [11249]
-# (Subspecies) Anigozanthos SPECIES subspecies terraspectans.
-
-# WARNING 2018-03-01 11:43:44,291 [make_subspecies] Couldn't find record for species petiolata, using genus Decaisnina
-# INFO 2018-03-01 11:43:44,986 [make_subspecies] Updated [11398] (Subspecies) Decaisnina SPECIES subspecies angustata.
-
-# WARNING 2018-03-01 11:45:19,554 [make_subspecies] Couldn't find record for species shuttleworthina,
-# using genus Grevillea
-# INFO 2018-03-01 11:45:20,331 [make_subspecies] Updated [15768] (Subspecies) Grevillea SPECIES subspecies canarina.
-
-# WARNING 2018-03-01 11:49:36,794 [make_variety] Couldn't find record for subspecies A Kimberley Flora
-# (K.F. Kenneally 5452), using genus Brunonia as parent
-# INFO 2018-03-01 11:49:37,844 [make_variety] Updated [15247] (Variety)
-# Brunonia SPECIES variety A Kimberley Flora (K.F. Kenneally 5452).

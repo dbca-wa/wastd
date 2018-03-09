@@ -1738,9 +1738,8 @@ class Taxon(MPTTModel):
         * Subspecies and lower: [NameID] RANK GENUS SPECIES RANK (SUBSPECIES)NAME
         """
         if self.rank == self.RANK_SPECIES:
-            genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
             return "{0} {1}".format(
-                "GENUS" if not genus else genus.name,
+                self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first().name or "GENUS",
                 self.name)
 
         elif self.rank > self.RANK_SPECIES:

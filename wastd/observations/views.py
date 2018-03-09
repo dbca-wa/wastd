@@ -22,7 +22,7 @@ from wastd.observations.models import Encounter, AnimalEncounter
 from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
 from wastd.observations.forms import (
     EncounterListFormHelper, AnimalEncounterListFormHelper)
-from taxonomy.models import HbvSpecies, Taxon
+from taxonomy.models import Taxon
 
 
 class HomeView(ListView):
@@ -40,17 +40,19 @@ class HomeView(ListView):
 
 
 class TaxonListView(ListView):
+    """A ListView for Taxon."""
 
     model = Taxon
     template_name = "pages/dashboard.html"
     paginate_by = 12
     queryset = Taxon.objects.all()
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(TaxonListView, self).get_context_data(**kwargs)
-    #     context['now'] = timezone.now()
-    #     # context['nodes'] = Taxon.objects.all()
-    #     return context
+    def get_context_data(self, **kwargs):
+        """Add extra items to context."""
+        context = super(TaxonListView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        # context['nodes'] = Taxon.objects.all()
+        return context
 
 
 # Encounters -----------------------------------------------------------------#
