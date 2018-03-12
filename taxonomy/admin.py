@@ -200,11 +200,10 @@ class HbvParentAdmin(VersionAdmin, admin.ModelAdmin):
 
 @admin.register(Taxon)
 class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
-    """Admin for Taxon."""
+    """Admin for Taxon. """
     list_filter = (
         'rank',
         'publication_status',
         'current',
-        ('parent', TreeRelatedFieldListFilter),
-
+        # ('parent', TreeRelatedFieldListFilter),  # performance bomb - DO NOT ENABLE
     )

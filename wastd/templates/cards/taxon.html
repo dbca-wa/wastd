@@ -32,6 +32,13 @@
     </span>
     {% endif %}
 
+    <!-- Leaf node -->
+    {% if original.is_leaf_node %}
+    <span class="badge badge-success">
+      <span class="oi oi-check" title="Terminal Taxon" aria-hidden="true"></span>
+    </span>
+    {% endif %}
+
     </h6>
 
     <!-- Conservation status -->
@@ -86,9 +93,8 @@
 
   <div class="card-footer">
 
-    <a href="?name_id={{ original.name_id }}"
-      class="btn btn-primary btn-sm btn-block" target="_" rel="nofollow">
-      <span class="oi oi-eye" title="Explore {{ original.taxonomic_name }}" aria-hidden="true"></span>
+    <a href="?name_id={{ original.name_id }}" class="btn btn-primary btn-sm btn-block">
+      <span class="oi oi-aperture" title="Explore {{ original.taxonomic_name }}" aria-hidden="true"></span>
       Explore {{ original.taxonomic_name }}
     </a>
 

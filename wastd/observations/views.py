@@ -2,7 +2,6 @@
 # from django.shortcuts import render
 # from rest_framework.decorators import api_view, renderer_classes, permission_classes
 # from rest_framework import response, schemas, permissions
-from itertools import chain
 
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
@@ -16,51 +15,30 @@ from django_tables2 import RequestConfig, SingleTableView, tables
 # from django.views.decorators.csrf import csrf_exempt
 # from django.views.generic import ListView, TemplateView
 # from django.http import HttpResponseRedirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.list import ListView
 from django.utils import timezone
 
 from wastd.observations.models import Encounter, AnimalEncounter
 from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
-from wastd.observations.forms import (
-    EncounterListFormHelper, AnimalEncounterListFormHelper)
-from taxonomy.models import Taxon
+from wastd.observations.forms import (EncounterListFormHelper, AnimalEncounterListFormHelper)
 
 
 class HomeView(ListView):
+    """HomeView."""
 
     model = AnimalEncounter
     template_name = "pages/home.html"
 
     def get_context_data(self, **kwargs):
+        """Context data."""
         context = super(HomeView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
 
     def get_queryset(self, **kwargs):
+        """Queryset."""
         return AnimalEncounter.objects.filter(taxon="Cheloniidae")
-
-
-class TaxonListView(ListView):
-    """A ListView for Taxon."""
-
-    model = Taxon
-    template_name = "pages/dashboard.html"
-    paginate_by = 12
-
-    def get_context_data(self, **kwargs):
-        """Add extra items to context."""
-        context = super(TaxonListView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        # context['nodes'] = Taxon.objects.all()
-        return context
-
-    def get_queryset(self):
-        queryset = Taxon.objects.all()
-        if self.request.GET.get('name_id'):
-            t = Taxon.objects.filter(name_id=self.request.GET.get('name_id'))
-            queryset = list(chain(t.first().get_ancestors(), t, t.first().get_children()))
-        return queryset
 
 
 # Encounters -----------------------------------------------------------------#

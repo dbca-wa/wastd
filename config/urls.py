@@ -24,8 +24,8 @@ from rest_framework.documentation import include_docs_urls
 from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
-    schema_view, HomeView, TaxonListView, EncounterTableView, AnimalEncounterTableView)
-from taxonomy.views import update_taxon
+    schema_view, HomeView, EncounterTableView, AnimalEncounterTableView)
+from taxonomy.views import update_taxon, TaxonListView
 
 # register all adminactions
 actions.add_to_site(site)
