@@ -5,9 +5,10 @@
 <div class="row">
 
   <!-- Data -->
-  <div id="dash-data" class="col-md-9 col-sm-6 col-12">
+  <div id="dash-data" class="col-lg-10 col-md-8 col-sm-6 col-12">
     <h3>Threatened Species and Communities</h3>
 
+    <!-- Pagination -->
     {% if is_paginated %}
     <div class="row">
       <nav aria-label="Page navigation example">
@@ -50,6 +51,7 @@
     </div>
     {% endif %}
 
+    <!-- Content -->
     <div class="row">
       {% for original in object_list %}
       {% include "cards/taxon.html" with original=original %}
@@ -58,8 +60,9 @@
 
   </div><!-- /#dash-data -->
 
-  <div id="dash-filters" class="col-md-3 col-sm-6 col-12">
-    <h3>Search and filter</h3>
+    <!-- Search -->
+  <div id="dash-filters" class="col-lg-2 col-md-4 col-sm-6 col-12">
+    <h3>Search</h3>
      <form method="get">
         <!-- <input class="form-control mr-sm-2" type="search" name="name" placeholder="Species or Communities" aria-label="Search"> -->
         {{ taxon_filter.form.as_p }}

@@ -43,7 +43,11 @@ class TaxonListView(ListView):
         return context
 
     def get_queryset(self):
-        """Queryset: filter by name_id if in pars."""
+        """Queryset: filter by name_id if in pars.
+
+        DO NOT use taxon_filter.qs in template: https://github.com/django-mptt/django-mptt/issues/632
+        Instead, build filtered queryset here.
+        """
         queryset = Taxon.objects.all()
 
         # name_id is mutually exclusive to other parameters
@@ -51,16 +55,4 @@ class TaxonListView(ListView):
             t = queryset.filter(name_id=self.request.GET.get('name_id'))
             return list(chain(t.first().get_ancestors(), t, t.first().get_children()))
 
-        if self.request.GET.get('rank'):
-            queryset = queryset.filter(rank=self.request.GET.get('rank'))
-
-        if self.request.GET.get('current'):
-            queryset = queryset.filter(current=self.request.GET.get('current').title())
-
-        if self.request.GET.get('publication_status'):
-            queryset = queryset.filter(publication_status=self.request.GET.get('publication_status'))
-
-        if self.request.GET.get('name'):
-            queryset = queryset.filter(name__icontains=self.request.GET.get('name'))
-
-        return queryset
+        return TaxonFilter(self.request.GET, queryset=queryset).qs

@@ -15,9 +15,7 @@
 */
 [hidden][style="display: block;"] {display: block !important;}
 
-html, body {height: 100%; width: 100%;
-    /*overflow: hidden;*/
-}
+html, body {height: 100%; width: 100%;}
 
 .bg-darkblue {background-color: #000035;}
 /* body is padded-top with navbar height */
@@ -64,10 +62,7 @@ html, body {height: 100%; width: 100%;
 /* Leaflet popup twitter-bootstrap image carousel: lower indicators 10px */
 /*#popup-image-indicators {bottom: -10px;}*/
 
-.leaflet-control-attribution {
-  max-height: 12px;
-  max-width: 200px;
-}
+.leaflet-control-attribution {max-height: 12px; max-width: 200px;}
 
 /* Table width */
 .table {width:100%;}
