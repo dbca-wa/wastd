@@ -45,7 +45,22 @@ class TaxonListView(ListView):
     def get_queryset(self):
         """Queryset: filter by name_id if in pars."""
         queryset = Taxon.objects.all()
+
+        # name_id is mutually exclusive to other parameters
         if self.request.GET.get('name_id'):
             t = queryset.filter(name_id=self.request.GET.get('name_id'))
-            queryset = list(chain(t.first().get_ancestors(), t, t.first().get_children()))
+            return list(chain(t.first().get_ancestors(), t, t.first().get_children()))
+
+        if self.request.GET.get('rank'):
+            queryset = queryset.filter(rank=self.request.GET.get('rank'))
+
+        if self.request.GET.get('current'):
+            queryset = queryset.filter(current=self.request.GET.get('current').title())
+
+        if self.request.GET.get('publication_status'):
+            queryset = queryset.filter(publication_status=self.request.GET.get('publication_status'))
+
+        if self.request.GET.get('name'):
+            queryset = queryset.filter(name__icontains=self.request.GET.get('name'))
+
         return queryset

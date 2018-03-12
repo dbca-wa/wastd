@@ -1632,7 +1632,7 @@ class Taxon(MPTTModel):
         (RANK_KINGDOM, "Kingdom"),
         (RANK_SUBKINGDOM, "Subkingdom"),
         (RANK_DIVISION, "Division"),
-        (RANK_SUBDIVISION, "Subivision"),
+        (RANK_SUBDIVISION, "Subdivision"),
         (RANK_CLASS, "Class"),
         (RANK_SUBCLASS, "Subclass"),
         (RANK_ORDER, "Order"),
