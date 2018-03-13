@@ -1199,6 +1199,7 @@ class Survey(QualityControl, geo_models.Model):
 
     start_photo = models.FileField(
         upload_to=survey_media,
+        blank=True, null=True,
         max_length=500,
         verbose_name=_("Site photo start"),
         help_text=_("Site conditions at start of survey."),)
@@ -1230,6 +1231,7 @@ class Survey(QualityControl, geo_models.Model):
 
     end_photo = models.FileField(
         upload_to=expedition_media,
+        blank=True, null=True,
         max_length=500,
         verbose_name=_("Site photo end"),
         help_text=_("Site conditions at end of survey."),)
