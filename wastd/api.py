@@ -314,6 +314,7 @@ class SurveySerializer(GeoFeatureModelSerializer):
 
     reporter = FastUserSerializer(many=False, read_only=True)
     site = FastAreaSerializer(many=False, read_only=True)
+    status = serializers.ReadOnlyField()
 
     class Meta:
         """Class options."""
