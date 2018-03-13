@@ -354,6 +354,7 @@ class SurveyFilter(filters.FilterSet):
             'device_id': '__all__',
             'source_id': '__all__',
             'end_source_id': '__all__',
+            'status': '__all__',
         }
 
 
@@ -1730,8 +1731,7 @@ class HbvSupraViewSet(viewsets.ModelViewSet):
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
 
-        obj, created = self.model.objects.get_or_create(
-            supra_code=data[self.uid_field], defaults=data)
+        obj, created = self.model.objects.get_or_create(supra_code=data[self.uid_field], defaults=data)
         if not created:
             self.model.objects.filter(supra_code=data[self.uid_field]).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)

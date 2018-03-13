@@ -789,9 +789,8 @@ class QualityControl(models.Model):
         """
         return
 
+
 # Spatial models -------------------------------------------------------------#
-
-
 @python_2_unicode_compatible
 class Area(geo_models.Model):
     """An area with a polygonal extent.

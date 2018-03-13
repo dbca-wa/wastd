@@ -302,7 +302,7 @@ class ExpeditionAdmin(admin.ModelAdmin):
     formfield_overrides = {
         geo_models.PointField: leaflet_settings,
         geo_models.LineStringField: leaflet_settings,
-        }
+    }
 
 
 @admin.register(SiteVisit)
@@ -311,7 +311,7 @@ class SiteVisitAdmin(ExpeditionAdmin):
 
 
 @admin.register(Survey)
-class SurveyAdmin(VersionAdmin, admin.ModelAdmin):
+class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     form = s2form(Survey, attrs=S2ATTRS)
     # model = Survey
     date_hierarchy = 'start_time'
@@ -328,19 +328,22 @@ class SurveyAdmin(VersionAdmin, admin.ModelAdmin):
         'end_source_id',
         'end_location',
         'end_time',
-        'end_comments'
+        'end_comments',
+        'status'
     )
-    list_filter = ('device_id', 'site', 'reporter')
+    list_filter = ('device_id', 'site', 'reporter', 'status')
     search_fields = ('start_comments', 'end_comments')
     exclude = (
         # 'end_location',
         # 'transect',
         # 'start_location'
-        )
+    )
     formfield_overrides = {
         geo_models.PointField: leaflet_settings,
         geo_models.LineStringField: leaflet_settings,
-        }
+    }
+    # Django-fsm transitions config
+    fsm_field = ['status', ]
 
 
 @admin.register(Area)
@@ -352,7 +355,7 @@ class AreaAdmin(admin.ModelAdmin):
     # Leaflet geolocation widget
     formfield_overrides = {
         geo_models.PolygonField: leaflet_settings,
-        }
+    }
 
 
 @admin.register(Encounter)
@@ -377,7 +380,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     formfield_overrides = {
         geo_models.PointField: leaflet_settings,
         geo_models.LineStringField: leaflet_settings,
-        }
+    }
 
     # Filters for change_list
     list_filter = (
@@ -424,7 +427,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
         HatchlingMorphometricObservationInline,
-        ]
+    ]
 
     def source_display(self, obj):
         """Make data source readable."""
@@ -461,7 +464,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'checked_for_injuries',
         'scanned_for_pit_tags',
         'checked_for_flipper_tags',
-        ) + EncounterAdmin.LAST_COLS
+    ) + EncounterAdmin.LAST_COLS
     list_filter = EncounterAdmin.list_filter + (
         'taxon', 'species',
         'health', 'cause_of_death', 'cause_of_death_confidence',
@@ -490,7 +493,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         TurtleNestObservationInline,
         ManagementActionInline,
         NestTagObservationInline,
-        ]
+    ]
 
     def health_display(self, obj):
         """Make health status human readable."""
@@ -526,7 +529,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
     list_display = EncounterAdmin.FIRST_COLS + (
         'age_display', 'type_display', 'species',
         'habitat_display', 'disturbance', 'comments'
-        ) + EncounterAdmin.LAST_COLS
+    ) + EncounterAdmin.LAST_COLS
     list_filter = EncounterAdmin.list_filter + (
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance')
     fieldsets = EncounterAdmin.fieldsets + (
@@ -541,7 +544,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
         HatchlingMorphometricObservationInline,
-        ]
+    ]
 
     def habitat_display(self, obj):
         """Make habitat human readable."""
@@ -566,7 +569,7 @@ class LineTransectEncounterAdmin(EncounterAdmin):
     form = LineTransectEncounterAdminForm
     list_display = EncounterAdmin.FIRST_COLS + (
         'transect',
-        ) + EncounterAdmin.LAST_COLS
+    ) + EncounterAdmin.LAST_COLS
     # list_filter = EncounterAdmin.list_filter + ()
     fieldsets = EncounterAdmin.fieldsets + (
         ('Location', {'fields': ('transect', )}), )
@@ -574,7 +577,7 @@ class LineTransectEncounterAdmin(EncounterAdmin):
     inlines = [
         TrackTallyObservationInline,
         TurtleNestDisturbanceTallyObservationInline,
-        ]
+    ]
 
 
 @admin.register(LoggerEncounter)
@@ -585,7 +588,7 @@ class LoggerEncounterAdmin(EncounterAdmin):
     list_display = EncounterAdmin.FIRST_COLS + (
         'logger_type_display', 'deployment_status_display',
         'logger_id', 'comments',
-        ) + EncounterAdmin.LAST_COLS
+    ) + EncounterAdmin.LAST_COLS
     list_filter = EncounterAdmin.list_filter + ('logger_type', 'deployment_status',)
     search_fields = ('logger_id', 'source_id')
     fieldsets = EncounterAdmin.fieldsets + (
