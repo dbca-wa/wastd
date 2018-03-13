@@ -3748,7 +3748,7 @@ def import_odka_svs02(r):
     extra_data = dict(
         start_location=odk_point_as_point(data["site_visit"]["location"]),
         start_time=parse_datetime(data["survey_start_time"]),
-        start_comments="{0}\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
+        start_comments="{0}\n\n\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
         reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
     )
@@ -3927,7 +3927,7 @@ def import_odka_sve02(r):
     extra_data = dict(
         end_location=odk_point_as_point(data["site_visit"]["location"]),
         end_time=parse_datetime(data["survey_end_time"]),
-        end_comments="{0}\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
+        end_comments="{0}\n\n\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
         reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
     )
