@@ -1240,6 +1240,12 @@ class Survey(QualityControl, geo_models.Model):
         help_text=_("Describe any circumstances affecting data collection, "
                     "e.g. days without surveys."), )
 
+    production = models.BooleanField(
+        default=True,
+        verbose_name=_("Production run"),
+        help_text=_("Whether the survey is a real (production) survey, or a training survey."),
+    )
+
     team = models.ManyToManyField(
         User,
         blank=True,

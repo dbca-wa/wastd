@@ -3758,7 +3758,7 @@ def import_odka_svs02(r):
         extra_data,
         cls=Survey,
         base_cls=Survey,
-        retain_qa=False)
+        retain_qa=True)
 
     if action in ["update", "create"]:
         enc.save()

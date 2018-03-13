@@ -329,9 +329,10 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         'end_location',
         'end_time',
         'end_comments',
-        'status'
+        'status',
+        'production'
     )
-    list_filter = ('device_id', 'site', 'reporter', 'status')
+    list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
     search_fields = ('start_comments', 'end_comments')
     exclude = (
         # 'end_location',
