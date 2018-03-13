@@ -339,8 +339,8 @@ On the production server, run::
 
     fab shell
     from wastd.observations.utils import *
-  
-    import_odk("data/latest/Track_Tally_0_5_results.json", flavour="odk-tally05")                                                     
+
+    import_odk("data/latest/Track_Tally_0_5_results.json", flavour="odk-tally05")
     #import_odk('data/latest/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
     import_odk('data/latest/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
     import_odk('data/latest/Track_or_Treat_0_35_results.json', flavour="odk-tt036")
@@ -348,7 +348,7 @@ On the production server, run::
     import_odk('data/latest/Fox_Sake_0_3_results.json', flavour="odk-fs03")
 
 
-    # TODO: 
+    # TODO:
     # MWI, TS 0.8, 0.9
 
 This process contains three manual steps for each form,
@@ -406,3 +406,68 @@ actually release information to the general public. The flag serves simply to
 mark a record as "ready to publish".
 This transition can be reversed with "Embargo Encounter", which will push the record
 back to "curated".
+
+
+Data QA for turtle track census
+===============================
+This section addresses the regional turtle monitoring program coordinators, who
+conduct training and supervise volunteer data collection.
+
+Data flow of surveys
+--------------------
+WAStD creates or updates (if existing) one Survey for each recorded "Site Visit Start".
+WAStD guesses the site (an existing "Area" with a polygonal boundary)
+from the Site Visit Start's Geolocation.
+WAStD tries to find a corresponding "Site Visit End", or else sets the end time to 6 hours
+after the start time, and leaves a note in the "comments at finish".
+
+If the data collectors forgot to record a "Site Visit Start", the QA operator has to create
+a new Survey with start and end time before and after the recorded Encounters (Track or Treat, Fox Sake).
+
+When a Survey is saved, it finds all Encounters within its start and end time and location (site) and
+links them to itself. This link can be seen in the Encounters' field "survey".
+
+Since data collection unavoidably lossy and incomplete due to human error,
+QA operators (coordinators) have to:
+
+* Flag training surveys (to exclude their corresponding Encounters from analysis)
+* Double-check reporter names to QA WAStD's automated name matching
+* Populate "team" from "comments at start" (to allow estimating volunteer hours)
+* QA "survey end time" and set to a realistic time where guessed (to allow estimating volunteer hours)
+
+Flag training surveys
+---------------------
+Surveys can be marked as training surveys by unticking the "production" checkbox.
+This allows to exclude training data from analysis.
+
+Remember to "Save and continue editing", "proofread" and "curate" the record to
+protect it from being overwritten with the original data.
+
+Double-check reporter names
+---------------------------
+Filter the Survey list to each of your sites, compare "reported by" with "comments at start".
+WAStD leaves QA messages. Surveys requiring QA will have a "NEEDS QA" remark.
+
+QA Survey end time
+------------------
+Where WAStD left a "Needs QA" remark in the "Comments at finish" regarding "Survey end guessed",
+try to set the end time to a more realistic time.
+
+Populate team
+-------------
+From "Comments at start" beginning after the [guess_user] QA message, the team is listed.
+Excluding the "reporter", add all team members to the "team" field.
+
+This in combination with an accurate Survey end time assists to accurately estimate
+the volunteer hours (hours on ground times number of volunteers)
+and survey effort (hours on ground).
+
+**Note** Remember to "Save and continue editing", "proofread" and "curate"
+each updated record to protect it from being overwritten with the original data.
+It is not necessary to "proofread" and "curate" unchanged records.
+
+Add missing surveys
+-------------------
+This currently is a job for the admin: Pivot Encounters without a survey by site and date
+and extract earliest and latest Encounter. Buffer by a few minutes, extract Encounter's reporter,
+and create missing surveys.

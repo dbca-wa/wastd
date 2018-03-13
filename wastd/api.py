@@ -487,21 +487,6 @@ class TagObservationSerializer(serializers.ModelSerializer):
                   'status', 'comments', )
 
 
-class TagObservationEncounterSerializer(serializers.ModelSerializer):
-    """TagObservation serializer including encounter for standalone viewset."""
-
-    # as_latex = serializers.ReadOnlyField()
-
-    class Meta:
-        """Class options."""
-
-        model = TagObservation
-        fields = ('encounter',  # 'as_latex',
-                  'observation_name',
-                  'tag_type', 'name', 'tag_location',
-                  'status', 'comments', )
-
-
 class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
     """TurtleMorphometricObservation serializer."""
 
@@ -825,6 +810,70 @@ class EncounterSerializer(GeoFeatureModelSerializer):
         # return encounter
 
 
+class FastEncounterSerializer(GeoFeatureModelSerializer):
+    """Encounter serializer.
+
+    Alternative: serializers.HyperlinkedModelSerializer
+
+    TODO: a writable version of the serializer will provide `create` and
+    `update` methods, which also create/update the inline Observations.
+
+    Since nested Observations are polymorphic, two steps have to be taken above
+    the plain nested writeable API:
+
+    * :mod:`wastd.observations.models.Observation.observation_name` is a property
+      method to return the child model's name
+    * :mod:`wastd.api.ObservationSerializer` includes the `observation_name` in
+      the API dict
+    * :mod:`wastd.api.EncounterSerializer.create` and `update` (coming) handle
+      both the Encounter and the nested Observations separately. Observations
+      use their included `observation_name` to figure out the actual model that
+      we want to `create` or `update`.
+
+      TODO http://stackoverflow.com/q/32123148/2813717
+      NOTE this API is not writeable, as related models (User and Observation)
+      require customisations to handle data thrown at them.
+    """
+
+    # observation_set = ObservationSerializer(many=True, read_only=False)
+    observer = FastUserSerializer(many=False, read_only=True)
+    reporter = FastUserSerializer(many=False, read_only=True)
+    area = FastAreaSerializer(many=False, read_only=True)
+    site = FastAreaSerializer(many=False, read_only=True)
+    survey = FastSurveySerializer(many=False, read_only=True)
+    # observer = serializers.StringRelatedField(read_only=True)
+    # reporter = serializers.StringRelatedField(read_only=True)
+    # where = PointField(required=True)   ## THIS BREAKS GEOJSON OUTPUT
+    leaflet_title = serializers.ReadOnlyField()
+    latitude = serializers.ReadOnlyField()
+    longitude = serializers.ReadOnlyField()
+    crs = serializers.ReadOnlyField()
+    absolute_admin_url = serializers.ReadOnlyField()
+    photographs = MediaAttachmentSerializer(many=True, read_only=False)
+    tx_logs = serializers.ReadOnlyField()
+
+    class Meta:
+        """Class options.
+
+        The non-standard name `where` is declared as the geo field for the
+        GeoJSON serializer's benefit.
+        """
+
+        model = Encounter
+        name = 'encounter'
+        fields = ('pk', 'area', 'site', 'survey',
+                  'where', 'location_accuracy', 'when',
+                  'name', 'observer', 'reporter', 'comments',
+                  'status', 'source', 'source_id', 'encounter_type',
+                  'leaflet_title', 'latitude', 'longitude', 'crs',
+                  'absolute_admin_url', 'photographs', 'tx_logs',
+                  #  'as_html', 'as_latex',
+                  # 'observation_set',
+                  )
+        geo_field = "where"
+        id_field = "source_id"
+
+
 class AnimalEncounterSerializer(EncounterSerializer):
     """AnimalEncounter serializer."""
 
@@ -890,6 +939,19 @@ class LoggerEncounterSerializer(EncounterSerializer):
                   'absolute_admin_url', 'photographs', 'tx_logs',
                   'observation_set', )
         geo_field = "where"
+
+
+class TagObservationEncounterSerializer(serializers.ModelSerializer):
+    """TagObservation serializer including encounter for standalone viewset."""
+
+    encounter = FastEncounterSerializer(many=False, read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = TagObservation
+        fields = ('encounter', 'observation_name', 'tag_type', 'name',
+                  'tag_location', 'status', 'comments', )
 
 
 class EncounterFilter(filters.FilterSet):
@@ -1215,6 +1277,7 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
     search_fields = ('name', 'comments', )
+    pagination_class = pagination.LimitOffsetPagination
 
 
 class NestTagObservationEncounterSerializer(serializers.ModelSerializer):
