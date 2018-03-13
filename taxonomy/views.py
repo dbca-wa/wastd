@@ -45,8 +45,13 @@ class TaxonListView(ListView):
     def get_queryset(self):
         """Queryset: filter by name_id if in pars.
 
+        There are two mutually exclusive ways of filtering data:
+
+        * Taxon card > explore: GET name_id = show this taxon, its parents
+          and one generation of children. Do not process the other filter fields.
+        * Search filter: name (icontains), rank, is current, publication status.
+
         DO NOT use taxon_filter.qs in template: https://github.com/django-mptt/django-mptt/issues/632
-        Instead, build filtered queryset here.
         """
         queryset = Taxon.objects.all()
 

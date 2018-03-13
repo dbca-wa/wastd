@@ -1668,6 +1668,7 @@ class Taxon(MPTTModel):
 
     name_id = models.BigIntegerField(
         unique=True,
+        db_index=True,
         verbose_name=_("NameID"),
         help_text=_("WACensus NameID, assigned by WACensus."),
     )
@@ -1683,6 +1684,7 @@ class Taxon(MPTTModel):
 
     rank = models.PositiveSmallIntegerField(
         choices=RANKS,
+        db_index=True,
         blank=True, null=True,
         verbose_name=_("Taxonomic Rank"),
         help_text=_("The taxonomic rank of the taxon."),
@@ -1690,6 +1692,7 @@ class Taxon(MPTTModel):
 
     name = models.CharField(
         max_length=1000,
+        db_index=True,
         blank=True, null=True,
         verbose_name=_("Taxon Name"),
         help_text=_("The taxon name.")
@@ -1703,6 +1706,7 @@ class Taxon(MPTTModel):
     )
 
     publication_status = models.PositiveSmallIntegerField(
+        db_index=True,
         choices=PUBLICATION_STATUS,
         default=PUBLICATION_STATUS_PUBLISHED_NAME,
         verbose_name=_("Publication Status"),
@@ -1710,6 +1714,7 @@ class Taxon(MPTTModel):
     )
 
     current = models.BooleanField(
+        db_index=True,
         default=False,
         verbose_name=_("Is current"),
         help_text=_("Whether the name is current."),
