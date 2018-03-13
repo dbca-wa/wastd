@@ -610,7 +610,188 @@ def survey_media(instance, filename):
     return 'survey/{0}/{1}'.format(instance.id, filename)
 
 
+# Abstract models ------------------------------------------------------------#
+class QualityControl(models.Model):
+    """QA status levels and django-fsm transitions."""
+
+    STATUS_NEW = 'new'
+    STATUS_PROOFREAD = 'proofread'
+    STATUS_CURATED = 'curated'
+    STATUS_PUBLISHED = 'published'
+
+    STATUS_CHOICES = (
+        (STATUS_NEW, _("New")),
+        (STATUS_PROOFREAD, _("Proofread")),
+        (STATUS_CURATED, _("Curated")),
+        (STATUS_PUBLISHED, _("Published")), )
+
+    STATUS_LABELS = {
+        STATUS_NEW: "danger",
+        STATUS_PROOFREAD: "warning",
+        STATUS_CURATED: "info",
+        STATUS_PUBLISHED: "success", }
+
+    status = FSMField(
+        default=STATUS_NEW,
+        choices=STATUS_CHOICES,
+        verbose_name=_("QA Status"))
+
+    class Meta:
+        """Class opts."""
+
+        abstract = True
+
+# FSM transitions --------------------------------------------------------#
+    def can_proofread(self):
+        """Return true if this document can be proofread."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_NEW,
+        target=STATUS_PROOFREAD,
+        conditions=[can_proofread],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Mark as proofread",
+            explanation=("This record is a faithful representation of the "
+                         "data sheet."),
+            notify=True,)
+    )
+    def proofread(self, by=None):
+        """Mark encounter as proof-read.
+
+        Proofreading compares the attached data sheet with entered values.
+        Proofread data is deemed a faithful representation of original data
+        captured on a paper field data collection form, or stored in a legacy
+        system.
+        """
+        return
+
+    def can_require_proofreading(self):
+        """Return true if this document can be proofread."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_PROOFREAD,
+        target=STATUS_NEW,
+        conditions=[can_require_proofreading],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Require proofreading",
+            explanation=("This record deviates from the data source and "
+                         "requires proofreading."),
+            notify=True,)
+    )
+    def require_proofreading(self, by=None):
+        """Mark encounter as having typos, requiring more proofreading.
+
+        Proofreading compares the attached data sheet with entered values.
+        If a discrepancy to the data sheet is found, proofreading is required.
+        """
+        return
+
+    def can_curate(self):
+        """Return true if this document can be marked as curated."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_PROOFREAD,
+        target=STATUS_CURATED,
+        conditions=[can_curate],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Mark as trustworthy",
+            explanation=("This record is deemed trustworthy."),
+            notify=True,)
+    )
+    def curate(self, by=None):
+        """Mark encounter as curated.
+
+        Curated data is deemed trustworthy by a subject matter expert.
+        """
+        return
+
+    def can_revoke_curated(self):
+        """Return true if curated status can be revoked."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_CURATED,
+        target=STATUS_PROOFREAD,
+        conditions=[can_revoke_curated],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Flag",
+            explanation=("This record cannot be true. This record requires"
+                         " review by a subject matter expert."),
+            notify=True,)
+    )
+    def flag(self, by=None):
+        """Flag as requiring changes to data.
+
+        Curated data is deemed trustworthy by a subject matter expert.
+        Revoking curation flags data for requiring changes by an expert.
+        """
+        return
+
+    def can_publish(self):
+        """Return true if this document can be published."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_CURATED,
+        target=STATUS_PUBLISHED,
+        conditions=[can_publish],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Publish",
+            explanation=("This record is fit for release."),
+            notify=True,)
+    )
+    def publish(self, by=None):
+        """Mark encounter as ready to be published.
+
+        Published data has been deemed fit for release by the data owner.
+        """
+        return
+
+    def can_embargo(self):
+        """Return true if encounter can be embargoed."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_PUBLISHED,
+        target=STATUS_CURATED,
+        conditions=[can_embargo],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Embargo",
+            explanation=("This record is not fit for release."),
+            notify=True,)
+    )
+    def embargo(self, by=None):
+        """Mark encounter as NOT ready to be published.
+
+        Published data has been deemed fit for release by the data owner.
+        Embargoed data is marked as curated, but not ready for release.
+        """
+        return
+
 # Spatial models -------------------------------------------------------------#
+
+
 @python_2_unicode_compatible
 class Area(geo_models.Model):
     """An area with a polygonal extent.
@@ -960,7 +1141,7 @@ class FieldMediaAttachment(models.Model):
 
 
 @python_2_unicode_compatible
-class Survey(geo_models.Model):
+class Survey(QualityControl, geo_models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
     source = models.CharField(
