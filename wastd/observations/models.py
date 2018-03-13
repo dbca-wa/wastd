@@ -1216,6 +1216,12 @@ class Survey(QualityControl, geo_models.Model):
         verbose_name=_("Source ID of end point"),
         help_text=_("The ID of the record in the original source."), )
 
+    end_device_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("End Device ID"),
+        help_text=_("The ID of the recording device which captured the end point, if available."), )
+
     end_location = geo_models.PointField(
         srid=4326,
         blank=True, null=True,
@@ -1319,6 +1325,7 @@ def claim_end_points(survey_instance):
         survey_instance.end_comments = se.end_comments
         survey_instance.end_photo = se.end_photo
         survey_instance.end_source_id = se.source_id
+        survey_instance.end_device_id = se.device_id
     else:
         if not survey_instance.end_time:
             survey_instance.end_time = survey_instance.start_time + timedelta(hours=6)

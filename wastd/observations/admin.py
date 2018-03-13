@@ -318,19 +318,16 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     list_display = (
         '__str__',
         'source',
-        'source_id',
         'device_id',
+        'end_device_id',
         'site',
-        'start_location',
         'start_time',
+        'end_time',
         'reporter',
         'start_comments',
-        'end_source_id',
-        'end_location',
-        'end_time',
         'end_comments',
         'status',
-        'production'
+        'production',
     )
     list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
     search_fields = ('start_comments', 'end_comments')
