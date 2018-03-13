@@ -1242,6 +1242,7 @@ class Survey(QualityControl, geo_models.Model):
 
     team = models.ManyToManyField(
         User,
+        blank=True,
         related_name="survey_team",
         help_text=_(
             "Additional field workers, apart from the reporter,"
