@@ -1328,21 +1328,23 @@ class TagObservationViewSet(viewsets.ModelViewSet):
 # ----------------------------------------------------------------------------#
 # Tagged nests with Encounters
 class NestTagObservationEncounterSerializer(serializers.ModelSerializer):
-    """NestTagObservationSerializer."""
+    """NestTagObservationSerializer with encounter."""
 
-    encounter = EncounterSerializer(many=False, read_only=True)
+    encounter = FastEncounterSerializer(many=False, read_only=True)
 
     class Meta:
         """Class options."""
 
         model = NestTagObservation
-        fields = ('observation_name',
-                  'encounter',
-                  'status',
-                  'flipper_tag_id',
-                  'date_nest_laid',
-                  'tag_label',
-                  'comments',)
+        # geo_field = "encounter__where"
+        fields = (
+            'encounter',
+            'observation_name',
+            'status',
+            'flipper_tag_id',
+            'date_nest_laid',
+            'tag_label',
+            'comments',)
 
 
 class NestTagObservationViewSet(viewsets.ModelViewSet):
@@ -1352,9 +1354,39 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = NestTagObservationEncounterSerializer
     filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments']
     pagination_class = pagination.LimitOffsetPagination
-
+    # pagination_class = MyGeoJsonPagination
 
 router.register(r'nesttag-observations', NestTagObservationViewSet)
+
+
+class TurtleNestDisturbanceObservationEncounterSerializer(serializers.ModelSerializer):
+    """TurtleNestDisturbanceObservation serializer with encounter."""
+
+    encounter = FastEncounterSerializer(many=False, read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleNestDisturbanceObservation
+        fields = (
+            'encounter',
+            'observation_name',
+            'disturbance_cause',
+            'disturbance_cause_confidence',
+            'disturbance_severity',
+            'comments', )
+
+
+class TurtleNestDisturbanceObservationViewSet(viewsets.ModelViewSet):
+    """TurtleNestDisturbanceObservation view set."""
+
+    queryset = TurtleNestDisturbanceObservation.objects.all()
+    serializer_class = TurtleNestDisturbanceObservationEncounterSerializer
+    filter_fields = ['disturbance_cause', 'disturbance_cause_confidence', 'disturbance_severity', ]
+    pagination_class = pagination.LimitOffsetPagination
+    # pagination_class = MyGeoJsonPagination
+
+router.register(r'disturbance-observations', TurtleNestDisturbanceObservationViewSet)
 # ----------------------------------------------------------------------------#
 
 router.register(r'encounters', EncounterViewSet)
