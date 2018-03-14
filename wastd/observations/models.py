@@ -1290,8 +1290,7 @@ class Survey(QualityControl, geo_models.Model):
                 where__contained=self.site.geom,
                 when__gte=self.start_time,
                 when__lte=self.end_time)
-            logger.info(
-                "[wastd.observations.models.survey.encounters] Survey {0} found {1} Encounters".format(self, len(e)))
+            logger.info("[Survey.encounters] {0} found {1} Encounters".format(self, len(e)))
             return e
 
 
@@ -1329,9 +1328,8 @@ def claim_end_points(survey_instance):
     else:
         if not survey_instance.end_time:
             survey_instance.end_time = survey_instance.start_time + timedelta(hours=6)
-            survey_instance.end_comments = "[Needs QA][Missing SiteVisitEnd] Survey end guessed."
-            logger.info("[wastd.observations.models.claim_end_points] "
-                        "Missing SiteVisitEnd for Survey {0}".format(survey_instance))
+            survey_instance.end_comments = "[NEEDS QA][Missing SiteVisitEnd] Survey end guessed."
+            logger.info("[Survey.claim_end_points] Missing SiteVisitEnd for Survey {0}".format(survey_instance))
 
 
 def claim_encounters(survey_instance):
@@ -1346,8 +1344,10 @@ def claim_encounters(survey_instance):
 @receiver(pre_save, sender=Survey)
 def survey_pre_save(sender, instance, *args, **kwargs):
     """Survey: Claim site, end point."""
-    instance.site = guess_site(instance)
-    claim_end_points(instance)
+    if instance.status == Survey.STATUS_NEW and not instance.site:
+        instance.site = guess_site(instance)
+    if instance.status == Survey.STATUS_NEW and not instance.end_time:
+        claim_end_points(instance)
 
 
 @receiver(post_save, sender=Survey)
