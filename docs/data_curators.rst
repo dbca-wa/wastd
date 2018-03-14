@@ -415,8 +415,10 @@ conduct training and supervise volunteer data collection.
 
 Data flow of surveys
 --------------------
-WAStD creates or updates (if existing) one Survey for each recorded "Site Visit Start".
-WAStD guesses the site (an existing "Area" with a polygonal boundary)
+WAStD creates or updates (if existing) one
+`Survey <https://strandings.dpaw.wa.gov.au/admin/observations/survey/>`_
+for each recorded "Site Visit Start".
+WAStD guesses the `Site <https://strandings.dpaw.wa.gov.au/admin/observations/area/?area_type__exact=Site>`_
 from the Site Visit Start's Geolocation.
 WAStD tries to find a corresponding "Site Visit End", or else sets the end time to 6 hours
 after the start time, and leaves a note in the "comments at finish".
@@ -424,8 +426,8 @@ after the start time, and leaves a note in the "comments at finish".
 If the data collectors forgot to record a "Site Visit Start", the QA operator has to create
 a new Survey with start and end time before and after the recorded Encounters (Track or Treat, Fox Sake).
 
-When a Survey is saved, it finds all Encounters within its start and end time and location (site) and
-links them to itself. This link can be seen in the Encounters' field "survey".
+When a Survey is saved, it finds all Encounters within its start and end time at the given Site
+and links them to itself. This link can be seen in the Encounters' field "survey".
 
 Since data collection unavoidably lossy and incomplete due to human error,
 QA operators (coordinators) have to:
@@ -450,8 +452,22 @@ WAStD leaves QA messages. Surveys requiring QA will have a "NEEDS QA" remark.
 
 QA Survey end time
 ------------------
-Where WAStD left a "Needs QA" remark in the "Comments at finish" regarding "Survey end guessed",
+The end time can be incorrect for two reasons:
+
+* If the data collector forgot to capture a Site Visit End, WAStD will guess the end time.
+* If WAStD's heuristic picked the wrong Site Visit End (likely in absence of the right one),
+  the Survey's "end" fields will be populated, but likely wrong.
+
+In the first case, WAStD leaves a "Needs QA" remark in the "Comments at finish" regarding "Survey end guessed",
 try to set the end time to a more realistic time.
+
+Where a Survey's ``device_id`` differs from ``end_device_id``, the data collectors either have
+switched to the backup device, or WAStD has mismatched the Site Visit End.
+Similarly, a different ``[guess_user]`` comment in the Survey's ``start_comments`` and ``end_comments``
+can indicate a mismatch.
+
+In the case of a mismatched Site Visit End, simply delete the incorrect information from the Survey's
+``end_comments``, save and proofread. Set ``end time`` to a sensible time, ignore the end point.
 
 Populate team
 -------------
@@ -471,3 +487,12 @@ Add missing surveys
 This currently is a job for the admin: Pivot Encounters without a survey by site and date
 and extract earliest and latest Encounter. Buffer by a few minutes, extract Encounter's reporter,
 and create missing surveys.
+
+Add missing users
+-----------------
+If a person is not listed in the dropdown menus, you might need to
+`add a User <https://strandings.dpaw.wa.gov.au/admin/users/user/add/>`_ for that person.
+Use their ``firstname_lastname`` as username, select a password, save, then add the details.
+
+WAStD will create a new user profile at first login for each DBCA staff member, but
+the profile will miss the details

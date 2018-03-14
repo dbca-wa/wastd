@@ -292,26 +292,28 @@ class FieldMediaAttachmentInline(admin.TabularInline):
     widgets = {'attachment': ImageThumbnailFileInput}  # seems inactive
 
 
-@admin.register(Expedition)
-class ExpeditionAdmin(admin.ModelAdmin):
-    form = ExpeditionForm
-    list_display = ('site', 'started_on', 'finished_on', 'comments')
-    date_hierarchy = 'started_on'
-    inlines = [FieldMediaAttachmentInline, ]
-    # Leaflet geolocation widget
-    formfield_overrides = {
-        geo_models.PointField: leaflet_settings,
-        geo_models.LineStringField: leaflet_settings,
-    }
+# @admin.register(Expedition)
+# class ExpeditionAdmin(admin.ModelAdmin):
+#     form = ExpeditionForm
+#     list_display = ('site', 'started_on', 'finished_on', 'comments')
+#     date_hierarchy = 'started_on'
+#     inlines = [FieldMediaAttachmentInline, ]
+#     # Leaflet geolocation widget
+#     formfield_overrides = {
+#         geo_models.PointField: leaflet_settings,
+#         geo_models.LineStringField: leaflet_settings,
+#     }
 
 
-@admin.register(SiteVisit)
-class SiteVisitAdmin(ExpeditionAdmin):
-    form = SiteVisitForm
+# @admin.register(SiteVisit)
+# class SiteVisitAdmin(ExpeditionAdmin):
+#     form = SiteVisitForm
 
 
 @admin.register(Survey)
 class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
+    """Survey Admin."""
+
     form = s2form(Survey, attrs=S2ATTRS)
     # model = Survey
     date_hierarchy = 'start_time'
@@ -331,16 +333,17 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     )
     list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
     search_fields = ('start_comments', 'end_comments')
-    exclude = (
-        'status',
-        # 'transect',
-        # 'start_location'
+    fieldsets = (
+        ('Device', {'fields': ('source', 'source_id', 'device_id',
+                               'end_source_id', 'end_device_id', 'production',)}),
+        ('Location', {'fields': ('transect', 'start_location', 'end_location', 'site',)}),
+        ('Time', {'fields': ('start_time', 'end_time',)}),
+        ('Team', {'fields': ('start_comments', 'end_comments', 'reporter', 'team',)}),
     )
     formfield_overrides = {
         geo_models.PointField: leaflet_settings,
         geo_models.LineStringField: leaflet_settings,
     }
-    # Django-fsm transitions config
     fsm_field = ['status', ]
 
 
