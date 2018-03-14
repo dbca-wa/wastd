@@ -33,7 +33,7 @@ This API is built using:
 from collections import OrderedDict
 
 import logging
-from pdb import set_trace
+# from pdb import set_trace
 
 # from django.db import models as django_models
 from django.template import Context, Template
@@ -51,8 +51,8 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 import rest_framework_filters as filters
 
-from rest_framework_gis.filterset import GeoFilterSet
-from rest_framework_gis.filters import GeometryFilter, InBBoxFilter
+# from rest_framework_gis.filterset import GeoFilterSet
+from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 
 from wastd.observations.models import (
     Area, Survey,  # SiteVisit,
@@ -100,6 +100,7 @@ class MyGeoJsonPagination(pagination.LimitOffsetPagination):
     """
 
     def get_paginated_response(self, data):
+        """Return a GeoJSON FeatureCollection with pagination links."""
         return RestResponse(OrderedDict([
             ('type', 'FeatureCollection'),
             ('count', self.count),
@@ -110,6 +111,8 @@ class MyGeoJsonPagination(pagination.LimitOffsetPagination):
 
 
 class InBBoxHTMLMixin:
+    """Mixin for bbox search."""
+
     template = Template("""
     {% load i18n %}
     <style type="text/css">
@@ -176,10 +179,13 @@ class InBBoxHTMLMixin:
     """)
 
     def to_html(self, request, queryset, view):
+        """Representation as HTML."""
         return self.template.render(Context({'bbox_param': self.bbox_param}))
 
 
 class CustomBBoxFilter(InBBoxHTMLMixin, InBBoxFilter):
+    """Custom BBox filter."""
+
     bbox_param = 'in_bbox'
 
 
@@ -271,8 +277,11 @@ class FastAreaSerializer(serializers.ModelSerializer):
 
 
 class AreaFilter(filters.FilterSet):
+    """Area filter."""
 
     class Meta:
+        """Class opts."""
+
         model = Area
         fields = {
             'area_type': ['exact', 'in', 'startswith'],
@@ -286,14 +295,18 @@ class AreaViewSet(viewsets.ModelViewSet):
     # Filters
 
     # name
-    * [/api/1/areas/?name__startswith=Broome](/api/1/areas/?name__startswith=Broome) Areas starting with "Broome"
-    * [/api/1/areas/?name__icontains=sector](/api/1/areas/?name__icontains=Sector) Areas containing (case-insensitive) "sector"
-    * [/api/1/areas/?name=Cable Beach Broome Sector 3](/api/1/areas/?name=Cable Beach Broome Sector 3) Area with exact name (case sensitive)
+    * [/api/1/areas/?name__startswith=Broome](/api/1/areas/?name__startswith=Broome)
+      Areas starting with "Broome"
+    * [/api/1/areas/?name__icontains=sector](/api/1/areas/?name__icontains=Sector)
+      Areas containing (case-insensitive) "sector"
+    * [/api/1/areas/?name=Cable Beach Broome Sector 3](/api/1/areas/?name=Cable Beach Broome Sector 3)
+      Area with exact name (case sensitive)
 
 
     # area_type
     * [/api/1/areas/?area_type=MPA](/api/1/areas/?area_type=MPA) Marine Protected Areas
-    * [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality) Localities (typically containing multiple surveyed sites)
+    * [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality)
+      Localities (typically containing multiple surveyed sites)
     * [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site) Sites (where Surveys are conducted)
     """
 
@@ -954,9 +967,11 @@ class TagObservationEncounterSerializer(serializers.ModelSerializer):
 
 
 class EncounterFilter(filters.FilterSet):
-    # area = filters.RelatedFilter(AreaFilter, name="area", queryset=Area.objects.all())
+    """Encounter filter."""
 
     class Meta:
+        """Class opts."""
+
         model = Encounter
         fields = {
             'area': ['exact', 'in'],
@@ -1007,44 +1022,60 @@ class EncounterViewSet(viewsets.ModelViewSet):
 
 
     # name
-    The derived name of an encountered entity (e.g. animal or logger) is the first associated ID, such as a turtle flipper tag.
+    The derived name of an encountered entity (e.g. animal or logger) is the first associated ID,
+    such as a turtle flipper tag.
+
     Filter options:
 
     * exact (case sensitive and case insensitive)
     * contains (case sensitive and case insensitive)
     * startswith / endwith
 
-    * [/api/1/encounters/?name=WA49138](/api/1/encounters/?name=WA49138) Encounters with name "WA49138"
-    * [/api/1/encounters/?name__startswith=WA49](/api/1/encounters/?name__startswith=WA49) Encounters with name starting with "WA49"
-    * [/api/1/encounters/?name__icontains=4913](/api/1/encounters/?name__icontains=4913) Encounters with name containing (case-insensitive) "4913"
+    * [/api/1/encounters/?name=WA49138](/api/1/encounters/?name=WA49138)
+      Encounters with name "WA49138"
+    * [/api/1/encounters/?name__startswith=WA49](/api/1/encounters/?name__startswith=WA49)
+      Encounters with name starting with "WA49"
+    * [/api/1/encounters/?name__icontains=4913](/api/1/encounters/?name__icontains=4913)
+      Encounters with name containing (case-insensitive) "4913"
 
     # source_id
     The source_id is constructed from coordinates, date, entity and other properties.
-    Filter options and examples: see name, substitute "name" with "source_id" and choose appropriate filter string values.
+    Filter options and examples: see name, substitute "name" with "source_id" and choose
+    appropriate filter string values.
 
     # comments
     Where data are captured digitally, the username is guessed from data collecctors' supplied names.
     This process sometimes goes wrong, and a log is kept in comments.
 
-    * [/api/1/encounters/?comments__icontains=QA](/api/1/encounters/?comments__icontains=QA) These encounters require proofreading of usernames.
+    * [/api/1/encounters/?comments__icontains=QA](/api/1/encounters/?comments__icontains=QA)
+      These encounters require proofreading of usernames.
 
     Process:
 
-    * Curators can filter Encounters with "TODO" in comments further down to their area, of which they know the data collection team.
-    * Where the username has no match, the curator can add a new user (with username: givenname_surname) at [/admin/users/user/](/admin/users/user/).
-    * Where there are multiple matches, the curator can set the correct user at [/admin/observations/encounter/](/admin/observations/encounter/)
-      plus the Encounter ID and then mark the Encounter as "proofread" to protect the change from being overwritten through repeated data imports.
+    * Curators can filter Encounters with "TODO" in comments further down to their area,
+      of which they know the data collection team.
+    * Where the username has no match, the curator can add a new user (with username: givenname_surname) at
+      [/admin/users/user/](/admin/users/user/).
+    * Where there are multiple matches, the curator can set the correct user at
+      [/admin/observations/encounter/](/admin/observations/encounter/)
+      plus the Encounter ID and then mark the Encounter as "proofread" to protect the change from
+      being overwritten through repeated data imports.
 
     # source
 
     * [/api/1/encounters/?source=direct](/api/1/encounters/?source=direct) (direct entry)
     * [/api/1/encounters/?source=paper](/api/1/encounters/?source=paper) (typed off datasheet)
     * [/api/1/encounters/?source=odk](/api/1/encounters/?source=odk) (imported from OpenDataKit digital data capture)
-    * [/api/1/encounters/?source=wamtram](/api/1/encounters/?source=wamtram) (imported from WAMTRAM turtle tagging database)
-    * [/api/1/encounters/?source=ntp-exmouth](/api/1/encounters/?source=ntp-exmouth) (imported from MS Access Exmouth tracks database)
-    * [/api/1/encounters/?source=ntp-broome](/api/1/encounters/?source=ntp-broome) (imported from MS Access Broome tracks database)
-    * [/api/1/encounters/?source=cet](/api/1/encounters/?source=cet) (imported from FileMaker Pro Cetacean strandings database)
-    * [/api/1/encounters/?source=pin](/api/1/encounters/?source=pin) (imported from FileMaker Pro Pinnniped strandings database)
+    * [/api/1/encounters/?source=wamtram](/api/1/encounters/?source=wamtram)
+      (imported from WAMTRAM turtle tagging database)
+    * [/api/1/encounters/?source=ntp-exmouth](/api/1/encounters/?source=ntp-exmouth)
+      (imported from MS Access Exmouth tracks database)
+    * [/api/1/encounters/?source=ntp-broome](/api/1/encounters/?source=ntp-broome)
+      (imported from MS Access Broome tracks database)
+    * [/api/1/encounters/?source=cet](/api/1/encounters/?source=cet)
+      (imported from FileMaker Pro Cetacean strandings database)
+    * [/api/1/encounters/?source=pin](/api/1/encounters/?source=pin)
+      (imported from FileMaker Pro Pinnniped strandings database)
 
     # encounter_type
 
@@ -1052,8 +1083,10 @@ class EncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/encounters/?encounter_type=tagging](/api/1/encounters/?encounter_type=tagging) (turtle tagging)
     * [/api/1/encounters/?encounter_type=inwater](/api/1/encounters/?encounter_type=inwater) (in water encounter)
     * [/api/1/encounters/?encounter_type=nest](/api/1/encounters/?encounter_type=nest) (track census, turtle nest)
-    * [/api/1/encounters/?encounter_type=tracks](/api/1/encounters/?encounter_type=tracks) (track census, track without nest)
-    * [/api/1/encounters/?encounter_type=tag-management](/api/1/encounters/?encounter_type=tag-management) (admin, tag or sensor asset management task)
+    * [/api/1/encounters/?encounter_type=tracks](/api/1/encounters/?encounter_type=tracks)
+      (track census, track without nest)
+    * [/api/1/encounters/?encounter_type=tag-management](/api/1/encounters/?encounter_type=tag-management)
+      (admin, tag or sensor asset management task)
     * [/api/1/encounters/?encounter_type=logger](/api/1/encounters/?encounter_type=logger) (tag or logger encounter)
     * [/api/1/encounters/?encounter_type=other](/api/1/encounters/?encounter_type=other) (anything not in above)
 
@@ -1061,9 +1094,12 @@ class EncounterViewSet(viewsets.ModelViewSet):
     # status
 
     * [/api/1/encounters/?status=new](/api/1/encounters/?status=new) (Records freshly created or imported)
-    * [/api/1/encounters/?status=proofread](/api/1/encounters/?status=proofread) (Records marked as proofread = as on paper datasheet)
-    * [/api/1/encounters/?status=curated](/api/1/encounters/?status=curated) (Records marked as curated = as true as we can make it)
-    * [/api/1/encounters/?status=published](/api/1/encounters/?status=published) (Records marked ready for public release)
+    * [/api/1/encounters/?status=proofread](/api/1/encounters/?status=proofread)
+      (Records marked as proofread = as on paper datasheet)
+    * [/api/1/encounters/?status=curated](/api/1/encounters/?status=curated)
+      (Records marked as curated = as true as we can make it)
+    * [/api/1/encounters/?status=published](/api/1/encounters/?status=published)
+      (Records marked ready for public release)
 
     # location_accuracy
 
@@ -1087,14 +1123,17 @@ class EncounterViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
     filter_class = EncounterFilter
 
-    def pre_latex(view, t_dir, data):
+    def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
 
 class TurtleNestEncounterFilter(filters.FilterSet):
+    """TurtleNestEncounter filter."""
 
     class Meta:
+        """Class opts."""
+
         model = TurtleNestEncounter
         fields = {
             'area': ['exact', 'in'],
@@ -1127,10 +1166,14 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
 
     # nest_age
-    * [/api/1/turtle-nest-encounters/?nest_age=fresh](/api/1/turtle-nest-encounters/?nest_age=fresh) observed in the morning, made the night before (same turtle date)
-    * [/api/1/turtle-nest-encounters/?nest_age=old](/api/1/turtle-nest-encounters/?nest_age=old) older than a day (previous turtle date)
-    * [/api/1/turtle-nest-encounters/?nest_age=unknown](/api/1/turtle-nest-encounters/?nest_age=unknown) unknown
-    * [/api/1/turtle-nest-encounters/?nest_age=missed](/api/1/turtle-nest-encounters/?nest_age=missed) missed turtle during turtle tagging, track observed and made within same night (same turtle date)
+    * [/api/1/turtle-nest-encounters/?nest_age=fresh](/api/1/turtle-nest-encounters/?nest_age=fresh)
+      observed in the morning, made the night before (same turtle date)
+    * [/api/1/turtle-nest-encounters/?nest_age=old](/api/1/turtle-nest-encounters/?nest_age=old)
+      older than a day (previous turtle date)
+    * [/api/1/turtle-nest-encounters/?nest_age=unknown](/api/1/turtle-nest-encounters/?nest_age=unknown)
+      unknown
+    * [/api/1/turtle-nest-encounters/?nest_age=missed](/api/1/turtle-nest-encounters/?nest_age=missed)
+      missed turtle during turtle tagging, track observed and made within same night (same turtle date)
 
     # nest_type
     * [/api/1/turtle-nest-encounters/?nest_type=track-not-assessed](/api/1/turtle-nest-encounters/?nest_type=track-not-assessed) track, not checked for nest
@@ -1173,25 +1216,29 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     filter_class = TurtleNestEncounterFilter
     pagination_class = MyGeoJsonPagination
 
-    def pre_latex(view, t_dir, data):
+    def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
 
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
-    """AnimalEncounter view set.\
+    """AnimalEncounter view set.
 
     # Filters
     In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
 
 
     # taxon
-    * [/api/1/turtle-nest-encounters/?taxon=Cheloniidae](/api/1/turtle-nest-encounters/?taxon=Cheloniidae) Marine Turtles
-    * [/api/1/turtle-nest-encounters/?taxon=Cetacea](/api/1/turtle-nest-encounters/?taxon=Cetacea) Whales and Dolphins
+    * [/api/1/turtle-nest-encounters/?taxon=Cheloniidae](/api/1/turtle-nest-encounters/?taxon=Cheloniidae)
+      Marine Turtles
+    * [/api/1/turtle-nest-encounters/?taxon=Cetacea](/api/1/turtle-nest-encounters/?taxon=Cetacea)
+      Whales and Dolphins
     * [/api/1/turtle-nest-encounters/?taxon=Pinnipedia](/api/1/turtle-nest-encounters/?taxon=Pinnipedia) Seals
     * [/api/1/turtle-nest-encounters/?taxon=Sirenia](/api/1/turtle-nest-encounters/?taxon=Sirenia) Dugongs
-    * [/api/1/turtle-nest-encounters/?taxon=Elasmobranchii](/api/1/turtle-nest-encounters/?taxon=Elasmobranchii) Sharks and Rays
-    * [/api/1/turtle-nest-encounters/?taxon=Hydrophiinae](/api/1/turtle-nest-encounters/?taxon=Hydrophiinae) Sea snakes and kraits
+    * [/api/1/turtle-nest-encounters/?taxon=Elasmobranchii](/api/1/turtle-nest-encounters/?taxon=Elasmobranchii)
+      Sharks and Rays
+    * [/api/1/turtle-nest-encounters/?taxon=Hydrophiinae](/api/1/turtle-nest-encounters/?taxon=Hydrophiinae)
+      Sea snakes and kraits
 
     # species
     * [/api/1/turtle-nest-encounters/?species=natator-depressus](/api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
@@ -1205,8 +1252,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     # Other filters
     Other enabled filters (typically these categories will be used later during analysis):
 
-    'health', 'sex', 'maturity',
-    'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
+    'health', 'sex', 'maturity', 'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
     'cause_of_death', 'cause_of_death_confidence'
 
     # habitat
@@ -1232,7 +1278,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
     # filter_backends = (CustomBBoxFilter, filters.DjangoFilterBackend, )
 
-    def pre_latex(view, t_dir, data):
+    def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
@@ -1250,7 +1296,7 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'source_id', )
     pagination_class = MyGeoJsonPagination
 
-    def pre_latex(view, t_dir, data):
+    def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
@@ -1423,8 +1469,11 @@ class TaxonSerializer(serializers.ModelSerializer):
 
 # Taxonomy: Filters -------------------------------------------------------------------#
 class HbvNameFilter(filters.FilterSet):
+    """HbvName filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvName
         fields = {
             'rank_name': '__all__',
@@ -1483,8 +1532,11 @@ class HbvNameFilter(filters.FilterSet):
 
 
 class HbvSupraFilter(filters.FilterSet):
+    """HbvSupra filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvSupra
         fields = {
             'ogc_fid': '__all__',
@@ -1496,8 +1548,11 @@ class HbvSupraFilter(filters.FilterSet):
 
 
 class HbvGroupFilter(filters.FilterSet):
+    """HbvGroup filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvGroup
         fields = {
             'ogc_fid': '__all__',
@@ -1512,8 +1567,11 @@ class HbvGroupFilter(filters.FilterSet):
 
 
 class HbvFamilyFilter(filters.FilterSet):
+    """HbvFamily filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvFamily
         fields = {
             "ogc_fid": '__all__',
@@ -1545,8 +1603,11 @@ class HbvFamilyFilter(filters.FilterSet):
 
 
 class HbvGenusFilter(filters.FilterSet):
+    """HbvGenus filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvGenus
         fields = {
             'ogc_fid': '__all__',
@@ -1571,8 +1632,11 @@ class HbvGenusFilter(filters.FilterSet):
 
 
 class HbvSpeciesFilter(filters.FilterSet):
+    """HbvSpecies filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvSpecies
         fields = {
             'ogc_fid': '__all__',
@@ -1611,8 +1675,11 @@ class HbvSpeciesFilter(filters.FilterSet):
 
 
 class HbvVernacularFilter(filters.FilterSet):
+    """HbvVernacular filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvVernacular
         fields = {
             'ogc_fid': '__all__',
@@ -1630,8 +1697,11 @@ class HbvVernacularFilter(filters.FilterSet):
 
 
 class HbvXrefFilter(filters.FilterSet):
+    """HbvXref filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvXref
         fields = {
             'ogc_fid': '__all__',
@@ -1650,8 +1720,11 @@ class HbvXrefFilter(filters.FilterSet):
 
 
 class HbvParentFilter(filters.FilterSet):
+    """HbvParent filter."""
 
     class Meta:
+        """Class opts."""
+
         model = HbvParent
         fields = {
             'ogc_fid': '__all__',
@@ -1665,8 +1738,11 @@ class HbvParentFilter(filters.FilterSet):
 
 
 class TaxonFilter(filters.FilterSet):
+    """Taxon filter."""
 
     class Meta:
+        """Class opts."""
+
         model = Taxon
         fields = {
             'name_id': '__all__',
@@ -1677,7 +1753,49 @@ class TaxonFilter(filters.FilterSet):
 
 
 # Taxonomy: Viewsets -------------------------------------------------------------------#
-class HbvNameViewSet(viewsets.ModelViewSet):
+class BatchUpsertViewSet(viewsets.ModelViewSet):
+    """A ModelViewSet with custom create().
+
+    Accepts request.data to be either a GeoJSON feature property dict,
+    or a list of GeoJSON feature property dicts.
+
+    `model` and `uid_field` are used to determine whether the object
+    already exists. The `uid_field` can be the PK or any other
+    unique field of the given `model`.
+
+    Responds with status 200 if all went well, else 400.
+    """
+
+    pagination_class = pagination.LimitOffsetPagination
+    model = None
+    uid_field = None
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+        dd = {self.uid_field: data[self.uid_field]}
+        obj, created = self.model.objects.get_or_create(**dd)
+        self.model.objects.filter(**dd).update(**data)
+        return RestResponse(data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
+        else:
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HbvNameViewSet(BatchUpsertViewSet):
     """View set for HbvName.
 
     # Custom features
@@ -1695,12 +1813,14 @@ class HbvNameViewSet(viewsets.ModelViewSet):
 
     # Search and filter
 
-    The following fields offer search filters `exact`, `iexact`, `in`, `startswith`, `istartswith`, `contains`, `icontains`:
+    The following fields offer search filters `exact`, `iexact`, `in`, `startswith`,
+    `istartswith`, `contains`, `icontains`:
 
     `rank_name`,  `is_current`, `naturalised_status`, ` naturalised_certainty`,
     `is_eradicated`, `informal`, `name`, `name_id`, `full_name`, `vernacular`, `all_vernaculars`, `author`.
 
-    Learn more about filter usage at [django-rest-framework-filters](https://github.com/philipn/django-rest-framework-filters).
+    Learn more about filter usage at
+    [django-rest-framework-filters](https://github.com/philipn/django-rest-framework-filters).
 
     # Search names
     Search `name`, `name_id`, `full_name`, `vernacular`, `all_vernaculars`, `author` as follows:
@@ -1712,7 +1832,8 @@ class HbvNameViewSet(viewsets.ModelViewSet):
 
     # Taxonomic rank
 
-    * [/api/1/taxonomy/?rank_name=Kingdom](/api/1/taxonomy/?rank_name=Kingdom) Taxa of exact, case-sensitive rank_name "Kingdom".
+    * [/api/1/taxonomy/?rank_name=Kingdom](/api/1/taxonomy/?rank_name=Kingdom)
+      Taxa of exact, case-sensitive rank_name "Kingdom".
     * [/api/1/taxonomy/?rank_name__startswith=King](/api/1/taxonomy/?rank_name__startswith=King)
       Taxa of rank_names starting with the exact, case-sensitive phrase "King".
     * Other ranks available: Division, Phylum, Class, Subclass, Order, Family, Subfamily,
@@ -1756,75 +1877,7 @@ class HbvNameViewSet(viewsets.ModelViewSet):
     uid_field = "name_id"
     model = HbvName
 
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-
-        obj, created = self.model.objects.get_or_create(
-            name_id=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
-
 router.register("names", HbvNameViewSet)
-
-
-class BatchUpsertViewSet(viewsets.ModelViewSet):
-    """A ModelViewSet with custom create().
-
-    Accepts request.data to be either a GeoJSON feature property dict,
-    or a list of GeoJSON feature property dicts.
-
-    `model` and `uid_field` are used to determine whether the object
-    already exists. The `uid_field` can be the PK or any other
-    unique field of the given `model`.
-
-    Responds with status 200 if all went well, else 400.
-    """
-
-    pagination_class = pagination.LimitOffsetPagination
-    model = None
-    uid_field = None
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-        dd = {self.uid_field: data[self.uid_field]}
-        obj, created = self.model.objects.get_or_create(**dd)
-        self.model.objects.filter(**dd).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class HbvSupraViewSet(BatchUpsertViewSet):
@@ -1836,29 +1889,6 @@ class HbvSupraViewSet(BatchUpsertViewSet):
     uid_field = "supra_code"
     model = HbvSupra
 
-    # def create_one(self, data):
-    #     """POST: Create or update exactly one model instance."""
-    #     dd = {self.uid_field: data[self.uid_field]}
-    #     obj, created = self.model.objects.get_or_create(**dd)
-    #     self.model.objects.filter(**dd).update(**data)
-    #     return RestResponse(data, status=status.HTTP_200_OK)
-
-    # def create(self, request):
-    #     """POST: Create or update one or many model instances.
-
-    #     request.data must be:
-
-    #     * a GeoJSON feature property dict, or
-    #     * a list of GeoJSON feature property dicts.
-    #     """
-    #     if self.uid_field in request.data:
-    #         res = self.create_one(request.data)
-    #         return res
-    #     elif type(request.data) == list and self.uid_field in request.data[1]:
-    #         res = [self.create_one(data) for data in request.data]
-    #         return RestResponse(request.data, status=status.HTTP_200_OK)
-    #     else:
-    #         return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("supra", HbvSupraViewSet)
 
@@ -1872,262 +1902,77 @@ class HbvGroupViewSet(BatchUpsertViewSet):
     model = HbvGroup
     uid_field = "name_id"
 
-    # def create_one(self, data):
-    #     """POST: Create or update exactly one model instance."""
-
-    #     obj, created = self.model.objects.get_or_create(
-    #         name_id=data[self.uid_field], defaults=data)
-    #     if not created:
-    #         self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
-    #     return RestResponse(data, status=status.HTTP_200_OK)
-
-    # def create(self, request):
-    #     """POST: Create or update one or many model instances.
-
-    #     request.data must be:
-
-    #     * a GeoJSON feature property dict, or
-    #     * a list of GeoJSON feature property dicts.
-    #     """
-    #     if self.uid_field in request.data:
-    #         res = self.create_one(request.data)
-    #         return res
-    #     elif type(request.data) == list and self.uid_field in request.data[1]:
-    #         res = [self.create_one(data) for data in request.data]
-    #         return RestResponse(request.data, status=status.HTTP_200_OK)
-    #     else:
-    #         return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
-
 router.register("groups", HbvGroupViewSet)
 
 
-class HbvFamilyViewSet(viewsets.ModelViewSet):
+class HbvFamilyViewSet(BatchUpsertViewSet):
     """View set for HbvFamily. See HBV Names for details and usage examples."""
 
     queryset = HbvFamily.objects.all()
     serializer_class = HbvFamilySerializer
     filter_class = HbvFamilyFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_field = "name_id"
     model = HbvFamily
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-
-        obj, created = self.model.objects.get_or_create(
-            name_id=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("families", HbvFamilyViewSet)
 
 
-class HbvGenusViewSet(viewsets.ModelViewSet):
+class HbvGenusViewSet(BatchUpsertViewSet):
     """View set for HbvGenus. See HBV Names for details and usage examples."""
 
     queryset = HbvGenus.objects.all()
     serializer_class = HbvGenusSerializer
     filter_class = HbvGenusFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_field = "name_id"
     model = HbvGenus
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-
-        obj, created = self.model.objects.get_or_create(
-            name_id=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("genera", HbvGenusViewSet)
 
 
-class HbvSpeciesViewSet(viewsets.ModelViewSet):
+class HbvSpeciesViewSet(BatchUpsertViewSet):
     """View set for HbvSpecies. See HBV Names for details and usage examples."""
 
     queryset = HbvSpecies.objects.all()
     serializer_class = HbvSpeciesSerializer
     filter_class = HbvSpeciesFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_field = "name_id"
     model = HbvSpecies
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-
-        obj, created = self.model.objects.get_or_create(
-            name_id=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("species", HbvSpeciesViewSet)
 
 
-class HbvVernacularViewSet(viewsets.ModelViewSet):
+class HbvVernacularViewSet(BatchUpsertViewSet):
     """View set for HbvVernacular. See HBV Names for details and usage examples."""
 
     queryset = HbvVernacular.objects.all()
     serializer_class = HbvVernacularSerializer
     filter_class = HbvVernacularFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_field = "ogc_fid"
     model = HbvVernacular
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-        obj, created = self.model.objects.get_or_create(
-            ogc_fid=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(ogc_fid=data[self.uid_field]).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("vernaculars", HbvVernacularViewSet)
 
 
-class HbvXrefViewSet(viewsets.ModelViewSet):
+class HbvXrefViewSet(BatchUpsertViewSet):
     """View set for HbvXref. See HBV Names for details and usage examples."""
 
     queryset = HbvXref.objects.all()
     serializer_class = HbvXrefSerializer
     filter_class = HbvXrefFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_field = "xref_id"
     model = HbvXref
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-        obj, created = self.model.objects.get_or_create(
-            xref_id=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(xref_id=data[self.uid_field]).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("xrefs", HbvXrefViewSet)
 
 
-class HbvParentViewSet(viewsets.ModelViewSet):
+class HbvParentViewSet(BatchUpsertViewSet):
     """View set for HbvParent. See HBV Names for details and usage examples."""
 
     queryset = HbvParent.objects.all()
     serializer_class = HbvParentSerializer
     filter_class = HbvParentFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_field = "ogc_fid"
     model = HbvParent
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-        obj, created = self.model.objects.get_or_create(
-            ogc_fid=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(ogc_fid=data[self.ogc_fid]).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("parents", HbvParentViewSet)
 
@@ -2138,7 +1983,6 @@ class TaxonViewSet(viewsets.ModelViewSet):
     queryset = Taxon.objects.all()
     serializer_class = TaxonSerializer
     filter_class = TaxonFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_field = "name_id"
     model = Taxon
 
