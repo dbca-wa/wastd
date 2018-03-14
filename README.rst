@@ -81,9 +81,21 @@ Moved to `Live reloading and SASS compilation`_.
 .. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
 
 
+**TODO merge with maintainer docs.**
+
 Deployment
 ----------
-First, create a postgis database on an available database cluster.
+First, create a postgis database on an available database cluster.::
+
+    export CLUSTERNAME=sdis
+    export CLUSTERPORT=5444
+    export PG_VERSION=10
+    sudo -u postgres pg_createcluster -p $CLUSTERPORT $PG_VERSION $CLUSTERNAME --start && \
+    sudo -u postgres createuser -s $CLUSTERNAME -p $CLUSTERPORT -P && \
+    sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /etc/postgresql/$PG_VERSION/$CLUSTERNAME/postgresql.conf && \
+    sed -i "s/#wal_level = minimal/wal_level = archive/" /etc/postgresql/$PG_VERSION/$CLUSTERNAME/postgresql.conf && \
+    sed -i "s/127.0.0.1\/32/10.0.0.0\/8/" /etc/postgresql/$PG_VERSION/$CLUSTERNAME/pg_hba.conf && \
+    sudo systemctl restart postgresql@$PG_VERSION-$CLUSTERNAME restart
 
 Create a virtualenv project, clone this repo and pip install the requirements::
 
@@ -128,3 +140,21 @@ set permissions to 775 for directories, 664 for files::
 
 This lets the server admin run commands and edit files
 as long as the admin is in the same group as the webserver, e.g. www-data.
+
+
+Data migration
+--------------
+Restoring a snapshot of the production database to a development environment::
+
+    (wastd)florianm@aws-eco-001:~/projects/wastd$ pg_dump -h localhost -p 5443 -U sdis -Fc wastd_8220 > data/wastd.dump
+    (wastd)florianm@aws-eco-001:~/projects/wastd$ rsync -Pavvr data/wastd.dump kens-xenmate-dev:/home/CORPORATEICT/florianm
+    (wastd)florianm@aws-eco-001:~/projects/wastd$ rsync -Pavvr wastd/media kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd/media
+
+    # LOCAL
+    ./manage.py dbshell
+    # drop database wastd; create database wastd owner sdis; \q
+    (wastd)florianm@kens-awesome-001:~/projects/wastd⟫ rsync -Pavvr kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd.dump data/
+    (wastd)florianm@kens-awesome-001:~/projects/wastd⟫ pg_restore -h localhost -p 5444 -U sdis -d wastd < data/wastd.dump
+    (wastd)florianm@kens-awesome-001:~/projects/wastd⟫ rsync -Pavvr kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd/media wastd/media
+
+Double check file permissions after transfer.

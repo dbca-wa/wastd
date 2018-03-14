@@ -39,6 +39,7 @@ DJANGO_APPS = (
     'django.contrib.staticfiles',
     'grappelli',
     'django.contrib.admin',
+    'django.contrib.postgres',
 )
 
 THIRD_PARTY_APPS = (

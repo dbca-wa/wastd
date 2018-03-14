@@ -8,7 +8,7 @@ import os
 from confy import env
 from datetime import datetime
 from dateutil import parser
-# from pprint import pprint
+# from plogger.debug import plogger.debug
 import logging
 import requests
 import shutil
@@ -180,15 +180,11 @@ def make_user(d):
     return usr
 
 
-def guess_user(un, default_username="florianm"):
+def guess_user(un, default_username="FlorianM"):
     """Find exact or fuzzy match of username, or create User.
 
-    In order, return:
-
-    * A user with username `un`, or
-    * the first or only match of a user with username `icontain`ing the first
-      five characters of `un`, or
-    * a new user with username `un`.
+    Returns the first or only trigram match of username
+    or a new user with username `un`.
 
     Arguments
 
@@ -199,42 +195,29 @@ def guess_user(un, default_username="florianm"):
     A dict of
 
     user: An instance of settings.AUTH_USER_MODEL
-    message: The deug message
+    message: The debug message
     """
     usermodel = get_user_model()
-
-    if un is None:
-        un = default_username
-
-    logger.info("Guessing User for {0}...".format(un))
+    username = default_username if not un else lowersnake(un)
 
     try:
-        usr = usermodel.objects.get(username=un.replace(" ", "_").replace(".", "_"))
-        msg = "[guess_user][exact match] Username {0} found by exact match: returning {1}"
-
+        usr = usermodel.objects.get(username=username)
+        msg = "[guess_user][OK] Exact match for {0} is {1}."
     except ObjectDoesNotExist:
-        try:
-            usrs = usermodel.objects.filter(username__icontains=un[0:4])
+        usrs = usermodel.objects.filter(username__trigram_similar=username)
+        if usrs.count() == 0:
+            usr = usermodel.objects.create(username=un, name=un)
+            msg = "[guess_user][CREATED] {0} not found. Created {1}."
+        elif usrs.count() == 1:
+            usr = usrs[0]
+            msg = "[guess_user][OK] Only match for {0} is {1}."
+        else:
+            usr = usrs[0]
+            msg = "[guess_user][NEEDS QA] Best match for {0} is {1}."
 
-            if usrs.count() == 0:
-                usr = usermodel.objects.create(username=un, name=un)
-                msg = "[guess_user][NEEDS QA][not found] Username {0} not found: created {1}"
-
-            elif usrs.count() == 1:
-                usr = usrs[0]
-                msg = "[guess_user][NEEDS QA][fuzzy match] Username {0} found by fuzzy match: only match is {1}"
-                usr = usrs[0]
-
-            else:
-                usr = usrs[0]
-                msg = "[guess_user][NEEDS QA][multiple matches] Username {0} returned multiple matches, choosing {1}"
-
-        except TypeError:
-            usr = usermodel.objects.first()
-            msg = "[guess_user][NEEDS QA][default] Username not given, using admin {1}"
-
-    logger.info(msg.format(un, usr))
-    return {'user': usr, 'message': msg.format(un, usr)}
+    message = msg.format(username, usr)
+    logger.info(message)
+    return {'user': usr, 'message': message}
 
 
 def map_values(d):
@@ -325,23 +308,23 @@ def dl_photo(photo_id, photo_url, photo_filename):
     photo_id The WAStD source_id of the record, to which this photo belongs
     photo_url A URL to download the photo from
     """
-    print("  Downloading photo...")
+    logger.debug("  Downloading photo...")
     pdir = make_photo_foldername(photo_id)
     if not os.path.exists(pdir):
-        print("  Creating folder {0}".format(pdir))
+        logger.debug("  Creating folder {0}".format(pdir))
         os.mkdir(pdir)
     else:
-        print(("  Found folder {0}".format(pdir)))
+        logger.debug(("  Found folder {0}".format(pdir)))
     pname = os.path.join(pdir, photo_filename)
 
     if not os.path.exists(pname):
-        print("  Downloading file {0}...".format(pname))
+        logger.debug("  Downloading file {0}...".format(pname))
         response = requests.get(photo_url, stream=True)
         with open(pname, 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
         del response
     else:
-        print("  Found file {0}".format(pname))
+        logger.debug("  Found file {0}".format(pname))
 
 
 def handle_photo(p, e, title="Track", enc=True):
@@ -356,17 +339,17 @@ def handle_photo(p, e, title="Track", enc=True):
         Expedition / FieldMediaAttachment
     """
     # Does the file exist locally?
-    print(
+    logger.debug(
         "  Creating photo attachment at filepath"
         " {0} for encounter {1} with title {2}...".format(p, e.id, title))
 
     if os.path.exists(p):
-        print("  File {0} exists".format(p))
+        logger.debug("  File {0} exists".format(p))
         with open(p, 'rb') as photo:
             f = File(photo)
             # Is the file a dud?
             if f.size > 0:
-                print("  File size is {0}".format(f.size))
+                logger.debug("  File size is {0}".format(f.size))
 
                 if enc:
 
@@ -392,11 +375,11 @@ def handle_photo(p, e, title="Track", enc=True):
 
                 # Update the file
                 m.attachment.save(p, f, save=True)
-                print("  Photo {0}: {1}".format(action, m))
+                logger.debug("  Photo {0}: {1}".format(action, m))
             else:
-                print("  [ERROR] zero size file {0}".format(p))
+                logger.debug("  [ERROR] zero size file {0}".format(p))
     else:
-        print("  [ERROR] missing file {0}".format(p))
+        logger.debug("  [ERROR] missing file {0}".format(p))
 
 
 def handle_media_attachment(e, photo_dict, title="Photo"):
@@ -413,13 +396,13 @@ def handle_media_attachment(e, photo_dict, title="Photo"):
     }
     """
     if photo_dict is None:
-        print("  ODK collect photo not taken, skipping {0}".format(title))
+        logger.debug("  ODK collect photo not taken, skipping {0}".format(title))
         return
 
     pdir = make_photo_foldername(e.source_id)
     pname = os.path.join(pdir, photo_dict["filename"])
-    print("  Photo dir is {0}".format(pdir))
-    print("  Photo filepath is {0}".format(pname))
+    logger.debug("  Photo dir is {0}".format(pdir))
+    logger.debug("  Photo filepath is {0}".format(pname))
 
     dl_photo(
         e.source_id,
@@ -443,13 +426,13 @@ def handle_fieldmedia_attachment(e, photo_dict, title="Photo"):
     }
     """
     if photo_dict is None:
-        print("  ODK collect photo not taken, skipping {0}".format(title))
+        logger.debug("  ODK collect photo not taken, skipping {0}".format(title))
         return
 
     pdir = make_photo_foldername(e.source_id)
     pname = os.path.join(pdir, photo_dict["filename"])
-    print("  Photo dir is {0}".format(pdir))
-    print("  Photo filepath is {0}".format(pname))
+    logger.debug("  Photo dir is {0}".format(pdir))
+    logger.debug("  Photo filepath is {0}".format(pname))
 
     dl_photo(
         e.source_id,
@@ -479,7 +462,7 @@ def handle_turtlenestdistobs(d, e, m):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    print("  Creating TurtleNestDisturbanceObservation...")
+    logger.debug("  Creating TurtleNestDisturbanceObservation...")
     dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(
         encounter=e,
         disturbance_cause=d["disturbance_cause"],
@@ -489,7 +472,7 @@ def handle_turtlenestdistobs(d, e, m):
     )
     dd.save()
     action = "created" if created else "updated"
-    print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
+    logger.debug("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
     handle_media_attachment(
         e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause))
@@ -526,7 +509,7 @@ def handle_turtlenestdistobs31(d, e):
 
     e The related TurtleNestEncounter (must exist)
     """
-    print("  Creating TurtleNestDisturbanceObservation...")
+    logger.debug("  Creating TurtleNestDisturbanceObservation...")
     dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(
         encounter=e,
         disturbance_cause=d["disturbance_cause"],
@@ -537,7 +520,7 @@ def handle_turtlenestdistobs31(d, e):
         dd.disturbance_severity = d["disturbance_severity"]
     dd.save()
     action = "created" if created else "updated"
-    print("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
+    logger.debug("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
     handle_media_attachment(
         e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause))
@@ -580,7 +563,7 @@ def handle_turtlenestobs(d, e, m):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    print("  Creating TurtleNestObservation...")
+    logger.debug("  Creating TurtleNestObservation...")
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
         nest_position=m["habitat"][d["habitat"]],
@@ -596,7 +579,7 @@ def handle_turtlenestobs(d, e, m):
     )
     dd.save()
     action = "created" if created else "updated"
-    print("  TurtleNestObservation {0}: {1}".format(action, dd))
+    logger.debug("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     for idx, ep in enumerate(d["egg_photos"]):
         handle_media_attachment(e, ep, title="Egg photo {0}".format(idx + 1))
@@ -638,7 +621,7 @@ def handle_turtlenestobs31(d, e):
 
     e The related TurtleNestEncounter (must exist)
     """
-    print("  Creating TurtleNestObservation...")
+    logger.debug("  Creating TurtleNestObservation...")
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
         nest_position=d["habitat"],
@@ -654,7 +637,7 @@ def handle_turtlenestobs31(d, e):
     )
     dd.save()
     action = "created" if created else "updated"
-    print("  TurtleNestObservation {0}: {1}".format(action, dd))
+    logger.debug("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     if "egg_photos" in d:
         [handle_media_attachment(
@@ -683,29 +666,28 @@ def handle_turtlenesttagobs(d, e, m=None):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    print("[handle_turtlenesttagobs] start")
     if (d["flipper_tag_id"] is None and
             d["date_nest_laid"] is None and
             d["tag_label"] is None):
         return None
 
     else:
-        print("[handle_turtlenesttagobs] looks like we have required fields")
+        logger.info("[handle_turtlenesttagobs] looks like we have required fields")
         dd, created = NestTagObservation.objects.get_or_create(
             encounter=e,
             status=m["tag_status"][d["status"]] if m else d["status"],
             flipper_tag_id=d["flipper_tag_id"],
             date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
             tag_label=d["tag_label"])
-        print("[handle_turtlenesttagobs] created new NTO")
+        logger.debug("[handle_turtlenesttagobs] created new NTO")
         dd.save()
-        print("[handle_turtlenesttagobs] saved NTO")
+        logger.debug("[handle_turtlenesttagobs] saved NTO")
         action = "created" if created else "updated"
-        print("  NestTagObservation {0}: {1}".format(action, dd))
+        logger.debug("  NestTagObservation {0}: {1}".format(action, dd))
 
-    print("[handle_turtlenesttagobs] handle photo")
+    logger.debug("[handle_turtlenesttagobs] handle photo")
     handle_media_attachment(e, d["photo_tag"], title="Nest tag photo")
-    print("[handle_turtlenesttagobs] done!")
+    logger.debug("[handle_turtlenesttagobs] done!")
     return None
 
 
@@ -722,7 +704,7 @@ def handle_hatchlingmorphometricobs(d, e):
         }
     e The related TurtleNestEncounter (must exist)
     """
-    print("  Creating Hatchling Obs...")
+    logger.debug("  Creating Hatchling Obs...")
     scl = int(d["straight_carapace_length_mm"]) if d["straight_carapace_length_mm"] else None
     scw = int(d["straight_carapace_width_mm"]) if d["straight_carapace_width_mm"] else None
     bwg = int(d["body_weight_g"]) if d["body_weight_g"] else None
@@ -735,7 +717,7 @@ def handle_hatchlingmorphometricobs(d, e):
     )
     dd.save()
     action = "created" if created else "updated"
-    print("  Hatchling Obs {0}: {1}".format(action, dd))
+    logger.debug("  Hatchling Obs {0}: {1}".format(action, dd))
 
 
 def handle_loggerenc(d, e):
@@ -761,7 +743,7 @@ def handle_loggerenc(d, e):
         }
     e The related TurtleNestEncounter (must exist)
     """
-    print("  Creating LoggerEncounter...")
+    logger.debug("  Creating LoggerEncounter...")
     dd, created = LoggerEncounter.objects.get_or_create(
         source=e.source,
         source_id="{0}-{1}".format(e.source_id, d["logger_id"]))
@@ -776,13 +758,13 @@ def handle_loggerenc(d, e):
 
     dd.save()
     action = "created" if created else "updated"
-    print("  LoggerEncounter {0}: {1}".format(action, dd))
+    logger.debug("  LoggerEncounter {0}: {1}".format(action, dd))
 
     handle_media_attachment(dd, d["photo_logger"], title="Logger ID")
 
     # If e has NestTagObservation, replicate NTO on LoggerEncounter
     if e.observation_set.instance_of(NestTagObservation).exists():
-        print("  TurtleNestEncounter has nest tag, replicating nest tag observation on LoggerEncounter...")
+        logger.debug("  TurtleNestEncounter has nest tag, replicating nest tag observation on LoggerEncounter...")
         nto = e.observation_set.instance_of(NestTagObservation).first()
         NestTagObservation.objects.get_or_create(
             encounter=e,
@@ -793,7 +775,7 @@ def handle_loggerenc(d, e):
         )
         nto.save()
         action = "created" if created else "updated"
-        print("  NestTag Observation {0} for {1}".format(action, nto))
+        logger.debug("  NestTag Observation {0} for {1}".format(action, nto))
 
 
 def handle_turtlenestdisttallyobs(d, e, m=None):
@@ -811,7 +793,7 @@ def handle_turtlenestdisttallyobs(d, e, m=None):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    print("  Found disturbance observation...")
+    logger.debug("  Found disturbance observation...")
 
     dd, created = TurtleNestDisturbanceTallyObservation.objects.get_or_create(
         encounter=e,
@@ -822,7 +804,7 @@ def handle_turtlenestdisttallyobs(d, e, m=None):
     )
     dd.save()
     action = "created" if created else "updated"
-    print("  Disturbance observation {0}: {1}".format(action, dd))
+    logger.debug("  Disturbance observation {0}: {1}".format(action, dd))
     e.save()  # cache distobs in HTML
 
 
@@ -869,11 +851,11 @@ def import_one_record_tt034(r, m):
         new_data["disturbance"] = r["disturbance"]
 
     if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
+        logger.debug("Updating unchanged existing record {0}...".format(src_id))
         TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = TurtleNestEncounter.objects.get(source_id=src_id)
     else:
-        print("Creating new record {0}...".format(src_id))
+        logger.debug("Creating new record {0}...".format(src_id))
         e = TurtleNestEncounter.objects.create(**new_data)
 
     e.save()
@@ -904,7 +886,7 @@ def import_one_record_tt034(r, m):
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -953,11 +935,11 @@ def import_one_record_tt036(r, m):
         new_data["disturbance"] = r["disturbance"]
 
     if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
+        logger.debug("Updating unchanged existing record {0}...".format(src_id))
         TurtleNestEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = TurtleNestEncounter.objects.get(source_id=src_id)
     else:
-        print("Creating new record {0}...".format(src_id))
+        logger.debug("Creating new record {0}...".format(src_id))
         e = TurtleNestEncounter.objects.create(**new_data)
 
     e.save()
@@ -991,7 +973,7 @@ def import_one_record_tt036(r, m):
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1027,18 +1009,18 @@ def import_one_record_fs03(r, m):
     )
 
     if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
+        logger.debug("Updating unchanged existing record {0}...".format(src_id))
         Encounter.objects.filter(source_id=src_id).update(**new_data)
         e = Encounter.objects.get(source_id=src_id)
     else:
-        print("Creating new record {0}...".format(src_id))
+        logger.debug("Creating new record {0}...".format(src_id))
         e = Encounter.objects.create(**new_data)
 
     e.save()
 
     handle_turtlenestdistobs31(r, e)
 
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1235,21 +1217,21 @@ def import_one_record_mwi01(r, m):
     )
 
     if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
+        logger.debug("Updating unchanged existing record {0}...".format(src_id))
         AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = AnimalEncounter.objects.get(source_id=src_id)
     else:
-        print("Creating new record {0}...".format(src_id))
+        logger.debug("Creating new record {0}...".format(src_id))
         e = AnimalEncounter.objects.create(**new_data)
 
     e.save()
 
     if r["checked_for_injuries"]:
-        print("  Damage seen - TODO")
+        logger.debug("  Damage seen - TODO")
         # "damage_observation": [],
 
     if r["samples_taken"]:
-        print("  Samples taken - TODO")
+        logger.debug("  Samples taken - TODO")
 
     # "tag_observation": [],
 
@@ -1272,7 +1254,7 @@ def import_one_record_mwi01(r, m):
     handle_media_attachment(e, r["photo_head_side"], title="Head side")
     handle_media_attachment(e, r["photo_head_front"], title="Head front")
 
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1332,11 +1314,11 @@ def import_one_record_sv01(r, m):
     )
 
     if Survey.objects.filter(source_id=src_id).exists():
-        print("Updating unchanged existing record {0}...".format(src_id))
+        logger.debug("Updating unchanged existing record {0}...".format(src_id))
         Survey.objects.filter(source_id=src_id).update(**new_data)
         e = Survey.objects.get(source_id=src_id)
     else:
-        print("Creating new record {0}...".format(src_id))
+        logger.debug("Creating new record {0}...".format(src_id))
         e = Survey.objects.create(**new_data)
 
     e.save()
@@ -1345,7 +1327,7 @@ def import_one_record_sv01(r, m):
     handle_media_attachment(e, r["photo_start"], title="Site conditions at start of suvey")
     handle_media_attachment(e, r["photo_finish"], title="Site conditions at end of suvey")
 
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1359,7 +1341,7 @@ def make_tallyobs(encounter, species, nest_age, nest_type, tally_number):
         nest_type=nest_type,
         tally=tally_number
     )
-    print('  Tally (created: {0}) {1}'.format(created, t))
+    logger.debug('  Tally (created: {0}) {1}'.format(created, t))
 
 
 def import_one_record_tt05(r, m):
@@ -1448,11 +1430,11 @@ def import_one_record_tt05(r, m):
     )
 
     if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
+        logger.debug("Updating unchanged existing record {0}...".format(src_id))
         LineTransectEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = LineTransectEncounter.objects.get(source_id=src_id)
     else:
-        print("Creating new record {0}...".format(src_id))
+        logger.debug("Creating new record {0}...".format(src_id))
         e = LineTransectEncounter.objects.create(**new_data)
 
     e.save()
@@ -1516,7 +1498,7 @@ def import_one_record_tt05(r, m):
     [make_tallyobs(e, x[0], x[1], x[2], x[3]) for x in tally_mapping]
 
     e.save()
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     return e
 
 
@@ -1722,15 +1704,15 @@ def import_one_encounter_wamtram(r, m, u):
     """
 
     if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
+        logger.debug("Updating unchanged existing record {0}...".format(src_id))
         AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = AnimalEncounter.objects.get(source_id=src_id)
     else:
-        print("Creating new record {0}...".format(src_id))
+        logger.debug("Creating new record {0}...".format(src_id))
         e = AnimalEncounter.objects.create(**new_data)
 
     e.save()
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     return e
 
 
@@ -1813,17 +1795,17 @@ def import_one_tag(t, m):
     )
 
     if TagObservation.objects.filter(encounter=enc, name=tag_name).exists():
-        print("Updating existing tag obs {0}...".format(tag_name))
+        logger.debug("Updating existing tag obs {0}...".format(tag_name))
         e = TagObservation.objects.filter(
             encounter=enc, name=tag_name).update(**new_data)
         e = TagObservation.objects.get(encounter=enc, name=tag_name)
 
     else:
-        print("Creating new tag obs {0}...".format(tag_name))
+        logger.debug("Creating new tag obs {0}...".format(tag_name))
         e = TagObservation.objects.create(**new_data)
 
     e.save()
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     return e
 
 
@@ -2111,15 +2093,15 @@ def import_one_record_cet(r, m):
     }
     # check if src_id exists
     if src_id in m["overwrite"]:
-        print("Updating unchanged existing record {0}...".format(src_id))
+        logger.debug("Updating unchanged existing record {0}...".format(src_id))
         AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = AnimalEncounter.objects.get(source_id=src_id)
     else:
-        print("Creating new record {0}...".format(src_id))
+        logger.debug("Creating new record {0}...".format(src_id))
         e = AnimalEncounter.objects.create(**new_data)
 
     e.save()
-    print(" Saved {0}\n".format(e))
+    logger.debug(" Saved {0}\n".format(e))
     return e
 
 
@@ -2151,8 +2133,8 @@ def pinniped_coords_as_point(cstring):
     Returns
     Point in WGS84 or None
     """
-    print("Got coords {0}".format(cstring))
-    print("TODO: parse to point")
+    logger.debug("Got coords {0}".format(cstring))
+    logger.debug("TODO: parse to point")
     return None
 
 
@@ -2231,29 +2213,29 @@ def update_wastd_user(u):
     """
     usr, created = User.objects.get_or_create(
         username=u["name"].lower().replace(" ", "_"))
-    print("User {0}: {1}".format("created" if created else "found", usr))
+    logger.debug("User {0}: {1}".format("created" if created else "found", usr))
 
     # Update name
     if (usr.name is None or usr.name == "") and u["name"] != "NA" and u["name"] != "":
         usr.name = u["name"]
-        print("  User name updated from name: {0}".format(usr.name))
+        logger.debug("  User name updated from name: {0}".format(usr.name))
 
     # Update email
     if (usr.email is None or usr.email == "") and u["EMAIL"] != "NA":
         usr.email = u["EMAIL"]
-        print("  User email updated from EMAIL: {0}".format(usr.role))
+        logger.debug("  User email updated from EMAIL: {0}".format(usr.role))
 
     # If role is not set, or doesn't already contain SPECIALTY, add SPECIALTY
     if ((usr.role is None or usr.role == "" or u["SPECIALTY"] not in usr.role) and u["SPECIALTY"] != "NA"):
         usr.role = "{0} Specialty: {1}".format(usr.role or '', u["SPECIALTY"]).strip()
-        print("  User role updated from SPECIALTY: {0}".format(usr.role))
+        logger.debug("  User role updated from SPECIALTY: {0}".format(usr.role))
 
     if ((usr.role is None or usr.role == "" or u["COMMENTS"] not in usr.role) and u["COMMENTS"] != "NA"):
         usr.role = "{0} Comments: {1}".format(usr.role or '', u["COMMENTS"]).strip()
-        print("  User role updated from COMMENTS: {0}".format(usr.role))
+        logger.debug("  User role updated from COMMENTS: {0}".format(usr.role))
 
     usr.save()
-    print(" Saved User {0}".format(usr))
+    logger.debug(" Saved User {0}".format(usr))
     return usr.id
 
 
@@ -2603,7 +2585,7 @@ def odka_forms(url=env('ODKA_URL'),
     A list of dicts, each dict contains one xform:
 
     forms = odka_forms()
-    print(json.dumps(forms, indent=4))
+    logger.debug(json.dumps(forms, indent=4))
 
 
     The whole response parses to:
@@ -2740,7 +2722,7 @@ def odka_submission(form_id,
         Default: the value of environment variable "ODKA_UN".
     pw The username's password.
         Default: the value of environment variable "ODKA_PW".
-    verbose Whether to print verbose log messages, default: False.
+    verbose Whether to logger.debug verbose log messages, default: False.
 
     Returns
         A dict with key "submission" containing "data" and "mediaFile".
@@ -2748,7 +2730,7 @@ def odka_submission(form_id,
     Example
     d = odka_submission('build_Site-Visit-Start-0-1_1490753483',
         'uuid:a9772680-b6f9-45c0-8ed4-189f5e722a6c')
-    print(json.dumps(d, indent=4))
+    logger.debug(json.dumps(d, indent=4))
     {
         "submission": {
             "@xmlns": "http://opendatakit.org/submissions",
@@ -2835,7 +2817,7 @@ def odka_submissions(form_id,
         Default: the value of environment variable "ODKA_UN".
     pw The username's password.
         Default: the value of environment variable "ODKA_PW".
-    verbose Whether to print verbose log messages, default: False.
+    verbose Whether to logger.debug verbose log messages, default: False.
     append Whether to retain already downloaded data and append new data, or
         to overwrite all already downloaded data and download all data again.
 
@@ -2882,7 +2864,7 @@ def save_odka(form_id,
         Default: the value of environment variable "ODKA_UN".
     pw The username's password.
         Default: the value of environment variable "ODKA_PW".
-    verbose Whether to print verbose log messages, default: False.
+    verbose Whether to logger.debug verbose log messages, default: False.
     append Whether to retain already downloaded data and append new data, or
         to overwrite all already downloaded data and download all data again.
     """
@@ -2916,7 +2898,7 @@ def save_all_odka(path=".",
         Default: the value of environment variable "ODKA_UN".
     pw The username's password.
         Default: the value of environment variable "ODKA_PW".
-    verbose Whether to print verbose log messages, default: False.
+    verbose Whether to logger.debug verbose log messages, default: False.
     append Whether to retain already downloaded data and append new data, or
         to overwrite all already downloaded data and download all data again.
 
@@ -2955,7 +2937,7 @@ def make_datapackage_json(xform,
         Default: the value of environment variable "ODKA_UN".
     pw The username's password.
         Default: the value of environment variable "ODKA_PW".
-    verbose Whether to print verbose log messages, default: False.
+    verbose Whether to logger.debug verbose log messages, default: False.
     download_submissions Whether to download submissions
     download_config Whether to write the returned config to a local file
 
@@ -4086,7 +4068,7 @@ def import_odka_tt044(r):
     with open("data/odka/build_Track-or-Treat-0-44_1509422138.json") as df:
         d = json.load(df)
 
-    print(json.dumps(d[0], indent=4))
+    logger.debug(json.dumps(d[0], indent=4))
 
     {
         "submission": {
@@ -4446,7 +4428,7 @@ def import_odka_tal05(r):
     with open("data/odka/build_Track-Tally-0-5_1502342159.json") as df:
         tal05 = json.load(df)
 
-    print(json.dumps(tal05[0], indent=4))
+    logger.debug(json.dumps(tal05[0], indent=4))
 
     {
         "submission": {
@@ -4659,7 +4641,7 @@ def import_odka_mwi05(r):
     with open("data/odka/build_Marine-Wildlife-Incident-0-4_1509605702.json") as df:
         d = json.load(df)
 
-    print(json.dumps(d[0], indent=4))
+    logger.debug(json.dumps(d[0], indent=4))
 
     {
         "submission": {
