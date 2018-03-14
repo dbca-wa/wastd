@@ -1863,41 +1863,40 @@ class HbvSupraViewSet(BatchUpsertViewSet):
 router.register("supra", HbvSupraViewSet)
 
 
-class HbvGroupViewSet(viewsets.ModelViewSet):
+class HbvGroupViewSet(BatchUpsertViewSet):
     """View set for HbvGroup.See HBV Names for details and usage examples."""
 
     queryset = HbvGroup.objects.all()
     serializer_class = HbvGroupSerializer
     filter_class = HbvGroupFilter
-    pagination_class = pagination.LimitOffsetPagination
-    uid_field = "name_id"
     model = HbvGroup
+    uid_field = "name_id"
 
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
+    # def create_one(self, data):
+    #     """POST: Create or update exactly one model instance."""
 
-        obj, created = self.model.objects.get_or_create(
-            name_id=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
+    #     obj, created = self.model.objects.get_or_create(
+    #         name_id=data[self.uid_field], defaults=data)
+    #     if not created:
+    #         self.model.objects.filter(name_id=data[self.uid_field]).update(**data)
+    #     return RestResponse(data, status=status.HTTP_200_OK)
 
-    def create(self, request):
-        """POST: Create or update one or many model instances.
+    # def create(self, request):
+    #     """POST: Create or update one or many model instances.
 
-        request.data must be:
+    #     request.data must be:
 
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
+    #     * a GeoJSON feature property dict, or
+    #     * a list of GeoJSON feature property dicts.
+    #     """
+    #     if self.uid_field in request.data:
+    #         res = self.create_one(request.data)
+    #         return res
+    #     elif type(request.data) == list and self.uid_field in request.data[1]:
+    #         res = [self.create_one(data) for data in request.data]
+    #         return RestResponse(request.data, status=status.HTTP_200_OK)
+    #     else:
+    #         return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 router.register("groups", HbvGroupViewSet)
 
