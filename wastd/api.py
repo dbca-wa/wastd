@@ -106,7 +106,6 @@ class MyGeoJsonPagination(pagination.LimitOffsetPagination):
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
             ('features', data['features']),
-            # ('data', data),
         ]))
 
 
@@ -1280,24 +1279,24 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.LimitOffsetPagination
 
 
+# ----------------------------------------------------------------------------#
+# Tagged nests with Encounters
 class NestTagObservationEncounterSerializer(serializers.ModelSerializer):
     """NestTagObservationSerializer."""
 
-    # as_latex = serializers.ReadOnlyField()
     encounter = EncounterSerializer(many=False, read_only=True)
 
     class Meta:
         """Class options."""
 
         model = NestTagObservation
-        fields = ('observation_name',  # 'as_latex', #
+        fields = ('observation_name',
                   'encounter',
                   'status',
                   'flipper_tag_id',
                   'date_nest_laid',
                   'tag_label',
-                  'comments',
-                  )
+                  'comments',)
 
 
 class NestTagObservationViewSet(viewsets.ModelViewSet):
@@ -1309,6 +1308,9 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.LimitOffsetPagination
 
 
+router.register(r'nesttag-observations', NestTagObservationViewSet)
+# ----------------------------------------------------------------------------#
+
 router.register(r'encounters', EncounterViewSet)
 router.register(r'animal-encounters', AnimalEncounterViewSet)
 router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
@@ -1316,7 +1318,6 @@ router.register(r'logger-encounters', LoggerEncounterViewSet)
 router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
 router.register(r'tag-observations', TagObservationViewSet)
-router.register(r'nesttag-observations', NestTagObservationViewSet)
 
 
 # Taxonomy: Serializers -------------------------------------------------------------------#
@@ -1796,10 +1797,9 @@ class HbvSupraViewSet(viewsets.ModelViewSet):
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
-
-        obj, created = self.model.objects.get_or_create(supra_code=data[self.uid_field], defaults=data)
-        if not created:
-            self.model.objects.filter(supra_code=data[self.uid_field]).update(**data)
+        dd = {self.uid_field: data[self.uid_field]}
+        obj, created = self.model.objects.get_or_create(**dd)
+        self.model.objects.filter(**dd).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
