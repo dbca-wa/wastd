@@ -366,6 +366,7 @@ class SurveyFilter(filters.FilterSet):
             'end_comments': '__all__',
             'reporter': '__all__',
             'device_id': '__all__',
+            'end_device_id': '__all__',
             'source_id': '__all__',
             'end_source_id': '__all__',
             'status': '__all__',
