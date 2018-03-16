@@ -1,10 +1,13 @@
 {% extends "rest_framework/base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
-{% block title %}BioSys TT API{% endblock %}
+{% block title %}Threatened Things API{% endblock %}
 
 {% block branding %}
-<a class="navbar-brand" rel="nofollow" href="/">BioSys Threatened Things API</a>
+<a class="navbar-brand" rel="nofollow" href="/">
+  <img src="{% static 'images/threatened-api.png' %}" style="height:50px;margin-top:-15px;" alt="Threatened Things">
+</a>
+<a class="navbar-brand" rel="nofollow" href="/">Threatened Things API</a>
 {% endblock %}
 
 {% block userlinks %}

@@ -49,7 +49,7 @@ urlpatterns = [
 
     # API
     url(r'^api/1/swagger/$', schema_view, name="api-docs"),
-    url(r'^api/1/docs/', include_docs_urls(title='WAStD API')),
+    url(r'^api/1/docs/', include_docs_urls(title='API')),
     url(r'^api/1/', include(router.urls, namespace="api")),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
