@@ -2018,5 +2018,6 @@ class TaxonViewSet(viewsets.ModelViewSet):
     filter_class = TaxonFilter
     uid_field = "name_id"
     model = Taxon
+    pagination_class = pagination.LimitOffsetPagination
 
 router.register("taxa", TaxonViewSet)
