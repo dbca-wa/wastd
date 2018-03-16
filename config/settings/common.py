@@ -324,7 +324,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework_jsonp.renderers.JSONPRenderer',
-        # 'rest_framework_csv.renderers.CSVRenderer',
+        'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework_yaml.renderers.YAMLRenderer',
         'rest_framework_latex.renderers.LatexRenderer',
     ),
@@ -506,11 +506,16 @@ LOGGING = {
     'loggers': {
         'django.request': {
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True
         },
         'django.security.DisallowedHost': {
             'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True
+        },
+        'django': {
+            'level': 'DEBUG',
             'handlers': ['console', 'file'],
             'propagate': True
         },

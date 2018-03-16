@@ -1497,7 +1497,15 @@ class TaxonSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = Taxon
-        fields = ('name_id', 'name', 'rank', 'parent')
+        fields = (
+            'name_id',
+            'name',
+            'rank',
+            'parent',
+            'author',
+            'current',
+            'publication_status',
+        )
 
 
 # Taxonomy: Filters -------------------------------------------------------------------#
@@ -1782,6 +1790,9 @@ class TaxonFilter(filters.FilterSet):
             'name': '__all__',
             'rank': '__all__',
             'parent': '__all__',
+            'author': '__all__',
+            'publication_status': '__all__',
+            'current': '__all__',
         }
 
 
@@ -2015,9 +2026,9 @@ class TaxonViewSet(viewsets.ModelViewSet):
 
     queryset = Taxon.objects.all()
     serializer_class = TaxonSerializer
-    filter_class = TaxonFilter
-    uid_field = "name_id"
-    model = Taxon
+    # filter_class = TaxonFilter
+    # uid_field = "name_id"
+    # model = Taxon
     pagination_class = pagination.LimitOffsetPagination
 
-router.register("taxa", TaxonViewSet)
+router.register("taxon", TaxonViewSet)
