@@ -66,6 +66,7 @@ THIRD_PARTY_APPS = (
     'rest_framework_gis',           # API spatial fields
     'rest_framework_swagger',       # API docs
     'rest_framework_latex',         # API latex renderer
+    'rest_framework_filters',
     # 'dynamic_rest',                 # Parameterised API queries
     'mptt',                         # Graph database: tree models
     'background_task',              # Job queue

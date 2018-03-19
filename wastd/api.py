@@ -50,6 +50,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 # from rest_framework_gis.pagination import GeoJsonPagination
 
 import rest_framework_filters as filters
+from django_filters import rest_framework as rf_filters
 
 # from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
@@ -352,7 +353,14 @@ class FastSurveySerializer(serializers.ModelSerializer):
 
 
 class SurveyFilter(filters.FilterSet):
-    """Survey Filter. All filter methods available on all fields except location and team."""
+    """Survey Filter. All filter methods available on all fields except location and team.
+
+    # Dates
+    * [/api/1/surveys/?start_time__year__in=2017,2018](/api/1/surveys/?start_time__year__in=2017,2018) Years 2017, 2018
+    """
+
+    start_time = rf_filters.DateFilter()
+    end_time = rf_filters.DateFilter()
 
     class Meta:
         """Class opts."""
@@ -594,7 +602,7 @@ class TrackTallyObservationSerializer(serializers.ModelSerializer):
 
         model = TrackTallyObservation
         fields = ('observation_name',  # 'as_latex',
-                  'species', 'track_type', 'tally', )
+                  'species', 'nest_type', )
 
 
 class TurtleNestDisturbanceTallyObservationSerializer(serializers.ModelSerializer):
@@ -607,7 +615,7 @@ class TurtleNestDisturbanceTallyObservationSerializer(serializers.ModelSerialize
 
         model = TurtleNestDisturbanceTallyObservation
         fields = ('observation_name',  # 'as_latex',
-                  'species', 'disturbance_cause', 'tally', )
+                  'species', 'disturbance_cause', )
 
 
 class TemperatureLoggerSettingsSerializer(serializers.ModelSerializer):
@@ -970,24 +978,26 @@ class TagObservationEncounterSerializer(serializers.ModelSerializer):
 class EncounterFilter(filters.FilterSet):
     """Encounter filter."""
 
+    when = rf_filters.DateFilter()
+
     class Meta:
         """Class opts."""
 
         model = Encounter
         fields = {
-            'area': ['exact', 'in'],
-            'encounter_type': ['exact', 'in', 'startswith'],
-            'status': ['exact', 'in', 'startswith'],
-            'site': ['exact', 'in', ],
-            'survey': ['exact', 'in', ],
-            'source': ['exact', 'in', ],
-            'location_accuracy': ['exact', 'in', ],
-            'when': ['exact', 'in', ],
-            'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
-            'source_id': ['exact', 'iexact', 'in', 'startswith', 'endswith', 'contains', 'icontains'],
-            'observer': ['exact', 'in', ],
-            'reporter': ['exact', 'in', ],
-            'comments': ['icontains', 'startswith', 'endswith']
+            'area': '__all__',
+            'encounter_type': '__all__',
+            'status': '__all__',
+            'site': '__all__',
+            'survey': '__all__',
+            'source': '__all__',
+            'location_accuracy': '__all__',
+            'when': '__all__',
+            'name': '__all__',
+            'source_id': '__all__',
+            'observer': '__all__',
+            'reporter': '__all__',
+            'comments': '__all__',
         }
 
 
@@ -1004,6 +1014,9 @@ class EncounterViewSet(viewsets.ModelViewSet):
     # Filters
     Combine arguments with &, e.g.
     [/api/1/encounters/?source=odk&encounter_type=tracks](/api/1/encounters/?source=odk&encounter_type=tracks)
+
+    # date
+    * [/api/1/encounters/?when__year__in=2017,2018](/api/1/encounters/?when__year__in=2017,2018) Years 2017-18
 
     # area and site
     For convenience and performance, every Encounter links to the general area of its occurrence (Locality)
@@ -1132,29 +1145,31 @@ class EncounterViewSet(viewsets.ModelViewSet):
 class TurtleNestEncounterFilter(filters.FilterSet):
     """TurtleNestEncounter filter."""
 
+    when = rf_filters.DateFilter()
+
     class Meta:
         """Class opts."""
 
         model = TurtleNestEncounter
         fields = {
-            'area': ['exact', 'in'],
-            'encounter_type': ['exact', 'in', 'startswith'],
-            'status': ['exact', 'in', 'startswith'],
-            'site': ['exact', 'in', ],
-            'survey': ['exact', 'in', ],
-            'source': ['exact', 'in', ],
-            'source_id': ['exact', 'iexact', 'in', 'startswith', 'endswith', 'contains', 'icontains'],
-            'location_accuracy': ['exact', 'in', ],
-            'when': ['exact', 'in', ],
-            'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
-            'observer': ['exact', 'in', ],
-            'reporter': ['exact', 'in', ],
-            'nest_age': ['exact', 'in', ],
-            'nest_type': ['exact', 'in', ],
-            'species': ['exact', 'in', ],
-            'habitat': ['exact', 'in', ],
-            'disturbance': ['exact', 'in', ],
-            'comments': ['icontains', 'startswith', 'endswith'],
+            'area': '__all__',
+            'encounter_type': '__all__',
+            'status': '__all__',
+            'site': '__all__',
+            'survey': '__all__',
+            'source': '__all__',
+            'source_id': '__all__',
+            'location_accuracy': '__all__',
+            'when': '__all__',
+            'name': '__all__',
+            'observer': '__all__',
+            'reporter': '__all__',
+            'nest_age': '__all__',
+            'nest_type': '__all__',
+            'species': '__all__',
+            'habitat': '__all__',
+            'disturbance': '__all__',
+            'comments': '__all__',
         }
 
 
@@ -1222,6 +1237,42 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
         symlink_resources(t_dir, data)
 
 
+class AnimalEncounterFilter(filters.FilterSet):
+    """TurtleNestEncounter filter."""
+
+    when = rf_filters.DateFilter()
+
+    class Meta:
+        """Class opts."""
+
+        model = AnimalEncounter
+        fields = {
+            'encounter_type': '__all__',
+            'status': '__all__',
+            'area': '__all__',
+            'site': '__all__',
+            'survey': '__all__',
+            'source': '__all__',
+            'source_id': '__all__',
+            'location_accuracy': '__all__',
+            'when': '__all__',
+            'name': '__all__',
+            'observer': '__all__',
+            'reporter': '__all__',
+            'taxon': '__all__',
+            'species': '__all__',
+            'health': '__all__',
+            'sex': '__all__',
+            'maturity': '__all__',
+            'habitat': '__all__',
+            'checked_for_injuries': '__all__',
+            'scanned_for_pit_tags': '__all__',
+            'checked_for_flipper_tags': '__all__',
+            'cause_of_death': '__all__',
+            'cause_of_death_confidence': '__all__',
+        }
+
+
 class AnimalEncounterViewSet(viewsets.ModelViewSet):
     """AnimalEncounter view set.
 
@@ -1269,12 +1320,7 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     latex_name = 'latex/animalencounter.tex'
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
-    filter_fields = [
-        'encounter_type', 'status', 'area', 'site', 'survey', 'source', 'source_id',
-        'location_accuracy', 'when', 'name', 'observer', 'reporter',
-        'taxon', 'species', 'health', 'sex', 'maturity', 'habitat',
-        'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
-        'cause_of_death', 'cause_of_death_confidence']
+    filter_class = AnimalEncounterFilter
     search_fields = ('name', 'source_id', 'behaviour', )
     pagination_class = MyGeoJsonPagination
     # filter_backends = (CustomBBoxFilter, filters.DjangoFilterBackend, )
