@@ -51,7 +51,7 @@
             <strong>{{ request.user.apitoken }}</strong>.</p>
 
             <h3>Code example in R</h3>
-            See <a href="https://parksandwildlife.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.
+            See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.
 
             <h3>Code example in Python</h3>
             <pre>
@@ -64,7 +64,7 @@ d = requests.get(url + "?format=csv", headers=headers).content
 
             <h3>Code example on the command line</h3>
             <pre>
-curl GET {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/ -H 'Authorization: Token {{ request.user.apitoken }}'
+curl {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/?format=json -H 'Authorization: Token {{ request.user.apitoken }}'
             </pre>
 
         </div><!-- /.col-sm-12 "-->

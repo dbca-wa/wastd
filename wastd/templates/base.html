@@ -1,4 +1,4 @@
-{% load staticfiles i18n compress leaflet_tags observations %}
+{% load staticfiles i18n compress leaflet_tags observations bootstrap4 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
   <title>{% block title %}Threatened Things{% endblock title %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Gooder science to make stuff less deader">
-  <meta name="author" content="Department of Biodiversity, Conservation and Attractions">
+  <meta name="author" content="Department of Biodiversity, Conservation and Attractions WA">
   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
   <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -16,9 +16,10 @@
     <![endif]-->
 
     {% block css %}
-    <link
+    {% bootstrap_css %}
+    <!-- <link
     rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
     <!-- <link rel="stylesheet" href="//unpkg.com/leaflet@1.0.1/dist/leaflet.css" /> -->
     <!-- <link rel="stylesheet" href="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.css" /> -->
     <!-- <link rel="stylesheet" href="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.Default.css" /> -->
@@ -70,28 +71,29 @@
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false">
+            <span class="oi oi-graph" title="Analysts" aria-hidden="true"></span>
             Analysts
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
               <a class="dropdown-item" href="http://wastd.readthedocs.io/data_consumers.html" target="_">
-                <i class="fa fa-book align-middle"></i>
+                <span class="oi oi-book" title="Manual" aria-hidden="true"></span>
                 <span class="align-middle">Data Analysts' Manual</span>
               </a>
               <a class="dropdown-item" href="/api/1/" target="_">
-               <i class="fa fa-database align-middle"></i>
+               <span class="oi oi-terminal" title="API" aria-hidden="true"></span>
                <span class="align-middle">API</span>
              </a>
              <a class="dropdown-item" href="{% url 'api-docs' %}" target="_">
-               <i class="fa fa-book align-middle"></i>
+               <span class="oi oi-book align-middle" title="API docs (Swagger)" aria-hidden="true"></span>
                <span class="align-middle">API Docs (Swagger)</span>
              </a>
              <a class="dropdown-item" href="/api/1/docs" target="_">
-               <i class="fa fa-book align-middle"></i>
+               <span class="oi oi-book align-middle" title="API docs (DRF)" aria-hidden="true"></span>
                <span class="align-middle">API Docs (DRF)</span>
              </a>
              {% if request.user.is_authenticated %}
              <a class="dropdown-item" href="{% url 'users:detail' request.user.username  %}">
-              <i class="fa fa-user align-middle"></i>
+              <span class="oi oi-person align-middle" title="My API Authentication" aria-hidden="true"></span>
               <span class="align-middle">My API Authentication</span>
               </a>
               {% endif %}
@@ -119,30 +121,35 @@
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false">
+              <span class="oi oi-shield" title="Curators" aria-hidden="true"></span>
               Curators
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-curators">
               <a class="dropdown-item" href="http://wastd.readthedocs.io/data_curators.html" target="_">
-                <i class="fa fa-book"></i>&nbsp;Data Curators' Manual
+                <span class="oi oi-book" title="Manual" aria-hidden="true"></span>
+                Data Curators' Manual
               </a>
               <a class="dropdown-item"
                 href="{% url 'admin:index' %}"
                 target="_"
                 title="Data entry and curation area">
-                <i class="fa fa-cog"></i>&nbsp;Curate Data
+                <span class="oi oi-beaker" title="Analysts" aria-hidden="true"></span>
+                Data Curation Portal
               </a>
 
               {% if request.user.is_superuser %}
               <a class="dropdown-item"
                 href="{% url 'update-taxon' %}"
                 title="Update taxon names">
-                <i class="fa fa-refresh"></i> Update Taxon Names
+               <span class="oi oi-loop-circular" title="Update taxon names" aria-hidden="true"></span>
+               Update Taxon Names
               </a>
               <a class="dropdown-item"
                 href="/api/1/animal-encounters/?format=latex"
                 target="_"
                 title="Export all Animal Encounters as PDF">
-                <i class="fa fa-file-pdf-o"></i> Export All AnimalEncounters
+                <span class="oi oi-document" title="Export all AnimalEncounters" aria-hidden="true"></span>
+                Export All AnimalEncounters
               </a>
               {% endif %}
             </div>
@@ -151,12 +158,15 @@
 
           <li class="nav-item">
            <a class="nav-link" href="http://wastd.readthedocs.io/" target="_">
-             <i class="fa fa-book"></i>&nbsp;Manual
+             <span class="oi oi-book" title="Manual" aria-hidden="true"></span>
+             Manual
            </a>
           </li>
 
           <li class="nav-item">
-            {% if messages %}
+            {% bootstrap_messages %}
+
+          <!-- {% if messages %}
             {% for message in messages %}
             <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -165,7 +175,7 @@
               {{ message }}
             </div>
             {% endfor %}
-            {% endif %}
+            {% endif %} -->
 
             {% block extranav %}{% endblock extranav %}
           </li>
@@ -174,20 +184,28 @@
         {% if request.user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">
-            <i class="fa fa-user"></i>&nbsp;{% trans "My Profile" %}
+            <span class="oi oi-person" title="Profile" aria-hidden="true"></span>
+            {% trans "My Profile" %}
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'account_logout' %}">
-            <i class="fa fa-sign-out"></i>&nbsp;{% trans "Sign out" %}
+            <span class="oi oi-account-logout" title="Log out" aria-hidden="true"></span>
+            {% trans "Sign out" %}
           </a>
         </li>
         {% else %}
         <li class="nav-item">
-          <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
+          <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">
+            <span class="oi oi-star" title="Sign up" aria-hidden="true"></span>
+            {% trans "Sign Up" %}
+          </a>
         </li>
         <li class="nav-item">
-          <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
+          <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">
+            <span class="oi oi-account-login" title="Manual" aria-hidden="true"></span>
+            {% trans "Sign In" %}
+          </a>
         </li>
         {% endif %}
       </ul>
@@ -212,10 +230,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
   integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
   crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
   integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-  crossorigin="anonymous"></script>
-
+  crossorigin="anonymous"></script> -->
+  {% bootstrap_javascript jquery='full' %}
   <!-- Fontawesome: icons -->
   <!-- <script src="//use.fontawesome.com/f8f5501a45.js"></script> -->
 

@@ -1600,8 +1600,9 @@ class Taxon(MPTTModel):
 
     Get Parents: https://stackoverflow.com/a/6565577/2813717
     """
-
-    RANK_DOMAIN = 0
+    RANK_THING = 0
+    RANK_DOMAIN = 5
+    RANK_COMMUNITY = 7
     RANK_KINGDOM = 10
     RANK_SUBKINGDOM = 20
     RANK_DIVISION = 30
@@ -1628,6 +1629,8 @@ class Taxon(MPTTModel):
     RANK_SUBFORMA = 240
 
     RANKS = (
+        (RANK_THING, "Thing"),
+        (RANK_COMMUNITY, "Community"),
         (RANK_DOMAIN, "Domain"),
         (RANK_KINGDOM, "Kingdom"),
         (RANK_SUBKINGDOM, "Subkingdom"),

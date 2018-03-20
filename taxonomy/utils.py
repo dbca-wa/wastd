@@ -219,9 +219,21 @@ def update_taxon():
     http://django-mptt.readthedocs.io/en/latest/mptt.managers.html#mptt.managers.TreeManager.disable_mptt_updates
 
     """
+    # Thing
+    logger.info("[update_taxon] Creating/updating thing...")
+    thing, created = Taxon.objects.update_or_create(name_id=-1, name="Thing", rank=Taxon.RANK_THING)
+
     # Domain
     logger.info("[update_taxon] Creating/updating domains...")
-    domain, created = Taxon.objects.update_or_create(name_id=0, name="Eukarya", rank=Taxon.RANK_DOMAIN)
+    domain, created = Taxon.objects.update_or_create(
+        name_id=0, name="Eukarya", rank=Taxon.RANK_DOMAIN, parent=thing)
+    comms, created = Taxon.objects.update_or_create(
+        name_id=1000000, name="Communities", rank=Taxon.RANK_DOMAIN, parent=thing)
+
+    # Commmunities
+    # [Taxon.objects.update_or_create(
+    #     name_id=1000000 + x.com_id, defaults=dict(name=x.name, rank=Taxon.RANK_COMMUNITY, parent=comms))
+    #  for x in TECnames.objects.all()]
 
     # Kingdoms
     logger.info("[update_taxon] Creating/updating kingdoms...")

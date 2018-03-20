@@ -1,18 +1,28 @@
 {% extends "rest_framework/base.html" %}
 {% load i18n static %}
 
+{% block style %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.css' %}">
+{% endblock %}
 {% block title %}Threatened Things API{% endblock %}
 
 {% block branding %}
-<a class="navbar-brand" rel="nofollow" href="/">
+<a class="navbar-brand" rel="nofollow" href="/api/1/">
   <img src="{% static 'images/threatened-api.png' %}" style="height:50px;margin-top:-15px;" alt="Threatened Things">
 </a>
-<a class="navbar-brand" rel="nofollow" href="/">Threatened Things API</a>
+<a class="navbar-brand" rel="nofollow" href="/api/1/">Threatened Things API</a>
 {% endblock %}
 
 {% block userlinks %}
 <ul class="nav navbar-nav">
 
+     <li class="nav-item">
+       <a class="nav-link" href="/" target="_">
+           <span class="oi oi-home" title="Main site" aria-hidden="true"></span>
+           Main site
+       </a>
+     </li>
     {% if request.user.is_staff %}
      <li class="nav-item">
        <a class="nav-link" href="{% url 'admin:index' %}" target="_">
@@ -21,13 +31,9 @@
      </li>
      {% endif %}
      <li class="nav-item">
-       <a class="nav-link" href="/api/1/" target="_">
-           <i class="fa fa-database"></i>&nbsp;API
-       </a>
-     </li>
-     <li class="nav-item">
        <a class="nav-link" href="http://wastd.readthedocs.io/" target="_">
-           <i class="fa fa-book"></i>&nbsp;Manual
+          <span class="oi oi-book" title="Manual" aria-hidden="true"></span>
+          Manual
        </a>
      </li>
 
@@ -54,6 +60,4 @@
     </li>
   {% endif %}
 </ul>
-
-
 {% endblock %}
