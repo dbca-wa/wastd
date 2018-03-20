@@ -2067,14 +2067,13 @@ class HbvParentViewSet(BatchUpsertViewSet):
 router.register("parents", HbvParentViewSet)
 
 
-class TaxonViewSet(viewsets.ModelViewSet):
+class TaxonViewSet(BatchUpsertViewSet):
     """View set for Taxon. See HBV Names for details and usage examples."""
 
     queryset = Taxon.objects.all()
     serializer_class = TaxonSerializer
     # filter_class = TaxonFilter
-    # uid_field = "name_id"
-    # model = Taxon
-    pagination_class = pagination.LimitOffsetPagination
+    uid_field = "name_id"
+    model = Taxon
 
 router.register("taxon", TaxonViewSet)
