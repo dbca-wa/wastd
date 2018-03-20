@@ -1863,6 +1863,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
         dd = {self.uid_field: data[self.uid_field]}
+        if 'csrfmiddlewaretoken' in data:
+            data.pop('csrfmiddlewaretoken')
         obj, created = self.model.objects.get_or_create(**dd)
         self.model.objects.filter(**dd).update(**data)
         return RestResponse(data, status=status.HTTP_200_OK)
