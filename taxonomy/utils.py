@@ -221,24 +221,19 @@ def update_taxon():
     """
     # Thing
     logger.info("[update_taxon] Creating/updating thing...")
-    thing, created = Taxon.objects.update_or_create(name_id=-1, name="Thing", rank=Taxon.RANK_THING)
+    thing, created = Taxon.objects.update_or_create(name_id=-1, name="Thing", current=True, rank=Taxon.RANK_THING)
 
     # Domain
     logger.info("[update_taxon] Creating/updating domains...")
     domain, created = Taxon.objects.update_or_create(
-        name_id=0, defaults=dict(name="Eukarya", rank=Taxon.RANK_DOMAIN, parent=thing))
+        name_id=0, defaults=dict(name="Eukarya", rank=Taxon.RANK_DOMAIN, current=True, parent=thing))
     comms, created = Taxon.objects.update_or_create(
-        name_id=1000000, defaults=dict(name="Communities", rank=Taxon.RANK_DOMAIN, parent=thing))
-
-    # Commmunities
-    # [Taxon.objects.update_or_create(
-    #     name_id=1000000 + x.com_id, defaults=dict(name=x.name, rank=Taxon.RANK_COMMUNITY, parent=comms))
-    #  for x in TECnames.objects.all()]
+        name_id=1000000, defaults=dict(name="Communities", rank=Taxon.RANK_DOMAIN, current=True, parent=thing))
 
     # Kingdoms
     logger.info("[update_taxon] Creating/updating kingdoms...")
     kingdoms = [Taxon.objects.update_or_create(
-        name_id=x.name_id, defaults=dict(name=x.name, rank=Taxon.RANK_KINGDOM, parent=domain))
+        name_id=x.name_id, defaults=dict(name=x.name, rank=Taxon.RANK_KINGDOM, current=True, parent=domain))
         for x in HbvName.objects.filter(rank_name='Kingdom')]
 
     # Divisions, Classes, Orders, Families
