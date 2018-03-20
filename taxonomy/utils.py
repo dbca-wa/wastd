@@ -226,9 +226,9 @@ def update_taxon():
     # Domain
     logger.info("[update_taxon] Creating/updating domains...")
     domain, created = Taxon.objects.update_or_create(
-        name_id=0, name="Eukarya", rank=Taxon.RANK_DOMAIN, parent=thing)
+        name_id=0, defaults=dict(name="Eukarya", rank=Taxon.RANK_DOMAIN, parent=thing))
     comms, created = Taxon.objects.update_or_create(
-        name_id=1000000, name="Communities", rank=Taxon.RANK_DOMAIN, parent=thing)
+        name_id=1000000, defaults=dict(name="Communities", rank=Taxon.RANK_DOMAIN, parent=thing))
 
     # Commmunities
     # [Taxon.objects.update_or_create(
