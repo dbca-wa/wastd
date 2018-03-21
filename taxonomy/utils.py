@@ -221,7 +221,8 @@ def update_taxon():
     """
     # Thing
     logger.info("[update_taxon] Creating/updating thing...")
-    thing, created = Taxon.objects.update_or_create(name_id=-1, name="Thing", current=True, rank=Taxon.RANK_THING)
+    thing, created = Taxon.objects.update_or_create(
+        name_id=-1, defaults=dict(name="Thing", current=True, rank=Taxon.RANK_THING))
 
     # Domain
     logger.info("[update_taxon] Creating/updating domains...")
