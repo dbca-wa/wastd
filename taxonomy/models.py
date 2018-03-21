@@ -15,8 +15,8 @@ from __future__ import unicode_literals, absolute_import
 # from django.core.urlresolvers import reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
-# from django.db.models.signals import pre_delete, pre_save, post_save
-# from django.dispatch import receiver
+from django.db.models.signals import pre_save  # post_save, pre_delete
+from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
 # from django.core.urlresolvers import reverse
@@ -1600,6 +1600,7 @@ class Taxon(MPTTModel):
 
     Get Parents: https://stackoverflow.com/a/6565577/2813717
     """
+
     RANK_THING = 0
     RANK_DOMAIN = 5
     RANK_COMMUNITY = 7
@@ -1701,6 +1702,22 @@ class Taxon(MPTTModel):
         help_text=_("The taxon name.")
     )
 
+    canonical_name = models.CharField(
+        max_length=2000,
+        db_index=True,
+        blank=True, null=True,
+        verbose_name=_("Canonical Name"),
+        help_text=_("The canonical name.")
+    )
+
+    taxonomic_name = models.CharField(
+        max_length=2000,
+        db_index=True,
+        blank=True, null=True,
+        verbose_name=_("Taxonomic Name"),
+        help_text=_("The taxonomic name.")
+    )
+
     author = models.CharField(
         max_length=1000,
         blank=True, null=True,
@@ -1723,7 +1740,7 @@ class Taxon(MPTTModel):
         help_text=_("Whether the name is current."),
     )
 
-    # QA Status FSM: new, proofread
+    # Approval Status FSM: [phrase name, ms name, current name, non-current name]
     # status = FSMField(default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name=_("QA Status"))
 
     class MPTTMeta:
@@ -1738,7 +1755,7 @@ class Taxon(MPTTModel):
         verbose_name_plural = "Taxa"
 
     @property
-    def taxonomic_name(self):
+    def build_canonical_name(self):
         """The taxonomic name.
 
         * Anything above species:
@@ -1762,6 +1779,20 @@ class Taxon(MPTTModel):
         else:
             return self.name
 
+    @property
+    def build_taxonomic_name(self):
+        if self.author:
+            return "{0} ({1})".format(self.build_canonical_name, self.author)
+        else:
+            return self.build_canonical_name
+
     def __str__(self):
         """The full name: [NameID] (RANK) TAXONOMIC NAME."""
         return "[{0}] ({1}) {2}".format(self.name_id, self.get_rank_display(), self.taxonomic_name)
+
+
+@receiver(pre_save, sender=Taxon)
+def survey_pre_save(sender, instance, *args, **kwargs):
+    """Taxon: Build names (expensive lookup)."""
+    instance.canonical_name = instance.build_canonical_name
+    instance.taxonomic_name = instance.build_taxonomic_name

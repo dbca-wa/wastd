@@ -41,15 +41,7 @@
 
     </h6>
 
-    <!-- Conservation status -->
-    {% if original.consv_code %}
-    <span class="badge badge-danger">
-      <span class="oi oi-pulse" title="Conservation Status" aria-hidden="true"></span>
-      {{ original.consv_code }} {% if original.ranking %}{{ original.ranking }}{% endif %}
-    </span>
-    {% endif %}
-
-    <h5 class="card-title {% if original.is_current == 'N' %}text-muted{% endif %}">
+    <h5 class="card-title {% if original.current == False %}text-muted{% endif %}">
       {{ original.taxonomic_name }}
     </h5>
 
@@ -58,14 +50,6 @@
     <h6 class="card-subtitle mb-2 text-muted">
       <span class="oi oi-pencil" title="Author" aria-hidden="true"></span>
       {{original.author}}
-    </h6>
-    {% endif %}
-
-    <!-- Vernacular names -->
-    {% if original.all_vernaculars %}
-    <h6 class="card-subtitle mb-2 text-muted">
-      <span class="oi oi-tags" title="Vernacular names" aria-hidden="true"></span>
-      {{original.all_vernaculars}}
     </h6>
     {% endif %}
 
