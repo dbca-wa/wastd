@@ -17,7 +17,7 @@ class TaxonFilter(django_filters.FilterSet):
         """Class opts."""
 
         model = Taxon
-        fields = ['name', 'rank', 'current', 'publication_status']
+        fields = ['taxonomic_name', 'rank', 'current', 'publication_status']
         filter_overrides = {
             models.CharField: {
                 'filter_class': django_filters.CharFilter,
