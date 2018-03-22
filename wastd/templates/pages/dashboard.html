@@ -28,16 +28,20 @@
   <div id="dash-filters" class="col-lg-2 col-md-4 col-sm-6 col-12">
     <h3>Search</h3>
       <form method="get">
-        <row>
+        <div class="row">
             {% bootstrap_form taxon_filter.form %}
-        </row>
+        </div>
         <button
           class="btn btn-outline-danger my-2 my-sm-0"
-          title="Filter all names by above criteria."
-          type="submit">Go</button>
+          title="Filter all names by above criteria." type="submit">
+          Go
+        </button>
       </form>
 
-   <!--<div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>-->
+      <br/>
+      <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
+
+
   </div><!-- /#dash-filters -->
 </div>
 {% endblock %}
