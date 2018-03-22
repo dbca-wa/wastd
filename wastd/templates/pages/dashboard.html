@@ -6,7 +6,7 @@
 
   <!-- Data -->
   <div id="dash-data" class="col-lg-10 col-md-8 col-sm-6 col-12">
-    <h3>Threatened Species and Communities</h3>
+    <h3>{{ settings.SITE_NAME }}</h3>
 
     <!-- Pagination -->
     <div class="row">
@@ -31,7 +31,10 @@
         <row>
             {% bootstrap_form taxon_filter.form %}
         </row>
-        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Go</button>
+        <button
+          class="btn btn-outline-danger my-2 my-sm-0"
+          title="Filter all names by above criteria."
+          type="submit">Go</button>
       </form>
 
    <!--<div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>-->

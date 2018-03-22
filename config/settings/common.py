@@ -121,6 +121,19 @@ CACHES = {
 }
 
 
+# Names
+# ------------------------------------------------------------------------------
+# https://github.com/jakubroztocil/django-settings-export
+SITE_NAME = env('SITE_NAME', default="SITE NAME")
+SITE_TITLE = env('SITE_TITLE', default="SITE TITLE")
+SITE_CODE = env('SITE_CODE', default="SITE CODE")
+
+SETTINGS_EXPORT = [
+    'SITE_NAME',
+    'SITE_TITLE',
+    'SITE_CODE',
+]
+
 # DEBUG
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
@@ -220,6 +233,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
             ],
         },
     },

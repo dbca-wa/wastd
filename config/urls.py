@@ -23,15 +23,16 @@ from rest_framework.documentation import include_docs_urls
 
 from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter, AnimalEncounter
-from wastd.observations.views import (
-    schema_view, HomeView, EncounterTableView, AnimalEncounterTableView)
+from wastd.observations.views import (schema_view, HomeView,
+                                      EncounterTableView, AnimalEncounterTableView)
 from taxonomy.views import update_taxon, TaxonListView
 
 # register all adminactions
 actions.add_to_site(site)
 
 urlpatterns = [
-    url(r'^$', HomeView.as_view(), name='home'),
+    url(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
+    url(r'^map/$', HomeView.as_view(), name='map'),
     url(r'^data/$', TaxonListView.as_view(), name='dashboard'),
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 

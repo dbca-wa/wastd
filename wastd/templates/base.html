@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>{% block title %}Threatened Things{% endblock title %}</title>
+  <title>{% block title %}{{ settings.SITE_TITLE }}{% endblock title %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Gooder science to make stuff less deader">
   <meta name="author" content="Department of Biodiversity, Conservation and Attractions WA">
@@ -43,7 +43,7 @@
       <a class="navbar-brand" href="/"><img
         src="{% static 'images/tt.png' %}"
         class="brandimg"
-        alt="Threatened Things"></a>
+        alt="{{ settings.SITE_TITLE }}"></a>
         <button class="navbar-toggler" type="button"
           data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -57,10 +57,20 @@
           <li class="nav-item">
             <a class="nav-link"
             href="{% url 'dashboard' %}"
-            title="Browse, filter and search threatened species and communities">
+            title="Browse, filter and search {{ settings.SITE_NAME }}">
             <span class="oi oi-dashboard"
-            title="Species and Communities Dashboard" aria-hidden="true"></span>
+            title="{{ settings.SITE_NAME }} Dashboard" aria-hidden="true"></span>
             Dashboard
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link"
+            href="{% url 'map' %}"
+            title="Map {{ settings.SITE_NAME }}">
+            <span class="oi oi-map"
+            title="{{ settings.SITE_NAME }} Map" aria-hidden="true"></span>
+            Map
             </a>
           </li>
 

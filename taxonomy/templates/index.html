@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col col-lg-8 col-12 align-self-center">
+      <h1>{{ settings.SITE_NAME }}</h1>
+
+      <a class="btn btn-primary btn-block" href="{% url 'dashboard' %}"
+        title="Browse, filter and search {{ settings.SITE_NAME }}">
+        <h3>
+          <span class="oi oi-dashboard" title="Browse {{ settings.SITE_NAME }}" aria-hidden="true"></span>
+          Dashboard
+        </h3>
+      </a>
+
+      <a class="btn btn-primary btn-block" href="{% url 'map' %}" title="">
+        <h3>
+          <span class="oi oi-map" title="" aria-hidden="true"></span>
+          Map occurrences
+        </h3>
+      </a>
+
+      <a class="btn btn-secondary btn-block" href="#" title="">
+        <h3>
+          <span class="oi oi-spreadsheet" title="" aria-hidden="true"></span>
+          Submit occurrences
+        </h3>
+      </a>
+
+      <a class="btn btn-secondary btn-block" href="#" title="">
+        <h3>
+          <span class="oi oi-text" title="" aria-hidden="true"></span>
+          Lodge nomination
+        </h3>
+      </a>
+
+      <a class="btn btn-secondary btn-block" href="#" title="">
+        <h3>
+          <span class="oi oi-document" title="" aria-hidden="true"></span>
+          View reports
+        </h3>
+    </a>
+  </div>
+</div>
+{% endblock %}
