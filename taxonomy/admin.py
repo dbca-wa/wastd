@@ -202,6 +202,7 @@ class HbvParentAdmin(VersionAdmin, admin.ModelAdmin):
 class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
     """Admin for Taxon."""
 
+    search_fields = ('taxonomic_name',)
     list_filter = (
         'rank',
         'publication_status',
