@@ -1862,10 +1862,6 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
-        if data[self.uid_field] is None or data[self.uid_field] == "":
-            logger.warn("[API][{0}] failed to upsert record {1}".format(
-                self.model, data))
-            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
         dd = {self.uid_field: data[self.uid_field]}
         if 'csrfmiddlewaretoken' in data:
             data.pop('csrfmiddlewaretoken')
@@ -2049,6 +2045,20 @@ class HbvVernacularViewSet(BatchUpsertViewSet):
     filter_class = HbvVernacularFilter
     uid_field = "ogc_fid"
     model = HbvVernacular
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance.
+
+        Custom: non-null UID is "ogc_fid", but "name_id" is non-null.
+        dd contains both.
+        """
+        dd = {"ogc_fid": data["ogc_fid"], "name_id": data["name_id"]}
+
+        if 'csrfmiddlewaretoken' in data:
+            data.pop('csrfmiddlewaretoken')
+        obj, created = self.model.objects.get_or_create(**dd)
+        self.model.objects.filter(**dd).update(**data)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
 router.register("vernaculars", HbvVernacularViewSet)
 

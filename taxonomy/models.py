@@ -1265,7 +1265,6 @@ class HbvVernacular(models.Model):
 
     ogc_fid = models.BigIntegerField(
         unique=True,
-        blank=True, null=True,
         verbose_name=_("GeoServer OGC FeatureID"),
         help_text=_("The OCG Feature ID of the record, used to "
                     "identify the record."),
@@ -1351,7 +1350,7 @@ class HbvVernacular(models.Model):
 
         # ordering = ["kingdom_id", "family_nid", "name_id"]
         verbose_name = "HBV Vernacular Name"
-        verbose_name_plural = "HBV Vernacular Name"
+        verbose_name_plural = "HBV Vernacular Names"
         # get_latest_by = "added_on"
 
     def __str__(self):
@@ -1756,7 +1755,7 @@ class Taxon(MPTTModel):
 
     @property
     def build_canonical_name(self):
-        """The taxonomic name.
+        """Build the canonical name.
 
         * Anything above species:
         * Species: [NameID] RANK GENUS (SPECIES)NAME
@@ -1781,6 +1780,7 @@ class Taxon(MPTTModel):
 
     @property
     def build_taxonomic_name(self):
+        """Build the taxonomic name."""
         if self.author:
             return "{0} ({1})".format(self.build_canonical_name, self.author)
         else:
