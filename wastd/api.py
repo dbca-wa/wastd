@@ -1864,7 +1864,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         """POST: Create or update exactly one model instance."""
         if data[self.uid_field] is None or data[self.uid_field] == "":
             logger.warn("[API][{0}] failed to upsert record {1}".format(
-                self.model, str(data.__dict__)))
+                self.model, data))
             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
         dd = {self.uid_field: data[self.uid_field]}
         if 'csrfmiddlewaretoken' in data:
@@ -1875,7 +1875,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             return RestResponse(data, status=status.HTTP_200_OK)
         except:
             logger.warn("[API][{0}] failed to upsert record {1}".format(
-                self.model, str(dd.__dict__)))
+                self.model, dd))
 
     def create(self, request):
         """POST: Create or update one or many model instances.
