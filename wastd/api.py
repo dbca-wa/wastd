@@ -1875,7 +1875,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             return RestResponse(data, status=status.HTTP_200_OK)
         except:
             logger.warn("[API][{0}] failed to upsert record {1}".format(
-                self.model, dd))
+                self.model, data))
 
     def create(self, request):
         """POST: Create or update one or many model instances.
