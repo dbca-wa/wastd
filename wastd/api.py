@@ -1860,18 +1860,24 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
     model = None
     uid_field = None
 
+    def build_unique_fields(self, data):
+        """Return a dict with a set of unique fields.
+
+        If your model has more than one unique field,
+        get_or_create will fail on create.
+        In this case, override build_unique_fields to
+        return a dict of all unique fields.
+        """
+        return {self.uid_field: data[self.uid_field]}
+
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
-        dd = {self.uid_field: data[self.uid_field]}
+        dd = self.build_unique_fields(data)
         if 'csrfmiddlewaretoken' in data:
             data.pop('csrfmiddlewaretoken')
-        try:
-            obj, created = self.model.objects.get_or_create(**dd)
-            self.model.objects.filter(**dd).update(**data)
-            return RestResponse(data, status=status.HTTP_200_OK)
-        except:
-            logger.warn("[API][{0}] failed to upsert record {1}".format(
-                self.model, data))
+        obj, created = self.model.objects.get_or_create(**dd)
+        self.model.objects.filter(**dd).update(**data)
+        return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -2046,19 +2052,10 @@ class HbvVernacularViewSet(BatchUpsertViewSet):
     uid_field = "ogc_fid"
     model = HbvVernacular
 
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance.
+    def build_unique_fields(self, data):
+        """Custom unique fields for Vernaculars."""
+        return {"ogc_fid": data["ogc_fid"], "name_id": data["name_id"]}
 
-        Custom: non-null UID is "ogc_fid", but "name_id" is non-null.
-        dd contains both.
-        """
-        dd = {"ogc_fid": data["ogc_fid"], "name_id": data["name_id"]}
-
-        if 'csrfmiddlewaretoken' in data:
-            data.pop('csrfmiddlewaretoken')
-        obj, created = self.model.objects.get_or_create(**dd)
-        self.model.objects.filter(**dd).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
 
 router.register("vernaculars", HbvVernacularViewSet)
 
