@@ -1792,7 +1792,9 @@ class Taxon(MPTTModel):
 
 
 @receiver(pre_save, sender=Taxon)
-def survey_pre_save(sender, instance, *args, **kwargs):
+def taxon_pre_save(sender, instance, *args, **kwargs):
     """Taxon: Build names (expensive lookup)."""
+    if not instance.pk:
+        instance.save(update_fields=['name_id', ])
     instance.canonical_name = instance.build_canonical_name
     instance.taxonomic_name = instance.build_taxonomic_name
