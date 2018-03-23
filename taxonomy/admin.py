@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 # from django import forms as django_forms
 # import floppyforms as ff
 from django.contrib import admin
-from mptt.admin import MPTTModelAdmin, TreeRelatedFieldListFilter
+from mptt.admin import MPTTModelAdmin  # TreeRelatedFieldListFilter
 # from django.contrib.gis import forms
 # from django.contrib.gis.db import models as geo_models
 
@@ -200,7 +200,8 @@ class HbvParentAdmin(VersionAdmin, admin.ModelAdmin):
 
 @admin.register(Taxon)
 class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
-    """Admin for Taxon. """
+    """Admin for Taxon."""
+
     list_filter = (
         'rank',
         'publication_status',

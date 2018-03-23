@@ -2089,7 +2089,7 @@ class TaxonViewSet(BatchUpsertViewSet):
 
     queryset = Taxon.objects.all()
     serializer_class = TaxonSerializer
-    # filter_class = TaxonFilter
+    filter_class = TaxonFilter
     uid_field = "name_id"
     model = Taxon
 
