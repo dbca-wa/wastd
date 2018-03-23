@@ -15,7 +15,7 @@ from __future__ import unicode_literals, absolute_import
 # from django.core.urlresolvers import reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
-from django.db.models.signals import pre_save  # post_save, pre_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
@@ -1791,10 +1791,9 @@ class Taxon(MPTTModel):
         return "[{0}] ({1}) {2}".format(self.name_id, self.get_rank_display(), self.taxonomic_name)
 
 
-@receiver(pre_save, sender=Taxon)
-def taxon_pre_save(sender, instance, *args, **kwargs):
+@receiver(post_save, sender=Taxon)
+def taxon_post_save(sender, instance, *args, **kwargs):
     """Taxon: Build names (expensive lookup)."""
-    if not instance.pk:
-        instance.save(update_fields=['name_id', ])
     instance.canonical_name = instance.build_canonical_name
     instance.taxonomic_name = instance.build_taxonomic_name
+    instance.save(update_fields=['canonical_name', 'taxonomic_name'])
