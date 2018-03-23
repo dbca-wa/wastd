@@ -1862,6 +1862,10 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
+        if data[self.uid_field] is None or data[self.uid_field] == "":
+            logger.warn("[API][{0}] failed to upsert record {1}".format(
+                self.model, str(data.__dict__)))
+            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
         dd = {self.uid_field: data[self.uid_field]}
         if 'csrfmiddlewaretoken' in data:
             data.pop('csrfmiddlewaretoken')
