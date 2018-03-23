@@ -2,6 +2,7 @@
 import logging
 # from pdb import set_trace
 from django.db import transaction
+from django.utils.encoding import force_text
 from taxonomy.models import (Taxon, HbvName, HbvFamily, HbvGenus, HbvSpecies, HbvParent)  # HbvXref
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
     if fam.division_nid:
         dd = dict(
             name_id=fam.division_nid,
-            name=fam.division_name,
+            name=force_text(fam.division_name),
             rank=Taxon.RANK_DIVISION,
             parent=lowest_parent)
         division, created = Taxon.objects.update_or_create(name_id=fam.division_nid, defaults=dd)
@@ -33,7 +34,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
     if fam.class_nid:
         dd = dict(
             name_id=fam.class_nid,
-            name=fam.class_name,
+            name=force_text(fam.class_name),
             rank=Taxon.RANK_CLASS,
             parent=lowest_parent)
         clazz, created = Taxon.objects.update_or_create(name_id=fam.class_nid, defaults=dd)
@@ -43,7 +44,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
 
     if fam.order_nid:
         dd = dict(
-            name=fam.order_name,
+            name=(fam.order_name),
             rank=Taxon.RANK_ORDER,
             parent=lowest_parent)
         order, created = Taxon.objects.update_or_create(name_id=fam.order_nid, defaults=dd)
@@ -51,7 +52,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
         action = "Created" if created else "Updated"
         logger.info("[make_family] {0} {1}.".format(action, order))
 
-    dd = dict(name=fam.family_name,
+    dd = dict(name=force_text(fam.family_name),
               rank=Taxon.RANK_FAMILY,
               current=current_dict[fam.is_current],
               parent=lowest_parent,
@@ -79,7 +80,7 @@ def make_genus(x, current_dict, publication_dict):
     Return The created or updated instance of Taxon.
     """
     dd = dict(
-        name=x.genus,
+        name=force_text(x.genus),
         rank=Taxon.RANK_GENUS,
         current=current_dict[x.is_current],
         parent=Taxon.objects.get(name_id=x.family_nid),
@@ -110,7 +111,7 @@ def make_species(x, current_dict, publication_dict):
     Return The created or updated instance of Taxon.
     """
     dd = dict(
-        name=x.species,
+        name=force_text(x.species),
         rank=Taxon.RANK_SPECIES,
         current=current_dict[x.is_current],
         parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
@@ -138,7 +139,7 @@ def make_subspecies(x, current_dict, publication_dict):
     Return The created or updated instance of Taxon.
     """
     dd = dict(
-        name=x.infra_name,
+        name=force_text(x.infra_name),
         rank=Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
         parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
@@ -167,7 +168,7 @@ def make_variety(x, current_dict, publication_dict):
     Return The created or updated instance of Taxon.
     """
     dd = dict(
-        name=x.infra_name,
+        name=force_text(x.infra_name),
         rank=Taxon.RANK_VARIETY,
         current=current_dict[x.is_current],
         parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
@@ -196,7 +197,7 @@ def make_form(x, current_dict, publication_dict):
     Return The created or updated instance of Taxon.
     """
     dd = dict(
-        name=x.infra_name2 or x.infra_name,
+        name=force_text(x.infra_name2) or force_text(x.infra_name),
         rank=Taxon.RANK_FORMA,
         current=current_dict[x.is_current],
         parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),

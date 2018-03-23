@@ -1763,9 +1763,7 @@ class Taxon(MPTTModel):
         """
         if self.rank == self.RANK_SPECIES:
             genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
-            return "{0} {1}".format(
-                "GENUS" if not genus else genus.name,
-                self.name)
+            return "{0} {1}".format("GENUS" if not genus else genus.name, self.name)
 
         elif self.rank > self.RANK_SPECIES:
             genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
@@ -1788,7 +1786,10 @@ class Taxon(MPTTModel):
 
     def __str__(self):
         """The full name: [NameID] (RANK) TAXONOMIC NAME."""
-        return "[{0}] ({1}) {2}".format(self.name_id, self.get_rank_display(), self.taxonomic_name)
+        return "[{0}] ({1}) {2}".format(
+            self.name_id,
+            self.get_rank_display(),
+            self.name if not self.taxonomic_name else self.taxonomic_name)
 
 
 @receiver(post_save, sender=Taxon)
@@ -1796,4 +1797,3 @@ def taxon_post_save(sender, instance, *args, **kwargs):
     """Taxon: Build names (expensive lookup)."""
     instance.canonical_name = instance.build_canonical_name
     instance.taxonomic_name = instance.build_taxonomic_name
-    instance.save(update_fields=['canonical_name', 'taxonomic_name'])
