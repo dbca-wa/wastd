@@ -1896,3 +1896,100 @@ class Vernacular(models.Model):
         return "[{0}] {1}".format(
             self.taxon.name_id,
             self.name)
+
+
+@python_2_unicode_compatible
+class Crossreference(models.Model):
+    """Taxonomic crossreference."""
+
+    REASON_MIS = 0
+    REASON_TSY = 1
+    REASON_NSY = 2
+    REASON_EXC = 3
+    REASON_CON = 4
+    REASON_FOR = 5
+    REASON_OGV = 6
+    REASON_ERR = 7
+    REASON_ISY = 8
+    REASONS = (
+        (REASON_MIS, "Misapplied name"),
+        (REASON_TSY, "Taxonomic synonym"),
+        (REASON_NSY, "Nomenclatural synonym"),
+        (REASON_EXC, "Excluded name"),
+        (REASON_CON, "Concept change"),
+        (REASON_FOR, "Formal description"),
+        (REASON_OGV, "Orthographic variant"),
+        (REASON_ERR, "Name in error"),
+        (REASON_ISY, "Informal Synonym"),
+        # ISY: non-current name pointing to another non-current name
+    )
+
+    xref_id = models.BigIntegerField(
+        unique=True,
+        blank=True, null=True,
+        verbose_name=_("WACensus xref ID"),
+        help_text=_("The WACensus xref ID of the record."),
+    )
+
+    predecessor = models.ForeignKey(
+        Taxon,
+        blank=True, null=True,
+        verbose_name=_("Predecessor Taxon"),
+        related_name="predecessor",
+        help_text=_("The old taxon.")
+    )
+
+    successor = models.ForeignKey(
+        Taxon,
+        blank=True, null=True,
+        verbose_name=_("Successor Taxon"),
+        related_name="successor",
+        help_text=_("The new taxon.")
+    )
+
+    reason = models.PositiveSmallIntegerField(
+        choices=REASONS,
+        default=REASON_ERR,
+        db_index=True,
+        verbose_name=_("Reason"),
+        help_text=_("The reason for the taxonomic change."),
+    )
+
+    authorised_by = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("WACensus authorised by"),
+        help_text=_("The person or system who authorised this record "
+                    "last in WACensus."),
+    )
+
+    authorised_on = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("WACensus authorised on"),
+        help_text=_("Date on which this record was authorised in WACensus."),
+    )
+
+    effective_to = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("WACensus deactivated on"),
+        help_text=_("Xref considered deleted after this date if set."),
+    )
+
+    comments = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Comments"),
+        help_text=_("Comments are words to clarify things."),
+    )
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Crossreference"
+        verbose_name_plural = "Crossreferences"
+
+    def __str__(self):
+        """The name."""
+        return "[{0} > {1}] {2}".format(
+            "x" if not self.predecessor else self.predecessor.name_id,
+            "x" if not self.successor else self.successor.name_id,
+            self.get_reason_display())

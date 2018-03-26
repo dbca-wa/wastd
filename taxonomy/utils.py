@@ -1,10 +1,14 @@
 """Helpers for Taxonomy module."""
 import logging
+from django.utils.dateparse import parse_datetime
+# from django.utils.timezone import is_aware, make_aware
 # from pdb import set_trace
 from django.db import transaction
 from django.utils.encoding import force_text
 from taxonomy.models import (
-    Taxon, Vernacular, HbvName, HbvFamily, HbvGenus, HbvSpecies, HbvParent, HbvVernacular)  # HbvXref
+    Taxon, Vernacular, Crossreference,
+    HbvName, HbvFamily, HbvGenus, HbvSpecies,
+    HbvParent, HbvVernacular, HbvXref)
 
 logger = logging.getLogger(__name__)
 
@@ -231,6 +235,41 @@ def make_vernacular(hbv_vern_obj, lang_dict):
     return obj
 
 
+def make_crossreference(hbv_xref_obj, reason_dict):
+    """Create or update Crossreference."""
+    if hbv_xref_obj.old_name_id:
+        pre = Taxon.objects.get(name_id=hbv_xref_obj.old_name_id)
+    else:
+        pre = None
+
+    if hbv_xref_obj.new_name_id:
+        suc = Taxon.objects.get(name_id=hbv_xref_obj.new_name_id)
+    else:
+        suc = None
+
+    if hbv_xref_obj.authorised_on:
+        auth_on = parse_datetime("{0}T00:00:00+00:00".format(hbv_xref_obj.authorised_on))
+        # auth_on = x if is_aware(x) else make_aware(x)
+    else:
+        auth_on = None
+
+    dd = dict(
+        xref_id=hbv_xref_obj.xref_id,
+        predecessor=pre,
+        successor=suc,
+        reason=reason_dict[hbv_xref_obj.xref_type],
+        authorised_by=hbv_xref_obj.authorised_by,
+        authorised_on=auth_on,
+        comments=hbv_xref_obj.comments
+    )
+    obj, created = Crossreference.objects.update_or_create(xref_id=hbv_xref_obj.xref_id, defaults=dd)
+    action = "Created" if created else "Updated"
+    # pre.save()
+    # suc.save()
+    logger.info("[make_crossreference] {0} {1}.".format(action, obj))
+    return obj
+
+
 def update_taxon():
     """Update Taxon from local copy of WACensus data.
 
@@ -316,9 +355,14 @@ def update_taxon():
     )
     logger.info(msg)
 
-    logger.info("[update_taxon] Updating... Vernacular Names...")
+    logger.info("[update_taxon] Updating Vernacular Names...")
     LANG = {"ENGLISH": 0, "INDIGENOUS": 1}
     [make_vernacular(x, LANG) for x in HbvVernacular.objects.all()]
     logger.info("[update_taxon] Updated {0} Vernacular Names.".format(Vernacular.objects.count()))
+
+    logger.info("[update_taxon] Updating Crossreferences...")
+    REASONS = {"MIS": 0, "TSY": 1, "NSY": 2, "EXC": 3, "CON": 4, "FOR": 5, "OGV": 6, "ERR": 7, "ISY": 8}
+    [make_crossreference(x, REASONS) for x in HbvXref.objects.filter(active="Y")]
+    logger.info("[update_taxon] Updated {0} Crossreferences.".format(Crossreference.objects.count()))
 
     return msg
