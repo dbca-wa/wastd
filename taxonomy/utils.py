@@ -3,7 +3,8 @@ import logging
 # from pdb import set_trace
 from django.db import transaction
 from django.utils.encoding import force_text
-from taxonomy.models import (Taxon, HbvName, HbvFamily, HbvGenus, HbvSpecies, HbvParent)  # HbvXref
+from taxonomy.models import (
+    Taxon, Vernacular, HbvName, HbvFamily, HbvGenus, HbvSpecies, HbvParent, HbvVernacular)  # HbvXref
 
 logger = logging.getLogger(__name__)
 
@@ -213,6 +214,23 @@ def make_form(x, current_dict, publication_dict):
     return obj
 
 
+def make_vernacular(hbv_vern_obj, lang_dict):
+    """Create or update Vernacular."""
+    t = Taxon.objects.get(name_id=hbv_vern_obj.name_id)
+    dd = dict(
+        ogc_fid=hbv_vern_obj.ogc_fid,
+        taxon=t,
+        name=hbv_vern_obj.vernacular,
+        language=lang_dict[hbv_vern_obj.language],
+        preferred=True if (hbv_vern_obj.lang_pref and hbv_vern_obj.lang_pref == "Y") else False
+    )
+    obj, created = Vernacular.objects.update_or_create(ogc_fid=hbv_vern_obj.ogc_fid, defaults=dd)
+    action = "Created" if created else "Updated"
+    t.save()
+    logger.info("[make_vernacular] {0} {1}.".format(action, obj))
+    return obj
+
+
 def update_taxon():
     """Update Taxon from local copy of WACensus data.
 
@@ -297,4 +315,10 @@ def update_taxon():
         len(forms)
     )
     logger.info(msg)
+
+    logger.info("[update_taxon] Updating... Vernacular Names...")
+    LANG = {"ENGLISH": 0, "INDIGENOUS": 1}
+    [make_vernacular(x, LANG) for x in HbvVernacular.objects.all()]
+    logger.info("[update_taxon] Updated {0} Vernacular Names.".format(Vernacular.objects.count()))
+
     return msg

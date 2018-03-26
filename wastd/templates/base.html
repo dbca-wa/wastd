@@ -55,55 +55,56 @@
           <ul class="navbar-nav mr-auto">
 
           <li class="nav-item">
-            <a class="nav-link"
-            href="{% url 'dashboard' %}"
-            title="Browse, filter and search {{ settings.SITE_NAME }}">
-            <span class="oi oi-dashboard"
-            title="{{ settings.SITE_NAME }} Dashboard" aria-hidden="true"></span>
-            Dashboard
+            <a class="nav-link" href="{% url 'dashboard' %}"
+              title="Browse, filter and search {{ settings.SITE_NAME }}">
+            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            Data
             </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link"
-            href="{% url 'map' %}"
-            title="Map {{ settings.SITE_NAME }}">
-            <span class="oi oi-map"
-            title="{{ settings.SITE_NAME }} Map" aria-hidden="true"></span>
+            <a class="nav-link" href="{% url 'map' %}"
+              title="Map {{ settings.SITE_NAME }}">
+            <span class="oi oi-globe" aria-hidden="true"></span>
             Map
             </a>
           </li>
 
           <li class="nav-item dropdown">
-            <a  class="nav-link dropdown-toggle"
-            href="/"
-            id="nav-li-analysts"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false">
-            <span class="oi oi-graph" title="Analysts" aria-hidden="true"></span>
+            <a  class="nav-link dropdown-toggle" href="/"
+              id="nav-li-analysts"
+              title="Analysts"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false">
+            <span class="oi oi-graph" aria-hidden="true"></span>
             Analysts
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
-              <a class="dropdown-item" href="http://wastd.readthedocs.io/data_consumers.html" target="_">
-                <span class="oi oi-book" title="Manual" aria-hidden="true"></span>
+              <a class="dropdown-item"
+                href="http://wastd.readthedocs.io/data_consumers.html"
+                title="Manual" target="_">
+                <span class="oi oi-book" aria-hidden="true"></span>
                 <span class="align-middle">Data Analysts' Manual</span>
               </a>
-              <a class="dropdown-item" href="/api/1/" target="_">
-               <span class="oi oi-terminal" title="API" aria-hidden="true"></span>
+              <a class="dropdown-item" href="/api/1/" title="API" target="_">
+               <span class="oi oi-terminal" aria-hidden="true"></span>
                <span class="align-middle">API</span>
              </a>
-             <a class="dropdown-item" href="{% url 'api-docs' %}" target="_">
-               <span class="oi oi-book align-middle" title="API docs (Swagger)" aria-hidden="true"></span>
+             <a class="dropdown-item" href="{% url 'api-docs' %}"
+                title="API docs (Swagger)" target="_">
+               <span class="oi oi-book align-middle" aria-hidden="true"></span>
                <span class="align-middle">API Docs (Swagger)</span>
              </a>
-             <a class="dropdown-item" href="/api/1/docs" target="_">
-               <span class="oi oi-book align-middle" title="API docs (DRF)" aria-hidden="true"></span>
+             <a class="dropdown-item" href="/api/1/docs" title="API docs (DRF)" target="_">
+               <span class="oi oi-book align-middle" aria-hidden="true"></span>
                <span class="align-middle">API Docs (DRF)</span>
              </a>
              {% if request.user.is_authenticated %}
-             <a class="dropdown-item" href="{% url 'users:detail' request.user.username  %}">
-              <span class="oi oi-person align-middle" title="My API Authentication" aria-hidden="true"></span>
+             <a class="dropdown-item"
+                title="My API Authentication"
+                href="{% url 'users:detail' request.user.username  %}">
+              <span class="oi oi-person align-middle" aria-hidden="true"></span>
               <span class="align-middle">My API Authentication</span>
               </a>
               {% endif %}
@@ -128,22 +129,25 @@
             <a  class="nav-link dropdown-toggle"
               href="/"
               id="nav-li-curators"
+              title="Curators"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false">
-              <span class="oi oi-shield" title="Curators" aria-hidden="true"></span>
+              <span class="oi oi-shield" aria-hidden="true"></span>
               Curators
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-curators">
-              <a class="dropdown-item" href="http://wastd.readthedocs.io/data_curators.html" target="_">
-                <span class="oi oi-book" title="Manual" aria-hidden="true"></span>
+              <a class="dropdown-item"
+                href="http://wastd.readthedocs.io/data_curators.html"
+                title="Manual" target="_">
+                <span class="oi oi-book" aria-hidden="true"></span>
                 Data Curators' Manual
               </a>
               <a class="dropdown-item"
                 href="{% url 'admin:index' %}"
                 target="_"
                 title="Data entry and curation area">
-                <span class="oi oi-beaker" title="Analysts" aria-hidden="true"></span>
+                <span class="oi oi-beaker" aria-hidden="true"></span>
                 Data Curation Portal
               </a>
 
@@ -151,14 +155,14 @@
               <a class="dropdown-item"
                 href="{% url 'update-taxon' %}"
                 title="Update taxon names">
-               <span class="oi oi-loop-circular" title="Update taxon names" aria-hidden="true"></span>
+               <span class="oi oi-loop-circular" aria-hidden="true"></span>
                Update Taxon Names
               </a>
               <a class="dropdown-item"
                 href="/api/1/animal-encounters/?format=latex"
                 target="_"
                 title="Export all Animal Encounters as PDF">
-                <span class="oi oi-document" title="Export all AnimalEncounters" aria-hidden="true"></span>
+                <span class="oi oi-document" aria-hidden="true"></span>
                 Export All AnimalEncounters
               </a>
               {% endif %}
@@ -167,26 +171,14 @@
           {% endif %}
 
           <li class="nav-item">
-           <a class="nav-link" href="http://wastd.readthedocs.io/" target="_">
-             <span class="oi oi-book" title="Manual" aria-hidden="true"></span>
+           <a class="nav-link" href="http://wastd.readthedocs.io/" title="Manual" target="_">
+             <span class="oi oi-book" aria-hidden="true"></span>
              Manual
            </a>
           </li>
 
           <li class="nav-item">
             {% bootstrap_messages %}
-
-          <!-- {% if messages %}
-            {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              {{ message }}
-            </div>
-            {% endfor %}
-            {% endif %} -->
-
             {% block extranav %}{% endblock extranav %}
           </li>
        </ul>

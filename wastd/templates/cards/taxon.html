@@ -42,14 +42,29 @@
     </h6>
 
     <h5 class="card-title {% if original.current == False %}text-muted{% endif %}">
-      {{ original.taxonomic_name }}
+      {{ original.canonical_name }}
     </h5>
 
     <!-- Author -->
     {% if original.author %}
     <h6 class="card-subtitle mb-2 text-muted">
       <span class="oi oi-pencil" title="Author" aria-hidden="true"></span>
-      {{original.author}}
+      {{ original.author }}
+    </h6>
+    {% endif %}
+
+    <!-- Vernacular -->
+    {% if original.vernacular_name %}
+    <h6 class="card-subtitle mb-2 text-muted">
+      <span class="oi oi-double-quote-sans-left" title="Preferred English vernacular name" aria-hidden="true"></span>
+      {{ original.vernacular_name }}
+    </h6>
+    {% endif %}
+
+    {% if original.vernacular_names and original.vernacular_names != original.vernacular_name %}
+    <h6 class="card-subtitle mb-2 text-muted">
+      <span class="oi oi-tags" title="All vernacular names" aria-hidden="true"></span>
+      {{ original.vernacular_names }}
     </h6>
     {% endif %}
 
@@ -80,7 +95,7 @@
     <a href="?name_id={{ original.name_id }}"
       class="btn btn-primary btn-sm btn-block"
       title="Restrict results to {{ original.taxonomic_name }}, its parents, and immediate children and reset all filters.">
-      <span class="oi oi-aperture" aria-hidden="true"></span>
+      <span class="oi oi-project" aria-hidden="true"></span>
       Explore {{ original.taxonomic_name }}
     </a>
 

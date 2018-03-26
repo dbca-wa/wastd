@@ -11,11 +11,12 @@ from __future__ import unicode_literals, absolute_import
 # import slugify
 # from datetime import timedelta
 # from dateutil import tz
+import logging
 
 # from django.core.urlresolvers import reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
@@ -34,6 +35,8 @@ from django.utils.translation import ugettext_lazy as _
 # from polymorphic.models import PolymorphicModel
 
 # from wastd.users.models import User
+
+logger = logging.getLogger(__name__)
 
 
 @python_2_unicode_compatible
@@ -1280,8 +1283,7 @@ class HbvVernacular(models.Model):
         blank=True, null=True,
         verbose_name=_("Name"),
         help_text=_(
-            "Full taxonomic name without author. Different concepts "
-            "(defined by different authors) can have identical names."),
+            ""),
     )
 
     vernacular = models.CharField(
@@ -1289,8 +1291,7 @@ class HbvVernacular(models.Model):
         blank=True, null=True,
         verbose_name=_("Vernacular Name"),
         help_text=_(
-            "Full taxonomic name without author. Different concepts "
-            "(defined by different authors) can have identical names."),
+            ""),
     )
 
     language = models.CharField(
@@ -1572,8 +1573,6 @@ class HbvParent(models.Model):
 
 
 # django-mptt tree models ----------------------------------------------------#
-
-
 @python_2_unicode_compatible
 class Taxon(MPTTModel):
     """A taxonomic name at any taxonomic rank.
@@ -1717,6 +1716,21 @@ class Taxon(MPTTModel):
         help_text=_("The taxonomic name.")
     )
 
+    vernacular_name = models.CharField(
+        max_length=2000,
+        db_index=True,
+        blank=True, null=True,
+        verbose_name=_("Preferred English Vernacular Name"),
+        help_text=_("The preferred english vernacular name.")
+    )
+
+    vernacular_names = models.TextField(
+        db_index=True,
+        blank=True, null=True,
+        verbose_name=_("All Vernacular Names"),
+        help_text=_("A list of all vernacular names.")
+    )
+
     author = models.CharField(
         max_length=1000,
         blank=True, null=True,
@@ -1784,6 +1798,25 @@ class Taxon(MPTTModel):
         else:
             return self.build_canonical_name
 
+    @property
+    def build_vernacular_name(self):
+        """Return the preferred english, or the first available vernacular name."""
+        vv = self.vernacular_set.all()
+        if vv.filter(language=Vernacular.LANGUAGE_ENGLISH, preferred=True):
+            n = vv.filter(language=Vernacular.LANGUAGE_ENGLISH, preferred=True).first().name
+        elif vv.filter(language=Vernacular.LANGUAGE_ENGLISH):
+            n = vv.filter(language=Vernacular.LANGUAGE_ENGLISH).first().name
+        elif vv:
+            n = vv.first().name
+        else:
+            n = ""
+        return n
+
+    @property
+    def build_vernacular_names(self):
+        """Return a comma-separated list of all vernacular names."""
+        return ", ".join([x.name for x in self.vernacular_set.all()])
+
     def __str__(self):
         """The full name: [NameID] (RANK) TAXONOMIC NAME."""
         return "[{0}] ({1}) {2}".format(
@@ -1792,8 +1825,74 @@ class Taxon(MPTTModel):
             self.name if not self.taxonomic_name else self.taxonomic_name)
 
 
-@receiver(post_save, sender=Taxon)
-def taxon_post_save(sender, instance, *args, **kwargs):
-    """Taxon: Build names (expensive lookup)."""
-    instance.canonical_name = instance.build_canonical_name
-    instance.taxonomic_name = instance.build_taxonomic_name
+@receiver(pre_save, sender=Taxon)
+def taxon_pre_save(sender, instance, *args, **kwargs):
+    """Taxon: Build names (expensive lookups)."""
+    try:
+        instance.canonical_name = instance.build_canonical_name
+        instance.taxonomic_name = instance.build_taxonomic_name
+    except:
+        logger.info("[taxon_pre_save] skipping can/tax name.")
+    instance.vernacular_name = instance.build_vernacular_name
+    instance.vernacular_names = instance.build_vernacular_names
+
+
+@python_2_unicode_compatible
+class Vernacular(models.Model):
+    """Vernacular Name."""
+
+    LANGUAGE_ENGLISH = 0
+    LANGUAGE_INDIGENOUS = 1
+    LANGUAGES = (
+        (LANGUAGE_ENGLISH, "English"),
+        (LANGUAGE_INDIGENOUS, "Indigenous"),
+    )
+
+    ogc_fid = models.BigIntegerField(
+        unique=True,
+        verbose_name=_("GeoServer OGC FeatureID"),
+        help_text=_("The OCG Feature ID of the record, used to "
+                    "identify the record."),
+    )
+
+    taxon = models.ForeignKey(
+        Taxon,
+        verbose_name=_("Taxon"),
+        help_text=_("The taxon this vernacular name applies to.")
+    )
+
+    name = models.CharField(
+        max_length=1000,
+        db_index=True,
+        blank=True, null=True,
+        verbose_name=_("Vernacular Name"),
+        help_text=_("The vernacular name.")
+    )
+
+    language = models.PositiveSmallIntegerField(
+        choices=LANGUAGES,
+        db_index=True,
+        blank=True, null=True,
+        verbose_name=_("Language"),
+        help_text=_("The language of the vernacular name."),
+    )
+
+    preferred = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Is preferred"),
+        help_text=_("Whether the vernacular name is the "
+                    "preferred name in the given language."),
+    )
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Vernacular Name"
+        verbose_name_plural = "Vernacular Names"
+
+    def __str__(self):
+        """The vernacular name: [NameID] (RANK) TAXONOMIC NAME."""
+        return "[{0}] {1}".format(
+            self.taxon.name_id,
+            self.name)

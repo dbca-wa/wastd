@@ -17,9 +17,13 @@ class TaxonFilter(django_filters.FilterSet):
         """Class opts."""
 
         model = Taxon
-        fields = ['taxonomic_name', 'rank', 'current', 'publication_status']
+        fields = ['taxonomic_name', 'vernacular_names', 'rank', 'current', 'publication_status']
         filter_overrides = {
             models.CharField: {
+                'filter_class': django_filters.CharFilter,
+                'extra': lambda f: {'lookup_expr': 'icontains', },
+            },
+            models.TextField: {
                 'filter_class': django_filters.CharFilter,
                 'extra': lambda f: {'lookup_expr': 'icontains', },
             },
