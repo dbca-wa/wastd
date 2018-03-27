@@ -237,37 +237,42 @@ def make_vernacular(hbv_vern_obj, lang_dict):
 
 def make_crossreference(hbv_xref_obj, reason_dict):
     """Create or update Crossreference."""
-    if hbv_xref_obj.old_name_id:
-        pre = Taxon.objects.get(name_id=hbv_xref_obj.old_name_id)
-    else:
-        pre = None
+    try:
+        if hbv_xref_obj.old_name_id:
+            pre = Taxon.objects.get(name_id=hbv_xref_obj.old_name_id)
+        else:
+            pre = None
 
-    if hbv_xref_obj.new_name_id:
-        suc = Taxon.objects.get(name_id=hbv_xref_obj.new_name_id)
-    else:
-        suc = None
+        if hbv_xref_obj.new_name_id:
+            suc = Taxon.objects.get(name_id=hbv_xref_obj.new_name_id)
+        else:
+            suc = None
 
-    if hbv_xref_obj.authorised_on:
-        auth_on = parse_datetime("{0}T00:00:00+00:00".format(hbv_xref_obj.authorised_on))
-        # auth_on = x if is_aware(x) else make_aware(x)
-    else:
-        auth_on = None
+        if hbv_xref_obj.authorised_on:
+            auth_on = parse_datetime("{0}T00:00:00+00:00".format(hbv_xref_obj.authorised_on))
+            # auth_on = x if is_aware(x) else make_aware(x)
+        else:
+            auth_on = None
 
-    dd = dict(
-        xref_id=hbv_xref_obj.xref_id,
-        predecessor=pre,
-        successor=suc,
-        reason=reason_dict[hbv_xref_obj.xref_type],
-        authorised_by=hbv_xref_obj.authorised_by,
-        authorised_on=auth_on,
-        comments=hbv_xref_obj.comments
-    )
-    obj, created = Crossreference.objects.update_or_create(xref_id=hbv_xref_obj.xref_id, defaults=dd)
-    action = "Created" if created else "Updated"
-    # pre.save()
-    # suc.save()
-    logger.info("[make_crossreference] {0} {1}.".format(action, obj))
-    return obj
+        dd = dict(
+            xref_id=hbv_xref_obj.xref_id,
+            predecessor=pre,
+            successor=suc,
+            reason=reason_dict[hbv_xref_obj.xref_type],
+            authorised_by=hbv_xref_obj.authorised_by,
+            authorised_on=auth_on,
+            comments=hbv_xref_obj.comments
+        )
+        obj, created = Crossreference.objects.update_or_create(xref_id=hbv_xref_obj.xref_id, defaults=dd)
+        action = "Created" if created else "Updated"
+        # pre.save()
+        # suc.save()
+        logger.info("[make_crossreference] {0} {1}.".format(action, obj))
+        return obj
+    except:
+        logger.info("[make_crossreference] Failed to create Crossreference "
+                    "for xref_id {0}, skipping.".format(hbv_xref_obj.xref_id))
+        return None
 
 
 def update_taxon():
