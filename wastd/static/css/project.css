@@ -27,7 +27,7 @@ html, body {height: 100%; width: 100%;}
 #mapholder {height:100%; width: 100%;}
 #wastdmap {width: auto; height: 100%;}
 
-#searchmapholder {width: 18rem; height: 18rem;}
+#searchmapholder {width: 100% auto; height: 18rem;}
 #searchmap {height:100%; width: auto;}
 
 /* Leaflet popup fixed width */
