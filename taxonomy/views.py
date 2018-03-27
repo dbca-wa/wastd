@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Taxonomy views."""
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 from itertools import chain
 
 from django.contrib import messages

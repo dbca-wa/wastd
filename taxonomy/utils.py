@@ -1,4 +1,5 @@
 """Helpers for Taxonomy module."""
+from __future__ import division, print_function, unicode_literals, absolute_import
 import logging
 from django.utils.dateparse import parse_datetime
 # from django.utils.timezone import is_aware, make_aware
@@ -270,7 +271,7 @@ def make_crossreference(hbv_xref_obj, reason_dict):
         logger.info("[make_crossreference] {0} {1}.".format(action, obj))
         return obj
     except:
-        logger.info("[make_crossreference] Failed to create Crossreference "
+        logger.warn("[make_crossreference] Failed to create Crossreference "
                     "for xref_id {0}, skipping.".format(hbv_xref_obj.xref_id))
         return None
 
