@@ -143,3 +143,8 @@ django_compressor==2.1.1
 boto==2.47.0
 django-storages-redux==1.3.2
 dj-static
+
+
+# Profiling
+# ------------------------------------------------
+django-silk

@@ -1771,9 +1771,9 @@ class Taxon(MPTTModel):
     def build_canonical_name(self):
         """Build the canonical name.
 
-        * Anything above species:
-        * Species: [NameID] RANK GENUS (SPECIES)NAME
-        * Subspecies and lower: [NameID] RANK GENUS SPECIES RANK (SUBSPECIES)NAME
+        * Anything above species: [NameID] NAME
+        * Species: [NameID] RANK GENUS NAME
+        * Subspecies and lower: [NameID] RANK GENUS SPECIES RANK NAME
         """
         if self.rank == self.RANK_SPECIES:
             genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
@@ -1935,7 +1935,7 @@ class Crossreference(models.Model):
         Taxon,
         blank=True, null=True,
         verbose_name=_("Predecessor Taxon"),
-        related_name="predecessor",
+        related_name="precedes",
         help_text=_("The old taxon.")
     )
 
@@ -1943,7 +1943,7 @@ class Crossreference(models.Model):
         Taxon,
         blank=True, null=True,
         verbose_name=_("Successor Taxon"),
-        related_name="successor",
+        related_name="supercedes",
         help_text=_("The new taxon.")
     )
 

@@ -343,13 +343,28 @@ def update_taxon():
         with Taxon.objects.delay_mptt_updates():
             forms = [make_form(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Form")]
 
+    # Vernaculars
+    logger.info("[update_taxon] Updating Vernacular Names...")
+    LANG = {"ENGLISH": 0, "INDIGENOUS": 1}
+    vernaculars = [make_vernacular(x, LANG) for x in HbvVernacular.objects.all()]
+    logger.info("[update_taxon] Updated {0} Vernacular Names.".format(Vernacular.objects.count()))
+
+    # Crossreferences
+    logger.info("[update_taxon] Updating Crossreferences...")
+    REASONS = {"MIS": 0, "TSY": 1, "NSY": 2, "EXC": 3, "CON": 4, "FOR": 5, "OGV": 6, "ERR": 7, "ISY": 8}
+    crossreferences = [make_crossreference(x, REASONS) for x in HbvXref.objects.filter(active="Y")]
+    logger.info("[update_taxon] Updated {0} Crossreferences.".format(Crossreference.objects.count()))
+
+    # Rebuild MPTT tree
     logger.info("[update_taxon] Rebuilding taxonomic tree - this could take a while.")
     Taxon.objects.rebuild()
     logger.info("[update_taxon] Taxonomic tree rebuilt.")
 
+    # Say bye
     msg = ("[update_taxon] Updated {0} kingdoms, {1} families "
            "and their parentage, {2} genera, {3} species"
-           ", {4} subspecies, {5} varieties, {6} forms."
+           ", {4} subspecies, {5} varieties, {6} forms,"
+           " {7} vernaculars and {8} crossreferences."
            ).format(
         len(kingdoms),
         len(families),
@@ -357,18 +372,8 @@ def update_taxon():
         len(species),
         len(subspecies),
         len(varieties),
-        len(forms)
-    )
+        len(forms),
+        len(vernaculars),
+        len(crossreferences))
     logger.info(msg)
-
-    logger.info("[update_taxon] Updating Vernacular Names...")
-    LANG = {"ENGLISH": 0, "INDIGENOUS": 1}
-    [make_vernacular(x, LANG) for x in HbvVernacular.objects.all()]
-    logger.info("[update_taxon] Updated {0} Vernacular Names.".format(Vernacular.objects.count()))
-
-    logger.info("[update_taxon] Updating Crossreferences...")
-    REASONS = {"MIS": 0, "TSY": 1, "NSY": 2, "EXC": 3, "CON": 4, "FOR": 5, "OGV": 6, "ERR": 7, "ISY": 8}
-    [make_crossreference(x, REASONS) for x in HbvXref.objects.filter(active="Y")]
-    logger.info("[update_taxon] Updated {0} Crossreferences.".format(Crossreference.objects.count()))
-
     return msg

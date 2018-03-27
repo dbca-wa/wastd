@@ -153,6 +153,13 @@
 
               {% if request.user.is_superuser %}
               <a class="dropdown-item"
+                href="/silk/"
+                title="Measure performance">
+               <span class="oi oi-pulse" aria-hidden="true"></span>
+               Site performance
+              </a>
+
+              <a class="dropdown-item"
                 href="{% url 'update-taxon' %}"
                 title="Update taxon names">
                <span class="oi oi-loop-circular" aria-hidden="true"></span>

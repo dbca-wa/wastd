@@ -71,6 +71,7 @@ THIRD_PARTY_APPS = (
     # 'dynamic_rest',                 # Parameterised API queries
     'mptt',                         # Graph database: tree models
     'background_task',              # Job queue
+    'silk',                         # Profiling
 )
 
 # Apps specific for this project go here.
@@ -95,6 +96,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    'silk.middleware.SilkyMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'dpaw_utils.middleware.SSOLoginMiddleware',
 )

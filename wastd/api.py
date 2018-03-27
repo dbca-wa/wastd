@@ -71,7 +71,8 @@ from wastd.users.models import User
 
 from taxonomy.models import (
     HbvName, HbvSupra, HbvGroup, HbvFamily,
-    HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent, Taxon)
+    HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent,
+    Taxon, Vernacular, Crossreference)
 
 logger = logging.getLogger(__name__)
 
@@ -1192,28 +1193,46 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
       missed turtle during turtle tagging, track observed and made within same night (same turtle date)
 
     # nest_type
-    * [/api/1/turtle-nest-encounters/?nest_type=track-not-assessed](/api/1/turtle-nest-encounters/?nest_type=track-not-assessed) track, not checked for nest
-    * [/api/1/turtle-nest-encounters/?nest_type=false-crawl](/api/1/turtle-nest-encounters/?nest_type=false-crawl) track without nest
-    * [/api/1/turtle-nest-encounters/?nest_type=successful-crawl](/api/1/turtle-nest-encounters/?nest_type=successful-crawl) track with nest
-    * [/api/1/turtle-nest-encounters/?nest_type=track-unsure](/api/1/turtle-nest-encounters/?nest_type=track-unsure) track, checked for nest, unsure if nest
-    * [/api/1/turtle-nest-encounters/?nest_type=nest](/api/1/turtle-nest-encounters/?nest_type=nest) nest, unhatched, no track
-    * [/api/1/turtle-nest-encounters/?nest_type=hatched-nest](/api/1/turtle-nest-encounters/?nest_type=hatched-nest) nest, hatched
-    * [/api/1/turtle-nest-encounters/?nest_type=body-pit](/api/1/turtle-nest-encounters/?nest_type=body-pit) body pit, no track
+    * [/api/1/turtle-nest-encounters/?nest_type=track-not-assessed](
+      /api/1/turtle-nest-encounters/?nest_type=track-not-assessed) track, not checked for nest
+    * [/api/1/turtle-nest-encounters/?nest_type=false-crawl](
+      /api/1/turtle-nest-encounters/?nest_type=false-crawl) track without nest
+    * [/api/1/turtle-nest-encounters/?nest_type=successful-crawl](
+      /api/1/turtle-nest-encounters/?nest_type=successful-crawl) track with nest
+    * [/api/1/turtle-nest-encounters/?nest_type=track-unsure](
+      /api/1/turtle-nest-encounters/?nest_type=track-unsure) track, checked for nest, unsure if nest
+    * [/api/1/turtle-nest-encounters/?nest_type=nest](
+      /api/1/turtle-nest-encounters/?nest_type=nest) nest, unhatched, no track
+    * [/api/1/turtle-nest-encounters/?nest_type=hatched-nest](
+      /api/1/turtle-nest-encounters/?nest_type=hatched-nest) nest, hatched
+    * [/api/1/turtle-nest-encounters/?nest_type=body-pit](
+      /api/1/turtle-nest-encounters/?nest_type=body-pit) body pit, no track
 
     # species
-    * [/api/1/turtle-nest-encounters/?species=natator-depressus](/api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
-    * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](/api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
-    * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
-    * [/api/1/turtle-nest-encounters/?species=caretta-caretta](/api/1/turtle-nest-encounters/?species=caretta-caretta) Loggerhead turtle
-    * [/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea](/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea) Olive ridley turtle
-    * [/api/1/turtle-nest-encounters/?species=corolla-corolla](/api/1/turtle-nest-encounters/?species=corolla-corolla) Hatchback turtle (training dummy)
+    * [/api/1/turtle-nest-encounters/?species=natator-depressus](
+      /api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
+    * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](
+      /api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
+    * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](
+      /api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
+    * [/api/1/turtle-nest-encounters/?species=caretta-caretta](
+      /api/1/turtle-nest-encounters/?species=caretta-caretta) Loggerhead turtle
+    * [/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea](
+      /api/1/turtle-nest-encounters/?species=lepidochelys-olivacea) Olive ridley turtle
+    * [/api/1/turtle-nest-encounters/?species=corolla-corolla](
+      /api/1/turtle-nest-encounters/?species=corolla-corolla) Hatchback turtle (training dummy)
 
     # habitat
-    * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
-    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](/api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
-    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](/api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
-    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
-    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
+    * [/api/1/turtle-nest-encounters/?habitat=na](
+      /api/1/turtle-nest-encounters/?habitat=na) unknown habitat
+    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](
+      /api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
+    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](
+      /api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
+    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](
+      /api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
+    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](
+      /api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
 
     # disturbance
     Indicates whether disturbance observation is attached.
@@ -1293,12 +1312,18 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
       Sea snakes and kraits
 
     # species
-    * [/api/1/turtle-nest-encounters/?species=natator-depressus](/api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
-    * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](/api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
-    * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
-    * [/api/1/turtle-nest-encounters/?species=caretta-caretta](/api/1/turtle-nest-encounters/?species=caretta-caretta) Loggerhead turtle
-    * [/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea](/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea) Olive ridley turtle
-    * [/api/1/turtle-nest-encounters/?species=corolla-corolla](/api/1/turtle-nest-encounters/?species=corolla-corolla) Hatchback turtle (training dummy)
+    * [/api/1/turtle-nest-encounters/?species=natator-depressus](
+      /api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
+    * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](
+      /api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
+    * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](
+      /api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
+    * [/api/1/turtle-nest-encounters/?species=caretta-caretta](
+      /api/1/turtle-nest-encounters/?species=caretta-caretta) Loggerhead turtle
+    * [/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea](
+      /api/1/turtle-nest-encounters/?species=lepidochelys-olivacea) Olive ridley turtle
+    * [/api/1/turtle-nest-encounters/?species=corolla-corolla](
+      /api/1/turtle-nest-encounters/?species=corolla-corolla) Hatchback turtle (training dummy)
 
 
     # Other filters
@@ -1309,10 +1334,14 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 
     # habitat
     * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
-    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](/api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
-    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](/api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
-    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
-    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
+    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](
+      /api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
+    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](
+      /api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
+    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](
+      /api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
+    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](
+      /api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
     * plus all other habitat choices.
 
     """
@@ -1551,6 +1580,64 @@ class TaxonSerializer(serializers.ModelSerializer):
             'author',
             'current',
             'publication_status',
+            'vernacular_name',
+            'vernacular_names',
+            'canonical_name',
+            'taxonomic_name',
+        )
+
+
+class FastTaxonSerializer(serializers.ModelSerializer):
+    """Minimal serializer for Taxon to be used in other serializers."""
+
+    class Meta:
+        """Opts."""
+
+        model = Taxon
+        fields = (
+            'name_id',
+            'taxonomic_name',
+            'vernacular_names',
+        )
+
+
+class VernacularSerializer(serializers.ModelSerializer):
+    """Serializer for Vernacular."""
+
+    taxon = FastTaxonSerializer(many=False)
+
+    class Meta:
+        """Opts."""
+
+        model = Vernacular
+        fields = (
+            'ogc_fid',
+            'taxon',
+            'name',
+            'language',
+            'preferred',
+        )
+
+
+class CrossreferenceSerializer(serializers.ModelSerializer):
+    """Serializer for Crossreference."""
+
+    predecessor = FastTaxonSerializer(many=False)
+    successor = FastTaxonSerializer(many=False)
+
+    class Meta:
+        """Opts."""
+
+        model = Crossreference
+        fields = (
+            'xref_id',
+            'predecessor',
+            'successor',
+            'reason',
+            'authorised_by',
+            'authorised_on',
+            'effective_to',
+            'comments',
         )
 
 
@@ -1835,14 +1922,54 @@ class TaxonFilter(filters.FilterSet):
             'name_id': '__all__',
             'name': '__all__',
             'rank': '__all__',
-            'parent': '__all__',
-            'author': '__all__',
+            # 'parent': ['exact', ],  # performance bomb
             'publication_status': '__all__',
             'current': '__all__',
+            'author': '__all__',
+            'canonical_name': '__all__',
+            'taxonomic_name': '__all__',
+            'vernacular_name': '__all__',
+            'vernacular_names': '__all__',
         }
 
 
+class VernacularFilter(filters.FilterSet):
+    """Vernacular filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Vernacular
+        fields = {
+            'ogc_fid': '__all__',
+            # 'taxon': '__all__',
+            'name': '__all__',
+            'language': '__all__',
+            'preferred': '__all__',
+        }
+
+
+class CrossreferenceFilter(filters.FilterSet):
+    """Crossreference filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Crossreference
+        fields = {
+            'xref_id': '__all__',
+            # 'predecessor': '__all__',
+            # 'successor': '__all__',
+            'reason': '__all__',
+            'authorised_by': '__all__',
+            'authorised_on': '__all__',
+            'effective_to': '__all__',
+            'comments': '__all__',
+        }
+
 # Taxonomy: Viewsets -------------------------------------------------------------------#
+
+
 class BatchUpsertViewSet(viewsets.ModelViewSet):
     """A ModelViewSet with custom create().
 
@@ -2085,7 +2212,11 @@ router.register("parents", HbvParentViewSet)
 
 
 class TaxonViewSet(BatchUpsertViewSet):
-    """View set for Taxon. See HBV Names for details and usage examples."""
+    """View set for Taxon.
+
+    See HBV Names for details and usage examples.
+    All filters are available on all fields.
+    """
 
     queryset = Taxon.objects.all()
     serializer_class = TaxonSerializer
@@ -2094,3 +2225,35 @@ class TaxonViewSet(BatchUpsertViewSet):
     model = Taxon
 
 router.register("taxon", TaxonViewSet)
+
+
+class VernacularViewSet(BatchUpsertViewSet):
+    """View set for Vernacular.
+
+    See HBV Names for details and usage examples.
+    All filters are available on all fields.
+    """
+
+    queryset = Vernacular.objects.all()
+    serializer_class = VernacularSerializer
+    filter_class = VernacularFilter
+    uid_field = "ogc_fid"
+    model = Vernacular
+
+router.register("vernacular", VernacularViewSet)
+
+
+class CrossreferenceViewSet(BatchUpsertViewSet):
+    """View set for Crossreference.
+
+    See HBV Names for details and usage examples.
+    All filters are available on all fields.
+    """
+
+    queryset = Crossreference.objects.all()
+    serializer_class = CrossreferenceSerializer
+    filter_class = CrossreferenceFilter
+    uid_field = "xref_id"
+    model = Crossreference
+
+router.register("crossreference", CrossreferenceViewSet)
