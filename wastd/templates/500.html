@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
 {% block title %}Server Error{% endblock %}
 
 {% block map %}
 <div class="row">
-<img src="http://i.imgur.com/LAyjeaC.gif" style="width:100%;"></img>
+    <img src="{% static 'images/500.gif' %}" style="width:100%;"></img>
 </div>
 {% endblock %}

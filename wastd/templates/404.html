@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
 {% block title %}Not found{% endblock %}
 
 {% block content %}
 <h1>Those records you were looking for...</h1>
-<img src="http://i.imgur.com/q0UiNL9.gif" style="width:100%;"></img>
-{% endblock content %}
+<img src="{% static 'images/404.gif' %}" style="width:100%;"></img>
+{% endblock %}

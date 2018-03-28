@@ -141,6 +141,8 @@ SETTINGS_EXPORT = [
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env('DJANGO_DEBUG', default=False)
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default="localhost")
+
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
