@@ -72,7 +72,7 @@ from wastd.users.models import User
 from taxonomy.models import (
     HbvName, HbvSupra, HbvGroup, HbvFamily,
     HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent,
-    Taxon, Vernacular, Crossreference)
+    Taxon, Vernacular, Crossreference, Community)
 
 logger = logging.getLogger(__name__)
 
@@ -1641,7 +1641,22 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
         )
 
 
+class CommunitySerializer(serializers.ModelSerializer):
+    """Serializer for Community."""
+
+    class Meta:
+        """Opts."""
+
+        model = Community
+        fields = (
+            'code',
+            'name',
+            'description',
+        )
+
 # Taxonomy: Filters -------------------------------------------------------------------#
+
+
 class HbvNameFilter(filters.FilterSet):
     """HbvName filter."""
 
@@ -1967,6 +1982,20 @@ class CrossreferenceFilter(filters.FilterSet):
             'comments': '__all__',
         }
 
+
+class CommunityFilter(filters.FilterSet):
+    """Community filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Community
+        fields = {
+            'code': '__all__',
+            'name': '__all__',
+            'description': '__all__',
+        }
+
 # Taxonomy: Viewsets -------------------------------------------------------------------#
 
 
@@ -2257,3 +2286,19 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
     model = Crossreference
 
 router.register("crossreference", CrossreferenceViewSet)
+
+
+class CommunityViewSet(BatchUpsertViewSet):
+    """View set for Community.
+
+    See HBV Names for details and usage examples.
+    All filters are available on all fields.
+    """
+
+    queryset = Community.objects.all()
+    serializer_class = CommunitySerializer
+    filter_class = CommunityFilter
+    uid_field = "code"
+    model = Community
+
+router.register("community", CommunityViewSet)

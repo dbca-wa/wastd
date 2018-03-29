@@ -20,7 +20,9 @@ from reversion.admin import VersionAdmin
 
 from taxonomy.models import (
     HbvName, HbvSupra, HbvGroup, HbvFamily,
-    HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent, Taxon)
+    HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent,
+    Taxon,  # Crossreference, Vernacular,
+    Community)
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
@@ -208,4 +210,16 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
         'publication_status',
         'current',
         # ('parent', TreeRelatedFieldListFilter),  # performance bomb - DO NOT ENABLE
+    )
+
+
+@admin.register(Community)
+class CommunityAdmin(VersionAdmin):
+    """Admin for Community."""
+
+    search_fields = ('code', 'name', 'desciption')
+    list_display = (
+        'code',
+        'name',
+        'description',
     )

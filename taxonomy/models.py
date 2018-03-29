@@ -1993,3 +1993,41 @@ class Crossreference(models.Model):
             "x" if not self.predecessor else self.predecessor.name_id,
             "x" if not self.successor else self.successor.name_id,
             self.get_reason_display())
+
+
+@python_2_unicode_compatible
+class Community(models.Model):
+    """Ecological Community."""
+
+    code = models.CharField(
+        max_length=1000,
+        unique=True,
+        blank=True, null=True,
+        verbose_name=_("Community code"),
+        help_text=_("A short community codename."),
+    )
+
+    name = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Community name"),
+        help_text=_("A full community name."),
+    )
+
+    description = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Community description"),
+        help_text=_("An optional description."),
+    )
+
+    # add cache fields here
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Community"
+        verbose_name_plural = "Communities"
+
+    def __str__(self):
+        """The name."""
+        return self.code
