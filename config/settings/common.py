@@ -16,10 +16,10 @@ from unipath import Path
 import confy
 import os
 
-try:
-    confy.read_environment_file(".env")
-except:
-    pass
+# try:
+#     confy.read_environment_file(".env")
+# except:
+#     pass
 
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 BASE_DIR = Path(__file__).ancestor(3)
@@ -60,7 +60,7 @@ THIRD_PARTY_APPS = (
     'django_fsm',                   # Transitions
     'django_fsm_log',               # Transition audit logs
     'fsm_admin',                    # Transitions in admin
-    'reversion',                    # Version history
+    'reversion',                    # Version history, requires grappelli loaded
     'graphene_django',              # GraphQL API
     'rest_framework',               # API
     'rest_framework.authtoken',     # API auth via token
@@ -111,19 +111,26 @@ MIGRATION_MODULES = {
 
 # CACHES
 # ------------------------------------------------------------------------------
+
 CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
         'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'IGNORE_EXCEPTIONS': True,  # mimics memcache behavior.
-                                        # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior
-            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            'IGNORE_EXCEPTIONS': True,
+        }
+    },
+    "select2": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 1),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }
 
+SELECT2_CACHE_BACKEND = "select2"
 
 # Names
 # ------------------------------------------------------------------------------

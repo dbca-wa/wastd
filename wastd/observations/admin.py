@@ -43,7 +43,7 @@ from wastd.observations.models import (
     TemperatureLoggerSettings,
     DispatchRecord,
     TemperatureLoggerDeployment)
-from wastd.observations.filters import LocationListFilter
+# from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 
 TokenAdmin.raw_id_fields = ('user',)
@@ -270,6 +270,8 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
 S2ATTRS = {'width': '350px'}
 ExpeditionForm = s2form(Expedition, attrs=S2ATTRS)
 SiteVisitForm = s2form(SiteVisit, attrs=S2ATTRS)
+SurveyForm = s2form(Survey, attrs=S2ATTRS)
+AreaForm = s2form(Area, attrs=S2ATTRS)
 EncounterAdminForm = s2form(Encounter, attrs=S2ATTRS)
 AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
 TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
@@ -361,15 +363,15 @@ class AreaAdmin(admin.ModelAdmin):
 
 
 @admin.register(Encounter)
-class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
+class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for Encounter with inlines for all Observations.
 
     This admin can be extended by other Encounter Admin classes.
     """
 
     # Grappelli User lookup overrides select2 select widget
-    raw_id_fields = ('survey', 'observer', 'reporter')
-    autocomplete_lookup_fields = {'fk': ['survey', 'observer', 'reporter']}
+    raw_id_fields = ('observer', 'reporter')
+    autocomplete_lookup_fields = {'fk': ['observer', 'reporter']}
     change_list_filter_template = "admin/filter_listing.html"
 
     # select2 widgets for searchable dropdowns
@@ -386,20 +388,20 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 
     # Filters for change_list
     list_filter = (
-        'area', 'site', 'survey', 'status', 'observer', 'reporter',
-        'location_accuracy', 'encounter_type', 'source')
+        'area', 'site', 'status', 'observer', 'reporter',
+        'location_accuracy', 'encounter_type', 'source')  # 'survey',
 
     # Columns for change_list, allow re-use and inserting fields
-    FIRST_COLS = ('when', 'area', 'site', 'survey', 'latitude', 'longitude',
+    FIRST_COLS = ('when', 'area', 'site', 'latitude', 'longitude',
                   'location_accuracy', 'name')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
-                 'status', 'encounter_type')
+                 'status', 'encounter_type')  # 'survey',
     list_display = FIRST_COLS + LAST_COLS
 
     # Performance
     # https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
     # #django.contrib.admin.ModelAdmin.list_select_related
-    list_select_related = True
+    list_select_related = True  # 'survey',
 
     # Layout: save buttons also on top - overridden by Grapelli admin skin
     # save_on_top = True

@@ -11,7 +11,7 @@ Production Configurations
 """
 from __future__ import absolute_import, unicode_literals
 
-import os
+# import os
 # from boto.s3.connection import OrdinaryCallingFormat, SubdomainCallingFormat
 # from django.utils import six
 from confy import env, database
@@ -116,8 +116,8 @@ INSTALLED_APPS += ('gunicorn', )
 # ------------------------------------------------------------------------------
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.corporateict.domain')
 EMAIL_PORT = env('EMAIL_PORT', default=25)
-DEFAULT_FROM_EMAIL = '"WA Strandings DB" <strandings-noreply@dpaw.wa.gov.au>'
-EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[WAStD] ')
+DEFAULT_FROM_EMAIL = '"Threatened Things" <tsc-noreply@dbca.wa.gov.au>'
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[TSC] ')
 
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -136,17 +136,17 @@ DATABASES = {'default': database.config()}
 # CACHING
 # ------------------------------------------------------------------------------
 # Heroku URL does not pass the DB number, so we parse it in
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'IGNORE_EXCEPTIONS': True,  # mimics memcache behavior.
-                                        # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior
-        }
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#             'IGNORE_EXCEPTIONS': True,  # mimics memcache behavior.
+#                                         # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior
+#         }
+#     }
+# }
 
 
 # Custom Admin URL, use {% url 'admin:index' %}
