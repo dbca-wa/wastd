@@ -311,3 +311,6 @@ Open WAStD/TSC data in QGIS 3.0.1
 * Save project (contains layers and styles)
 
 Add other layers as WFS or WMS (choose jpeg for faster rendering) as suitable. Warning: WMS layers slow down project startup.
+
+See the `QGIS docs <https://docs.qgis.org/>`_ on how to
+`load a web mapping (WFS, WMS) layer <https://docs.qgis.org/testing/en/docs/training_manual/online_resources/index.html>`_.
