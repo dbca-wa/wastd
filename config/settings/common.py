@@ -16,10 +16,10 @@ from unipath import Path
 import confy
 import os
 
-# try:
-#     confy.read_environment_file(".env")
-# except:
-#     pass
+try:
+    confy.read_environment_file(".env")
+except:
+    pass
 
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 BASE_DIR = Path(__file__).ancestor(3)
