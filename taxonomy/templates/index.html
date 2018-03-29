@@ -7,11 +7,19 @@
     <div class="col col-lg-8 col-12 align-self-center">
       <h1>{{ settings.SITE_NAME }}</h1>
 
-      <a class="btn btn-primary btn-block" href="{% url 'dashboard' %}"
-        title="Browse, filter and search {{ settings.SITE_NAME }}">
+      <a class="btn btn-primary btn-block" href="{% url 'species-list' %}"
+        title="Browse, filter and search Threatened Species">
         <h3>
-          <span class="oi oi-grid-three-up" title="Browse {{ settings.SITE_NAME }}" aria-hidden="true"></span>
-          Data
+          <span class="oi oi-grid-three-up" title="Browse Threatened Species" aria-hidden="true"></span>
+          Species
+        </h3>
+      </a>
+
+      <a class="btn btn-primary btn-block" href="{% url 'community-list' %}"
+        title="Browse, filter and search Threatened Communities">
+        <h3>
+          <span class="oi oi-grid-three-up" title="Browse Threatened Communities" aria-hidden="true"></span>
+          Communities
         </h3>
       </a>
 

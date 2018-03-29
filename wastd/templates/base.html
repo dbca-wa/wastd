@@ -55,10 +55,18 @@
           <ul class="navbar-nav mr-auto">
 
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'dashboard' %}"
-              title="Browse, filter and search {{ settings.SITE_NAME }}">
+            <a class="nav-link" href="{% url 'species-list' %}"
+              title="Browse, filter and search threatened species">
             <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-            Data
+            Species
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'community-list' %}"
+              title="Browse, filter and search threatened communities">
+            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            Communities
             </a>
           </li>
 

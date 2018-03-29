@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.views.generic.list import ListView
 
 from taxonomy.utils import update_taxon as update_taxon_util
-from taxonomy.models import Taxon
+from taxonomy.models import Taxon, Community
 from taxonomy.filters import TaxonFilter
 
 
@@ -61,3 +61,11 @@ class TaxonListView(ListView):
             return list(chain(t.first().get_ancestors(), t, t.first().get_children()))
 
         return TaxonFilter(self.request.GET, queryset=queryset).qs
+
+
+class CommunityListView(ListView):
+    """A ListView for Community."""
+
+    model = Community
+    template_name = "pages/community_list.html"
+    paginate_by = 12
