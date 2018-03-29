@@ -101,6 +101,11 @@ MIDDLEWARE_CLASSES = (
     'dpaw_utils.middleware.SSOLoginMiddleware',
 )
 
+# Session management
+# http://niwinz.github.io/django-redis/latest/#_configure_as_cache_backend
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"  # use Redis
+SESSION_CACHE_ALIAS = "default"
+
 # MIGRATIONS CONFIGURATION
 # ------------------------------------------------------------------------------
 MIGRATION_MODULES = {
@@ -118,6 +123,7 @@ CACHES = {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'IGNORE_EXCEPTIONS': True,  # mimics memcache behavior.
                                         # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior
+            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
         }
     }
 }
@@ -359,7 +365,7 @@ REST_FRAMEWORK = {
 
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
-    'PAGE_SIZE': 100,
+    'PAGE_SIZE': 10,
 }
 
 # Shared Latex resources for DRF-latex

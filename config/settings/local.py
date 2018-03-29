@@ -16,7 +16,7 @@ from confy import env
 # DEBUG
 # ------------------------------------------------------------------------------
 DEBUG = env('DJANGO_DEBUG', default=True)
-
+ALLOWED_HOSTS = ["localhost", ]
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key

@@ -1922,7 +1922,7 @@ class TaxonFilter(filters.FilterSet):
             'name_id': '__all__',
             'name': '__all__',
             'rank': '__all__',
-            # 'parent': ['exact', ],  # performance bomb
+            'parent': ['exact', ],  # performance bomb
             'publication_status': '__all__',
             'current': '__all__',
             'author': '__all__',
