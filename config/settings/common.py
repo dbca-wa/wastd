@@ -101,10 +101,6 @@ MIDDLEWARE_CLASSES = (
     'dpaw_utils.middleware.SSOLoginMiddleware',
 )
 
-# Session management
-# http://niwinz.github.io/django-redis/latest/#_configure_as_cache_backend
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"  # use Redis
-SESSION_CACHE_ALIAS = "default"
 
 # MIGRATIONS CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -323,6 +319,12 @@ LOGIN_URL = 'account_login'
 
 # SLUGLIFIER
 AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
+
+# Session management
+# http://niwinz.github.io/django-redis/latest/#_configure_as_cache_backend
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"  # use Redis
+# SESSION_CACHE_ALIAS = "default"
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}

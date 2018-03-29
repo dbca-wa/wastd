@@ -332,6 +332,7 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         'production',
     )
     list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
+    list_select_related = ('site', 'reporter', )
     search_fields = ('start_comments', 'end_comments')
     fieldsets = (
         ('Device', {'fields': ('source', 'source_id', 'device_id',
@@ -396,8 +397,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     list_display = FIRST_COLS + LAST_COLS
 
     # Performance
-    # https://docs.djangoproject.com/en/1.10/ref/contrib/admin/
-    # django.contrib.admin.ModelAdmin.list_select_related
+    # https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
+    # #django.contrib.admin.ModelAdmin.list_select_related
     list_select_related = True
 
     # Layout: save buttons also on top - overridden by Grapelli admin skin
@@ -466,6 +467,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'scanned_for_pit_tags',
         'checked_for_flipper_tags',
     ) + EncounterAdmin.LAST_COLS
+    list_select_related = ('area', 'site', 'survey', )
     list_filter = EncounterAdmin.list_filter + (
         'taxon', 'species',
         'health', 'cause_of_death', 'cause_of_death_confidence',
@@ -531,6 +533,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         'age_display', 'type_display', 'species',
         'habitat_display', 'disturbance', 'comments'
     ) + EncounterAdmin.LAST_COLS
+    list_select_related = True
     list_filter = EncounterAdmin.list_filter + (
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance')
     fieldsets = EncounterAdmin.fieldsets + (
@@ -571,6 +574,7 @@ class LineTransectEncounterAdmin(EncounterAdmin):
     list_display = EncounterAdmin.FIRST_COLS + (
         'transect',
     ) + EncounterAdmin.LAST_COLS
+    list_select_related = ('area', 'site', 'survey', )
     # list_filter = EncounterAdmin.list_filter + ()
     fieldsets = EncounterAdmin.fieldsets + (
         ('Location', {'fields': ('transect', )}), )
@@ -590,6 +594,7 @@ class LoggerEncounterAdmin(EncounterAdmin):
         'logger_type_display', 'deployment_status_display',
         'logger_id', 'comments',
     ) + EncounterAdmin.LAST_COLS
+    list_select_related = ('area', 'site', 'survey', )
     list_filter = EncounterAdmin.list_filter + ('logger_type', 'deployment_status',)
     search_fields = ('logger_id', 'source_id')
     fieldsets = EncounterAdmin.fieldsets + (

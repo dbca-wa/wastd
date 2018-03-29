@@ -51,6 +51,12 @@ CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = 'DENY'
 
+# Session management
+# http://niwinz.github.io/django-redis/latest/#_configure_as_cache_backend
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"  # use Redis
+# SESSION_CACHE_ALIAS = "default"
+
+
 # SITE CONFIGURATION
 # ------------------------------------------------------------------------------
 # Hosts/domain names that are valid for this site
