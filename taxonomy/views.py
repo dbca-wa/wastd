@@ -11,7 +11,7 @@ from django.views.generic.list import ListView
 
 from taxonomy.utils import update_taxon as update_taxon_util
 from taxonomy.models import Taxon, Community
-from taxonomy.filters import TaxonFilter
+from taxonomy.filters import TaxonFilter, CommunityFilter
 
 
 # Utilities ------------------------------------------------------------------#
@@ -69,3 +69,15 @@ class CommunityListView(ListView):
     model = Community
     template_name = "pages/community_list.html"
     paginate_by = 12
+
+    def get_context_data(self, **kwargs):
+        """Add extra items to context."""
+        context = super(CommunityListView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        context['community_filter'] = CommunityFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+
+    def get_queryset(self):
+        """Queryset."""
+        queryset = Community.objects.all()
+        return CommunityFilter(self.request.GET, queryset=queryset).qs

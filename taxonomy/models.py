@@ -1162,6 +1162,14 @@ class HbvName(models.Model):
                     "published (blank)."),
     )
 
+    code = models.CharField(
+        max_length=1000,
+        unique=True,
+        blank=True, null=True,
+        verbose_name=_("Taxon code"),
+        help_text=_("If available, the DBCA six-letter code used in MAX."),
+    )
+
     comments = models.TextField(
         blank=True, null=True,
         verbose_name=_("Comments"),
@@ -2027,6 +2035,7 @@ class Community(models.Model):
 
         verbose_name = "Community"
         verbose_name_plural = "Communities"
+        ordering = ["code", ]
 
     def __str__(self):
         """The name."""

@@ -29,7 +29,7 @@
     <h3>Search</h3>
       <form method="get">
         <div class="row">
-
+          {% bootstrap_form community_filter.form %}
         </div>
         <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
         <br/>

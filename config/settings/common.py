@@ -76,11 +76,10 @@ THIRD_PARTY_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
-    # custom users app
     'wastd.users.apps.UsersConfig',
-    # Your stuff: custom apps go here
     'wastd.observations.apps.ObservationsConfig',
     'taxonomy.apps.TaxonomyConfig',
+    'conservation.apps.ConservationConfig'
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -151,7 +150,7 @@ SETTINGS_EXPORT = [
 DEBUG = env('DJANGO_DEBUG', default=False)
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
 ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default="localhost")
-
+SILKY_PYTHON_PROFILER = True
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -375,6 +374,7 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
     'PAGE_SIZE': 10,
+    'HTML_SELECT_CUTOFF': 100,
 }
 
 # Shared Latex resources for DRF-latex

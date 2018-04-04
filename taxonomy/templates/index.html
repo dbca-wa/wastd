@@ -3,10 +3,11 @@
 
 {% block content %}
 <div class="container">
-  <div class="row">
-    <div class="col col-lg-8 col-12 align-self-center">
+    <div class="col col-12">
       <h1>{{ settings.SITE_NAME }}</h1>
+    </div>
 
+    <div class="col col-lg-8 col-12">
       <a class="btn btn-primary btn-block" href="{% url 'species-list' %}"
         title="Browse, filter and search Threatened Species">
         <h3>

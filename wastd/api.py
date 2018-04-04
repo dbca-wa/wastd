@@ -34,6 +34,7 @@ from collections import OrderedDict
 
 import logging
 # from pdb import set_trace
+# from silk.profiling.profiler import silk_profile
 
 # from django.db import models as django_models
 from django.template import Context, Template
@@ -73,6 +74,14 @@ from taxonomy.models import (
     HbvName, HbvSupra, HbvGroup, HbvFamily,
     HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent,
     Taxon, Vernacular, Crossreference, Community)
+
+from conservation.models import (
+    ConservationList,
+    ConservationCategory,
+    ConservationCriterion,
+    TaxonGazettal,
+    CommunityGazettal
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1017,7 +1026,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     [/api/1/encounters/?source=odk&encounter_type=tracks](/api/1/encounters/?source=odk&encounter_type=tracks)
 
     # date
-    * [/api/1/encounters/?when__year__in=2017,2018](/api/1/encounters/?when__year__in=2017,2018) Years 2017-18
+    * [``/api/1/encounters/?when__year__in=2017,2018``](/api/1/encounters/?when__year__in=2017,2018) Years 2017-18
 
     # area and site
     For convenience and performance, every Encounter links to the general area of its occurrence (Locality)
@@ -1389,6 +1398,7 @@ class MediaAttachmentViewSet(viewsets.ModelViewSet):
 
     queryset = MediaAttachment.objects.all()
     serializer_class = MediaAttachmentSerializer
+    pagination_class = pagination.LimitOffsetPagination
 
 
 class TagObservationViewSet(viewsets.ModelViewSet):
@@ -1584,6 +1594,7 @@ class TaxonSerializer(serializers.ModelSerializer):
             'vernacular_names',
             'canonical_name',
             'taxonomic_name',
+            'code',
         )
 
 
@@ -1939,7 +1950,7 @@ class TaxonFilter(filters.FilterSet):
             'rank': '__all__',
             'parent': ['exact', ],  # performance bomb
             'publication_status': '__all__',
-            'current': '__all__',
+            'current': ['exact', ],
             'author': '__all__',
             'canonical_name': '__all__',
             'taxonomic_name': '__all__',
@@ -1960,7 +1971,7 @@ class VernacularFilter(filters.FilterSet):
             # 'taxon': '__all__',
             'name': '__all__',
             'language': '__all__',
-            'preferred': '__all__',
+            'preferred': ['exact', ],
         }
 
 
@@ -2302,3 +2313,255 @@ class CommunityViewSet(BatchUpsertViewSet):
     model = Community
 
 router.register("community", CommunityViewSet)
+
+
+# ConservationList -------------------------------------------------------------------#
+class ConservationListSerializer(serializers.ModelSerializer):
+    """Serializer for ConservationList."""
+
+    class Meta:
+        """Opts."""
+
+        model = ConservationList
+        fields = '__all__'
+
+
+class ConservationListFilter(filters.FilterSet):
+    """ConservationList filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = ConservationList
+        fields = {
+            'code': ['exact', 'icontains'],
+            'label': ['exact', 'icontains'],
+            'description': ['icontains'],
+            'active_from': ['exact', 'year__gt'],
+            'active_to': ['exact', 'year__gt'],
+            'scope_wa': ['exact', ],
+            'scope_cmw': ['exact', ],
+            'scope_intl': ['exact', ],
+        }
+
+
+class ConservationListViewSet(BatchUpsertViewSet):
+    """View set for ConservationList."""
+
+    queryset = ConservationList.objects.all()
+    serializer_class = ConservationListSerializer
+    filter_class = ConservationListFilter
+    uid_field = "code"
+    model = ConservationList
+
+
+router.register("conservationlist", ConservationListViewSet)
+
+
+# ConservationCategory -------------------------------------------------------------------#
+class ConservationCategorySerializer(serializers.ModelSerializer):
+    """Serializer for ConservationCategory."""
+
+    class Meta:
+        """Opts."""
+
+        model = ConservationCategory
+        fields = '__all__'
+
+
+class ConservationCategoryFilter(filters.FilterSet):
+    """ConservationCategory filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = ConservationCategory
+        fields = {
+            'code': ['exact', 'icontains'],
+            'label': ['exact', 'icontains'],
+            'description': ['icontains'],
+            'conservation_list': ['exact', 'in'],
+        }
+
+
+class ConservationCategoryViewSet(BatchUpsertViewSet):
+    """View set for ConservationCategory."""
+
+    queryset = ConservationCategory.objects.all()
+    serializer_class = ConservationCategorySerializer
+    filter_class = ConservationCategoryFilter
+    uid_field = "code"
+    model = ConservationCategory
+
+    def build_unique_fields(self, data):
+        """Custom unique fields for Vernaculars."""
+        return {"conservation_list": data["conservation_list"],
+                "code": data["code"]}
+
+
+router.register("conservationcategory", ConservationCategoryViewSet)
+
+
+# ConservationCriterion -------------------------------------------------------------------#
+class ConservationCriterionSerializer(serializers.ModelSerializer):
+    """Serializer for ConservationCriterion."""
+
+    class Meta:
+        """Opts."""
+
+        model = ConservationCriterion
+        fields = '__all__'
+
+
+class ConservationCriterionFilter(filters.FilterSet):
+    """ConservationCriterion filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = ConservationCriterion
+        fields = {
+            'code': ['exact', 'icontains'],
+            'label': ['exact', 'icontains'],
+            'description': ['icontains'],
+            'conservation_list': ['exact', 'in'],
+        }
+
+
+class ConservationCriterionViewSet(BatchUpsertViewSet):
+    """View set for ConservationCriterion."""
+
+    queryset = ConservationCriterion.objects.all()
+    serializer_class = ConservationCriterionSerializer
+    filter_class = ConservationCriterionFilter
+    uid_field = "code"
+    model = ConservationCriterion
+
+    def build_unique_fields(self, data):
+        """Custom unique fields for Vernaculars."""
+        return {"conservation_list": data["conservation_list"],
+                "code": data["code"]}
+
+
+router.register("conservationcriterion", ConservationCriterionViewSet)
+
+
+# TaxonGazettal -------------------------------------------------------------------#
+class TaxonGazettalSerializer(serializers.ModelSerializer):
+    """Serializer for ConservationCriterion."""
+
+    # taxon = FastTaxonSerializer(many=False)
+    taxon = serializers.SlugRelatedField(
+        queryset=Taxon.objects.all(),
+        slug_field='name_id',
+        style={'base_template': 'input.html'}
+    )
+
+    class Meta:
+        """Opts."""
+
+        model = TaxonGazettal
+        fields = '__all__'
+
+
+class TaxonGazettalFilter(filters.FilterSet):
+    """TaxonGazettal filter.
+
+    Performance: Excluding taxon from filter speeds up
+    loading an empty TaxonGazettal List
+    from 14 sec (with) to 5 sec (without).
+    """
+
+    class Meta:
+        """Class opts."""
+
+        model = TaxonGazettal
+        fields = {
+            # 'taxon': '__all__',
+            # 'taxon': ['exact', ],
+            'category': ['exact', 'in'],
+            'is_s5': ['exact', ],
+            'is_m1': ['exact', ],
+            'is_m2': ['exact', ],
+            'is_m3': ['exact', ],
+            'is_m4': ['exact', ],
+            'proposed_on': ['exact', 'year__gt'],
+            'gazetted_on': ['exact', 'year__gt'],
+            'deactivated_on': ['exact', 'year__gt'],
+            'review_due': ['exact', 'year__gt'],
+            'comments': ['exact', 'icontains'],
+        }
+
+
+class TaxonGazettalViewSet(BatchUpsertViewSet):
+    """View set for TaxonGazettal."""
+
+    queryset = TaxonGazettal.objects.all().select_related(
+        'taxon', 'category',)
+    serializer_class = TaxonGazettalSerializer
+    filter_class = TaxonGazettalFilter
+    uid_field = "taxon"
+    model = TaxonGazettal
+
+    # def build_unique_fields(self, data):
+    #     """Custom unique fields for Vernaculars."""
+    #     return {"conservation_list": data["conservation_list"],
+    #             "code": data["code"]}
+
+    # @silk_profile(name='List TaxonGazettal')
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     serializer = TaxonGazettalSerializer(queryset, many=True)
+    #     return RestResponse(serializer.data)
+
+
+router.register("taxongazettal", TaxonGazettalViewSet)
+
+
+# CommunityGazettal -------------------------------------------------------------------#
+class CommunityGazettalSerializer(serializers.ModelSerializer):
+    """Serializer for CommunityGazettal."""
+
+    # community = FastTaxonSerializer(many=False)
+
+    class Meta:
+        """Opts."""
+
+        model = CommunityGazettal
+        fields = '__all__'
+
+
+class CommunityGazettalFilter(filters.FilterSet):
+    """CommunityGazettal filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = CommunityGazettal
+        fields = {
+            'community': ['exact', ],
+            'category': ['exact', 'in'],
+            'proposed_on': ['exact', 'year__gt'],
+            'gazetted_on': ['exact', 'year__gt'],
+            'deactivated_on': ['exact', 'year__gt'],
+            'review_due': ['exact', 'year__gt'],
+            'comments': ['exact', 'icontains'],
+        }
+
+
+class CommunityGazettalViewSet(BatchUpsertViewSet):
+    """View set for CommunityGazettal."""
+
+    queryset = CommunityGazettal.objects.all().select_related('community')
+    serializer_class = CommunityGazettalSerializer
+    filter_class = CommunityGazettalFilter
+    uid_field = "community"
+    model = CommunityGazettal
+
+    # def build_unique_fields(self, data):
+    #     """Custom unique fields for Vernaculars."""
+    #     return {"conservation_list": data["conservation_list"],
+    #             "code": data["code"]}
+
+
+router.register("communitygazettal", CommunityGazettalViewSet)

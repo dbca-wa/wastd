@@ -4,13 +4,14 @@
     src="{% static 'images/map_example.png' %}" alt="Occurrence map">
   <div class="card-body">
 
-    <h6 class="card-subtitle mb-2 text-muted">
 
-    </h6>
-
-    <h5 class="card-title {% if original.current == False %}text-muted{% endif %}">
-      {{ original.code }} -- {{ original.name }}
+    <h5 class="card-title">
+      {{ original.code }}
     </h5>
+
+    <h6 class="card-subtitle mb-2 text-muted">
+      {{ original.name }}
+    </h6>
 
   </div>
 
