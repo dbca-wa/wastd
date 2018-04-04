@@ -2007,9 +2007,8 @@ class CommunityFilter(filters.FilterSet):
             'description': '__all__',
         }
 
-# Taxonomy: Viewsets -------------------------------------------------------------------#
 
-
+# Taxonomy: Viewsets ---------------------------------------------------------#
 class BatchUpsertViewSet(viewsets.ModelViewSet):
     """A ModelViewSet with custom create().
 
@@ -2061,6 +2060,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             res = [self.create_one(data) for data in request.data]
             return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
+            logger.debug("[BatchUpsertViewSet] data: {0}".format(request.data))
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -2315,50 +2315,7 @@ class CommunityViewSet(BatchUpsertViewSet):
 router.register("community", CommunityViewSet)
 
 
-# ConservationList -------------------------------------------------------------------#
-class ConservationListSerializer(serializers.ModelSerializer):
-    """Serializer for ConservationList."""
-
-    class Meta:
-        """Opts."""
-
-        model = ConservationList
-        fields = '__all__'
-
-
-class ConservationListFilter(filters.FilterSet):
-    """ConservationList filter."""
-
-    class Meta:
-        """Class opts."""
-
-        model = ConservationList
-        fields = {
-            'code': ['exact', 'icontains'],
-            'label': ['exact', 'icontains'],
-            'description': ['icontains'],
-            'active_from': ['exact', 'year__gt'],
-            'active_to': ['exact', 'year__gt'],
-            'scope_wa': ['exact', ],
-            'scope_cmw': ['exact', ],
-            'scope_intl': ['exact', ],
-        }
-
-
-class ConservationListViewSet(BatchUpsertViewSet):
-    """View set for ConservationList."""
-
-    queryset = ConservationList.objects.all()
-    serializer_class = ConservationListSerializer
-    filter_class = ConservationListFilter
-    uid_field = "code"
-    model = ConservationList
-
-
-router.register("conservationlist", ConservationListViewSet)
-
-
-# ConservationCategory -------------------------------------------------------------------#
+# ConservationCategory -------------------------------------------------------#
 class ConservationCategorySerializer(serializers.ModelSerializer):
     """Serializer for ConservationCategory."""
 
@@ -2366,7 +2323,7 @@ class ConservationCategorySerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = ConservationCategory
-        fields = '__all__'
+        fields = ['code', 'label', 'description', ]
 
 
 class ConservationCategoryFilter(filters.FilterSet):
@@ -2384,25 +2341,22 @@ class ConservationCategoryFilter(filters.FilterSet):
         }
 
 
-class ConservationCategoryViewSet(BatchUpsertViewSet):
-    """View set for ConservationCategory."""
+class ConservationCategoryViewSet(viewsets.ModelViewSet):
+    """View set for ConservationCategory.
+
+    Not using BatchUpsertViewSet.
+    """
 
     queryset = ConservationCategory.objects.all()
     serializer_class = ConservationCategorySerializer
     filter_class = ConservationCategoryFilter
-    uid_field = "code"
-    model = ConservationCategory
-
-    def build_unique_fields(self, data):
-        """Custom unique fields for Vernaculars."""
-        return {"conservation_list": data["conservation_list"],
-                "code": data["code"]}
+    pagination_class = pagination.LimitOffsetPagination
 
 
 router.register("conservationcategory", ConservationCategoryViewSet)
 
 
-# ConservationCriterion -------------------------------------------------------------------#
+# ConservationCriterion ------------------------------------------------------#
 class ConservationCriterionSerializer(serializers.ModelSerializer):
     """Serializer for ConservationCriterion."""
 
@@ -2438,12 +2392,76 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
     model = ConservationCriterion
 
     def build_unique_fields(self, data):
-        """Custom unique fields for Vernaculars."""
+        """Custom unique fields."""
         return {"conservation_list": data["conservation_list"],
                 "code": data["code"]}
 
 
 router.register("conservationcriterion", ConservationCriterionViewSet)
+
+
+# ConservationList -------------------------------------------------------------------#
+class ConservationListSerializer(serializers.ModelSerializer):
+    """Serializer for ConservationList."""
+
+    conservationcategory_set = ConservationCategorySerializer(many=True, write_only=False)
+
+    def create(self, validated_data):
+        """Custom create with nested ConsCat serializer."""
+        cat_data = validated_data.pop('conservationcategory_set')
+        conservation_list = ConservationList.objects.create_or_update(code=validated_data["code"])
+        ConservationList.objects.filter(code=validated_data["code"]).update(**validated_data)
+        for cat in cat_data:
+            ConservationCategory.objects.create(conservation_list=conservation_list, **cat)
+        return conservation_list
+
+    class Meta:
+        """Opts."""
+
+        model = ConservationList
+        fields = '__all__'
+
+
+class FastConservationListSerializer(serializers.ModelSerializer):
+    """Serializer for ConservationList."""
+
+    class Meta:
+        """Opts."""
+
+        model = ConservationList
+        fields = ['id', 'code', 'label', ]
+
+
+class ConservationListFilter(filters.FilterSet):
+    """ConservationList filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = ConservationList
+        fields = {
+            'code': ['exact', 'icontains'],
+            'label': ['exact', 'icontains'],
+            'description': ['icontains'],
+            'active_from': ['exact', 'year__gt'],
+            'active_to': ['exact', 'year__gt'],
+            'scope_wa': ['exact', ],
+            'scope_cmw': ['exact', ],
+            'scope_intl': ['exact', ],
+        }
+
+
+class ConservationListViewSet(BatchUpsertViewSet):
+    """View set for ConservationList."""
+
+    queryset = ConservationList.objects.all()
+    serializer_class = ConservationListSerializer
+    filter_class = ConservationListFilter
+    uid_field = "code"
+    model = ConservationList
+
+
+router.register("conservationlist", ConservationListViewSet)
 
 
 # TaxonGazettal -------------------------------------------------------------------#
@@ -2480,11 +2498,6 @@ class TaxonGazettalFilter(filters.FilterSet):
             # 'taxon': '__all__',
             # 'taxon': ['exact', ],
             'category': ['exact', 'in'],
-            'is_s5': ['exact', ],
-            'is_m1': ['exact', ],
-            'is_m2': ['exact', ],
-            'is_m3': ['exact', ],
-            'is_m4': ['exact', ],
             'proposed_on': ['exact', 'year__gt'],
             'gazetted_on': ['exact', 'year__gt'],
             'deactivated_on': ['exact', 'year__gt'],
@@ -2494,7 +2507,10 @@ class TaxonGazettalFilter(filters.FilterSet):
 
 
 class TaxonGazettalViewSet(BatchUpsertViewSet):
-    """View set for TaxonGazettal."""
+    """View set for TaxonGazettal.
+
+    TODO add source and source_id to Gazettal as uid fields
+    """
 
     queryset = TaxonGazettal.objects.all().select_related(
         'taxon', 'category',)

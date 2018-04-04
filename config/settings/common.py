@@ -569,5 +569,10 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'propagate': True,
         },
+        "silk.model_factory": {
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
     }
 }

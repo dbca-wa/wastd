@@ -85,23 +85,13 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     list_display = (
         "taxon",
         "category",
-        "is_s5",
-        "is_m1",
-        "is_m2",
-        "is_m3",
-        "is_m4",
         "proposed_on",
         "gazetted_on",
         "deactivated_on",
         "review_due",
         "comments",
     )
-    list_filter = ("category",
-                   "is_s5",
-                   "is_m1",
-                   "is_m2",
-                   "is_m3",
-                   "is_m4",)
+    list_filter = ("category",)
     search_fields = ("taxon", "comments", )
 
     # Detail View layout and widgets
@@ -114,11 +104,6 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             {'fields': (
                 "taxon",
                 "category",
-                "is_s5",
-                "is_m1",
-                "is_m2",
-                "is_m3",
-                "is_m4",
                 "criteria",
             )}
          ),

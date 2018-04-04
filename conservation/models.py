@@ -44,12 +44,14 @@ class ConservationList(models.Model):
     )
 
     label = models.CharField(
+        blank=True, null=True,
         max_length=500,
         verbose_name=_("Label"),
         help_text=_("An explanatory label."),
     )
 
     description = models.TextField(
+        blank=True, null=True,
         verbose_name=_("Description"),
         help_text=_("A comprehensive description."),
     )
@@ -115,12 +117,14 @@ class ConservationCategory(models.Model):
     )
 
     label = models.CharField(
+        blank=True, null=True,
         max_length=500,
         verbose_name=_("Label"),
         help_text=_("An explanatory label."),
     )
 
     description = models.TextField(
+        blank=True, null=True,
         verbose_name=_("Description"),
         help_text=_("A comprehensive description."),
     )
@@ -154,12 +158,14 @@ class ConservationCriterion(models.Model):
     )
 
     label = models.CharField(
+        blank=True, null=True,
         max_length=500,
         verbose_name=_("Label"),
         help_text=_("An explanatory label."),
     )
 
     description = models.TextField(
+        blank=True, null=True,
         verbose_name=_("Description"),
         help_text=_("A comprehensive description."),
     )
@@ -187,13 +193,9 @@ class Gazettal(models.Model):
     Documents are attached as MediaAttachments.
 
     Some conservation categories are mutually exclusiver than others.
-    Mutually exclusice categories are linked as FK to ConservationCategory.
-    Mutually additive categories are added as checkboxes.
-
-    Hard-coding mutually additive categories is a conscious decision which
-    allows us to reduce complexity.
-    The expected churn of these additional categories is far lower than the expected
-    software churn. New additional categories can be added easily, existing ones remain.
+    To prevent invalid combinations of ConservationCategories,
+    the transition to Gazettal.STATUS_GAZETTED must take care of
+    closing just the mutually exclusive ones.
     """
 
     STATUS_PROPOSED = 0
@@ -233,40 +235,40 @@ class Gazettal(models.Model):
         help_text=_("The Conservation Criteria form the reason for the choice of conservation category."),
     )
 
-    is_s5 = models.BooleanField(
-        db_index=True,
-        default=False,
-        verbose_name=_("Conservation Category S5"),
-        help_text=_("Whether this Gazettal includes Conservation Category S5 (Migratory Bird)."),
-    )
+    # is_s5 = models.BooleanField(
+    #     db_index=True,
+    #     default=False,
+    #     verbose_name=_("Conservation Category S5"),
+    #     help_text=_("Whether this Gazettal includes Conservation Category S5 (Migratory Bird)."),
+    # )
 
-    is_m1 = models.BooleanField(
-        db_index=True,
-        default=False,
-        verbose_name=_("Conservation Category M1"),
-        help_text=_("Whether this Gazettal includes Conservation Category M1."),
-    )
+    # is_m1 = models.BooleanField(
+    #     db_index=True,
+    #     default=False,
+    #     verbose_name=_("Conservation Category M1"),
+    #     help_text=_("Whether this Gazettal includes Conservation Category M1."),
+    # )
 
-    is_m2 = models.BooleanField(
-        db_index=True,
-        default=False,
-        verbose_name=_("Conservation Category M2"),
-        help_text=_("Whether this Gazettal includes Conservation Category M2."),
-    )
+    # is_m2 = models.BooleanField(
+    #     db_index=True,
+    #     default=False,
+    #     verbose_name=_("Conservation Category M2"),
+    #     help_text=_("Whether this Gazettal includes Conservation Category M2."),
+    # )
 
-    is_m3 = models.BooleanField(
-        db_index=True,
-        default=False,
-        verbose_name=_("Conservation Category M3"),
-        help_text=_("Whether this Gazettal includes Conservation Category M3."),
-    )
+    # is_m3 = models.BooleanField(
+    #     db_index=True,
+    #     default=False,
+    #     verbose_name=_("Conservation Category M3"),
+    #     help_text=_("Whether this Gazettal includes Conservation Category M3."),
+    # )
 
-    is_m4 = models.BooleanField(
-        db_index=True,
-        default=False,
-        verbose_name=_("Conservation Category M4"),
-        help_text=_("Whether this Gazettal includes Conservation Category M4."),
-    )
+    # is_m4 = models.BooleanField(
+    #     db_index=True,
+    #     default=False,
+    #     verbose_name=_("Conservation Category M4"),
+    #     help_text=_("Whether this Gazettal includes Conservation Category M4."),
+    # )
 
     # Approval status
     status = FSMField(
@@ -304,6 +306,7 @@ class Gazettal(models.Model):
 
     # Approval process log
     comments = models.TextField(
+        blank=True, null=True,
         verbose_name=_("Comments"),
         help_text=_("Append comments on approval process as appropriate."),
     )
