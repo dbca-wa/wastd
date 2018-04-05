@@ -251,7 +251,8 @@ class Gazettal(models.Model):
         ConservationCriterion,
         blank=True,
         verbose_name=_("Conservation Criteria"),
-        help_text=_("The Conservation Criteria form the reason for the choice of conservation category."),
+        help_text=_("The Conservation Criteria form the reason "
+                    "for the choice of conservation categories."),
     )
 
     # Approval status
@@ -308,6 +309,12 @@ class Gazettal(models.Model):
         help_text=_("An auto-generated list of conservation criteria."),
     )
 
+    label_cache = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Gazettal label"),
+        help_text=_("An auto-generated label for the Gazettal minus the Taxon."),
+    )
+
     class Meta:
         """Class opts."""
 
@@ -324,8 +331,16 @@ class Gazettal(models.Model):
 
     @property
     def build_criteria_cache(self):
-        """Build a string of all attached criterai."""
+        """Build a string of all attached criteria."""
         return ", ".join([c.__str__() for c in self.criteria.all()])
+
+    @property
+    def build_label_cache(self):
+        """Return the category and criteria cache."""
+        return "{0} {1}".format(
+            self.build_category_cache,
+            self.build_criteria_cache
+        ).strip()
 
 
 @python_2_unicode_compatible
@@ -336,11 +351,17 @@ class TaxonGazettal(Gazettal):
     Transition to "gazetted" shall close any other Gazettals of same scope.
     """
 
-    taxon = models.ForeignKey(Taxon)
+    taxon = models.ForeignKey(
+        Taxon,
+        related_name="taxon_gazettal")
 
     def __str__(self):
         """The full name."""
-        return unicode(self.pk)
+        return "{0} {1} {2}".format(
+            self.taxon,
+            self.category_cache,
+            self.criteria_cache
+        ).strip()
 
     class Meta:
         """Class opts."""
@@ -353,7 +374,9 @@ class TaxonGazettal(Gazettal):
 class CommunityGazettal(Gazettal):
     """The Gazettal of a ConservationCategory against a Community."""
 
-    community = models.ForeignKey(Community)
+    community = models.ForeignKey(
+        Community,
+        related_name="community_gazettal")
 
     class Meta:
         """Class opts."""
@@ -363,7 +386,11 @@ class CommunityGazettal(Gazettal):
 
     def __str__(self):
         """The full name."""
-        return unicode(self.pk)
+        return "{0} {1} {2}".format(
+            self.community.code,
+            self.category_cache,
+            self.criteria_cache
+        ).strip()
 
 
 @receiver(pre_save, sender=TaxonGazettal)
@@ -373,3 +400,4 @@ def gazettal_pre_save(sender, instance, *args, **kwargs):
     logger.info("[gazettal_pre_save] Building caches...")
     instance.category_cache = instance.build_category_cache
     instance.criteria_cache = instance.build_criteria_cache
+    instance.label_cache = instance.build_label_cache

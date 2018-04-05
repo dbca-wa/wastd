@@ -38,7 +38,6 @@
       <span class="oi oi-media-stop" title="Terminal Taxon" aria-hidden="true"></span>
     </span>
     {% endif %}
-
     </h6>
 
     <h5 class="card-title {% if original.current == False %}text-muted{% endif %}">
@@ -67,6 +66,15 @@
       {{ original.vernacular_names }}
     </h6>
     {% endif %}
+
+    {% for gazettal in original.gazettal_labels %}
+    <h6 class="card-subtitle mb-2">
+      <span class="badge badge-danger">
+      <span class="oi oi-warning" title="Gazetted as {{ gazettal }}" aria-hidden="true"></span>
+        {{ gazettal }}
+      </span>
+    </h6>
+    {% endfor %}
 
   </div>
 

@@ -1832,6 +1832,14 @@ class Taxon(MPTTModel):
             self.get_rank_display(),
             self.name if not self.taxonomic_name else self.taxonomic_name)
 
+    @property
+    def gazettal_labels(self):
+        """Return a comma-separated list of Gazettal strings.
+
+        TODO save as list field on model, populate in pre_save.
+        """
+        return [x.label_cache for x in self.taxon_gazettal.all()]
+
 
 @receiver(pre_save, sender=Taxon)
 def taxon_pre_save(sender, instance, *args, **kwargs):
