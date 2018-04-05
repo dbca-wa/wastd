@@ -2448,6 +2448,8 @@ class ConservationListFilter(filters.FilterSet):
             'scope_wa': ['exact', ],
             'scope_cmw': ['exact', ],
             'scope_intl': ['exact', ],
+            'scope_species': ['exact', ],
+            'scope_communities': ['exact', ],
         }
 
 
@@ -2498,6 +2500,7 @@ class TaxonGazettalFilter(filters.FilterSet):
             # 'taxon': '__all__',
             # 'taxon': ['exact', ],
             'category': ['exact', 'in'],
+            'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
             'gazetted_on': ['exact', 'year__gt'],
             'deactivated_on': ['exact', 'year__gt'],
@@ -2557,6 +2560,7 @@ class CommunityGazettalFilter(filters.FilterSet):
         fields = {
             'community': ['exact', ],
             'category': ['exact', 'in'],
+            'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
             'gazetted_on': ['exact', 'year__gt'],
             'deactivated_on': ['exact', 'year__gt'],

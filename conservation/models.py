@@ -7,12 +7,12 @@ from __future__ import unicode_literals, absolute_import
 # import slugify
 # from datetime import timedelta
 # from dateutil import tz
-# import logging
+import logging
 
 # from django.core.urlresolvers import reverse
 from django.db import models
-# from django.db.models.signals import pre_save, post_save
-# from django.dispatch import receiver
+from django.db.models.signals import pre_save  # , post_save
+from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
 # from django.core.urlresolvers import reverse
@@ -30,6 +30,8 @@ from django_fsm import FSMField  # , transition
 # from django_fsm_log.models import StateLog
 
 from taxonomy.models import Taxon, Community
+
+logger = logging.getLogger(__name__)
 
 
 @python_2_unicode_compatible
@@ -89,6 +91,20 @@ class ConservationList(models.Model):
         help_text=_("Whether this list is applicable internationally."),
     )
 
+    scope_species = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Applies to Species"),
+        help_text=_("Whether this list is applicable to individual species."),
+    )
+
+    scope_communities = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Applies to Communities"),
+        help_text=_("Whether this list is applicable to ecological communities."),
+    )
+
     class Meta:
         """Class opts."""
 
@@ -138,7 +154,7 @@ class ConservationCategory(models.Model):
 
     def __str__(self):
         """The full name."""
-        return self.code
+        return "[{0}] {1}".format(self.conservation_list.code, self.code)
 
 
 @python_2_unicode_compatible
@@ -179,7 +195,7 @@ class ConservationCriterion(models.Model):
 
     def __str__(self):
         """The full name."""
-        return self.code
+        return "[{0}] {1}".format(self.conservation_list.code, self.code)
 
 
 @python_2_unicode_compatible
@@ -223,52 +239,20 @@ class Gazettal(models.Model):
     )
 
     # Conservation status
-    category = models.ForeignKey(
+    category = models.ManyToManyField(
         ConservationCategory,
-        verbose_name=_("Conservation Category"),
-        help_text=_("The Conservation Category can change during the approval process."),
+        blank=True,
+        verbose_name=_("Conservation Categories"),
+        help_text=_("The Conservation Categories can change during the approval process."
+                    " Some combinations are valid, some are not."),
     )
 
     criteria = models.ManyToManyField(
         ConservationCriterion,
+        blank=True,
         verbose_name=_("Conservation Criteria"),
         help_text=_("The Conservation Criteria form the reason for the choice of conservation category."),
     )
-
-    # is_s5 = models.BooleanField(
-    #     db_index=True,
-    #     default=False,
-    #     verbose_name=_("Conservation Category S5"),
-    #     help_text=_("Whether this Gazettal includes Conservation Category S5 (Migratory Bird)."),
-    # )
-
-    # is_m1 = models.BooleanField(
-    #     db_index=True,
-    #     default=False,
-    #     verbose_name=_("Conservation Category M1"),
-    #     help_text=_("Whether this Gazettal includes Conservation Category M1."),
-    # )
-
-    # is_m2 = models.BooleanField(
-    #     db_index=True,
-    #     default=False,
-    #     verbose_name=_("Conservation Category M2"),
-    #     help_text=_("Whether this Gazettal includes Conservation Category M2."),
-    # )
-
-    # is_m3 = models.BooleanField(
-    #     db_index=True,
-    #     default=False,
-    #     verbose_name=_("Conservation Category M3"),
-    #     help_text=_("Whether this Gazettal includes Conservation Category M3."),
-    # )
-
-    # is_m4 = models.BooleanField(
-    #     db_index=True,
-    #     default=False,
-    #     verbose_name=_("Conservation Category M4"),
-    #     help_text=_("Whether this Gazettal includes Conservation Category M4."),
-    # )
 
     # Approval status
     status = FSMField(
@@ -311,6 +295,19 @@ class Gazettal(models.Model):
         help_text=_("Append comments on approval process as appropriate."),
     )
 
+    # Cache fields
+    category_cache = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Category list"),
+        help_text=_("An auto-generated list of conservation categories."),
+    )
+
+    criteria_cache = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Criteria list"),
+        help_text=_("An auto-generated list of conservation criteria."),
+    )
+
     class Meta:
         """Class opts."""
 
@@ -318,7 +315,17 @@ class Gazettal(models.Model):
 
     def __str__(self):
         """The full name."""
-        return self.pk
+        return unicode(self.pk)
+
+    @property
+    def build_category_cache(self):
+        """Build a string of all attached categories."""
+        return ", ".join([c.__str__() for c in self.category.all()])
+
+    @property
+    def build_criteria_cache(self):
+        """Build a string of all attached criterai."""
+        return ", ".join([c.__str__() for c in self.criteria.all()])
 
 
 @python_2_unicode_compatible
@@ -333,7 +340,7 @@ class TaxonGazettal(Gazettal):
 
     def __str__(self):
         """The full name."""
-        return self.pk
+        return unicode(self.pk)
 
     class Meta:
         """Class opts."""
@@ -356,4 +363,13 @@ class CommunityGazettal(Gazettal):
 
     def __str__(self):
         """The full name."""
-        return self.pk
+        return unicode(self.pk)
+
+
+@receiver(pre_save, sender=TaxonGazettal)
+@receiver(pre_save, sender=CommunityGazettal)
+def gazettal_pre_save(sender, instance, *args, **kwargs):
+    """Gazettal: Build names (expensive lookups)."""
+    logger.info("[gazettal_pre_save] Building caches...")
+    instance.category_cache = instance.build_category_cache
+    instance.criteria_cache = instance.build_criteria_cache

@@ -54,13 +54,20 @@ class ConservationListAdmin(VersionAdmin):
         "scope_wa",
         "scope_cmw",
         "scope_intl",
+        "scope_species",
+        "scope_communities",
     )
-    list_filter = ("scope_wa", "scope_cmw", "scope_intl", )
+    list_filter = ("scope_wa",
+                   "scope_cmw",
+                   "scope_intl",
+                   "scope_species",
+                   "scope_communities",)
     search_fields = ("code", "label", "description", )
     fieldsets = (
         ('Details', {'fields': ("code", "label", "description",)}),
         ('Scope', {'fields': ("active_from", "active_to",
-                              "scope_wa", "scope_cmw", "scope_intl",)}),
+                              "scope_wa", "scope_cmw", "scope_intl",
+                              "scope_species", "scope_communities",)}),
     )
     inlines = [ConservationCategoryInline,
                ConservationCriterionInline]
@@ -84,7 +91,8 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     # List View
     list_display = (
         "taxon",
-        "category",
+        "category_cache",
+        "criteria_cache",
         "proposed_on",
         "gazetted_on",
         "deactivated_on",
@@ -92,10 +100,19 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "comments",
     )
     list_filter = ("category",)
+
+    list_filter = (
+        "category",
+        ('proposed_on', admin.DateFieldListFilter),
+        ('gazetted_on', admin.DateFieldListFilter),
+        ('deactivated_on', admin.DateFieldListFilter),
+        ('review_due', admin.DateFieldListFilter),
+    )
+
     search_fields = ("taxon", "comments", )
 
     # Detail View layout and widgets
-    filter_horizontal = ('criteria',)
+    filter_horizontal = ('category', 'criteria',)
     raw_id_fields = ('taxon', )
     autocomplete_lookup_fields = {'fk': ['taxon', ]}
     form = TaxonGazettalForm
@@ -132,7 +149,8 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     # List View
     list_display = (
         "community",
-        "category",
+        "category_cache",
+        "criteria_cache",
         "proposed_on",
         "gazetted_on",
         "deactivated_on",
@@ -143,7 +161,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("category", "comments", )
 
     # Detail View
-    filter_horizontal = ('criteria',)
+    filter_horizontal = ('category', 'criteria',)
     raw_id_fields = ('community', )
     autocomplete_lookup_fields = {'fk': ['community', ]}
     form = CommunityGazettalForm
