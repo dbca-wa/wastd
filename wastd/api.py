@@ -2409,10 +2409,11 @@ class ConservationListSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Custom create with nested ConsCat serializer."""
         cat_data = validated_data.pop('conservationcategory_set')
-        conservation_list = ConservationList.objects.create_or_update(code=validated_data["code"])
-        ConservationList.objects.filter(code=validated_data["code"]).update(**validated_data)
+        conservation_list = ConservationList.objects.update_or_create(
+            code=validated_data["code"], defaults=validated_data)
         for cat in cat_data:
-            ConservationCategory.objects.create(conservation_list=conservation_list, **cat)
+            cat["conservation_list_id"] = conservation_list.pk
+            ConservationCategory.objects.update_or_create(code=cat["code"], defaults=cat)
         return conservation_list
 
     class Meta:
@@ -2453,7 +2454,7 @@ class ConservationListFilter(filters.FilterSet):
         }
 
 
-class ConservationListViewSet(BatchUpsertViewSet):
+class ConservationListViewSet(viewsets.ModelViewSet):
     """View set for ConservationList."""
 
     queryset = ConservationList.objects.all()
@@ -2461,6 +2462,38 @@ class ConservationListViewSet(BatchUpsertViewSet):
     filter_class = ConservationListFilter
     uid_field = "code"
     model = ConservationList
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+        cats = data.pop("conservationcategory_set")
+        if 'csrfmiddlewaretoken' in data:
+            data.pop('csrfmiddlewaretoken')
+        obj, created = self.model.objects.update_or_create(code=data["code"], defaults=data)
+        for cat in cats:
+            cat["conservation_list_id"] = obj.pk
+            ConservationCategory.objects.update_or_create(code=cat["code"], defaults=cat)
+
+        return RestResponse(data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            logger.info("[create] Found one ConservationList dict.")
+            res = self.create_one(request.data)
+            return res
+        elif type(request.data) == list and self.uid_field in request.data[1]:
+            logger.info("[create] Found multiple ConservationList dicts.")
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
+        else:
+            logger.debug("[BatchUpsertViewSet] data: {0}".format(request.data))
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 router.register("conservationlist", ConservationListViewSet)
@@ -2515,8 +2548,7 @@ class TaxonGazettalViewSet(BatchUpsertViewSet):
     TODO add source and source_id to Gazettal as uid fields
     """
 
-    queryset = TaxonGazettal.objects.all().select_related(
-        'taxon', 'category',)
+    queryset = TaxonGazettal.objects.all().select_related('taxon')
     serializer_class = TaxonGazettalSerializer
     filter_class = TaxonGazettalFilter
     uid_field = "taxon"
