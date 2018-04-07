@@ -2056,7 +2056,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         if self.uid_field in request.data:
             res = self.create_one(request.data)
             return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
+        elif type(request.data) == list and self.uid_field in request.data[0]:
             res = [self.create_one(data) for data in request.data]
             return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
@@ -2470,6 +2470,7 @@ class ConservationListViewSet(viewsets.ModelViewSet):
             data.pop('csrfmiddlewaretoken')
         obj, created = self.model.objects.update_or_create(code=data["code"], defaults=data)
         for cat in cats:
+            logger.debug("[ConsList viewset] Found one cons cat: {0}".format(cat))
             cat["conservation_list_id"] = obj.pk
             ConservationCategory.objects.update_or_create(code=cat["code"], defaults=cat)
 
@@ -2487,7 +2488,7 @@ class ConservationListViewSet(viewsets.ModelViewSet):
             logger.info("[create] Found one ConservationList dict.")
             res = self.create_one(request.data)
             return res
-        elif type(request.data) == list and self.uid_field in request.data[1]:
+        elif type(request.data) == list and self.uid_field in request.data[0]:
             logger.info("[create] Found multiple ConservationList dicts.")
             res = [self.create_one(data) for data in request.data]
             return RestResponse(request.data, status=status.HTTP_200_OK)

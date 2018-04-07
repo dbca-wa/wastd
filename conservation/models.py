@@ -87,7 +87,7 @@ class ConservationList(models.Model):
     scope_intl = models.BooleanField(
         db_index=True,
         default=False,
-        verbose_name=_("Applies to WA"),
+        verbose_name=_("Applies Internationally"),
         help_text=_("Whether this list is applicable internationally."),
     )
 
