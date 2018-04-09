@@ -398,6 +398,7 @@ class CommunityGazettal(Gazettal):
 def gazettal_pre_save(sender, instance, *args, **kwargs):
     """Gazettal: Build names (expensive lookups)."""
     logger.info("[gazettal_pre_save] Building caches...")
-    instance.category_cache = instance.build_category_cache
-    instance.criteria_cache = instance.build_criteria_cache
-    instance.label_cache = instance.build_label_cache
+    if instance.pk:
+        instance.category_cache = instance.build_category_cache
+        instance.criteria_cache = instance.build_criteria_cache
+        instance.label_cache = instance.build_label_cache
