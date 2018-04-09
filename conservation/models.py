@@ -11,7 +11,7 @@ import logging
 
 # from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.signals import pre_save  # , post_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
@@ -395,10 +395,12 @@ class CommunityGazettal(Gazettal):
 
 @receiver(pre_save, sender=TaxonGazettal)
 @receiver(pre_save, sender=CommunityGazettal)
-def gazettal_pre_save(sender, instance, *args, **kwargs):
+def gazettal_caches(sender, instance, *args, **kwargs):
     """Gazettal: Build names (expensive lookups)."""
-    logger.info("[gazettal_pre_save] Building caches...")
     if instance.pk:
+        logger.info("[gazettal_caches] Building caches.")
         instance.category_cache = instance.build_category_cache
         instance.criteria_cache = instance.build_criteria_cache
         instance.label_cache = instance.build_label_cache
+    else:
+        logger.info("[gazettal_caches] New Gazettal, re-save to populate caches.")

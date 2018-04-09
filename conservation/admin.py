@@ -5,6 +5,8 @@ from __future__ import absolute_import, unicode_literals
 # from django import forms as django_forms
 # import floppyforms as ff
 from django.contrib import admin
+from django.forms import Textarea
+from django.db import models
 
 # from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
@@ -21,12 +23,26 @@ from conservation.models import (
 )
 
 
+S2ATTRS = {'width': 'auto'}
+ConservationCategoryForm = s2form(ConservationCategory, attrs=S2ATTRS)
+ConservationCriterionForm = s2form(ConservationCriterion, attrs=S2ATTRS)
+ConservationListForm = s2form(ConservationList, attrs=S2ATTRS)
+TaxonGazettalForm = s2form(TaxonGazettal, attrs=S2ATTRS)
+CommunityGazettalForm = s2form(CommunityGazettal, attrs=S2ATTRS)
+
+FORMFIELD_OVERRIDES = {
+    models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 80})},
+}
+
+
 class ConservationCategoryInline(admin.TabularInline):
     """Inline admin for ConservationCategory."""
 
     extra = 1
     model = ConservationCategory
-    classes = ('grp-collapse grp-open',)
+    classes = ('grp-collapse grp-open wide extrapretty',)
+    form = ConservationCategoryForm
+    # formfield_overrides = FORMFIELD_OVERRIDES
 
 
 class ConservationCriterionInline(admin.TabularInline):
@@ -34,7 +50,9 @@ class ConservationCriterionInline(admin.TabularInline):
 
     extra = 1
     model = ConservationCriterion
-    classes = ('grp-collapse grp-open',)
+    classes = ('grp-collapse grp-open wide extrapretty',)
+    form = ConservationCriterionForm
+    # formfield_overrides = FORMFIELD_OVERRIDES
 
 
 @admin.register(ConservationList)
@@ -65,17 +83,17 @@ class ConservationListAdmin(VersionAdmin):
     search_fields = ("code", "label", "description", )
     fieldsets = (
         ('Details', {'fields': ("code", "label", "description",)}),
-        ('Scope', {'fields': ("active_from", "active_to",
-                              "scope_wa", "scope_cmw", "scope_intl",
-                              "scope_species", "scope_communities",)}),
+        ('Scope', {
+            'classes': ('grp-collapse', 'grp-open', 'wide'),
+            'fields': ("active_from", "active_to",
+                       "scope_wa", "scope_cmw", "scope_intl",
+                       "scope_species", "scope_communities")
+
+        }),
     )
+    formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [ConservationCategoryInline,
                ConservationCriterionInline]
-
-
-S2ATTRS = {'width': '350px'}
-TaxonGazettalForm = s2form(TaxonGazettal, attrs=S2ATTRS)
-CommunityGazettalForm = s2form(CommunityGazettal, attrs=S2ATTRS)
 
 
 @admin.register(TaxonGazettal)
@@ -116,6 +134,8 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     raw_id_fields = ('taxon', )
     autocomplete_lookup_fields = {'fk': ['taxon', ]}
     form = TaxonGazettalForm
+    formfield_overrides = FORMFIELD_OVERRIDES
+
     fieldsets = (
         ('Conservation Status',
             {'fields': (
@@ -165,6 +185,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     raw_id_fields = ('community', )
     autocomplete_lookup_fields = {'fk': ['community', ]}
     form = CommunityGazettalForm
+    formfield_overrides = FORMFIELD_OVERRIDES
     fieldsets = (
         ('Conservation Status',
             {'fields': (
