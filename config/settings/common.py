@@ -564,6 +564,11 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'propagate': True,
         },
+        'conservation': {
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
         "background_task": {
             'level': 'INFO',
             'handlers': ['console', 'file'],

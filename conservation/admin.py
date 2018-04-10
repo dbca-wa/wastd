@@ -13,12 +13,14 @@ from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from django_fsm_log.admin import StateLogInline
+from django_fsm_log.models import StateLog
 from reversion.admin import VersionAdmin
 
 from conservation.models import (
     ConservationList,
     ConservationCategory,
     ConservationCriterion,
+    Gazettal,
     TaxonGazettal,
     CommunityGazettal
 )
@@ -34,6 +36,22 @@ CommunityGazettalForm = s2form(CommunityGazettal, attrs=S2ATTRS)
 FORMFIELD_OVERRIDES = {
     models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 80})},
 }
+
+
+class CustomStateLogInline(StateLogInline):
+
+    def status_display(self, obj):
+        """Make health status human readable."""
+        return Gazettal.get_status_display(self.state)
+    status_display.short_description = 'Status'
+
+    fields = (
+        'transition',
+        'status_display',
+        'by',
+        'description',
+        'timestamp',
+    )
 
 
 class ConservationCategoryInline(admin.TabularInline):

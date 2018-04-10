@@ -222,7 +222,7 @@ class Gazettal(models.Model):
     STATUS_IN_PUBLIC_REVIEW = 20
     STATUS_IN_PANEL_REVIEW = 30
     STATUS_IN_BM_REVIEW = 40
-    STATUS_IN_DIV_REVIEW = 50
+    STATUS_IN_DIR_REVIEW = 50
     STATUS_IN_DG_REVIEW = 60
     STATUS_IN_MIN_REVIEW = 70
     STATUS_GAZETTED = 80
@@ -234,7 +234,7 @@ class Gazettal(models.Model):
         (STATUS_IN_PUBLIC_REVIEW, "In review with public"),
         (STATUS_IN_PANEL_REVIEW, "In review with panel"),
         (STATUS_IN_BM_REVIEW, "In review with Branch Manager"),
-        (STATUS_IN_DIV_REVIEW, "In review with Division Director"),
+        (STATUS_IN_DIR_REVIEW, "In review with Division Director"),
         (STATUS_IN_DG_REVIEW, "In review with Director General"),
         (STATUS_IN_MIN_REVIEW, "In review with Minister"),
         (STATUS_GAZETTED, "Gazetted"),
@@ -359,17 +359,45 @@ class Gazettal(models.Model):
 
     # ------------------------------------------------------------------------#
     # Django-FSM transitions
-    # STATUS_PROPOSED = 0
+    # recall_to_proposed = 0
     # STATUS_IN_EXPERT_REVIEW = 10
     # STATUS_IN_PUBLIC_REVIEW = 20
     # STATUS_IN_PANEL_REVIEW = 30
     # STATUS_IN_BM_REVIEW = 40
-    # STATUS_IN_DIV_REVIEW = 50
+    # STATUS_IN_DIR_REVIEW = 50
     # STATUS_IN_DG_REVIEW = 60
     # STATUS_IN_MIN_REVIEW = 70
     # STATUS_GAZETTED = 80
     # STATUS_INACVITE = 90
 
+    # ALL -> STATUS_PROPOSED -------------------------------------------------#
+    def can_recall_to_proposed(self):
+        """Gatecheck for recall_to_proposed."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source='*',
+        target=STATUS_PROPOSED,
+        conditions=[can_recall_to_proposed],
+        # permission='conservation.can_recall_to_proposed'
+    )
+    def recall_to_proposed(self):
+        """Reset a new Gazettal to status "new" (proposed).
+
+        This transition allows to reset any Gazettal to status "new"
+        (before any endorsement) to start over freshly.
+        This operation is equivalent to starting a new Gazettal.
+
+        Source: all
+        Target: STATUS_PROPOSED
+        Permissions: staff
+        Gatecheck: can_recall_to_proposed (pass)
+        """
+        logger.info("[Gazettal status] recall_to_proposed")
+
+    # STATUS_PROPOSED -> STATUS_IN_EXPERT_REVIEW -----------------------------#
     def can_submit_for_expert_review(self):
         """Gatecheck for submit_for_expert_review."""
         return True
@@ -392,8 +420,151 @@ class Gazettal(models.Model):
         """
         logger.info("[Gazettal status] submit_for_expert_review")
 
+    # PROPOSED / IN_EXPERT_REVIEW -> STATUS_IN_PUBLIC_REVIEW -----------------#
+    def can_submit_for_public_review(self):
+        """Gatecheck for submit_for_public_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW],
+        target=STATUS_IN_PUBLIC_REVIEW,
+        conditions=[can_submit_for_public_review],
+        # permission='conservation.can_submit_for_expert_review'
+    )
+    def submit_for_public_review(self):
+        """Submit a new Gazettal for public review.
+
+        Source: STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW
+        Target: STATUS_IN_PUBLIC_REVIEW
+        Permissions: staff
+        Gatecheck: can_submit_for_public_review (pass)
+        """
+        logger.info("[Gazettal status] submit_for_public_review")
+
+    # STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW ->
+    # STATUS_IN_PANEL_REVIEW  ------------------------------------------------#
+    def can_submit_for_panel_review(self):
+        """Gatecheck for submit_for_panel_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW],
+        target=STATUS_IN_PANEL_REVIEW,
+        conditions=[can_submit_for_panel_review],
+        # permission='conservation.can_submit_for_panel_review'
+    )
+    def submit_for_panel_review(self):
+        """Submit a new Gazettal for panel review.
+
+        A proposed review can optionally go to an expert, to the public,
+        or go directly for panel review.
+
+        Source: STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW
+        Target: STATUS_IN_PANEL_REVIEW
+        Permissions: staff
+        Gatecheck: can_submit_for_panel_review (pass)
+        """
+        logger.info("[Gazettal status] submit_for_panel_review")
+
+    # STATUS_IN_PANEL_REVIEW -> STATUS_IN_BM_REVIEW --------------------------#
+    def can_submit_for_bm_review(self):
+        """Gatecheck for submit_for_bm_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_IN_PANEL_REVIEW,
+        target=STATUS_IN_BM_REVIEW,
+        conditions=[can_submit_for_panel_review],
+        # permission='conservation.submit_for_bm_review'
+    )
+    def submit_for_bm_review(self):
+        """Submit a new Gazettal for Branch Manager review once panel endorses.
+
+        Source: STATUS_IN_PANEL_REVIEW
+        Target: STATUS_IN_BM_REVIEW
+        Permissions: staff
+        Gatecheck: can_submit_for_bm_review (pass)
+        """
+        logger.info("[Gazettal status] submit_for_bm_review")
+
+    # STATUS_IN_BM_REVIEW -> STATUS_IN_DIR_REVIEW ----------------------------#
+    def can_submit_for_dir_review(self):
+        """Gatecheck for submit_for_dir_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_IN_BM_REVIEW,
+        target=STATUS_IN_DIR_REVIEW,
+        conditions=[can_submit_for_dir_review],
+        # permission='conservation.can_submit_for_dir_review'
+    )
+    def submit_for_director_review(self):
+        """Submit a new Gazettal for Dir BCS review once BM endorses.
+
+        Source: STATUS_IN_BM_REVIEW
+        Target: STATUS_IN_DIR_REVIEW
+        Permissions: staff
+        Gatecheck: can_submit_for_dir_review (pass)
+        """
+        logger.info("[Gazettal status] submit_for_director_review")
+
+    # STATUS_IN_DIR_REVIEW -> STATUS_IN_DG_REVIEW ----------------------------#
+    def can_submit_for_dg_review(self):
+        """Gatecheck for submit_for_dg_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_IN_DIR_REVIEW,
+        target=STATUS_IN_DG_REVIEW,
+        conditions=[can_submit_for_dg_review],
+        # permission='conservation.can_submit_for_dg_review'
+    )
+    def submit_for_director_general_review(self):
+        """Submit a new Gazettal for DG review once Director endorses.
+
+        Source: STATUS_IN_DIR_REVIEW
+        Target: STATUS_IN_DG_REVIEW
+        Permissions: staff
+        Gatecheck: can_submit_for_dg_review (pass)
+        """
+        logger.info("[Gazettal status] submit_for_director_general_review")
+
+    # STATUS_IN_DG_REVIEW -> STATUS_IN_MIN_REVIEW ----------------------------#
+    def can_submit_for_minister_review(self):
+        """Gatecheck for submit_for_minister_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_IN_DG_REVIEW,
+        target=STATUS_IN_MIN_REVIEW,
+        conditions=[can_submit_for_minister_review],
+        # permission='conservation.can_submit_for_dg_review'
+    )
+    def submit_for_minister_review(self):
+        """Submit a new Gazettal for DG review once Director endorses.
+
+        Source: STATUS_IN_DG_REVIEW
+        Target: STATUS_IN_MIN_REVIEW
+        Permissions: staff
+        Gatecheck: can_submit_for_minister_review (pass)
+        """
+        logger.info("[Gazettal status] submit_for_minister_review")
+
+    # ALL -> STATUS_GAZETTED -------------------------------------------------#
     def can_mark_gazetted(self):
-        """Gatecheck for submit_for_expert_review."""
+        """Gatecheck for mark_gazetted."""
         return True
 
     @fsm_log_by
@@ -407,15 +578,19 @@ class Gazettal(models.Model):
     def mark_gazetted(self):
         """Mark a conservation listing as gazetted.
 
+        This transition allows to fast-forward any Gazettal to "gazetted".
+
         Source: all
         Target: STATUS_GAZETTED
         Permissions: staff
         Gatecheck: can_mark_gazetted (pass)
         """
-        logger.info("[Gazettal status] mark_gazetted should now mark older Gazettals inactive.")
+        logger.info("[Gazettal status] mark_gazetted should now mark older "
+                    "Gazettals inactive.")
 
+    # STATUS_GAZETTED -> STATUS_INACVITE -------------------------------------#
     def can_mark_inactive(self):
-        """Gatecheck for submit_for_expert_review."""
+        """Gatecheck for mark_inactive."""
         return True
 
     @fsm_log_by
