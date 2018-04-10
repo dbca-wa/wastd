@@ -12,6 +12,7 @@ from django.db import models
 from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
+from django_fsm_log.admin import StateLogInline
 from reversion.admin import VersionAdmin
 
 from conservation.models import (
@@ -109,6 +110,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     # List View
     list_display = (
         "taxon",
+        "status",
         "category_cache",
         "criteria_cache",
         "proposed_on",
@@ -117,17 +119,16 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "review_due",
         "comments",
     )
-    list_filter = ("category",)
-
     list_filter = (
         "category",
+        "status",
         ('proposed_on', admin.DateFieldListFilter),
         ('gazetted_on', admin.DateFieldListFilter),
         ('deactivated_on', admin.DateFieldListFilter),
         ('review_due', admin.DateFieldListFilter),
     )
 
-    search_fields = ("taxon", "comments", )
+    search_fields = ("comments", )
 
     # Detail View layout and widgets
     filter_horizontal = ('category', 'criteria',)
@@ -135,6 +136,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     autocomplete_lookup_fields = {'fk': ['taxon', ]}
     form = TaxonGazettalForm
     formfield_overrides = FORMFIELD_OVERRIDES
+    inlines = [StateLogInline]
 
     fieldsets = (
         ('Conservation Status',
@@ -169,6 +171,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     # List View
     list_display = (
         "community",
+        "status",
         "category_cache",
         "criteria_cache",
         "proposed_on",
@@ -177,8 +180,15 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "review_due",
         "comments",
     )
-    list_filter = ("category",)
-    search_fields = ("category", "comments", )
+    list_filter = (
+        "category",
+        "status",
+        ('proposed_on', admin.DateFieldListFilter),
+        ('gazetted_on', admin.DateFieldListFilter),
+        ('deactivated_on', admin.DateFieldListFilter),
+        ('review_due', admin.DateFieldListFilter),
+    )
+    search_fields = ("comments", )
 
     # Detail View
     filter_horizontal = ('category', 'criteria',)
@@ -186,6 +196,8 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     autocomplete_lookup_fields = {'fk': ['community', ]}
     form = CommunityGazettalForm
     formfield_overrides = FORMFIELD_OVERRIDES
+    inlines = [StateLogInline]
+
     fieldsets = (
         ('Conservation Status',
             {'fields': (

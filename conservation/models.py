@@ -11,7 +11,7 @@ import logging
 
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
@@ -25,8 +25,8 @@ from django.utils.translation import ugettext_lazy as _
 # from polymorphic.models import PolymorphicModel
 # from durationfield.db.models.fields.duration import DurationField
 # from django.db.models.fields import DurationField
-from django_fsm import FSMField  # , transition
-# from django_fsm_log.decorators import fsm_log_by
+from django_fsm import FSMIntegerField, transition
+from django_fsm_log.decorators import fsm_log_by
 # from django_fsm_log.models import StateLog
 
 from taxonomy.models import Taxon, Community
@@ -259,7 +259,7 @@ class Gazettal(models.Model):
     )
 
     # Approval status
-    status = FSMField(
+    status = FSMIntegerField(
         choices=APPROVAL_STATUS,
         default=STATUS_PROPOSED,
         db_index=True,
@@ -354,8 +354,90 @@ class Gazettal(models.Model):
     @property
     def absolute_admin_add_url(self):
         """Return the absolute admin add URL."""
-        return reverse('admin:{0}_{1}/add'.format(
+        return reverse('admin:{0}_{1}_add'.format(
             self._meta.app_label, self._meta.model_name))
+
+    # ------------------------------------------------------------------------#
+    # Django-FSM transitions
+    # STATUS_PROPOSED = 0
+    # STATUS_IN_EXPERT_REVIEW = 10
+    # STATUS_IN_PUBLIC_REVIEW = 20
+    # STATUS_IN_PANEL_REVIEW = 30
+    # STATUS_IN_BM_REVIEW = 40
+    # STATUS_IN_DIV_REVIEW = 50
+    # STATUS_IN_DG_REVIEW = 60
+    # STATUS_IN_MIN_REVIEW = 70
+    # STATUS_GAZETTED = 80
+    # STATUS_INACVITE = 90
+
+    def can_submit_for_expert_review(self):
+        """Gatecheck for submit_for_expert_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_PROPOSED,
+        target=STATUS_IN_EXPERT_REVIEW,
+        conditions=[can_submit_for_expert_review],
+        # permission='conservation.can_submit_for_expert_review'
+    )
+    def submit_for_expert_review(self):
+        """Submit a new Gazettal for expert review.
+
+        Source: STATUS_PROPOSED
+        Target: STATUS_IN_EXPERT_REVIEW
+        Permissions: staff
+        Gatecheck: can_submit_for_expert_review (pass)
+        """
+        logger.info("[Gazettal status] submit_for_expert_review")
+
+    def can_mark_gazetted(self):
+        """Gatecheck for submit_for_expert_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source='*',
+        target=STATUS_GAZETTED,
+        conditions=[can_mark_gazetted],
+        # permission='conservation.can_mark_gazetted'
+    )
+    def mark_gazetted(self):
+        """Mark a conservation listing as gazetted.
+
+        Source: all
+        Target: STATUS_GAZETTED
+        Permissions: staff
+        Gatecheck: can_mark_gazetted (pass)
+        """
+        logger.info("[Gazettal status] mark_gazetted should now mark older Gazettals inactive.")
+
+    def can_mark_inactive(self):
+        """Gatecheck for submit_for_expert_review."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_GAZETTED,
+        target=STATUS_INACVITE,
+        conditions=[can_mark_inactive],
+        # permission='conservation.can_mark_inactive'
+    )
+    def mark_inactive(self):
+        """Mark a conservation listing as inactive.
+
+        Source: all
+        Target: STATUS_INACVITE
+        Permissions: staff
+        Gatecheck: can_mark_inactive (pass)
+        """
+        logger.info("[Gazettal status] mark_inactive")
+
+    # end Django-FSM
+    # ------------------------------------------------------------------------#
 
 
 @python_2_unicode_compatible
