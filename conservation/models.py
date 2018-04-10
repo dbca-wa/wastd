@@ -9,7 +9,7 @@ from __future__ import unicode_literals, absolute_import
 # from dateutil import tz
 import logging
 
-# from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
@@ -110,6 +110,7 @@ class ConservationList(models.Model):
 
         verbose_name = "Conservation List"
         verbose_name_plural = "Conservation Lists"
+        ordering = ["-active_from", ]
 
     def __str__(self):
         """The full name."""
@@ -149,6 +150,7 @@ class ConservationCategory(models.Model):
         """Class opts."""
 
         unique_together = ("conservation_list", "code")
+        ordering = ["conservation_list", "code"]
         verbose_name = "Conservation Category"
         verbose_name_plural = "Conservation Categories"
 
@@ -190,6 +192,7 @@ class ConservationCriterion(models.Model):
         """Class opts."""
 
         unique_together = ("conservation_list", "code")
+        ordering = ["conservation_list", "code"]
         verbose_name = "Conservation Criterion"
         verbose_name_plural = "Conservation Criteria"
 
@@ -342,6 +345,18 @@ class Gazettal(models.Model):
             self.build_criteria_cache
         ).strip()
 
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    @property
+    def absolute_admin_add_url(self):
+        """Return the absolute admin add URL."""
+        return reverse('admin:{0}_{1}/add'.format(
+            self._meta.app_label, self._meta.model_name))
+
 
 @python_2_unicode_compatible
 class TaxonGazettal(Gazettal):
@@ -351,9 +366,8 @@ class TaxonGazettal(Gazettal):
     Transition to "gazetted" shall close any other Gazettals of same scope.
     """
 
-    taxon = models.ForeignKey(
-        Taxon,
-        related_name="taxon_gazettal")
+    taxon = models.ForeignKey(Taxon,
+                              related_name="taxon_gazettal")
 
     def __str__(self):
         """The full name."""
@@ -374,9 +388,8 @@ class TaxonGazettal(Gazettal):
 class CommunityGazettal(Gazettal):
     """The Gazettal of a ConservationCategory against a Community."""
 
-    community = models.ForeignKey(
-        Community,
-        related_name="community_gazettal")
+    community = models.ForeignKey(Community,
+                                  related_name="community_gazettal")
 
     class Meta:
         """Class opts."""
@@ -396,9 +409,9 @@ class CommunityGazettal(Gazettal):
 @receiver(pre_save, sender=TaxonGazettal)
 @receiver(pre_save, sender=CommunityGazettal)
 def gazettal_caches(sender, instance, *args, **kwargs):
-    """Gazettal: Build names (expensive lookups)."""
+    """Gazettal: Cache expensive lookups."""
     if instance.pk:
-        logger.info("[gazettal_caches] Building caches.")
+        logger.info("[gazettal_caches] Updating cache fields.")
         instance.category_cache = instance.build_category_cache
         instance.criteria_cache = instance.build_criteria_cache
         instance.label_cache = instance.build_label_cache

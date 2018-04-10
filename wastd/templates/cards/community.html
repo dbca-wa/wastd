@@ -13,10 +13,36 @@
       {{ original.name }}
     </h6>
 
+
+    {% for gazettal in original.gazettals %}
+    <h6 class="card-subtitle mb-2">
+      <span class="badge badge-danger">
+      <span class="oi oi-warning" title="Gazetted as {{ gazettal.label }}" aria-hidden="true"></span>
+        {{ gazettal.label }}
+      </span>
+      {% if request.user.is_staff %}
+      <a href="{{ gazettal.url }}" title="Because you are DBCA staff, you may edit this conservation listing" target="_">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+      </a>
+      {% endif %}
+    </h6>
+    {% endfor %}
+
   </div>
 
   <!-- Management plan placeholder -->
   <ul class="list-group list-group-flush">
+
+    {% if request.user.is_staff %}
+    <li class="list-group-item">
+      <a href="{% url 'admin:conservation_communitygazettal_add' %}"
+         title="Because you are DBCA staff, you may propose a new conservation listing" target="_">
+        <span class="oi oi-plus" aria-hidden="true"></span>
+        Propose new cons listing
+      </a>
+    </li>
+    {% endif %}
+
     <li class="list-group-item">
       <span class="badge badge-info">
         <span class="oi oi-document" title="PDF document" aria-hidden="true"></span>

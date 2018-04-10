@@ -47,7 +47,7 @@
     <!-- Author -->
     {% if original.author %}
     <h6 class="card-subtitle mb-2 text-muted">
-      <span class="oi oi-pencil" title="Author" aria-hidden="true"></span>
+      <span class="oi oi-person" title="Author" aria-hidden="true"></span>
       {{ original.author }}
     </h6>
     {% endif %}
@@ -67,19 +67,37 @@
     </h6>
     {% endif %}
 
-    {% for gazettal in original.gazettal_labels %}
+    {% for gazettal in original.gazettals %}
     <h6 class="card-subtitle mb-2">
       <span class="badge badge-danger">
-      <span class="oi oi-warning" title="Gazetted as {{ gazettal }}" aria-hidden="true"></span>
-        {{ gazettal }}
+      <span class="oi oi-warning" title="Gazetted as {{ gazettal.label }}" aria-hidden="true"></span>
+        {{ gazettal.label }}
       </span>
+      {% if request.user.is_staff %}
+      <a href="{{ gazettal.url }}" title="Because you are DBCA staff, you may edit this conservation listing" target="_">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+      </a>
+      {% endif %}
     </h6>
     {% endfor %}
 
   </div>
 
+
   <!-- Management plan placeholder -->
   <ul class="list-group list-group-flush">
+
+    {% if request.user.is_staff %}
+    <li class="list-group-item">
+      <a href="{% url 'admin:conservation_taxongazettal_add' %}"
+         title="Because you are DBCA staff, you may propose a new conservation listing" target="_">
+        <span class="oi oi-plus" aria-hidden="true"></span>
+        Propose new cons listing
+      </a>
+    </li>
+    {% endif %}
+
+
     <li class="list-group-item">
       <span class="badge badge-info">
         <span class="oi oi-document" title="PDF document" aria-hidden="true"></span>
@@ -102,7 +120,7 @@
 
     <a href="?name_id={{ original.name_id }}"
       class="btn btn-primary btn-sm btn-block"
-      title="Restrict results to {{ original.taxonomic_name }}, its parents, and immediate children and reset all filters.">
+      title="Restrict results to {{ original.taxonomic_name }} with its parents and immediate children and reset all filters.">
       <span class="oi oi-project" aria-hidden="true"></span>
       Explore {{ original.canonical_name }}
     </a>
