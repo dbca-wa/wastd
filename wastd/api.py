@@ -2537,7 +2537,7 @@ class TaxonGazettalFilter(filters.FilterSet):
             'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
             'gazetted_on': ['exact', 'year__gt'],
-            'deactivated_on': ['exact', 'year__gt'],
+            'delisted_on': ['exact', 'year__gt'],
             'review_due': ['exact', 'year__gt'],
             'comments': ['exact', 'icontains'],
         }
@@ -2596,7 +2596,7 @@ class CommunityGazettalFilter(filters.FilterSet):
             'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
             'gazetted_on': ['exact', 'year__gt'],
-            'deactivated_on': ['exact', 'year__gt'],
+            'delisted_on': ['exact', 'year__gt'],
             'review_due': ['exact', 'year__gt'],
             'comments': ['exact', 'icontains'],
         }

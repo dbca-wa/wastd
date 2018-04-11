@@ -362,10 +362,10 @@ class Gazettal(models.Model):
         help_text=_("The date and time this Gazettal was gazetted on."),
     )
 
-    deactivated_on = models.DateTimeField(
+    delisted_on = models.DateTimeField(
         blank=True, null=True,
-        verbose_name=_("Deactivated on"),
-        help_text=_("The date and time this Gazettal was deactivated on, most likely superseded by another Gazettal."),
+        verbose_name=_("De-listed on"),
+        help_text=_("The date and time this Gazettal was de-listed, most likely superseded by another Gazettal."),
     )
 
     review_due = models.DateTimeField(
@@ -455,7 +455,7 @@ class Gazettal(models.Model):
 
     # ALL -> STATUS_PROPOSED -------------------------------------------------#
     def can_recall_to_proposed(self):
-        """Gatecheck for recall_to_proposed."""
+        """Gazettals can always be reset to the initial status."""
         return True
 
     @fsm_log_by
