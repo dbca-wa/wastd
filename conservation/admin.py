@@ -43,6 +43,7 @@ FORMFIELD_OVERRIDES = {
 
 class CustomStateLogInline(StateLogInline):
     """Custom StateLogInline."""
+
     classes = ('grp-collapse grp-closed wide extrapretty',)
 
 
@@ -130,6 +131,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     # List View
     list_display = (
         "taxon",
+        "scope",
         "status",
         "category_cache",
         "criteria_cache",
@@ -141,6 +143,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     )
     list_filter = (
         "category",
+        "scope",
         "status",
         ('proposed_on', admin.DateFieldListFilter),
         ('gazetted_on', admin.DateFieldListFilter),
@@ -161,11 +164,15 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     fieldsets = (
         ('Conservation Status', {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("taxon", "category", "criteria",)}
+            'fields': ("taxon", "scope", "category", "criteria",)}
          ),
         ('Approval process', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
             'fields': ("proposed_on", "gazetted_on", "deactivated_on", "review_due", "comments",)}
+         ),
+        ('Data lineage', {
+            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
+            'fields': ("source", "source_id", )}
          ),
     )
 
@@ -183,6 +190,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     # List View
     list_display = (
         "community",
+        "scope",
         "status",
         "category_cache",
         "criteria_cache",
@@ -194,6 +202,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     )
     list_filter = (
         "category",
+        "scope",
         "status",
         ('proposed_on', admin.DateFieldListFilter),
         ('gazetted_on', admin.DateFieldListFilter),
@@ -218,5 +227,9 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         ('Approval process', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
             'fields': ("proposed_on", "gazetted_on", "deactivated_on", "review_due", "comments",)}
+         ),
+        ('Data lineage', {
+            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
+            'fields': ("source", "source_id", )}
          ),
     )

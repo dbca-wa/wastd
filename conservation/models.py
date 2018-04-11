@@ -230,7 +230,7 @@ class ConservationCriterion(models.Model):
 
     def __str__(self):
         """The full name."""
-        return "[{0}] {1}".format(self.conservation_list.code, self.code)
+        return unicode(self.code)  # "[{0}] {1}".format(self.conservation_list.code, self.code)
 
 
 @python_2_unicode_compatible
@@ -272,6 +272,46 @@ class Gazettal(models.Model):
         (STATUS_GAZETTED, "Gazetted"),
         (STATUS_INACVITE, "Inactive"),
     )
+
+    SOURCE_MANUAL_ENTRY = 0
+    SOURCE_THREATENED_FAUNA = 1
+    SOURCE_THREATENED_FLORA = 2
+    SOURCE_THREATENED_COMMUNITIES = 3
+
+    SOURCES = (
+        (SOURCE_MANUAL_ENTRY, 'Manual entry'),
+        (SOURCE_THREATENED_FAUNA, 'Threatened Fauna'),
+        (SOURCE_THREATENED_FLORA, 'Threatened Flora'),
+        (SOURCE_THREATENED_COMMUNITIES, 'Threatened Communities'),
+    )
+
+    SCOPE_WESTERN_AUSTRALIA = 0
+    SCOPE_COMMONWEALTH = 1
+    SCOPE_INTERNATIONAL = 2
+
+    SCOPES = (
+        (SCOPE_WESTERN_AUSTRALIA, 'Western Australia'),
+        (SCOPE_COMMONWEALTH, 'Commonwealth'),
+        (SCOPE_INTERNATIONAL, 'International'),
+    )
+
+    source = models.PositiveIntegerField(
+        verbose_name=_("Data Source"),
+        default=SOURCE_MANUAL_ENTRY,
+        choices=SOURCES,
+        help_text=_("Where was this record captured initially?"), )
+
+    source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID"),
+        help_text=_("The ID of the record in the original source, if available."), )
+
+    scope = models.PositiveIntegerField(
+        verbose_name=_("Scope"),
+        default=SCOPE_WESTERN_AUSTRALIA,
+        choices=SCOPES,
+        help_text=_("In which legislation does this Gazettal apply?"), )
 
     # Conservation status
     category = models.ManyToManyField(
