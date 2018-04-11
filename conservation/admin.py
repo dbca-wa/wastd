@@ -5,6 +5,7 @@ from __future__ import absolute_import, unicode_literals
 # from django import forms as django_forms
 # import floppyforms as ff
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.forms import Textarea
 from django.db import models
 
@@ -13,14 +14,15 @@ from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from django_fsm_log.admin import StateLogInline
-from django_fsm_log.models import StateLog
+# from django_fsm_log.models import StateLog
 from reversion.admin import VersionAdmin
 
 from conservation.models import (
+    FileAttachment,
     ConservationList,
     ConservationCategory,
     ConservationCriterion,
-    Gazettal,
+    # Gazettal,
     TaxonGazettal,
     CommunityGazettal
 )
@@ -32,6 +34,7 @@ ConservationCriterionForm = s2form(ConservationCriterion, attrs=S2ATTRS)
 ConservationListForm = s2form(ConservationList, attrs=S2ATTRS)
 TaxonGazettalForm = s2form(TaxonGazettal, attrs=S2ATTRS)
 CommunityGazettalForm = s2form(CommunityGazettal, attrs=S2ATTRS)
+FileAttachmentForm = s2form(FileAttachment, attrs=S2ATTRS)
 
 FORMFIELD_OVERRIDES = {
     models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 80})},
@@ -39,19 +42,17 @@ FORMFIELD_OVERRIDES = {
 
 
 class CustomStateLogInline(StateLogInline):
+    """Custom StateLogInline."""
+    classes = ('grp-collapse grp-closed wide extrapretty',)
 
-    def status_display(self, obj):
-        """Make health status human readable."""
-        return Gazettal.get_status_display(self.state)
-    status_display.short_description = 'Status'
 
-    fields = (
-        'transition',
-        'status_display',
-        'by',
-        'description',
-        'timestamp',
-    )
+class FileAttachmentInline(GenericTabularInline):
+    """Inline for FileAttachment."""
+
+    model = FileAttachment
+    form = FileAttachmentForm
+    extra = 1
+    classes = ('grp-collapse grp-closed wide extrapretty',)
 
 
 class ConservationCategoryInline(admin.TabularInline):
@@ -59,7 +60,7 @@ class ConservationCategoryInline(admin.TabularInline):
 
     extra = 1
     model = ConservationCategory
-    classes = ('grp-collapse grp-open wide extrapretty',)
+    classes = ('grp-collapse grp-closed wide extrapretty',)
     form = ConservationCategoryForm
     # formfield_overrides = FORMFIELD_OVERRIDES
 
@@ -69,7 +70,7 @@ class ConservationCriterionInline(admin.TabularInline):
 
     extra = 1
     model = ConservationCriterion
-    classes = ('grp-collapse grp-open wide extrapretty',)
+    classes = ('grp-collapse grp-closed wide extrapretty',)
     form = ConservationCriterionForm
     # formfield_overrides = FORMFIELD_OVERRIDES
 
@@ -103,7 +104,7 @@ class ConservationListAdmin(VersionAdmin):
     fieldsets = (
         ('Details', {'fields': ("code", "label", "description",)}),
         ('Scope', {
-            'classes': ('grp-collapse', 'grp-open', 'wide'),
+            'classes': ('grp-collapse', 'grp-closed', 'wide'),
             'fields': ("active_from", "active_to",
                        "scope_wa", "scope_cmw", "scope_intl",
                        "scope_species", "scope_communities")
@@ -112,7 +113,8 @@ class ConservationListAdmin(VersionAdmin):
     )
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [ConservationCategoryInline,
-               ConservationCriterionInline]
+               ConservationCriterionInline,
+               FileAttachmentInline]
 
 
 @admin.register(TaxonGazettal)
@@ -154,24 +156,16 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     autocomplete_lookup_fields = {'fk': ['taxon', ]}
     form = TaxonGazettalForm
     formfield_overrides = FORMFIELD_OVERRIDES
-    inlines = [StateLogInline]
+    inlines = [CustomStateLogInline, FileAttachmentInline]
 
     fieldsets = (
-        ('Conservation Status',
-            {'fields': (
-                "taxon",
-                "category",
-                "criteria",
-            )}
+        ('Conservation Status', {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': ("taxon", "category", "criteria",)}
          ),
-        ('Approval process',
-            {'fields': (
-                "proposed_on",
-                "gazetted_on",
-                "deactivated_on",
-                "review_due",
-                "comments",
-            )}
+        ('Approval process', {
+            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
+            'fields': ("proposed_on", "gazetted_on", "deactivated_on", "review_due", "comments",)}
          ),
     )
 
@@ -214,23 +208,15 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     autocomplete_lookup_fields = {'fk': ['community', ]}
     form = CommunityGazettalForm
     formfield_overrides = FORMFIELD_OVERRIDES
-    inlines = [StateLogInline]
+    inlines = [CustomStateLogInline, FileAttachmentInline]
 
     fieldsets = (
-        ('Conservation Status',
-            {'fields': (
-                "community",
-                "category",
-                "criteria",
-            )}
+        ('Conservation Status', {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': ("community", "category", "criteria",)}
          ),
-        ('Approval process',
-            {'fields': (
-                "proposed_on",
-                "gazetted_on",
-                "deactivated_on",
-                "review_due",
-                "comments",
-            )}
+        ('Approval process', {
+            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
+            'fields': ("proposed_on", "gazetted_on", "deactivated_on", "review_due", "comments",)}
          ),
     )

@@ -10,6 +10,8 @@ from __future__ import unicode_literals, absolute_import
 import logging
 
 from django.core.urlresolvers import reverse
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
@@ -30,8 +32,38 @@ from django_fsm_log.decorators import fsm_log_by
 # from django_fsm_log.models import StateLog
 
 from taxonomy.models import Taxon, Community
+from wastd.users.models import User
 
 logger = logging.getLogger(__name__)
+
+
+def fileattachment_media(instance, filename):
+    """Return an upload path for fileattachment media."""
+    return 'attachment/{0}/{1}/{2}'.format(instance.content_type, instance.object_id, filename)
+
+
+@python_2_unicode_compatible
+class FileAttachment(models.Model):
+    """A generic file attachment to any model."""
+
+    attachment = models.FileField(upload_to=fileattachment_media)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    title = models.CharField(
+        blank=True, null=True,
+        max_length=500,
+        verbose_name=_("Title"),
+        help_text=_("A self-explanatory title for the file attachment."))
+    author = models.ForeignKey(
+        User,
+        verbose_name=_("Author"),
+        blank=True, null=True,
+        help_text=_("The person who authored and endorsed this file."))
+
+    def __str__(self):
+        """The full name."""
+        return "{0} {1}".format(self.title, self.author)
 
 
 @python_2_unicode_compatible
