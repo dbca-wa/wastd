@@ -230,7 +230,7 @@ class ConservationCriterion(models.Model):
 
     def __str__(self):
         """The full name."""
-        return unicode(self.code)  # "[{0}] {1}".format(self.conservation_list.code, self.code)
+        return "[{0}] {1}".format(self.conservation_list.code, self.code)
 
 
 @python_2_unicode_compatible
@@ -407,7 +407,7 @@ class Gazettal(models.Model):
     @property
     def build_criteria_cache(self):
         """Build a string of all attached criteria."""
-        return ", ".join([c.__str__() for c in self.criteria.all()])
+        return ", ".join([c.code for c in self.criteria.all()])
 
     @property
     def build_label_cache(self):
