@@ -290,9 +290,9 @@ class Gazettal(models.Model):
     SCOPE_INTERNATIONAL = 2
 
     SCOPES = (
-        (SCOPE_WESTERN_AUSTRALIA, 'Western Australia'),
-        (SCOPE_COMMONWEALTH, 'Commonwealth'),
-        (SCOPE_INTERNATIONAL, 'International'),
+        (SCOPE_WESTERN_AUSTRALIA, 'WA'),
+        (SCOPE_COMMONWEALTH, 'CMW'),
+        (SCOPE_INTERNATIONAL, 'INT'),
     )
 
     source = models.PositiveIntegerField(
@@ -412,7 +412,8 @@ class Gazettal(models.Model):
     @property
     def build_label_cache(self):
         """Return the category and criteria cache."""
-        return "{0} {1}".format(
+        return "{0} {1} {2}".format(
+            self.scope,
             self.build_category_cache,
             self.build_criteria_cache
         ).strip()
@@ -700,7 +701,8 @@ class TaxonGazettal(Gazettal):
 
     def __str__(self):
         """The full name."""
-        return "{0} {1} {2}".format(
+        return "{0} {1} {2} {3}".format(
+            self.scope,
             self.taxon,
             self.category_cache,
             self.criteria_cache
@@ -728,7 +730,8 @@ class CommunityGazettal(Gazettal):
 
     def __str__(self):
         """The full name."""
-        return "{0} {1} {2}".format(
+        return "{0} {1} {2} {3}".format(
+            self.scope,
             self.community.code,
             self.category_cache,
             self.criteria_cache
