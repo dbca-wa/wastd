@@ -176,6 +176,15 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
          ),
     )
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """Restrict available cat and crit to lists relevant to species."""
+        if db_field.name == "category":
+            kwargs["queryset"] = ConservationCategory.objects.filter(conservation_list__scope_species=True)
+
+        if db_field.name == "criteria":
+            kwargs["queryset"] = ConservationCriterion.objects.filter(conservation_list__scope_species=True)
+        return super(TaxonGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+
 
 @admin.register(CommunityGazettal)
 class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
@@ -222,7 +231,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     fieldsets = (
         ('Conservation Status', {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("community", "category", "criteria",)}
+            'fields': ("community", "scope", "category", "criteria",)}
          ),
         ('Approval process', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
@@ -233,3 +242,12 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             'fields': ("source", "source_id", )}
          ),
     )
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """Restrict available cat and crit to lists relevant to species."""
+        if db_field.name == "category":
+            kwargs["queryset"] = ConservationCategory.objects.filter(conservation_list__scope_communities=True)
+
+        if db_field.name == "criteria":
+            kwargs["queryset"] = ConservationCriterion.objects.filter(conservation_list__scope_communities=True)
+        return super(CommunityGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
