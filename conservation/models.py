@@ -70,6 +70,16 @@ class FileAttachment(models.Model):
 class ConservationList(models.Model):
     """A Conservation List like BCA, EPBC, RedList."""
 
+    APPROVAL_IMMEDIATE = 10
+    APPROVAL_PANEL = 20
+    APPROVAL_MINISTER = 30
+
+    APPROVAL_LEVELS = (
+        (APPROVAL_IMMEDIATE, 'Immediate'),
+        (APPROVAL_PANEL, 'Panel'),
+        (APPROVAL_MINISTER, 'Minister'),
+    )
+
     code = models.CharField(
         max_length=500,
         unique=True,
@@ -136,6 +146,12 @@ class ConservationList(models.Model):
         verbose_name=_("Applies to Communities"),
         help_text=_("Whether this list is applicable to ecological communities."),
     )
+
+    approval_level = models.PositiveIntegerField(
+        verbose_name=_("Approval Level"),
+        default=APPROVAL_MINISTER,
+        choices=APPROVAL_LEVELS,
+        help_text=_("What is the highest required approval instance for this list?"), )
 
     class Meta:
         """Class opts."""
@@ -268,7 +284,7 @@ class Gazettal(models.Model):
     STATUS_IN_DG_REVIEW = 60
     STATUS_IN_MIN_REVIEW = 70
     STATUS_GAZETTED = 80
-    STATUS_INACVITE = 90
+    STATUS_DELISTED = 90
 
     APPROVAL_STATUS = (
         (STATUS_PROPOSED, "Proposed"),
@@ -280,7 +296,7 @@ class Gazettal(models.Model):
         (STATUS_IN_DG_REVIEW, "In review with Director General"),
         (STATUS_IN_MIN_REVIEW, "In review with Minister"),
         (STATUS_GAZETTED, "Gazetted"),
-        (STATUS_INACVITE, "Inactive"),
+        (STATUS_DELISTED, "De-listed"),
     )
 
     SOURCE_MANUAL_ENTRY = 0
@@ -298,11 +314,13 @@ class Gazettal(models.Model):
     SCOPE_WESTERN_AUSTRALIA = 0
     SCOPE_COMMONWEALTH = 1
     SCOPE_INTERNATIONAL = 2
+    SCOPE_ACTION_PLAN = 3
 
     SCOPES = (
         (SCOPE_WESTERN_AUSTRALIA, 'WA'),
         (SCOPE_COMMONWEALTH, 'CMW'),
         (SCOPE_INTERNATIONAL, 'INT'),
+        (SCOPE_ACTION_PLAN, 'AP'),
     )
 
     source = models.PositiveIntegerField(
@@ -440,6 +458,12 @@ class Gazettal(models.Model):
         return reverse('admin:{0}_{1}_add'.format(
             self._meta.app_label, self._meta.model_name))
 
+    @property
+    def max_approval_level(self):
+        """Return the highest required approval level of all categories."""
+        return max([c.conservation_list.approval_level
+                    for c in self.category.all()])
+
     # ------------------------------------------------------------------------#
     # Django-FSM transitions
     # recall_to_proposed = 0
@@ -451,17 +475,25 @@ class Gazettal(models.Model):
     # STATUS_IN_DG_REVIEW = 60
     # STATUS_IN_MIN_REVIEW = 70
     # STATUS_GAZETTED = 80
-    # STATUS_INACVITE = 90
+    # STATUS_DELISTED = 90
 
     # ALL -> STATUS_PROPOSED -------------------------------------------------#
     def can_recall_to_proposed(self):
-        """Gazettals can always be reset to the initial status."""
+        """Allow always to reset to the initial status."""
         return True
 
     @fsm_log_by
     @transition(
         field=status,
-        source='*',
+        source=[STATUS_IN_EXPERT_REVIEW,
+                STATUS_IN_PUBLIC_REVIEW,
+                STATUS_IN_PANEL_REVIEW,
+                STATUS_IN_BM_REVIEW,
+                STATUS_IN_DIR_REVIEW,
+                STATUS_IN_DG_REVIEW,
+                STATUS_IN_MIN_REVIEW,
+                STATUS_GAZETTED,
+                STATUS_DELISTED],
         target=STATUS_PROPOSED,
         conditions=[can_recall_to_proposed],
         # permission='conservation.can_recall_to_proposed'
@@ -473,7 +505,7 @@ class Gazettal(models.Model):
         (before any endorsement) to start over freshly.
         This operation is equivalent to starting a new Gazettal.
 
-        Source: all
+        Source: all but STATUS_PROPOSED
         Target: STATUS_PROPOSED
         Permissions: staff
         Gatecheck: can_recall_to_proposed (pass)
@@ -482,8 +514,8 @@ class Gazettal(models.Model):
 
     # STATUS_PROPOSED -> STATUS_IN_EXPERT_REVIEW -----------------------------#
     def can_submit_for_expert_review(self):
-        """Gatecheck for submit_for_expert_review."""
-        return True
+        """Require if any categories are of min approval level APPROVAL_PANEL."""
+        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
 
     @fsm_log_by
     @transition(
@@ -498,15 +530,15 @@ class Gazettal(models.Model):
 
         Source: STATUS_PROPOSED
         Target: STATUS_IN_EXPERT_REVIEW
-        Permissions: staff
-        Gatecheck: can_submit_for_expert_review (pass)
+        Permissions: curators
+        Gatecheck: At least one category requires panel approval
         """
         logger.info("[Gazettal status] submit_for_expert_review")
 
     # PROPOSED / IN_EXPERT_REVIEW -> STATUS_IN_PUBLIC_REVIEW -----------------#
     def can_submit_for_public_review(self):
-        """Gatecheck for submit_for_public_review."""
-        return True
+        """Only categories of max approval level APPROVAL_PANEL require this step."""
+        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
 
     @fsm_log_by
     @transition(
@@ -521,16 +553,16 @@ class Gazettal(models.Model):
 
         Source: STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW
         Target: STATUS_IN_PUBLIC_REVIEW
-        Permissions: staff
-        Gatecheck: can_submit_for_public_review (pass)
+        Permissions: curators
+        Gatecheck: At least one category requires panel approval
         """
         logger.info("[Gazettal status] submit_for_public_review")
 
     # STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW ->
     # STATUS_IN_PANEL_REVIEW  ------------------------------------------------#
     def can_submit_for_panel_review(self):
-        """Gatecheck for submit_for_panel_review."""
-        return True
+        """Only categories of max approval level APPROVAL_PANEL require this step."""
+        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
 
     @fsm_log_by
     @transition(
@@ -548,15 +580,15 @@ class Gazettal(models.Model):
 
         Source: STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW
         Target: STATUS_IN_PANEL_REVIEW
-        Permissions: staff
-        Gatecheck: can_submit_for_panel_review (pass)
+        Permissions: curators
+        Gatecheck: At least one category requires panel approval
         """
         logger.info("[Gazettal status] submit_for_panel_review")
 
     # STATUS_IN_PANEL_REVIEW -> STATUS_IN_BM_REVIEW --------------------------#
     def can_submit_for_bm_review(self):
-        """Gatecheck for submit_for_bm_review."""
-        return True
+        """Only categories of approval level APPROVAL_MINISTER require this step."""
+        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
 
     @fsm_log_by
     @transition(
@@ -571,15 +603,15 @@ class Gazettal(models.Model):
 
         Source: STATUS_IN_PANEL_REVIEW
         Target: STATUS_IN_BM_REVIEW
-        Permissions: staff
-        Gatecheck: can_submit_for_bm_review (pass)
+        Permissions: curators
+        Gatecheck: At least one category requires ministerial approval
         """
         logger.info("[Gazettal status] submit_for_bm_review")
 
     # STATUS_IN_BM_REVIEW -> STATUS_IN_DIR_REVIEW ----------------------------#
     def can_submit_for_dir_review(self):
-        """Gatecheck for submit_for_dir_review."""
-        return True
+        """Only categories of approval level APPROVAL_MINISTER require this step."""
+        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
 
     @fsm_log_by
     @transition(
@@ -594,15 +626,15 @@ class Gazettal(models.Model):
 
         Source: STATUS_IN_BM_REVIEW
         Target: STATUS_IN_DIR_REVIEW
-        Permissions: staff
-        Gatecheck: can_submit_for_dir_review (pass)
+        Permissions: curators
+        Gatecheck: At least one category requires ministerial approval
         """
         logger.info("[Gazettal status] submit_for_director_review")
 
     # STATUS_IN_DIR_REVIEW -> STATUS_IN_DG_REVIEW ----------------------------#
     def can_submit_for_dg_review(self):
-        """Gatecheck for submit_for_dg_review."""
-        return True
+        """Only categories of approval level APPROVAL_MINISTER require this step."""
+        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
 
     @fsm_log_by
     @transition(
@@ -617,15 +649,15 @@ class Gazettal(models.Model):
 
         Source: STATUS_IN_DIR_REVIEW
         Target: STATUS_IN_DG_REVIEW
-        Permissions: staff
-        Gatecheck: can_submit_for_dg_review (pass)
+        Permissions: curators
+        Gatecheck: At least one category requires ministerial approval
         """
         logger.info("[Gazettal status] submit_for_director_general_review")
 
     # STATUS_IN_DG_REVIEW -> STATUS_IN_MIN_REVIEW ----------------------------#
     def can_submit_for_minister_review(self):
-        """Gatecheck for submit_for_minister_review."""
-        return True
+        """Only categories of approval level APPROVAL_MINISTER require this step."""
+        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
 
     @fsm_log_by
     @transition(
@@ -640,8 +672,8 @@ class Gazettal(models.Model):
 
         Source: STATUS_IN_DG_REVIEW
         Target: STATUS_IN_MIN_REVIEW
-        Permissions: staff
-        Gatecheck: can_submit_for_minister_review (pass)
+        Permissions: curators
+        Gatecheck: At least one category requires ministerial approval
         """
         logger.info("[Gazettal status] submit_for_minister_review")
 
@@ -650,47 +682,58 @@ class Gazettal(models.Model):
         """Gatecheck for mark_gazetted."""
         return True
 
-    @fsm_log_by
-    @transition(
-        field=status,
-        source='*',
-        target=STATUS_GAZETTED,
-        conditions=[can_mark_gazetted],
-        # permission='conservation.can_mark_gazetted'
-    )
-    def mark_gazetted(self):
-        """Mark a conservation listing as gazetted.
+    # @fsm_log_by
+    # @transition(
+    #     field=status,
+    #     source='*',
+    #     target=STATUS_GAZETTED,
+    #     conditions=[can_mark_gazetted],
+    #     # permission='conservation.can_mark_gazetted'
+    # )
+    # def mark_gazetted(self):
+    #     """Mark a conservation listing as gazetted.
 
-        This transition allows to fast-forward any Gazettal to "gazetted".
+    #     This transition allows any source status to fast-track any Gazettal.
 
-        Source: all
-        Target: STATUS_GAZETTED
-        Permissions: staff
-        Gatecheck: can_mark_gazetted (pass)
-        """
-        logger.info("[Gazettal status] mark_gazetted should now mark older "
-                    "Gazettals inactive.")
+    #     Source: all but STATUS_GAZETTED
+    #     Target: STATUS_GAZETTED
+    #     Permissions: curators
+    #     Gatecheck: can_mark_gazetted (pass)
+    #     """
+    #     logger.info("[Gazettal status] you should override this method to "
+    #                 "close other Tax/ComGazettals in same scope.")
 
-    # STATUS_GAZETTED -> STATUS_INACVITE -------------------------------------#
-    def can_mark_inactive(self):
-        """Gatecheck for mark_inactive."""
+    # STATUS_GAZETTED -> STATUS_DELISTED -------------------------------------#
+    def can_mark_delisted(self):
+        """Gatecheck for mark_delisted."""
         return True
 
     @fsm_log_by
     @transition(
         field=status,
-        source=STATUS_GAZETTED,
-        target=STATUS_INACVITE,
-        conditions=[can_mark_inactive],
-        # permission='conservation.can_mark_inactive'
+        source=[STATUS_PROPOSED,
+                STATUS_IN_EXPERT_REVIEW,
+                STATUS_IN_PUBLIC_REVIEW,
+                STATUS_IN_PANEL_REVIEW,
+                STATUS_IN_BM_REVIEW,
+                STATUS_IN_DIR_REVIEW,
+                STATUS_IN_DG_REVIEW,
+                STATUS_IN_MIN_REVIEW,
+                STATUS_GAZETTED],
+        target=STATUS_DELISTED,
+        conditions=[can_mark_delisted],
+        # permission='conservation.can_mark_delisted'
     )
-    def mark_inactive(self):
-        """Mark a conservation listing as inactive.
+    def mark_delisted(self):
+        """Mark a conservation listing as de-listed.
+
+        This can either happen if a new conservation listing is gazetted,
+        or if a conservation listing is de-listed without a superseding new listing.
 
         Source: all
-        Target: STATUS_INACVITE
-        Permissions: staff
-        Gatecheck: can_mark_inactive (pass)
+        Target: STATUS_DELISTED
+        Permissions: curators
+        Gatecheck: can_mark_delisted (pass)
         """
         logger.info("[Gazettal status] mark_inactive")
 
@@ -724,6 +767,37 @@ class TaxonGazettal(Gazettal):
         verbose_name = "Taxon Gazettal"
         verbose_name_plural = "Taxon Gazettals"
 
+    @fsm_log_by
+    @transition(
+        field='status',
+        source=[Gazettal.STATUS_PROPOSED,
+                Gazettal.STATUS_IN_EXPERT_REVIEW,
+                Gazettal.STATUS_IN_PUBLIC_REVIEW,
+                Gazettal.STATUS_IN_PANEL_REVIEW,
+                Gazettal.STATUS_IN_BM_REVIEW,
+                Gazettal.STATUS_IN_DIR_REVIEW,
+                Gazettal.STATUS_IN_DG_REVIEW,
+                Gazettal.STATUS_IN_MIN_REVIEW,
+                Gazettal.STATUS_DELISTED],
+        target=Gazettal.STATUS_GAZETTED,
+        # conditions=[Gazettal.can_mark_gazetted],
+        # permission='conservation.can_mark_gazetted'
+    )
+    def mark_gazetted(self):
+        """Mark a conservation listing as gazetted.
+
+        This transition allows any source status to fast-track any Gazettal.
+
+        Source: all but STATUS_GAZETTED
+        Target: STATUS_GAZETTED
+        Permissions: curators
+        Gatecheck: can_mark_gazetted (pass)
+        """
+        logger.info("[Taxon Gazettal] mark_gazetted should now mark older "
+                    "Gazettals as de-listed.")
+        [gazettal.mark_delisted() for gazettal in
+         self.taxon.taxon_gazettal.filter(scope=self.scope).exclude(pk=self.pk)]
+
 
 @python_2_unicode_compatible
 class CommunityGazettal(Gazettal):
@@ -746,6 +820,37 @@ class CommunityGazettal(Gazettal):
             self.category_cache,
             self.criteria_cache
         ).strip()
+
+    @fsm_log_by
+    @transition(
+        field='status',
+        source=[Gazettal.STATUS_PROPOSED,
+                Gazettal.STATUS_IN_EXPERT_REVIEW,
+                Gazettal.STATUS_IN_PUBLIC_REVIEW,
+                Gazettal.STATUS_IN_PANEL_REVIEW,
+                Gazettal.STATUS_IN_BM_REVIEW,
+                Gazettal.STATUS_IN_DIR_REVIEW,
+                Gazettal.STATUS_IN_DG_REVIEW,
+                Gazettal.STATUS_IN_MIN_REVIEW,
+                Gazettal.STATUS_DELISTED],
+        target=Gazettal.STATUS_GAZETTED,
+        # conditions=[Gazettal.can_mark_gazetted],
+        # permission='conservation.can_mark_gazetted'
+    )
+    def mark_gazetted(self):
+        """Mark a conservation listing as gazetted.
+
+        This transition allows any source status to fast-track any Gazettal.
+
+        Source: all but STATUS_GAZETTED
+        Target: STATUS_GAZETTED
+        Permissions: curators
+        Gatecheck: can_mark_gazetted (pass)
+        """
+        logger.info("[Community Gazettal] De-list previous "
+                    "Gazettals in same scope.")
+        [gazettal.mark_delisted() for gazettal in
+         self.community.community_gazettal.filter(scope=self.scope).exclude(pk=self.pk)]
 
 
 @receiver(pre_save, sender=TaxonGazettal)

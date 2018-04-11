@@ -95,12 +95,14 @@ class ConservationListAdmin(VersionAdmin):
         "scope_intl",
         "scope_species",
         "scope_communities",
+        "approval_level",
     )
     list_filter = ("scope_wa",
                    "scope_cmw",
                    "scope_intl",
                    "scope_species",
-                   "scope_communities",)
+                   "scope_communities",
+                   "approval_level",)
     search_fields = ("code", "label", "description", )
     fieldsets = (
         ('Details', {'fields': ("code", "label", "description",)}),
@@ -108,7 +110,7 @@ class ConservationListAdmin(VersionAdmin):
             'classes': ('grp-collapse', 'grp-closed', 'wide'),
             'fields': ("active_from", "active_to",
                        "scope_wa", "scope_cmw", "scope_intl",
-                       "scope_species", "scope_communities")
+                       "scope_species", "scope_communities", "approval_level",)
 
         }),
     )
