@@ -384,7 +384,7 @@ LATEX_RESOURCES = str(APPS_DIR('templates/latex/common'))
 
 # Grappelli admin theme
 # ------------------------------------------------------------------------------
-GRAPPELLI_ADMIN_TITLE = "WAStD Data Entry and Curation Portal"
+GRAPPELLI_ADMIN_TITLE = "Data Entry and Curation Portal"
 
 # Django-filters
 # ------------------------------------------------------------------------------
