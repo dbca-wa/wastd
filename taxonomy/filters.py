@@ -14,7 +14,9 @@ class TaxonFilter(django_filters.FilterSet):
 
     current = BooleanFilter(widget=BooleanWidget())
     taxon_gazettal__category = ModelMultipleChoiceFilter(
-        queryset=ConservationCategory.objects.filter(conservation_list__scope_species=True))
+        queryset=ConservationCategory.objects.filter(
+            conservation_list__scope_species=True).order_by('conservation_list__code', 'rank')
+    )
 
     class Meta:
         """Class opts."""
@@ -42,7 +44,9 @@ class CommunityFilter(django_filters.FilterSet):
     """Filter for Community."""
 
     community_gazettal__category = ModelMultipleChoiceFilter(
-        queryset=ConservationCategory.objects.filter(conservation_list__scope_communities=True))
+        queryset=ConservationCategory.objects.filter(
+            conservation_list__scope_communities=True).order_by('conservation_list__code', 'rank')
+    )
 
     class Meta:
         """Class opts."""

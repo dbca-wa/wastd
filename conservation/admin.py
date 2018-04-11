@@ -179,10 +179,12 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """Restrict available cat and crit to lists relevant to species."""
         if db_field.name == "category":
-            kwargs["queryset"] = ConservationCategory.objects.filter(conservation_list__scope_species=True)
+            kwargs["queryset"] = ConservationCategory.objects.filter(
+                conservation_list__scope_species=True).order_by('rank')
 
         if db_field.name == "criteria":
-            kwargs["queryset"] = ConservationCriterion.objects.filter(conservation_list__scope_species=True)
+            kwargs["queryset"] = ConservationCriterion.objects.filter(
+                conservation_list__scope_species=True).order_by('rank')
         return super(TaxonGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
@@ -246,8 +248,10 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """Restrict available cat and crit to lists relevant to species."""
         if db_field.name == "category":
-            kwargs["queryset"] = ConservationCategory.objects.filter(conservation_list__scope_communities=True)
+            kwargs["queryset"] = ConservationCategory.objects.filter(
+                conservation_list__scope_communities=True).order_by('rank')
 
         if db_field.name == "criteria":
-            kwargs["queryset"] = ConservationCriterion.objects.filter(conservation_list__scope_communities=True)
+            kwargs["queryset"] = ConservationCriterion.objects.filter(
+                conservation_list__scope_communities=True).order_by('rank')
         return super(CommunityGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)

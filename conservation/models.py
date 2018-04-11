@@ -178,11 +178,16 @@ class ConservationCategory(models.Model):
         help_text=_("A comprehensive description."),
     )
 
+    rank = models.PositiveIntegerField(
+        verbose_name=_("Rank"),
+        blank=True, null=True,
+        help_text=_("Display order, lowest number goes first."), )
+
     class Meta:
         """Class opts."""
 
         unique_together = ("conservation_list", "code")
-        ordering = ["conservation_list", "code"]
+        ordering = ["conservation_list", "rank"]
         verbose_name = "Conservation Category"
         verbose_name_plural = "Conservation Categories"
 
@@ -220,11 +225,16 @@ class ConservationCriterion(models.Model):
         help_text=_("A comprehensive description."),
     )
 
+    rank = models.PositiveIntegerField(
+        verbose_name=_("Rank"),
+        blank=True, null=True,
+        help_text=_("Display order, lowest number goes first."), )
+
     class Meta:
         """Class opts."""
 
         unique_together = ("conservation_list", "code")
-        ordering = ["conservation_list", "code"]
+        ordering = ["conservation_list", "rank"]
         verbose_name = "Conservation Criterion"
         verbose_name_plural = "Conservation Criteria"
 
