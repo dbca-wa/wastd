@@ -89,7 +89,7 @@
 
     {% if request.user.is_staff %}
     <li class="list-group-item">
-      <a href="{% url 'admin:conservation_taxongazettal_add' %}"
+      <a href="{% url 'admin:conservation_taxongazettal_add' %}?taxon={{ original.pk }}"
          title="Because you are DBCA staff, you may propose a new conservation listing" target="_">
         <span class="oi oi-plus" aria-hidden="true"></span>
         Propose new cons listing
