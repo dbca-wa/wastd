@@ -166,13 +166,13 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
             'fields': ("taxon", "scope", "category", "criteria",)}
          ),
-        ('Approval process', {
-            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("proposed_on", "gazetted_on", "deactivated_on", "review_due", "comments",)}
-         ),
         ('Data lineage', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
             'fields': ("source", "source_id", )}
+         ),
+        ('Approval milestones and log', {
+            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
+            'fields': ("proposed_on", "gazetted_on", "deactivated_on", "review_due", "comments",)}
          ),
     )
 
@@ -235,13 +235,13 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
             'fields': ("community", "scope", "category", "criteria",)}
          ),
-        ('Approval process', {
-            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("proposed_on", "gazetted_on", "deactivated_on", "review_due", "comments",)}
-         ),
         ('Data lineage', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
             'fields': ("source", "source_id", )}
+         ),
+        ('Approval milestones and log', {
+            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
+            'fields': ("proposed_on", "gazetted_on", "deactivated_on", "review_due", "comments",)}
          ),
     )
 
