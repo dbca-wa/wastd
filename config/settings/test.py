@@ -32,12 +32,28 @@ EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 # CACHING
 # ------------------------------------------------------------------------------
 # Speed advantages of in-memory caching without having to run Memcached
+# CACHES
+# ------------------------------------------------------------------------------
+
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': ''
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            'IGNORE_EXCEPTIONS': True,
+        }
+    },
+    "select2": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 1),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
+
+SELECT2_CACHE_BACKEND = "select2"
 
 # TESTING
 # ------------------------------------------------------------------------------

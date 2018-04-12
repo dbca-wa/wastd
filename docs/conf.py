@@ -14,9 +14,11 @@
 
 from __future__ import unicode_literals
 import django
+import confy
+from confy import env, database
 import os
 import sys
-# from django.conf import settings
+
 
 # -- Django configuration -------------------------------------------------
 # 1. Add Django ROOT_DIR to sys.path, so conf.py can discover django settings
@@ -28,6 +30,14 @@ sys.path.insert(0, os.path.abspath('..'))
 # which settings to use
 # IMPORTANT: use SINGLE quotes for the settings module
 os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.local'
+try:
+    confy.read_environment_file(".env")
+except:
+    pass
+
+DATABASES = {'default': database.config()}
+DATABASES['default']['ATOMIC_REQUESTS'] = True
+
 
 # 3. Setup the Django app, so that autodoc will find the modules this help references
 try:
@@ -56,7 +66,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     # 'sphinx.ext.githubpages',
-    ]
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -265,22 +275,22 @@ htmlhelp_basename = 'WAStDdoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-     # The paper size ('letterpaper' or 'a4paper').
-     #
-     # 'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #
+    # 'papersize': 'letterpaper',
 
-     # The font size ('10pt', '11pt' or '12pt').
-     #
-     # 'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #
+    # 'pointsize': '10pt',
 
-     # Additional stuff for the LaTeX preamble.
-     #
-     # 'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #
+    # 'preamble': '',
 
-     # Latex figure (float) alignment
-     #
-     # 'figure_align': 'htbp',
-     }
+    # Latex figure (float) alignment
+    #
+    # 'figure_align': 'htbp',
+}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,

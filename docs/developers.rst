@@ -51,6 +51,24 @@ samples etc.).
  :show-inheritance:
 
 
+:mod:`taxonomy.models` Module
+---------------------------------------
+
+.. automodule:: taxonomy.models
+ :members:
+ :undoc-members:
+ :show-inheritance:
+
+
+
+:mod:`conservation.models` Module
+---------------------------------------
+
+.. automodule:: conservation.models
+ :members:
+ :undoc-members:
+ :show-inheritance:
+
 Admin
 =====
 We're using a nicely styled admin to let trained data entry operators and
@@ -74,14 +92,27 @@ The API is intended for programmatic access to data, mainly to batch-import
 and batch-export.
 
 
-:mod:`wastd.api` Module
+.. :mod:`wastd.api` Module
+.. ---------------------------------------
+
+.. .. automodule:: wastd.api
+..     :members:
+..     :undoc-members:
+..     :show-inheritance:
+
+
+Business logic
+==============
+
+
+:mod:`conservation.tests` Module
 ---------------------------------------
+Conservation status listing and related business logic is described in the conservation test module.
 
-.. automodule:: wastd.api
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+.. automodule:: conservation.tests
+ :members:
+ :undoc-members:
+ :show-inheritance:
 
 The rest
 ========
