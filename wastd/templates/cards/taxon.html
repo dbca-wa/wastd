@@ -72,25 +72,25 @@
       <span class="badge badge-danger">
       <span class="oi oi-warning" title="Listed as {{ gazettal.label }}" aria-hidden="true"></span>
         {{ gazettal.label }}
-      </span>
-      {% if request.user.is_staff %}
-      <a href="{{ gazettal.url }}" title="Because you are DBCA staff, you may edit this conservation listing" target="_">
-        <span class="oi oi-pencil" aria-hidden="true"></span>
-      </a>
+        {% if request.user.is_staff %}
+        <a href="{{ gazettal.url }}"
+          title="Because you have DBCA Curator privileges, you may edit this conservation listing" target="_">
+          <span class="oi oi-pencil" aria-hidden="true"></span>
+        </a>
       {% endif %}
+      </span>
+
     </h6>
     {% endfor %}
 
   </div>
 
-
-  <!-- Management plan placeholder -->
   <ul class="list-group list-group-flush">
 
     {% if request.user.is_staff %}
     <li class="list-group-item">
       <a href="{% url 'admin:conservation_taxongazettal_add' %}?taxon={{ original.pk }}"
-         title="Because you are DBCA staff, you may propose a new conservation listing" target="_">
+         title="Because you have DBCA Curator privileges, you may propose a new conservation listing" target="_">
         <span class="oi oi-plus" aria-hidden="true"></span>
         Propose new cons listing
       </a>
@@ -98,22 +98,19 @@
     {% endif %}
 
 
+    {% for document in original.document_set.all %}
     <li class="list-group-item">
-      <span class="badge badge-info">
+      {% for attachment in document.attachments.all %}
+      <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
+      <span class="badge badge-{% if attachment.confidential == True%}danger{% else %}primary{% endif %}">
         <span class="oi oi-document" title="PDF document" aria-hidden="true"></span>
-        PDF
       </span>
-      Management Plan
+      </a>
+      {% endfor %}
+      {{ document }}
     </li>
+    {% endfor %}
 
-    <!-- Attachment placeholder -->
-    <li class="list-group-item">
-      <span class="badge badge-info">
-        <span class="oi oi-document" title="PDF document" aria-hidden="true"></span>
-        PDF
-      </span>
-      Attachment
-    </li>
   </ul>
 
   <div class="card-footer">

@@ -22,6 +22,7 @@ html, body {height: 100%; width: 100%;}
 /*body {padding-top: 54px;}*/
 
 .brandimg {margin-top:-18px; height:50px; margin-bottom: -13px;}
+.breadcrumb {background: none;}
 
 /* Force fullscreen map */
 #mapholder {height:100%; width: 100%;}

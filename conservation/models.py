@@ -11,7 +11,7 @@ import logging
 
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.db import models
 from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
@@ -954,12 +954,14 @@ class Document(models.Model):
 
     taxa = models.ManyToManyField(
         Taxon,
+        blank=True,
         verbose_name=_("Taxa"),
         help_text=_("All taxa this document applies to."),
     )
 
     communities = models.ManyToManyField(
         Community,
+        blank=True,
         verbose_name=_("Communities"),
         help_text=_("All communities this document applies to."),
     )
@@ -1013,8 +1015,7 @@ class Document(models.Model):
     # number
 
     title = models.CharField(
-        blank=True, null=True,
-        max_length=500,
+        max_length=1000,
         verbose_name=_("Title"),
         help_text=_("A concise document title."),
     )
@@ -1031,6 +1032,8 @@ class Document(models.Model):
         verbose_name=_("Staff involved in the writing, approval, "
                        "or publication of this document."),
     )
+
+    attachments = GenericRelation(FileAttachment, object_id_field="object_id")
 
     class Meta:
         """Class opts."""
@@ -1084,7 +1087,7 @@ class Document(models.Model):
     # STATUS_PROPOSED -> STATUS_IN_EXPERT_REVIEW -----------------------------#
     def can_submit_for_expert_review(self):
         """Require if any categories are of min approval level APPROVAL_PANEL."""
-        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
+        return True
 
     @fsm_log_by
     @transition(
@@ -1107,7 +1110,7 @@ class Document(models.Model):
     # PROPOSED / IN_EXPERT_REVIEW -> STATUS_IN_PUBLIC_REVIEW -----------------#
     def can_submit_for_public_review(self):
         """Only categories of max approval level APPROVAL_PANEL require this step."""
-        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
+        return True
 
     @fsm_log_by
     @transition(
@@ -1131,7 +1134,7 @@ class Document(models.Model):
     # STATUS_IN_PANEL_REVIEW  ------------------------------------------------#
     def can_submit_for_panel_review(self):
         """Only categories of max approval level APPROVAL_PANEL require this step."""
-        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
+        return True
 
     @fsm_log_by
     @transition(
@@ -1157,7 +1160,7 @@ class Document(models.Model):
     # STATUS_IN_PANEL_REVIEW -> STATUS_IN_BM_REVIEW --------------------------#
     def can_submit_for_bm_review(self):
         """Only categories of approval level APPROVAL_MINISTER require this step."""
-        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
+        return True
 
     @fsm_log_by
     @transition(
@@ -1180,7 +1183,7 @@ class Document(models.Model):
     # STATUS_IN_BM_REVIEW -> STATUS_IN_DIR_REVIEW ----------------------------#
     def can_submit_for_dir_review(self):
         """Only categories of approval level APPROVAL_MINISTER require this step."""
-        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
+        return True
 
     @fsm_log_by
     @transition(
@@ -1203,7 +1206,7 @@ class Document(models.Model):
     # STATUS_IN_DIR_REVIEW -> STATUS_IN_DG_REVIEW ----------------------------#
     def can_submit_for_dg_review(self):
         """Only categories of approval level APPROVAL_MINISTER require this step."""
-        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
+        return True
 
     @fsm_log_by
     @transition(
@@ -1226,7 +1229,7 @@ class Document(models.Model):
     # STATUS_IN_DG_REVIEW -> STATUS_IN_MIN_REVIEW ----------------------------#
     def can_submit_for_minister_review(self):
         """Only categories of approval level APPROVAL_MINISTER require this step."""
-        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
+        return True
 
     @fsm_log_by
     @transition(

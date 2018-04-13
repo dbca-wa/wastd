@@ -3,9 +3,17 @@
 
 {% block content %}
 <div class="container">
-    <div class="col col-12">
-      <h1>{{ settings.SITE_NAME }}</h1>
-    </div>
+
+  <!-- Breadcrumbs -->
+<div class="row">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><a href="/">{{ settings.SITE_NAME }} Home</a></li>
+    </ol>
+  </nav>
+</div>
+<div class="row">
+
 
     <div class="col col-lg-8 col-12">
       <a class="btn btn-primary btn-block" href="{% url 'species-list' %}"

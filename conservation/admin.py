@@ -24,7 +24,8 @@ from conservation.models import (
     ConservationCriterion,
     # Gazettal,
     TaxonGazettal,
-    CommunityGazettal
+    CommunityGazettal,
+    Document
 )
 
 
@@ -35,6 +36,7 @@ ConservationListForm = s2form(ConservationList, attrs=S2ATTRS)
 TaxonGazettalForm = s2form(TaxonGazettal, attrs=S2ATTRS)
 CommunityGazettalForm = s2form(CommunityGazettal, attrs=S2ATTRS)
 FileAttachmentForm = s2form(FileAttachment, attrs=S2ATTRS)
+DocumentForm = s2form(Document, attrs=S2ATTRS)
 
 FORMFIELD_OVERRIDES = {
     models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 80})},
@@ -257,3 +259,59 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             kwargs["queryset"] = ConservationCriterion.objects.filter(
                 conservation_list__scope_communities=True).order_by('conservation_list__code', 'rank')
         return super(CommunityGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+
+
+@admin.register(Document)
+class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
+    """Admin for Document."""
+
+    save_on_top = True
+    date_hierarchy = 'effective_from'
+
+    # FSM Transitions
+    fsm_field = ['status', ]
+
+    # List View
+    list_display = (
+        "document_type",
+        "title",
+        "effective_from",
+        "effective_to",
+        "effective_from_commonwealth",
+        "effective_to_commonwealth",
+        "review_due"
+    )
+    list_filter = (
+        # "taxa",
+        # "communities",
+        "document_type",
+        "status",
+        ('effective_from', admin.DateFieldListFilter),
+        ('effective_to', admin.DateFieldListFilter),
+        ('review_due', admin.DateFieldListFilter),
+        ('effective_from_commonwealth', admin.DateFieldListFilter),
+        ('effective_to_commonwealth', admin.DateFieldListFilter),
+    )
+    search_fields = ("title", )
+
+    # Detail View
+    filter_horizontal = ('taxa', 'communities', 'team')
+    # raw_id_fields = ('taxa', 'communities', 'team')
+    # autocomplete_lookup_fields = {'fk': ['taxa', 'communities', 'team']}
+    form = DocumentForm
+    formfield_overrides = FORMFIELD_OVERRIDES
+    inlines = [CustomStateLogInline,
+               FileAttachmentInline,
+               ]
+
+    fieldsets = (
+        ('Scope', {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': ("document_type", "title", "taxa", "communities", "team",)}
+         ),
+        ('Approval milestones and log', {
+            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
+            'fields': ("effective_from", "effective_to", "effective_from_commonwealth",
+                       "effective_to_commonwealth", "review_due", )}
+         ),
+    )

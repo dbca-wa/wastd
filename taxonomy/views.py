@@ -32,7 +32,7 @@ class TaxonListView(ListView):
     """
 
     model = Taxon
-    template_name = "pages/dashboard.html"
+    template_name = "species_list.html"
     paginate_by = 12
 
     def get_context_data(self, **kwargs):
@@ -67,7 +67,7 @@ class CommunityListView(ListView):
     """A ListView for Community."""
 
     model = Community
-    template_name = "pages/community_list.html"
+    template_name = "community_list.html"
     paginate_by = 12
 
     def get_context_data(self, **kwargs):

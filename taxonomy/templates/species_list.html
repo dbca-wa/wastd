@@ -2,50 +2,52 @@
 {% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
 
 {% block content %}
-<div class="row">
+<div class="container-fluid">
+  <!-- Breadcrumbs -->
+  <div class="row">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Threatened Species</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="row">
 
-  <!-- Data -->
-  <div id="dash-data" class="col-lg-10 col-md-8 col-sm-6 col-12">
-    <h3>Threatened Communities</h3>
+  <!-- Pagination -->
+  <div class="row">
+    <div class="col-12">
+      {% bootstrap_pagination page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
+    </div>
+  </div>
 
-    <!-- Pagination -->
-    <div class="row">
-      <div class="col-12">
-        {% bootstrap_pagination page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
+  <div class="row">
+    <!-- Data -->
+    <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
+      <div class="row">
+        {% for original in object_list %}
+        {% include "cards/taxon.html" with original=original %}
+        {% endfor %}
       </div>
-    </div>
-
-    <!-- Content -->
-    <div class="row">
-      {% for original in object_list %}
-      {% include "cards/community.html" with original=original %}
-      {% endfor %}
-    </div>
-
-  </div><!-- /#dash-data -->
+    </div><!-- /#dash-data -->
 
     <!-- Search -->
-  <div id="dash-filters" class="col-lg-2 col-md-4 col-sm-6 col-12">
-    <h3>Search</h3>
+    <div id="dash-filters" class="col-lg-3 col-md-4 col-sm-6 col-12">
       <form method="get">
         <div class="row">
-          {% bootstrap_form community_filter.form %}
+          {% bootstrap_form taxon_filter.form %}
         </div>
         <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
         <br/>
         <br/>
         <button
           class="btn btn-outline-primary my-2 my-sm-0"
-          title="Filter all names by above criteria." type="submit">
+          title="Filter by above criteria." type="submit">
           Go
         </button>
       </form>
-
-
-
-
-
-  </div><!-- /#dash-filters -->
+    </div><!-- /#dash-filters -->
+  </div>
 </div>
 {% endblock %}
 
