@@ -28,6 +28,20 @@
     </h6>
     {% endfor %}
 
+    {% for gazettal in original.gazettals %}
+    <h6 class="card-subtitle mb-2">
+      <span class="badge badge-danger">
+      <span class="oi oi-warning" title="Listed as {{ gazettal.label }}" aria-hidden="true"></span>
+        {{ gazettal.label }}
+      </span>
+      {% if request.user.is_staff %}
+      <a href="{{ gazettal.url }}" title="Because you are DBCA staff, you may edit this conservation listing" target="_">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+      </a>
+      {% endif %}
+    </h6>
+    {% endfor %}
+
   </div>
 
   <!-- Management plan placeholder -->
