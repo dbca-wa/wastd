@@ -6,7 +6,7 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>{% block title %}{{ settings.SITE_TITLE }}{% endblock title %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Gooder science to make stuff less deader">
+  <meta name="description" content="Threatened Species and Communities Information System">
   <meta name="author" content="Department of Biodiversity, Conservation and Attractions WA">
   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
@@ -40,10 +40,10 @@
   <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-darkblue">
-      <a class="navbar-brand" href="/"><img
-        src="{% static 'images/tt.png' %}"
-        class="brandimg"
-        alt="{{ settings.SITE_TITLE }}"></a>
+      <a class="navbar-brand" href="/">
+        <img src="" class="brandimg" alt="{{ settings.SITE_TITLE }}">
+        {{ settings.SITE_TITLE }}
+      </a>
         <button class="navbar-toggler" type="button"
           data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false"
