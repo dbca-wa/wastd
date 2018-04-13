@@ -2451,6 +2451,7 @@ class ConservationListFilter(filters.FilterSet):
             'scope_intl': ['exact', ],
             'scope_species': ['exact', ],
             'scope_communities': ['exact', ],
+            'approval_level': ['exact']
         }
 
 
@@ -2536,8 +2537,8 @@ class TaxonGazettalFilter(filters.FilterSet):
             'category': ['exact', 'in'],
             'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
-            'gazetted_on': ['exact', 'year__gt'],
-            'delisted_on': ['exact', 'year__gt'],
+            'effective_from': ['exact', 'year__gt'],
+            'effective_to': ['exact', 'year__gt'],
             'review_due': ['exact', 'year__gt'],
             'comments': ['exact', 'icontains'],
         }
@@ -2595,8 +2596,8 @@ class CommunityGazettalFilter(filters.FilterSet):
             'category': ['exact', 'in'],
             'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
-            'gazetted_on': ['exact', 'year__gt'],
-            'delisted_on': ['exact', 'year__gt'],
+            'effective_from': ['exact', 'year__gt'],
+            'effective_to': ['exact', 'year__gt'],
             'review_due': ['exact', 'year__gt'],
             'comments': ['exact', 'icontains'],
         }

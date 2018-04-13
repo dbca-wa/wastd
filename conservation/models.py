@@ -60,6 +60,18 @@ class FileAttachment(models.Model):
         verbose_name=_("Author"),
         blank=True, null=True,
         help_text=_("The person who authored and endorsed this file."))
+    current = models.BooleanField(
+        db_index=True,
+        default=True,
+        verbose_name=_("Is current"),
+        help_text=_("Whether this file is current or an archived version."),
+    )
+    confidential = models.BooleanField(
+        db_index=True,
+        default=True,
+        verbose_name=_("Is confidential"),
+        help_text=_("Whether this file is confidential or can be released to the public."),
+    )
 
     def __str__(self):
         """The full name."""
@@ -72,11 +84,13 @@ class ConservationList(models.Model):
 
     APPROVAL_IMMEDIATE = 10
     APPROVAL_PANEL = 20
+    APPROVAL_DIRECTOR = 25
     APPROVAL_MINISTER = 30
 
     APPROVAL_LEVELS = (
         (APPROVAL_IMMEDIATE, 'Immediate'),
         (APPROVAL_PANEL, 'Panel'),
+        (APPROVAL_DIRECTOR, 'Director'),
         (APPROVAL_MINISTER, 'Minister'),
     )
 
@@ -271,7 +285,7 @@ class Gazettal(models.Model):
 
     Some conservation categories are mutually exclusiver than others.
     To prevent invalid combinations of ConservationCategories,
-    the transition to Gazettal.STATUS_GAZETTED must take care of
+    the transition to Gazettal.STATUS_EFFECTIVE must take care of
     closing just the mutually exclusive ones.
     """
 
@@ -283,8 +297,9 @@ class Gazettal(models.Model):
     STATUS_IN_DIR_REVIEW = 50
     STATUS_IN_DG_REVIEW = 60
     STATUS_IN_MIN_REVIEW = 70
-    STATUS_GAZETTED = 80
-    STATUS_DELISTED = 90
+    STATUS_EFFECTIVE = 80
+    STATUS_CLOSED = 90
+    STATUS_REJECTED = 100
 
     APPROVAL_STATUS = (
         (STATUS_PROPOSED, "Proposed"),
@@ -295,8 +310,9 @@ class Gazettal(models.Model):
         (STATUS_IN_DIR_REVIEW, "In review with Division Director"),
         (STATUS_IN_DG_REVIEW, "In review with Director General"),
         (STATUS_IN_MIN_REVIEW, "In review with Minister"),
-        (STATUS_GAZETTED, "Gazetted"),
-        (STATUS_DELISTED, "De-listed"),
+        (STATUS_EFFECTIVE, "Published"),
+        (STATUS_CLOSED, "De-listed"),
+        (STATUS_REJECTED, "Rejected"),
     )
 
     SOURCE_MANUAL_ENTRY = 0
@@ -364,32 +380,34 @@ class Gazettal(models.Model):
         default=STATUS_PROPOSED,
         db_index=True,
         verbose_name=_("Approval status"),
-        help_text=_("The approval status of the Gazettal."),
+        help_text=_("The approval status of the Conservation Listing."),
     )
 
     # Approval milestones
     proposed_on = models.DateTimeField(
         blank=True, null=True,
         verbose_name=_("Proposed on"),
-        help_text=_("The date and time this Gazettal was proposed on."),
+        help_text=_("The date and time this Conservation Listing was proposed on."),
     )
 
-    gazetted_on = models.DateTimeField(
+    effective_from = models.DateTimeField(
         blank=True, null=True,
-        verbose_name=_("Gazetted on"),
-        help_text=_("The date and time this Gazettal was gazetted on."),
+        verbose_name=_("Effective from"),
+        help_text=_("The date printed on the Departmental Gazettal notice "
+                    "containing this Conservation Listing."),
     )
 
-    delisted_on = models.DateTimeField(
+    effective_to = models.DateTimeField(
         blank=True, null=True,
-        verbose_name=_("De-listed on"),
-        help_text=_("The date and time this Gazettal was de-listed, most likely superseded by another Gazettal."),
+        verbose_name=_("Effective to"),
+        help_text=_("The date and time this Conservation Listing was de-listed or "
+                    "otherwise ceased to be in effect."),
     )
 
     review_due = models.DateTimeField(
         blank=True, null=True,
         verbose_name=_("Review due date"),
-        help_text=_("The date and time this Gazettal should be reviewed."),
+        help_text=_("The date and time this Conservation Listing should be reviewed."),
     )
 
     # Approval process log
@@ -415,7 +433,7 @@ class Gazettal(models.Model):
     label_cache = models.TextField(
         blank=True, null=True,
         verbose_name=_("Gazettal label"),
-        help_text=_("An auto-generated label for the Gazettal minus the Taxon."),
+        help_text=_("An auto-generated label for the Conservation Listing."),
     )
 
     class Meta:
@@ -440,10 +458,9 @@ class Gazettal(models.Model):
     @property
     def build_label_cache(self):
         """Return the category and criteria cache."""
-        return "{0} {1} {2}".format(
+        return "{0} {1}".format(
             self.get_scope_display(),
-            self.build_category_cache,
-            self.build_criteria_cache
+            self.build_category_cache
         ).strip()
 
     @property
@@ -466,17 +483,6 @@ class Gazettal(models.Model):
 
     # ------------------------------------------------------------------------#
     # Django-FSM transitions
-    # recall_to_proposed = 0
-    # STATUS_IN_EXPERT_REVIEW = 10
-    # STATUS_IN_PUBLIC_REVIEW = 20
-    # STATUS_IN_PANEL_REVIEW = 30
-    # STATUS_IN_BM_REVIEW = 40
-    # STATUS_IN_DIR_REVIEW = 50
-    # STATUS_IN_DG_REVIEW = 60
-    # STATUS_IN_MIN_REVIEW = 70
-    # STATUS_GAZETTED = 80
-    # STATUS_DELISTED = 90
-
     # ALL -> STATUS_PROPOSED -------------------------------------------------#
     def can_recall_to_proposed(self):
         """Allow always to reset to the initial status."""
@@ -492,8 +498,9 @@ class Gazettal(models.Model):
                 STATUS_IN_DIR_REVIEW,
                 STATUS_IN_DG_REVIEW,
                 STATUS_IN_MIN_REVIEW,
-                STATUS_GAZETTED,
-                STATUS_DELISTED],
+                STATUS_EFFECTIVE,
+                STATUS_CLOSED,
+                STATUS_REJECTED],
         target=STATUS_PROPOSED,
         conditions=[can_recall_to_proposed],
         # permission='conservation.can_recall_to_proposed'
@@ -677,7 +684,7 @@ class Gazettal(models.Model):
         """
         logger.info("[Gazettal status] submit_for_minister_review")
 
-    # ALL -> STATUS_GAZETTED -------------------------------------------------#
+    # ALL -> STATUS_EFFECTIVE -------------------------------------------------#
     def can_mark_gazetted(self):
         """Gatecheck for mark_gazetted."""
         return True
@@ -686,7 +693,7 @@ class Gazettal(models.Model):
     # @transition(
     #     field=status,
     #     source='*',
-    #     target=STATUS_GAZETTED,
+    #     target=STATUS_EFFECTIVE,
     #     conditions=[can_mark_gazetted],
     #     # permission='conservation.can_mark_gazetted'
     # )
@@ -695,15 +702,15 @@ class Gazettal(models.Model):
 
     #     This transition allows any source status to fast-track any Gazettal.
 
-    #     Source: all but STATUS_GAZETTED
-    #     Target: STATUS_GAZETTED
+    #     Source: all but STATUS_EFFECTIVE
+    #     Target: STATUS_EFFECTIVE
     #     Permissions: curators
     #     Gatecheck: can_mark_gazetted (pass)
     #     """
     #     logger.info("[Gazettal status] you should override this method to "
     #                 "close other Tax/ComGazettals in same scope.")
 
-    # STATUS_GAZETTED -> STATUS_DELISTED -------------------------------------#
+    # STATUS_* -> STATUS_CLOSED ----------------------------------------------#
     def can_mark_delisted(self):
         """Gatecheck for mark_delisted."""
         return True
@@ -719,8 +726,8 @@ class Gazettal(models.Model):
                 STATUS_IN_DIR_REVIEW,
                 STATUS_IN_DG_REVIEW,
                 STATUS_IN_MIN_REVIEW,
-                STATUS_GAZETTED],
-        target=STATUS_DELISTED,
+                STATUS_EFFECTIVE],
+        target=STATUS_CLOSED,
         conditions=[can_mark_delisted],
         # permission='conservation.can_mark_delisted'
     )
@@ -731,11 +738,43 @@ class Gazettal(models.Model):
         or if a conservation listing is de-listed without a superseding new listing.
 
         Source: all
-        Target: STATUS_DELISTED
+        Target: STATUS_CLOSED
         Permissions: curators
         Gatecheck: can_mark_delisted (pass)
         """
         logger.info("[Gazettal status] mark_inactive")
+
+    # STATUS_* -> STATUS_CLOSED ----------------------------------------------#
+    def can_mark_rejected(self):
+        """Gatecheck for mark_rejected."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROPOSED,
+                STATUS_IN_EXPERT_REVIEW,
+                STATUS_IN_PUBLIC_REVIEW,
+                STATUS_IN_PANEL_REVIEW,
+                STATUS_IN_BM_REVIEW,
+                STATUS_IN_DIR_REVIEW,
+                STATUS_IN_DG_REVIEW,
+                STATUS_IN_MIN_REVIEW],
+        target=STATUS_REJECTED,
+        conditions=[can_mark_rejected],
+        # permission='conservation.can_mark_rejected'
+    )
+    def mark_rejected(self):
+        """Mark a conservation listing as rejected.
+
+        This can happen in any review stage.
+
+        Source: all review stages
+        Target: STATUS_REJECTED
+        Permissions: curators
+        Gatecheck: can_mark_rejected (pass)
+        """
+        logger.info("[Gazettal status] mark_rejected")
 
     # end Django-FSM
     # ------------------------------------------------------------------------#
@@ -764,8 +803,8 @@ class TaxonGazettal(Gazettal):
     class Meta:
         """Class opts."""
 
-        verbose_name = "Taxon Gazettal"
-        verbose_name_plural = "Taxon Gazettals"
+        verbose_name = "Taxon Conservation Listing"
+        verbose_name_plural = "Taxon Conservation Listings"
 
     @fsm_log_by
     @transition(
@@ -778,8 +817,8 @@ class TaxonGazettal(Gazettal):
                 Gazettal.STATUS_IN_DIR_REVIEW,
                 Gazettal.STATUS_IN_DG_REVIEW,
                 Gazettal.STATUS_IN_MIN_REVIEW,
-                Gazettal.STATUS_DELISTED],
-        target=Gazettal.STATUS_GAZETTED,
+                Gazettal.STATUS_CLOSED],
+        target=Gazettal.STATUS_EFFECTIVE,
         # conditions=[Gazettal.can_mark_gazetted],
         # permission='conservation.can_mark_gazetted'
     )
@@ -788,8 +827,8 @@ class TaxonGazettal(Gazettal):
 
         This transition allows any source status to fast-track any Gazettal.
 
-        Source: all but STATUS_GAZETTED
-        Target: STATUS_GAZETTED
+        Source: all but STATUS_EFFECTIVE
+        Target: STATUS_EFFECTIVE
         Permissions: curators
         Gatecheck: can_mark_gazetted (pass)
         """
@@ -809,8 +848,8 @@ class CommunityGazettal(Gazettal):
     class Meta:
         """Class opts."""
 
-        verbose_name = "Community Gazettal"
-        verbose_name_plural = "Community Gazettals"
+        verbose_name = "Community Conservation Listing"
+        verbose_name_plural = "Community Conservation Listings"
 
     def __str__(self):
         """The full name."""
@@ -832,8 +871,8 @@ class CommunityGazettal(Gazettal):
                 Gazettal.STATUS_IN_DIR_REVIEW,
                 Gazettal.STATUS_IN_DG_REVIEW,
                 Gazettal.STATUS_IN_MIN_REVIEW,
-                Gazettal.STATUS_DELISTED],
-        target=Gazettal.STATUS_GAZETTED,
+                Gazettal.STATUS_CLOSED],
+        target=Gazettal.STATUS_EFFECTIVE,
         # conditions=[Gazettal.can_mark_gazetted],
         # permission='conservation.can_mark_gazetted'
     )
@@ -842,8 +881,8 @@ class CommunityGazettal(Gazettal):
 
         This transition allows any source status to fast-track any Gazettal.
 
-        Source: all but STATUS_GAZETTED
-        Target: STATUS_GAZETTED
+        Source: all but STATUS_EFFECTIVE
+        Target: STATUS_EFFECTIVE
         Permissions: curators
         Gatecheck: can_mark_gazetted (pass)
         """
@@ -864,3 +903,440 @@ def gazettal_caches(sender, instance, *args, **kwargs):
         instance.label_cache = instance.build_label_cache
     else:
         logger.info("[gazettal_caches] New Gazettal, re-save to populate caches.")
+
+
+@python_2_unicode_compatible
+class Document(models.Model):
+    """A Document with attachments and approval workflow."""
+
+    TYPE_RECOVERY_PLAN = 0
+    TYPE_INTERIM_RECOVERY_PLAN = 5
+    TYPE_MANAGEMENT_PLAN = 10
+    TYPE_ANIMAL_ETHICS = 20
+    TYPE_FAUNA_TRANSLOCATION = 30
+    TYPE_SOP = 40
+
+    TYPES = (
+        (TYPE_RECOVERY_PLAN, 'Recovery Plan'),
+        (TYPE_INTERIM_RECOVERY_PLAN, 'Interim Recovery Plan'),
+        (TYPE_MANAGEMENT_PLAN, 'Management Plan'),
+        (TYPE_ANIMAL_ETHICS, 'Animal Ethics Application'),
+        (TYPE_FAUNA_TRANSLOCATION, 'Fauna Translocation Proposal'),
+        (TYPE_SOP, 'Standard Operating Procedure'),
+    )
+
+    STATUS_PROPOSED = 0
+    STATUS_IN_EXPERT_REVIEW = 10
+    STATUS_IN_PUBLIC_REVIEW = 20
+    STATUS_IN_PANEL_REVIEW = 30
+    STATUS_IN_BM_REVIEW = 40
+    STATUS_IN_REGIONAL_REVIEW = 45
+    STATUS_IN_DIR_REVIEW = 50
+    STATUS_IN_DG_REVIEW = 60
+    STATUS_IN_MIN_REVIEW = 70
+    STATUS_EFFECTIVE = 80
+    STATUS_ADOPTED_COMMONWEALTH = 85
+    STATUS_CLOSED = 90
+    STATUS_REJECTED = 100
+
+    APPROVAL_STATUS = (
+        (STATUS_PROPOSED, "Proposed"),
+        (STATUS_IN_BM_REVIEW, "In review with Branch Manager"),
+        (STATUS_IN_REGIONAL_REVIEW, "In review with Regional Manager"),
+        (STATUS_IN_DIR_REVIEW, "In review with Division Director"),
+        (STATUS_IN_PUBLIC_REVIEW, "In review with public"),
+        (STATUS_IN_DG_REVIEW, "In review with Director General"),
+        (STATUS_IN_MIN_REVIEW, "In review with Minister"),
+        (STATUS_EFFECTIVE, "Active"),
+        (STATUS_CLOSED, "Closed"),
+        (STATUS_REJECTED, "Rejected"),
+    )
+
+    taxa = models.ManyToManyField(
+        Taxon,
+        verbose_name=_("Taxa"),
+        help_text=_("All taxa this document applies to."),
+    )
+
+    communities = models.ManyToManyField(
+        Community,
+        verbose_name=_("Communities"),
+        help_text=_("All communities this document applies to."),
+    )
+
+    document_type = models.PositiveIntegerField(
+        verbose_name=_("Document Type"),
+        choices=TYPES,
+        default=TYPE_RECOVERY_PLAN,
+        help_text=_("The document type governs the approval process."), )
+
+    # Approval status
+    status = FSMIntegerField(
+        choices=APPROVAL_STATUS,
+        default=STATUS_PROPOSED,
+        db_index=True,
+        verbose_name=_("Approval status"),
+        help_text=_("The approval status of the Gazettal."),
+    )
+
+    effective_from = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("Effective from"),
+        help_text=_("The date from which this document is effective from."),
+    )
+
+    effective_to = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("Effective to"),
+        help_text=_("The date to which this document is effective to."),
+    )
+
+    effective_from_commonwealth = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("Adopted by Commonwealth on"),
+        help_text=_("The date from which this document was adopted by the Commonwealth."),
+    )
+
+    effective_to_commonwealth = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("Retired by Commonwealth on"),
+        help_text=_("The date on which this document was retired by the Commonwealth."),
+    )
+
+    review_due = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("Review due date"),
+        help_text=_("The date and time this Document should be reviewed."),
+    )
+
+    # year
+    # number
+
+    title = models.CharField(
+        blank=True, null=True,
+        max_length=500,
+        verbose_name=_("Title"),
+        help_text=_("A concise document title."),
+    )
+
+    comments = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Comments"),
+        help_text=_("Optional comments on document approval and provenance."),
+    )
+
+    team = models.ManyToManyField(
+        User,
+        blank=True,
+        verbose_name=_("Staff involved in the writing, approval, "
+                       "or publication of this document."),
+    )
+
+    class Meta:
+        """Class opts."""
+
+        ordering = ["document_type", "title"]
+        verbose_name = "Document"
+        verbose_name_plural = "Documents"
+
+    def __str__(self):
+        """The full name."""
+        return "[{0}] {1}".format(self.get_document_type_display(), self.title)
+
+    # ------------------------------------------------------------------------#
+    # Django-FSM transitions
+    # ALL -> STATUS_PROPOSED -------------------------------------------------#
+    def can_recall_to_proposed(self):
+        """Allow always to reset to the initial status."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_IN_EXPERT_REVIEW,
+                STATUS_IN_PUBLIC_REVIEW,
+                STATUS_IN_PANEL_REVIEW,
+                STATUS_IN_BM_REVIEW,
+                STATUS_IN_DIR_REVIEW,
+                STATUS_IN_DG_REVIEW,
+                STATUS_IN_MIN_REVIEW,
+                STATUS_EFFECTIVE,
+                STATUS_CLOSED,
+                STATUS_REJECTED],
+        target=STATUS_PROPOSED,
+        conditions=[can_recall_to_proposed],
+        # permission='conservation.can_recall_to_proposed'
+    )
+    def recall_to_proposed(self):
+        """Reset a new Gazettal to status "new" (proposed).
+
+        This transition allows to reset any Gazettal to status "new"
+        (before any endorsement) to start over freshly.
+        This operation is equivalent to starting a new Gazettal.
+
+        Source: all but STATUS_PROPOSED
+        Target: STATUS_PROPOSED
+        Permissions: staff
+        Gatecheck: can_recall_to_proposed (pass)
+        """
+        logger.info("[Gazettal status] recall_to_proposed")
+
+    # STATUS_PROPOSED -> STATUS_IN_EXPERT_REVIEW -----------------------------#
+    def can_submit_for_expert_review(self):
+        """Require if any categories are of min approval level APPROVAL_PANEL."""
+        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_PROPOSED,
+        target=STATUS_IN_EXPERT_REVIEW,
+        conditions=[can_submit_for_expert_review],
+        # permission='conservation.can_submit_for_expert_review'
+    )
+    def submit_for_expert_review(self):
+        """Submit a new Gazettal for expert review.
+
+        Source: STATUS_PROPOSED
+        Target: STATUS_IN_EXPERT_REVIEW
+        Permissions: curators
+        Gatecheck: At least one category requires panel approval
+        """
+        logger.info("[Gazettal status] submit_for_expert_review")
+
+    # PROPOSED / IN_EXPERT_REVIEW -> STATUS_IN_PUBLIC_REVIEW -----------------#
+    def can_submit_for_public_review(self):
+        """Only categories of max approval level APPROVAL_PANEL require this step."""
+        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW],
+        target=STATUS_IN_PUBLIC_REVIEW,
+        conditions=[can_submit_for_public_review],
+        # permission='conservation.can_submit_for_expert_review'
+    )
+    def submit_for_public_review(self):
+        """Submit a new Gazettal for public review.
+
+        Source: STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW
+        Target: STATUS_IN_PUBLIC_REVIEW
+        Permissions: curators
+        Gatecheck: At least one category requires panel approval
+        """
+        logger.info("[Gazettal status] submit_for_public_review")
+
+    # STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW ->
+    # STATUS_IN_PANEL_REVIEW  ------------------------------------------------#
+    def can_submit_for_panel_review(self):
+        """Only categories of max approval level APPROVAL_PANEL require this step."""
+        return self.max_approval_level >= ConservationList.APPROVAL_PANEL
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW],
+        target=STATUS_IN_PANEL_REVIEW,
+        conditions=[can_submit_for_panel_review],
+        # permission='conservation.can_submit_for_panel_review'
+    )
+    def submit_for_panel_review(self):
+        """Submit a new Gazettal for panel review.
+
+        A proposed review can optionally go to an expert, to the public,
+        or go directly for panel review.
+
+        Source: STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW
+        Target: STATUS_IN_PANEL_REVIEW
+        Permissions: curators
+        Gatecheck: At least one category requires panel approval
+        """
+        logger.info("[Gazettal status] submit_for_panel_review")
+
+    # STATUS_IN_PANEL_REVIEW -> STATUS_IN_BM_REVIEW --------------------------#
+    def can_submit_for_bm_review(self):
+        """Only categories of approval level APPROVAL_MINISTER require this step."""
+        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_IN_PANEL_REVIEW,
+        target=STATUS_IN_BM_REVIEW,
+        conditions=[can_submit_for_panel_review],
+        # permission='conservation.submit_for_bm_review'
+    )
+    def submit_for_bm_review(self):
+        """Submit a new Gazettal for Branch Manager review once panel endorses.
+
+        Source: STATUS_IN_PANEL_REVIEW
+        Target: STATUS_IN_BM_REVIEW
+        Permissions: curators
+        Gatecheck: At least one category requires ministerial approval
+        """
+        logger.info("[Gazettal status] submit_for_bm_review")
+
+    # STATUS_IN_BM_REVIEW -> STATUS_IN_DIR_REVIEW ----------------------------#
+    def can_submit_for_dir_review(self):
+        """Only categories of approval level APPROVAL_MINISTER require this step."""
+        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_IN_BM_REVIEW,
+        target=STATUS_IN_DIR_REVIEW,
+        conditions=[can_submit_for_dir_review],
+        # permission='conservation.can_submit_for_dir_review'
+    )
+    def submit_for_director_review(self):
+        """Submit a new Gazettal for Dir BCS review once BM endorses.
+
+        Source: STATUS_IN_BM_REVIEW
+        Target: STATUS_IN_DIR_REVIEW
+        Permissions: curators
+        Gatecheck: At least one category requires ministerial approval
+        """
+        logger.info("[Gazettal status] submit_for_director_review")
+
+    # STATUS_IN_DIR_REVIEW -> STATUS_IN_DG_REVIEW ----------------------------#
+    def can_submit_for_dg_review(self):
+        """Only categories of approval level APPROVAL_MINISTER require this step."""
+        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_IN_DIR_REVIEW,
+        target=STATUS_IN_DG_REVIEW,
+        conditions=[can_submit_for_dg_review],
+        # permission='conservation.can_submit_for_dg_review'
+    )
+    def submit_for_director_general_review(self):
+        """Submit a new Gazettal for DG review once Director endorses.
+
+        Source: STATUS_IN_DIR_REVIEW
+        Target: STATUS_IN_DG_REVIEW
+        Permissions: curators
+        Gatecheck: At least one category requires ministerial approval
+        """
+        logger.info("[Gazettal status] submit_for_director_general_review")
+
+    # STATUS_IN_DG_REVIEW -> STATUS_IN_MIN_REVIEW ----------------------------#
+    def can_submit_for_minister_review(self):
+        """Only categories of approval level APPROVAL_MINISTER require this step."""
+        return self.max_approval_level == ConservationList.APPROVAL_MINISTER
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_IN_DG_REVIEW,
+        target=STATUS_IN_MIN_REVIEW,
+        conditions=[can_submit_for_minister_review],
+        # permission='conservation.can_submit_for_dg_review'
+    )
+    def submit_for_minister_review(self):
+        """Submit a new Gazettal for DG review once Director endorses.
+
+        Source: STATUS_IN_DG_REVIEW
+        Target: STATUS_IN_MIN_REVIEW
+        Permissions: curators
+        Gatecheck: At least one category requires ministerial approval
+        """
+        logger.info("[Gazettal status] submit_for_minister_review")
+
+    # ALL -> STATUS_EFFECTIVE -------------------------------------------------#
+    def can_mark_gazetted(self):
+        """Gatecheck for mark_gazetted."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source='*',
+        target=STATUS_EFFECTIVE,
+        conditions=[can_mark_gazetted],
+        # permission='conservation.can_mark_gazetted'
+    )
+    def mark_active(self):
+        """Mark a Document as approved and active.
+
+        This transition allows any source status to fast-track any Document.
+
+        Source: all but STATUS_EFFECTIVE
+        Target: STATUS_EFFECTIVE
+        Permissions: curators
+        Gatecheck: can_mark_gazetted (pass)
+        """
+        logger.info("[Gazettal status] you should override this method to "
+                    "close other Tax/ComGazettals in same scope.")
+
+    # STATUS_* -> STATUS_CLOSED ----------------------------------------------#
+    def can_mark_delisted(self):
+        """Gatecheck for mark_delisted."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROPOSED,
+                STATUS_IN_EXPERT_REVIEW,
+                STATUS_IN_PUBLIC_REVIEW,
+                STATUS_IN_PANEL_REVIEW,
+                STATUS_IN_BM_REVIEW,
+                STATUS_IN_DIR_REVIEW,
+                STATUS_IN_DG_REVIEW,
+                STATUS_IN_MIN_REVIEW,
+                STATUS_EFFECTIVE],
+        target=STATUS_CLOSED,
+        conditions=[can_mark_delisted],
+        # permission='conservation.can_mark_delisted'
+    )
+    def mark_closed(self):
+        """Mark a Document as closed.
+
+        Source: all
+        Target: STATUS_CLOSED
+        Permissions: curators
+        Gatecheck: can_mark_delisted (pass)
+        """
+        logger.info("[Gazettal status] mark_inactive")
+
+    # STATUS_EFFECTIVE -> STATUS_ADOPTED_COMMONWEALTH
+    # TODO
+
+    # STATUS_* -> STATUS_CLOSED ----------------------------------------------#
+    def can_mark_rejected(self):
+        """Gatecheck for mark_rejected."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROPOSED,
+                STATUS_IN_EXPERT_REVIEW,
+                STATUS_IN_PUBLIC_REVIEW,
+                STATUS_IN_PANEL_REVIEW,
+                STATUS_IN_BM_REVIEW,
+                STATUS_IN_DIR_REVIEW,
+                STATUS_IN_DG_REVIEW,
+                STATUS_IN_MIN_REVIEW],
+        target=STATUS_REJECTED,
+        conditions=[can_mark_rejected],
+        # permission='conservation.can_mark_rejected'
+    )
+    def mark_rejected(self):
+        """Mark a conservation listing as rejected.
+
+        This can happen in any review stage.
+
+        Source: all review stages
+        Target: STATUS_REJECTED
+        Permissions: curators
+        Gatecheck: can_mark_rejected (pass)
+        """
+        logger.info("[Gazettal status] mark_rejected")
+
+    # end Django-FSM
+    # ------------------------------------------------------------------------#

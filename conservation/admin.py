@@ -125,7 +125,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for TaxonGazettal."""
 
     save_on_top = True
-    date_hierarchy = 'gazetted_on'
+    date_hierarchy = 'effective_from'
 
     # FSM Transitions
     fsm_field = ['status', ]
@@ -138,8 +138,8 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "category_cache",
         "criteria_cache",
         "proposed_on",
-        "gazetted_on",
-        "delisted_on",
+        "effective_from",
+        "effective_to",
         "review_due",
         "comments",
     )
@@ -148,8 +148,8 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "scope",
         "status",
         ('proposed_on', admin.DateFieldListFilter),
-        ('gazetted_on', admin.DateFieldListFilter),
-        ('delisted_on', admin.DateFieldListFilter),
+        ('effective_from', admin.DateFieldListFilter),
+        ('effective_to', admin.DateFieldListFilter),
         ('review_due', admin.DateFieldListFilter),
     )
 
@@ -174,7 +174,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
          ),
         ('Approval milestones and log', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("proposed_on", "gazetted_on", "delisted_on", "review_due", "comments",)}
+            'fields': ("proposed_on", "effective_from", "effective_to", "review_due", "comments",)}
          ),
     )
 
@@ -195,7 +195,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for CommunityGazettal."""
 
     save_on_top = True
-    date_hierarchy = 'gazetted_on'
+    date_hierarchy = 'effective_from'
 
     # FSM Transitions
     fsm_field = ['status', ]
@@ -208,8 +208,8 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "category_cache",
         "criteria_cache",
         "proposed_on",
-        "gazetted_on",
-        "delisted_on",
+        "effective_from",
+        "effective_to",
         "review_due",
         "comments",
     )
@@ -218,8 +218,8 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "scope",
         "status",
         ('proposed_on', admin.DateFieldListFilter),
-        ('gazetted_on', admin.DateFieldListFilter),
-        ('delisted_on', admin.DateFieldListFilter),
+        ('effective_from', admin.DateFieldListFilter),
+        ('effective_to', admin.DateFieldListFilter),
         ('review_due', admin.DateFieldListFilter),
     )
     search_fields = ("comments", )
@@ -243,7 +243,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
          ),
         ('Approval milestones and log', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("proposed_on", "gazetted_on", "delisted_on", "review_due", "comments",)}
+            'fields': ("proposed_on", "effective_from", "effective_to", "review_due", "comments",)}
          ),
     )
 
