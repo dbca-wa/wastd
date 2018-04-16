@@ -2323,7 +2323,7 @@ class ConservationCategorySerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = ConservationCategory
-        fields = ['code', 'label', 'description', ]
+        fields = ['conservation_list', 'code', 'label', 'description', ]
 
 
 class ConservationCategoryFilter(filters.FilterSet):
@@ -2334,10 +2334,10 @@ class ConservationCategoryFilter(filters.FilterSet):
 
         model = ConservationCategory
         fields = {
+            'conservation_list': ['exact', 'in'],
             'code': ['exact', 'icontains'],
             'label': ['exact', 'icontains'],
             'description': ['icontains'],
-            'conservation_list': ['exact', 'in'],
         }
 
 
@@ -2388,6 +2388,7 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
     queryset = ConservationCriterion.objects.all()
     serializer_class = ConservationCriterionSerializer
     filter_class = ConservationCriterionFilter
+    pagination_class = pagination.LimitOffsetPagination
     uid_field = "code"
     model = ConservationCriterion
 
@@ -2461,6 +2462,7 @@ class ConservationListViewSet(viewsets.ModelViewSet):
     queryset = ConservationList.objects.all()
     serializer_class = ConservationListSerializer
     filter_class = ConservationListFilter
+    pagination_class = pagination.LimitOffsetPagination
     uid_field = "code"
     model = ConservationList
 
@@ -2534,6 +2536,7 @@ class TaxonGazettalFilter(filters.FilterSet):
         fields = {
             # 'taxon': '__all__',
             # 'taxon': ['exact', ],
+            'scope': ['exact', 'in'],
             'category': ['exact', 'in'],
             'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
@@ -2553,6 +2556,7 @@ class TaxonGazettalViewSet(BatchUpsertViewSet):
     queryset = TaxonGazettal.objects.all().select_related('taxon')
     serializer_class = TaxonGazettalSerializer
     filter_class = TaxonGazettalFilter
+    pagination_class = pagination.LimitOffsetPagination
     uid_field = "taxon"
     model = TaxonGazettal
 
@@ -2593,6 +2597,7 @@ class CommunityGazettalFilter(filters.FilterSet):
         model = CommunityGazettal
         fields = {
             'community': ['exact', ],
+            'scope': ['exact', 'in'],
             'category': ['exact', 'in'],
             'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
@@ -2609,6 +2614,7 @@ class CommunityGazettalViewSet(BatchUpsertViewSet):
     queryset = CommunityGazettal.objects.all().select_related('community')
     serializer_class = CommunityGazettalSerializer
     filter_class = CommunityGazettalFilter
+    pagination_class = pagination.LimitOffsetPagination
     uid_field = "community"
     model = CommunityGazettal
 
