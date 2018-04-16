@@ -2406,15 +2406,23 @@ class ConservationListSerializer(serializers.ModelSerializer):
     """Serializer for ConservationList."""
 
     conservationcategory_set = ConservationCategorySerializer(many=True, write_only=False)
+    conservationcriterion_set = ConservationCriterionSerializer(many=True, write_only=False)
 
     def create(self, validated_data):
         """Custom create with nested ConsCat serializer."""
-        cat_data = validated_data.pop('conservationcategory_set')
+        cat_data = validated_data.pop('conservationcategory_set', [])
+        crit_data = validated_data.pop('conservationcriterion_set', [])
+
         conservation_list = ConservationList.objects.update_or_create(
             code=validated_data["code"], defaults=validated_data)
+
         for cat in cat_data:
             cat["conservation_list_id"] = conservation_list.pk
             ConservationCategory.objects.update_or_create(code=cat["code"], defaults=cat)
+        for crit in crit_data:
+            crit["conservation_list_id"] = conservation_list.pk
+            ConservationCriterion.objects.update_or_create(code=crit["code"], defaults=crit)
+
         return conservation_list
 
     class Meta:
@@ -2468,14 +2476,23 @@ class ConservationListViewSet(viewsets.ModelViewSet):
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
-        cats = data.pop("conservationcategory_set")
         if 'csrfmiddlewaretoken' in data:
             data.pop('csrfmiddlewaretoken')
-        obj, created = self.model.objects.update_or_create(code=data["code"], defaults=data)
-        for cat in cats:
+
+        cat_data = data.pop('conservationcategory_set', [])
+        crit_data = data.pop('conservationcriterion_set', [])
+
+        conservation_list, created = ConservationList.objects.update_or_create(
+            code=data["code"], defaults=data)
+
+        for cat in cat_data:
             logger.debug("[ConsList viewset] Found one cons cat: {0}".format(cat))
-            cat["conservation_list_id"] = obj.pk
+            cat["conservation_list_id"] = conservation_list.pk
             ConservationCategory.objects.update_or_create(code=cat["code"], defaults=cat)
+        for crit in crit_data:
+            logger.debug("[ConsList viewset] Found one cons crit: {0}".format(crit))
+            crit["conservation_list_id"] = conservation_list.pk
+            ConservationCriterion.objects.update_or_create(code=crit["code"], defaults=crit)
 
         return RestResponse(data, status=status.HTTP_200_OK)
 
