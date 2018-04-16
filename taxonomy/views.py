@@ -14,9 +14,6 @@ from taxonomy.models import Taxon, Community
 from taxonomy.filters import TaxonFilter, CommunityFilter
 
 
-# Utilities ------------------------------------------------------------------#
-
-
 @csrf_exempt
 def update_taxon(request):
     """Update Taxon."""
@@ -26,10 +23,7 @@ def update_taxon(request):
 
 
 class TaxonListView(ListView):
-    """A ListView for Taxon.
-
-    TODO http://inmagik.github.io/django-search-views
-    """
+    """A ListView for Taxon."""
 
     model = Taxon
     template_name = "species_list.html"

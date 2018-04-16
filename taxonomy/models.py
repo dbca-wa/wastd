@@ -1842,6 +1842,13 @@ class Taxon(MPTTModel):
                  'url': x.absolute_admin_url, }
                 for x in self.taxon_gazettal.all()]
 
+    @property
+    def documents(self):
+        """Return a dict of Documents and admin urls."""
+        return [{'object': x,
+                 'url': x.absolute_admin_url}
+                for x in self.document_set.all()]
+
 
 @receiver(pre_save, sender=Taxon)
 def taxon_pre_save(sender, instance, *args, **kwargs):
