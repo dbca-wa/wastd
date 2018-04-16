@@ -1594,7 +1594,6 @@ class TaxonSerializer(serializers.ModelSerializer):
             'vernacular_names',
             'canonical_name',
             'taxonomic_name',
-            'code',
         )
 
 
