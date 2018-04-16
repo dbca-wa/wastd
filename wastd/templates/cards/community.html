@@ -44,8 +44,8 @@
     <li class="list-group-item">
       {% for attachment in document.attachments.all %}
       <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
-      <span class="badge badge-{% if attachment.confidential == True%}danger{% else %}primary{% endif %}">
-        <span class="oi oi-document" title="PDF document" aria-hidden="true"></span>
+      <span class="badge badge-{% if attachment.confidential == True%}danger{% else %}success{% endif %}">
+        <span class="oi oi-document" aria-hidden="true"></span>
       </span>
       </a>
       {% endfor %}

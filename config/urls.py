@@ -15,6 +15,7 @@ from adminactions import actions
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
+from ajax_select import urls as ajax_select_urls
 
 # from dynamic_rest import routers as dr
 
@@ -41,7 +42,8 @@ urlpatterns = [
 
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 
-    url(r'^grappelli/', include('grappelli.urls')),  # grappelli URLS
+    url(r'^grappelli/', include('grappelli.urls')),  # grappelli URLs
+    url(r'^ajax_select/', include(ajax_select_urls)),  # ajax select URLs
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, include(admin.site.urls)),
 

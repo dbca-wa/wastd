@@ -9,8 +9,11 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from django.forms import Textarea
 from django.db import models
 
-# from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
+from django_select2.forms import HeavySelect2MultipleWidget
+from ajax_select.fields import (  # AutoCompleteSelectField,
+    AutoCompleteSelectMultipleField)
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from django_fsm_log.admin import StateLogInline
@@ -38,8 +41,19 @@ CommunityGazettalForm = s2form(CommunityGazettal, attrs=S2ATTRS)
 FileAttachmentForm = s2form(FileAttachment, attrs=S2ATTRS)
 DocumentForm = s2form(Document, attrs=S2ATTRS)
 
+
+class AjaxDocumentForm(DocumentForm):
+
+    taxa = AutoCompleteSelectMultipleField(
+        'taxon',
+        required=False,
+        help_text=_("Enter a part of the taxonomic name to search. "
+                    "The search is case-insensitive."))
+    # taxa = HeavySelect2MultipleWidget()
+
 FORMFIELD_OVERRIDES = {
     models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 80})},
+    models.ManyToManyField: {'widget': HeavySelect2MultipleWidget(data_url='/api/1/taxon/?format=json')}
 }
 
 
@@ -298,7 +312,7 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     filter_horizontal = ('taxa', 'communities', 'team')
     # raw_id_fields = ('taxa', 'communities', 'team')
     # autocomplete_lookup_fields = {'fk': ['taxa', 'communities', 'team']}
-    form = DocumentForm
+    form = AjaxDocumentForm
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [CustomStateLogInline,
                FileAttachmentInline,

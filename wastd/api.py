@@ -2482,15 +2482,21 @@ class ConservationListViewSet(viewsets.ModelViewSet):
         cat_data = data.pop('conservationcategory_set', [])
         crit_data = data.pop('conservationcriterion_set', [])
 
+        if data["active_from"] == {}:
+            data["active_from"] = None
+        if data["active_to"] == {}:
+            data["active_to"] = None
+
         conservation_list, created = ConservationList.objects.update_or_create(
             code=data["code"], defaults=data)
-
         for cat in cat_data:
             logger.debug("[ConsList viewset] Found one cons cat: {0}".format(cat))
+            cat.pop("conservation_list")
             cat["conservation_list_id"] = conservation_list.pk
             ConservationCategory.objects.update_or_create(code=cat["code"], defaults=cat)
         for crit in crit_data:
             logger.debug("[ConsList viewset] Found one cons crit: {0}".format(crit))
+            crit.pop("conservation_list")
             crit["conservation_list_id"] = conservation_list.pk
             ConservationCriterion.objects.update_or_create(code=crit["code"], defaults=crit)
 

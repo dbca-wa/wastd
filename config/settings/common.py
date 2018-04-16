@@ -48,6 +48,7 @@ THIRD_PARTY_APPS = (
     'bootstrap4',                   # bootstrap4
     'floppyforms',                  # Floppyforms: Admin GIS widgets
     'easy_select2',                 # Select2 dropdowns
+    'ajax_select',                  # Ajax dropdowns
     'django_tables2',               # View mixins
     'django_filters',               # Form filters
     'allauth',                      # registration
