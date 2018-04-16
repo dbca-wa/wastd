@@ -1046,6 +1046,12 @@ class Document(models.Model):
         """The full name."""
         return "[{0}] {1}".format(self.get_document_type_display(), self.title)
 
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
     # ------------------------------------------------------------------------#
     # Django-FSM transitions
     # ALL -> STATUS_PROPOSED -------------------------------------------------#

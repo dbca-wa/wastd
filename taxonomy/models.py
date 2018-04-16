@@ -1845,7 +1845,7 @@ class Taxon(MPTTModel):
     @property
     def documents(self):
         """Return a dict of Documents and admin urls."""
-        return [{'object': x,
+        return [{'obj': x,
                  'url': x.absolute_admin_url}
                 for x in self.document_set.all()]
 
