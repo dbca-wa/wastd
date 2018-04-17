@@ -478,8 +478,11 @@ class Gazettal(models.Model):
     @property
     def max_approval_level(self):
         """Return the highest required approval level of all categories."""
-        return max([c.conservation_list.approval_level
-                    for c in self.category.all()])
+        try:
+            return max([c.conservation_list.approval_level
+                        for c in self.category.all()])
+        except ValueError:
+            return 0
 
     # ------------------------------------------------------------------------#
     # Django-FSM transitions
