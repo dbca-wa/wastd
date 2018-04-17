@@ -334,8 +334,8 @@ class Gazettal(models.Model):
 
     SCOPES = (
         (SCOPE_WESTERN_AUSTRALIA, 'WA'),
-        (SCOPE_COMMONWEALTH, 'CMW'),
-        (SCOPE_INTERNATIONAL, 'INT'),
+        (SCOPE_COMMONWEALTH, 'CWTH'),
+        (SCOPE_INTERNATIONAL, 'IUCN'),
         (SCOPE_ACTION_PLAN, 'AP'),
     )
 
@@ -951,6 +951,30 @@ class Document(models.Model):
         (STATUS_CLOSED, "Closed"),
         (STATUS_REJECTED, "Rejected"),
     )
+
+    SOURCE_MANUAL_ENTRY = 0
+    SOURCE_THREATENED_FAUNA = 1
+    SOURCE_THREATENED_FLORA = 2
+    SOURCE_THREATENED_COMMUNITIES = 3
+
+    SOURCES = (
+        (SOURCE_MANUAL_ENTRY, 'Manual entry'),
+        (SOURCE_THREATENED_FAUNA, 'Threatened Fauna'),
+        (SOURCE_THREATENED_FLORA, 'Threatened Flora'),
+        (SOURCE_THREATENED_COMMUNITIES, 'Threatened Communities'),
+    )
+
+    source = models.PositiveIntegerField(
+        verbose_name=_("Data Source"),
+        default=SOURCE_MANUAL_ENTRY,
+        choices=SOURCES,
+        help_text=_("Where was this record captured initially?"), )
+
+    source_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Source ID"),
+        help_text=_("The ID of the record in the original source, if available."), )
 
     taxa = models.ManyToManyField(
         Taxon,

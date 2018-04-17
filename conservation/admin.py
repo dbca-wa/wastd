@@ -148,6 +148,8 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
 
     # List View
     list_display = (
+        "source",
+        "source_id",
         "taxon",
         "scope",
         "status",
@@ -160,6 +162,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "comments",
     )
     list_filter = (
+        "source",
         "category",
         "scope",
         "status",
@@ -287,6 +290,8 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
 
     # List View
     list_display = (
+        "source",
+        "source_id",
         "document_type",
         "title",
         "effective_from",
@@ -298,6 +303,7 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     list_filter = (
         # "taxa",
         # "communities",
+        "source",
         "document_type",
         "status",
         ('effective_from', admin.DateFieldListFilter),
@@ -306,7 +312,7 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
         ('effective_from_commonwealth', admin.DateFieldListFilter),
         ('effective_to_commonwealth', admin.DateFieldListFilter),
     )
-    search_fields = ("title", )
+    search_fields = ("title", "source_id", )
 
     # Detail View
     filter_horizontal = ('taxa', 'communities', 'team')

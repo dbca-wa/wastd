@@ -80,7 +80,8 @@ from conservation.models import (
     ConservationCategory,
     ConservationCriterion,
     TaxonGazettal,
-    CommunityGazettal
+    CommunityGazettal,
+    Document
 )
 
 logger = logging.getLogger(__name__)
@@ -2559,6 +2560,7 @@ class TaxonGazettalFilter(filters.FilterSet):
             # 'taxon': '__all__',
             # 'taxon': ['exact', ],
             'scope': ['exact', 'in'],
+            'status': ['exact', 'in'],
             'category': ['exact', 'in'],
             'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
@@ -2620,6 +2622,7 @@ class CommunityGazettalFilter(filters.FilterSet):
         fields = {
             'community': ['exact', ],
             'scope': ['exact', 'in'],
+            'status': ['exact', 'in'],
             'category': ['exact', 'in'],
             'criteria': ['exact', 'in'],
             'proposed_on': ['exact', 'year__gt'],
@@ -2647,3 +2650,53 @@ class CommunityGazettalViewSet(BatchUpsertViewSet):
 
 
 router.register("communitygazettal", CommunityGazettalViewSet)
+
+
+# Document -------------------------------------------------------------------#
+class DocumentSerializer(serializers.ModelSerializer):
+    """Serializer for Document."""
+
+    class Meta:
+        """Opts."""
+
+        model = Document
+        fields = '__all__'
+
+
+class DocumentFilter(filters.FilterSet):
+    """Document filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Document
+        fields = {
+            'source': ['exact', 'in'],
+            'document_type': ['exact', 'in'],
+            'title': ['icontains'],
+            'status': ['exact', 'in'],
+            'effective_from': ['exact', 'year__gt'],
+            'effective_to': ['exact', 'year__gt'],
+            'effective_from_commonwealth': ['exact', 'year__gt'],
+            'effective_to_commonwealth': ['exact', 'year__gt'],
+            'review_due': ['exact', 'year__gt'],
+        }
+
+
+class DocumentViewSet(BatchUpsertViewSet):
+    """View set for Document."""
+
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
+    filter_class = DocumentFilter
+    pagination_class = pagination.LimitOffsetPagination
+    uid_field = None
+    model = Document
+
+    def build_unique_fields(self, data):
+        """Custom unique fields."""
+        return {"source": data["source"],
+                "source_id": data["source_id"]}
+
+
+router.register("document", DocumentViewSet)
