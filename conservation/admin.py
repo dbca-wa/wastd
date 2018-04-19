@@ -16,10 +16,9 @@ from ajax_select.fields import (  # AutoCompleteSelectField,
     AutoCompleteSelectMultipleField)
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
-from django_fsm_log.admin import StateLogInline
-# from django_fsm_log.models import StateLog
-from reversion.admin import VersionAdmin
 
+from reversion.admin import VersionAdmin
+from shared.admin import CustomStateLogInline
 from conservation.models import (
     FileAttachment,
     ConservationList,
@@ -55,12 +54,6 @@ FORMFIELD_OVERRIDES = {
     models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 80})},
     models.ManyToManyField: {'widget': HeavySelect2MultipleWidget(data_url='/api/1/taxon/?format=json')}
 }
-
-
-class CustomStateLogInline(StateLogInline):
-    """Custom StateLogInline."""
-
-    classes = ('grp-collapse grp-closed wide extrapretty',)
 
 
 class FileAttachmentInline(GenericTabularInline):
