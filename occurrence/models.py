@@ -93,7 +93,7 @@ class Area(PolymorphicModel, LegacySourceMixin, ObservationAuditMixin, QualityCo
     )
 
     area_type = models.PositiveIntegerField(
-        verbose_name=_("Data Source"),
+        verbose_name=_("Area type"),
         default=AREA_TYPE_EPHEMERAL_SITE,
         choices=AREA_TYPES,
         help_text=_("The area type."), )
