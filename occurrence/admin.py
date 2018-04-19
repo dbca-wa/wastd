@@ -79,7 +79,10 @@ class TaxonAreaAdmin(AreaAdmin):
     form = TaxonAreaForm
     list_display = AreaAdmin.list_display + ["taxon"]
     list_select_related = ["taxon"]
-    # fieldsets = AreaAdmin.fieldsets
+    fieldsets = ((_('Taxon'), {
+        'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+        'fields': ("taxon", )}
+    ),) + AreaAdmin.fieldsets
 
 
 @admin.register(CommunityArea)
