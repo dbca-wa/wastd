@@ -404,6 +404,12 @@ class Gazettal(models.Model):
                     "otherwise ceased to be in effect."),
     )
 
+    last_reviewed_on = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("Last reviewed on"),
+        help_text=_("The date and time this Conservation Listing was last reviewed."),
+    )
+
     review_due = models.DateTimeField(
         blank=True, null=True,
         verbose_name=_("Review due date"),
