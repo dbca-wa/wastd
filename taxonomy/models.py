@@ -1843,6 +1843,18 @@ class Taxon(MPTTModel):
                 for x in self.taxon_gazettal.all()]
 
     @property
+    def active_gazettals(self):
+        """Return a dict of active Gazettal labels and admin URLs.
+
+        TODO save as list field on model, populate in pre_save.
+        TODO make active_gazettals a manager method on Gazettal
+        """
+        from conservation.models import Gazettal
+        return [{'label': x.label_cache, 'url': x.absolute_admin_url}
+                for x in self.taxon_gazettal.filter(
+                status=Gazettal.STATUS_EFFECTIVE)]
+
+    @property
     def documents(self):
         """Return a dict of Documents and admin urls."""
         return [{'obj': x,
@@ -2057,3 +2069,25 @@ class Community(models.Model):
     def __str__(self):
         """The name."""
         return self.code
+
+    @property
+    def gazettals(self):
+        """Return a dict of Gazettal labels and admin URLs.
+
+        TODO save as list field on model, populate in pre_save.
+        """
+        return [{'label': x.label_cache,
+                 'url': x.absolute_admin_url, }
+                for x in self.community_gazettal.all()]
+
+    @property
+    def active_gazettals(self):
+        """Return a dict of active Gazettal labels and admin URLs.
+
+        TODO save as list field on model, populate in pre_save.
+        TODO make active_gazettals a manager method on Gazettal
+        """
+        from conservation.models import Gazettal
+        return [{'label': x.label_cache, 'url': x.absolute_admin_url}
+                for x in self.community_gazettal.filter(
+                status=Gazettal.STATUS_EFFECTIVE)]

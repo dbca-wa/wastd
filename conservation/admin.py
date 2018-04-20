@@ -151,6 +151,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "proposed_on",
         "effective_from",
         "effective_to",
+        "last_reviewed_on",
         "review_due",
         "comments",
     )
@@ -162,6 +163,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         ('proposed_on', admin.DateFieldListFilter),
         ('effective_from', admin.DateFieldListFilter),
         ('effective_to', admin.DateFieldListFilter),
+        ('last_reviewed_on', admin.DateFieldListFilter),
         ('review_due', admin.DateFieldListFilter),
     )
 
@@ -186,7 +188,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
          ),
         ('Approval milestones and log', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("proposed_on", "effective_from", "effective_to", "review_due", "comments",)}
+            'fields': ("proposed_on", "effective_from", "effective_to", "last_reviewed_on", "review_due", "comments",)}
          ),
     )
 
@@ -325,6 +327,6 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
         ('Approval milestones and log', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
             'fields': ("effective_from", "effective_to", "effective_from_commonwealth",
-                       "effective_to_commonwealth", "review_due", )}
+                       "effective_to_commonwealth", "review_due", "comments")}
          ),
     )

@@ -50,28 +50,31 @@ class FileAttachment(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+
     title = models.CharField(
         blank=True, null=True,
         max_length=500,
         verbose_name=_("Title"),
         help_text=_("A self-explanatory title for the file attachment."))
+
     author = models.ForeignKey(
         User,
         verbose_name=_("Author"),
         blank=True, null=True,
         help_text=_("The person who authored and endorsed this file."))
+
     current = models.BooleanField(
         db_index=True,
         default=True,
         verbose_name=_("Is current"),
-        help_text=_("Whether this file is current or an archived version."),
-    )
+        help_text=_("Whether this file is current or an archived version."),)
+
     confidential = models.BooleanField(
         db_index=True,
         default=True,
         verbose_name=_("Is confidential"),
-        help_text=_("Whether this file is confidential or can be released to the public."),
-    )
+        help_text=_("Whether this file is confidential or "
+                    "can be released to the public."),)
 
     def __str__(self):
         """The full name."""
@@ -213,6 +216,14 @@ class ConservationCategory(models.Model):
         blank=True, null=True,
         help_text=_("Display order, lowest number goes first."), )
 
+    current = models.BooleanField(
+        db_index=True,
+        default=True,
+        verbose_name=_("Is current"),
+        help_text=_("Whether this category should be shown for "
+                    "new conservatin listings."),
+    )
+
     class Meta:
         """Class opts."""
 
@@ -271,6 +282,14 @@ class ConservationCriterion(models.Model):
     def __str__(self):
         """The full name."""
         return "[{0}] {1}".format(self.conservation_list.code, self.code)
+
+
+class ActiveGazettalManager(models.Manager):
+    """Custom Gazettal manager to return only active Gazettals."""
+
+    def get_queryset(self):
+        """Return only active Gazettals."""
+        return super().get_queryset().filter(status=Gazettal.STATUS_EFFECTIVE)
 
 
 @python_2_unicode_compatible
@@ -441,6 +460,9 @@ class Gazettal(models.Model):
         verbose_name=_("Gazettal label"),
         help_text=_("An auto-generated label for the Conservation Listing."),
     )
+
+    objects = models.Manager()
+    active = ActiveGazettalManager()
 
     class Meta:
         """Class opts."""
@@ -740,7 +762,7 @@ class Gazettal(models.Model):
         conditions=[can_mark_delisted],
         # permission='conservation.can_mark_delisted'
     )
-    def mark_delisted(self):
+    def mark_delisted(self, by=None):
         """Mark a conservation listing as de-listed.
 
         This can either happen if a new conservation listing is gazetted,
@@ -751,7 +773,7 @@ class Gazettal(models.Model):
         Permissions: curators
         Gatecheck: can_mark_delisted (pass)
         """
-        logger.info("[Gazettal status] mark_inactive")
+        logger.info("[Gazettal status] mark_delisted")
 
     # STATUS_* -> STATUS_CLOSED ----------------------------------------------#
     def can_mark_rejected(self):
@@ -843,8 +865,10 @@ class TaxonGazettal(Gazettal):
         """
         logger.info("[Taxon Gazettal] mark_gazetted should now mark older "
                     "Gazettals as de-listed.")
+        # TODO fsm_log_by request.user if coming from request
         [gazettal.mark_delisted() for gazettal in
          self.taxon.taxon_gazettal.filter(scope=self.scope).exclude(pk=self.pk)]
+        # TODO: set fsm_log_by
 
 
 @python_2_unicode_compatible

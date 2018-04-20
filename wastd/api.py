@@ -2702,3 +2702,5 @@ class DocumentViewSet(BatchUpsertViewSet):
 
 
 router.register("document", DocumentViewSet)
+
+# TODO: add Area, TaxonArea, ConservationArea
