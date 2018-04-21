@@ -50,37 +50,30 @@
   </div>
 
   <ul class="list-group list-group-flush">
-
-    {% if request.user.is_staff %}
-    <li class="list-group-item">
-      <a href="{% url 'admin:conservation_taxongazettal_add' %}?taxon={{ original.pk }}"
-         title="Because you have DBCA Curator privileges, you may propose a new conservation listing."
-         target="_">
-        <span class="oi oi-plus" aria-hidden="true"></span>
-        Propose new cons listing
-      </a>
-    </li>
-    {% endif %}
-
     {% document_listgroupitem request.user %}
-
   </ul>
 
   <div class="card-footer">
+    <div class="row">
 
-    <a href="?name_id={{ original.name_id }}"
-      class="btn btn-primary btn-sm btn-block"
-      title="Restrict results to {{ original.taxonomic_name }} with its parents and immediate children and reset all filters.">
-      <span class="oi oi-project" aria-hidden="true"></span>
-      Explore {{ original.canonical_name }}
-    </a>
 
     <a href=""
       class="btn btn-primary btn-sm btn-block"
-      title="View details for {{ original.taxonomic_name }}.">
+      title="View details.">
       <span class="oi oi-eye" aria-hidden="true"></span>
-      View {{ original.canonical_name }}
+      View Details
     </a>
 
+    <a href="?name_id={{ original.name_id }}"
+      class="btn btn-secondary btn-sm btn-block"
+      title="Restrict results to {{ original.taxonomic_name }} with its parents and immediate children and reset all filters.">
+      <span class="oi oi-project" aria-hidden="true"></span>
+      Explore taxonomy
+    </a>
+
+    {% taxongazettal_add request.user %}
+    {% document_add request.user "taxa" %}
+
+    </div>
   </div>
 </div>

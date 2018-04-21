@@ -1,0 +1,9 @@
+{% if is_staff %}
+<a href="{% url 'admin:conservation_communitygazettal_add' %}?community={{ original.pk }}"
+  class="btn btn-secondary btn-sm btn-block"
+  title="Because you have DBCA Curator privileges, you may propose a new conservation listing."
+  target="_">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  Propose cons listing
+</a>
+{% endif %}

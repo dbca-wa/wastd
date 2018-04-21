@@ -293,7 +293,8 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
         "effective_to",
         "effective_from_commonwealth",
         "effective_to_commonwealth",
-        "review_due"
+        "review_due",
+        "last_reviewed_on"
     )
     list_filter = (
         # "taxa",
@@ -304,6 +305,7 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
         ('effective_from', admin.DateFieldListFilter),
         ('effective_to', admin.DateFieldListFilter),
         ('review_due', admin.DateFieldListFilter),
+        ('last_reviewed_on', admin.DateFieldListFilter),
         ('effective_from_commonwealth', admin.DateFieldListFilter),
         ('effective_to_commonwealth', admin.DateFieldListFilter),
     )
@@ -326,7 +328,8 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
          ),
         ('Approval milestones and log', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("effective_from", "effective_to", "effective_from_commonwealth",
-                       "effective_to_commonwealth", "review_due", "comments")}
+            'fields': ("effective_from", "effective_to",
+                       "effective_from_commonwealth", "effective_to_commonwealth",
+                       "review_due", "last_reviewed_on", "comments")}
          ),
     )

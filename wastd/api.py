@@ -2682,6 +2682,7 @@ class DocumentFilter(filters.FilterSet):
             'effective_from_commonwealth': ['exact', 'year__gt'],
             'effective_to_commonwealth': ['exact', 'year__gt'],
             'review_due': ['exact', 'year__gt'],
+            "last_reviewed_on": ['exact', 'year__gt'],
         }
 
 

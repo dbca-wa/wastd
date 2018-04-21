@@ -1068,6 +1068,12 @@ class Document(models.Model):
         help_text=_("The date and time this Document should be reviewed."),
     )
 
+    last_reviewed_on = models.DateTimeField(
+        blank=True, null=True,
+        verbose_name=_("Last reviewed on"),
+        help_text=_("The date and time this Conservation Listing was last reviewed."),
+    )
+
     # year
     # number
 

@@ -31,12 +31,40 @@ def gazettal_labels(context, user):
     }
 
 
+@register.inclusion_tag('include/taxongazettal_add.html', takes_context=True)
+def taxongazettal_add(context, user):
+    """Render an "add cons listing" link for staff."""
+    return {
+        "original": context["original"],
+        "is_staff": user.is_staff
+    }
+
+
+@register.inclusion_tag('include/communitygazettal_add.html', takes_context=True)
+def communitygazettal_add(context, user):
+    """Render an "add cons listing" link for staff."""
+    return {
+        "original": context["original"],
+        "is_staff": user.is_staff
+    }
+
+
 @register.inclusion_tag('include/document.html', takes_context=True)
 def document_listgroupitem(context, user):
     """Render a Document in a card."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff
+    }
+
+
+@register.inclusion_tag('include/document_add.html', takes_context=True)
+def document_add(context, user, subject):
+    """Render an "add document" link for staff."""
+    return {
+        "original": context["original"],
+        "is_staff": user.is_staff,
+        "subject": subject
     }
 
 
