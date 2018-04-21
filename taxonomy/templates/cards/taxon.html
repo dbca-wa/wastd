@@ -1,0 +1,86 @@
+{% load staticfiles taxonomy_tags %}
+<div class="card" style="width: 16rem; margin: 0.2rem;">
+  <img class="card-img-top"
+    src="{% static 'images/map_example.png' %}" alt="Occurrence map">
+  <div class="card-body">
+
+    <h6 class="card-subtitle mb-2 text-muted">
+
+    <!-- Rank -->
+    <span class="badge badge-primary">
+      {{ original.get_rank_display }}
+    </span>
+
+    <!-- Name ID -->
+    <span class="badge badge-primary">{{original.name_id}}</span>
+
+    {% taxonomic_status %}
+
+    <!-- Publication status -->
+    {% if original.publication_status < 2 %}
+    <span class="badge badge-secondary">
+      {{ original.get_publication_status_display }}
+    </span>
+    {% endif %}
+
+    <!-- Leaf nodes are terminal taxa -->
+    {% if original.is_leaf_node %}
+    <span class="badge badge-success">
+      <span class="oi oi-media-stop" title="Terminal Taxon" aria-hidden="true"></span>
+    </span>
+    {% endif %}
+    </h6>
+
+    <h5 class="card-title {% if original.current == False %}text-muted{% endif %}">
+      {{ original.canonical_name }}
+    </h5>
+
+    <!-- Author -->
+    {% if original.author %}
+    <h6 class="card-subtitle mb-2 text-muted">
+      <span class="oi oi-person" title="Author" aria-hidden="true"></span>
+      {{ original.author }}
+    </h6>
+    {% endif %}
+
+    {% vernacular_names %}
+
+    {% gazettal_labels request.user %}
+
+  </div>
+
+  <ul class="list-group list-group-flush">
+
+    {% if request.user.is_staff %}
+    <li class="list-group-item">
+      <a href="{% url 'admin:conservation_taxongazettal_add' %}?taxon={{ original.pk }}"
+         title="Because you have DBCA Curator privileges, you may propose a new conservation listing."
+         target="_">
+        <span class="oi oi-plus" aria-hidden="true"></span>
+        Propose new cons listing
+      </a>
+    </li>
+    {% endif %}
+
+    {% document_listgroupitem request.user %}
+
+  </ul>
+
+  <div class="card-footer">
+
+    <a href="?name_id={{ original.name_id }}"
+      class="btn btn-primary btn-sm btn-block"
+      title="Restrict results to {{ original.taxonomic_name }} with its parents and immediate children and reset all filters.">
+      <span class="oi oi-project" aria-hidden="true"></span>
+      Explore {{ original.canonical_name }}
+    </a>
+
+    <a href=""
+      class="btn btn-primary btn-sm btn-block"
+      title="View details for {{ original.taxonomic_name }}.">
+      <span class="oi oi-eye" aria-hidden="true"></span>
+      View {{ original.canonical_name }}
+    </a>
+
+  </div>
+</div>

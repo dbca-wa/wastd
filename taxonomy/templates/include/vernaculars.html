@@ -1,0 +1,13 @@
+{% if original.vernacular_name %}
+<h6 class="card-subtitle mb-2 text-muted">
+  <span class="oi oi-double-quote-sans-left" title="Preferred English vernacular name" aria-hidden="true"></span>
+  {{ original.vernacular_name }}
+</h6>
+{% endif %}
+
+{% if original.vernacular_names and original.vernacular_names != original.vernacular_name %}
+<h6 class="card-subtitle mb-2 text-muted">
+  <span class="oi oi-tags" title="All vernacular names" aria-hidden="true"></span>
+  {{ original.vernacular_names }}
+</h6>
+{% endif %}

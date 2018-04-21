@@ -1,0 +1,9 @@
+{% if original.current == True %}
+<span class="badge badge-success">
+  <span class="oi oi-thumb-up" title="Name is current" aria-hidden="true"></span>
+</span>
+{% else %}
+<span class="badge badge-secondary">
+  <span class="oi oi-thumb-down" title="Name is non current" aria-hidden="true"></span>
+</span>
+{% endif %}

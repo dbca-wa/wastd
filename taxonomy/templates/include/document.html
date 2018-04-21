@@ -1,0 +1,18 @@
+{% for document in original.document_set.all %}
+<li class="list-group-item">
+  {% for attachment in document.attachments.all %}
+  <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
+  <span class="badge badge-{% if attachment.confidential == True%}danger{% else %}success{% endif %}">
+    <span class="oi oi-document" aria-hidden="true"></span>
+  </span>
+  </a>
+  {% endfor %}
+  {{ document }}
+  {% if is_staff %}
+    <a href="{{ document.absolute_admin_url }}"
+      title="Because you have DBCA Curator privileges, you may edit this Document." target="_">
+      <span class="oi oi-pencil" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+</li>
+{% endfor %}

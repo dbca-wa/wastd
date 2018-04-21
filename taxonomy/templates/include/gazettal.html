@@ -1,0 +1,14 @@
+{% for gazettal in original.active_gazettals %}
+<h6 class="card-subtitle mb-2">
+  <span class="badge badge-danger">
+  <span class="oi oi-warning" title="Listed as {{ gazettal.label }}" aria-hidden="true"></span>
+    {{ gazettal.label }}
+    {% if is_staff %}
+    <a href="{{ gazettal.url }}"
+      title="Because you have DBCA Curator privileges, you may edit this conservation listing." target="_">
+      <span class="oi oi-pencil" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  </span>
+</h6>
+{% endfor %}
