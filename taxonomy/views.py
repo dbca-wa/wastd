@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 
 from taxonomy.utils import update_taxon as update_taxon_util
 from taxonomy.models import Taxon, Community
@@ -22,11 +23,13 @@ def update_taxon(request):
     return HttpResponseRedirect("/")
 
 
+# ---------------------------------------------------------------------------#
+# List Views
+#
 class TaxonListView(ListView):
     """A ListView for Taxon."""
 
     model = Taxon
-    template_name = "species_list.html"
     paginate_by = 12
 
     def get_context_data(self, **kwargs):
@@ -61,7 +64,6 @@ class CommunityListView(ListView):
     """A ListView for Community."""
 
     model = Community
-    template_name = "community_list.html"
     paginate_by = 12
 
     def get_context_data(self, **kwargs):
@@ -75,3 +77,31 @@ class CommunityListView(ListView):
         """Queryset."""
         queryset = Community.objects.all()
         return CommunityFilter(self.request.GET, queryset=queryset).qs
+
+
+# ---------------------------------------------------------------------------#
+# Detail Views
+#
+class TaxonDetailView(DetailView):
+    """DetailView for Taxon."""
+
+    model = Taxon
+    context_object_name = "original"
+
+    def get_object(self):
+        """Get Object by name_id."""
+        object = Taxon.objects.get(name_id=self.kwargs.get("name_id"))
+        return object
+
+    # def get_context_data(self, **kwargs):
+    #     """Custom context."""
+    #     context = super(TaxonDetailView, self).get_context_data(**kwargs)
+    #     # context['now'] = timezone.now()
+    #     return context
+
+
+class CommunityDetailView(DetailView):
+    """DetailView for Community."""
+
+    model = Community
+    context_object_name = "original"

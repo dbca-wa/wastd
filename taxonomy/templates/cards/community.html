@@ -21,9 +21,9 @@
   </ul>
 
   <div class="card-footer">
-    <a href=""
+    <a href="{% url 'community-detail' original.pk %}"
       class="btn btn-primary btn-sm btn-block"
-      title="View details for {{ original.taxonomic_name }}.">
+      title="View details for community {{ original }}.">
       <span class="oi oi-eye" aria-hidden="true"></span>
       View {{ original.canonical_name }}
     </a>

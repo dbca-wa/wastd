@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Breadcrumbs -->
+  <div class="row">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{% url 'community-list' %}">Communities</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          <a href="{% url 'community-detail' original.pk %}">{{ original }}</a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Community details -->
+  <div class="row">
+    <h1>{{ original}}</h1>
+  </div>
+  <!-- Occurrence -->
+  <div class="row">
+    <h3>Occurrences</h3>
+  </div>
+  <!-- Conservation listing -->
+  <div class="row">
+    <h3>Conservation listings</h3>
+  </div>
+  <!-- Documents -->
+  <div class="row">
+    <h3>Documents</h3>
+  </div>
+</div>
+{% endblock %}

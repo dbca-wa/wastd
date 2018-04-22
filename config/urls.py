@@ -24,9 +24,10 @@ from ajax_select import urls as ajax_select_urls
 
 from wastd.api import router  # , sync_route
 from wastd.observations.models import Area, Encounter, AnimalEncounter
-from wastd.observations.views import (schema_view, HomeView,
-                                      EncounterTableView, AnimalEncounterTableView)
-from taxonomy.views import update_taxon, TaxonListView, CommunityListView
+from wastd.observations.views import (
+    schema_view, HomeView, EncounterTableView, AnimalEncounterTableView)
+from taxonomy.views import (
+    update_taxon, TaxonListView, CommunityListView, TaxonDetailView, CommunityDetailView)
 
 # register all adminactions
 actions.add_to_site(site)
@@ -35,8 +36,9 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
     url(r'^map/$', HomeView.as_view(), name='map'),
 
-
-    url(r'^species/$', TaxonListView.as_view(), name='species-list'),
+    url(r'^species/(?P<name_id>[0-9]+)/$', TaxonDetailView.as_view(), name='taxon-detail'),
+    url(r'^species/$', TaxonListView.as_view(), name='taxon-list'),
+    url(r'^communities/(?P<pk>[0-9]+)/$', CommunityDetailView.as_view(), name='community-detail'),
     url(r'^communities/$', CommunityListView.as_view(), name='community-list'),
 
 
