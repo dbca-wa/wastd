@@ -46,10 +46,21 @@
         </h3>
       </a>
 
-      <a class="btn btn-secondary btn-block" href="#" title="">
+      <a class="btn btn-primary btn-block"
+        href="{% url 'admin:conservation_taxongazettal_add' %}"
+        title="">
         <h3>
           <span class="oi oi-text" title="" aria-hidden="true"></span>
-          Lodge nomination
+          Lodge nomination (taxon)
+        </h3>
+      </a>
+
+      <a class="btn btn-primary btn-block"
+        href="{% url 'admin:conservation_communitygazettal_add' %}"
+        title="">
+        <h3>
+          <span class="oi oi-text" title="" aria-hidden="true"></span>
+          Lodge nomination (community)
         </h3>
       </a>
 
