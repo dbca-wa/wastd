@@ -8,7 +8,11 @@
   <div class="row">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item active"><a href="/">{{ settings.SITE_NAME }} Home</a></li>
+        <li class="breadcrumb-item active">
+          <a href="/">
+            {{ settings.SITE_NAME }} Home
+          </a>
+        </li>
       </ol>
     </nav>
   </div>
@@ -30,13 +34,13 @@
       <p>
         <a class="btn btn-primary" href="{% url 'taxon-list' %}"
             title="Browse, filter and search Species">
-          Browse species >>
+          Browse species »
         </a>
          </p>
       <p>
         <a class="btn btn-secondary"
         href="{% url 'admin:conservation_taxongazettal_add' %}"
-        title="">Lodge nomination >></a>
+        title="">Lodge nomination »</a>
       </p>
     </div>
 
@@ -52,13 +56,13 @@
       <p>
         <a class="btn btn-primary" href="{% url 'community-list' %}"
             title="Browse, filter and search Communities">
-          Browse communities >>
+          Browse communities »
         </a>
          </p>
       <p>
         <a class="btn btn-secondary"
         href="{% url 'admin:conservation_communitygazettal_add' %}"
-        title="">Lodge nomination >></a>
+        title="">Lodge nomination »</a>
       </p>
     </div>
 
@@ -73,14 +77,15 @@
       </p>
       <p>
         <a class="btn btn-primary" href="{% url 'map' %}"
-            title="Map Threatened Species">
-          View Map >>
+            title="Map Threatened Species and Communities">
+          View Map »
         </a>
         </p>
       <p>
         <a class="btn btn-secondary"
         href="#"
-        title="">Submit occurrences >></a>
+        title="Submit occurrences (coming soon)">
+      Submit occurrences »</a>
       </p>
     </div>
 

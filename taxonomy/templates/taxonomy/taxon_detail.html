@@ -12,6 +12,11 @@
         <li class="breadcrumb-item" aria-current="page">
           <a href="{% url 'taxon-list' %}">Species</a>
         </li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{% url 'taxon-list' %}?name_id={{ original.name_id }}"
+          title="List {{ original.taxonomic_name }} with its parents and immediate children.">
+            Taxonomy of {{ original }}</a>
+        </li>
         <li class="breadcrumb-item active" aria-current="page">
           <a href="{% url 'taxon-detail' original.name_id %}">{{ original }}</a>
         </li>
@@ -19,7 +24,7 @@
     </nav>
   </div>
 
-  <div class="container-fluid marketing">
+  <div class="container-fluid centering">
 
     <!-- Taxon details -->
     <div class="row">

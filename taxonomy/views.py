@@ -30,6 +30,7 @@ class TaxonListView(ListView):
     """A ListView for Taxon."""
 
     model = Taxon
+    template_name = "taxonomy/taxon_list.html"
     paginate_by = 12
 
     def get_context_data(self, **kwargs):

@@ -7,12 +7,12 @@
     <h6 class="card-subtitle mb-2 text-muted">
 
     <!-- Rank -->
-    <span class="badge badge-primary">
+    <span class="badge badge-primary" title="Taxonomic rank: {{ original.get_rank_display }}">
       {{ original.get_rank_display }}
     </span>
 
     <!-- Name ID -->
-    <span class="badge badge-primary">{{original.name_id}}</span>
+    <span class="badge badge-primary" title="WACensus Name ID: {{original.name_id}}">{{original.name_id}}</span>
 
     {% taxonomic_status %}
 

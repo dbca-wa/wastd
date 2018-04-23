@@ -76,7 +76,7 @@ def vernacular_names(context):
     }
 
 
-@register.inclusion_tag('include/vernaculars.html', takes_context=True)
+@register.inclusion_tag('include/taxonomic_status.html', takes_context=True)
 def taxonomic_status(context):
     """Render a Taxon's taxonomic status in a card."""
     return {
