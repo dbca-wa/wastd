@@ -30,7 +30,7 @@ This API is built using:
 * coreapi-cli (complementary CLI for coreapi)
 """
 # from django.shortcuts import render
-from collections import OrderedDict
+
 
 import logging
 # from pdb import set_trace
@@ -56,6 +56,7 @@ from django_filters import rest_framework as rf_filters
 # from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 
+from shared.api import MyGeoJsonPagination
 from wastd.observations import models as wastd_models
 from wastd.observations.models import (
     # Area,
@@ -86,8 +87,7 @@ from conservation.models import (
     Document
 )
 
-from occurrence import models as occurence_models
-# , TaxonArea, CommunityArea
+from occurrence import models as occ_models
 
 logger = logging.getLogger(__name__)
 
@@ -103,28 +103,7 @@ logger = logging.getLogger(__name__)
 # @sync_route.app("users", "users")
 # @sync_route.app("observations", "observations")
 
-# Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-
-
-class MyGeoJsonPagination(pagination.LimitOffsetPagination):
-    """
-    A geoJSON implementation of a LimitOffset pagination serializer.
-
-    Attempt to un-break HTML filter controls in browsable API.
-
-    https://github.com/tomchristie/django-rest-framework/issues/4812
-    """
-
-    def get_paginated_response(self, data):
-        """Return a GeoJSON FeatureCollection with pagination links."""
-        return RestResponse(OrderedDict([
-            ('type', 'FeatureCollection'),
-            ('count', self.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('features', data['features']),
-        ]))
 
 
 class InBBoxHTMLMixin:
@@ -334,7 +313,7 @@ class AreaViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
-router.register(r'wastd-area', AreaViewSet)
+router.register(r'area', AreaViewSet)
 
 
 # Surveys --------------------------------------------------------------------#
@@ -2709,18 +2688,15 @@ class DocumentViewSet(BatchUpsertViewSet):
 
 router.register("document", DocumentViewSet)
 
-# TODO: add Area, TaxonArea, ConservationArea
 
 # Area -------------------------------------------------------------------#
-
-
 class OccurrenceAreaPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence Area."""
 
     class Meta:
         """Opts."""
 
-        model = occurence_models.Area
+        model = occ_models.Area
         fields = '__all__'
         geo_field = 'geom'
 
@@ -2731,7 +2707,7 @@ class OccurrenceAreaPointSerializer(GeoFeatureModelSerializer):
     class Meta:
         """Opts."""
 
-        model = occurence_models.Area
+        model = occ_models.Area
         fields = '__all__'
         geo_field = 'point'
 
@@ -2742,7 +2718,7 @@ class OccurrenceAreaFilter(filters.FilterSet):
     class Meta:
         """Class opts."""
 
-        model = occurence_models.Area
+        model = occ_models.Area
         fields = {
 
             'area_type': ['exact', 'in'],
@@ -2758,7 +2734,7 @@ class OccurrenceAreaFilter(filters.FilterSet):
 class OccurrenceAreaPolyViewSet(viewsets.ModelViewSet):
     """Occurrence Area view set."""
 
-    queryset = occurence_models.Area.objects.all()
+    queryset = occ_models.Area.objects.all()
     serializer_class = OccurrenceAreaPolySerializer
     filter_class = OccurrenceAreaFilter
     pagination_class = MyGeoJsonPagination
@@ -2767,11 +2743,11 @@ class OccurrenceAreaPolyViewSet(viewsets.ModelViewSet):
 class OccurrenceAreaPointViewSet(viewsets.ModelViewSet):
     """Occurrence Area view set."""
 
-    queryset = occurence_models.Area.objects.all()
+    queryset = occ_models.Area.objects.all()
     serializer_class = OccurrenceAreaPointSerializer
     filter_class = OccurrenceAreaFilter
     pagination_class = MyGeoJsonPagination
 
 
-router.register(r"occurrence/areapoint", OccurrenceAreaPointViewSet)
-router.register(r"occurrence/areapoly", OccurrenceAreaPolyViewSet)
+router.register(r"occ-areas", OccurrenceAreaPolyViewSet, base_name="occurrence_area_polys")
+router.register(r"occ-area-points", OccurrenceAreaPointViewSet, base_name="occurrence_area_points")

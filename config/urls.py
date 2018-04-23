@@ -15,14 +15,14 @@ from adminactions import actions
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
+
 from ajax_select import urls as ajax_select_urls
 
 # from dynamic_rest import routers as dr
 
 # from graphene_django.views import GraphQLView
 # from wastd.schema import schema
-
-from wastd.api import router  # , sync_route
+from wastd.api import router as wastd_router
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
     schema_view, HomeView, EncounterTableView, AnimalEncounterTableView)
@@ -60,7 +60,7 @@ urlpatterns = [
     # API
     url(r'^api/1/swagger/$', schema_view, name="api-docs"),
     url(r'^api/1/docs/', include_docs_urls(title='API')),
-    url(r'^api/1/', include(router.urls, namespace="api")),
+    url(r'^api/1/', include(wastd_router.urls, namespace="api")),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 
