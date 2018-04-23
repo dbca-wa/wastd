@@ -10,6 +10,25 @@
 {% block javascript%}
 {{ block.super }}
 <script type="text/javascript">
+/*
+ * Workaround for 1px lines appearing in some browsers due to fractional transforms
+ * and resulting anti-aliasing.
+ * https://github.com/Leaflet/Leaflet/issues/3575
+ */
+(function(){
+    var originalInitTile = L.GridLayer.prototype._initTile
+    L.GridLayer.include({
+        _initTile: function (tile) {
+            originalInitTile.call(this, tile);
+
+            var tileSize = this.getTileSize();
+
+            tile.style.width = tileSize.x + 1 + 'px';
+            tile.style.height = tileSize.y + 1 + 'px';
+        }
+    });
+})()
+
 function map_init(map, options) {
 
 
@@ -67,16 +86,16 @@ function map_init(map, options) {
 
     }
 
-    /* Actions taken when highlighting feature */
-    function highlightFeature(e) {
-        var layer = e.target;
-        info.update(layer.feature.properties);
-    }
+ //    /* Actions taken when highlighting feature */
+ //    function highlightFeature(e) {
+ //        var layer = e.target;
+ //        info.update(layer.feature.properties);
+ //    }
 
-    /* Actions taken when resetting highlight on feature */
-    function resetHighlight(e) {
-		info.update();
-	}
+ //    /* Actions taken when resetting highlight on feature */
+ //    function resetHighlight(e) {
+	// 	info.update();
+	// }
 
     /* Actions taken on each feature: title, popup, info preview */
     function oef (feature, layer) {
@@ -85,19 +104,19 @@ function map_init(map, options) {
         // layer.on({mouseover: highlightFeature, click: resetHighlight});
     }
 
-    /* Preview window called "info" */
-    var info = L.control();
+ //    /* Preview window called "info" */
+ //    var info = L.control();
 
-    info.onAdd = function (map) {
-        this._div = L.DomUtil.create('div', 'info');
-        this.update();
-        return this._div;
-    };
-    info.update = function (props) {
-		this._div.innerHTML = props ? props.as_html: 'Hover to preview, click to inspect';
-	};
+ //    info.onAdd = function (map) {
+ //        this._div = L.DomUtil.create('div', 'info');
+ //        this.update();
+ //        return this._div;
+ //    };
+ //    info.update = function (props) {
+	// 	this._div.innerHTML = props ? props.as_html: 'Hover to preview, click to inspect';
+	// };
 
-	info.addTo(map);
+	// info.addTo(map);
 
     /* Data loading */
 
