@@ -82,7 +82,7 @@ function map_init(map, options) {
     function oef (feature, layer) {
         layer.bindLabel(feature.properties.leaflet_title);
         layer.bindPopup(feature.properties.as_html);
-        layer.on({mouseover: highlightFeature, click: resetHighlight});
+        // layer.on({mouseover: highlightFeature, click: resetHighlight});
     }
 
     /* Preview window called "info" */
