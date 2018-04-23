@@ -2,7 +2,8 @@
 {% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid" id="wrap">
+
   <!-- Breadcrumbs -->
   <div class="row">
     <nav aria-label="breadcrumb">
@@ -18,21 +19,23 @@
     </nav>
   </div>
 
-  <!-- Community details -->
-  <div class="row">
-    <h1>{{ original}}</h1>
-  </div>
-  <!-- Occurrence -->
-  <div class="row">
-    <h3>Occurrences</h3>
-  </div>
-  <!-- Conservation listing -->
-  <div class="row">
-    <h3>Conservation listings</h3>
-  </div>
-  <!-- Documents -->
-  <div class="row">
-    <h3>Documents</h3>
-  </div>
-</div>
+   <div class="container-fluid centering">
+    <!-- Community details -->
+    <div class="row">
+      <h1>{{ original}}</h1>
+    </div>
+    <!-- Occurrence -->
+    <div class="row">
+      <h3>Occurrences</h3>
+    </div>
+    <!-- Conservation listing -->
+    <div class="row">
+      <h3>Conservation listings</h3>
+    </div>
+    <!-- Documents -->
+    <div class="row">
+      <h3>Documents</h3>
+    </div>
+  </div><!-- .container-fluid -->
+</div><!-- #wrap -->
 {% endblock %}

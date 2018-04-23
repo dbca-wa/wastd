@@ -2,7 +2,8 @@
 {% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid" id="wrap">
+
   <!-- Breadcrumbs -->
   <div class="row">
     <nav aria-label="breadcrumb">
@@ -14,43 +15,45 @@
       </ol>
     </nav>
   </div>
-  <div class="row">
 
-  <!-- Pagination -->
-  <div class="row">
-    <div class="col-12">
-      {% bootstrap_pagination page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
-    </div>
-  </div>
+  <div class="container-fluid centering">
 
-  <div class="row">
-    <!-- Data -->
-    <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
-      <div class="row">
-        {% for original in object_list %}
-        {% include "cards/community.html" with original=original %}
-        {% endfor %}
+    <!-- Pagination -->
+    <div class="row">
+      <div class="col-12">
+        {% bootstrap_pagination page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
       </div>
-    </div><!-- /#dash-data -->
+    </div>
 
-    <!-- Search -->
-    <div id="dash-filters" class="col-lg-3 col-md-4 col-sm-6 col-12">
-      <form method="get">
+    <div class="row">
+      <!-- Data -->
+      <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
         <div class="row">
-          {% bootstrap_form community_filter.form %}
+          {% for original in object_list %}
+          {% include "cards/community.html" with original=original %}
+          {% endfor %}
         </div>
-        <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
-        <br/>
-        <br/>
-        <button
-          class="btn btn-outline-primary my-2 my-sm-0"
-          title="Filter by above criteria." type="submit">
-          Go
-        </button>
-      </form>
-    </div><!-- /#dash-filters -->
-  </div>
-</div>
+      </div><!-- /#dash-data -->
+
+      <!-- Search -->
+      <div id="dash-filters" class="col-lg-3 col-md-4 col-sm-6 col-12">
+        <form method="get">
+          <div class="row">
+            {% bootstrap_form community_filter.form %}
+          </div>
+          <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
+          <br/>
+          <br/>
+          <button
+            class="btn btn-outline-primary my-2 my-sm-0"
+            title="Filter by above criteria." type="submit">
+            Go
+          </button>
+        </form>
+      </div><!-- /#dash-filters -->
+    </div><!-- .row -->
+  </div><!-- .container-fluid -->
+</div><!-- #wrap -->
 {% endblock %}
 
 {% block css%}

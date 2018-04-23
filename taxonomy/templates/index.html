@@ -2,74 +2,90 @@
 {% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid" id="wrap">
 
   <!-- Breadcrumbs -->
-<div class="row">
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item active"><a href="/">{{ settings.SITE_NAME }} Home</a></li>
-    </ol>
-  </nav>
-</div>
-<div class="row">
-
-
-    <div class="col col-lg-8 col-12">
-      <a class="btn btn-primary btn-block" href="{% url 'taxon-list' %}"
-        title="Browse, filter and search Threatened Species">
-        <h3>
-          <span class="oi oi-grid-three-up" title="Browse Threatened Species" aria-hidden="true"></span>
-          Species
-        </h3>
-      </a>
-
-      <a class="btn btn-primary btn-block" href="{% url 'community-list' %}"
-        title="Browse, filter and search Threatened Communities">
-        <h3>
-          <span class="oi oi-grid-three-up" title="Browse Threatened Communities" aria-hidden="true"></span>
-          Communities
-        </h3>
-      </a>
-
-      <a class="btn btn-primary btn-block" href="{% url 'map' %}" title="">
-        <h3>
-          <span class="oi oi-globe" title="" aria-hidden="true"></span>
-          Map
-        </h3>
-      </a>
-
-      <a class="btn btn-secondary btn-block" href="#" title="">
-        <h3>
-          <span class="oi oi-spreadsheet" title="" aria-hidden="true"></span>
-          Submit occurrences
-        </h3>
-      </a>
-
-      <a class="btn btn-primary btn-block"
-        href="{% url 'admin:conservation_taxongazettal_add' %}"
-        title="">
-        <h3>
-          <span class="oi oi-text" title="" aria-hidden="true"></span>
-          Lodge nomination (taxon)
-        </h3>
-      </a>
-
-      <a class="btn btn-primary btn-block"
-        href="{% url 'admin:conservation_communitygazettal_add' %}"
-        title="">
-        <h3>
-          <span class="oi oi-text" title="" aria-hidden="true"></span>
-          Lodge nomination (community)
-        </h3>
-      </a>
-
-      <a class="btn btn-secondary btn-block" href="#" title="">
-        <h3>
-          <span class="oi oi-document" title="" aria-hidden="true"></span>
-          View reports
-        </h3>
-    </a>
+  <div class="row">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><a href="/">{{ settings.SITE_NAME }} Home</a></li>
+      </ol>
+    </nav>
   </div>
-</div>
+
+
+<div class="container centering">
+
+  <div class="row">
+
+    <div class="col-lg-4 col-md-6 col-12">
+      <img class="rounded-circle"
+        src="{% static 'images/green_hatchling_140.png' %}"
+        alt="Green turtle hatchling at Thevenard Island. Photo: Florian Mayer, DBCA."
+        width="140" height="140">
+      <h2>Species</h2>
+      <p>
+        Browse and search WA species, view conservation status and suggest conservation status changes.
+      </p>
+      <p>
+        <a class="btn btn-primary" href="{% url 'taxon-list' %}"
+            title="Browse, filter and search Species">
+          Browse species >>
+        </a>
+         </p>
+      <p>
+        <a class="btn btn-secondary"
+        href="{% url 'admin:conservation_taxongazettal_add' %}"
+        title="">Lodge nomination >></a>
+      </p>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-12">
+      <img class="rounded-circle"
+        src="{% static 'images/tec_val.png' %}"
+        alt="Shrublands and woodlands of the eastern side of the Swan Coastal Plain TEC. Photo: Val English, DBCA."
+        width="140" height="140">
+      <h2>Communities</h2>
+      <p>
+        Browse and search WA ecological communities, view conservation status and suggest conservation status changes.
+      </p>
+      <p>
+        <a class="btn btn-primary" href="{% url 'community-list' %}"
+            title="Browse, filter and search Communities">
+          Browse communities >>
+        </a>
+         </p>
+      <p>
+        <a class="btn btn-secondary"
+        href="{% url 'admin:conservation_communitygazettal_add' %}"
+        title="">Lodge nomination >></a>
+      </p>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-12">
+      <img class="rounded-circle"
+        src="{% static 'images/map_wa_square.png' %}"
+        alt="Map of Western Australia showing TSC data on ESRI imagery. Copyright background layers: ESRI."
+        width="140" height="140">
+      <h2>Map</h2>
+      <p>
+        View selected occurrences of threatened species and communities on a map.
+      </p>
+      <p>
+        <a class="btn btn-primary" href="{% url 'map' %}"
+            title="Map Threatened Species">
+          View Map >>
+        </a>
+        </p>
+      <p>
+        <a class="btn btn-secondary"
+        href="#"
+        title="">Submit occurrences >></a>
+      </p>
+    </div>
+
+  </div><!-- .row -->
+</div><!-- .container -->
+
+</div><!-- #wrap -->
 {% endblock %}

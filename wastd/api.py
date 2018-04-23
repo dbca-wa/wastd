@@ -56,8 +56,10 @@ from django_filters import rest_framework as rf_filters
 # from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 
+from wastd.observations import models as wastd_models
 from wastd.observations.models import (
-    Area, Survey,  # SiteVisit,
+    # Area,
+    Survey,  # SiteVisit,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     Observation,  # LineTransectEncounter
     MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
@@ -83,6 +85,9 @@ from conservation.models import (
     CommunityGazettal,
     Document
 )
+
+from occurrence import models as occurence_models
+# , TaxonArea, CommunityArea
 
 logger = logging.getLogger(__name__)
 
@@ -272,7 +277,7 @@ class AreaSerializer(GeoFeatureModelSerializer):
     class Meta:
         """Class options."""
 
-        model = Area
+        model = wastd_models.Area
         geo_field = "geom"
         fields = ("pk", "area_type", "name", "geom", "northern_extent", "centroid", )
 
@@ -283,7 +288,7 @@ class FastAreaSerializer(serializers.ModelSerializer):
     class Meta:
         """Class options."""
 
-        model = Area
+        model = wastd_models.Area
         geo_field = "geom"
         fields = ("pk", "area_type", "name", )
 
@@ -294,7 +299,7 @@ class AreaFilter(filters.FilterSet):
     class Meta:
         """Class opts."""
 
-        model = Area
+        model = wastd_models.Area
         fields = {
             'area_type': ['exact', 'in', 'startswith'],
             'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
@@ -322,14 +327,14 @@ class AreaViewSet(viewsets.ModelViewSet):
     * [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site) Sites (where Surveys are conducted)
     """
 
-    queryset = Area.objects.all()
+    queryset = wastd_models.Area.objects.all()
     serializer_class = AreaSerializer
     filter_class = AreaFilter
     bbox_filter_field = 'geom'
     pagination_class = MyGeoJsonPagination
 
 
-router.register(r'areas', AreaViewSet)
+router.register(r'wastd-area', AreaViewSet)
 
 
 # Surveys --------------------------------------------------------------------#
@@ -2705,3 +2710,68 @@ class DocumentViewSet(BatchUpsertViewSet):
 router.register("document", DocumentViewSet)
 
 # TODO: add Area, TaxonArea, ConservationArea
+
+# Area -------------------------------------------------------------------#
+
+
+class OccurrenceAreaPolySerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence Area."""
+
+    class Meta:
+        """Opts."""
+
+        model = occurence_models.Area
+        fields = '__all__'
+        geo_field = 'geom'
+
+
+class OccurrenceAreaPointSerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence Area."""
+
+    class Meta:
+        """Opts."""
+
+        model = occurence_models.Area
+        fields = '__all__'
+        geo_field = 'point'
+
+
+class OccurrenceAreaFilter(filters.FilterSet):
+    """Occurrence Area filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = occurence_models.Area
+        fields = {
+
+            'area_type': ['exact', 'in'],
+            'accuracy': ['exact', 'gt', 'lt'],
+            'code': ['exact', 'icontains', 'in'],
+            'label': ['exact', 'icontains', 'in'],
+            'name': ['exact', 'icontains', 'in'],
+            'description': ['exact', 'icontains', 'in'],
+            'northern_extent': ['exact', 'gt', 'lt'],
+        }
+
+
+class OccurrenceAreaPolyViewSet(viewsets.ModelViewSet):
+    """Occurrence Area view set."""
+
+    queryset = occurence_models.Area.objects.all()
+    serializer_class = OccurrenceAreaPolySerializer
+    filter_class = OccurrenceAreaFilter
+    pagination_class = MyGeoJsonPagination
+
+
+class OccurrenceAreaPointViewSet(viewsets.ModelViewSet):
+    """Occurrence Area view set."""
+
+    queryset = occurence_models.Area.objects.all()
+    serializer_class = OccurrenceAreaPointSerializer
+    filter_class = OccurrenceAreaFilter
+    pagination_class = MyGeoJsonPagination
+
+
+router.register(r"occurrence/areapoint", OccurrenceAreaPointViewSet)
+router.register(r"occurrence/areapoly", OccurrenceAreaPolyViewSet)

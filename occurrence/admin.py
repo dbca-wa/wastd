@@ -49,6 +49,7 @@ class AreaAdmin(FSMTransitionMixin, VersionAdmin):
     list_filter = ["area_type", "source"]
     search_fields = ("code", "name", )
     raw_id_fields = ('encountered_by', )
+    fsm_field = ['status', ]
     autocomplete_lookup_fields = {'fk': ['encountered_by', ]}
     fieldsets = (
         (_('Details'), {
