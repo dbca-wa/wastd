@@ -69,8 +69,8 @@ html, body {height: 100%; width: 100%;}
 /* popup image limited height */
 .carousel-item img {
     max-height: 300px;  /* limit popup height*/
-   width: 100% auto; /* allow less than 100% width */
-  margin: auto; /* center image */
+   width: 100% auto;    /* allow less than 100% width */
+  margin: auto;         /* center image */
 }
 
 /* Leaflet popup link colour */
@@ -86,3 +86,9 @@ html, body {height: 100%; width: 100%;}
 .text-shadow {text-shadow: 1px 1px #000000;}
 
 .breadcrumb-item a {color: black;}
+
+.card {
+  max-width: 21rem;
+  min-width: 8rem;
+  margin: 0.2rem;
+}

@@ -2748,6 +2748,6 @@ class OccurrenceAreaPointViewSet(viewsets.ModelViewSet):
     filter_class = OccurrenceAreaFilter
     pagination_class = MyGeoJsonPagination
 
-
+# Without base_name, the last registered viewset overrides the other area viewsets
 router.register(r"occ-areas", OccurrenceAreaPolyViewSet, base_name="occurrence_area_polys")
 router.register(r"occ-area-points", OccurrenceAreaPointViewSet, base_name="occurrence_area_points")

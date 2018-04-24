@@ -38,7 +38,7 @@
       <!-- Search -->
       <div id="dash-filters" class="col-lg-3 col-md-4 col-sm-6 col-12">
         <form method="get">
-          <div class="row">
+          <div class="row-fluid">
             {% bootstrap_form community_filter.form %}
           </div>
           <div id="searchmapholder">{% leaflet_map "searchmap" callback="window.map_init" %}</div>
