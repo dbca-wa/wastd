@@ -36,6 +36,11 @@ leaflet_settings = {
         'map_width': '100%',
         'display_raw': 'true',
         'map_srid': 4326, })}
+formfield_overrides = {
+    geo_models.PointField: leaflet_settings,
+    geo_models.LineStringField: leaflet_settings,
+    geo_models.PolygonField: leaflet_settings,
+}
 
 
 @admin.register(Area)
@@ -66,11 +71,7 @@ class AreaAdmin(FSMTransitionMixin, VersionAdmin):
          ),
     )
     # Leaflet geolocation widget
-    formfield_overrides = {
-        geo_models.PointField: leaflet_settings,
-        geo_models.LineStringField: leaflet_settings,
-        geo_models.PolygonField: leaflet_settings,
-    }
+    formfield_overrides = formfield_overrides
 
 
 @admin.register(TaxonArea)

@@ -11,7 +11,7 @@ from __future__ import unicode_literals, absolute_import
 
 # import itertools
 import logging
-import os
+# import os
 # import urllib
 # import slugify
 # from datetime import timedelta
@@ -198,11 +198,11 @@ class Area(PolymorphicModel, LegacySourceMixin, ObservationAuditMixin, QualityCo
     @property
     def derived_html(self):
         """Generate HTML popup content."""
-        template = "popup/{0}.html".format(self._meta.model_name)
-        if os.path.isfile(template):
+        template = "occurrence/popup/{0}.html".format(self._meta.model_name)
+        try:
             t = loader.get_template(template)
             return mark_safe(t.render({"original": self}))
-        else:
+        except:
             logger.info("[occurrence.models.area] Template missing: {0}".format(template))
             return self.__str__()
 

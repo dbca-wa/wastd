@@ -80,9 +80,9 @@ LOCAL_APPS = (
     'wastd.users.apps.UsersConfig',
     'shared.apps.SharedConfig',
     'wastd.observations.apps.ObservationsConfig',
+    'occurrence.apps.OccurrenceConfig',
     'taxonomy.apps.TaxonomyConfig',
     'conservation.apps.ConservationConfig',
-    'occurrence.apps.OccurrenceConfig',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -568,6 +568,11 @@ LOGGING = {
             'propagate': True,
         },
         'conservation': {
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
+        'occurrence': {
             'level': 'INFO',
             'handlers': ['console', 'file'],
             'propagate': True,

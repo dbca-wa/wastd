@@ -43,6 +43,7 @@ html, body {height: 100%; width: 100%;}
 /* Force fullscreen map */
 #mapholder {height:100%; width: 100%;}
 #wastdmap {width: auto; height: 100%;}
+#detailmap {width: auto; min-height:500px;}
 
 #searchmapholder {width: 100% auto; height: 18rem;}
 #searchmap {height:100%; width: auto;}
