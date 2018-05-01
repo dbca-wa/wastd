@@ -15,7 +15,7 @@ import logging
 
 # from django.core.urlresolvers import reverse
 from django.db import models
-from mptt.models import MPTTModel, TreeForeignKey
+from django.contrib.gis.db import models as geo_models
 from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
@@ -32,6 +32,8 @@ from django.utils.translation import ugettext_lazy as _
 # from django_fsm import FSMField, transition
 # from django_fsm_log.decorators import fsm_log_by
 # from django_fsm_log.models import StateLog
+
+from mptt.models import MPTTModel, TreeForeignKey
 # from polymorphic.models import PolymorphicModel
 
 # from wastd.users.models import User
@@ -1582,7 +1584,7 @@ class HbvParent(models.Model):
 
 # django-mptt tree models ----------------------------------------------------#
 @python_2_unicode_compatible
-class Taxon(MPTTModel):
+class Taxon(MPTTModel, geo_models.Model):
     """A taxonomic name at any taxonomic rank.
 
     A taxonomy is a directed graph with exactly one root node (Domain) and
@@ -1760,6 +1762,12 @@ class Taxon(MPTTModel):
         verbose_name=_("Is current"),
         help_text=_("Whether the name is current."),
     )
+
+    eoo = geo_models.PolygonField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Extent of Occurrence"),
+        help_text=_("The extent of occurrence as polygon in WGS84, if available."))
 
     # Approval Status FSM: [phrase name, ms name, current name, non-current name]
     # status = FSMField(default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name=_("QA Status"))
@@ -2033,7 +2041,7 @@ class Crossreference(models.Model):
 
 
 @python_2_unicode_compatible
-class Community(models.Model):
+class Community(geo_models.Model):
     """Ecological Community."""
 
     code = models.CharField(
@@ -2056,6 +2064,12 @@ class Community(models.Model):
         verbose_name=_("Community description"),
         help_text=_("An optional description."),
     )
+
+    eoo = geo_models.PolygonField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Extent of Occurrence"),
+        help_text=_("The extent of occurrence as polygon in WGS84, if available."))
 
     # add cache fields here
 

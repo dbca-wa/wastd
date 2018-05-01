@@ -10,12 +10,13 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib import admin
 from mptt.admin import MPTTModelAdmin  # TreeRelatedFieldListFilter
 # from django.contrib.gis import forms
-# from django.contrib.gis.db import models as geo_models
+from django.contrib.gis.db import models as geo_models
 
 # from django.utils.translation import ugettext_lazy as _
 # from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 # from fsm_admin.mixins import FSMTransitionMixin
+from leaflet.forms.widgets import LeafletWidget
 from reversion.admin import VersionAdmin
 
 from taxonomy.models import (
@@ -23,10 +24,29 @@ from taxonomy.models import (
     HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent,
     Taxon,  # Crossreference, Vernacular,
     Community)
+from occurrence.models import TaxonArea, CommunityArea
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
+from easy_select2 import select2_modelform as s2form
+
+S2ATTRS = {'width': 'auto'}
+TaxonAreaForm = s2form(TaxonArea, attrs=S2ATTRS)
+CommunityAreaForm = s2form(TaxonArea, attrs=S2ATTRS)
 
 TokenAdmin.raw_id_fields = ('user',)
+
+leaflet_settings = {
+    'widget': LeafletWidget(attrs={
+        'map_height': '400px',
+        'map_width': '100%',
+        'display_raw': 'true',
+        'map_srid': 4326, })}
+
+formfield_overrides = {
+    geo_models.PointField: leaflet_settings,
+    geo_models.LineStringField: leaflet_settings,
+    geo_models.PolygonField: leaflet_settings,
+}
 
 
 @admin.register(HbvName)
@@ -200,6 +220,26 @@ class HbvParentAdmin(VersionAdmin, admin.ModelAdmin):
     search_fields = ('name_id', 'parent_nid', )
 
 
+class TaxonAreaInline(admin.StackedInline):
+    """Inline for TaxonArea."""
+
+    model = TaxonArea
+    form = TaxonAreaForm
+    extra = 1
+    classes = ('wide extrapretty',)
+    formfield_overrides = formfield_overrides
+
+
+class CommunityAreaInline(admin.StackedInline):
+    """Inline for CommunityArea."""
+
+    model = CommunityArea
+    form = CommunityAreaForm
+    extra = 1
+    classes = ('wide extrapretty',)
+    formfield_overrides = formfield_overrides
+
+
 @admin.register(Taxon)
 class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
     """Admin for Taxon."""
@@ -212,6 +252,9 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
         # ('parent', TreeRelatedFieldListFilter),  # performance bomb - DO NOT ENABLE
     )
 
+    inlines = [TaxonAreaInline, ]
+    formfield_overrides = formfield_overrides
+
 
 @admin.register(Community)
 class CommunityAdmin(VersionAdmin):
@@ -223,3 +266,6 @@ class CommunityAdmin(VersionAdmin):
         'name',
         'description',
     )
+
+    inlines = [CommunityAreaInline, ]
+    formfield_overrides = formfield_overrides

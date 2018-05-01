@@ -1,6 +1,13 @@
-from rest_framework import pagination
+# -*- coding: utf-8 -*-
+"""Shared API utilities."""
 from collections import OrderedDict
+import logging
+
+
 from rest_framework.response import Response as RestResponse
+from rest_framework import viewsets, status, pagination  # , serializers, routers
+
+logger = logging.getLogger(__name__)
 
 
 class MyGeoJsonPagination(pagination.LimitOffsetPagination):
@@ -21,3 +28,58 @@ class MyGeoJsonPagination(pagination.LimitOffsetPagination):
             ('previous', self.get_previous_link()),
             ('features', data['features']),
         ]))
+
+
+class BatchUpsertViewSet(viewsets.ModelViewSet):
+    """A ModelViewSet with custom create().
+
+    Accepts request.data to be either a GeoJSON feature property dict,
+    or a list of GeoJSON feature property dicts.
+
+    `model` and `uid_field` are used to determine whether the object
+    already exists. The `uid_field` can be the PK or any other
+    unique field of the given `model`.
+
+    Responds with status 200 if all went well, else 400.
+    """
+
+    pagination_class = pagination.LimitOffsetPagination
+    model = None
+    uid_field = None
+
+    def build_unique_fields(self, data):
+        """Return a dict with a set of unique fields.
+
+        If your model has more than one unique field,
+        get_or_create will fail on create.
+        In this case, override build_unique_fields to
+        return a dict of all unique fields.
+        """
+        return {self.uid_field: data[self.uid_field]}
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance."""
+        dd = self.build_unique_fields(data)
+        if 'csrfmiddlewaretoken' in data:
+            data.pop('csrfmiddlewaretoken')
+        obj, created = self.model.objects.get_or_create(**dd)
+        self.model.objects.filter(**dd).update(**data)
+        return RestResponse(data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be:
+
+        * a GeoJSON feature property dict, or
+        * a list of GeoJSON feature property dicts.
+        """
+        if self.uid_field in request.data:
+            res = self.create_one(request.data)
+            return res
+        elif type(request.data) == list and self.uid_field in request.data[0]:
+            res = [self.create_one(data) for data in request.data]
+            return RestResponse(request.data, status=status.HTTP_200_OK)
+        else:
+            logger.debug("[BatchUpsertViewSet] data: {0}".format(request.data))
+            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)

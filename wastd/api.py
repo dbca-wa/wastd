@@ -56,10 +56,9 @@ from django_filters import rest_framework as rf_filters
 # from rest_framework_gis.filterset import GeoFilterSet
 from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 
-from shared.api import MyGeoJsonPagination
-from wastd.observations import models as wastd_models
+from shared.api import MyGeoJsonPagination, BatchUpsertViewSet
 from wastd.observations.models import (
-    # Area,
+    Area,
     Survey,  # SiteVisit,
     Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
     Observation,  # LineTransectEncounter
@@ -256,7 +255,7 @@ class AreaSerializer(GeoFeatureModelSerializer):
     class Meta:
         """Class options."""
 
-        model = wastd_models.Area
+        model = Area
         geo_field = "geom"
         fields = ("pk", "area_type", "name", "geom", "northern_extent", "centroid", )
 
@@ -267,7 +266,7 @@ class FastAreaSerializer(serializers.ModelSerializer):
     class Meta:
         """Class options."""
 
-        model = wastd_models.Area
+        model = Area
         geo_field = "geom"
         fields = ("pk", "area_type", "name", )
 
@@ -278,7 +277,7 @@ class AreaFilter(filters.FilterSet):
     class Meta:
         """Class opts."""
 
-        model = wastd_models.Area
+        model = Area
         fields = {
             'area_type': ['exact', 'in', 'startswith'],
             'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
@@ -306,7 +305,7 @@ class AreaViewSet(viewsets.ModelViewSet):
     * [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site) Sites (where Surveys are conducted)
     """
 
-    queryset = wastd_models.Area.objects.all()
+    queryset = Area.objects.all()
     serializer_class = AreaSerializer
     filter_class = AreaFilter
     bbox_filter_field = 'geom'
@@ -1457,7 +1456,6 @@ class TurtleNestDisturbanceObservationViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.LimitOffsetPagination
     # pagination_class = MyGeoJsonPagination
 
-router.register(r'disturbance-observations', TurtleNestDisturbanceObservationViewSet)
 # ----------------------------------------------------------------------------#
 
 router.register(r'encounters', EncounterViewSet)
@@ -1467,9 +1465,238 @@ router.register(r'logger-encounters', LoggerEncounterViewSet)
 router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
 router.register(r'tag-observations', TagObservationViewSet)
+router.register(r'disturbance-observations', TurtleNestDisturbanceObservationViewSet)
 
+
+# Area -------------------------------------------------------------------#
+class OccurrenceAreaPolySerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence Area."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.Area
+        fields = '__all__'
+        geo_field = 'geom'
+
+
+class OccurrenceAreaPointSerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence Area."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.Area
+        fields = '__all__'
+        geo_field = 'point'
+
+
+class OccurrenceAreaFilter(filters.FilterSet):
+    """Occurrence Area filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = occ_models.Area
+        fields = {
+
+            'area_type': ['exact', 'in'],
+            'accuracy': ['exact', 'gt', 'lt'],
+            'code': ['exact', 'icontains', 'in'],
+            'label': ['exact', 'icontains', 'in'],
+            'name': ['exact', 'icontains', 'in'],
+            'description': ['exact', 'icontains', 'in'],
+            'northern_extent': ['exact', 'gt', 'lt'],
+        }
+
+
+class OccurrenceAreaPolyViewSet(viewsets.ModelViewSet):
+    """Occurrence Area view set."""
+
+    queryset = occ_models.Area.objects.all()
+    serializer_class = OccurrenceAreaPolySerializer
+    filter_class = OccurrenceAreaFilter
+    pagination_class = MyGeoJsonPagination
+
+
+class OccurrenceAreaPointViewSet(viewsets.ModelViewSet):
+    """Occurrence Area view set."""
+
+    queryset = occ_models.Area.objects.all()
+    serializer_class = OccurrenceAreaPointSerializer
+    filter_class = OccurrenceAreaFilter
+    pagination_class = MyGeoJsonPagination
+
+# Without base_name, the last registered viewset overrides the other area viewsets
+router.register(r"occ-areas", OccurrenceAreaPolyViewSet, base_name="occurrence_area_polys")
+router.register(r"occ-area-points", OccurrenceAreaPointViewSet, base_name="occurrence_area_points")
+
+
+# TaxonArea -------------------------------------------------------------------#
+class OccurrenceTaxonAreaPolyInlineSerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence TaxonArea to be used inline in TaxonSerializer."""
+
+    class Meta:
+        """Opts."""
+
+        exclude = ('taxon', )
+        model = occ_models.TaxonArea
+        id_field = 'id'
+        geo_field = 'geom'
+
+
+class OccurrenceTaxonAreaPolySerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence TaxonArea."""
+
+    taxon = serializers.SlugRelatedField(
+        queryset=Taxon.objects.all(),
+        slug_field='name_id',
+        style={'base_template': 'input.html'}
+    )
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.TaxonArea
+        fields = '__all__'
+        id_field = 'id'
+        geo_field = 'geom'
+
+
+class OccurrenceTaxonAreaPointSerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence TaxonArea."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.TaxonArea
+        fields = '__all__'
+        id_field = 'id'
+        geo_field = 'point'
+
+
+class OccurrenceTaxonAreaFilter(filters.FilterSet):
+    """Occurrence TaxonArea filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = occ_models.TaxonArea
+        fields = {
+
+            'area_type': ['exact', 'in'],
+            'accuracy': ['exact', 'gt', 'lt'],
+            'code': ['exact', 'icontains', 'in'],
+            'label': ['exact', 'icontains', 'in'],
+            'name': ['exact', 'icontains', 'in'],
+            'description': ['exact', 'icontains', 'in'],
+            'northern_extent': ['exact', 'gt', 'lt'],
+        }
+
+
+class OccurrenceTaxonAreaPolyViewSet(viewsets.ModelViewSet):
+    """Occurrence TaxonArea view set."""
+
+    queryset = occ_models.TaxonArea.objects.all()
+    serializer_class = OccurrenceTaxonAreaPolySerializer
+    filter_class = OccurrenceTaxonAreaFilter
+    pagination_class = MyGeoJsonPagination
+
+
+class OccurrenceTaxonAreaPointViewSet(viewsets.ModelViewSet):
+    """Occurrence TaxonArea view set."""
+
+    queryset = occ_models.TaxonArea.objects.all()
+    serializer_class = OccurrenceTaxonAreaPointSerializer
+    filter_class = OccurrenceTaxonAreaFilter
+    pagination_class = MyGeoJsonPagination
+
+# Without base_name, the last registered viewset overrides the other area viewsets
+router.register(r"occ-taxon-areas", OccurrenceTaxonAreaPolyViewSet, base_name="occurrence_taxonarea_polys")
+router.register(r"occ-taxon-points", OccurrenceTaxonAreaPointViewSet, base_name="occurrence_taxonarea_points")
+
+
+# CommunityArea -------------------------------------------------------------------#
+class OccurrenceCommunityAreaPolyInlineSerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence CommunityArea to be used inline in CommunitySerializer."""
+
+    class Meta:
+        """Opts."""
+
+        exclude = ('community', )
+        model = occ_models.CommunityArea
+        id_field = 'id'
+        geo_field = 'geom'
+
+
+class OccurrenceCommunityAreaPolySerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence CommunityArea."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.CommunityArea
+        fields = '__all__'
+        id_field = 'id'
+        geo_field = 'geom'
+
+
+class OccurrenceCommunityAreaPointSerializer(GeoFeatureModelSerializer):
+    """Serializer for Occurrence CommunityArea."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.CommunityArea
+        fields = '__all__'
+        id_field = 'id'
+        geo_field = 'point'
+
+
+class OccurrenceCommunityAreaFilter(filters.FilterSet):
+    """Occurrence CommunityArea filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = occ_models.CommunityArea
+        fields = {
+
+            'area_type': ['exact', 'in'],
+            'accuracy': ['exact', 'gt', 'lt'],
+            'code': ['exact', 'icontains', 'in'],
+            'label': ['exact', 'icontains', 'in'],
+            'name': ['exact', 'icontains', 'in'],
+            'description': ['exact', 'icontains', 'in'],
+            'northern_extent': ['exact', 'gt', 'lt'],
+        }
+
+
+class OccurrenceCommunityAreaPolyViewSet(viewsets.ModelViewSet):
+    """Occurrence CommunityArea view set."""
+
+    queryset = occ_models.CommunityArea.objects.all()
+    serializer_class = OccurrenceCommunityAreaPolySerializer
+    filter_class = OccurrenceCommunityAreaFilter
+    pagination_class = MyGeoJsonPagination
+
+
+class OccurrenceCommunityAreaPointViewSet(viewsets.ModelViewSet):
+    """Occurrence CommunityArea view set."""
+
+    queryset = occ_models.CommunityArea.objects.all()
+    serializer_class = OccurrenceCommunityAreaPointSerializer
+    filter_class = OccurrenceCommunityAreaFilter
+    pagination_class = MyGeoJsonPagination
+
+# Without base_name, the last registered viewset overrides the other area viewsets
+router.register(r"occ-community-areas", OccurrenceCommunityAreaPolyViewSet, base_name="occurrence_communityarea_polys")
+router.register(r"occ-community-points", OccurrenceCommunityAreaPointViewSet,
+                base_name="occurrence_communityarea_points")
 
 # Taxonomy: Serializers -------------------------------------------------------------------#
+
+
 class HbvNameSerializer(serializers.ModelSerializer):
     """Serializer for HBVName."""
 
@@ -1563,6 +1790,8 @@ class HbvParentSerializer(serializers.ModelSerializer):
 class TaxonSerializer(serializers.ModelSerializer):
     """Serializer for Taxon."""
 
+    taxon_related_areas = OccurrenceTaxonAreaPolyInlineSerializer(many=True)
+
     class Meta:
         """Opts."""
 
@@ -1579,6 +1808,7 @@ class TaxonSerializer(serializers.ModelSerializer):
             'vernacular_names',
             'canonical_name',
             'taxonomic_name',
+            'taxon_related_areas'
         )
 
 
@@ -1639,6 +1869,8 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     """Serializer for Community."""
 
+    community_related_areas = OccurrenceCommunityAreaPolyInlineSerializer(many=True)
+
     class Meta:
         """Opts."""
 
@@ -1647,6 +1879,7 @@ class CommunitySerializer(serializers.ModelSerializer):
             'code',
             'name',
             'description',
+            'community_related_areas',
         )
 
 # Taxonomy: Filters -------------------------------------------------------------------#
@@ -1993,61 +2226,6 @@ class CommunityFilter(filters.FilterSet):
 
 
 # Taxonomy: Viewsets ---------------------------------------------------------#
-class BatchUpsertViewSet(viewsets.ModelViewSet):
-    """A ModelViewSet with custom create().
-
-    Accepts request.data to be either a GeoJSON feature property dict,
-    or a list of GeoJSON feature property dicts.
-
-    `model` and `uid_field` are used to determine whether the object
-    already exists. The `uid_field` can be the PK or any other
-    unique field of the given `model`.
-
-    Responds with status 200 if all went well, else 400.
-    """
-
-    pagination_class = pagination.LimitOffsetPagination
-    model = None
-    uid_field = None
-
-    def build_unique_fields(self, data):
-        """Return a dict with a set of unique fields.
-
-        If your model has more than one unique field,
-        get_or_create will fail on create.
-        In this case, override build_unique_fields to
-        return a dict of all unique fields.
-        """
-        return {self.uid_field: data[self.uid_field]}
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-        dd = self.build_unique_fields(data)
-        if 'csrfmiddlewaretoken' in data:
-            data.pop('csrfmiddlewaretoken')
-        obj, created = self.model.objects.get_or_create(**dd)
-        self.model.objects.filter(**dd).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        if self.uid_field in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif type(request.data) == list and self.uid_field in request.data[0]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            logger.debug("[BatchUpsertViewSet] data: {0}".format(request.data))
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
-
-
 class HbvNameViewSet(BatchUpsertViewSet):
     """View set for HbvName.
 
@@ -2687,67 +2865,3 @@ class DocumentViewSet(BatchUpsertViewSet):
 
 
 router.register("document", DocumentViewSet)
-
-
-# Area -------------------------------------------------------------------#
-class OccurrenceAreaPolySerializer(GeoFeatureModelSerializer):
-    """Serializer for Occurrence Area."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.Area
-        fields = '__all__'
-        geo_field = 'geom'
-
-
-class OccurrenceAreaPointSerializer(GeoFeatureModelSerializer):
-    """Serializer for Occurrence Area."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.Area
-        fields = '__all__'
-        geo_field = 'point'
-
-
-class OccurrenceAreaFilter(filters.FilterSet):
-    """Occurrence Area filter."""
-
-    class Meta:
-        """Class opts."""
-
-        model = occ_models.Area
-        fields = {
-
-            'area_type': ['exact', 'in'],
-            'accuracy': ['exact', 'gt', 'lt'],
-            'code': ['exact', 'icontains', 'in'],
-            'label': ['exact', 'icontains', 'in'],
-            'name': ['exact', 'icontains', 'in'],
-            'description': ['exact', 'icontains', 'in'],
-            'northern_extent': ['exact', 'gt', 'lt'],
-        }
-
-
-class OccurrenceAreaPolyViewSet(viewsets.ModelViewSet):
-    """Occurrence Area view set."""
-
-    queryset = occ_models.Area.objects.all()
-    serializer_class = OccurrenceAreaPolySerializer
-    filter_class = OccurrenceAreaFilter
-    pagination_class = MyGeoJsonPagination
-
-
-class OccurrenceAreaPointViewSet(viewsets.ModelViewSet):
-    """Occurrence Area view set."""
-
-    queryset = occ_models.Area.objects.all()
-    serializer_class = OccurrenceAreaPointSerializer
-    filter_class = OccurrenceAreaFilter
-    pagination_class = MyGeoJsonPagination
-
-# Without base_name, the last registered viewset overrides the other area viewsets
-router.register(r"occ-areas", OccurrenceAreaPolyViewSet, base_name="occurrence_area_polys")
-router.register(r"occ-area-points", OccurrenceAreaPointViewSet, base_name="occurrence_area_points")
