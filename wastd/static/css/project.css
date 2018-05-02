@@ -86,10 +86,14 @@ html, body {height: 100%; width: 100%;}
 .table {width:100%;}
 .text-shadow {text-shadow: 1px 1px #000000;}
 
-.breadcrumb-item a {color: black;}
+li.breadcrumb-item a {color: #2d2f32;}
+li.breadcrumb-item.active a {color: black;}
 
 .card {
+  /*margin: 0.1rem;*/
+}
+
+.card-md {
   max-width: 21rem;
-  min-width: 8rem;
-  margin: 0.2rem;
+  min-width: 9rem;
 }

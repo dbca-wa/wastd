@@ -1,9 +1,10 @@
 {% if is_staff %}
 <a href="{% url 'admin:conservation_document_add' %}?{{ subject }}={{ original.pk }}"
-     title="Because you have DBCA Curator privileges, you may attach a new document."
-  class="btn btn-secondary btn-sm btn-block"
-  target="_">
+    title="Because you have DBCA Curator privileges, you may attach a new document."
+    role="button"
+    class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+    target="_">
   <span class="oi oi-plus" aria-hidden="true"></span>
-  Add new document
+  {% if show_label_text %}Add new document{% endif %}
 </a>
 {% endif %}

@@ -31,12 +31,23 @@ def gazettal_labels(context, user):
     }
 
 
-@register.inclusion_tag('include/taxongazettal_add.html', takes_context=True)
-def taxongazettal_add(context, user):
-    """Render an "add cons listing" link for staff."""
+@register.inclusion_tag('include/gazettal_row.html', takes_context=True)
+def gazettal_rows(context, user):
+    """Render a Gazettal as row."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff
+    }
+
+
+@register.inclusion_tag('include/taxongazettal_add.html', takes_context=True)
+def taxongazettal_add(context, user, block=True, show_label_text=True):
+    """Render an "add cons listing" link for staff."""
+    return {
+        "original": context["original"],
+        "is_staff": user.is_staff,
+        "block": block,
+        "show_label_text": show_label_text
     }
 
 
@@ -51,6 +62,15 @@ def communitygazettal_add(context, user):
 
 @register.inclusion_tag('include/document.html', takes_context=True)
 def document_listgroupitem(context, user):
+    """Render a Document in a card listgroup item."""
+    return {
+        "original": context["original"],
+        "is_staff": user.is_staff
+    }
+
+
+@register.inclusion_tag('include/document_row.html', takes_context=True)
+def document_row(context, user):
     """Render a Document in a card."""
     return {
         "original": context["original"],
@@ -59,12 +79,14 @@ def document_listgroupitem(context, user):
 
 
 @register.inclusion_tag('include/document_add.html', takes_context=True)
-def document_add(context, user, subject):
+def document_add(context, user, subject, block=False, show_label_text=True):
     """Render an "add document" link for staff."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff,
-        "subject": subject
+        "subject": subject,
+        "block": block,
+        "show_label_text": show_label_text
     }
 
 

@@ -69,7 +69,19 @@
           {% endif %}
       </p>
 
-      <h1 class="display-4">{{ original.canonical_name }}</h1>
+      <h1 class="display-4">
+        {{ original.canonical_name }}
+        {% if request.user.is_staff %}
+        <small class="float-right">
+          <a href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
+          class="btn btn-primary btn-sm"
+          role="button"
+          title="Edit Taxon details.">
+            <span class="oi oi-pencil" aria-hidden="true"></span>
+          </a>
+      </small>
+      {% endif %}
+      </h1>
 
       <!-- Author -->
       {% if original.author %}
@@ -84,28 +96,35 @@
       </p>
 
       <hr class="my-4">
-      <!-- <p>It uses utility classes for typography and spacing to space content out within the larger container.</p> -->
+      <h3>Conservation Listings
+        <small class="float-right">
+          {% taxongazettal_add request.user block=False show_label_text=False %}
+        </small>
+      </h3>
+      <p>{% gazettal_rows request.user %}</p>
+
+      <hr class="my-4">
+      <h3>Documents
+        <small class="float-right">
+          {% document_add request.user "taxa" block=False show_label_text=False %}
+        </small>
+      </h3>
+      <p>{% document_row request.user %}</p>
+
+      <hr class="my-4">
       <p class="lead">
-        <p>
+        {% if request.user.is_staff %}
         <a href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
           class="btn btn-primary btn-sm"
           role="button"
           title="Edit Taxon details.">
-          <span class="oi oi-pencil" aria-hidden="true"></span>
-          Edit Taxon Details
-        </a>
+            <span class="oi oi-pencil" aria-hidden="true"></span>
+            Edit Taxon details
+          </a>
+          {% endif %}
+          {% taxongazettal_add request.user block=False show_label_text=True %}
+          {% document_add request.user "taxa" block=False show_label_text=True %}
       </p>
-        {% taxongazettal_add request.user %}
-        {% document_add request.user "taxa" %}
-      </p>
-
-      <hr class="my-4">
-      <h3>Conservation Listings</h3>
-      <p>{% gazettal_labels request.user %}</p>
-
-      <hr class="my-4">
-      <h3>Documents</h3>
-      <ul>{% document_listgroupitem request.user %}</ul>
 
     </div><!-- /.jumbotron -->
     </div><!-- /.col#taxon-detail-main -->

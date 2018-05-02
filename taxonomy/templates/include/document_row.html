@@ -1,0 +1,85 @@
+{% for document in original.document_set.all %}
+<div class="row d-block">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          {{ document }}
+          <small class="float-right">
+            {% if is_staff %}
+            <a href="{{ document.absolute_admin_url }}"
+              title="Because you have DBCA Curator privileges, you may edit this Document." target="_">
+              <span class="oi oi-pencil" aria-hidden="true"></span>
+            </a>
+            {% endif %}
+          </small>
+        </h5>
+
+        <p class="card-text">
+          <span class="badge badge-warning" title="Document type">
+            {{ document.get_document_type_display }}
+          </span>
+          <span class="badge badge-success" title="Approval status">
+            {{ document.get_status_display }}
+          </span>
+
+          <span class="badge badge-primary" title="Effective dates">
+            <span class="oi oi-calendar" aria-hidden="true"></span>
+            Effective from
+            {% if document.effective_from %}
+            {{ document.effective_from|date:'r' }}
+            {% else %}
+            unknown
+            {% endif %}
+            -
+            {% if document.effective_to %}
+            {{ document.effective_to|date:'r' }}
+            {% else %}
+            unknown
+            {% endif %}
+          </span>
+
+          {% if document.last_reviewed_on %}
+          <span class="badge badge-primary" title="Reviewed last">
+            <span class="oi oi-check" aria-hidden="true"></span>
+            Last reviewed on {{ document.last_reviewed_on|date:'r' }}
+          </span>
+          {% else %}
+          <span class="badge badge-primary" title="Reviewed last">
+          <span class="oi oi-x" aria-hidden="true"></span>
+            Not yet reviewed
+          </span>
+          {% endif %}
+          {% if document.review_due %}
+          <span class="badge badge-primary" title="Review due">
+            <span class="oi oi-bell" aria-hidden="true"></span>
+            Next review due on {{ document.review_due|date:'r' }}
+          </span>
+          {% else %}
+          <span class="badge badge-primary" title="Reviewed last">
+            <span class="oi oi-bolt" aria-hidden="true"></span>
+            No review date set
+          </span>
+          {% endif %}
+
+        </p>
+
+        {% for attachment in document.attachments.all %}
+        <p class="card-text">
+          <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
+          <span class="badge badge-{% if attachment.confidential == True%}danger{% else %}success{% endif %}">
+            <span class="oi oi-document" aria-hidden="true"></span>
+          </span>
+          </a>
+          {{attachment.title}} by {{ attachment.author }}
+          <span class="oi oi-{% if attachment.current %}check{% else%}x{% endif %}" title="Is current?"></span>
+        </p>
+        {% endfor %}
+
+
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
