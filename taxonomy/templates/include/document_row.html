@@ -27,13 +27,13 @@
             <span class="oi oi-calendar" aria-hidden="true"></span>
             Effective from
             {% if document.effective_from %}
-            {{ document.effective_from|date:'r' }}
+            {{ document.effective_from|date:'d/m/Y' }}
             {% else %}
             unknown
             {% endif %}
             -
             {% if document.effective_to %}
-            {{ document.effective_to|date:'r' }}
+            {{ document.effective_to|date:'d/m/Y' }}
             {% else %}
             unknown
             {% endif %}
@@ -42,7 +42,7 @@
           {% if document.last_reviewed_on %}
           <span class="badge badge-primary" title="Reviewed last">
             <span class="oi oi-check" aria-hidden="true"></span>
-            Last reviewed on {{ document.last_reviewed_on|date:'r' }}
+            Last reviewed on {{ document.last_reviewed_on|date:'d/m/Y' }}
           </span>
           {% else %}
           <span class="badge badge-primary" title="Reviewed last">
@@ -53,7 +53,7 @@
           {% if document.review_due %}
           <span class="badge badge-primary" title="Review due">
             <span class="oi oi-bell" aria-hidden="true"></span>
-            Next review due on {{ document.review_due|date:'r' }}
+            Next review due on {{ document.review_due|date:'d/m/Y' }}
           </span>
           {% else %}
           <span class="badge badge-primary" title="Reviewed last">
