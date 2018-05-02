@@ -37,8 +37,8 @@ urlpatterns = [
     url(r'^map/$', HomeView.as_view(), name='map'),
 
     url(r'^species/(?P<name_id>[0-9]+)/$', TaxonDetailView.as_view(), name='taxon-detail'),
-    url(r'^species/$', TaxonListView.as_view(), name='taxon-list'),
     url(r'^communities/(?P<pk>[0-9]+)/$', CommunityDetailView.as_view(), name='community-detail'),
+    url(r'^species/$', TaxonListView.as_view(), name='taxon-list'),
     url(r'^communities/$', CommunityListView.as_view(), name='community-list'),
 
 
