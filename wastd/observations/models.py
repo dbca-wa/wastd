@@ -2662,6 +2662,10 @@ class Observation(PolymorphicModel, models.Model):
         return u"Obs {0} for {1}".format(self.pk, self.encounter.__str__())
 
     @property
+    def point(self):
+        return self.encounter.where
+
+    @property
     def as_html(self):
         """An HTML representation."""
         t = loader.get_template("popup/{0}.html".format(self._meta.model_name))

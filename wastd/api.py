@@ -48,13 +48,14 @@ from rest_framework.response import Response as RestResponse
 # from drf_extra_fields.geo_fields import PointField
 
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from rest_framework_gis.fields import GeometryField
+from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 # from rest_framework_gis.pagination import GeoJsonPagination
 
 import rest_framework_filters as filters
 from django_filters import rest_framework as rf_filters
 
 # from rest_framework_gis.filterset import GeoFilterSet
-from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 
 from shared.api import MyGeoJsonPagination, BatchUpsertViewSet
 from wastd.observations.models import (
@@ -956,15 +957,17 @@ class LoggerEncounterSerializer(EncounterSerializer):
         geo_field = "where"
 
 
-class TagObservationEncounterSerializer(serializers.ModelSerializer):
+class TagObservationEncounterSerializer(GeoFeatureModelSerializer):
     """TagObservation serializer including encounter for standalone viewset."""
 
     encounter = FastEncounterSerializer(many=False, read_only=True)
+    point = GeometryField()
 
     class Meta:
         """Class options."""
 
         model = TagObservation
+        geo_field = "point"
         fields = ('encounter', 'observation_name', 'tag_type', 'name',
                   'tag_location', 'status', 'comments', )
 
@@ -1392,21 +1395,22 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     serializer_class = TagObservationEncounterSerializer
     filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
     search_fields = ('name', 'comments', )
-    pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
 
 
 # ----------------------------------------------------------------------------#
 # Tagged nests with Encounters
-class NestTagObservationEncounterSerializer(serializers.ModelSerializer):
+class NestTagObservationEncounterSerializer(GeoFeatureModelSerializer):
     """NestTagObservationSerializer with encounter."""
 
     encounter = FastEncounterSerializer(many=False, read_only=True)
+    point = GeometryField()
 
     class Meta:
         """Class options."""
 
         model = NestTagObservation
-        # geo_field = "encounter__where"
+        geo_field = "point"
         fields = (
             'encounter',
             'observation_name',
@@ -1423,21 +1427,23 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     queryset = NestTagObservation.objects.all()
     serializer_class = NestTagObservationEncounterSerializer
     filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments']
-    pagination_class = pagination.LimitOffsetPagination
-    # pagination_class = MyGeoJsonPagination
+    # pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
 
 router.register(r'nesttag-observations', NestTagObservationViewSet)
 
 
-class TurtleNestDisturbanceObservationEncounterSerializer(serializers.ModelSerializer):
+class TurtleNestDisturbanceObservationEncounterSerializer(GeoFeatureModelSerializer):
     """TurtleNestDisturbanceObservation serializer with encounter."""
 
     encounter = FastEncounterSerializer(many=False, read_only=True)
+    point = GeometryField()
 
     class Meta:
         """Class options."""
 
         model = TurtleNestDisturbanceObservation
+        geo_field = "point"
         fields = (
             'encounter',
             'observation_name',
@@ -1453,8 +1459,8 @@ class TurtleNestDisturbanceObservationViewSet(viewsets.ModelViewSet):
     queryset = TurtleNestDisturbanceObservation.objects.all()
     serializer_class = TurtleNestDisturbanceObservationEncounterSerializer
     filter_fields = ['disturbance_cause', 'disturbance_cause_confidence', 'disturbance_severity', ]
-    pagination_class = pagination.LimitOffsetPagination
-    # pagination_class = MyGeoJsonPagination
+    # pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
 
 # ----------------------------------------------------------------------------#
 
