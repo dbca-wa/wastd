@@ -59,11 +59,12 @@
 
 {% block css%}
 {{ block.super }}
-{% leaflet_css plugins="draw" %}
+{% leaflet_css plugins="ALL" %}
 {% endblock %}
 
 {% block javascript%}
 {{ block.super }}
+{% leaflet_js plugins="ALL" %}
 {% leaflet_js plugins="draw" %}
 <script type="text/javascript">
   function map_init(map, options) {

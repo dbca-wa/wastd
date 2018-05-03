@@ -398,7 +398,7 @@ GRAPPELLI_ADMIN_TITLE = "Data Entry and Curation Portal"
 # Leaflet maps
 # ------------------------------------------------------------------------------
 LEAFLET_CONFIG = {
-    'DEFAULT_CENTER': (-25, 130),
+    'DEFAULT_CENTER': (-25, 120),
     'DEFAULT_ZOOM': 5,
     'SCALE': 'metric',
     'MINIMAP': False,

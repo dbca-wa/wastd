@@ -29,38 +29,37 @@
             {% if document.effective_from %}
             {{ document.effective_from|date:'d/m/Y' }}
             {% else %}
-            unknown
-            {% endif %}
             -
+            {% endif %}
+          </span>
+          <span class="badge badge-primary" title="Effective dates">
+            <span class="oi oi-calendar" aria-hidden="true"></span>
+            Effective to
             {% if document.effective_to %}
             {{ document.effective_to|date:'d/m/Y' }}
             {% else %}
-            unknown
+            -
             {% endif %}
           </span>
 
-          {% if document.last_reviewed_on %}
           <span class="badge badge-primary" title="Reviewed last">
             <span class="oi oi-check" aria-hidden="true"></span>
-            Last reviewed on {{ document.last_reviewed_on|date:'d/m/Y' }}
+            Last reviewed on
+              {% if document.last_reviewed_on %}
+              {{ document.last_reviewed_on|date:'d/m/Y' }}
+              {% else %}
+              -
+              {% endif %}
           </span>
-          {% else %}
-          <span class="badge badge-primary" title="Reviewed last">
-          <span class="oi oi-x" aria-hidden="true"></span>
-            Not yet reviewed
-          </span>
-          {% endif %}
-          {% if document.review_due %}
           <span class="badge badge-primary" title="Review due">
             <span class="oi oi-bell" aria-hidden="true"></span>
-            Next review due on {{ document.review_due|date:'d/m/Y' }}
+            Next review due on
+            {% if document.review_due %}
+            {{ document.review_due|date:'d/m/Y' }}
+            {% else %}
+            -
+            {% endif %}
           </span>
-          {% else %}
-          <span class="badge badge-primary" title="Reviewed last">
-            <span class="oi oi-bolt" aria-hidden="true"></span>
-            No review date set
-          </span>
-          {% endif %}
 
         </p>
 
@@ -71,11 +70,10 @@
             <span class="oi oi-document" aria-hidden="true"></span>
           </span>
           </a>
-          {{attachment.title}} by {{ attachment.author }}
+          {{ attachment.title }} by {{ attachment.author }}
           <span class="oi oi-{% if attachment.current %}check{% else%}x{% endif %}" title="Is current?"></span>
         </p>
         {% endfor %}
-
 
         </p>
       </div>

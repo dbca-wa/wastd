@@ -237,18 +237,19 @@ function map_init(map, options) {
      * Ideal for filters with sensible defaults (e.g. show only current year)
      * https://github.com/makinacorpus/django-geojson#geojson-template-filter
      */
-    L.geoJson(
+    var eoo = L.geoJson(
         {{ original|geojsonfeature:"canonical_name,taxonomic_name:eoo"|safe }},
         // {clipTiles: true, unique: getUnique},
         {style: style, onEachFeature: oef}
-    ).addTo(map);
+    );
+    eoo.addTo(map);
+    map.fitBounds(eoo.getBounds());
 
     L.geoJson(
         {{ original.taxon_related_areas.all|geojsonfeature:"label,as_html:geom"|safe }},
         // {clipTiles: true, unique: getUnique},
         {style: polystyle,onEachFeature: oef_rel}
     ).addTo(map);
-
 
     // var markers = L.markerClusterGroup();
     // var gj_markers = L.geoJson(

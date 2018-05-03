@@ -30,38 +30,37 @@
             {% if gazettal.effective_from %}
             {{ gazettal.effective_from|date:'d/m/Y' }}
             {% else %}
-            unknown
-            {% endif %}
             -
+            {% endif %}
+          </span>
+          <span class="badge badge-primary" title="Effective dates">
+            <span class="oi oi-calendar" aria-hidden="true"></span>
+            Effective to
             {% if gazettal.effective_to %}
             {{ gazettal.effective_to|date:'d/m/Y' }}
             {% else %}
-            unknown
+            -
             {% endif %}
           </span>
 
-          {% if gazettal.last_reviewed_on %}
           <span class="badge badge-primary" title="Reviewed last">
             <span class="oi oi-check" aria-hidden="true"></span>
-            Last reviewed on {{ gazettal.last_reviewed_on|date:'d/m/Y' }}
+            Last reviewed on
+              {% if gazettal.last_reviewed_on %}
+              {{ gazettal.last_reviewed_on|date:'d/m/Y' }}
+              {% else %}
+              -
+              {% endif %}
           </span>
-          {% else %}
-          <span class="badge badge-primary" title="Reviewed last">
-          <span class="oi oi-x" aria-hidden="true"></span>
-            Not yet reviewed
-          </span>
-          {% endif %}
-          {% if gazettal.review_due %}
           <span class="badge badge-primary" title="Review due">
             <span class="oi oi-bell" aria-hidden="true"></span>
-            Next review due on {{ gazettal.review_due|date:'d/m/Y' }}
+            Next review due on
+            {% if gazettal.review_due %}
+            {{ gazettal.review_due|date:'d/m/Y' }}
+            {% else %}
+            -
+            {% endif %}
           </span>
-          {% else %}
-          <span class="badge badge-primary" title="Reviewed last">
-            <span class="oi oi-bolt" aria-hidden="true"></span>
-            No review date set
-          </span>
-          {% endif %}
         </p>
 
 
