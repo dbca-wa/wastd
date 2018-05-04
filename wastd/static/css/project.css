@@ -90,7 +90,8 @@ li.breadcrumb-item a {color: #2d2f32;}
 li.breadcrumb-item.active a {color: black;}
 
 .card {
-  /*margin: 0.1rem;*/
+  margin: 5px;
+  padding: 0px;
 }
 
 .card-md {
