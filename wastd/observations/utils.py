@@ -507,7 +507,7 @@ def handle_turtlenestdistobs31(d, e):
       }
     ],
 
-    e The related TurtleNestEncounter (must exist)
+    e The related (TurtleNest)Encounter (must exist)
     """
     logger.debug("  Creating TurtleNestDisturbanceObservation...")
     dd, created = TurtleNestDisturbanceObservation.objects.get_or_create(

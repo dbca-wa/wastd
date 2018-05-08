@@ -24,7 +24,11 @@ html, body {height: 100%; width: 100%;}
 /*body {padding-top: 54px;}*/
 
 .brandimg {margin-top:-18px; height:50px; margin-bottom: -13px;}
+
+/* Breadcrumb */
 .breadcrumb {background: none;}
+li.breadcrumb-item a {color: #2d2f32;}
+li.breadcrumb-item.active a {color: black;}
 
 
 /* Wrapper for page content to push down footer */
@@ -49,7 +53,7 @@ html, body {height: 100%; width: 100%;}
 #searchmap {height:100%; width: auto;}
 
 /* Leaflet popup fixed width */
-.leaflet-popup-content {min-width: 540px; padding: 10px;}
+.leaflet-popup-content {min-width: 540px; padding: 10px; word-wrap: break-word;}
 /*.leaflet-popup-content-wrapper {max-height: 500px;}*/
 
 /* popup image margins */
@@ -69,9 +73,9 @@ html, body {height: 100%; width: 100%;}
 
 /* popup image limited height */
 .carousel-item img {
-    max-height: 300px;  /* limit popup height*/
-   width: 100% auto;    /* allow less than 100% width */
-  margin: auto;         /* center image */
+  max-height: 300px;  /* limit popup height*/
+  width: 100% auto;   /* allow less than 100% width */
+  margin: auto;       /* center image */
 }
 
 /* Leaflet popup link colour */
@@ -86,9 +90,8 @@ html, body {height: 100%; width: 100%;}
 .table {width:100%;}
 .text-shadow {text-shadow: 1px 1px #000000;}
 
-li.breadcrumb-item a {color: #2d2f32;}
-li.breadcrumb-item.active a {color: black;}
 
+/* Card */
 .card {
   margin: 5px;
   padding: 0px;

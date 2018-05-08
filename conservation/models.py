@@ -512,6 +512,11 @@ class Gazettal(models.Model):
         except ValueError:
             return 0
 
+    @property
+    def is_active(self):
+        """Return True if status currently in effect."""
+        return self.status == Gazettal.STATUS_EFFECTIVE
+
     # ------------------------------------------------------------------------#
     # Django-FSM transitions
     # ALL -> STATUS_PROPOSED -------------------------------------------------#
@@ -867,7 +872,10 @@ class TaxonGazettal(Gazettal):
                     "Gazettals as de-listed.")
         # TODO fsm_log_by request.user if coming from request
         [gazettal.mark_delisted() for gazettal in
-         self.taxon.taxon_gazettal.filter(scope=self.scope).exclude(pk=self.pk)]
+         self.taxon.taxon_gazettal.filter(
+            scope=self.scope,
+            status=Gazettal.STATUS_EFFECTIVE
+        ).exclude(pk=self.pk)]
         # TODO: set fsm_log_by
 
 
@@ -922,7 +930,10 @@ class CommunityGazettal(Gazettal):
         logger.info("[Community Gazettal] De-list previous "
                     "Gazettals in same scope.")
         [gazettal.mark_delisted() for gazettal in
-         self.community.community_gazettal.filter(scope=self.scope).exclude(pk=self.pk)]
+         self.community.community_gazettal.filter(
+            scope=self.scope,
+            status=Gazettal.STATUS_EFFECTIVE
+        ).exclude(pk=self.pk)]
 
 
 @receiver(pre_save, sender=TaxonGazettal)

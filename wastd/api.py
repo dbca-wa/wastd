@@ -1453,7 +1453,7 @@ class TurtleNestDisturbanceObservationEncounterSerializer(GeoFeatureModelSeriali
             'comments', )
 
 
-class TurtleNestDisturbanceObservationViewSet(viewsets.ModelViewSet):
+class TurtleNestDisturbanceObservationEncounterViewSet(viewsets.ModelViewSet):
     """TurtleNestDisturbanceObservation view set."""
 
     queryset = TurtleNestDisturbanceObservation.objects.all()
@@ -1471,7 +1471,7 @@ router.register(r'logger-encounters', LoggerEncounterViewSet)
 router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
 router.register(r'tag-observations', TagObservationViewSet)
-router.register(r'disturbance-observations', TurtleNestDisturbanceObservationViewSet)
+router.register(r'disturbance-observations', TurtleNestDisturbanceObservationEncounterViewSet)
 
 
 # Area -------------------------------------------------------------------#

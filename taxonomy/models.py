@@ -1847,7 +1847,8 @@ class Taxon(MPTTModel, geo_models.Model):
         TODO save as list field on model, populate in pre_save.
         """
         return [{'label': x.label_cache,
-                 'url': x.absolute_admin_url, }
+                 'url': x.absolute_admin_url,
+                 'is_active': x.is_active}
                 for x in self.taxon_gazettal.all()]
 
     @property
@@ -1858,7 +1859,9 @@ class Taxon(MPTTModel, geo_models.Model):
         TODO make active_gazettals a manager method on Gazettal
         """
         from conservation.models import Gazettal
-        return [{'label': x.label_cache, 'url': x.absolute_admin_url}
+        return [{'label': x.label_cache,
+                 'url': x.absolute_admin_url,
+                 'is_active': x.is_active}
                 for x in self.taxon_gazettal.filter(
                 status=Gazettal.STATUS_EFFECTIVE)]
 
@@ -2091,7 +2094,8 @@ class Community(geo_models.Model):
         TODO save as list field on model, populate in pre_save.
         """
         return [{'label': x.label_cache,
-                 'url': x.absolute_admin_url, }
+                 'url': x.absolute_admin_url,
+                 'is_active': x.is_active}
                 for x in self.community_gazettal.all()]
 
     @property
@@ -2102,6 +2106,8 @@ class Community(geo_models.Model):
         TODO make active_gazettals a manager method on Gazettal
         """
         from conservation.models import Gazettal
-        return [{'label': x.label_cache, 'url': x.absolute_admin_url}
+        return [{'label': x.label_cache,
+                 'url': x.absolute_admin_url,
+                 'is_active': x.is_active}
                 for x in self.community_gazettal.filter(
-                status=Gazettal.STATUS_EFFECTIVE)]
+            status=Gazettal.STATUS_EFFECTIVE)]
