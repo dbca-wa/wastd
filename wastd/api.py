@@ -2491,7 +2491,7 @@ class ConservationCategorySerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = ConservationCategory
-        fields = ['conservation_list', 'code', 'label', 'description', ]
+        fields = '__all__'
 
 
 class ConservationCategoryFilter(filters.FilterSet):
@@ -2814,7 +2814,7 @@ class CommunityGazettalViewSet(BatchUpsertViewSet):
     model = CommunityGazettal
 
     # def build_unique_fields(self, data):
-    #     """Custom unique fields for Vernaculars."""
+    #     """Custom unique fields for CommunityGazettal."""
     #     return {"conservation_list": data["conservation_list"],
     #             "code": data["code"]}
 
