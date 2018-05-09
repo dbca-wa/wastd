@@ -2384,7 +2384,7 @@ class HbvVernacularViewSet(BatchUpsertViewSet):
     queryset = HbvVernacular.objects.all()
     serializer_class = HbvVernacularSerializer
     filter_class = HbvVernacularFilter
-    uid_field = "ogc_fid"
+    # uid_field = "ogc_fid"
     model = HbvVernacular
 
     def build_unique_fields(self, data):
