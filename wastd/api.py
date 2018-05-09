@@ -2384,12 +2384,12 @@ class HbvVernacularViewSet(BatchUpsertViewSet):
     queryset = HbvVernacular.objects.all()
     serializer_class = HbvVernacularSerializer
     filter_class = HbvVernacularFilter
-    # uid_field = "ogc_fid"
+    uid_field = "ogc_fid"
     model = HbvVernacular
 
-    def build_unique_fields(self, data):
-        """Custom unique fields for Vernaculars."""
-        return {"ogc_fid": data["ogc_fid"], "name_id": data["name_id"]}
+    # def build_unique_fields(self, data):
+    #     """Custom unique fields for Vernaculars."""
+    #     return {"ogc_fid": data["ogc_fid"], "name_id": data["name_id"]}
 
 
 router.register("vernaculars", HbvVernacularViewSet)
