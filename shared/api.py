@@ -30,6 +30,12 @@ class MyGeoJsonPagination(pagination.LimitOffsetPagination):
         ]))
 
 
+class FastLimitOffsetPagination(pagination.LimitOffsetPagination):
+    """GeoJSON pagination with page size of 10."""
+
+    page_size = 10
+
+
 class BatchUpsertViewSet(viewsets.ModelViewSet):
     """A ModelViewSet with custom create().
 
@@ -83,3 +89,9 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         else:
             logger.debug("[BatchUpsertViewSet] data: {0}".format(request.data))
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FastBatchUpsertViewSet(BatchUpsertViewSet):
+    """Viewset with LO pagination and page size 10."""
+
+    pagination_class = FastLimitOffsetPagination

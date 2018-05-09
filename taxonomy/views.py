@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Taxonomy views."""
 from __future__ import unicode_literals, absolute_import
-from itertools import chain
+# from itertools import chain
 
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
@@ -46,17 +46,18 @@ class TaxonListView(ListView):
         There are two mutually exclusive ways of filtering data:
 
         * Taxon card > explore: GET name_id = show this taxon, its parents
-          and one generation of children. Do not process the other filter fields.
+          and all children. Do not process the other filter fields.
         * Search filter: name (icontains), rank, is current, publication status.
 
         DO NOT use taxon_filter.qs in template: https://github.com/django-mptt/django-mptt/issues/632
         """
-        queryset = Taxon.objects.all()
+        queryset = Taxon.objects.order_by('-rank', '-current')  # prefetch('documents', 'taxon_gazettal')
 
         # name_id is mutually exclusive to other parameters
         if self.request.GET.get('name_id'):
-            t = queryset.filter(name_id=self.request.GET.get('name_id'))
-            return list(chain(t.first().get_ancestors(), t, t.first().get_children()))
+            # t = queryset.filter(name_id=self.request.GET.get('name_id'))
+            # return list(chain(t.first().get_ancestors(), t, t.first().get_children()))
+            return queryset.filter(name_id=self.request.GET.get('name_id')).get().get_family()
 
         return TaxonFilter(self.request.GET, queryset=queryset).qs
 

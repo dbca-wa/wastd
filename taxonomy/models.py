@@ -1638,8 +1638,8 @@ class Taxon(MPTTModel, geo_models.Model):
     RANK_SUBFORMA = 240
 
     RANKS = (
-        (RANK_THING, "Thing"),
-        (RANK_COMMUNITY, "Community"),
+        # (RANK_THING, "Thing"),
+        # (RANK_COMMUNITY, "Community"),
         (RANK_DOMAIN, "Domain"),
         (RANK_KINGDOM, "Kingdom"),
         (RANK_SUBKINGDOM, "Subkingdom"),
@@ -1776,12 +1776,14 @@ class Taxon(MPTTModel, geo_models.Model):
         """MPTT Class options."""
 
         order_insertion_by = ["name_id"]
+        ordering = ['-rank', 'current']
 
     class Meta:
         """Class options."""
 
         verbose_name = "Taxon"
         verbose_name_plural = "Taxa"
+        # ordering = ['-rank', 'current']
 
     @property
     def build_canonical_name(self):
@@ -1871,6 +1873,11 @@ class Taxon(MPTTModel, geo_models.Model):
         return [{'obj': x,
                  'url': x.absolute_admin_url}
                 for x in self.document_set.all()]
+
+    @property
+    def is_listed(self):
+        """Whether this Taxon has a conservation listing."""
+        return self.taxon_gazettals.count() > 0
 
 
 @receiver(pre_save, sender=Taxon)

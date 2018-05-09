@@ -57,7 +57,7 @@ from django_filters import rest_framework as rf_filters
 
 # from rest_framework_gis.filterset import GeoFilterSet
 
-from shared.api import MyGeoJsonPagination, BatchUpsertViewSet
+from shared.api import MyGeoJsonPagination, FastBatchUpsertViewSet, BatchUpsertViewSet
 from wastd.observations.models import (
     Area,
     Survey,  # SiteVisit,
@@ -2419,7 +2419,7 @@ class HbvParentViewSet(BatchUpsertViewSet):
 router.register("parents", HbvParentViewSet)
 
 
-class TaxonViewSet(BatchUpsertViewSet):
+class TaxonViewSet(FastBatchUpsertViewSet):
     """View set for Taxon.
 
     See HBV Names for details and usage examples.

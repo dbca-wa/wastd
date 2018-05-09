@@ -42,6 +42,7 @@ DocumentForm = s2form(Document, attrs=S2ATTRS)
 
 
 class AjaxDocumentForm(DocumentForm):
+    """A document form with a type-ahead widget for Taxa."""
 
     taxa = AutoCompleteSelectMultipleField(
         'taxon',
@@ -257,7 +258,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
          ),
         ('Approval milestones and log', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("proposed_on", "effective_from", "effective_to", "review_due", "comments",)}
+            'fields': ("proposed_on", "effective_from", "effective_to", "last_reviewed_on", "review_due", "comments",)}
          ),
     )
 
@@ -293,8 +294,8 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
         "effective_to",
         "effective_from_commonwealth",
         "effective_to_commonwealth",
+        "last_reviewed_on",
         "review_due",
-        "last_reviewed_on"
     )
     list_filter = (
         # "taxa",
@@ -304,8 +305,8 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
         "status",
         ('effective_from', admin.DateFieldListFilter),
         ('effective_to', admin.DateFieldListFilter),
-        ('review_due', admin.DateFieldListFilter),
         ('last_reviewed_on', admin.DateFieldListFilter),
+        ('review_due', admin.DateFieldListFilter),
         ('effective_from_commonwealth', admin.DateFieldListFilter),
         ('effective_to_commonwealth', admin.DateFieldListFilter),
     )
@@ -330,6 +331,6 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
             'fields': ("effective_from", "effective_to",
                        "effective_from_commonwealth", "effective_to_commonwealth",
-                       "review_due", "last_reviewed_on", "comments")}
+                       "last_reviewed_on", "review_due", "comments")}
          ),
     )

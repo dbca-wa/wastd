@@ -329,7 +329,7 @@ class Gazettal(models.Model):
         (STATUS_IN_DIR_REVIEW, "In review with Division Director"),
         (STATUS_IN_DG_REVIEW, "In review with Director General"),
         (STATUS_IN_MIN_REVIEW, "In review with Minister"),
-        (STATUS_EFFECTIVE, "Published"),
+        (STATUS_EFFECTIVE, "Listed"),
         (STATUS_CLOSED, "De-listed"),
         (STATUS_REJECTED, "Rejected"),
     )
