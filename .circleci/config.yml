@@ -45,6 +45,10 @@ jobs:
           - v1-dependencies-
 
       - run:
+          name: Install system packages
+          command: sudo apt-get install binutils libproj-dev gdal-bin
+
+      - run:
           name: Install Python module dependencies
           command: |
             virtualenv venv
