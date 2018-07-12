@@ -10,8 +10,8 @@ jobs:
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:2.7.15-node-browsers
         environment:
-          PIPENV_VENV_IN_PROJECT: true
-          DATABASE_URL: postgis://root@localhost/circle_test?sslmode=disable
+          - PIPENV_VENV_IN_PROJECT: true
+          - DATABASE_URL: postgis://root@localhost/circle_test?sslmode=disable
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
