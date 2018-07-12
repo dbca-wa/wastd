@@ -12,12 +12,6 @@ WA Stranding Database
 .. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
-.. image:: https://landscape.io/github/dbca-wa/wastd/master/landscape.svg?style=flat
-     :target: https://landscape.io/github/dbca-wa/wastd/master
-     :alt: Code Health
-.. image:: https://requires.io/github/dbca-wa/wastd/requirements.svg?branch=master
-     :target: https://requires.io/github/dbca-wa/wastd/requirements/?branch=master
-     :alt: Requirements Status
 .. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
      :target: http://wastd.readthedocs.io/
      :alt: Documentation Status

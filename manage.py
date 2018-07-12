@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-import confy
 import os
 import sys
 
 try:
+    import confy
     confy.read_environment_file()
 except:
     pass
