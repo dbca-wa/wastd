@@ -38,21 +38,21 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            pip install virtualenv
             virtualenv venv
             . venv/bin/activate
             pip install -r requirements/dev.txt
+
+      -run:
+          name: create folders
+          command: |
+            mkdir -p logs staticfiles
+            touch logs/wastd.log
 
       - save_cache:
           paths:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements/dev.txt" }}
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
       - run:
           name: run tests
           command: |
