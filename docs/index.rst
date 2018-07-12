@@ -5,20 +5,20 @@ WAStD - WA Sea Turtle Data / TSC - Threatened Species and Communities
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/
      :alt: Built with Cookiecutter Django
-.. image:: https://circleci.com/gh/parksandwildlife/wastd.svg?style=svg
-     :target: https://circleci.com/gh/parksandwildlife/wastd
+.. image:: https://circleci.com/gh/dbca-wa/wastd.svg?style=svg
+     :target: https://circleci.com/gh/dbca-wa/wastd
      :alt: Test status
-.. image:: https://coveralls.io/repos/github/parksandwildlife/wastd/badge.svg?branch=master
-     :target: https://coveralls.io/github/parksandwildlife/wastd?branch=master
+.. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
+     :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
-.. image:: https://requires.io/github/parksandwildlife/wastd/requirements.svg?branch=master
-     :target: https://requires.io/github/parksandwildlife/wastd/requirements/?branch=master
+.. image:: https://requires.io/github/dbca-wa/wastd/requirements.svg?branch=master
+     :target: https://requires.io/github/dbca-wa/wastd/requirements/?branch=master
      :alt: Requirements Status
 .. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
      :target: http://wastd.readthedocs.io/
      :alt: Documentation Status
-.. image:: https://badge.waffle.io/parksandwildlife/wastd.svg?label=ready&title=Ready
-     :target: https://waffle.io/parksandwildlife/wastd
+.. image:: https://badge.waffle.io/dbca-wa/wastd.svg?label=ready&title=Ready
+     :target: https://waffle.io/dbca-wa/wastd
      :alt: Open Issues
 
 .. "WA STD - now you've got it, too"
@@ -46,19 +46,19 @@ This manual aims to provide useful information for:
 Overview
 ========
 
-WAStD is a data warehouse for:
+WAStD is a data clearinghouse for:
 
-* Turtle strandings in WA, as reported to the Department of Parks & Wildlife, WA.
-* Dugong strandings in WA.
+* Turtle strandings in WA, as reported to the Department of Biodiversity, Conservation and Attractions, WA.
+* Dugong and sea snake strandings in WA.
 * Turtle track observations, taken at sunrise after nesting (can involve nests,
   predation, nest tags, temperature loggers, egg excavation and hatchling measurements).
 * Temperature logger asset management.
+* Threatened Species and Communities of WA: occurrence, conservation status, management plans.
 
 WAStD is built scalable enough to accommodate other, related, data:
 
 * Turtle tagging observations, taken of nesting turtles.
-* Cetacean (whales and dolphins), pinniped (seals and sea lions),
-  other reptiles (sea snake) strandings.
+* Cetacean (whales and dolphins) and pinniped (seals and sea lions) strandings.
 
 WAStD offers as main functionalities:
 
@@ -124,6 +124,7 @@ The journey so far:
   egg, hatchling and logger measurements.
 * Feb 2017: Revised tracks form used in field.
 * Season 2017/2018: Six regions join digital data collection of turtle track census.
+* 2018: Threatened species and communities.
 
 WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange standards and
 analytical knowledge pipelines.

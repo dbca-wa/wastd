@@ -2824,7 +2824,10 @@ router.register("communitygazettal", CommunityGazettalViewSet)
 
 # Document -------------------------------------------------------------------#
 class DocumentSerializer(serializers.ModelSerializer):
-    """Serializer for Document."""
+    """Serializer for Document.
+
+    TODO: File attachments, current/confidential filters.
+    """
 
     class Meta:
         """Opts."""

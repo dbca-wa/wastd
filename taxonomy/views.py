@@ -51,7 +51,7 @@ class TaxonListView(ListView):
 
         DO NOT use taxon_filter.qs in template: https://github.com/django-mptt/django-mptt/issues/632
         """
-        queryset = Taxon.objects.order_by('-rank', '-current')  # prefetch('documents', 'taxon_gazettal')
+        queryset = Taxon.objects.order_by('-rank', '-current')
 
         # name_id is mutually exclusive to other parameters
         if self.request.GET.get('name_id'):
