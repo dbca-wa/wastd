@@ -11,7 +11,7 @@ jobs:
       - image: circleci/python:2.7.15-node-browsers
         environment:
           PIPENV_VENV_IN_PROJECT: true
-          DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
+          DATABASE_URL: postgis://root@localhost/circle_test?sslmode=disable
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
