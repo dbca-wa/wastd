@@ -11,21 +11,25 @@ jobs:
       - image: circleci/python:2.7.15-node-browsers
         environment:
           - PIPENV_VENV_IN_PROJECT: true
-          - DATABASE_URL: postgis://circleci@localhost/circle_test?sslmode=disable
+          - DATABASE_URL: postgis://root@localhost/circle_test?sslmode=disable
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: mdillon/postgis:9.6
         environment:
-          POSTGRES_USER: circleci
-          POSTGRES_DB: circle_test
+          # POSTGRES_USER: circleci
+          # POSTGRES_DB: circle_test
+          - POSTGRES_USER=root
+          - PGUSER=root
+          - POSTGRES_DB=circle_test
+          - POSTGRES_PASSWORD=
 
     working_directory: ~/repo
 
     steps:
       - checkout
-      - run: psql -c "CREATE EXTENSION postgis;" -U circleci -d circle_test
+      #- run: psql -c "CREATE EXTENSION postgis;" -U circleci -d circle_test
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
 
