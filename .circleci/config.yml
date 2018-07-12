@@ -6,32 +6,36 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:2.7.15-node-browsers
         environment:
+          # Not using pipenv, but virtualenvwrapper / virtualenv
           - PIPENV_VENV_IN_PROJECT: true
           - DATABASE_URL: postgis://root@localhost/circle_test?sslmode=disable
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
+      # This config follows https://discuss.circleci.com/t/installing-postgis/8708/10
       - image: mdillon/postgis:9.6
         environment:
-          # POSTGRES_USER: circleci
-          # POSTGRES_DB: circle_test
-          - POSTGRES_USER=root
-          - PGUSER=root
-          - POSTGRES_DB=circle_test
-          - POSTGRES_PASSWORD=
+          POSTGRES_USER: root
+          PGUSER: root
+          POSTGRES_DB: circle_test
+          POSTGRES_PASSWORD:
 
     working_directory: ~/repo
 
     steps:
       - checkout
-      #- run: psql -c "CREATE EXTENSION postgis;" -U circleci -d circle_test
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
+
+      - run:
+          name: Fix file ownership and create log and staticfiles folders
+          command: |
+            sudo chown -R circleci:circleci /usr/local/bin
+            sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
+            mkdir -p logs staticfiles
+            touch logs/wastd.log
 
       # Download and cache dependencies
       - restore_cache:
@@ -41,17 +45,11 @@ jobs:
           - v1-dependencies-
 
       - run:
-          name: install dependencies
+          name: Install Python module dependencies
           command: |
             virtualenv venv
             . venv/bin/activate
             pip install -r requirements/dev.txt
-
-      - run:
-          name: create log and staticfiles folders
-          command: |
-            mkdir -p logs staticfiles
-            touch logs/wastd.log
 
       - save_cache:
           paths:
@@ -59,7 +57,7 @@ jobs:
           key: v1-dependencies-{{ checksum "requirements/dev.txt" }}
 
       - run:
-          name: run tests
+          name: Run tests
           command: |
             . venv/bin/activate
             fab test
