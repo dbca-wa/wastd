@@ -8,11 +8,12 @@ from fabric.colors import green, yellow  # red
 
 env.hosts = ['localhost', ]
 
+
 def clean():
-        """Delete .pyc, temp and swap files."""
-        local("./manage.py clean_pyc")
-        local("find . -name \*~ -delete")
-        local("find . -name \*swp -delete")
+    """Delete .pyc, temp and swap files."""
+    local("./manage.py clean_pyc")
+    local("find . -name \*~ -delete")
+    local("find . -name \*swp -delete")
 
 
 def pip():
@@ -50,13 +51,13 @@ def shell():
 
 
 def go():
-    """Run the app with local settings and runserver (dev)."""
+    """Run the app with development settings and runserver."""
     static()
     local('python manage.py runserver --settings=config.settings.local 0.0.0.0:8220')
 
 
 def pro():
-    """Run the app with local settings and runserver (pro)."""
+    """Run the app with production settings and runserver."""
     static()
     local('python manage.py runserver --settings=config.settings.production 0.0.0.0:8220')
 
@@ -85,6 +86,6 @@ def test():
 
 def doc():
     """Compile docs, draw data models and transitions."""
-    #local('./manage.py graph_models --pygraphviz observations '
+    # local('./manage.py graph_models --pygraphviz observations '
     #      'users -g -o docs/datamodel.png')
     local("cd docs && make html && cd ..")
