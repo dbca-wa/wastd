@@ -52,6 +52,7 @@ django-background-tasks
 # DevOps
 # ------------------------------------------------
 Fabric==1.14.0
+honcho=1.0.1
 
 # Email backends for Mailgun, Postmark, SendGrid and more
 # -------------------------------------------------------
