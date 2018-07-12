@@ -42,8 +42,8 @@ jobs:
             . venv/bin/activate
             pip install -r requirements/dev.txt
 
-      -run:
-          name: create folders
+      - run:
+          name: create log and staticfiles folders
           command: |
             mkdir -p logs staticfiles
             touch logs/wastd.log
