@@ -11,7 +11,7 @@ jobs:
         environment:
           # Not using pipenv, but virtualenvwrapper / virtualenv
           - PIPENV_VENV_IN_PROJECT: true
-          - DATABASE_URL: postgis://circleci@localhost/circle_test?sslmode=disable
+          - DATABASE_URL: postgis://ubuntu@localhost/circle_test?sslmode=disable
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -19,8 +19,8 @@ jobs:
       # This config follows https://discuss.circleci.com/t/installing-postgis/8708/10
       - image: mdillon/postgis:9.6
         environment:
-          POSTGRES_USER: circleci
-          PGUSER: circleci
+          POSTGRES_USER: ubuntu
+          PGUSER: ubuntu
           POSTGRES_DB: circle_test
           POSTGRES_PASSWORD:
 
@@ -45,7 +45,7 @@ jobs:
           - v1-dependencies-
 
       - run:
-          name: Install system packages
+          name: Install system packages for GDAL
           command: sudo apt-get install -qq binutils libproj-dev gdal-bin
 
       - run:
