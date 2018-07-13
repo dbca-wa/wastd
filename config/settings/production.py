@@ -116,7 +116,7 @@ INSTALLED_APPS += ('gunicorn', )
 # ------------------------------------------------------------------------------
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.corporateict.domain')
 EMAIL_PORT = env('EMAIL_PORT', default=25)
-DEFAULT_FROM_EMAIL = '"Threatened Things" <tsc-noreply@dbca.wa.gov.au>'
+DEFAULT_FROM_EMAIL = '"TSC" <tsc-noreply@dbca.wa.gov.au>'
 EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[TSC] ')
 
 # TEMPLATE CONFIGURATION

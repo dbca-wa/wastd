@@ -27,13 +27,13 @@ djangorestframework-yaml
 djangorestframework-jsonp
 djangorestframework-filters
 django-url-filter
-dynamic-rest
+#dynamic-rest
 rest-framework-latex
 # -e git+https://github.com/florianm/rest-framework-latex.git#egg=rest-framework-latex
 markdown
 django-filter==1.1.0
 django-rest-swagger
-coreapi
+coreapi==2.3.3
 coreapi-cli
 pypandoc
 graphene-django==2.0.0

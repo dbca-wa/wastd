@@ -16,7 +16,7 @@ jobs:
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      # This config follows https://discuss.circleci.com/t/installing-postgis/8708/10
+      # User MUST be called `ubuntu`
       - image: mdillon/postgis:9.6
         environment:
           POSTGRES_USER: ubuntu
