@@ -534,7 +534,7 @@ LOGGING = {
             'formatter': 'simple',
         },
         'file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'logs/wastd.log'),
             'formatter': 'verbose',
