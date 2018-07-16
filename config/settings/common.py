@@ -420,7 +420,7 @@ LEAFLET_CONFIG = {
     'TILES': [
         ('Aerial Image',
          '//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-         {'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'}),
+         {'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'}),  # noqa
 
         ('Place names',
          'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -428,7 +428,7 @@ LEAFLET_CONFIG = {
 
         ('Dirk Hartog mode',
          '//stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}',
-         {'attribution': 'Map tiles by <a href="//stamen.com">Stamen Design</a>, <a href="//creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+         {'attribution': 'Map tiles by <a href="//stamen.com">Stamen Design</a>, <a href="//creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',   # noqa
           'subdomains': 'abcd',
           'minZoom': 1,
           'maxZoom': 16,
@@ -436,12 +436,12 @@ LEAFLET_CONFIG = {
 
         ('Bathymetry',
          '//server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}',
-         {'attribution': 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
+         {'attribution': 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',  # noqa
           'maxZoom': 13, }),
 
         ('Real time true colour',
-         '//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
-         {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+         '//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',  # noqa
+         {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',  # noqa
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
           'minZoom': 1,
           'maxZoom': 9,
@@ -450,8 +450,8 @@ LEAFLET_CONFIG = {
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
 
         ('Real time false colour',
-         '//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_Bands367/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
-         {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+         '//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_Bands367/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',  # noqa
+         {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',  # noqa
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
           'minZoom': 1,
           'maxZoom': 9,
@@ -460,8 +460,8 @@ LEAFLET_CONFIG = {
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
 
         ('Light pollution',
-         '//map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
-         {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+         '//map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',  # noqa
+         {'attribution': 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',  # noqa
           'bounds': [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
           'minZoom': 1,
           'maxZoom': 8,
@@ -507,7 +507,7 @@ MAX_RUN_TIME = 7200  # 2h
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -557,8 +557,18 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'propagate': True
         },
-        'wastd': {
+        "background_task": {
             'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
+        "silk.model_factory": {
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True,
+        },
+        'wastd': {
+            'level': 'DEBUG',
             'handlers': ['console', 'file'],
             'propagate': True,
         },
@@ -568,27 +578,17 @@ LOGGING = {
             'propagate': True,
         },
         'taxonomy': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'handlers': ['console', 'file'],
             'propagate': True,
         },
         'conservation': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'handlers': ['console', 'file'],
             'propagate': True,
         },
         'occurrence': {
-            'level': 'INFO',
-            'handlers': ['console', 'file'],
-            'propagate': True,
-        },
-        "background_task": {
-            'level': 'INFO',
-            'handlers': ['console', 'file'],
-            'propagate': True,
-        },
-        "silk.model_factory": {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'handlers': ['console', 'file'],
             'propagate': True,
         },

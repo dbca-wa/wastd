@@ -64,13 +64,22 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         return {self.uid_field: data[self.uid_field]}
 
     def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
+        """POST: Create or update exactly one model instance.
+
+        Discard, if present, the CSRF token.
+        Log (debug) data and result.
+
+        Return RestResponse(data, status)
+        """
         dd = self.build_unique_fields(data)
         if 'csrfmiddlewaretoken' in data:
             data.pop('csrfmiddlewaretoken')
-        logger.debug('[API][create_one] data {0}'.format(dd))
+        logger.debug('[API][create_one] Creating/updating '
+                     'with data\n{0}'.format(dd))
         obj, created = self.model.objects.get_or_create(**dd)
+        verb = "created" if created else "updated"
         self.model.objects.filter(**dd).update(**data)
+        logger.debug('[API][create_one] {0}: {1}'.format(verb, obj))
         return RestResponse(data, status=status.HTTP_200_OK)
 
     def create(self, request):
