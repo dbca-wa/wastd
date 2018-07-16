@@ -544,7 +544,7 @@ LOGGING = {
     'loggers': {
         'django.request': {
             'handlers': ['console', 'file'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True
         },
         'django.security.DisallowedHost': {
@@ -553,7 +553,7 @@ LOGGING = {
             'propagate': True
         },
         'django': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'handlers': ['console', 'file'],
             'propagate': True
         },
