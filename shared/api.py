@@ -75,12 +75,16 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         if 'csrfmiddlewaretoken' in data:
             data.pop('csrfmiddlewaretoken')
         logger.debug('[API][create_one] Creating/updating '
-                     'with data\n{0}'.format(dd))
-        obj, created = self.model.objects.get_or_create(**dd)
-        verb = "created" if created else "updated"
-        self.model.objects.filter(**dd).update(**data)
-        logger.debug('[API][create_one] {0}: {1}'.format(verb, obj))
-        return RestResponse(data, status=status.HTTP_200_OK)
+                     'unique fields {0}'.format(str(dd)))
+        try:
+            obj, created = self.model.objects.get_or_create(**dd)
+            verb = "created" if created else "updated"
+            self.model.objects.filter(**dd).update(**data)
+            logger.debug('[API][create_one] {0}: {1}'.format(verb, obj))
+            return RestResponse(data, status=status.HTTP_200_OK)
+        except:
+            logger.warning('[API][create_one] Failed with data {0}'.format(str(data)))
+            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -99,7 +103,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             logger.debug('[API][create] found batch of {0} records'.format(len(res)))
             return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            logger.debug("[BatchUpsertViewSet] data: {0}".format(request.data))
+            logger.debug("[BatchUpsertViewSet] data: {0}".format(str(request.data)))
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
