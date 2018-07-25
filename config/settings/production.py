@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Production Configurations
+Production Configurations.
 
 - Use djangosecure
 - Use Amazon's S3 for storing static files and uploaded media
@@ -65,7 +65,8 @@ ALLOWED_HOSTS = ['localhost',
                  'strandings-test.dpaw.wa.gov.au',
                  'strandings.dpaw.wa.gov.au',
                  'strandings.dbca.wa.gov.au',
-                 'tsc.dbca.wa.gov.au']
+                 'tsc.dbca.wa.gov.au',
+                 'aws-eco-002']
 # env('DJANGO_ALLOWED_HOSTS')
 # END SITE CONFIGURATION
 
