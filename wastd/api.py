@@ -1814,7 +1814,8 @@ class TaxonSerializer(serializers.ModelSerializer):
             'vernacular_names',
             'canonical_name',
             'taxonomic_name',
-            'taxon_related_areas'
+            'taxon_related_areas',
+            'eoo'
         )
 
 
@@ -2179,6 +2180,7 @@ class TaxonFilter(filters.FilterSet):
             'taxonomic_name': '__all__',
             'vernacular_name': '__all__',
             'vernacular_names': '__all__',
+            # 'eoo' requires polygon filter
         }
 
 
