@@ -15,9 +15,5 @@ pytest-sugar
 
 # Debug
 # ------------------------------------------------
-django-debug-toolbar
+django-debug-toolbar==1.9.1
 ipdb
-
-# Web server
-# ------------------------------------------------
-# gunicorn

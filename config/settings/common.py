@@ -99,11 +99,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # patch, remove
     'silk.middleware.SilkyMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'dpaw_utils.middleware.SSOLoginMiddleware',
 )
 
+MIDDLEWARE = MIDDLEWARE_CLASSES
 
 # MIGRATIONS CONFIGURATION
 # ------------------------------------------------------------------------------

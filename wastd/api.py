@@ -104,6 +104,7 @@ logger = logging.getLogger(__name__)
 # @sync_route.app("observations", "observations")
 
 router = routers.DefaultRouter()
+app_name = 'api'
 
 
 class InBBoxHTMLMixin:

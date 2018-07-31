@@ -3,8 +3,7 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.conf.urls import include  # , url
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.admin import site
@@ -51,7 +50,7 @@ urlpatterns = [
     re_path(settings.ADMIN_URL, admin.site.urls),
 
     # User management
-    re_path(r'^users/', include('wastd.users.urls')),  # namespace='users'
+    re_path(r'^users/', include('wastd.users.urls', namespace='users')),
     re_path(r'^accounts/', include('allauth.urls')),
 
     # Encounters
@@ -61,7 +60,7 @@ urlpatterns = [
     # API
     re_path(r'^api/1/swagger/$', schema_view, name="api-docs"),
     re_path(r'^api/1/docs/', include_docs_urls(title='API')),
-    re_path(r'^api/1/', include(wastd_router.urls)),  # , namespace="api"
+    re_path(r'^api/1/', include(wastd_router.urls)),
     re_path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     re_path(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 

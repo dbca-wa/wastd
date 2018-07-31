@@ -2,12 +2,9 @@
 """manage.py for Django app."""
 import os
 import sys
+import confy
 
-try:
-    import confy
-    confy.read_environment_file()
-except:
-    pass
+confy.read_environment_file()
 
 if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
