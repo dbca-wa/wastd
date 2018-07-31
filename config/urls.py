@@ -50,7 +50,7 @@ urlpatterns = [
     re_path(settings.ADMIN_URL, admin.site.urls),
 
     # User management
-    re_path(r'^users/', include('wastd.users.urls', namespace='users')),
+    re_path(r'^users/', include(('wastd.users.urls', 'users'), namespace='users')),
     re_path(r'^accounts/', include('allauth.urls')),
 
     # Encounters
@@ -60,11 +60,11 @@ urlpatterns = [
     # API
     re_path(r'^api/1/swagger/$', schema_view, name="api-docs"),
     re_path(r'^api/1/docs/', include_docs_urls(title='API')),
-    re_path(r'^api/1/', include(wastd_router.urls)),
-    re_path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    re_path(r'^api/1/', include((wastd_router.urls, 'api'), namespace="api")),
+    re_path(r'^api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
     re_path(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 
-    re_path(r'^performance/', include('silk.urls', namespace='silk')),
+    re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')),
 
     # GraphQL
     # url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=schema)),
@@ -121,8 +121,8 @@ urlpatterns = [
     # url(r'^500/$', default_views.server_error,
     #     kwargs={'exception': Exception('Infernal Server Error')}),
 
-] + staticfiles_urlpatterns() + \
-    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
+    staticfiles_urlpatterns()
 
 if settings.DEBUG:
     import debug_toolbar

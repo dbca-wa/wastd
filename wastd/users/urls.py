@@ -5,7 +5,6 @@ from django.conf.urls import url
 
 from . import views
 
-app_name = 'users'
 urlpatterns = [
     # URL pattern for the UserListView
     url(

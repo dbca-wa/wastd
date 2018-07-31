@@ -1742,8 +1742,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """
         return slugify.slugify("-".join([
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            force_text(round(self.where.get_x(), 4)).replace(".", "-"),
-            force_text(round(self.where.get_y(), 4)).replace(".", "-"),
+            force_text(round(self.longitude, 4)).replace(".", "-"),
+            force_text(round(self.latitude, 4)).replace(".", "-"),
         ]))
 
     def save(self, *args, **kwargs):
@@ -1927,12 +1927,12 @@ class Encounter(PolymorphicModel, geo_models.Model):
     @property
     def latitude(self):
         """Return the WGS 84 DD latitude."""
-        return self.where.get_y()
+        return self.where.y
 
     @property
     def longitude(self):
         """Return the WGS 84 DD longitude."""
-        return self.where.get_x()
+        return self.where.x
 
     @property
     def crs(self):
@@ -2315,8 +2315,8 @@ class AnimalEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            force_text(round(self.where.get_x(), 4)).replace(".", "-"),
-            force_text(round(self.where.get_y(), 4)).replace(".", "-"),
+            force_text(round(self.longitude, 4)).replace(".", "-"),
+            force_text(round(self.latitude, 4)).replace(".", "-"),
             self.health,
             self.maturity,
             self.sex,
@@ -2451,8 +2451,8 @@ class TurtleNestEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            force_text(round(self.where.get_x(), 4)).replace(".", "-"),
-            force_text(round(self.where.get_y(), 4)).replace(".", "-"),
+            force_text(round(self.longitude, 4)).replace(".", "-"),
+            force_text(round(self.latitude, 4)).replace(".", "-"),
             self.nest_age,
             self.species,
         ]
@@ -2528,8 +2528,8 @@ class LineTransectEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            force_text(round(self.where.get_x(), 4)).replace(".", "-"),
-            force_text(round(self.where.get_y(), 4)).replace(".", "-")
+            force_text(round(self.longitude, 4)).replace(".", "-"),
+            force_text(round(self.latitude, 4)).replace(".", "-")
         ]
         if self.name is not None:
             nameparts.append(self.name)

@@ -245,12 +245,12 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
 
     def latitude(self, obj):
         """Make data source readable."""
-        return obj.encounter.where.get_y()
+        return obj.encounter.latitude
     latitude.short_description = 'Latitude'
 
     def longitude(self, obj):
         """Make data source readable."""
-        return obj.encounter.where.get_x()
+        return obj.encounter.longitude
     longitude.short_description = 'Longitude'
 
     def date(self, obj):
@@ -440,12 +440,12 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
     def latitude(self, obj):
         """Make data source readable."""
-        return obj.where.get_y()
+        return obj.latitude
     latitude.short_description = 'Latitude'
 
     def longitude(self, obj):
         """Make data source readable."""
-        return obj.where.get_x()
+        return obj.longitude
     longitude.short_description = 'Longitude'
 
     def encounter_type_display(self, obj):
