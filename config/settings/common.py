@@ -13,6 +13,9 @@ import environ
 from confy import env, database
 from unipath import Path
 
+# import confy
+# confy.read_environment_file()
+
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 BASE_DIR = Path(__file__).ancestor(3)
 APPS_DIR = ROOT_DIR.path('wastd')
@@ -90,6 +93,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'silk.middleware.SilkyMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -530,7 +534,7 @@ LOGGING = {
         # 'file': {
         #     'level': 'DEBUG',
         #     'class': 'logging.handlers.RotatingFileHandler',
-        #     'filename': os.path.join(BASE_DIR, 'logs/wastd.log'),
+        #     'filename': ROOT_DIR.path('logs', 'wastd.log'),
         #     'formatter': 'verbose',
         #     'maxBytes': '16777216'
         # },
