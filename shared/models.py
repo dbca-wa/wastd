@@ -15,7 +15,7 @@ from django.db import models
 # from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
-# from django.core.urlresolvers import reverse
+# from django.urls import reverse
 # from rest_framework.reverse import reverse as rest_reverse
 # from django.template import loader
 # from django.utils.encoding import python_2_unicode_compatible
@@ -45,6 +45,7 @@ class ObservationAuditMixin(models.Model):
 
     encountered_by = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         verbose_name=_("Encountered by"),
         blank=True, null=True,
         help_text=_("The person who experience the original encounter."))

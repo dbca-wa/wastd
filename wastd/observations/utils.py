@@ -230,12 +230,12 @@ def map_values(d):
     Returns
 
     A dict of ODK (keys) to WAStD (values) choices, e.g. NEST_TYPE_CHOICES
-    {u'falsecrawl': u'false-crawl',
-     u'hatchednest': u'hatched-nest',
-     u'nest': u'nest',
-     u'successfulcrawl': u'successful-crawl',
-     u'tracknotassessed': u'track-not-assessed',
-     u'trackunsure': u'track-unsure'}
+    {u'falsecrawl': 'false-crawl',
+     'hatchednest': 'hatched-nest',
+     'nest': 'nest',
+     'successfulcrawl': 'successful-crawl',
+     'tracknotassessed': 'track-not-assessed',
+     'trackunsure': 'track-unsure'}
     """
     return {k.replace("-", ""): k for k in dict(d).keys()}
 
@@ -252,12 +252,12 @@ def keep_values(d):
     Returns
 
     A dict of WAStD (keys) to WAStD (values) choices, e.g. NEST_TYPE_CHOICES
-    {u'false-crawl': u'false-crawl',
-     u'hatched-nest': u'hatched-nest',
-     u'nest': u'nest',
-     u'successful-crawl': u'successful-crawl',
-     u'track-not-assessed': u'track-not-assessed',
-     u'track-unsure': u'track-unsure'}
+    {u'false-crawl': 'false-crawl',
+     'hatched-nest': 'hatched-nest',
+     'nest': 'nest',
+     'successful-crawl': 'successful-crawl',
+     'track-not-assessed': 'track-not-assessed',
+     'track-unsure': 'track-unsure'}
     """
     return {k: k for k in dict(d).keys()}
 
@@ -1294,10 +1294,10 @@ def import_one_record_sv01(r, m):
      'started_on': datetime.datetime(2017, 1, 31, 16, 0, tzinfo=<UTC>),
      'finished_on': datetime.datetime(2017, 2, 4, 16, 0, tzinfo=<UTC>),
      'site_id': 17,
-     'source': u'direct',
+     'source': 'direct',
      'source_id': None,
      'transect': None,
-     'comments': u'',
+     'comments': '',
     }
     """
     src_id = r["instanceID"]
@@ -1587,31 +1587,31 @@ def import_one_encounter_wamtram(r, m, u):
     Returns
 
     The created encounter, e.g.
-    {'activity': u'na',
-    'behaviour': u'',
-    'cause_of_death': u'na',
-    'cause_of_death_confidence': u'na',
-    'checked_for_flipper_tags': u'na',
-    'checked_for_injuries': u'na',
+    {'activity': 'na',
+    'behaviour': '',
+    'cause_of_death': 'na',
+    'cause_of_death_confidence': 'na',
+    'checked_for_flipper_tags': 'na',
+    'checked_for_injuries': 'na',
     'encounter_ptr_id': 2574,
-    'encounter_type': u'stranding',
-    'habitat': u'na',
-    'health': u'dead-edible',
+    'encounter_type': 'stranding',
+    'habitat': 'na',
+    'health': 'dead-edible',
     'id': 2574,
-    'location_accuracy': u'1000',
-    'maturity': u'adult',
+    'location_accuracy': '1000',
+    'maturity': 'adult',
     'name': None,
     'observer_id': 1,
     'polymorphic_ctype_id': 17,
     'reporter_id': 5,
-    'scanned_for_pit_tags': u'na',
-    'sex': u'na',
+    'scanned_for_pit_tags': 'na',
+    'sex': 'na',
     'site_visit_id': None,
-    'source': u'direct',
-    'source_id': u'2017-02-03-10-35-00-112-3242-25-5623-dead-edible-adult-na-dugong-dugon',
-    'species': u'dugong-dugon',
-    'status': u'new',
-    'taxon': u'Sirenia',
+    'source': 'direct',
+    'source_id': '2017-02-03-10-35-00-112-3242-25-5623-dead-edible-adult-na-dugong-dugon',
+    'species': 'dugong-dugon',
+    'status': 'new',
+    'taxon': 'Sirenia',
     'when': datetime.datetime(2017, 2, 3, 2, 35, tzinfo=<UTC>),
     'where': <Point object at 0x7f16854fb400>}
 
@@ -1769,14 +1769,14 @@ def import_one_tag(t, m):
     Return a TabObservation e.g.
 
     {
-    'tag_type': u'flipper-tag'
+    'tag_type': 'flipper-tag'
     'encounter_id': 80,
     'handler_id': 1,
     'recorder_id': 1,
-    'name': u'WA1234',
-    'status': u'resighted',
-    'tag_location': u'whole',
-    'comments': u'',
+    'name': 'WA1234',
+    'status': 'resighted',
+    'tag_location': 'whole',
+    'comments': '',
     }
     """
     tag_name = sanitize_tag_name(t["tag_name"])
@@ -1926,25 +1926,25 @@ def import_one_record_cet(r, m):
 
     Returns AnimalEncounter e.g.
 
-    'activity': u'na',
-    'behaviour': u'',
-    'cause_of_death': u'na',
-    'cause_of_death_confidence': u'na',
-    'checked_for_flipper_tags': u'na',
-    'checked_for_injuries': u'na',
-    'habitat': u'na',
-    'health': u'dead-edible',
-    'location_accuracy': u'1000',
-    'maturity': u'adult',
+    'activity': 'na',
+    'behaviour': '',
+    'cause_of_death': 'na',
+    'cause_of_death_confidence': 'na',
+    'checked_for_flipper_tags': 'na',
+    'checked_for_injuries': 'na',
+    'habitat': 'na',
+    'health': 'dead-edible',
+    'location_accuracy': '1000',
+    'maturity': 'adult',
     'name': None,
     'observer_id': 1,
     'reporter_id': 5,
-    'scanned_for_pit_tags': u'na',
-    'sex': u'na',
-    'source': u'cet',
-    'source_id': u'cet-1234',  # src_id
-    'species': u'dugong-dugon',
-    'taxon': u'Cetacea',
+    'scanned_for_pit_tags': 'na',
+    'sex': 'na',
+    'source': 'cet',
+    'source_id': 'cet-1234',  # src_id
+    'species': 'dugong-dugon',
+    'taxon': 'Cetacea',
     'when': datetime.datetime(2017, 2, 3, 2, 35, tzinfo=<UTC>),
     'where': <Point object at 0x7fdede584b50>
 
@@ -2025,9 +2025,9 @@ def import_one_record_cet(r, m):
     new_data = {
         'when': parser.parse('{0} 12:00:00 +0800'.format(r["Date"])),
         'where': Point(float(r["Long"] or 120), float(r["Lat"] or -35)),
-        'taxon': u'Cetacea',
+        'taxon': 'Cetacea',
         'species': species[fix_species_name(r["Scientific Name"] or '')],
-        'activity': u'na',  # TODO
+        'activity': 'na',  # TODO
         'behaviour': "".join([make_comment(r, x) for x in [
             "File Number",
             "Name",
@@ -2076,19 +2076,19 @@ def import_one_record_cet(r, m):
             'Location',
         ]]),
         'cause_of_death': cod[r["Cause of Death _drop down_"]],
-        'cause_of_death_confidence': u'na',  # TODO
-        'checked_for_flipper_tags': u'na',  # TODO
-        'checked_for_injuries': u'na',  # TODO
-        'habitat': u'na',  # TODO
-        'health': u'dead-edible',  # TODO
-        'location_accuracy': u'10',
-        'maturity': u'adult',  # TODO
+        'cause_of_death_confidence': 'na',  # TODO
+        'checked_for_flipper_tags': 'na',  # TODO
+        'checked_for_injuries': 'na',  # TODO
+        'habitat': 'na',  # TODO
+        'health': 'dead-edible',  # TODO
+        'location_accuracy': '10',
+        'maturity': 'adult',  # TODO
         # 'name': r["ID"] or None,
         'observer_id': 1,
         'reporter_id': 1,
-        'scanned_for_pit_tags': u'na',  # TODO
+        'scanned_for_pit_tags': 'na',  # TODO
         'sex': infer_cetacean_sex(r["F"], r["M"]),
-        'source': u'cet',
+        'source': 'cet',
         'source_id': src_id,
     }
     # check if src_id exists
@@ -2763,7 +2763,7 @@ def odka_submission(form_id,
     }
 
     d["submission"]["data"]["data"]["@id"]
-    u'build_Site-Visit-Start-0-1_1490753483'
+    'build_Site-Visit-Start-0-1_1490753483'
     """
     api = ("{0}/view/downloadSubmission?formId={1}"
            "[@version=null%20and%20@uiVersion=null]/data[@key={2}]").format(

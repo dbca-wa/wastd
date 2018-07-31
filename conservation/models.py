@@ -9,7 +9,7 @@ from __future__ import unicode_literals, absolute_import
 # from dateutil import tz
 import logging
 
-from django.core.urlresolvers import reverse
+
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.db import models
@@ -17,7 +17,7 @@ from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
-# from django.core.urlresolvers import reverse
+from django.urls import reverse
 # from rest_framework.reverse import reverse as rest_reverse
 # from django.template import loader
 from django.utils.encoding import python_2_unicode_compatible
@@ -59,6 +59,7 @@ class FileAttachment(models.Model):
 
     author = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         verbose_name=_("Author"),
         blank=True, null=True,
         help_text=_("The person who authored and endorsed this file."))
@@ -188,6 +189,7 @@ class ConservationCategory(models.Model):
 
     conservation_list = models.ForeignKey(
         ConservationList,
+        on_delete=models.CASCADE,
         verbose_name=_("Conservation List"),
         help_text=_("The conservation list this code is described in."),
     )
@@ -243,6 +245,7 @@ class ConservationCriterion(models.Model):
 
     conservation_list = models.ForeignKey(
         ConservationList,
+        on_delete=models.CASCADE,
         verbose_name=_("Conservation List"),
         help_text=_("The conservation list this code is described in."),
     )
@@ -825,6 +828,7 @@ class TaxonGazettal(Gazettal):
     """
 
     taxon = models.ForeignKey(Taxon,
+                              on_delete=models.CASCADE,
                               related_name="taxon_gazettal")
 
     def __str__(self):
@@ -884,6 +888,7 @@ class CommunityGazettal(Gazettal):
     """The Gazettal of a ConservationCategory against a Community."""
 
     community = models.ForeignKey(Community,
+                                  on_delete=models.CASCADE,
                                   related_name="community_gazettal")
 
     class Meta:

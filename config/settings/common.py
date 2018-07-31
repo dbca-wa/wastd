@@ -14,7 +14,7 @@ from confy import env, database
 from unipath import Path
 
 import confy
-import os
+# import os
 
 try:
     confy.read_environment_file(".env")
@@ -51,6 +51,7 @@ THIRD_PARTY_APPS = (
     'ajax_select',                  # Ajax dropdowns
     'django_tables2',               # View mixins
     'django_filters',               # Form filters
+    'mapwidgets',                   # Map widgets
     'allauth',                      # registration
     'allauth.account',              # registration
     'allauth.socialaccount',        # registration
@@ -533,63 +534,63 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/wastd.log'),
-            'formatter': 'verbose',
-            'maxBytes': '16777216'
-        },
+        # 'file': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': os.path.join(BASE_DIR, 'logs/wastd.log'),
+        #     'formatter': 'verbose',
+        #     'maxBytes': '16777216'
+        # },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'level': 'INFO',
             'propagate': True
         },
         'django.security.DisallowedHost': {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True
         },
         'django': {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True
         },
         "background_task": {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True,
         },
         "silk": {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True,
         },
         'wastd': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True,
         },
         'shared': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True,
         },
         'taxonomy': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True,
         },
         'conservation': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True,
         },
         'occurrence': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'propagate': True,
         },
     }

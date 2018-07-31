@@ -36,10 +36,10 @@ from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
 from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework.reverse import reverse as rest_reverse
 from django.template import loader
-from django.utils.encoding import python_2_unicode_compatible
+from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
@@ -980,6 +980,7 @@ class Expedition(PolymorphicModel, geo_models.Model):
 
     site = models.ForeignKey(
         Area,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         verbose_name=_("Surveyed area"),
         help_text=_("The entire surveyed area."), )
@@ -1106,6 +1107,7 @@ class FieldMediaAttachment(models.Model):
 
     expedition = models.ForeignKey(
         Expedition,
+        on_delete=models.CASCADE,
         verbose_name=_("Expedition"),
         help_text=_("Surveys can be conducted during an expedition."), )
 
@@ -1136,7 +1138,7 @@ class FieldMediaAttachment(models.Model):
     @property
     def filepath(self):
         """Path to file."""
-        return str(self.attachment.file)
+        return force_text(self.attachment.file)
 
 
 @python_2_unicode_compatible
@@ -1164,6 +1166,7 @@ class Survey(QualityControl, geo_models.Model):
 
     site = models.ForeignKey(
         Area,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         verbose_name=_("Surveyed site"),
         help_text=_("The surveyed site, if known."), )
@@ -1178,6 +1181,7 @@ class Survey(QualityControl, geo_models.Model):
 
     reporter = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         verbose_name=_("Recorded by"),
         blank=True, null=True,
         help_text=_(
@@ -1381,6 +1385,7 @@ class SurveyEnd(geo_models.Model):
 
     reporter = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         verbose_name=_("Recorded by"),
         blank=True, null=True,
         help_text=_(
@@ -1389,6 +1394,7 @@ class SurveyEnd(geo_models.Model):
 
     site = models.ForeignKey(
         Area,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         verbose_name=_("Surveyed site"),
         help_text=_("The surveyed site, if known."), )
@@ -1554,12 +1560,14 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     survey = models.ForeignKey(
         Survey,
+        on_delete=models.PROTECT,
         null=True, blank=True,
         verbose_name=_("Survey"),
         help_text=_("The survey during which this encounter happened."),)
 
     area = models.ForeignKey(
         Area,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         verbose_name=_("Area"),
         related_name="encounter_area",
@@ -1567,6 +1575,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     site = models.ForeignKey(
         Area,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         verbose_name=_("Surveyed site"),
         related_name="encounter_site",
@@ -1618,6 +1627,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     observer = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         verbose_name=_("Measured by"),
         related_name="observer",
         help_text=_("The person who executes the measurements, "
@@ -1625,6 +1635,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     reporter = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         verbose_name=_("Recorded by"),
         related_name="reporter",
         help_text=_("The person who writes the data sheet in the field, "
@@ -1731,8 +1742,8 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """
         return slugify.slugify("-".join([
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            str(round(self.where.get_x(), 4)).replace(".", "-"),
-            str(round(self.where.get_y(), 4)).replace(".", "-"),
+            force_text(round(self.where.get_x(), 4)).replace(".", "-"),
+            force_text(round(self.where.get_y(), 4)).replace(".", "-"),
         ]))
 
     def save(self, *args, **kwargs):
@@ -2304,8 +2315,8 @@ class AnimalEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            str(round(self.where.get_x(), 4)).replace(".", "-"),
-            str(round(self.where.get_y(), 4)).replace(".", "-"),
+            force_text(round(self.where.get_x(), 4)).replace(".", "-"),
+            force_text(round(self.where.get_y(), 4)).replace(".", "-"),
             self.health,
             self.maturity,
             self.sex,
@@ -2440,8 +2451,8 @@ class TurtleNestEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            str(round(self.where.get_x(), 4)).replace(".", "-"),
-            str(round(self.where.get_y(), 4)).replace(".", "-"),
+            force_text(round(self.where.get_x(), 4)).replace(".", "-"),
+            force_text(round(self.where.get_y(), 4)).replace(".", "-"),
             self.nest_age,
             self.species,
         ]
@@ -2517,8 +2528,8 @@ class LineTransectEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            str(round(self.where.get_x(), 4)).replace(".", "-"),
-            str(round(self.where.get_y(), 4)).replace(".", "-")
+            force_text(round(self.where.get_x(), 4)).replace(".", "-"),
+            force_text(round(self.where.get_y(), 4)).replace(".", "-")
         ]
         if self.name is not None:
             nameparts.append(self.name)
@@ -2649,6 +2660,7 @@ class Observation(PolymorphicModel, models.Model):
 
     encounter = models.ForeignKey(
         Encounter,
+        on_delete=models.CASCADE,
         verbose_name=_("Encounter"),
         help_text=("The Encounter during which the observation was made"),)
 
@@ -2663,6 +2675,7 @@ class Observation(PolymorphicModel, models.Model):
 
     @property
     def point(self):
+        """Return the encounter location."""
         return self.encounter.where
 
     @property
@@ -2748,7 +2761,7 @@ class MediaAttachment(Observation):
     @property
     def filepath(self):
         """The path to attached file."""
-        return str(self.attachment.file)
+        return force_text(self.attachment.file)
 
 
 @python_2_unicode_compatible
@@ -2832,6 +2845,7 @@ class TagObservation(Observation):
 
     handler = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         verbose_name=_("Handled by"),
         related_name="tag_handler",
@@ -2839,6 +2853,7 @@ class TagObservation(Observation):
 
     recorder = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         verbose_name=_("Recorded by"),
         related_name="tag_recorder",
@@ -3125,6 +3140,7 @@ class TurtleMorphometricObservation(Observation):
 
     handler = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         related_name="morphometric_handler",
         verbose_name=_("Measured by"),
@@ -3132,6 +3148,7 @@ class TurtleMorphometricObservation(Observation):
 
     recorder = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         blank=True, null=True,
         related_name="morphometric_recorder",
         verbose_name=_("Recorded by"),
@@ -3325,8 +3342,8 @@ class TurtleNestDisturbanceTallyObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        t1 = (u'Nest Damage Tally: {0} nests of {1} showing disturbance by {2} '
-              u'({3} disturbance signs sighted)')
+        t1 = ('Nest Damage Tally: {0} nests of {1} showing disturbance by {2} '
+              '({3} disturbance signs sighted)')
         return t1.format(self.no_nests_disturbed, self.species,
                          self.disturbance_cause, self.no_tracks_encountered)
 
@@ -3596,6 +3613,7 @@ class DispatchRecord(Observation):
 
     sent_to = models.ForeignKey(
         User,
+        on_delete=models.PROTECT,
         verbose_name=_("Sent to"),
         related_name="receiver",
         blank=True, null=True,

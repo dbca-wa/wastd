@@ -23,7 +23,7 @@ from django.db.models.signals import pre_delete, pre_save, post_save  # noqa
 from django.dispatch import receiver
 from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 # from rest_framework.reverse import reverse as rest_reverse
 from django.template import loader
 from django.utils.encoding import python_2_unicode_compatible
@@ -211,7 +211,7 @@ class Area(PolymorphicModel, LegacySourceMixin, ObservationAuditMixin, QualityCo
 class TaxonArea(Area):
     """An Area related to a Taxon."""
 
-    taxon = models.ForeignKey(Taxon, related_name="taxon_related_areas")
+    taxon = models.ForeignKey(Taxon, on_delete=models.CASCADE, related_name="taxon_related_areas")
 
     def __str__(self):
         """The unicode representation."""
@@ -225,7 +225,7 @@ class TaxonArea(Area):
 class CommunityArea(Area):
     """An Area related to a Taxon."""
 
-    community = models.ForeignKey(Community, related_name="community_related_areas")
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name="community_related_areas")
 
     def __str__(self):
         """The unicode representation."""

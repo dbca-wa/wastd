@@ -20,7 +20,7 @@ from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
-# from django.core.urlresolvers import reverse
+# from django.urls import reverse
 # from rest_framework.reverse import reverse as rest_reverse
 # from django.template import loader
 from django.utils.encoding import python_2_unicode_compatible
@@ -1687,6 +1687,7 @@ class Taxon(MPTTModel, geo_models.Model):
 
     parent = TreeForeignKey(
         "self",
+        on_delete=models.CASCADE,
         null=True, blank=True,
         related_name="children",
         db_index=True,
@@ -1912,6 +1913,7 @@ class Vernacular(models.Model):
 
     taxon = models.ForeignKey(
         Taxon,
+        on_delete=models.CASCADE,
         verbose_name=_("Taxon"),
         help_text=_("The taxon this vernacular name applies to.")
     )
@@ -1988,6 +1990,7 @@ class Crossreference(models.Model):
 
     predecessor = models.ForeignKey(
         Taxon,
+        on_delete=models.CASCADE,
         blank=True, null=True,
         verbose_name=_("Predecessor Taxon"),
         related_name="precedes",
@@ -1996,6 +1999,7 @@ class Crossreference(models.Model):
 
     successor = models.ForeignKey(
         Taxon,
+        on_delete=models.CASCADE,
         blank=True, null=True,
         verbose_name=_("Successor Taxon"),
         related_name="supercedes",

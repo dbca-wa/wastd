@@ -1,7 +1,8 @@
 # Django
 # ------------------------------------------------
-django>=1.11.9,<2.0
-django-extensions==2.0.6
+# >=1.11.9,<2.0
+django==2.0.7
+django-extensions==2.1.0
 
 # breaking django-1.10:
 # https://github.com/django-polymorphic/django-polymorphic/issues/225 - fixed
@@ -21,7 +22,7 @@ django-grappelli==2.11.1
 # API
 # ------------------------------------------------
 djangorestframework==3.8.2
-djangorestframework-gis
+djangorestframework-gis==0.13
 djangorestframework-csv
 djangorestframework-yaml
 djangorestframework-jsonp
@@ -51,8 +52,10 @@ django-background-tasks
 
 # DevOps
 # ------------------------------------------------
-Fabric==1.14.0
-honcho==1.0.1
+#Fabric==2.2.1
+Fabric3==1.14.post1
+honcho
+gunicorn==19.9.0
 
 # Email backends for Mailgun, Postmark, SendGrid and more
 # -------------------------------------------------------
@@ -84,6 +87,7 @@ django-easy-select2==1.4.0
 django_select2==6.0.2
 django-bootstrap4
 django-ajax-selects
+django-map-widgets==0.1.9
 
 
 # Models

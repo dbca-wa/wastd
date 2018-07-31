@@ -23,7 +23,7 @@ class TaxonFilter(django_filters.FilterSet):
 
         model = Taxon
         fields = ['taxonomic_name', 'vernacular_names', 'rank',
-                  'current', 'publication_status', 'taxon_gazettal__category']
+                  'current', 'publication_status', 'taxon_gazettal__category', ]
         filter_overrides = {
             models.CharField: {
                 'filter_class': django_filters.CharFilter,
