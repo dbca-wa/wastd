@@ -400,21 +400,7 @@ LEAFLET_CONFIG = {
     'DEFAULT_ZOOM': 5,
     'SCALE': 'metric',
     'MINIMAP': False,
-    'PLUGINS': {
-        # 'leaflet-tilelayer-geojson': {
-        #     'css': [],
-        #     'js': '//static.dpaw.wa.gov.au/static/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.js',
-        #     'auto-include': True,
-        #     },
-        # 'leaflet-markercluster': {
-        #     'css': [
-        #         '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.css',
-        #         '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.Default.css', ],
-        #     'js': '//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/leaflet.markercluster.js',
-        #     'auto-include': False,
-        #     },
-    },
-
+    'PLUGINS': {'forms': {'auto-include': True}},
     'TILES': [
         ('Aerial Image',
          '//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',

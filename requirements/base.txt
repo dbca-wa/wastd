@@ -141,7 +141,7 @@ redis==2.10.6
 # Map
 # ------------------------------------------------
 django-geojson>=2.9.1
-django-leaflet==0.23.0
+django-leaflet==0.24.0
 
 
 # Static and Media Storage
