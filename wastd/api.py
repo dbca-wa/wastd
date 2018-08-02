@@ -1887,6 +1887,7 @@ class CommunitySerializer(serializers.ModelSerializer):
             'name',
             'description',
             'community_related_areas',
+            'eoo'
         )
 
 # Taxonomy: Filters -------------------------------------------------------------------#
