@@ -531,63 +531,63 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        # 'file': {
-        #     'level': 'DEBUG',
-        #     'class': 'logging.handlers.RotatingFileHandler',
-        #     'filename': ROOT_DIR.path('logs', 'wastd.log'),
-        #     'formatter': 'verbose',
-        #     'maxBytes': '16777216'
-        # },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(ROOT_DIR.path('logs', 'wastd.log')),
+            'formatter': 'verbose',
+            'maxBytes': 16777216
+        },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True
         },
         'django.security.DisallowedHost': {
             'level': 'INFO',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True
         },
         'django': {
             'level': 'INFO',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True
         },
         "background_task": {
             'level': 'INFO',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True,
         },
         "silk": {
             'level': 'INFO',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True,
         },
         'wastd': {
             'level': 'DEBUG',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True,
         },
         'shared': {
             'level': 'DEBUG',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True,
         },
         'taxonomy': {
             'level': 'DEBUG',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True,
         },
         'conservation': {
             'level': 'DEBUG',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True,
         },
         'occurrence': {
             'level': 'DEBUG',
-            'handlers': ['console', ],
+            'handlers': ['console', 'file'],
             'propagate': True,
         },
     }
