@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Install Python module dependencies
           command: |
-            pip install virtualenv
+            sudo pip install virtualenv
             virtualenv venv
             . venv/bin/activate
             pip install --upgrade pip
