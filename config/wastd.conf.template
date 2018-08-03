@@ -1,0 +1,8 @@
+[program:wastd]
+user=www-data
+stopasgroup=true
+autostart=true
+autorestart=true
+directory=/var/www/projects/wastd
+command=/home/CORPORATEICT/florianm/.virtualenvs/wastd/bin/gunicorn config.wsgi --config config/gunicorn.ini
+environment=PATH="/home/CORPORATEICT/florianm/.virtualenvs/wastd/bin/:%(ENV_PATH)s",PYTHONUNBUFFERED="true"

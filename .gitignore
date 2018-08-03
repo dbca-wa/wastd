@@ -71,13 +71,14 @@ docs/_build/
 # coveralls settings
 .coveralls.yml
 
-# uwsgi config
+# web server configs
 config/wastd_uwsgi.ini
+config/wastd.conf
 
 # ingested data
 data/
 
-# iPython 
+# iPython
 docs/.ipynb_checkpoints/
 
 # local admin scripts
