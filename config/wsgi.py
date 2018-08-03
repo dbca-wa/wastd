@@ -21,6 +21,9 @@ d = os.path.abspath('.')
 dot_env = os.path.join(str(d), '.env')
 if os.path.exists(dot_env):
     confy.read_environment_file(dot_env)            # Must precede dj_static imports.
+    #print("wsgi.py: .env found")
+else:
+    print("wsgi.py: .env missing at".format(dot_env))
 
 from django.core.wsgi import get_wsgi_application   # noqa
 from dj_static import Cling, MediaCling             # noqa
