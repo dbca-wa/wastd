@@ -66,7 +66,8 @@ ALLOWED_HOSTS = ['localhost',
                  'strandings.dpaw.wa.gov.au',
                  'strandings.dbca.wa.gov.au',
                  'tsc.dbca.wa.gov.au',
-                 'aws-eco-002']
+                 'tsc-uat.dbca.wa.gov.au',
+                 'aws-eco-002.lan.fyi',]
 # env('DJANGO_ALLOWED_HOSTS')
 # END SITE CONFIGURATION
 
