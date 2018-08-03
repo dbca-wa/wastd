@@ -40,13 +40,13 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements/dev.txt" }}
+          - v2-dependencies-{{ checksum "requirements/dev.txt" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - v2-dependencies-
 
       - run:
           name: Install system packages for GDAL
-          command: sudo apt-get install -qq binutils libproj-dev gdal-bin
+          command: sudo apt-get update && sudo apt-get install -qq binutils libproj-dev gdal-bin
 
       - run:
           name: Install Python module dependencies
@@ -58,7 +58,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements/dev.txt" }}
+          key: v2-dependencies-{{ checksum "requirements/dev.txt" }}
 
       - run:
           name: Run tests
