@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tasks for WAStD."""
 from background_task import background
 import logging

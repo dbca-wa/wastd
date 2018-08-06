@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Fabric makefile.
 
 Convenience wrapper for often used operations.

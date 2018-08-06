@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 To understand why this file is here, please read:
 

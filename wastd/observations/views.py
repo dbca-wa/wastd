@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Views for WAStD."""
 # from django.shortcuts import render
 # from rest_framework.decorators import api_view, renderer_classes, permission_classes

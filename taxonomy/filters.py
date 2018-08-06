@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Taxonomy filters."""
 # from django.contrib.auth.models import User
 import django_filters
