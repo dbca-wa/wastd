@@ -106,7 +106,7 @@ function map_init(map, options) {
 
     /* Actions taken on each feature: title, popup, info preview */
     function oef (feature, layer) {
-        layer.bindLabel(feature.properties.leaflet_title);
+        layer.bindTooltip(feature.properties.leaflet_title);
         layer.bindPopup(feature.properties.as_html);
         // layer.on({mouseover: highlightFeature, click: resetHighlight});
     }

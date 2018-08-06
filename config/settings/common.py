@@ -400,7 +400,22 @@ LEAFLET_CONFIG = {
     'DEFAULT_ZOOM': 5,
     'SCALE': 'metric',
     'MINIMAP': False,
-    'PLUGINS': {'forms': {'auto-include': True}},
+    'PLUGINS': {
+        'forms': {'auto-include': True},
+        'markers': {
+            'css': [
+                '/static/css/leaflet.awesome-markers.css',
+                '/static/css/leaflet.markercluster.default.css',
+                '/static/css/leaflet.markercluster.css',
+                '/static/css/leaflet.label.css'
+            ],
+            'js': [
+                '/static/js/leaflet.awesome-markers.min.js',
+                '/static/js/leaflet.markercluster.js',
+            ],
+            'auto-include': True
+        },
+    },
     'TILES': [
         ('Aerial Image',
          '//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',

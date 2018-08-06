@@ -180,12 +180,12 @@ function map_init(map, options) {
 
     /* Actions taken on each feature: title, popup, info preview */
     function oef (feature, layer) {
-        layer.bindLabel("Extent of Occurrence");
-        layer.bindPopup("Extent of Occurrence");
+        layer.bindTooltip("Extent of Occurrence");
+        // layer.bindPopup("Extent of Occurrence");
     }
 
     function oef_rel (feature, layer) {
-      layer.bindLabel(feature.properties.label);
+      layer.bindTooltip(feature.properties.label);
       layer.bindPopup(feature.properties.as_html);
     }
 
