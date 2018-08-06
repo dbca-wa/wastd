@@ -69,6 +69,12 @@ def wsgi():
     local('honcho run uwsgi --http 0.0.0.0:8220 --wsgi-file config/wsgi.py')
 
 
+def ulous():
+    """Serve fabulously with green unicorn."""
+    static()
+    local('honcho run gunicorn config.wsgi --config config/gunicorn.ini')
+
+
 def pep():
     """Run PEP style compliance audit and write warnings to logs/pepXXX.log."""
     local('pydocstyle > logs/pep257.log', capture=True)
