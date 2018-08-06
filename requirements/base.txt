@@ -101,6 +101,7 @@ django-fsm-log==1.5.0
 django-fsm-admin==1.2.4
 django-extra-fields==1.0.0
 django-synctool
+phonenumbers
 django-phonenumber-field==2.0.0
 django-mptt
 
