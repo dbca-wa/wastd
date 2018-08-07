@@ -100,9 +100,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'silk.middleware.SilkyMiddleware',
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'dpaw_utils.middleware.SSOLoginMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 MIDDLEWARE = MIDDLEWARE_CLASSES
