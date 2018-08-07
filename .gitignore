@@ -58,6 +58,7 @@ node_modules/
 
 # User-uploaded media
 wastd/media/
+media/
 
 # Hitch directory
 tests/.hitch
