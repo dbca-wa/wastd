@@ -64,8 +64,6 @@ urlpatterns = [
     re_path(r'^api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
     re_path(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 
-    re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')),
-
     # GraphQL
     # url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=schema)),
 
@@ -126,4 +124,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns += [re_path(r'^__debug__/', include(debug_toolbar.urls)), ]
+    urlpatterns += [
+        re_path(r'^__debug__/', include(debug_toolbar.urls)),
+        re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')),
+    ]

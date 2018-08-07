@@ -68,6 +68,7 @@ THIRD_PARTY_APPS = (
     # 'dynamic_rest',                 # Parameterised API queries
     'mptt',                         # Graph database: tree models
     'background_task',              # Job queue
+    'silk'
 )
 
 # Apps specific for this project go here.
