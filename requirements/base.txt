@@ -76,7 +76,6 @@ Sphinx>=1.6.1
 flake8
 pydot
 sphinx_rtd_theme
-pygraphviz
 
 
 # Forms
