@@ -12,6 +12,7 @@ from __future__ import absolute_import, unicode_literals
 import environ
 from confy import env, database
 from unipath import Path
+import os
 
 # import confy
 # confy.read_environment_file()
@@ -266,6 +267,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 STATIC_ROOT = str(ROOT_DIR('staticfiles'))
+if not os.path.exists(STATIC_ROOT):
+    os.mkdir(STATIC_ROOT)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
@@ -298,6 +301,8 @@ COMPRESS_URL = STATIC_URL
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = str(ROOT_DIR('media'))
+if not os.path.exists(MEDIA_ROOT):
+    os.mkdir(MEDIA_ROOT)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
@@ -503,6 +508,13 @@ MAX_ATTEMPTS = 5
 MAX_RUN_TIME = 7200  # 2h
 
 
+# Data
+# ------------------------------------------------------------------------------
+# Local cache of downloaded ODK data
+DATA_ROOT = str(ROOT_DIR('data'))
+if not os.path.exists(DATA_ROOT):
+    os.mkdir(DATA_ROOT)
+
 # LOGGING CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -511,6 +523,9 @@ MAX_RUN_TIME = 7200  # 2h
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+LOG_ROOT = str(ROOT_DIR('logs'))
+if not os.path.exists(LOG_ROOT):
+    os.mkdir(LOG_ROOT)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

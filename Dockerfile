@@ -15,7 +15,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
-RUN mkdir -p data logs staticfiles
 COPY config ./config
 COPY conservation ./conservation
 COPY occurrence ./occurrence
@@ -26,11 +25,10 @@ COPY wastd ./wastd
 COPY requirements ./requirements
 COPY manage.py ./
 
-ENV SECRET_KEY="replace-this-key-at-runtime"
-
-RUN pip install -U pip \
-  && pip install --no-cache-dir -r requirements/base.txt
+RUN pip install --no-cache-dir -r requirements/base.txt
 RUN python manage.py collectstatic --noinput
 
+HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 \
+  CMD ["wget", "-q", "-O", "-", "http://localhost:8220/"]
 EXPOSE 8220
 CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini"]
