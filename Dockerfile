@@ -1,28 +1,16 @@
 FROM python:3.7.0-stretch
-MAINTAINER Florian.Mayer@dbca.wa.gov.au
+LABEL maintainer=Florian.Mayer@dbca.wa.gov.au
+LABEL version="0.0.2"
+LABEL description="Python 3.7.0-stretch plus Latex, GDAL and LDAP binaries."
 
+# Already installed: binutils fontconfig gcc git lixrender1 make libssl-dev tar wget xz-utils
+# Installing extras: Latex, GDAL, LDAP/auth
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
   -o Acquire::Retries=10 --no-install-recommends \
-    gcc \
-    binutils \
-    python-dev \
-    make \
-    wget \
-    tar \
-    xz-utils \
-    git \
-    texlive-full \
-    fontconfig \
-    libxrender1 \
-    lmodern \
-    libmagic-dev \
-    libproj-dev \
-    gdal-bin \
-    libsasl2-dev \
-    libldap2-dev \
-    libssl-dev \
-    python-enchant \
+    texlive-full lmodern libmagic-dev \
+    libproj-dev gdal-bin \
+    python-dev libsasl2-dev libldap2-dev python-enchant \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -36,11 +24,13 @@ COPY taxonomy ./taxonomy
 COPY utility ./utility
 COPY wastd ./wastd
 COPY requirements ./requirements
-COPY config/gunicorn.ini manage.py ./
+COPY manage.py ./
+
+ENV SECRET_KEY="replace-this-key-at-runtime"
 
 RUN pip install -U pip \
   && pip install --no-cache-dir -r requirements/base.txt
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8220
-CMD ["gunicorn", "config.wsgi", "--config", "gunicorn.ini"]
+CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini"]
