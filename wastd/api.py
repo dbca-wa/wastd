@@ -70,7 +70,11 @@ from wastd.observations.models import (
     TurtleNestObservation, TurtleNestDisturbanceObservation,
     TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
 # from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
-from wastd.observations.utils import symlink_resources
+try:
+    from wastd.observations.utils import symlink_resources
+except:
+    # Docker image build migrate falls over this import
+    pass
 from wastd.users.models import User
 
 from taxonomy.models import (

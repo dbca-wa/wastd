@@ -1,9 +1,7 @@
 FROM python:3.7.0-stretch
 LABEL maintainer=Florian.Mayer@dbca.wa.gov.au
-LABEL description="Python 3.7.0-slim-stretch plus Latex, GDAL and LDAP binaries."
+LABEL description="Python 3.7.0-stretch plus Latex, GDAL and LDAP."
 
-# Already installed: binutils fontconfig gcc lixrender1 make libssl-dev tar wget xz-utils
-# Installing extras: Latex, GDAL, LDAP/auth
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
   -o Acquire::Retries=10 --no-install-recommends \
@@ -18,5 +16,5 @@ RUN pip install --no-cache-dir -r requirements/dev.txt
 RUN python manage.py collectstatic --clear --noinput -l
 EXPOSE 8220
 CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini"]
-HEALTHCHECK --interval=1m --timeout=10s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 \
   CMD ["wget", "-q", "-O", "-", "http://localhost:8220/healthcheck"]

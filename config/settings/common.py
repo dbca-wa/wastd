@@ -143,9 +143,9 @@ SELECT2_CACHE_BACKEND = "select2"
 # Names
 # ------------------------------------------------------------------------------
 # https://github.com/jakubroztocil/django-settings-export
-SITE_NAME = env('SITE_NAME', default="SITE NAME")
-SITE_TITLE = env('SITE_TITLE', default="SITE TITLE")
-SITE_CODE = env('SITE_CODE', default="SITE CODE")
+SITE_NAME = env('SITE_NAME', default="Threatened Species and Communities")
+SITE_TITLE = env('SITE_TITLE', default="TSC")
+SITE_CODE = env('SITE_CODE', default="TSC")
 
 SETTINGS_EXPORT = [
     'SITE_NAME',
@@ -158,7 +158,7 @@ SETTINGS_EXPORT = [
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env('DJANGO_DEBUG', default=False)
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
-ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default="localhost")
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default=["localhost", ])
 SILKY_PYTHON_PROFILER = True
 
 # FIXTURE CONFIGURATION
