@@ -92,4 +92,4 @@ def test():
 
 def doc():
     """Compile docs, draw data models and transitions."""
-    local("cd docs && make html && cd ..")
+    local("mkdir -p docs && cd docs && make html && cd ..")

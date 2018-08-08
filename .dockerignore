@@ -1,9 +1,15 @@
+.circleci/
 data/
+docs/
+fixtures/
+htmlcov/
 media/
+node_modules/
+*pycache*
 .cov*
 .editorconfig
 .env
-.git
+.git/
 .gitattributes
 .gitignore
 .pylintrc
