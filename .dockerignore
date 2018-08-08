@@ -1,1 +1,8 @@
 media/
+.env
+.cov*
+.git/
+.gitignore
+dbperf
+hoit
+pytest.ini

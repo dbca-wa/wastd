@@ -15,16 +15,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
-COPY config ./config
-COPY conservation ./conservation
-COPY occurrence ./occurrence
-COPY shared ./shared
-COPY taxonomy ./taxonomy
-COPY utility ./utility
-COPY wastd ./wastd
-COPY requirements ./requirements
-COPY manage.py ./
-
+COPY . .
 RUN pip install --no-cache-dir -r requirements/base.txt
 RUN python manage.py collectstatic --noinput
 
