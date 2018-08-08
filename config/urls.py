@@ -42,7 +42,7 @@ urlpatterns = [
     re_path(r'^communities/$', CommunityListView.as_view(), name='community-list'),
 
 
-    re_path(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
+    re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/about.html'), name='healthcheck'),
 
     re_path(r'^grappelli/', include('grappelli.urls')),  # grappelli URLs
     re_path(r'^ajax_select/', include(ajax_select_urls)),  # ajax select URLs
@@ -105,6 +105,7 @@ urlpatterns = [
     #         geometry_field="geom"),
     #     name='area-tiled-geojson'),
 
+    re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')),
     re_path(r'^action/update-taxon/$', update_taxon, name="update-taxon"),
 
     re_path(r'^400/$', default_views.bad_request,
@@ -126,5 +127,4 @@ if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [
         re_path(r'^__debug__/', include(debug_toolbar.urls)),
-        re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')),
     ]

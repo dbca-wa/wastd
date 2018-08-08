@@ -15,7 +15,7 @@ from confy import env
 
 # DEBUG
 # ------------------------------------------------------------------------------
-DEBUG = env('DJANGO_DEBUG', default=True)
+DEBUG = True
 ALLOWED_HOSTS = ["localhost", ]
 
 
@@ -38,7 +38,7 @@ EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
 #     }
 # }
 
-# Debug apps: django-debug-toolbar, silk
+# Debug apps: django-debug-toolbar
 # ------------------------------------------------------------------------------
 # MW = (
 #     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -60,13 +60,3 @@ DEBUG_TOOLBAR_CONFIG = {
     ],
     'SHOW_TEMPLATE_CONTEXT': True,
 }
-
-# django-extensions
-# ------------------------------------------------------------------------------
-# INSTALLED_APPS += ()
-
-# TESTING
-# ------------------------------------------------------------------------------
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
-
-# Your local stuff: Below this line define 3rd party library settings

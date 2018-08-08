@@ -78,7 +78,6 @@ def ulous():
 def pep():
     """Run PEP style compliance audit and write warnings to logs/pepXXX.log."""
     local('pydocstyle > logs/pep257.log', capture=True)
-    local('flake8', capture=True)
 
 
 def test():

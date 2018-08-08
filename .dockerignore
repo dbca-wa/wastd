@@ -1,8 +1,10 @@
+data/
 media/
-.env
 .cov*
-.git/
+.editorconfig
+.env
+.git
+.gitattributes
 .gitignore
-dbperf
+.pylintrc
 hoit
-pytest.ini

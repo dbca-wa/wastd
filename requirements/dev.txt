@@ -12,7 +12,6 @@ factory_boy
 pytest-django
 pytest-sugar
 
-
 # Debug
 # ------------------------------------------------
 django-debug-toolbar==1.9.1

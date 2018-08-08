@@ -22,7 +22,7 @@ from .common import *  # noqa
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Raises ImproperlyConfigured exception if DJANGO_SECRET_KEY not in os.environ
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+SECRET_KEY = env('DJANGO_SECRET_KEY', default="CHANGEME")
 
 
 # This ensures that Django will be able to detect a secure connection
@@ -61,14 +61,16 @@ X_FRAME_OPTIONS = 'DENY'
 # ------------------------------------------------------------------------------
 # Hosts/domain names that are valid for this site
 # See https://docs.djangoproject.com/en/1.6/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['localhost',
-                 'strandings-test.dpaw.wa.gov.au',
-                 'strandings.dpaw.wa.gov.au',
-                 'strandings.dbca.wa.gov.au',
-                 'tsc.dbca.wa.gov.au',
-                 'tsc-uat.dbca.wa.gov.au',
-                 'aws-eco-002.lan.fyi',]
-# env('DJANGO_ALLOWED_HOSTS')
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS',
+                    default=[
+                        'localhost',
+                        '0.0.0.0',
+                        'strandings-test.dpaw.wa.gov.au',
+                        'strandings.dpaw.wa.gov.au',
+                        'strandings.dbca.wa.gov.au',
+                        'tsc.dbca.wa.gov.au',
+                        'tsc-uat.dbca.wa.gov.au',
+                        'aws-eco-002.lan.fyi', ])
 # END SITE CONFIGURATION
 
 INSTALLED_APPS += ('gunicorn', )
