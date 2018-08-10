@@ -14,7 +14,7 @@ from __future__ import absolute_import, unicode_literals
 # import os
 # from boto.s3.connection import OrdinaryCallingFormat, SubdomainCallingFormat
 # from django.utils import six
-from confy import env, database
+from confy import env
 
 from .common import *  # noqa
 
@@ -43,13 +43,13 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_HSTS_SECONDS = 60
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True)
 SECURE_CONTENT_TYPE_NOSNIFF = env('DJANGO_SECURE_CONTENT_TYPE_NOSNIFF', default=True)
-SECURE_BROWSER_XSS_FILTER = True
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_HTTPONLY = True
+SECURE_BROWSER_XSS_FILTER = env('DJANGO_SECURE_BROWSER_XSS_FILTER', default=True)
+SESSION_COOKIE_SECURE = env('DJANGO_SESSION_COOKIE_SECURE', default=True)
+SESSION_COOKIE_HTTPONLY = env('DJANGO_SESSION_COOKIE_HTTPONLY', default=True)
 SECURE_SSL_REDIRECT = env('DJANGO_SECURE_SSL_REDIRECT', default=False)
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
-X_FRAME_OPTIONS = 'DENY'
+CSRF_COOKIE_SECURE = env('DJANGO_CSRF_COOKIE_SECURE', default=True)
+CSRF_COOKIE_HTTPONLY = env('DJANGO_CSRF_COOKIE_HTTPONLY', default=True)
+X_FRAME_OPTIONS = env('DJANGO_X_FRAME_OPTIONS', default='DENY')
 
 # Session management
 # http://niwinz.github.io/django-redis/latest/#_configure_as_cache_backend
@@ -72,8 +72,6 @@ ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS',
                         'tsc-uat.dbca.wa.gov.au',
                         'aws-eco-002.lan.fyi', ])
 # END SITE CONFIGURATION
-
-INSTALLED_APPS += ('gunicorn', )
 
 
 # STORAGE CONFIGURATION
@@ -116,13 +114,6 @@ INSTALLED_APPS += ('gunicorn', )
 # COMPRESS_URL = STATIC_URL
 # COMPRESS_ENABLED = env('COMPRESS_ENABLED', default=True)
 
-# EMAIL
-# ------------------------------------------------------------------------------
-EMAIL_HOST = env('EMAIL_HOST', default='smtp.corporateict.domain')
-EMAIL_PORT = env('EMAIL_PORT', default=25)
-DEFAULT_FROM_EMAIL = '"TSC" <tsc-noreply@dbca.wa.gov.au>'
-EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[TSC] ')
-
 # TEMPLATE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See:
@@ -132,10 +123,6 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader', ]), ]
 
-# DATABASE CONFIGURATION
-# ------------------------------------------------------------------------------
-# Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-DATABASES = {'default': database.config()}
 
 # CACHING
 # ------------------------------------------------------------------------------

@@ -105,7 +105,6 @@ urlpatterns = [
     #         geometry_field="geom"),
     #     name='area-tiled-geojson'),
 
-    re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')),
     re_path(r'^action/update-taxon/$', update_taxon, name="update-taxon"),
 
     re_path(r'^400/$', default_views.bad_request,
@@ -127,4 +126,5 @@ if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [
         re_path(r'^__debug__/', include(debug_toolbar.urls)),
+        re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')),
     ]

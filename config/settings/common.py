@@ -21,6 +21,11 @@ ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = 
 BASE_DIR = Path(__file__).ancestor(3)
 APPS_DIR = ROOT_DIR.path('wastd')
 
+# DEBUG
+# ------------------------------------------------------------------------------
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
+DEBUG = env('DJANGO_DEBUG', default=False)
+
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -69,7 +74,8 @@ THIRD_PARTY_APPS = (
     # 'dynamic_rest',                 # Parameterised API queries
     'mptt',                         # Graph database: tree models
     'background_task',              # Job queue
-    'silk'
+
+    'gunicorn'                      # Web server
 )
 
 # Apps specific for this project go here.
@@ -82,8 +88,16 @@ LOCAL_APPS = (
     'conservation.apps.ConservationConfig',
 )
 
+DEBUG_APPS = (
+    'silk',                         # Performance profiling
+    'debug_toolbar',                # Debug toolbar
+)
+
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
+if DEBUG:
+    INSTALLED_APPS += DEBUG_APPS
 
 
 # SECRET CONFIGURATION
@@ -101,12 +115,23 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'silk.middleware.SilkyMiddleware',
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
+)
+
+MIDDLEWARE_CLASSES_LAST = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'dpaw_utils.middleware.SSOLoginMiddleware',
+)
+
+DEBUG_MIDDLEWARE_CLASSES = (
+    'silk.middleware.SilkyMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += DEBUG_MIDDLEWARE_CLASSES
+
+MIDDLEWARE_CLASSES += MIDDLEWARE_CLASSES_LAST
 
 MIDDLEWARE = MIDDLEWARE_CLASSES
 
@@ -153,13 +178,26 @@ SETTINGS_EXPORT = [
     'SITE_CODE',
 ]
 
-# DEBUG
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = env('DJANGO_DEBUG', default=False)
+
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
-ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default=["localhost", ])
-SILKY_PYTHON_PROFILER = True
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS',
+                    default=[
+                        'localhost',
+                        '0.0.0.0',
+                        'strandings-test.dpaw.wa.gov.au',
+                        'strandings.dpaw.wa.gov.au',
+                        'strandings.dbca.wa.gov.au',
+                        'tsc.dbca.wa.gov.au',
+                        'tsc-uat.dbca.wa.gov.au',
+                        'aws-eco-002.lan.fyi', ])
+
+
+# Debug toolbar
+# ------------------------------------------------------------------------------
+DEBUG_TOOLBAR_CONFIG = {
+    'DISABLE_PANELS': ['debug_toolbar.panels.redirects.RedirectsPanel', ],
+    'SHOW_TEMPLATE_CONTEXT': True,
+}
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -172,11 +210,11 @@ FIXTURE_DIRS = (
 # ------------------------------------------------------------------------------
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
                     default='django.core.mail.backends.smtp.EmailBackend')
-
-# Email
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.corporateict.domain')
 EMAIL_PORT = env('EMAIL_PORT', default=25)
-DEFAULT_FROM_EMAIL = '"WA Strandings DB" <strandings-noreply@dpaw.wa.gov.au>'
+DEFAULT_FROM_EMAIL = '"TSC" <tsc-noreply@dbca.wa.gov.au>'
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[TSC] ')
+
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -507,6 +545,15 @@ BACKGROUND_TASK_RUN_ASYNC = True
 MAX_ATTEMPTS = 5
 MAX_RUN_TIME = 7200  # 2h
 
+# Django-silk performance monitoring
+# ------------------------------------------------------------------------------
+# https://github.com/jazzband/django-silk#limiting-requestresponse-data
+SILKY_MAX_RECORDED_REQUESTS = 10**4
+# https://github.com/jazzband/django-silk#meta-profiling
+SILKY_META = True
+# https://github.com/jazzband/django-silk#profiling
+SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER_BINARY = True
 
 # Data
 # ------------------------------------------------------------------------------
