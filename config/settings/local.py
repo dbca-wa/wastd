@@ -13,12 +13,6 @@ import socket
 import os
 from confy import env
 
-# DEBUG
-# ------------------------------------------------------------------------------
-DEBUG = True
-ALLOWED_HOSTS = ["localhost", "*"]
-
-
 # Mail settings
 # ------------------------------------------------------------------------------
 EMAIL_PORT = 1025

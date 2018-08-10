@@ -165,7 +165,7 @@ CACHES = {
 
 SELECT2_CACHE_BACKEND = "select2"
 
-# Names
+# Branding
 # ------------------------------------------------------------------------------
 # https://github.com/jakubroztocil/django-settings-export
 SITE_NAME = env('SITE_NAME', default="Threatened Species and Communities")
@@ -180,16 +180,19 @@ SETTINGS_EXPORT = [
 
 
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
-ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS',
-                    default=[
-                        'localhost',
-                        '0.0.0.0',
-                        'strandings-test.dpaw.wa.gov.au',
-                        'strandings.dpaw.wa.gov.au',
-                        'strandings.dbca.wa.gov.au',
-                        'tsc.dbca.wa.gov.au',
-                        'tsc-uat.dbca.wa.gov.au',
-                        'aws-eco-002.lan.fyi', ])
+if DEBUG:
+    ALLOWED_HOSTS = ["localhost", "*"]
+else:
+    ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS',
+                        default=[
+                            'localhost',
+                            '0.0.0.0',
+                            'strandings-test.dpaw.wa.gov.au',
+                            'strandings.dpaw.wa.gov.au',
+                            'strandings.dbca.wa.gov.au',
+                            'tsc.dbca.wa.gov.au',
+                            'tsc-uat.dbca.wa.gov.au',
+                            'aws-eco-002.lan.fyi', ])
 
 
 # Debug toolbar
