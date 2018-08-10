@@ -11,10 +11,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
-COPY . .
+COPY requirements/ ./requirements/
 RUN pip install --no-cache-dir -r requirements/dev.txt
+COPY . .
 RUN python manage.py collectstatic --clear --noinput -l
 EXPOSE 8220
 CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini"]
-HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=1m --timeout=10s --start-period=10s --retries=3 \
   CMD ["wget", "-q", "-O", "-", "http://localhost:8220/healthcheck"]
