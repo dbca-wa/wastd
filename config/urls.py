@@ -42,7 +42,7 @@ urlpatterns = [
     re_path(r'^communities/$', CommunityListView.as_view(), name='community-list'),
 
 
-    re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/about.html'), name='healthcheck'),
+    re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/healthcheck.html'), name='healthcheck'),
 
     re_path(r'^grappelli/', include('grappelli.urls')),  # grappelli URLs
     re_path(r'^ajax_select/', include(ajax_select_urls)),  # ajax select URLs

@@ -10,27 +10,13 @@
   <meta name="author" content="Department of Biodiversity, Conservation and Attractions WA">
   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
-  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    {% block css %}
+    <!-- bootstrap can't be compressed  -->
     {% bootstrap_css %}
-    <!-- <link
-    rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
-    <!-- <link rel="stylesheet" href="//unpkg.com/leaflet@1.0.1/dist/leaflet.css" /> -->
-    <!-- <link rel="stylesheet" href="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.css" /> -->
-    <!-- <link rel="stylesheet" href="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/MarkerCluster.Default.css" /> -->
-
-    <!--
-    <link rel="stylesheet" href="{% static 'css/leaflet.label.css' %}">
-    <link rel="stylesheet" href="{% static 'css/leaflet.awesome-markers.css' %}">
-    <link rel="stylesheet" href="{% static 'css/leaflet.markercluster.css' %}">
-    <link rel="stylesheet" href="{% static 'css/leaflet.markercluster.default.css' %}">
-     -->
-    <!-- Your stuff: Third-party css libraries go here -->
+    {% block css %}
     {% compress css %}
     {% leaflet_css %}
     <link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.css' %}">
@@ -268,10 +254,7 @@
   </script>
 
   {% compress js %}
-<!--   {% leaflet_js %}
-  <script src="{% static 'js/leaflet.awesome-markers.min.js' %}"></script>
-  <script src="{% static 'js/leaflet.markercluster.js' %}"></script>
-  <script src="{% static 'js/leaflet.label.js' %}"></script> -->
+  {% leaflet_js %}
   <script src="{% static 'js/fontawesome.js' %}"></script>
   <script src="{% static 'js/project.js' %}"></script>
   {% endcompress %}
