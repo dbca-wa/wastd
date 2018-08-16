@@ -331,12 +331,6 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder'
 )
 
-# django-compressor
-# ------------------------------------------------------------------------------
-INSTALLED_APPS += ("compressor", )
-COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_URL = STATIC_URL
-
 
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -347,6 +341,14 @@ if not os.path.exists(MEDIA_ROOT):
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
+
+
+# django-compressor
+# ------------------------------------------------------------------------------
+INSTALLED_APPS += ("compressor", )
+COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_URL = STATIC_URL
+
 
 # URL Configuration
 # ------------------------------------------------------------------------------
