@@ -226,7 +226,7 @@ class TaxonAreaInline(admin.StackedInline):
     model = TaxonArea
     form = TaxonAreaForm
     extra = 1
-    classes = ('wide extrapretty',)
+    # classes = ('wide extrapretty',)
     formfield_overrides = formfield_overrides
 
 
@@ -252,6 +252,7 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
         # ('parent', TreeRelatedFieldListFilter),  # performance bomb - DO NOT ENABLE
     )
 
+    readonly_fields = ('parent', )
     inlines = [TaxonAreaInline, ]
     formfield_overrides = formfield_overrides
 
