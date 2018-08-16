@@ -56,6 +56,11 @@ li.breadcrumb-item.active a {color: black;}
 .leaflet-popup-content {min-width: 540px; padding: 10px; word-wrap: break-word;}
 /*.leaflet-popup-content-wrapper {max-height: 500px;}*/
 
+
+/* Leaflet setTransform bugfix */
+/* https://github.com/Leaflet/Leaflet/issues/3575 */
+.leaflet-tile {outline: 1px solid transparent;}
+
 /* popup image margins */
 /*.popupimage {margin-top: 15px; margin-bottom: 15px;}*/
 
