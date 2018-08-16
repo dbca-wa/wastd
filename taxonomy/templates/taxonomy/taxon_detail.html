@@ -225,6 +225,11 @@ function map_init(map, options) {
         // layer.bindPopup("Extent of Occurrence");
     }
 
+    function oefBioSys(feature, layer){
+      layer.bindTooltip("Feature ID");
+      layer.bindPopup("Feature popup with edit link");
+    }
+
     function oef_rel (feature, layer) {
       layer.bindTooltip(feature.properties.label);
       layer.bindPopup(feature.properties.as_html);
@@ -284,7 +289,12 @@ function map_init(map, options) {
     //     {style: style, pointToLayer: ptl, onEachFeature: oef}
     // ).addTo(map);
 
-
+    /*
+     * BioSys Occurrences
+     */
+    $.getJSON("https://biosys-uat.dbca.wa.gov.au/api/record/?name_id={{ original.name_id }}", function (data) {
+        L.geoJson(data, {style: style, onEachFeature: oefBioSys}).addTo(map);
+    });
 }
 </script>
 {% endblock %}
