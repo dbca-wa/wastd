@@ -40,7 +40,12 @@ leaflet_settings = {
         'map_height': '400px',
         'map_width': '100%',
         'display_raw': 'true',
-        'map_srid': 4326, })}
+        'map_srid': 4326,
+        # 'settings_overrides': {
+        #     'DEFAULT_CENTER': (-25, 120),
+        #     'DEFAULT_ZOOM': 5
+        # } # doesn't fix the leaflet tiles now showing
+    })}
 
 formfield_overrides = {
     geo_models.PointField: leaflet_settings,

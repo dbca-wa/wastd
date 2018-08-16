@@ -453,6 +453,7 @@ GRAPPELLI_ADMIN_TITLE = "Data Entry and Curation Portal"
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (-25, 120),
     'DEFAULT_ZOOM': 5,
+    # 'SPATIAL_EXTENT': (-180, -90, 180, 90), # supposed to fix inline mapwidget but doesn't
     'SCALE': 'metric',
     'MINIMAP': False,
     'PLUGINS': {

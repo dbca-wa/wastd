@@ -59,7 +59,8 @@ li.breadcrumb-item.active a {color: black;}
 
 /* Leaflet setTransform bugfix */
 /* https://github.com/Leaflet/Leaflet/issues/3575 */
-.leaflet-tile {outline: 1px solid transparent;}
+.leaflet-tile {outline: 1px solid transparent; visibility: visible!important}
+
 
 /* popup image margins */
 /*.popupimage {margin-top: 15px; margin-bottom: 15px;}*/
