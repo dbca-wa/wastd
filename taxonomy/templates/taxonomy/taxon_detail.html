@@ -166,20 +166,17 @@
 
 function map_init(map, options) {
 
-
-    /* Helper functions */
-
     /* Point style */
-    var style = {
+    var pointstyle = {
         "clickable": true
-    }
+    };
 
     /* Polygon style */
     var polystyle = {
         "color": "#0009ff",
         "weight": 1,
         "opacity": 0.65
-    }
+    };
 
     /* Map a feature to an icon class */
     function getIcon(feature){
@@ -218,7 +215,6 @@ function map_init(map, options) {
 
         return L.marker(latlng, {icon: icon});
         //title: feature.properties.leaflet_title,
-
     }
 
     /* Actions taken on each feature: title, popup, info preview */
@@ -227,18 +223,12 @@ function map_init(map, options) {
         // layer.bindPopup("Extent of Occurrence");
     }
 
-    function oefBioSys(feature, layer){
-      layer.bindTooltip("Feature ID");
-      layer.bindPopup("Feature popup with edit link");
-    }
-
     function oef_rel (feature, layer) {
       layer.bindTooltip(feature.properties.label);
       layer.bindPopup(feature.properties.as_html);
     }
 
     /* Data loading */
-
     /*
      * Option 1: List view queryset plus djgeojson filter tag = GeoJSON
      * Ideal for filters with sensible defaults (e.g. show only current year)
@@ -246,23 +236,21 @@ function map_init(map, options) {
      */
     var eoo = L.geoJson(
         {{ original|geojsonfeature:"canonical_name,taxonomic_name:eoo"|safe }},
-        // {clipTiles: true, unique: getUnique},
-        {style: style, onEachFeature: oef}
+        {style: pointstyle, onEachFeature: oef}
     );
     eoo.addTo(map);
     map.fitBounds(eoo.getBounds());
 
     L.geoJson(
         {{ original.taxon_related_areas.all|geojsonfeature:"label,as_html:geom"|safe }},
-        // {clipTiles: true, unique: getUnique},
-        {style: polystyle,onEachFeature: oef_rel}
+        {style: polystyle, onEachFeature: oef_rel}
     ).addTo(map);
 
     // var markers = L.markerClusterGroup();
     // var gj_markers = L.geoJson(
     //     {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
     //     // {clipTiles: true, unique: getUnique},
-    //     {style: style, pointToLayer: ptl, onEachFeature: oef});
+    //     {style: pointstyle, pointToLayer: ptl, onEachFeature: oef});
     // markers.addLayer(gj_markers);
     // map.addLayer(markers);
 
@@ -288,15 +276,64 @@ function map_init(map, options) {
     // var geojsonTileLayer = new L.TileLayer.GeoJSON(
     //     'data/{z}/{x}/{y}.geojson',
     //     {clipTiles: true, unique: getUnique},
-    //     {style: style, pointToLayer: ptl, onEachFeature: oef}
+    //     {style: pointstyle, pointToLayer: ptl, onEachFeature: oef}
     // ).addTo(map);
 
     /*
      * BioSys Occurrences
      */
-    $.getJSON("https://biosys-uat.dbca.wa.gov.au/api/record/?name_id={{ original.name_id }}", function (data) {
-        L.geoJson(data, {style: style, onEachFeature: oefBioSys}).addTo(map);
-    });
+    // using Fetch API
+
+    function ptlBioSys (feature, latlng) {
+      return new L.Marker(feature.geometry.coordinates);
+    }
+
+    function oefBioSys(feature, layer) {
+      layer.bindPopup(
+        '<strong>' + feature.properties.species_name + '</strong><br />' +
+        '<p><strong>Observed on</strong> ' + feature.properties.data.datetime + '</p>' +
+        '<p><a class="btn btn-primary btn-sm" target="_" ' +
+        'href="https://biosys-uat.dbca.wa.gov.au/#/data/projects/61/datasets/' +
+        feature.properties.dataset + '/record/' + feature.id + '">Edit this record</a></p>'
+      );
+      layer.bindTooltip("Feature ID " + feature.id);
+
+    }
+
+    /* Turn a BioSys API record into a GeoJSON Feature. */
+    function geoJSONify(json_record) {
+      return {
+        type: 'Feature',
+        id: json_record.id,
+        geometry: {type: 'Point', coordinates: json_record.geometry.coordinates},
+        properties: json_record
+      };
+    }
+
+    function geoJSONfc(gj_feature_array) {
+      return {"type": "FeatureCollection", "features": gj_feature_array.map(geoJSONify)}
+    }
+
+    /* Authentication headers for BioSys API. */
+    var hdr = new Headers();
+    hdr.append("Authorization", 'Basic ' + btoa('{{ settings.BIOSYS_UN }}:{{ settings.BIOSYS_PW }}'));
+
+    fetch(
+      "{{ settings.BIOSYS_TSC_URL|safe }}{{ original.name_id }}", {credentials: "include", headers: hdr}
+    ).then(
+      function (response) {return response.json();}
+    ).then(
+      function(json) {
+        var gj_fc = geoJSONfc(json);
+        console.log(gj_fc);
+        var gj_markers = L.geoJson(gj_fc, {style: pointstyle, onEachFeature: oefBioSys});
+        var markers = L.markerClusterGroup();
+        markers.addLayer(gj_markers);
+        map.addLayer(markers);
+      }
+    );
+
+
 }
 </script>
 {% endblock %}

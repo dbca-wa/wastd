@@ -172,12 +172,6 @@ SITE_NAME = env('SITE_NAME', default="Threatened Species and Communities")
 SITE_TITLE = env('SITE_TITLE', default="TSC")
 SITE_CODE = env('SITE_CODE', default="TSC")
 
-SETTINGS_EXPORT = [
-    'SITE_NAME',
-    'SITE_TITLE',
-    'SITE_CODE',
-]
-
 
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
 if DEBUG:
@@ -448,12 +442,20 @@ GRAPPELLI_ADMIN_TITLE = "Data Entry and Curation Portal"
 # FILTERS_HELP_TEXT_EXCLUDE = True
 # FILTERS_HELP_TEXT_FILTER = False
 
+# Biosys
+# ------------------------------------------------------------------------------
+BIOSYS_TSC_URL = env(
+    "BIOSYS_TSC",
+    default="https://biosys-uat.dbca.wa.gov.au/api/record/?project_id=61&name_id=")
+BIOSYS_UN = env("BIOSYS_UN", default="")
+BIOSYS_PW = env("BIOSYS_PW", default="")
+
 # Leaflet maps
 # ------------------------------------------------------------------------------
 LEAFLET_CONFIG = {
+    'SPATIAL_EXTENT': (-180, -90, 180, 90),
     'DEFAULT_CENTER': (-25, 120),
     'DEFAULT_ZOOM': 5,
-    # 'SPATIAL_EXTENT': (-180, -90, 180, 90), # supposed to fix inline mapwidget but doesn't
     'SCALE': 'metric',
     'MINIMAP': False,
     'PLUGINS': {
@@ -669,3 +671,13 @@ LOGGING = {
         },
     }
 }
+
+
+SETTINGS_EXPORT = [
+    'SITE_NAME',
+    'SITE_TITLE',
+    'SITE_CODE',
+    'BIOSYS_TSC_URL',
+    'BIOSYS_UN',
+    'BIOSYS_PW'
+]

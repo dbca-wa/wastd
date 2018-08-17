@@ -231,7 +231,7 @@ class TaxonAreaInline(admin.StackedInline):
     model = TaxonArea
     form = TaxonAreaForm
     extra = 1
-    # classes = ('wide extrapretty',)
+    classes = ('wide extrapretty grp-open',)
     formfield_overrides = formfield_overrides
 
 
