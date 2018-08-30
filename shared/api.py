@@ -84,7 +84,6 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             return RestResponse(data, status=status.HTTP_200_OK)
         except:
             logger.warning('[API][create_one] Failed with data {0}'.format(str(data)))
-            raise
             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
