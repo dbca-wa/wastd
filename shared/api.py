@@ -80,10 +80,11 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             obj, created = self.model.objects.get_or_create(**dd)
             verb = "created" if created else "updated"
             self.model.objects.filter(**dd).update(**data)
-            logger.debug('[API][create_one] {0}: {1}'.format(verb, obj))
+            logger.info('[API][create_one] {0}: {1}'.format(verb, obj))
             return RestResponse(data, status=status.HTTP_200_OK)
         except:
             logger.warning('[API][create_one] Failed with data {0}'.format(str(data)))
+            raise
             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
@@ -96,11 +97,11 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         """
         if self.uid_field in request.data:
             res = self.create_one(request.data)
-            logger.debug('[API][create] found one record')
+            logger.info('[API][create] found one record')
             return res
         elif type(request.data) == list and self.uid_field in request.data[0]:
             res = [self.create_one(data) for data in request.data]
-            logger.debug('[API][create] found batch of {0} records'.format(len(res)))
+            logger.info('[API][create] found batch of {0} records'.format(len(res)))
             return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
             logger.debug("[BatchUpsertViewSet] data: {0}".format(str(request.data)))

@@ -75,7 +75,8 @@ THIRD_PARTY_APPS = (
     'mptt',                         # Graph database: tree models
     'background_task',              # Job queue
 
-    'gunicorn'                      # Web server
+    'gunicorn',                      # Web server
+    'raven.contrib.django.raven_compat',  # Sentry logging
 )
 
 # Apps specific for this project go here.
@@ -211,7 +212,6 @@ EMAIL_HOST = env('EMAIL_HOST', default='smtp.corporateict.domain')
 EMAIL_PORT = env('EMAIL_PORT', default=25)
 DEFAULT_FROM_EMAIL = '"TSC" <tsc-noreply@dbca.wa.gov.au>'
 EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[TSC] ')
-
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -671,6 +671,10 @@ LOGGING = {
         },
     }
 }
+
+# Logging to sentry.dbca.wa.gov.au
+if env('RAVEN_DSN', False):
+    RAVEN_CONFIG = {'dsn': env('RAVEN_DSN')}
 
 
 SETTINGS_EXPORT = [
