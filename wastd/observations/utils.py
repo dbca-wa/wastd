@@ -3733,6 +3733,7 @@ def import_odka_svs02(r):
         start_comments="{0}\n\n\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
         reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
+        # TODO team if present
     )
 
     enc, action = create_update_skip(
@@ -4825,8 +4826,8 @@ def import_odka_mwi05(r):
 
 
 # ---------------------------------------------------------------------------#
-# Turtle Tagging 0.1
-#
+# Turtle Tagging
+# Turtle Encounter
 # TODO
 
 def import_all_odka(path="."):
@@ -4837,11 +4838,14 @@ def import_all_odka(path="."):
     import sys; reload(sys); sys.setdefaultencoding('UTF8'); path="data/odka"; from wastd.observations.utils import *
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")
+
+    TODO: disable deprecated forms after adding fan angles etc to import
     """
     logger.info("[import_all_odka] Starting import of all downloaded ODKA data...")
     results = dict(
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
+        fs04=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-4_1534140913", path)],
 
         tt35=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)],
         tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
@@ -4851,6 +4855,8 @@ def import_all_odka(path="."):
         tt47=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-47_1512461621", path)],
         tt50=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-50_1516929392", path)],
         tt51=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-51_1517196378", path)],
+        tt52=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-52_1518683842", path)],
+        tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)],
 
         mwi01=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-1_1502342347", path)],
         mwi04=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-4_1509605702", path)],
@@ -4861,6 +4867,10 @@ def import_all_odka(path="."):
         sve02=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-2_1510716716", path)],
         svs01=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-1_1490753483", path)],
         svs02=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-2_1510716686", path)],
+        svs03=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-3_1535694081", path)],
+
+        # turtle tagging 0.3
+        # turtle encounter 0.4
     )
     logger.info("[import_all_odka] Finished import. Stats:")
     logger.info("\n".join(["[import_all_odka]  Imported {0} {1}".format(len(results[x]), x.upper()) for x in results]))
