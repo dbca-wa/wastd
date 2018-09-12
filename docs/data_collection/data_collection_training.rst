@@ -1,5 +1,4 @@
 .. _data-collection-training:
-
 ========================
 Data collection training
 ========================
@@ -21,10 +20,9 @@ together with the data collector.
 * Settings > General Settings > User and device identity > Form metadata > Username:
   * This username will be recorded during data collection -
     we need this so we can say "thank you".
-  * For volunteers, this should be firstname_lastname, e.g. florian_mayer in all
-    lower case and underscore separated.
-  * For DBCA staff, this should be the DBCA username, e.g. FlorianM or JoanneKi,
-    with initials capitalised and last name abbreviated.
+  * Type your full given and surname as it is shown e.g. on your driver's license.
+  * Separate your given name and surname with a whitespace (not . or _)
+  * No middle names
 * **Battery** Make sure the battery is full before you head out.
   Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
   GPS on only during surveys, WiFi on only during data upload.
@@ -63,10 +61,10 @@ Device checkin Kimberley - Anna Plains
 * Make sure all tablets are switched off.
 * Connect tablets to solar powered battery pack or to backup battery packs.
 
-Length reference
-================
-Take a length reference, such as a stake marked with coloured tape at minimum and
-maximum track width for all expected turtle species.
+TODO Device locations Karratha WPTP
+-----------------------------------
+
+TODO link to field kit
 
 Collecting turtle data
 ======================
@@ -332,11 +330,11 @@ Drag a line with your foot across the hatchling tracks above the high water mark
 
 .. _dct-stranding-report:
 
-Turtle Stranding
-================
+Marine Wildlife Incident (Turtle Stranding)
+===========================================
 
-Setup the device as described above and select the latest "Turtle Stranding" form
-in "Get blank forms".
+Setup the device as described above and select the latest "Marine Wildlife Incident"
+form in "Get blank forms".
 
 The expected work flow is:
 
@@ -385,19 +383,26 @@ You'll need:
 
 Training walk-through
 ---------------------
+* Note on all forms: swipe right until done, leave "Mark as finalized" on, "Save and exit".
+* Never save using the floppy symbol.
+* Never back out with "back" key and "save form".
+* The only valid way out of a form is to swipe right until "save and exit" is reached.
+* Training data should be recorded either outside of nesting beaches, or use "Hatchback turtle".
 
 0 Pre survey
 ^^^^^^^^^^^^
 * Battery full?
-* WiFi off
+* WiFi off (if saving battery)
 * GPS on
-* Set your ODK Collect username
+* Set your ODK Collect username: ODK Settings > General Settings > User and device identity > Form metadata > Username > Your given name and surname, e.g. "Florian Mayer".
 
-1 Survey start
-^^^^^^^^^^^^^^
-* Site visit Start
+1 Site visit start
+^^^^^^^^^^^^^^^^^^
+* Form "Site Visit Start"
 * Any reason you'd expect tracks to be non detectable, e.g. strong winds or rain? Photo, comment
-* Mention in comment that this is a training run
+* Mention in comment if this is a training run
+* Field "Other data collectors in survey": add other data collectors apart from yourself with full name, separated by commas. (Make sure your own full name is entered into the ODK username through ODK settings.)
+  Eg.: "Sarah McDonald, Marissa Speirs"
 
 2 Fox track
 ^^^^^^^^^^^
@@ -429,7 +434,7 @@ Training walk-through
 ^^^^^^^^^^^^^^^^^^^^^^^^
 * Track or Treat, nest, hatched
 * Disturbed or predated: yes
-* Add new "Disturbance observation" group for each disturbance
+* Add new "Disturbance observation" group for each disturbance: A dialogue will pop up allowing to add a "Disturbance observation" until you decline, allowing to add as many disturbances as you wish.
 
 Depending on whether your program records these events:
 
@@ -440,7 +445,7 @@ Depending on whether your program records these events:
 
 9 Signs of disturbance or predation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* Fox sake
+* Fox sake: human-made disturbance (e.g. vehicle tracks)
 
 10 Dead turtle
 ^^^^^^^^^^^^^^
@@ -448,8 +453,12 @@ Depending on whether your program records these events:
 
 11 A noteworthy find
 ^^^^^^^^^^^^^^^^^^^^
-* Take a photo, landscape
-* Write on a whiteboard what we're looking at and include as label and length reference
+* Write on a whiteboard what we're looking at and include as label
+* Include wooden folding ruler as length reference
+* Take a photo, landscape, of your find, including length reference and label
+* Photo will auto-upload to Google Photos where coordinators can access them
+* Notify coordinators about noteworthy find
+* "There should be a form for it, or it's not what we're looking for"
 
 12 Survey end
 ^^^^^^^^^^^^^

@@ -3574,10 +3574,29 @@ class TurtleNestDisturbanceObservation(Observation):
         return u"Nest Disturbance {0} {1}".format(
             self.disturbance_cause, self.disturbance_severity)
 
+
+@python_2_unicode_compatible
+class TurtleHatchlingEmergenceObservation(Observation):
+    """Turtle hatchling emergence observation.
+
+    Hatchling emergence observations can include:
+
+    * Emergence time (if seen directly),
+    * Fan angles of hatchling tracks forming a fan from nest to sea,
+    * Emergence climate
+    * Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)
+    * Light sources known and present (if yes: LightSourceObservation).
+    """
+    pass
+
+# LightSourceObservation
+# TurtleHatchlingEmergenceOutlierObservation
+
 # TODO add CecaceanMorphometricObservation for cetacean strandings
 
-
 # Logger Observation models --------------------------------------------------#
+
+
 @python_2_unicode_compatible
 class TemperatureLoggerSettings(Observation):
     """Temperature Logger Settings."""

@@ -10,10 +10,30 @@ and the data collectors (staff and volunteers).
 
 Tasks covered:
 
+* Getting started
 * Set up tablets
 * Provide training
 * Prepare tablets for data collection
 * Receive tablets after data collection
+
+Admin: Getting started
+======================
+* Admin's computer: set Chrome or Firefox as default browser
+* Bookmark TSC
+
+Admin: Prepare field packs
+==========================
+For each team collecting data at the same time:
+
+* One neoprene pouch containing:
+* Two data collection tablets
+* Two Micro USB cables to charge tablets
+* One power bank (mobile battery) 20000mAh
+* One wooden folding ruler with turtle track widths (min and max) marked in coloured tape
+* One whiteboard
+* One whiteboard marker
+* Turtle track ID guide
+* Predator track ID guide
 
 Admin: First time setup
 =======================
@@ -33,7 +53,7 @@ Setup the tablet
 * Google services: untick "help improve..." options. Keep "Back up apps etc" and "Location services" option.
 * Wait for restore to finish.
 * Skip creating a Lenovo ID. The "Start using your new device" button is hidden under the keyboard. Press "Back" to minimize keyboard.
-* Update apps and address any notifications.
+* Update Android apps if prompted and address any notifications.
 
 Device settings:
 
@@ -74,10 +94,10 @@ Requirements:
   forms and submit data, and the username will be automatically recorded when
   collecting data. It is crucial to spell the credentials exactly as provided.
 * Form management:
-  * Auto send: "WiFi only" if few data points are collected.
-    Disable for vigorous data collection in remote areas with limited bandwidth
-    provided by WiFi hotspots - don't swamp the WiFi hotspot by auto-uploading data with photos.
-  * Delete after send: yes.
+  * Form update: check every hour for form updates,
+    automatic download of updated versions, hide old versions.
+  * Auto send: "WiFi only"
+  * Delete after send: yes
 * User and device identity > Form metadata > Username: set to the data collector's username.
   This name will be automatically recorded in ODK forms as "observed by".
 * ODK Collect > Settings > Admin settings > User settings: de-select all but "Form metadata".
@@ -147,6 +167,13 @@ Admin: Review data
 Delete unwanted repeating groups:
 
 * Tap and hold a group title bar, select "delete".
+
+TODO error "form not existing" - notify admin (Florian) to re-enable missing forms in ODK Aggregate,
+get blank form, then saved form is editable and uploadable again.
+
+If GPS point is missing, record GPS (which will be incorrect), note record datetime and other details, let form upload,
+let data import into WAStD, find record again (based on datetime and details), update location as appropriate.
+Mark record as "proofread".
 
 Admin: Upload data
 ==================
@@ -219,12 +246,13 @@ Some older forms may be available for download - this is to allow import to WASt
 
 Process to upgrade:
 
-* Send all unsent forms
-* Delete saved form > Blank forms > Delete all
+* Send all unsent saved forms
+* Delete saved form > both Saved forms / Blank forms: Delete all
 * Get blank form > get latest version of each form
 
 Site Visit Start
 ----------------
+* 0.3 (2018-08-01) Capture team
 * 0.2 (2017-11-16) Auto-capture device ID
 
 Site Visit End
@@ -233,6 +261,8 @@ Site Visit End
 
 Track or Treat
 --------------
+* 0.53 Add predator "cat"
+* 0.52
 * 0.51 (2018-01-29) Bug fix: cloud cover now includes 0 (clear sky)
 * 0.50 (2018-01-27) Add informative prompts for missing required fields, simplify bearing measurements (hand-held compass only)
 * 0.49 (2018-01-18)
@@ -250,6 +280,7 @@ Turtle Tagging
 
 Fox Sake
 --------
+* 0.4 Add predator "cat"
 * 0.3
 
 Marine Wildlife Incident

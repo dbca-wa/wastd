@@ -2904,7 +2904,7 @@ def save_all_odka(path=".",
 
     Returns:
     At the specified location (path) for each form, a file will be written
-    which containis all submissions (records) for that respective form.
+    which contains all submissions (records) for that respective form.
     """
     [save_odka(
         xform['formID'],
@@ -4277,6 +4277,17 @@ def import_odka_tt044(r):
         handle_odka_hatchlingmorphometricobservation(enc, media, data)
         # handle_odka_fanangles(enc, media, data)
 
+        if "photo_hatchling_tracks_seawards" in data["fan_angles"]:
+            handle_media_attachment_odka(
+                enc, media,
+                data["fan_angles"]["photo_hatchling_tracks_seawards"],
+                title="Hatchling tracks seawards")
+        if "photo_hatchling_tracks_relief" in data["fan_angles"]:
+            handle_media_attachment_odka(
+                enc, media,
+                data["fan_angles"]["photo_hatchling_tracks_relief"],
+                title="Hatchling tracks relief")
+
         # TT0.44
         # "hatchling_emergence_time_group": {
         #     "hatchling_emergence_time": null
@@ -4324,9 +4335,6 @@ def import_odka_tt044(r):
         #    "leftmost_track_auto": "296.6340000000",
         #    "outlier_tracks_present": "yes"
         #  },
-
-        #  "observation_start_time": "2017-11-19T08:27:53.846Z",
-        #  "@markedAsCompleteDate": "2017-11-19T08:36:19.622Z",
         #  "outlier_track": {
         #    "track_bearing_auto": "296.9590000000",
         #    "track_bearing_manual": null
