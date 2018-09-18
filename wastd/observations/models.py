@@ -3581,8 +3581,8 @@ class TurtleNestDisturbanceObservation(Observation):
             self.disturbance_cause, self.disturbance_severity)
 
 
-@python_2_unicode_compatible
-class TurtleHatchlingEmergenceObservation(Observation):
+# @python_2_unicode_compatible
+# class TurtleHatchlingEmergenceObservation(Observation):
     """Turtle hatchling emergence observation.
 
     Hatchling emergence observations can include:
@@ -3593,7 +3593,7 @@ class TurtleHatchlingEmergenceObservation(Observation):
     * Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)
     * Light sources known and present (if yes: LightSourceObservation).
     """
-    pass
+    # pass
 
 # LightSourceObservation
 # TurtleHatchlingEmergenceOutlierObservation

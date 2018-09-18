@@ -13,6 +13,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 WORKDIR /usr/src/app
 COPY requirements/ ./requirements/
 RUN pip install --no-cache-dir -r requirements/dev.txt
+RUN wget https://github.com/jgm/pandoc/releases/download/2.3/pandoc-2.3-1-amd64.deb \
+  && dpkg -I pandoc-2.3-1-amd64.deb && rm pandoc-2.3-1-amd64.deb
 COPY . .
 RUN python manage.py collectstatic --clear --noinput -l
 EXPOSE 8220

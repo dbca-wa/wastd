@@ -3,7 +3,7 @@ data/
 docs/
 fixtures/
 htmlcov/
-media/
+wastd/media/
 node_modules/
 *pycache*
 .cov*
