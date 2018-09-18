@@ -347,8 +347,8 @@ class FastSurveySerializer(serializers.ModelSerializer):
 
         model = Survey
         fields = ['id', 'site', 'start_time', 'end_time',
-                  'start_comments', 'end_comments', 'reporter',
-                  'production']
+                  'start_comments', 'end_comments',
+                  'reporter', 'absolute_admin_url', 'production']
 
 
 class SurveyFilter(filters.FilterSet):

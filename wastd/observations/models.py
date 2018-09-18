@@ -1281,6 +1281,12 @@ class Survey(QualityControl, geo_models.Model):
             "na" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M"))
 
     @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    @property
     def encounters(self):
         """Return the QuerySet of all Encounters within this SiteVisit."""
         if not self.end_time:
