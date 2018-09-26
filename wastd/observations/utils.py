@@ -6,13 +6,14 @@ import io
 import os
 
 from confy import env
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 # from plogger.debug import plogger.debug
 import logging
 import requests
 import shutil
 import xmltodict
+import pandas
 
 from requests.auth import HTTPDigestAuth
 
@@ -45,6 +46,61 @@ def set_sites():
     enc = Encounter.objects.filter(status=Encounter.STATUS_NEW, site=None)
     logger.info("[wastd.observations.utils.set_sites] Found {0} encounters without site".format(enc.count()))
     return [set_site(sites, e) for e in enc]
+
+
+def reconstruct_missing_surveys(buffer_mins=30):
+    """Create missing surveys.
+
+    Find TurtleNestEncounters with missing survey but existing site,
+    group by date and site, aggregate datetime ("when") into earliest and latest record,
+    buffer earliest and latest record by given minutes (default: 30),
+    create a Survey with aggregated data.
+
+    Crosstab: See pandas
+
+
+    """
+    logger.info("[QA][reconstruct_missing_surveys] Rounding up the orphans...")
+    tne = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)
+    logger.info("[QA][reconstruct_missing_surveys] Done. Found {0} orphans witout survey.".format(tne.count()))
+    logger.info("[QA][reconstruct_missing_surveys] Inferring missing survey data...")
+    tne_all = [[t.site.id, t.when.date(), t.when, t.reporter] for t in tne]
+    tne_idx = [[t[0], t[1]] for t in tne_all]
+    tne_data = [[t[2], t[3]] for t in tne_all]
+    idx = pandas.MultiIndex.from_tuples(tne_idx, names=['site', 'date'])
+    df = pandas.DataFrame(tne_data, index=idx, columns=['datetime', 'reporter'])
+    missing_surveys = pandas.pivot_table(df,
+                                         index=['date', 'site'],
+                                         values=['datetime', 'reporter'],
+                                         aggfunc={'datetime': [min, max], 'reporter': 'first'})
+    logger.info("[QA][reconstruct_missing_surveys] Done. Creating {0} missing surveys...".format(len(missing_surveys)))
+
+    bfr = timedelta(minutes=buffer_mins)
+    for idx, row in missing_surveys.iterrows():
+        logger.debug("Missing Survey on {0} at {1} by {2} from {3}-{4}".format(
+            idx[0],
+            idx[1],
+            row['reporter']['first'],
+            row['datetime']['min'] - bfr,
+            row['datetime']['max'] + bfr
+        ))
+        s = Survey.objects.create(
+            source="reconstructed",
+            site=Area.objects.get(id=idx[1]),
+            start_time=row['datetime']['min'] - bfr,
+            end_time=row['datetime']['max'] + bfr,
+            reporter=row['reporter']['first'],
+            start_comments="[QA][AUTO] Reconstructed by WAStD from TurtleNestEncounters without surveys."
+        )
+        s.save()
+    logger.info("[QA][reconstruct_missing_surveys] Done. Created {0} surveys to "
+                "adopt {1} orphaned TurtleNestEncounters.".format(
+                    len(missing_surveys), tne.count()))
+
+    tne = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)
+    logger.info("[QA][reconstruct_missing_surveys] Remaining orphans witout survey: {0}".format(tne.count()))
+
+    return None
 
 
 def allocate_animal_names():
@@ -1309,7 +1365,7 @@ def import_one_record_sv01(r, m):
         transect=read_odk_linestring(r["transect"]),
         started_on=parse_datetime(r["observation_start_time"]),
         finished_on=parse_datetime(r["observation_end_time"]),
-        # m["users"][r["reporter"]],  # add to team
+        # m["users"][r["reporter"]],
         comments=r["comments"]
     )
 

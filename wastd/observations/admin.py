@@ -341,7 +341,9 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                                'end_source_id', 'end_device_id', 'production',)}),
         ('Location', {'fields': ('transect', 'start_location', 'end_location', 'site',)}),
         ('Time', {'fields': ('start_time', 'end_time',)}),
-        ('Team', {'fields': ('start_comments', 'end_comments', 'reporter', 'team',)}),
+        ('Team', {'fields': ('start_comments', 'end_comments', 'reporter', 'team',
+                             'start_photo', 'end_photo',
+                             )}),
     )
     formfield_overrides = {
         geo_models.PointField: leaflet_settings,

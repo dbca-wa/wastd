@@ -324,8 +324,8 @@ router.register(r'area', AreaViewSet)
 class SurveySerializer(GeoFeatureModelSerializer):
     """Survey serializer."""
 
-    reporter = FastUserSerializer(many=False, read_only=True)
-    site = FastAreaSerializer(many=False, read_only=True)
+    reporter = FastUserSerializer(many=False)
+    site = FastAreaSerializer(many=False)
     status = serializers.ReadOnlyField()
 
     class Meta:

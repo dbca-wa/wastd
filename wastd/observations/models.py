@@ -66,6 +66,7 @@ SOURCE_CHOICES = (
     ("ntp-broome", _("NTP Access DB Broome")),
     ("cet", _("Cetacean strandings DB")),
     ("pin", _("Pinniped strandings DB")),
+    ("reconstructed", _("Reconstructed by WAStD")),
 )
 
 BODY_PART_DEFAULT = "whole"
@@ -1314,17 +1315,21 @@ def guess_site(survey_instance):
 def claim_end_points(survey_instance):
     """Claim SurveyEnd.
 
-    The first SurveyEnd with the matching site, device_id,
+    The first SurveyEnd with the matching site,
     and an end_time within six hours after start_time is used
     to set corresponding end_location, end_time, end_comments,
     end_photo and end_source_id.
+
+    Since the end point could be taken with a different device (e.g.
+    if primary device malfunctions), we will not filter down to
+    the same device_id.
 
     If no SurveyEnd is found and no end_time is set, the end_time is set to
     start_time plus six hours. This should allow the survey to claim its Encounters.
     """
     se = SurveyEnd.objects.filter(
         site=survey_instance.site,
-        device_id=survey_instance.device_id,
+        # device_id=survey_instance.device_id,
         end_time__gte=survey_instance.start_time,
         end_time__lte=survey_instance.start_time + timedelta(hours=6)
     ).first()
@@ -1339,7 +1344,8 @@ def claim_end_points(survey_instance):
         if not survey_instance.end_time:
             survey_instance.end_time = survey_instance.start_time + timedelta(hours=6)
             survey_instance.end_comments = "[NEEDS QA][Missing SiteVisitEnd] Survey end guessed."
-            logger.info("[Survey.claim_end_points] Missing SiteVisitEnd for Survey {0}".format(survey_instance))
+            logger.info("[Survey.claim_end_points] Missing SiteVisitEnd for Survey"
+                        " {0}".format(survey_instance))
 
 
 def claim_encounters(survey_instance):
@@ -1751,6 +1757,20 @@ class Encounter(PolymorphicModel, geo_models.Model):
             force_text(round(self.longitude, 4)).replace(".", "-"),
             force_text(round(self.latitude, 4)).replace(".", "-"),
         ]))
+
+    @property
+    def date(self):
+        """Return the date component of Encounter.when."""
+        return self.when.date()
+
+    @property
+    def date_string(self):
+        return str(self.when.date())
+
+    @property
+    def datetime(self):
+        """Return the full datetime of the Encounter."""
+        return self.when
 
     def save(self, *args, **kwargs):
         """Cache popup, encounter type and source ID.
@@ -2767,7 +2787,11 @@ class MediaAttachment(Observation):
     @property
     def filepath(self):
         """The path to attached file."""
-        return force_text(self.attachment.file)
+        try:
+            fpath = force_text(self.attachment.file)
+        except:
+            fpath = None
+        return fpath
 
 
 @python_2_unicode_compatible
