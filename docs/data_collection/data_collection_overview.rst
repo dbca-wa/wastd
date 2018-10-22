@@ -4,11 +4,11 @@ Data collection
 
 This chapter provides an entrypoint to all documentation on the data collection process.
 
-Are you a volunteer or staff data collector? 
+Are you a volunteer or staff data collector?
 All you need to know is written at :ref:`data-collection-training`, but feel free to read more of this documentation.
 
-Are you a data collection admin in charge of maintaining collection devices 
-(tablets), training data collectors, and uploading the data? 
+Are you a data collection admin in charge of maintaining collection devices
+(tablets), training data collectors, and uploading the data?
 Read :ref:`data_collection_admin`.
 
 Are you a solution architect, developer or business analyst? Then read on.
@@ -18,27 +18,27 @@ Solution architecture and infrastructure
 
 This section provides a condensed overview of the information management infrastructure behind our digital data collection process.
 
-* Forms are built using the form builder software 
-  `ODK Build <https://opendatakit.org/use/build/>`_, 
+* Forms are built using the form builder software
+  `ODK Build <https://opendatakit.org/use/build/>`_,
   hosted `here <http://build.opendatakit.org/>`_.
-* Forms are pushed from ODK Build to an instance of the data 
-  clearinghouse software 
-  `ODK Aggregate <https://opendatakit.org/use/aggregate/>`_, 
+* Forms are pushed from ODK Build to an instance of the data
+  clearinghouse software
+  `ODK Aggregate <https://opendatakit.org/use/aggregate/>`_,
   deployed `here <http://dpaw-data.appspot.com/>`_.
 * Mobile Android devices (tablets, phablets, smartphones) running
-  the data collection software 
+  the data collection software
   `ODK Collect <https://opendatakit.org/use/collect/>`_
-  are configured to load data collection forms from 
+  are configured to load data collection forms from
   `DBCA's ODK Aggregate server <http://dpaw-data.appspot.com/>`_,
   collect data (offline capable), and submit collected data back to
   DBCA's ODK Aggregate server.
-* The data manager (Florian Mayer) uploads data from DBCA's 
-  ODK Aggregate server to the WA Sea Turtle Database 
+* The data manager (Florian Mayer) uploads data from DBCA's
+  ODK Aggregate server to the WA Sea Turtle Database
   `WAStD <https://strandings.dpaw.wa.gov.au/>`_.
 * Data anlysts access the WAStD API e.g. using the R package
   `wastdR <https://parksandwildlife.github.io/wastdr/>`_ to produce insight
   from the collected data.
-* Insight is disseminated through the 
+* Insight is disseminated through the
   `DBCA data catalogue <https://data.dpaw.wa.gov.au/>`_ and other internal or public platforms.
 
 See also :ref:`business-process-turtle-tracks`.
@@ -119,7 +119,27 @@ The choice of methodology can be driven by time availability.
 Example: Teams are dropped off on remote beaches and have too little time to
 identify and individually record turtle tracks (on paper or on mobile).
 In this case, a tally was kept on paper forms, as no specialised mobile app for
-tally observations was available yet.
+tally observations was available yet. Now such a form has been built.
+
+
+.. _geolocation-and-wifi:
+
+GPS location and WiFi
+=====================
+Android devices can set the location mode (System settings) to use WiFi + network + GPS, WiFi + network only, or GPS only.
+
+A particularity of the guest WiFi network used for all tablets on DBCA campuses is that this WiFi network
+does NOT provide a geolocation at all. If a tablet is therefore set to location mode "WiFi + GPS" and used
+indoors (no GPS signal), the ODK Collect geolocation will time out on (not) getting a location estimate
+from the guest WiFi at DBCA. This problem does not exist with other WiFi networks we tested.
+
+Therefore, all training must happen outdoors. The location mode can be set to "WiFi + GPS" or "GPS only", but
+tablets must have a clear view of the sky.
+
+All devices get a good GPS signal on beaches outside of WiFi range, independent on location mode.
+
+This insight was derived from testing devices in the field (beaches from Ningaloo, Karratha to Broome)
+and DBCA offices (Exmouth, Karratha, Broome, Perth) and non-DBCA locations over seveal months.
 
 .. _device-shootout:
 
@@ -165,7 +185,7 @@ Samsung Galaxy Tab A 7"
 * Fits in 7" sleeve, large trouser pocket, can be held securely in one hand.
 * Rugged cases available in store at time of writing.
 * Decidedly slower and laggier performance than flagship S2.
-* (-) GPS unacceptably slow.
+* (XXX) GPS unacceptably slow.
 * (-) 8GB internal storage is too small to collect data.
 * (-) Android 5.1.1 means external SD chip does not format as internal storage.
 
@@ -177,28 +197,54 @@ Lenovo Tab 3 7" TB3-730F
 * Very fast GPS fix, faster than Samsung S2, slower than a Moto G4+ phone.
 * Best cost-benefit for handing out in bulk.
 
+Lenovo Tab 7 Essential TB-7304F
+---------------------
+* Successor to the TB3-730F.
+* Beautiful performance, low price.
+* Lives longer with silicone shell and screen protector.
+* Cheap rugged case options available on eBay.
+* (-) Being phased out as of late 2018, replaced by (GPS-less = useless) TB7104F.
+
+Lenovo Tab E7
+-------------
+* Successor to the TB-7304F.
+* (XXX) Does not have a GPS chip. Does not advertise lack of GPS anywhere on packaging.
+* Cannot use for ODK Collect.
+
 Moto G4 Plus phone
 ------------------
 * $400 device, $4 plastic shell, $50 SD
+* Cheap rugged case options available on eBay.
 * Very good mid-range 5" Android phone
 * Fast GPS fix (~4-5 sec outdoors)
 * Dual SIM
 * Data collection works nicely
 * Good option for work phone for front-line staff at time of writing (Dec 2016)
 
+Moto G6 phone
+-------------
+* $388 in 2018.
+* Successor to Moto G4/G4+.
+* Cheap rugged case options available on eBay.
+* Works perfectly fine with ODK Collect.
+
 
 General observations
 --------------------
 * All devices were daylight-readable.
-* Polarising sunglasses and (polarised) device screens cancel each other out 
+* Screen protectors, especially the non-sticky plastic sheets from rugged cases,
+  tend to decrease the contrast a bit.
+* Polarising sunglasses and (polarised) device screens cancel each other out
   at certain angles, so that the display appears to blacken.
 * All devices had sufficient battery life to support hours of data collection.
-* Operation in harsh environments was against expectations no problem: 
+* Operation in harsh environments was against expectations no problem:
   walking along sandy beaches in daylight, sweaty fingers, flying sand.
+* Large devices in rugged cases in full sun can overheat to the point of auto-shutdown.
+  Hold them in your own shade when operating and out of the sun when not.
 * External battery packs extend time between wall power charging.
 * Best low-cost field device: Lenovo Tab 3. Runner-up: Samsung S2 8".
-* Strong case against Galaxy Tab A (slow GPS, low internal storage, 
-  old OS version).
+* Strong case against Galaxy Tab A (slow GPS, low internal storage,
+  old OS version) and of course devices without GPS chip.
 
 
 .. _cost-benefit-analysis-digital-data-capture:

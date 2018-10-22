@@ -79,6 +79,8 @@ Data collection protocol overview
 Marine wildlife incidents, such as turtle strandings, are always recorded on a case-by-case basis.
 Tracks can be recorded individually (preferred) or tallied over beach sections.
 
+* Every device must be updated with the main data collector's name.
+* All site visits are started with a ``Site Visit Start``
 * *Nest* counts: walking in a straight line along the high water mark, each
   uptrack is followed to its apex, where the presence or absence of a nest
   determines the type of track (track without nest, track with nest, track with
@@ -86,6 +88,11 @@ Tracks can be recorded individually (preferred) or tallied over beach sections.
   If evident, nest disturbance is recorded as well.
   Disturbed unhatched nests without tracks, as well as hatched nests (without
   tracks), if spotted, are recorded as well.
+
+In extreme circumstances, such as boat-based surveys of remote Kimberley beaches
+with a strict pick-up time (and survey time limit), the methodology of Nest/Track
+counts can be modified:
+
 * *Speed run* counts: walking in a straight line along the high water mark, only
   inbound tracks (uptracks) are counted as "tracks with success not assessed".
   The tracks are not followed. Except for the first day, only fresh (younger
@@ -94,6 +101,7 @@ Tracks can be recorded individually (preferred) or tallied over beach sections.
   beaches, where the geo-referencing of individual tracks is not possible within
   the available survey time. However, individual track counts (*nest* or *speed run*)
   are preferred.
+* All site visits are ended with a ``Site Visit End``. You **should** take a photo.
 
 Track count work flow
 ---------------------
@@ -156,13 +164,6 @@ about 15 seconds plus the time to take a photo.
 
 Repeat for each track / nest.
 
-Protocol "Oh no I forgot something"
------------------------------------
-This happens to the best of us. If you want to change your mind about a form:
-
-* ODK Collect > Edit Saved Form > Sort by date (sorting symbol top right) > Tap form to edit.
-* Correct errors right away, and at the latest before handing back the device or uploading the data.
-
 Protocol "nest counts"
 ----------------------
 This protocol is the preferred protocol and includes the steps of "speed run".
@@ -188,8 +189,9 @@ Indicate whether:
 * disturbance was evident,
 * eggs were counted,
 * the nest had an ID tag buried within the eggs (or tied to a nest marker pole),
-* there was a temperature logger in the nest, or
-* hatchlings were found and measured.
+* there was a temperature logger in the nest,
+* hatchlings were found and measured, or
+* fan angles were found and measured.
 
 Swipe right. Depending on the indications above, extra screens will be shown.
 
@@ -239,11 +241,6 @@ be retrieved for later data download.
 
 **Hatchling measurement**
 Enter straight carapace length in mm, straight carapace width in mm and weight in grams.
-
-This is the end of the form. Proceed to the next track or nest and repeat.
-
-At the end of the survey, turn off location services, and hand the device back to the admin.
-
 
 Protocol "fan angles"
 ---------------------
@@ -376,7 +373,6 @@ You'll need:
     :target: https://www.lucidchart.com/publicSegments/view/97f2cc34-d19b-403d-a349-814390f3b6c4/image.png
     :alt: Example nesting beach
 
-**Important notice** Please **never** conduct training on a nesting beach. Instead:
 
 * Collect as many records as you wish on any place outside the actual nesting beaches.
 * Use the species "Hatchback turtle (Corolla corolla)" when training.
@@ -394,18 +390,30 @@ Training walk-through
 * Battery full?
 * WiFi off (if saving battery)
 * GPS on
-* Set your ODK Collect username: ODK Settings > General Settings > User and device identity > Form metadata > Username > Your given name and surname, e.g. "Florian Mayer".
+* Set your **ODK Collect username**:
+  ODK Settings > General Settings > User and device identity > Form metadata > Username > Your given name and surname, e.g. "Florian Mayer".
 
 1 Site visit start
 ^^^^^^^^^^^^^^^^^^
-* Form "Site Visit Start"
-* Any reason you'd expect tracks to be non detectable, e.g. strong winds or rain? Photo, comment
-* Mention in comment if this is a training run
-* Field "Other data collectors in survey": add other data collectors apart from yourself with full name, separated by commas. (Make sure your own full name is entered into the ODK username through ODK settings.)
+* Form "Site Visit Start" when "feet in the sand, eyes open".
+* Location: can be done anywhere on beach - feet in the sand.
+* Time: **must** be done before any other record is created.
+* Photo: **should** always be taken.
+  May be valuable later on - high opportunity cost not to take a photo!
+  The photo can show environmental conditions (wind, past rain) which may lead
+  to under-detection of tracks. The photo also could show anything that might be
+  relevant to other questions in the future.
+* Field "Other data collectors in survey": add other data collectors apart from
+  yourself with full name, separated by commas.
   Eg.: "Sarah McDonald, Marissa Speirs"
+  Omit your own name, as it already is recorded through the ODK username.
+* Mention in comment if this is a training run, or if there were any
+  unusal environmental conditions.
 
 2 Fox track
 ^^^^^^^^^^^
+Any disturbance or sign of predation.
+
 * Fox sake
 
 3 Track without nest
@@ -442,6 +450,7 @@ Depending on whether your program records these events:
 * Pretend we've found nest tags
 * Pretend we've found a data logger in the nest
 * Pretend we've found and measured a few hatchlings
+* Pretend we've found and measured hatchling tracks (fan angles)
 
 9 Signs of disturbance or predation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -455,21 +464,24 @@ Depending on whether your program records these events:
 ^^^^^^^^^^^^^^^^^^^^
 * Write on a whiteboard what we're looking at and include as label
 * Include wooden folding ruler as length reference
-* Take a photo, landscape, of your find, including length reference and label
+* Take a photo in landscape orientation of your find, including length reference and label
 * Photo will auto-upload to Google Photos where coordinators can access them
 * Notify coordinators about noteworthy find
 * "There should be a form for it, or it's not what we're looking for"
 
 12 Survey end
 ^^^^^^^^^^^^^
-* Site visit end
-* Any new reasons impacting data collection? Photo, comment
+* Site visit end: "feet in the sand, eyes off".
+* Take a photo facing back towards surveyed area.
+* Any new reasons impacting data collection? Photo, comment.
+* Location: The end point can be taken anywhere on the just surveyed beach - "feet in the sand".
+* Time: **must** be taken when survey effort is ended - "eyes off".
 
 13 Return device
 ^^^^^^^^^^^^^^^^
 Returning to an office (WiFi and wall power):
 
-* GPS off
+* GPS can stay on
 * WiFi on
 
 Returning to a deposit box (no WiFi, portable battery):
@@ -477,3 +489,9 @@ Returning to a deposit box (no WiFi, portable battery):
 * GPS off
 * Device off
 * Plugin battery to charge device
+
+Returning to a deposit box (WiFi, portable battery):
+
+* GPS off
+* WiFi on
+* Device stays on (so it can auto-upload data)
