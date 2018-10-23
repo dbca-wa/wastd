@@ -9,4 +9,35 @@
 {% block javascripts %}
 {{ block.super }}
 {% leaflet_js plugins="draw,forms" %}
+<script type="text/javascript">
+
+(function(){
+    /*
+     * Fix broken Leaflet image path
+     * https://github.com/Leaflet/Leaflet/issues/4968
+     */
+    delete L.Icon.Default.prototype._getIconUrl
+
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
+      iconUrl: "/static/leaflet/images/marker-icon.png",
+      shadowUrl: "/static/leaflet/images/marker-shadow.png"
+    })
+
+    /*
+     * Workaround for 1px lines appearing in some browsers due to
+     * fractional transforms and resulting anti-aliasing.
+     * https://github.com/Leaflet/Leaflet/issues/3575
+     */
+    var originalInitTile = L.GridLayer.prototype._initTile
+    L.GridLayer.include({
+        _initTile: function (tile) {
+            originalInitTile.call(this, tile);
+            var tileSize = this.getTileSize();
+            tile.style.width = tileSize.x + 1 + 'px';
+            tile.style.height = tileSize.y + 1 + 'px';
+        }
+    });
+})()
+</script>
 {% endblock %}
