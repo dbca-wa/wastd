@@ -13,6 +13,7 @@ from django.views.generic.detail import DetailView
 from taxonomy.utils import update_taxon as update_taxon_util
 from taxonomy.models import Taxon, Community
 from taxonomy.filters import TaxonFilter, CommunityFilter
+from taxonomy.tables import TaxonAreaEncounterTable, CommunityAreaEncounterTable
 
 
 @csrf_exempt
@@ -95,11 +96,11 @@ class TaxonDetailView(DetailView):
         object = Taxon.objects.get(name_id=self.kwargs.get("name_id"))
         return object
 
-    # def get_context_data(self, **kwargs):
-    #     """Custom context."""
-    #     context = super(TaxonDetailView, self).get_context_data(**kwargs)
-    #     # context['now'] = timezone.now()
-    #     return context
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(TaxonDetailView, self).get_context_data(**kwargs)
+        context['occurrences'] = TaxonAreaEncounterTable(self.get_object().taxon_occurrences.all())
+        return context
 
 
 class CommunityDetailView(DetailView):
@@ -107,3 +108,9 @@ class CommunityDetailView(DetailView):
 
     model = Community
     context_object_name = "original"
+
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(CommunityDetailView, self).get_context_data(**kwargs)
+        context['occurrences'] = CommunityAreaEncounterTable(self.get_object().community_occurrences.all())
+        return context

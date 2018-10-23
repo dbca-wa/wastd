@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags occurrence_tags crispy_forms_tags bootstrap4 %}
+{% load render_table from django_tables2 %}
 
 {% block extrastyle %}
 <style>
@@ -126,18 +127,36 @@
           {% endif %}
           {% taxongazettal_add request.user block=False show_label_text=True %}
           {% document_add request.user "taxa" block=False show_label_text=True %}
+          {% areaencounter_add request.user "taxon" block=False show_label_text=True %}
       </p>
 
     </div><!-- /.jumbotron -->
     </div><!-- /.col#taxon-detail-main -->
 
-    <div class="col-12 col-md-6 col-lg-4" id="taxon-detail-map">
-      <div id="map">
-        {% leaflet_map "detailmap" callback="window.map_init" %}
-      </div>
-    </div><!-- /.col#taxon-detail-map -->
+    <div class="col-12 col-md-6 col-lg-4" id="taxon-occ">
+        <div id="map">
+          {% leaflet_map "detailmap" callback="window.map_init" %}
+        </div>
+    </div><!-- /.col#taxon-occ -->
 
   </div><!-- /.row -->
+
+  <!-- Taxon occurrence records -->
+  <div class="row" id="occ-row">
+    <div class="col-12" id="occ-main">
+      <div class="jumbotron">
+        <p class="lead">
+        <h3>Occurrence records
+          <small class="float-right">
+            {% areaencounter_add request.user "taxon" block=False show_label_text=False %}
+          </small>
+        </h3>
+        {% render_table occurrences %}
+        </p>
+      </div>
+    </div>
+  </div><!-- /#occ-row -->
+
   </div><!-- /.container-fluid -->
 </div><!-- /.container-fluid#wrap -->
 {% endblock %}
@@ -151,6 +170,16 @@
  * https://github.com/Leaflet/Leaflet/issues/3575
  */
 (function(){
+    // L.Icon.Default.imagePath = '/static/leaflet/images/';
+    delete L.Icon.Default.prototype._getIconUrl
+
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
+      iconUrl: "/static/leaflet/images/marker-icon.png",
+      shadowUrl: "/static/leaflet/images/marker-shadow.png"
+    })
+
+
     var originalInitTile = L.GridLayer.prototype._initTile
     L.GridLayer.include({
         _initTile: function (tile) {
@@ -170,6 +199,12 @@ function map_init(map, options) {
     var pointstyle = {
         "clickable": true
     };
+
+    var pointstyleBioSys = {
+        "clickable": true,
+        "color": "#6DC23A"
+    };
+
 
     /* Polygon style */
     var polystyle = {
@@ -242,8 +277,13 @@ function map_init(map, options) {
     map.fitBounds(eoo.getBounds());
 
     L.geoJson(
-        {{ original.taxon_related_areas.all|geojsonfeature:"label,as_html:geom"|safe }},
+        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html:geom"|safe }},
         {style: polystyle, onEachFeature: oef_rel}
+    ).addTo(map);
+
+    L.geoJson(
+        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html:point"|safe }},
+        {style: pointstyle, onEachFeature: oef_rel}
     ).addTo(map);
 
     // var markers = L.markerClusterGroup();
@@ -290,14 +330,14 @@ function map_init(map, options) {
 
     function oefBioSys(feature, layer) {
       layer.bindPopup(
-        '<strong>' + feature.properties.species_name + '</strong><br />' +
-        '<p><strong>Observed on</strong> ' + feature.properties.data.datetime + '</p>' +
-        '<p><a class="btn btn-primary btn-sm" target="_" ' +
+        '<div class="row"><div class="mr-auto p-2"><h5>'+ feature.properties.species_name + '</h5></div></div>' +
+        '<p><i class="oi oi-calendar" aria-hidden="true"></i> ' + feature.properties.datetime + '</p>' +
+        '<p><a class="btn btn-secondary btn-sm" target="_" ' +
         'href="https://biosys-uat.dbca.wa.gov.au/#/data/projects/61/datasets/' +
-        feature.properties.dataset + '/record/' + feature.id + '">Edit this record</a></p>'
+        feature.properties.dataset + '/record/' + feature.id + '">' +
+        '<i class="oi oi-pencil"></i> Edit this record in BioSys</a></p>'
       );
       layer.bindTooltip("Feature ID " + feature.id);
-
     }
 
     /* Turn a BioSys API record into a GeoJSON Feature. */
@@ -324,16 +364,13 @@ function map_init(map, options) {
       function (response) {return response.json();}
     ).then(
       function(json) {
-        var gj_fc = geoJSONfc(json);
-        console.log(gj_fc);
-        var gj_markers = L.geoJson(gj_fc, {style: pointstyle, onEachFeature: oefBioSys});
-        var markers = L.markerClusterGroup();
-        markers.addLayer(gj_markers);
-        map.addLayer(markers);
+        var point_markers = L.geoJson(geoJSONfc(json), {onEachFeature: oefBioSys});
+        // console.log(geoJSONfc(json));
+        var cluster_markers = L.markerClusterGroup();
+        cluster_markers.addLayer(point_markers);
+        map.addLayer(cluster_markers);
       }
     );
-
-
 }
 </script>
 {% endblock %}

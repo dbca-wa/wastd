@@ -22,14 +22,14 @@ from leaflet.forms.widgets import LeafletWidget
 from reversion.admin import VersionAdmin
 
 from shared.admin import CustomStateLogInline
-from occurrence.models import Area, TaxonArea, CommunityArea
+from occurrence.models import AreaEncounter, TaxonAreaEncounter, CommunityAreaEncounter
 
 
 # Select2Widget forms
 S2ATTRS = {'width': '350px'}
-AreaForm = s2form(Area, attrs=S2ATTRS)
-TaxonAreaForm = s2form(TaxonArea, attrs=S2ATTRS)
-CommunityAreaForm = s2form(CommunityArea, attrs=S2ATTRS)
+AreaForm = s2form(AreaEncounter, attrs=S2ATTRS)
+TaxonAreaForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
+CommunityAreaForm = s2form(CommunityAreaEncounter, attrs=S2ATTRS)
 leaflet_settings = {
     'widget': LeafletWidget(attrs={
         'map_height': '400px',
@@ -43,8 +43,8 @@ formfield_overrides = {
 }
 
 
-@admin.register(Area)
-class AreaAdmin(FSMTransitionMixin, VersionAdmin):
+@admin.register(AreaEncounter)
+class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for Area."""
 
     date_hierarchy = 'encountered_on'
@@ -74,27 +74,27 @@ class AreaAdmin(FSMTransitionMixin, VersionAdmin):
     formfield_overrides = formfield_overrides
 
 
-@admin.register(TaxonArea)
-class TaxonAreaAdmin(AreaAdmin):
+@admin.register(TaxonAreaEncounter)
+class TaxonAreaAdmin(AreaEncounterAdmin):
     """Admin for TaxonArea."""
 
     form = TaxonAreaForm
-    list_display = AreaAdmin.list_display + ["taxon"]
+    list_display = AreaEncounterAdmin.list_display + ["taxon"]
     list_select_related = ["taxon"]
     fieldsets = ((_('Taxon'), {
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
         'fields': ("taxon", )}
-    ),) + AreaAdmin.fieldsets
+    ),) + AreaEncounterAdmin.fieldsets
 
 
-@admin.register(CommunityArea)
-class CommunityAreaAdmin(AreaAdmin):
+@admin.register(CommunityAreaEncounter)
+class CommunityAreaAdmin(AreaEncounterAdmin):
     """Admin for CommunityArea."""
 
     form = CommunityAreaForm
-    list_display = AreaAdmin.list_display + ["community"]
+    list_display = AreaEncounterAdmin.list_display + ["community"]
     list_select_related = ["community"]
     fieldsets = ((_('Community'), {
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
         'fields': ("community", )}
-    ),) + AreaAdmin.fieldsets
+    ),) + AreaEncounterAdmin.fieldsets

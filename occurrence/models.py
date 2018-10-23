@@ -46,9 +46,15 @@ from taxonomy.models import Taxon, Community
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
-class Area(PolymorphicModel, LegacySourceMixin, ObservationAuditMixin, QualityControlMixin, geo_models.Model):
-    """An Area with a polygonal extent and an additional point representation.
+class AreaEncounter(PolymorphicModel,
+                    LegacySourceMixin,
+                    ObservationAuditMixin,
+                    QualityControlMixin,
+                    geo_models.Model):
+    """An Encounter with an Area.
+
+    The Area is represented spatially throuh a polygonal extent
+    and an additional point.
 
     This model accommodates anything with a spatial extent, providing:
 
@@ -92,6 +98,41 @@ class Area(PolymorphicModel, LegacySourceMixin, ObservationAuditMixin, QualityCo
         (AREA_TYPE_LOCALITY, "Locality"),
     )
 
+    # Naming -----------------------------------------------------------------#
+    code = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Area code"),
+        help_text=_("A URL-safe, short code for the area. "
+                    "Multiple records of the same Area "
+                    "will be recognised by the same area type and code."),
+    )
+
+    label = models.CharField(
+        blank=True, null=True,
+        max_length=1000,
+        editable=False,
+        verbose_name=_("Label"),
+        help_text=_("A short but comprehensive label for the encounter, "
+                    "populated from the model's string representation."),
+    )
+
+    name = models.CharField(
+        blank=True, null=True,
+        max_length=1000,
+        verbose_name=_("Area name"),
+        help_text=_("A human-readable name for the observed area."),
+    )
+
+    description = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Description"),
+        help_text=_("A comprehensive description."),
+    )
+
+    # Time: ObservationAuditMixin provides date and observer -----------------#
+    #
+    # Geolocation ------------------------------------------------------------#
     area_type = models.PositiveIntegerField(
         verbose_name=_("Area type"),
         default=AREA_TYPE_EPHEMERAL_SITE,
@@ -102,35 +143,6 @@ class Area(PolymorphicModel, LegacySourceMixin, ObservationAuditMixin, QualityCo
         blank=True, null=True,
         verbose_name=_("Accuracy [m]"),
         help_text=_("The measured or estimated accuracy of the location in meters."),
-    )
-
-    code = models.CharField(
-        max_length=1000,
-        verbose_name=_("Code"),
-        help_text=_("A URL-safe, short code. Multiple records of the same Area "
-                    "will be recognised by the same area type and code."),
-    )
-
-    label = models.CharField(
-        blank=True, null=True,
-        max_length=1000,
-        editable=False,
-        verbose_name=_("Label"),
-        help_text=_("A short but comprehensive label, populated from the model's "
-                    "string representation."),
-    )
-
-    name = models.CharField(
-        blank=True, null=True,
-        max_length=1000,
-        verbose_name=_("Name"),
-        help_text=_("A human-readable name."),
-    )
-
-    description = models.TextField(
-        blank=True, null=True,
-        verbose_name=_("Description"),
-        help_text=_("A comprehensive description."),
     )
 
     point = geo_models.PointField(
@@ -146,30 +158,33 @@ class Area(PolymorphicModel, LegacySourceMixin, ObservationAuditMixin, QualityCo
         blank=True, null=True,
         help_text=_("The northernmost latitude serves to sort areas."),)
 
-    as_html = models.TextField(
-        verbose_name=_("HTML representation"),
-        blank=True, null=True, editable=False,
-        help_text=_("The cached HTML representation for display purposes."),)
-
     geom = geo_models.PolygonField(
         srid=4326,
         blank=True, null=True,
         verbose_name=_("Location"),
         help_text=_("The exact extent of the area as polygon in WGS84, if available."))
 
+    # Cached fields ----------------------------------------------------------#
+    as_html = models.TextField(
+        verbose_name=_("HTML representation"),
+        blank=True, null=True, editable=False,
+        help_text=_("The cached HTML representation for display purposes."),)
+
     class Meta:
         """Class options."""
 
         ordering = ["-northern_extent", "name"]
-        verbose_name = "Area"
-        verbose_name_plural = "Areas"
+        verbose_name = "Area Encounter"
+        verbose_name_plural = "Area Encounters"
 
     def __str__(self):
         """The unicode representation."""
-        return "[{0}] ({1}) {2}".format(
+        return "Encounter at [{0}] ({1}) {2} on {3} by {4}".format(
             self.get_area_type_display(),
             self.code,
-            self.name)
+            self.name,
+            self.encountered_on,
+            self.encountered_by)
 
     @property
     def derived_point(self):
@@ -203,42 +218,48 @@ class Area(PolymorphicModel, LegacySourceMixin, ObservationAuditMixin, QualityCo
             t = loader.get_template(template)
             return mark_safe(t.render({"original": self}))
         except:
-            logger.info("[occurrence.models.area] Template missing: {0}".format(template))
+            logger.info("[occurrence.models.{0}] Template missing: {1}".format(self._meta.model_name, template))
             return self.__str__()
 
 
 @python_2_unicode_compatible
-class TaxonArea(Area):
-    """An Area related to a Taxon."""
+class TaxonAreaEncounter(AreaEncounter):
+    """An Encounter in time and space with a Taxon."""
 
-    taxon = models.ForeignKey(Taxon, on_delete=models.CASCADE, related_name="taxon_related_areas")
+    taxon = models.ForeignKey(Taxon, on_delete=models.CASCADE, related_name="taxon_occurrences")
 
     def __str__(self):
         """The unicode representation."""
-        return "[{0}] ({1}) {2}".format(
+        return "Encounter of {5} at [{0}] ({1}) {2} on {3} by {4}".format(
             self.get_area_type_display(),
             self.code,
-            self.name)
+            self.name,
+            self.encountered_on,
+            self.encountered_by,
+            self.taxon)
 
 
 @python_2_unicode_compatible
-class CommunityArea(Area):
-    """An Area related to a Taxon."""
+class CommunityAreaEncounter(AreaEncounter):
+    """An Encounter in time and space with a community."""
 
-    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name="community_related_areas")
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name="community_occurrences")
 
     def __str__(self):
         """The unicode representation."""
-        return "[{0}] ({1}) {2}".format(
+        return "Encounter of {5} at [{0}] ({1}) {2} on {3} by {4}".format(
             self.get_area_type_display(),
             self.code,
-            self.name)
+            self.name,
+            self.encountered_on,
+            self.encountered_by,
+            self.community)
 
 
-@receiver(pre_save, sender=TaxonArea)
-@receiver(pre_save, sender=CommunityArea)
+@receiver(pre_save, sender=TaxonAreaEncounter)
+@receiver(pre_save, sender=CommunityAreaEncounter)
 def area_caches(sender, instance, *args, **kwargs):
-    """Area: Cache expensive lookups."""
+    """AreaEncounter: Cache expensive lookups."""
     if instance.pk:
         logger.info("[area_caches] Updating cache fields.")
         instance.label = instance.__str__()
@@ -248,3 +269,42 @@ def area_caches(sender, instance, *args, **kwargs):
         instance.as_html = instance.derived_html
     else:
         logger.info("[area_caches] New Area, re-save to populate caches.")
+
+    # FAUNA ENC
+    # Survey
+    # Threats
+    # Habitat and habitat conditions
+    # Fire history
+    # Vegetation class
+    # Associated species
+    # mgmt actions required
+    # comments
+    # DRF permit no
+    # TaxonSpecimenEncounter
+    # TaxonSampleEncounter
+
+    # FLORA ENC
+    # Survey: often no survey as most fauna enc are opportunistic
+    # Threats
+    # Habitat and habitat conditions
+    # Fire history
+    # Vegetation class
+    # Associated species: mostly empty, flora
+    # mgmt actions required
+    # comments
+    # DRF permit no
+    # TaxonSpecimenEncounter
+    # TaxonSampleEncounter
+
+    # COM ENC
+    # Survey: often no survey as most fauna enc are opportunistic
+    # Threats
+    # Habitat and habitat conditions
+    # Fire history
+    # Vegetation class
+    # Associated species: mostly empty, flora
+    # mgmt actions required
+    # comments
+    # DRF permit no
+    # TaxonSpecimenEncounter
+    # TaxonSampleEncounter

@@ -4,7 +4,8 @@ from background_task import background
 import logging
 import sys
 from django.utils import timezone
-from wastd.observations.utils import allocate_animal_names, save_all_odka, import_all_odka
+from wastd.observations.utils import (
+    allocate_animal_names, save_all_odka, import_all_odka, reconstruct_missing_surveys)
 
 logger = logging.getLogger(__name__)
 
@@ -27,3 +28,4 @@ def import_odka():
     sys.setdefaultencoding('UTF8')
     save_all_odka(path="data/odka")
     import_all_odka(path="data/odka")
+    reconstruct_missing_surveys()

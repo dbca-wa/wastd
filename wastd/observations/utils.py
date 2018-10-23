@@ -1847,7 +1847,7 @@ def import_one_tag(t, m):
         name=tag_name,
         tag_location=make_tag_side(t["attached_on_side"], t["tag_position"]),
         status=m["tag_status"][t["tag_state"]],
-        comments='{0}{1}'.format(t["comments"], t["tag_label"]),
+        comments='{0}\n{1}'.format(t["comments"], t["tag_label"]),
     )
 
     if TagObservation.objects.filter(encounter=enc, name=tag_name).exists():
@@ -2377,6 +2377,7 @@ def make_mapping():
         "X": "floating",        # Turtle dead
         "Y": "floating",        # Caught in fishing gear - Relsd
         "Z": "other",           # Hunted for food by Ab & others
+        "NA": "na",
     })
 
     yes_no = map_and_keep(OBSERVATION_CHOICES)
@@ -2395,19 +2396,29 @@ def make_mapping():
     })
 
     tag_status = map_and_keep(TAG_STATUS_CHOICES)
+    # 0L A1 A2 ae AE M M1 N OO OX p P P_ED P_OK PX Q R RC RQ
     tag_status.update({
-        "#": 'resighted',
-        "OX": 'resighted',
+        "#": 'resighted',  # TODO query number - tag on
+        "OX": 'resighted',  # TODO observed present but open, tag refixed
+        "0": 'resighted',  # TODO false ID as lost
         "P": 'resighted',
+        "PX": 'resighted',  # TODO tag present, not read
+        "p": 'resighted',  # typo duplicate of P
         "P_OK": 'resighted',
-        "RQ": 'resighted',
+        "RQ": 'resighted',  # observed but insecure, action taken unknown
         "P_ED": 'resighted',
-        "A1": 'applied-new',
-        "AE": 'applied-new',
-        "RC": 'reclinched',
+        "A1": 'applied-new',  # applied new, fix seems ok
+        "A2": 'applied-new',  # TODO no tag applied
+        "AE": 'applied-new',  # applied new, end clinch noted
+        "ae": 'applied-new',  # typo duplicate of AE
+        "RC": 'reclinched',  # observed insecure, reclinched
         "OO": 'removed',
-        "R": 'removed',
-        "Q": 'resighted',
+        "OX": 'removed',
+        "R": 'removed',  # removed by obs
+        "Q": 'resighted',  # query present
+        # M missing TODO
+        # M1 missing - not observed TODO
+        # N not recorded TODO
         'resighted': 'resighted'
     })
 
@@ -2572,21 +2583,26 @@ def import_odk(datafile,
 
     elif flavour == "wamtram":
         logger.info("ALL ABOARD THE WAMTRAM!!!")
+        logger.info("Reading data...")
         enc = csv.DictReader(open(datafile))
         wamtram_users = csv.DictReader(open(usercsv))
 
         # List of [WAStD User object (.id), WAMTRAM user dict (["PERSON_ID"])]
+        logger.info("Reconstructing users...")
         users = {user["PERSON_ID"]: update_wastd_user(user)
                  for user in wamtram_users if user["name"] != ""}
 
+        logger.info("Selecting new data to insert...")
         # mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
         mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
             status=Encounter.STATUS_NEW).filter(source="wamtram")]
         mapping["overwrite"] = [t.source_id for t in Encounter.objects.filter(
             source="wamtram", status=Encounter.STATUS_NEW)]
 
+        logger.info("Importing data...")
         [import_one_encounter_wamtram(e, mapping, users) for e in enc
          if e["OBSERVATION_ID"] not in mapping["keep"]]
+        logger.info("Done!")
 
         # if extradata:
         #   tags = csv.DictReader(open(extradata))

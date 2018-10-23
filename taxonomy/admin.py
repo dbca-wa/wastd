@@ -24,14 +24,14 @@ from taxonomy.models import (
     HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent,
     Taxon,  # Crossreference, Vernacular,
     Community)
-from occurrence.models import TaxonArea, CommunityArea
+from occurrence.models import TaxonAreaEncounter, CommunityAreaEncounter
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 from easy_select2 import select2_modelform as s2form
 
 S2ATTRS = {'width': 'auto'}
-TaxonAreaForm = s2form(TaxonArea, attrs=S2ATTRS)
-CommunityAreaForm = s2form(TaxonArea, attrs=S2ATTRS)
+TaxonAreaEncounterForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
+CommunityAreaEncounterForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
 
 TokenAdmin.raw_id_fields = ('user',)
 
@@ -225,21 +225,21 @@ class HbvParentAdmin(VersionAdmin, admin.ModelAdmin):
     search_fields = ('name_id', 'parent_nid', )
 
 
-class TaxonAreaInline(admin.StackedInline):
+class TaxonAreaEncounterInline(admin.StackedInline):
     """Inline for TaxonArea."""
 
-    model = TaxonArea
-    form = TaxonAreaForm
+    model = TaxonAreaEncounter
+    form = TaxonAreaEncounterForm
     extra = 1
     classes = ('wide extrapretty grp-open',)
     formfield_overrides = formfield_overrides
 
 
-class CommunityAreaInline(admin.StackedInline):
+class CommunityAreaEncounterInline(admin.StackedInline):
     """Inline for CommunityArea."""
 
-    model = CommunityArea
-    form = CommunityAreaForm
+    model = CommunityAreaEncounter
+    form = CommunityAreaEncounterForm
     extra = 1
     classes = ('wide extrapretty',)
     formfield_overrides = formfield_overrides
@@ -258,7 +258,7 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
     )
 
     readonly_fields = ('parent', )
-    inlines = [TaxonAreaInline, ]
+    inlines = [TaxonAreaEncounterInline, ]
     formfield_overrides = formfield_overrides
 
 
@@ -273,5 +273,5 @@ class CommunityAdmin(VersionAdmin):
         'description',
     )
 
-    inlines = [CommunityAreaInline, ]
+    inlines = [CommunityAreaEncounterInline, ]
     formfield_overrides = formfield_overrides

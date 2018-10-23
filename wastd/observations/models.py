@@ -906,12 +906,12 @@ class Area(geo_models.Model):
     @property
     def all_encounters_url(self):
         """All Encounters within this Area."""
-        return '/admin/observations/encounter/?where={0}'.format(self.pk)
+        return '/admin/observations/encounter/?site__id__exact={0}'.format(self.pk)
 
     @property
     def animal_encounters_url(self):
         """The admin URL for AnimalEncounters within this Area."""
-        return '/admin/observations/animalencounter/?where={0}'.format(self.pk)
+        return '/admin/observations/animalencounter/?site__id__exact={0}'.format(self.pk)
 
     def make_rest_listurl(self, format='json'):
         """Return the API list URL in given format (default: JSON).
@@ -1289,7 +1289,9 @@ class Survey(QualityControl, geo_models.Model):
 
     @property
     def encounters(self):
-        """Return the QuerySet of all Encounters within this SiteVisit."""
+        """Return the QuerySet of all Encounters within this SiteVisit unless it's a training run."""
+        if not self.production:
+            return None
         if not self.end_time:
             logger.info("[wastd.observations.models.survey.encounters] No end_time set, can't filter Encounters")
             return None
@@ -1326,6 +1328,8 @@ def claim_end_points(survey_instance):
 
     If no SurveyEnd is found and no end_time is set, the end_time is set to
     start_time plus six hours. This should allow the survey to claim its Encounters.
+
+    TODO we could be a bit cleverer and find the latest encounter on the same day and site.
     """
     se = SurveyEnd.objects.filter(
         site=survey_instance.site,
@@ -1765,6 +1769,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     @property
     def date_string(self):
+        """Return the date as string."""
         return str(self.when.date())
 
     @property

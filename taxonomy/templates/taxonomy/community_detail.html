@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags occurrence_tags crispy_forms_tags bootstrap4 %}
+{% load render_table from django_tables2 %}
 
 {% block extrastyle %}
 <style>
@@ -85,6 +86,7 @@
           {% endif %}
           {% communitygazettal_add request.user block=False show_label_text=True %}
           {% document_add request.user "taxa" block=False show_label_text=True %}
+          {% areaencounter_add request.user "community" block=False show_label_text=True %}
       </p>
 
     </div><!-- /.jumbotron -->
@@ -97,6 +99,25 @@
     </div><!-- /.col#taxon-detail-map -->
 
   </div><!-- /.row -->
+
+
+  <!-- Taxon occurrence records -->
+  <div class="row" id="occ-row">
+    <div class="col-12" id="occ-main">
+      <div class="jumbotron">
+        <p class="lead">
+        <h3>Occurrence records
+          <small class="float-right">
+            {% areaencounter_add request.user "community" block=False show_label_text=False %}
+          </small>
+        </h3>
+        {% render_table occurrences %}
+        </p>
+      </div>
+    </div>
+  </div><!-- /#occ-row -->
+
+
   </div><!-- /.container-fluid -->
 </div><!-- /.container-fluid#wrap -->
 {% endblock %}
@@ -110,6 +131,16 @@
  * https://github.com/Leaflet/Leaflet/issues/3575
  */
 (function(){
+    // L.Icon.Default.imagePath = '/static/leaflet/images/';
+    delete L.Icon.Default.prototype._getIconUrl
+
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
+      iconUrl: "/static/leaflet/images/marker-icon.png",
+      shadowUrl: "/static/leaflet/images/marker-shadow.png"
+    })
+
+
     var originalInitTile = L.GridLayer.prototype._initTile
     L.GridLayer.include({
         _initTile: function (tile) {
@@ -188,7 +219,7 @@ function map_init(map, options) {
 
     function oef_rel (feature, layer) {
       layer.bindTooltip(feature.properties.label);
-      layer.bindPopup(feature.properties.as_html);s
+      layer.bindPopup(feature.properties.as_html);
     }
 
     /* Data loading */
@@ -207,7 +238,7 @@ function map_init(map, options) {
     map.fitBounds(eoo.getBounds());
 
     L.geoJson(
-        {{ original.community_related_areas.all|geojsonfeature:"label,as_html:geom"|safe }},
+        {{ original.community_occurrences.all|geojsonfeature:"label,as_html:geom"|safe }},
         // {clipTiles: true, unique: getUnique},
         {style: polystyle,onEachFeature: oef_rel}
     ).addTo(map);

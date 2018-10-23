@@ -39,7 +39,7 @@ class HomeView(ListView):
 
     def get_queryset(self, **kwargs):
         """Queryset."""
-        return AnimalEncounter.objects.filter(taxon="Cheloniidae")
+        return AnimalEncounter.objects.filter(taxon="Cheloniidae", encounter_type="stranding")
 
 
 # Encounters -----------------------------------------------------------------#

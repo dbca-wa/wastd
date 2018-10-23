@@ -14,14 +14,19 @@
     <!--[if lt IE 9]>
       <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    {% block css %}
     <!-- bootstrap can't be compressed  -->
     {% bootstrap_css %}
-    {% block css %}
     {% compress css %}
     {% leaflet_css %}
     <link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/project.css' %}">
     {% endcompress %}
+
+<!--     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/> -->
     {% endblock %}
     {% block extrastyle %}
     {% endblock %}
@@ -240,9 +245,10 @@
   {% bootstrap_javascript jquery='full' %}
   <!-- Fontawesome: icons -->
   <!-- <script src="//use.fontawesome.com/f8f5501a45.js"></script> -->
-
-  <!-- <script src="//static.dpaw.wa.gov.au/static/libs/leaflet/1.0.1/leaflet.js"></script> -->
-  <!-- <script src="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.0.0-rc.1.0/leaflet.markercluster.js"></script> -->
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+   crossorigin=""></script>
+  <!-- <script src="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script> -->
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
