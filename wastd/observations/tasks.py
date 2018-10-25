@@ -24,8 +24,6 @@ def update_names():
 @background(queue="admin-tasks", schedule=timezone.now())
 def import_odka():
     """Download and import new ODKA submissions."""
-    reload(sys)
-    sys.setdefaultencoding('UTF8')
     save_all_odka(path="data/odka")
     import_all_odka(path="data/odka")
     reconstruct_missing_surveys()

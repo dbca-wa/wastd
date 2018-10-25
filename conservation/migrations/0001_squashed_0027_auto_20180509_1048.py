@@ -14,9 +14,9 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('taxonomy', '0064_auto_20180413_2031'),
+        #('taxonomy', '0064_auto_20180413_2031'),
         ('contenttypes', '0002_remove_content_type_name'),
-        ('taxonomy', '0040_auto_20180404_1113'),
+        #('taxonomy', '0040_auto_20180404_1113'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
