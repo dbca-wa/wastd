@@ -221,12 +221,30 @@ class AreaEncounter(PolymorphicModel,
             logger.info("[occurrence.models.{0}] Template missing: {1}".format(self._meta.model_name, template))
             return self.__str__()
 
+    def get_nearby_encounters(self, dist_dd=0.005):
+        """Get encounters within dist_dd (default 0.005 degrees, ca 500m).
+
+        Arguments:
+
+        dist_dd <float> The search radius in decimal degrees. Default: 0.005 (ca 500 m).
+
+        Returns:
+        A queryset of nearby AreaEncounters.
+        """
+        return AreaEncounter.objects.filter(point__distance_lte=(self.point, dist_dd))
+
 
 @python_2_unicode_compatible
 class TaxonAreaEncounter(AreaEncounter):
     """An Encounter in time and space with a Taxon."""
 
     taxon = models.ForeignKey(Taxon, on_delete=models.CASCADE, related_name="taxon_occurrences")
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Taxon Encounter"
+        verbose_name_plural = "Taxon Encounters"
 
     def __str__(self):
         """The unicode representation."""
@@ -238,12 +256,33 @@ class TaxonAreaEncounter(AreaEncounter):
             self.encountered_by,
             self.taxon)
 
+    def nearby_same(self, dist_dd=0.005):
+        """Return encounters with same taxon within search radius (dist_dd).
+
+        Arguments:
+
+        dist_dd <float> The search radius in decimal degrees. Default: 0.005 (ca 500 m).
+
+        Returns:
+        A queryset of nearby TaxonAreaEncounters.
+        """
+        return TaxonAreaEncounter.objects.filter(
+            taxon=self.taxon,
+            point__distance_lte=(self.point, dist_dd)
+        )
+
 
 @python_2_unicode_compatible
 class CommunityAreaEncounter(AreaEncounter):
     """An Encounter in time and space with a community."""
 
     community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name="community_occurrences")
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Community Encounter"
+        verbose_name_plural = "Community Encounters"
 
     def __str__(self):
         """The unicode representation."""
@@ -254,6 +293,21 @@ class CommunityAreaEncounter(AreaEncounter):
             self.encountered_on,
             self.encountered_by,
             self.community)
+
+    def nearby_same(self, dist_dd=0.005):
+        """Return encounters with same community within search radius (dist_dd).
+
+        Arguments:
+
+        dist_dd <float> The search radius in decimal degrees. Default: 0.005 (ca 500 m).
+
+        Returns:
+        A queryset of nearby CommunityAreaEncounters.
+        """
+        return CommunityAreaEncounter.objects.filter(
+            community=self.community,
+            point__distance_lte=(self.point, dist_dd)
+        )
 
 
 @receiver(pre_save, sender=TaxonAreaEncounter)

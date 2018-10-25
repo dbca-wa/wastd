@@ -200,12 +200,6 @@ function map_init(map, options) {
         "clickable": true
     };
 
-    var pointstyleBioSys = {
-        "clickable": true,
-        "color": "#6DC23A"
-    };
-
-
     /* Polygon style */
     var polystyle = {
         "color": "#0009ff",
@@ -218,7 +212,7 @@ function map_init(map, options) {
         if (feature.properties.leaflet_icon){
             return feature.properties.leaflet_icon
         } else {
-            return "question-circle-o"
+            return "eye"
         }
     }
 
@@ -242,7 +236,7 @@ function map_init(map, options) {
         /* https://github.com/lvoogdt/Leaflet.awesome-markers */
         var icon = new L.AwesomeMarkers.icon({
             icon: getIcon(feature),
-            iconColor: 'white',
+            iconColor: "white",
             markerColor: getMarkerColor(feature),
             // prefix: 'fa',
             // spin:false
@@ -259,7 +253,7 @@ function map_init(map, options) {
     }
 
     function oef_rel (feature, layer) {
-      layer.bindTooltip(feature.properties.label);
+      layer.bindTooltip('TSC<br/><span class="oi oi-calendar" aria-hidden="true">' + feature.properties.encountered_on);
       layer.bindPopup(feature.properties.as_html);
     }
 
@@ -277,13 +271,13 @@ function map_init(map, options) {
     map.fitBounds(eoo.getBounds());
 
     L.geoJson(
-        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html:geom"|safe }},
+        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
         {style: polystyle, onEachFeature: oef_rel}
     ).addTo(map);
 
     L.geoJson(
-        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html:point"|safe }},
-        {style: pointstyle, onEachFeature: oef_rel}
+        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+        {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_rel}
     ).addTo(map);
 
     // var markers = L.markerClusterGroup();
@@ -324,8 +318,11 @@ function map_init(map, options) {
      */
     // using Fetch API
 
-    function ptlBioSys (feature, latlng) {
-      return new L.Marker(feature.geometry.coordinates);
+    /* Override default Marker, set colour, symbol; add mouse hover title */
+    function ptlBioSys(feature, latlng) {
+        /* https://github.com/lvoogdt/Leaflet.awesome-markers */
+        var icon = new L.AwesomeMarkers.icon({icon: 'database', markerColor: 'green'});
+        return L.marker(latlng, {icon: icon});
     }
 
     function oefBioSys(feature, layer) {
@@ -337,7 +334,7 @@ function map_init(map, options) {
         feature.properties.dataset + '/record/' + feature.id + '">' +
         '<i class="oi oi-pencil"></i> Edit this record in BioSys</a></p>'
       );
-      layer.bindTooltip("Feature ID " + feature.id);
+      layer.bindTooltip('BioSys <br/><span class="oi oi-calendar" aria-hidden="true">' + feature.properties.datetime);
     }
 
     /* Turn a BioSys API record into a GeoJSON Feature. */
@@ -364,7 +361,7 @@ function map_init(map, options) {
       function (response) {return response.json();}
     ).then(
       function(json) {
-        var point_markers = L.geoJson(geoJSONfc(json), {onEachFeature: oefBioSys});
+        var point_markers = L.geoJson(geoJSONfc(json), {pointToLayer: ptlBioSys, onEachFeature: oefBioSys});
         // console.log(geoJSONfc(json));
         var cluster_markers = L.markerClusterGroup();
         cluster_markers.addLayer(point_markers);

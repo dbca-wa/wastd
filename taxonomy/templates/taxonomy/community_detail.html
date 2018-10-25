@@ -156,9 +156,6 @@
 
 function map_init(map, options) {
 
-
-    /* Helper functions */
-
     /* Point style */
     var style = {
         "clickable": true
@@ -218,7 +215,7 @@ function map_init(map, options) {
     }
 
     function oef_rel (feature, layer) {
-      layer.bindTooltip(feature.properties.label);
+      layer.bindTooltip('TSC<br/><span class="oi oi-calendar" aria-hidden="true">' + feature.properties.encountered_on);
       layer.bindPopup(feature.properties.as_html);
     }
 
@@ -238,8 +235,7 @@ function map_init(map, options) {
     map.fitBounds(eoo.getBounds());
 
     L.geoJson(
-        {{ original.community_occurrences.all|geojsonfeature:"label,as_html:geom"|safe }},
-        // {clipTiles: true, unique: getUnique},
+        {{ original.community_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
         {style: polystyle,onEachFeature: oef_rel}
     ).addTo(map);
 

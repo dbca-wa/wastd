@@ -12,7 +12,7 @@ from .common import *  # noqa
 # ------------------------------------------------------------------------------
 # Turn debug off so tests run faster
 DEBUG = False
-TEMPLATES[0]['OPTIONS']['debug'] = False
+TEMPLATES[0]['OPTIONS']['debug'] = True
 
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------
