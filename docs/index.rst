@@ -37,14 +37,14 @@ WAStD - WA Sea Turtle Data / TSC - Threatened Species and Communities
 Overview
 ========
 
-WAStD is a data clearinghouse for:
+WAStD / TSC is a data warehouse for:
 
 * Turtle strandings in WA, as reported to the Department of Biodiversity, Conservation and Attractions, WA.
 * Dugong and sea snake strandings in WA.
 * Turtle track observations, taken at sunrise after nesting (can involve nests,
   predation, nest tags, temperature loggers, egg excavation and hatchling measurements).
 * Temperature logger asset management.
-* Threatened Species and Communities of WA: occurrence, conservation status, management plans.
+* Threatened Species and Communities of WA: occurrences, conservation status, management plans.
 
 WAStD is built scalable enough to accommodate other, related, data:
 
