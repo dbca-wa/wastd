@@ -2758,7 +2758,7 @@ def odka_submission_ids(form_id,
     if not parsed["idChunk"]["idList"]:
         # No submissions.
         ids = []
-    elif type(parsed["idChunk"]["idList"]["id"]) == unicode:
+    elif type(parsed["idChunk"]["idList"]["id"]) == str:
         # One submission.
         ids = [parsed["idChunk"]["idList"]["id"], ]
     else:
