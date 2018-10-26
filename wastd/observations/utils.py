@@ -4926,6 +4926,7 @@ def import_all_odka(path="."):
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
         fs04=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-4_1534140913", path)],
+        fs04a=[import_odka_fs03(x) for x in downloaded_data("build_Predator-or-Disturbance-1-0_1539932798", path)],
 
         tt35=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)],
         tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
@@ -4937,6 +4938,7 @@ def import_all_odka(path="."):
         tt51=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-51_1517196378", path)],
         tt52=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-52_1518683842", path)],
         tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)],
+        tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)],
 
         mwi01=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-1_1502342347", path)],
         mwi04=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-4_1509605702", path)],
