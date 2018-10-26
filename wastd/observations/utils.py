@@ -2397,28 +2397,38 @@ def make_mapping():
 
     tag_status = map_and_keep(TAG_STATUS_CHOICES)
     # 0L A1 A2 ae AE M M1 N OO OX p P P_ED P_OK PX Q R RC RQ
+    # Compare tag scar positions to previously tagged positions:
+    # could a tag have been applied in same position as tag scar?
     tag_status.update({
-        "#": 'resighted',  # TODO query number - tag on
-        "OX": 'resighted',  # TODO observed present but open, tag refixed
-        "0": 'resighted',  # TODO false ID as lost
+
+        # resighted
         "P": 'resighted',
-        "PX": 'resighted',  # TODO tag present, not read
         "p": 'resighted',  # typo duplicate of P
-        "P_OK": 'resighted',
+        "P_OK": 'resighted',  # tag seen, good fix observed
+        "P_ED": 'resighted',  # resighted, but tag about to fall off
         "RQ": 'resighted',  # observed but insecure, action taken unknown
-        "P_ED": 'resighted',
+        "RC": 'reclinched',  # observed insecure, reclinched
+        "OX": 'reclinched',
+
+        # applied-new
         "A1": 'applied-new',  # applied new, fix seems ok
-        "A2": 'applied-new',  # TODO no tag applied
         "AE": 'applied-new',  # applied new, end clinch noted
         "ae": 'applied-new',  # typo duplicate of AE
-        "RC": 'reclinched',  # observed insecure, reclinched
-        "OO": 'removed',
-        "OX": 'removed',
+
+        # removed
         "R": 'removed',  # removed by obs
-        "Q": 'resighted',  # query present
-        # M missing TODO
-        # M1 missing - not observed TODO
-        # N not recorded TODO
+        "OO": 'removed',  # fell off during observation
+
+        # not tagged, no tags seen, no number recorded:
+        # "A2": '',  # TODO no tag applied
+        # "PX": '',  # TODO tag present, not read
+        # "0": '',  # TODO false ID as lost
+        # "#": '',  # tag was applied, bit tag number unknown
+        # "Q": '',  # tag number incompletely recorded
+        # M tag scar seen
+        # M1 missing
+        # N not recorded
+        # 0L falsely assumed to be tag scar, not a tag scar
         'resighted': 'resighted'
     })
 
@@ -2949,7 +2959,7 @@ def save_odka(form_id,
         verbose=verbose,
         append=append)
     with io.open(downloaded_data_filename(form_id, path), mode="w", encoding="utf-8") as outfile:
-        data = json.dumps(data, indent=2, ensure_ascii=False, encoding="utf-8")
+        data = json.dumps(data, indent=2, ensure_ascii=False).encode("utf-8")
         outfile.write(unicode(data))
 
 
