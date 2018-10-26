@@ -86,3 +86,4 @@ docs/.ipynb_checkpoints/
 dbperf
 .Rproj.user
 *.Rproj
+.Rhistory
