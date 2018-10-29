@@ -25,7 +25,8 @@ from ajax_select import urls as ajax_select_urls
 from wastd.api import router as wastd_router
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 from wastd.observations.views import (
-    schema_view, HomeView, EncounterTableView, AnimalEncounterTableView)
+    import_odka_view, schema_view, HomeView,
+    EncounterTableView, AnimalEncounterTableView)
 from taxonomy.views import (
     update_taxon, TaxonListView, CommunityListView, TaxonDetailView, CommunityDetailView)
 
@@ -106,6 +107,7 @@ urlpatterns = [
     #     name='area-tiled-geojson'),
 
     re_path(r'^action/update-taxon/$', update_taxon, name="update-taxon"),
+    re_path(r'^action/import-odka/$', import_odka_view, name="import-odka"),
 
     re_path(r'^400/$', default_views.bad_request,
             kwargs={'exception': Exception('Bad Request!')}),

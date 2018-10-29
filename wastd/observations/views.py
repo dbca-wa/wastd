@@ -12,10 +12,10 @@ from rest_framework.renderers import CoreJSONRenderer
 # Tables
 from django_tables2 import RequestConfig, SingleTableView, tables
 
-# from django.contrib import messages
-# from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 # from django.views.generic import ListView, TemplateView
-# from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.list import ListView
 from django.utils import timezone
@@ -23,6 +23,15 @@ from django.utils import timezone
 from wastd.observations.models import Encounter, AnimalEncounter
 from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
 from wastd.observations.forms import (EncounterListFormHelper, AnimalEncounterListFormHelper)
+from wastd.observations.tasks import import_odka
+
+
+@csrf_exempt
+def import_odka_view(request):
+    """Import all available ODK-Aggregate forms."""
+    msg = import_odka.now()
+    messages.success(request, msg)
+    return HttpResponseRedirect("/")
 
 
 class HomeView(ListView):

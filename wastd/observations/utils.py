@@ -368,7 +368,7 @@ def dl_photo(photo_id, photo_url, photo_filename):
     pdir = make_photo_foldername(photo_id)
     if not os.path.exists(pdir):
         logger.debug("  Creating folder {0}".format(pdir))
-        os.mkdir(pdir)
+        os.makedirs(pdir, exist_ok=True)
     else:
         logger.debug(("  Found folder {0}".format(pdir)))
     pname = os.path.join(pdir, photo_filename)

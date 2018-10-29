@@ -160,7 +160,12 @@
                <span class="oi oi-pulse" aria-hidden="true"></span>
                Site performance
               </a>
-
+              <a class="dropdown-item"
+                href="{% url 'import-odka' %}"
+                title="Import all ODKA forms">
+               <span class="oi oi-loop-circular" aria-hidden="true"></span>
+               Import ODKA
+              </a>
               <a class="dropdown-item"
                 href="{% url 'update-taxon' %}"
                 title="Update taxon names">

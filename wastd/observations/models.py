@@ -2938,7 +2938,7 @@ class TagObservation(Observation):
     def history_url(self):
         """The list view of all observations of this tag."""
         cl = reverse("admin:observations_tagobservation_changelist")
-        return "{0}?q={1}".format(cl, urllib.quote_plus(self.name))
+        return "{0}?q={1}".format(cl, urllib.parse.quote_plus(self.name))
 
 
 @python_2_unicode_compatible
@@ -3008,7 +3008,7 @@ class NestTagObservation(Observation):
         """The list view of all observations of this tag."""
         cl = reverse("admin:observations_nesttagobservation_changelist")
         if self.flipper_tag_id:
-            return "{0}?q={1}".format(cl, urllib.quote_plus(self.flipper_tag_id))
+            return "{0}?q={1}".format(cl, urllib.parse.quote_plus(self.flipper_tag_id))
         else:
             return cl
 
