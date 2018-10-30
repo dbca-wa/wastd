@@ -3,6 +3,7 @@
 from background_task import background
 import logging
 import sys
+import os
 from django.utils import timezone
 from wastd.observations.utils import (
     allocate_animal_names, save_all_odka, import_all_odka, reconstruct_missing_surveys)
@@ -24,6 +25,8 @@ def update_names():
 @background(queue="admin-tasks", schedule=timezone.now())
 def import_odka():
     """Download and import new ODKA submissions."""
-    save_all_odka(path="data/odka")
-    import_all_odka(path="data/odka")
+    path = "data/odka"
+    os.makedirs(path)
+    save_all_odka(path=path)
+    import_all_odka(path=path)
     reconstruct_missing_surveys()

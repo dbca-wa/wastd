@@ -4932,6 +4932,7 @@ def import_all_odka(path="."):
     TODO: disable deprecated forms after adding fan angles etc to import
     """
     logger.info("[import_all_odka] Starting import of all downloaded ODKA data...")
+    os.makedirs(path)
     results = dict(
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
