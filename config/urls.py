@@ -82,20 +82,14 @@ urlpatterns = [
             name='observation-geojson'),
 
     re_path(r'^areas.geojson$',
-            GeoJSONLayerView.as_view(
-                model=Area,
-                properties=('leaflet_title', 'as_html')),
+            GeoJSONLayerView.as_view(model=Area, properties=('leaflet_title', 'as_html')),
             name='areas-geojson'),
 
     # Encounter as tiled GeoJSON
     re_path(r'^data/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
             TiledGeoJSONLayerView.as_view(
                 model=AnimalEncounter,
-                properties=(
-                    'as_html',
-                    'leaflet_title',
-                    'leaflet_icon',
-                    'leaflet_colour'),
+                properties=('as_html', 'leaflet_title', 'leaflet_icon', 'leaflet_colour'),
                 geometry_field="where"),
             name='encounter-tiled-geojson'),
 

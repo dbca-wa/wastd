@@ -4,6 +4,7 @@ docs/
 fixtures/
 htmlcov/
 wastd/media/
+media/
 node_modules/
 *pycache*
 .cov*

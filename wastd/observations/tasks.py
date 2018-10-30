@@ -2,8 +2,8 @@
 """Tasks for WAStD."""
 from background_task import background
 import logging
-import sys
 import os
+from django.conf import settings
 from django.utils import timezone
 from wastd.observations.utils import (
     allocate_animal_names, save_all_odka, import_all_odka, reconstruct_missing_surveys)
@@ -25,8 +25,8 @@ def update_names():
 @background(queue="admin-tasks", schedule=timezone.now())
 def import_odka():
     """Download and import new ODKA submissions."""
-    path = "data/odka"
-    os.makedirs(path)
+    path = os.path.join(settings.MEDIA_ROOT, "odka")
+    os.makedirs(path, exist_ok=True)
     save_all_odka(path=path)
     import_all_odka(path=path)
     reconstruct_missing_surveys()
