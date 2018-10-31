@@ -175,19 +175,8 @@ SITE_CODE = env('SITE_CODE', default="TSC")
 
 
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
-if DEBUG:
-    ALLOWED_HOSTS = ["localhost", "*"]
-else:
-    ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS',
-                        default=[
-                            'localhost',
-                            '0.0.0.0',
-                            'strandings-test.dpaw.wa.gov.au',
-                            'strandings.dpaw.wa.gov.au',
-                            'strandings.dbca.wa.gov.au',
-                            'tsc.dbca.wa.gov.au',
-                            'tsc-uat.dbca.wa.gov.au',
-                            'aws-eco-002.lan.fyi', ])
+
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', '*,localhost').split(',')
 
 
 # Debug toolbar
