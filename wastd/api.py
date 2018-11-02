@@ -1486,7 +1486,10 @@ class OccurrenceAreaEncounterPolySerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.AreaEncounter
-        fields = '__all__'
+        fields = ('id', 'code', 'label', 'name', 'description', 'as_html',
+                  'source', 'source_id', 'status',
+                  'encountered_on',  'encountered_by',
+                  'area_type',  'accuracy', 'northern_extent', )
         geo_field = 'geom'
 
 
@@ -1497,7 +1500,10 @@ class OccurrenceAreaEncounterPointSerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.AreaEncounter
-        fields = '__all__'
+        fields = ('id', 'code', 'label', 'name', 'description', 'as_html',
+                  'source', 'source_id', 'status',
+                  'encountered_on',  'encountered_by',
+                  'area_type',  'accuracy', 'northern_extent', )
         geo_field = 'point'
 
 
@@ -1520,7 +1526,7 @@ class OccurrenceAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceAreaPolyViewSet(viewsets.ModelViewSet):
+class OccurrenceAreaPolyViewSet(BatchUpsertViewSet):
     """Occurrence Area view set."""
 
     queryset = occ_models.AreaEncounter.objects.all()
@@ -1529,7 +1535,7 @@ class OccurrenceAreaPolyViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
-class OccurrenceAreaPointViewSet(viewsets.ModelViewSet):
+class OccurrenceAreaPointViewSet(BatchUpsertViewSet):
     """Occurrence Area view set."""
 
     queryset = occ_models.AreaEncounter.objects.all()
@@ -1568,7 +1574,11 @@ class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.TaxonAreaEncounter
-        fields = '__all__'
+        fields = ('taxon',
+                  'id', 'code', 'label', 'name', 'description', 'as_html',
+                  'source', 'source_id', 'status',
+                  'encountered_on',  'encountered_by',
+                  'area_type',  'accuracy', 'northern_extent', )
         id_field = 'id'
         geo_field = 'geom'
 
@@ -1580,7 +1590,11 @@ class OccurrenceTaxonAreaEncounterPointSerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.TaxonAreaEncounter
-        fields = '__all__'
+        fields = ('taxon',
+                  'id', 'code', 'label', 'name', 'description', 'as_html',
+                  'source', 'source_id', 'status',
+                  'encountered_on',  'encountered_by',
+                  'area_type',  'accuracy', 'northern_extent', )
         id_field = 'id'
         geo_field = 'point'
 
@@ -1593,7 +1607,6 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
 
         model = occ_models.TaxonAreaEncounter
         fields = {
-
             'area_type': ['exact', 'in'],
             'accuracy': ['exact', 'gt', 'lt'],
             'code': ['exact', 'icontains', 'in'],
@@ -1604,8 +1617,8 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceTaxonAreaEncounterPolyViewSet(viewsets.ModelViewSet):
-    """Occurrence TaxonAreaEncounter view set."""
+class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
+    """TaxonEncounter polygon view set."""
 
     queryset = occ_models.TaxonAreaEncounter.objects.all()
     serializer_class = OccurrenceTaxonAreaEncounterPolySerializer
@@ -1613,8 +1626,8 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
-class OccurrenceTaxonAreaEncounterPointViewSet(viewsets.ModelViewSet):
-    """Occurrence TaxonArea view set."""
+class OccurrenceTaxonAreaEncounterPointViewSet(BatchUpsertViewSet):
+    """TaxonEncounter point view set."""
 
     queryset = occ_models.TaxonAreaEncounter.objects.all()
     serializer_class = OccurrenceTaxonAreaEncounterPointSerializer
@@ -1646,7 +1659,11 @@ class OccurrenceCommunityAreaEncounterPolySerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.CommunityAreaEncounter
-        fields = '__all__'
+        fields = ('community',
+                  'id', 'code', 'label', 'name', 'description', 'as_html',
+                  'source', 'source_id', 'status',
+                  'encountered_on',  'encountered_by',
+                  'area_type',  'accuracy', 'northern_extent', )
         id_field = 'id'
         geo_field = 'geom'
 
@@ -1658,7 +1675,11 @@ class OccurrenceCommunityAreaEncounterPointSerializer(GeoFeatureModelSerializer)
         """Opts."""
 
         model = occ_models.CommunityAreaEncounter
-        fields = '__all__'
+        fields = ('community',
+                  'id', 'code', 'label', 'name', 'description', 'as_html',
+                  'source', 'source_id', 'status',
+                  'encountered_on',  'encountered_by',
+                  'area_type',  'accuracy', 'northern_extent', )
         id_field = 'id'
         geo_field = 'point'
 
@@ -1682,7 +1703,7 @@ class OccurrenceCommunityAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceCommunityAreaEncounterPolyViewSet(viewsets.ModelViewSet):
+class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
     """Occurrence CommunityAreaEncounter view set."""
 
     queryset = occ_models.CommunityAreaEncounter.objects.all()
@@ -1691,7 +1712,7 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
-class OccurrenceCommunityAreaEncounterPointViewSet(viewsets.ModelViewSet):
+class OccurrenceCommunityAreaEncounterPointViewSet(BatchUpsertViewSet):
     """Occurrence CommunityAreaEncounter view set."""
 
     queryset = occ_models.CommunityAreaEncounter.objects.all()
