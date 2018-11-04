@@ -52,6 +52,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.LimitOffsetPagination
     model = None
     uid_field = None
+    uid_fields = ()
 
     def build_unique_fields(self, data):
         """Return a dict with a set of unique fields.
@@ -61,7 +62,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         In this case, override build_unique_fields to
         return a dict of all unique fields.
         """
-        return {self.uid_field: data[self.uid_field]}
+        return {x: data[x] for x in self.uid_fields}
+        # return {self.uid_field: data[self.uid_field]}
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance.
@@ -71,10 +73,15 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         Return RestResponse(data, status)
         """
+        # Some seatbelts:
+        if self.model is None:
+            logger.debug("[API] The API ViewSet needs an attribute 'model'!")
+            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
+
         dd = self.build_unique_fields(data)
         if 'csrfmiddlewaretoken' in data:
             data.pop('csrfmiddlewaretoken')
-        logger.debug('[API][create_one] Creating/updating '
+        logger.debug('[API][create_one] Creating/updating with '
                      'unique fields {0}'.format(str(dd)))
         try:
             obj, created = self.model.objects.get_or_create(**dd)
@@ -82,8 +89,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             self.model.objects.filter(**dd).update(**data)
             logger.info('[API][create_one] {0}: {1}'.format(verb, obj))
             return RestResponse(data, status=status.HTTP_200_OK)
-        except:
-            logger.warning('[API][create_one] Failed with data {0}'.format(str(data)))
+        except Exception as e:
+            logger.warning('[API][create_one] Failed with data {0}: {1}'.format(str(data), e))
             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
@@ -103,7 +110,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             logger.info('[API][create] found batch of {0} records'.format(len(res)))
             return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            logger.debug("[BatchUpsertViewSet] data: {0}".format(str(request.data)))
+            logger.debug("[BatchUpsertViewSet] unknown data format: {0}".format(str(request.data)))
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 

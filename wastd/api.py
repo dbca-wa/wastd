@@ -45,7 +45,7 @@ from rest_framework.response import Response as RestResponse
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
 # from dynamic_rest import serializers as ds, viewsets as dv
-# from drf_extra_fields.geo_fields import PointField
+from drf_extra_fields.geo_fields import PointField
 
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from rest_framework_gis.fields import GeometryField
@@ -1570,6 +1570,8 @@ class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
         style={'base_template': 'input.html'}
     )
 
+    geom = GeometryField()
+
     class Meta:
         """Opts."""
 
@@ -1585,6 +1587,8 @@ class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
 
 class OccurrenceTaxonAreaEncounterPointSerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter."""
+
+    point = PointField()
 
     class Meta:
         """Opts."""
@@ -1624,6 +1628,9 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
     serializer_class = OccurrenceTaxonAreaEncounterPolySerializer
     filter_class = OccurrenceTaxonAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
+    uid_field = "source_id"
+    uid_fields = ("source", "source_id", "taxon")
+    model = occ_models.TaxonAreaEncounter
 
 
 class OccurrenceTaxonAreaEncounterPointViewSet(BatchUpsertViewSet):
@@ -1633,6 +1640,9 @@ class OccurrenceTaxonAreaEncounterPointViewSet(BatchUpsertViewSet):
     serializer_class = OccurrenceTaxonAreaEncounterPointSerializer
     filter_class = OccurrenceTaxonAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
+    uid_field = "source_id"
+    uid_fields = ("source", "source_id", "taxon")
+    model = occ_models.TaxonAreaEncounter
 
 # Without base_name, the last registered viewset overrides the other area viewsets
 router.register(r"occ-taxon-areas", OccurrenceTaxonAreaEncounterPolyViewSet, base_name="occurrence_taxonarea_polys")
@@ -1710,6 +1720,9 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
     serializer_class = OccurrenceCommunityAreaEncounterPolySerializer
     filter_class = OccurrenceCommunityAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
+    uid_field = "source_id"
+    uid_fields = ("source", "source_id", "community")
+    model = occ_models.CommunityAreaEncounter
 
 
 class OccurrenceCommunityAreaEncounterPointViewSet(BatchUpsertViewSet):
@@ -1719,6 +1732,9 @@ class OccurrenceCommunityAreaEncounterPointViewSet(BatchUpsertViewSet):
     serializer_class = OccurrenceCommunityAreaEncounterPointSerializer
     filter_class = OccurrenceCommunityAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
+    uid_field = "source_id"
+    uid_fields = ("source", "source_id", "community")
+    model = occ_models.CommunityAreaEncounter
 
 # Without base_name, the last registered viewset overrides the other area viewsets
 router.register(r"occ-community-areas", OccurrenceCommunityAreaEncounterPolyViewSet,

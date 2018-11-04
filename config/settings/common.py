@@ -166,6 +166,9 @@ CACHES = {
 
 SELECT2_CACHE_BACKEND = "select2"
 
+# Data upload request size
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024
+
 # Branding
 # ------------------------------------------------------------------------------
 # https://github.com/jakubroztocil/django-settings-export
