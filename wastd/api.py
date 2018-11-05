@@ -1588,6 +1588,11 @@ class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
 class OccurrenceTaxonAreaEncounterPointSerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter."""
 
+    taxon = serializers.SlugRelatedField(
+        queryset=Taxon.objects.all(),
+        slug_field='name_id',
+        style={'base_template': 'input.html'}
+    )
     point = PointField()
 
     class Meta:

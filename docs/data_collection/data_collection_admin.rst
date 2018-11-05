@@ -68,8 +68,26 @@ App settings:
 * Google Photos: auto-backup all photos in original resolution to Google Photos.
 
 
-Setup ODK Collect
------------------
+Setup ODK Collect from QR code
+------------------------------
+If you were provided with a QR code, you can speed up the ODK Collect setup.
+
+* Settings > Admin settings > Import/Export settings > Scan code from other device > Scan provided QR code
+  (if asked, grant ODK Collect required permissions to access camera)
+* If you were provided with one QR code (e.g. for ODK Aggregate username Murujuga1) for a range of tablets
+  (with usernames Murujuga2 through Murujuga8), set the ODK Aggregate username as follows:
+
+  * Settings > General settings > Server > Username > Change the trailing number (e.g. 1)
+    to create the other usernames (e.g. 2 through 8).
+  * Every tablet must have a separate ODK Aggregate username.
+  * Label the tablets (e.g. gaffa tape on the back) with the username to easily identify them,
+    e.g. when asking Florian for support.
+
+* Get blank forms on each tablet. This both prepares the tablets for field work,
+  and verifies username/password/server url.
+
+Setup ODK Collect from scratch
+------------------------------
 
 These steps have to be run once by the admin per device while online.
 Less than 10 MB will be downloaded.
