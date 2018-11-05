@@ -57,7 +57,9 @@ from django_filters import rest_framework as rf_filters
 
 # from rest_framework_gis.filterset import GeoFilterSet
 
-from shared.api import MyGeoJsonPagination, FastBatchUpsertViewSet, BatchUpsertViewSet
+from shared.api import (
+    MyGeoJsonPagination,
+    FastBatchUpsertViewSet, BatchUpsertViewSet, TaxonBatchUpsertViewSet)
 from wastd.observations.models import (
     Area,
     Survey,  # SiteVisit,
@@ -1564,12 +1566,7 @@ class OccurrenceTaxonAreaEncounterPolyInlineSerializer(GeoFeatureModelSerializer
 class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter."""
 
-    taxon = serializers.SlugRelatedField(
-        queryset=Taxon.objects.all(),
-        slug_field='name_id',
-        style={'base_template': 'input.html'}
-    )
-
+    taxon = serializers.SlugRelatedField(queryset=Taxon.objects.all(), slug_field='name_id')
     geom = GeometryField()
 
     class Meta:
@@ -1588,11 +1585,7 @@ class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
 class OccurrenceTaxonAreaEncounterPointSerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter."""
 
-    taxon = serializers.SlugRelatedField(
-        queryset=Taxon.objects.all(),
-        slug_field='name_id',
-        style={'base_template': 'input.html'}
-    )
+    taxon = serializers.SlugRelatedField(queryset=Taxon.objects.all(), slug_field='name_id')
     point = PointField()
 
     class Meta:
@@ -1626,7 +1619,7 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
+class OccurrenceTaxonAreaEncounterPolyViewSet(TaxonBatchUpsertViewSet):
     """TaxonEncounter polygon view set."""
 
     queryset = occ_models.TaxonAreaEncounter.objects.all()
@@ -1634,11 +1627,11 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
     filter_class = OccurrenceTaxonAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
     uid_field = "source_id"
-    uid_fields = ("source", "source_id", "taxon")
+    uid_fields = ("source", "source_id")
     model = occ_models.TaxonAreaEncounter
 
 
-class OccurrenceTaxonAreaEncounterPointViewSet(BatchUpsertViewSet):
+class OccurrenceTaxonAreaEncounterPointViewSet(TaxonBatchUpsertViewSet):
     """TaxonEncounter point view set."""
 
     queryset = occ_models.TaxonAreaEncounter.objects.all()
@@ -1646,7 +1639,7 @@ class OccurrenceTaxonAreaEncounterPointViewSet(BatchUpsertViewSet):
     filter_class = OccurrenceTaxonAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
     uid_field = "source_id"
-    uid_fields = ("source", "source_id", "taxon")
+    uid_fields = ("source", "source_id")
     model = occ_models.TaxonAreaEncounter
 
 # Without base_name, the last registered viewset overrides the other area viewsets

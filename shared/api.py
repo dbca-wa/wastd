@@ -7,6 +7,8 @@ import logging
 from rest_framework.response import Response as RestResponse
 from rest_framework import viewsets, status, pagination  # , serializers, routers
 
+from taxonomy.models import Taxon
+
 logger = logging.getLogger(__name__)
 
 
@@ -90,7 +92,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             logger.info('[API][create_one] {0}: {1}'.format(verb, obj))
             return RestResponse(data, status=status.HTTP_200_OK)
         except Exception as e:
-            logger.warning('[API][create_one] Failed with data {0}: {1}'.format(str(data), e))
+            logger.warning('[API][create_one] Raised {0} with data {1}'.format(e, str(data)))
             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
@@ -118,3 +120,52 @@ class FastBatchUpsertViewSet(BatchUpsertViewSet):
     """Viewset with LO pagination and page size 10."""
 
     pagination_class = FastLimitOffsetPagination
+
+
+class TaxonBatchUpsertViewSet(BatchUpsertViewSet):
+    """A custom BatchUpsert ViewSet for TaxonAreaEncounters."""
+
+    def build_unique_fields(self, data):
+        """Return a dict with a set of unique fields.
+
+        If your model has more than one unique field,
+        get_or_create will fail on create.
+        In this case, override build_unique_fields to
+        return a dict of all unique fields.
+        """
+        unique_fields = {x: data[x] for x in self.uid_fields}
+        unique_fields["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+        return unique_fields
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance.
+
+        Discard, if present, the CSRF token.
+        Log (debug) data and result.
+
+        Return RestResponse(data, status)
+        """
+        # Some seatbelts:
+        if self.model is None:
+            logger.debug("[API] The API ViewSet needs an attribute 'model'!")
+            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
+
+        dd = self.build_unique_fields(data)
+
+        if 'taxon' in data:
+            data.pop('taxon')
+        if 'csrfmiddlewaretoken' in data:
+            data.pop('csrfmiddlewaretoken')
+
+        logger.debug('[API][create_one] Creating/updating with '
+                     'unique fields\n{0}'.format(str(dd)))
+        # try:
+        obj, created = self.model.objects.get_or_create(**dd)
+        obj.save()
+        verb = "created" if created else "updated"
+        self.model.objects.filter(**dd).update(**data)
+        logger.info('[API][create_one] {0} {1} ({2}): {3}\n\n'.format(verb, self.model, obj.pk, obj))
+        return RestResponse(data, status=status.HTTP_200_OK)
+        # except Exception as e:
+        # logger.warning('[API][create_one] Raised {0} with data {1}'.format(e, str(data)))
+        # return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
