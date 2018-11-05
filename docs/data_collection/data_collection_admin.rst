@@ -176,6 +176,9 @@ The admin should be intimately acquainted with this chapter.
 
 Admin: Review data
 ==================
+**Note** In 2018, we have configured ODK Collect to never leave forms unfinalized,
+so this section applies up to season 2017-18.
+
 "Edit Saved Form" lists all unfinalized forms pending review and species / nest ID:
 
 * Tap once to view read-only, tap again to edit
@@ -277,8 +280,9 @@ Site Visit End
 --------------
 * 0.2 (2017-11-16) Auto-capture device ID
 
-Track or Treat
---------------
+Turtle Track or Nest / "Track or Treat"
+---------------------------------------
+* 0.54 Renamed ToT 0.53 to clarify its purpose. Re-worded the nest tag section.
 * 0.53 Add predator "cat"
 * 0.52
 * 0.51 (2018-01-29) Bug fix: cloud cover now includes 0 (clear sky)
@@ -289,15 +293,15 @@ Track or Treat
 * 0.45 (2017-11-19)
 * 0.44 (2017-10-31) Add fan angles (early version)
 
-
 Turtle Tagging
 --------------
 * 0.3 (2018-01-29) Manual location capture uses map widget (needs to be online to show background maps)
 * 0.2 (2018-01-29) Allow capturing location as "here" or manual entry (if not on site) - animal first encountered at, nest location
 
 
-Fox Sake
---------
+Predator or Disturbance / "Fox Sake"
+------------------------------------
+* Predator or Dustirbance 1.0 - renamed FS0.4 to make form name more palatable to a broader audience.
 * 0.4 Add predator "cat"
 * 0.3
 
