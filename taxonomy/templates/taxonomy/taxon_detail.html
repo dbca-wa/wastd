@@ -275,10 +275,14 @@ function map_init(map, options) {
         {style: polystyle, onEachFeature: oef_rel}
     ).addTo(map);
 
-    L.geoJson(
+    var taxon_points = L.geoJson(
         {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
         {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_rel}
-    ).addTo(map);
+    );
+
+    var taxon_cluster_markers = L.markerClusterGroup();
+    taxon_cluster_markers.addLayer(taxon_points);
+    map.addLayer(taxon_cluster_markers);
 
     // var markers = L.markerClusterGroup();
     // var gj_markers = L.geoJson(
@@ -363,9 +367,9 @@ function map_init(map, options) {
       function(json) {
         var point_markers = L.geoJson(geoJSONfc(json), {pointToLayer: ptlBioSys, onEachFeature: oefBioSys});
         // console.log(geoJSONfc(json));
-        var cluster_markers = L.markerClusterGroup();
-        cluster_markers.addLayer(point_markers);
-        map.addLayer(cluster_markers);
+        // var cluster_markers = L.markerClusterGroup();
+        taxon_cluster_markers.addLayer(point_markers);
+        // map.addLayer(cluster_markers);
       }
     );
 }
