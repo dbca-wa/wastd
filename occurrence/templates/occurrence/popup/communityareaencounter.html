@@ -1,5 +1,6 @@
 {% load staticfiles taxonomy_tags observations %}
 <div class="row">
+  <div class="col col-12">
   <div class="mr-auto p-2">
     <h5>{{ original.community }}</h5>
   </div>
@@ -12,21 +13,27 @@
         {{ original.get_status_display }}
     </a>
   </div>
+  </div>
 </div>
 
-<div class="col col-12">
+
 <!-- Time and location -->
 <div class="row">
+  <div class="col col-12">
   <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
   {{ original.encountered_on|date:"r" }}
 </div>
-
-<div class="row">
-  <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
-  [{{ original.code }}] {{ original.name }}
 </div>
 
 <div class="row">
+  <div class="col col-12">
+  <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
+  [{{ original.code }}] {{ original.name }}
+</div>
+</div>
+
+<div class="row">
+  <div class="col col-12">
   <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
   <a href="mailto:{{ original.encountered_by.email }}"
      target="_"
@@ -34,9 +41,11 @@
      subject="Question about TSC Encounter {{ original }}">
     {{ original.encountered_by.name }}
   </a>
+</div>
 </div><!-- /.row -->
 
 <div class="row">
+  <div class="col col-12">
   {{ original.description|safe }}
-</div><!-- /.row -->
 </div>
+</div><!-- /.row -->
