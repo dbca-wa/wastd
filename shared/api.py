@@ -80,6 +80,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         obj, created = self.model.objects.get_or_create(**unique_data)
         verb = "created" if created else "updated"
         self.model.objects.filter(**unique_data).update(**update_data)
+        obj = self.model.objects.get(**unique_data)
         obj.save()  # to update caches
         # if created:
         logger.info('[API][create_one] {0} {1}: {2}'.format(verb, self.model._meta.verbose_name, str(unique_data)))

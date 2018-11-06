@@ -1643,13 +1643,8 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
 class OccurrenceTaxonAreaEncounterPointViewSet(OccurrenceTaxonAreaEncounterPolyViewSet):
     """TaxonEncounter point view set."""
 
-    # queryset = occ_models.TaxonAreaEncounter.objects.all()
     serializer_class = OccurrenceTaxonAreaEncounterPointSerializer
-    # filter_class = OccurrenceTaxonAreaEncounterFilter
-    # pagination_class = MyGeoJsonPagination
-    # model = occ_models.TaxonAreaEncounter
-    # uid_field = "source_id"
-    # uid_fields = ("source", "source_id")
+
 
 # Without base_name, the last registered viewset overrides the other area viewsets
 router.register(r"occ-taxon-areas", OccurrenceTaxonAreaEncounterPolyViewSet, base_name="occurrence_taxonarea_polys")
@@ -1732,21 +1727,23 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
     filter_class = OccurrenceCommunityAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
     model = occ_models.CommunityAreaEncounter
-    pop_fields = ["community", ]
-    uid_field = "source_id"
     uid_fields = ("source", "source_id", "community")
 
+    def split_data(self, data):
+        """Custom split data: resolve community."""
+        unique_fields, update_data = super(OccurrenceCommunityAreaEncounterPolyViewSet, self).split_data(data)
+        com = Community.objects.get(code=unique_fields["community"])
+        logger.debug("[API][split_data] unique {0}, community {1}, update {2}".format(
+            str(unique_fields), com, str(update_data)))
+        unique_fields["community"] = com
+        return (unique_fields, update_data)
 
-class OccurrenceCommunityAreaEncounterPointViewSet(BatchUpsertViewSet):
+
+class OccurrenceCommunityAreaEncounterPointViewSet(OccurrenceCommunityAreaEncounterPolyViewSet):
     """Occurrence CommunityAreaEncounter view set."""
 
-    queryset = occ_models.CommunityAreaEncounter.objects.all()
     serializer_class = OccurrenceCommunityAreaEncounterPointSerializer
-    filter_class = OccurrenceCommunityAreaEncounterFilter
-    pagination_class = MyGeoJsonPagination
-    uid_field = "source_id"
-    uid_fields = ("source", "source_id", "community")
-    model = occ_models.CommunityAreaEncounter
+
 
 # Without base_name, the last registered viewset overrides the other area viewsets
 router.register(r"occ-community-areas", OccurrenceCommunityAreaEncounterPolyViewSet,
