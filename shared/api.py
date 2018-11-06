@@ -7,7 +7,7 @@ import logging
 from rest_framework.response import Response as RestResponse
 from rest_framework import viewsets, status, pagination  # , serializers, routers
 
-from taxonomy.models import Taxon
+# from taxonomy.models import Taxon
 
 logger = logging.getLogger(__name__)
 
@@ -39,61 +39,63 @@ class FastLimitOffsetPagination(pagination.LimitOffsetPagination):
 
 
 class BatchUpsertViewSet(viewsets.ModelViewSet):
-    """A ModelViewSet with custom create().
+    """A BatchUpsert ViewSet.
 
-    Accepts request.data to be either a GeoJSON feature property dict,
-    or a list of GeoJSON feature property dicts.
-
-    `model` and `uid_field` are used to determine whether the object
-    already exists. The `uid_field` can be the PK or any other
-    unique field of the given `model`.
-
-    Responds with status 200 if all went well, else 400.
+    Override split_data for nested serializers, e.g. TaxonAreaEncounters.taxon.
     """
 
     pagination_class = pagination.LimitOffsetPagination
     model = None
-    uid_field = None
     uid_fields = ()
 
-    def build_unique_fields(self, data):
-        """Return a dict with a set of unique fields.
+    def split_data(self, data):
+        """Split data into unique fields and remaining data.
 
-        If your model has more than one unique field,
-        get_or_create will fail on create.
-        In this case, override build_unique_fields to
-        return a dict of all unique fields.
+        Unique fields are used to get_or_create an object,
+        remaining data is used to update that object.
+
+        Unique fields and CSRF middleware token are removed from data.
         """
-        return {x: data[x] for x in self.uid_fields}
-        # return {self.uid_field: data[self.uid_field]}
+        unique_fields = {x: data[x] for x in self.uid_fields}
+        [data.pop(x) for x in self.uid_fields if x in data]
+        if 'csrfmiddlewaretoken' in data:
+            data.pop('csrfmiddlewaretoken')
+        # Custom:
+        # unique_fields["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+
+        return (unique_fields, data)
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance.
 
-        Discard, if present, the CSRF token.
-        Log (debug) data and result.
-
         Return RestResponse(data, status)
         """
-        # Some seatbelts:
-        if self.model is None:
-            logger.debug("[API] The API ViewSet needs an attribute 'model'!")
+        unique_data, update_data = self.split_data(data)
+
+        if None in unique_data.values():
+            logger.warning('[API][create_one] Skipping invalid data: {0}'.format(str(data)))
             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
-        dd = self.build_unique_fields(data)
-        if 'csrfmiddlewaretoken' in data:
-            data.pop('csrfmiddlewaretoken')
-        logger.debug('[API][create_one] Creating/updating with '
-                     'unique fields {0}'.format(str(dd)))
-        try:
-            obj, created = self.model.objects.get_or_create(**dd)
-            verb = "created" if created else "updated"
-            self.model.objects.filter(**dd).update(**data)
-            logger.info('[API][create_one] {0}: {1}'.format(verb, obj))
-            return RestResponse(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.warning('[API][create_one] Raised {0} with data {1}'.format(e, str(data)))
-            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
+        logger.debug('[API][create_one] Creating/updating with unique fields {0}'.format(str(unique_data)))
+        obj, created = self.model.objects.get_or_create(**unique_data)
+        verb = "created" if created else "updated"
+        self.model.objects.filter(**unique_data).update(**update_data)
+        obj.save()  # to update caches
+        # if created:
+        logger.info('[API][create_one] {0} {1}: {2}'.format(verb, self.model._meta.verbose_name, str(unique_data)))
+        # else:
+        # logger.info('[API][create_one] {0} {1} ({2}): {3}'.format(verb, self.model._meta.verbose_name, obj.pk, obj))
+        return RestResponse(data, status=status.HTTP_200_OK)
+
+        #         try:
+#             obj, created = self.model.objects.get_or_create(**dd)
+#             verb = "created" if created else "updated"
+#             self.model.objects.filter(**dd).update(**data)
+#             logger.info('[API][create_one] {0}: {1}'.format(verb, obj))
+#             return RestResponse(data, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             logger.warning('[API][create_one] Raised {0} with data {1}'.format(e, str(data)))
+#             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -103,16 +105,16 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         * a GeoJSON feature property dict, or
         * a list of GeoJSON feature property dicts.
         """
-        if self.uid_field in request.data:
+        if self.uid_fields[0] in request.data:
             res = self.create_one(request.data)
             logger.info('[API][create] found one record')
             return res
-        elif type(request.data) == list and self.uid_field in request.data[0]:
+        elif type(request.data) == list and self.uid_fields[0] in request.data[0]:
             res = [self.create_one(data) for data in request.data]
             logger.info('[API][create] found batch of {0} records'.format(len(res)))
             return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
-            logger.debug("[BatchUpsertViewSet] unknown data format: {0}".format(str(request.data)))
+            logger.debug("[API][BatchUpsertViewSet] unknown data format: {0}".format(str(request.data)))
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -120,52 +122,3 @@ class FastBatchUpsertViewSet(BatchUpsertViewSet):
     """Viewset with LO pagination and page size 10."""
 
     pagination_class = FastLimitOffsetPagination
-
-
-class TaxonBatchUpsertViewSet(BatchUpsertViewSet):
-    """A custom BatchUpsert ViewSet for TaxonAreaEncounters."""
-
-    def build_unique_fields(self, data):
-        """Return a dict with a set of unique fields.
-
-        If your model has more than one unique field,
-        get_or_create will fail on create.
-        In this case, override build_unique_fields to
-        return a dict of all unique fields.
-        """
-        unique_fields = {x: data[x] for x in self.uid_fields}
-        unique_fields["taxon"] = Taxon.objects.get(name_id=data["taxon"])
-        return unique_fields
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance.
-
-        Discard, if present, the CSRF token.
-        Log (debug) data and result.
-
-        Return RestResponse(data, status)
-        """
-        # Some seatbelts:
-        if self.model is None:
-            logger.debug("[API] The API ViewSet needs an attribute 'model'!")
-            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
-
-        dd = self.build_unique_fields(data)
-
-        if 'taxon' in data:
-            data.pop('taxon')
-        if 'csrfmiddlewaretoken' in data:
-            data.pop('csrfmiddlewaretoken')
-
-        logger.debug('[API][create_one] Creating/updating with '
-                     'unique fields\n{0}'.format(str(dd)))
-        # try:
-        obj, created = self.model.objects.get_or_create(**dd)
-        obj.save()
-        verb = "created" if created else "updated"
-        self.model.objects.filter(**dd).update(**data)
-        logger.info('[API][create_one] {0} {1} ({2}): {3}\n\n'.format(verb, self.model, obj.pk, obj))
-        return RestResponse(data, status=status.HTTP_200_OK)
-        # except Exception as e:
-        # logger.warning('[API][create_one] Raised {0} with data {1}'.format(e, str(data)))
-        # return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)

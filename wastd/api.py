@@ -59,7 +59,7 @@ from django_filters import rest_framework as rf_filters
 
 from shared.api import (
     MyGeoJsonPagination,
-    FastBatchUpsertViewSet, BatchUpsertViewSet, TaxonBatchUpsertViewSet)
+    FastBatchUpsertViewSet, BatchUpsertViewSet)
 from wastd.observations.models import (
     Area,
     Survey,  # SiteVisit,
@@ -1535,6 +1535,8 @@ class OccurrenceAreaPolyViewSet(BatchUpsertViewSet):
     serializer_class = OccurrenceAreaEncounterPolySerializer
     filter_class = OccurrenceAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
+    model = occ_models.AreaEncounter
+    uid_fields = ("source", "source_id")
 
 
 class OccurrenceAreaPointViewSet(BatchUpsertViewSet):
@@ -1544,6 +1546,8 @@ class OccurrenceAreaPointViewSet(BatchUpsertViewSet):
     serializer_class = OccurrenceAreaEncounterPointSerializer
     filter_class = OccurrenceAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
+    model = occ_models.AreaEncounter
+    uid_fields = ("source", "source_id")
 
 # Without base_name, the last registered viewset overrides the other area viewsets
 router.register(r"occ-areas", OccurrenceAreaPolyViewSet, base_name="occurrence_area_polys")
@@ -1577,7 +1581,7 @@ class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
                   'id', 'code', 'label', 'name', 'description', 'as_html',
                   'source', 'source_id', 'status',
                   'encountered_on',  'encountered_by',
-                  'area_type',  'accuracy', 'northern_extent', )
+                  'area_type',  'accuracy', 'northern_extent', 'point')
         id_field = 'id'
         geo_field = 'geom'
 
@@ -1619,28 +1623,33 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceTaxonAreaEncounterPolyViewSet(TaxonBatchUpsertViewSet):
+class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
     """TaxonEncounter polygon view set."""
 
     queryset = occ_models.TaxonAreaEncounter.objects.all()
     serializer_class = OccurrenceTaxonAreaEncounterPolySerializer
     filter_class = OccurrenceTaxonAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
-    uid_field = "source_id"
-    uid_fields = ("source", "source_id")
     model = occ_models.TaxonAreaEncounter
+    uid_fields = ("source", "source_id")
+
+    def split_data(self, data):
+        """Custom split data: resolve taxon."""
+        unique_fields, update_data = super(OccurrenceTaxonAreaEncounterPolyViewSet, self).split_data(data)
+        unique_fields["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+        return (unique_fields, update_data)
 
 
-class OccurrenceTaxonAreaEncounterPointViewSet(TaxonBatchUpsertViewSet):
+class OccurrenceTaxonAreaEncounterPointViewSet(OccurrenceTaxonAreaEncounterPolyViewSet):
     """TaxonEncounter point view set."""
 
-    queryset = occ_models.TaxonAreaEncounter.objects.all()
+    # queryset = occ_models.TaxonAreaEncounter.objects.all()
     serializer_class = OccurrenceTaxonAreaEncounterPointSerializer
-    filter_class = OccurrenceTaxonAreaEncounterFilter
-    pagination_class = MyGeoJsonPagination
-    uid_field = "source_id"
-    uid_fields = ("source", "source_id")
-    model = occ_models.TaxonAreaEncounter
+    # filter_class = OccurrenceTaxonAreaEncounterFilter
+    # pagination_class = MyGeoJsonPagination
+    # model = occ_models.TaxonAreaEncounter
+    # uid_field = "source_id"
+    # uid_fields = ("source", "source_id")
 
 # Without base_name, the last registered viewset overrides the other area viewsets
 router.register(r"occ-taxon-areas", OccurrenceTaxonAreaEncounterPolyViewSet, base_name="occurrence_taxonarea_polys")
@@ -1663,6 +1672,8 @@ class OccurrenceCommunityAreaEncounterPolyInlineSerializer(GeoFeatureModelSerial
 class OccurrenceCommunityAreaEncounterPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence CommunityAreaEncounter."""
 
+    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field='code')
+
     class Meta:
         """Opts."""
 
@@ -1671,13 +1682,15 @@ class OccurrenceCommunityAreaEncounterPolySerializer(GeoFeatureModelSerializer):
                   'id', 'code', 'label', 'name', 'description', 'as_html',
                   'source', 'source_id', 'status',
                   'encountered_on',  'encountered_by',
-                  'area_type',  'accuracy', 'northern_extent', )
+                  'area_type',  'accuracy', 'northern_extent', 'point')
         id_field = 'id'
         geo_field = 'geom'
 
 
 class OccurrenceCommunityAreaEncounterPointSerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence CommunityAreaEncounter."""
+
+    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field='code')
 
     class Meta:
         """Opts."""
@@ -1718,9 +1731,10 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
     serializer_class = OccurrenceCommunityAreaEncounterPolySerializer
     filter_class = OccurrenceCommunityAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
+    model = occ_models.CommunityAreaEncounter
+    pop_fields = ["community", ]
     uid_field = "source_id"
     uid_fields = ("source", "source_id", "community")
-    model = occ_models.CommunityAreaEncounter
 
 
 class OccurrenceCommunityAreaEncounterPointViewSet(BatchUpsertViewSet):
@@ -2354,8 +2368,8 @@ class HbvNameViewSet(BatchUpsertViewSet):
     serializer_class = HbvNameSerializer
     filter_class = HbvNameFilter
     pagination_class = pagination.LimitOffsetPagination
-    uid_field = "name_id"
     model = HbvName
+    uid_fields = ("name_id",)
 
 router.register("names", HbvNameViewSet)
 
@@ -2366,8 +2380,8 @@ class HbvSupraViewSet(BatchUpsertViewSet):
     queryset = HbvSupra.objects.all()
     serializer_class = HbvSupraSerializer
     filter_class = HbvSupraFilter
-    uid_field = "supra_code"
     model = HbvSupra
+    uid_fields = ("supra_code", )
 
 
 router.register("supra", HbvSupraViewSet)
@@ -2380,7 +2394,7 @@ class HbvGroupViewSet(BatchUpsertViewSet):
     serializer_class = HbvGroupSerializer
     filter_class = HbvGroupFilter
     model = HbvGroup
-    uid_field = "name_id"
+    uid_fields = ("name_id",)
 
 router.register("groups", HbvGroupViewSet)
 
@@ -2391,8 +2405,8 @@ class HbvFamilyViewSet(BatchUpsertViewSet):
     queryset = HbvFamily.objects.all()
     serializer_class = HbvFamilySerializer
     filter_class = HbvFamilyFilter
-    uid_field = "name_id"
     model = HbvFamily
+    uid_fields = ("name_id",)
 
 router.register("families", HbvFamilyViewSet)
 
@@ -2403,8 +2417,8 @@ class HbvGenusViewSet(BatchUpsertViewSet):
     queryset = HbvGenus.objects.all()
     serializer_class = HbvGenusSerializer
     filter_class = HbvGenusFilter
-    uid_field = "name_id"
     model = HbvGenus
+    uid_fields = ("name_id",)
 
 router.register("genera", HbvGenusViewSet)
 
@@ -2415,8 +2429,8 @@ class HbvSpeciesViewSet(BatchUpsertViewSet):
     queryset = HbvSpecies.objects.all()
     serializer_class = HbvSpeciesSerializer
     filter_class = HbvSpeciesFilter
-    uid_field = "name_id"
     model = HbvSpecies
+    uid_fields = ("name_id",)
 
 router.register("species", HbvSpeciesViewSet)
 
@@ -2427,13 +2441,26 @@ class HbvVernacularViewSet(BatchUpsertViewSet):
     queryset = HbvVernacular.objects.all()
     serializer_class = HbvVernacularSerializer
     filter_class = HbvVernacularFilter
-    uid_field = "ogc_fid"
     model = HbvVernacular
+    uid_fields = ("ogc_fid", "name_id")
 
-    # def build_unique_fields(self, data):
-    #     """Custom unique fields for Vernaculars."""
-    #     return {"ogc_fid": data["ogc_fid"], "name_id": data["name_id"]}
 
+def create_one(self, data):
+    """Shift name_id from unique_data to update_data."""
+    unique_data, update_data = self.split_data(data)
+
+    if None in unique_data.values():
+        logger.warning('[API][create_one] Skipping invalid data: {0}'.format(str(data)))
+        return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
+
+    logger.debug('[API][create_one] Creating/updating with unique fields {0}'.format(str(unique_data)))
+    obj, created = self.model.objects.get_or_create(data["ogc_fid"])
+    verb = "created" if created else "updated"
+    update_data["name_id"] = data["name_id"]
+    self.model.objects.filter(data["ogc_fid"]).update(**update_data)
+    obj.save()  # to update caches
+    logger.info('[API][create_one] {0} {1} ({2}): {3}'.format(verb, self.model._meta.verbose_name, obj.pk, obj))
+    return RestResponse(data, status=status.HTTP_200_OK)
 
 router.register("vernaculars", HbvVernacularViewSet)
 
@@ -2444,8 +2471,8 @@ class HbvXrefViewSet(BatchUpsertViewSet):
     queryset = HbvXref.objects.all()
     serializer_class = HbvXrefSerializer
     filter_class = HbvXrefFilter
-    uid_field = "xref_id"
     model = HbvXref
+    uid_fields = ("xref_id",)
 
 router.register("xrefs", HbvXrefViewSet)
 
@@ -2456,8 +2483,8 @@ class HbvParentViewSet(BatchUpsertViewSet):
     queryset = HbvParent.objects.all()
     serializer_class = HbvParentSerializer
     filter_class = HbvParentFilter
-    uid_field = "ogc_fid"
     model = HbvParent
+    uid_fields = ("ogc_fid", )
 
 router.register("parents", HbvParentViewSet)
 
@@ -2472,8 +2499,8 @@ class TaxonViewSet(FastBatchUpsertViewSet):
     queryset = Taxon.objects.all()
     serializer_class = TaxonSerializer
     filter_class = TaxonFilter
-    uid_field = "name_id"
     model = Taxon
+    uid_fields = ("name_id", )
 
 router.register("taxon", TaxonViewSet)
 
@@ -2488,8 +2515,8 @@ class VernacularViewSet(BatchUpsertViewSet):
     queryset = Vernacular.objects.all()
     serializer_class = VernacularSerializer
     filter_class = VernacularFilter
-    uid_field = "ogc_fid"
     model = Vernacular
+    uid_fields = ("ogc_fid", )
 
 router.register("vernacular", VernacularViewSet)
 
@@ -2504,8 +2531,8 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
     queryset = Crossreference.objects.all()
     serializer_class = CrossreferenceSerializer
     filter_class = CrossreferenceFilter
-    uid_field = "xref_id"
     model = Crossreference
+    uid_fields = ("xref_id", )
 
 router.register("crossreference", CrossreferenceViewSet)
 
@@ -2520,8 +2547,8 @@ class CommunityViewSet(BatchUpsertViewSet):
     queryset = Community.objects.all()
     serializer_class = CommunitySerializer
     filter_class = CommunityFilter
-    uid_field = "code"
     model = Community
+    uid_field = ("code",)
 
 router.register("community", CommunityViewSet)
 
@@ -2600,7 +2627,7 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
     serializer_class = ConservationCriterionSerializer
     filter_class = ConservationCriterionFilter
     pagination_class = pagination.LimitOffsetPagination
-    uid_field = "code"
+    uid_fields = ("code", )
     model = ConservationCriterion
 
     def build_unique_fields(self, data):
@@ -2683,6 +2710,7 @@ class ConservationListViewSet(viewsets.ModelViewSet):
     filter_class = ConservationListFilter
     pagination_class = pagination.LimitOffsetPagination
     uid_field = "code"
+    uid_fields = ("code", )
     model = ConservationList
 
     def create_one(self, data):
