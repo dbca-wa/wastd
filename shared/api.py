@@ -76,47 +76,31 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             logger.warning('[API][create_one] Skipping invalid data: {0}'.format(str(data)))
             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
-        logger.debug('[API][create_one] Creating/updating with unique fields {0}'.format(str(unique_data)))
-        obj, created = self.model.objects.get_or_create(**unique_data)
-        verb = "created" if created else "updated"
-        self.model.objects.filter(**unique_data).update(**update_data)
-        obj = self.model.objects.get(**unique_data)
+        logger.debug('[API][create_one] Update or create '
+                     '{0} with unique fields {1}'.format(
+                         self.model._meta.verbose_name, str(unique_data)))
+        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
+        verb = "Created" if created else "Updated"
         obj.save()  # to update caches
-        # if created:
-        logger.info('[API][create_one] {0} {1}: {2}'.format(verb, self.model._meta.verbose_name, str(unique_data)))
-        # else:
-        # logger.info('[API][create_one] {0} {1} ({2}): {3}'.format(verb, self.model._meta.verbose_name, obj.pk, obj))
-        return RestResponse(data, status=status.HTTP_200_OK)
-
-        #         try:
-#             obj, created = self.model.objects.get_or_create(**dd)
-#             verb = "created" if created else "updated"
-#             self.model.objects.filter(**dd).update(**data)
-#             logger.info('[API][create_one] {0}: {1}'.format(verb, obj))
-#             return RestResponse(data, status=status.HTTP_200_OK)
-#         except Exception as e:
-#             logger.warning('[API][create_one] Raised {0} with data {1}'.format(e, str(data)))
-#             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
+        logger.info('[API][create_one] {0} {1}'.format(verb, obj))
+        return RestResponse(obj.__str__(), status=status.HTTP_200_OK)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
 
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
+        request.data must be a dict or a list of dicts.
         """
         if self.uid_fields[0] in request.data:
+            logger.info('[API][create] found one record, creating/updating...')
             res = self.create_one(request.data)
-            logger.info('[API][create] found one record')
-            return res
+            return RestResponse([], status=status.HTTP_200_OK)
         elif type(request.data) == list and self.uid_fields[0] in request.data[0]:
+            logger.info('[API][create] found batch of {0} records, creating/updating...'.format(len(request.data)))
             res = [self.create_one(data) for data in request.data]
-            logger.info('[API][create] found batch of {0} records'.format(len(res)))
-            return RestResponse(request.data, status=status.HTTP_200_OK)
+            return RestResponse([], status=status.HTTP_200_OK)
         else:
-            logger.debug("[API][BatchUpsertViewSet] unknown data format: {0}".format(str(request.data)))
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
+            logger.warning("[API][BatchUpsertViewSet] unknown data format: {0}".format(str(request.data)))
+            return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
 
 
 class FastBatchUpsertViewSet(BatchUpsertViewSet):

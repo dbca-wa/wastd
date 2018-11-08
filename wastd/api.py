@@ -45,7 +45,7 @@ from rest_framework.response import Response as RestResponse
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
 # from dynamic_rest import serializers as ds, viewsets as dv
-from drf_extra_fields.geo_fields import PointField
+# from drf_extra_fields.geo_fields import PointField
 
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from rest_framework_gis.fields import GeometryField
@@ -1525,6 +1525,8 @@ class OccurrenceAreaEncounterFilter(filters.FilterSet):
             'name': ['exact', 'icontains', 'in'],
             'description': ['exact', 'icontains', 'in'],
             'northern_extent': ['exact', 'gt', 'lt'],
+            'source': ['exact', 'in'],
+            'source_id': ['exact', 'in'],
         }
 
 
@@ -1571,7 +1573,7 @@ class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter."""
 
     taxon = serializers.SlugRelatedField(queryset=Taxon.objects.all(), slug_field='name_id')
-    geom = GeometryField()
+    # geom = GeometryField()
 
     class Meta:
         """Opts."""
@@ -1590,7 +1592,7 @@ class OccurrenceTaxonAreaEncounterPointSerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter."""
 
     taxon = serializers.SlugRelatedField(queryset=Taxon.objects.all(), slug_field='name_id')
-    point = PointField()
+    # point = PointField()
 
     class Meta:
         """Opts."""
@@ -1620,6 +1622,8 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
             'name': ['exact', 'icontains', 'in'],
             'description': ['exact', 'icontains', 'in'],
             'northern_extent': ['exact', 'gt', 'lt'],
+            'source': ['exact', 'in'],
+            'source_id': ['exact', 'in'],
         }
 
 
@@ -1636,7 +1640,8 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
     def split_data(self, data):
         """Custom split data: resolve taxon."""
         unique_fields, update_data = super(OccurrenceTaxonAreaEncounterPolyViewSet, self).split_data(data)
-        unique_fields["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+        update_data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+        update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
         return (unique_fields, update_data)
 
 
@@ -1716,6 +1721,8 @@ class OccurrenceCommunityAreaEncounterFilter(filters.FilterSet):
             'name': ['exact', 'icontains', 'in'],
             'description': ['exact', 'icontains', 'in'],
             'northern_extent': ['exact', 'gt', 'lt'],
+            'source': ['exact', 'in'],
+            'source_id': ['exact', 'in'],
         }
 
 
@@ -1732,10 +1739,8 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
     def split_data(self, data):
         """Custom split data: resolve community."""
         unique_fields, update_data = super(OccurrenceCommunityAreaEncounterPolyViewSet, self).split_data(data)
-        com = Community.objects.get(code=unique_fields["community"])
-        logger.debug("[API][split_data] unique {0}, community {1}, update {2}".format(
-            str(unique_fields), com, str(update_data)))
-        unique_fields["community"] = com
+        update_data["community"] = Community.objects.get(code=unique_fields["community"])
+        update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
         return (unique_fields, update_data)
 
 
