@@ -1734,12 +1734,12 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
     filter_class = OccurrenceCommunityAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
     model = occ_models.CommunityAreaEncounter
-    uid_fields = ("source", "source_id", "community")
+    uid_fields = ("source", "source_id")
 
     def split_data(self, data):
         """Custom split data: resolve community."""
         unique_fields, update_data = super(OccurrenceCommunityAreaEncounterPolyViewSet, self).split_data(data)
-        update_data["community"] = Community.objects.get(code=unique_fields["community"])
+        update_data["community"] = Community.objects.get(code=data["community"])
         update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
         return (unique_fields, update_data)
 
