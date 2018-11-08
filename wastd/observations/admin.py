@@ -10,13 +10,15 @@ import floppyforms as ff
 from django.contrib import admin
 # from django.contrib.gis import forms
 from django.contrib.gis.db import models as geo_models
+from django.utils.safestring import mark_safe
 
-from django.utils.translation import ugettext_lazy as _
+# from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
+from shared.admin import CustomStateLogInline
 from wastd.observations.models import (
     Area,
     Expedition,
@@ -50,6 +52,8 @@ TokenAdmin.raw_id_fields = ('user',)
 
 
 class ImageThumbnailFileInput(ff.ClearableFileInput):
+    """Image thumbnail admin."""
+
     template_name = 'floppyforms/image_thumbnail.html'
 
 
@@ -176,7 +180,7 @@ class TemperatureLoggerDeploymentInline(admin.TabularInline):
 
 @admin.register(TagObservation)
 class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
-    """Admin for TagObservation"""
+    """Admin for TagObservation."""
 
     save_on_top = True
     # date_hierarchy = 'datetime'
@@ -209,22 +213,25 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
 
     def encounter_link(self, obj):
         """A link to the encounter."""
-        return '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
-                                              obj.encounter.__str__())
+        return mark_safe(
+            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
+                                           obj.encounter.__str__()))
     encounter_link.short_description = 'Encounter'
     encounter_link.allow_tags = True
 
 
 @admin.register(NestTagObservation)
 class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
-    """Admin for NestTagObservation"""
+    """Admin for NestTagObservation."""
+
     save_on_top = True
     date_hierarchy = 'encounter__when'
     list_display = (
         'pk', 'area',
         'latitude', 'longitude',  'date',
         'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
-        'status_display', 'encounter_link', 'comments')
+        'encounter_link',
+        'status_display', 'comments')
     list_filter = ('encounter__area', 'flipper_tag_id', 'tag_label', 'status')
     search_fields = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
 
@@ -260,8 +267,9 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
 
     def encounter_link(self, obj):
         """A link to the encounter."""
-        return '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
-                                              obj.encounter.__str__())
+        return mark_safe(
+            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
+                                           obj.encounter.__str__()))
     encounter_link.short_description = 'Encounter'
     encounter_link.allow_tags = True
 
@@ -350,10 +358,13 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         geo_models.LineStringField: leaflet_settings,
     }
     fsm_field = ['status', ]
+    inlines = [CustomStateLogInline, ]
 
 
 @admin.register(Area)
 class AreaAdmin(admin.ModelAdmin):
+    """Area admin."""
+
     list_display = ("area_type", "name", "northern_extent", "centroid", )
     list_filter = ("area_type", )
     search_fields = ("name", )
@@ -433,6 +444,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
         HatchlingMorphometricObservationInline,
+        CustomStateLogInline
     ]
 
     def source_display(self, obj):
@@ -500,6 +512,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         TurtleNestObservationInline,
         ManagementActionInline,
         NestTagObservationInline,
+        CustomStateLogInline
     ]
 
     def health_display(self, obj):
@@ -552,6 +565,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
         HatchlingMorphometricObservationInline,
+        CustomStateLogInline
     ]
 
     def habitat_display(self, obj):
@@ -586,6 +600,7 @@ class LineTransectEncounterAdmin(EncounterAdmin):
     inlines = [
         TrackTallyObservationInline,
         TurtleNestDisturbanceTallyObservationInline,
+        CustomStateLogInline
     ]
 
 
@@ -612,7 +627,9 @@ class LoggerEncounterAdmin(EncounterAdmin):
         NestTagObservationInline,
         TemperatureLoggerSettingsInline,
         DispatchRecordInline,
-        TemperatureLoggerDeploymentInline, ]
+        TemperatureLoggerDeploymentInline,
+        CustomStateLogInline
+    ]
 
     def logger_type_display(self, obj):
         """Make habitat human readable."""

@@ -2739,12 +2739,12 @@ class Observation(PolymorphicModel, models.Model):
     @property
     def latitude(self):
         """The encounter's latitude."""
-        return self.encounter.where.get_y() or ''
+        return self.encounter.where.y or ''
 
     @property
     def longitude(self):
         """The encounter's longitude."""
-        return self.encounter.where.get_x() or ''
+        return self.encounter.where.x or ''
 
     def datetime(self):
         """The encounter's timestamp."""
