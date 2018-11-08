@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles leaflet_tags geojson_tags %}
+{% load staticfiles compress leaflet_tags geojson_tags %}
 
 {% block map %}
 <div id="mapholder">
@@ -7,8 +7,24 @@
 </div>
 {% endblock %}
 
+{% block extrastyle %}
+{% compress css %}
+<style>
+.leaflet-popup, .leaflet-popup-content-wrapper {
+  width: 540px !important;
+  padding: -10px;  /* fix close button position */
+}
+.leaflet-popup-content {
+  width: 520px !important;
+  word-wrap: break-word;
+}
+</style>
+{% endcompress %}
+{% endblock %}
+
 {% block javascript%}
 {{ block.super }}
+{% compress js %}
 <script type="text/javascript">
 /*
  * Workaround for 1px lines appearing in some browsers due to fractional transforms
@@ -167,4 +183,5 @@ function map_init(map, options) {
 
 }
 </script>
+{% endcompress %}
 {% endblock %}

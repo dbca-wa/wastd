@@ -53,11 +53,8 @@ li.breadcrumb-item.active a {color: black;}
 #searchmap {height:100%; width: auto;}
 
 /* Leaflet popup fixed width */
-.leaflet-popup, .leaflet-popup-content-wrapper {width: 540px;}
-.leaflet-popup-content {
-  width: 540px;
-  padding: 10px;
-  word-wrap: break-word;}
+.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {width: 540px;}
+.leaflet-popup-content {padding: 10px; word-wrap: break-word;}
 /*.leaflet-popup-content-wrapper {max-height: 500px;}*/
 
 
