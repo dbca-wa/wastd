@@ -68,39 +68,62 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
     def create_one(self, data):
         """POST: Create or update exactly one model instance.
 
-        Return RestResponse(data, status)
+        The ViewSet must have a method ``split_data`` returning a dict
+        of the unique, mandatory fields to get_or_create,
+        and a dict of the other optional values to update.
+
+        Return RestResponse(content, status)
         """
         unique_data, update_data = self.split_data(data)
 
         if None in unique_data.values():
-            logger.warning('[API][create_one] Skipping invalid data: {0}'.format(str(data)))
-            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            msg = '[API][create_one] Skipping invalid data: {0}'.format(str(data))
+            logger.warning(msg)
+            content = {"msg": msg}
+            return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         logger.debug('[API][create_one] Update or create '
                      '{0} with unique fields {1}'.format(
                          self.model._meta.verbose_name, str(unique_data)))
         obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        verb = "Created" if created else "Updated"
         obj.save()  # to update caches
-        logger.info('[API][create_one] {0} {1}'.format(verb, obj))
-        return RestResponse(obj.__str__(), status=status.HTTP_200_OK)
+        verb = "Created" if created else "Updated"
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
+        content = {
+            "id": obj.id,
+            "msg": msg
+        }
+        logger.info(msg)
+        return RestResponse(content, status=st)
 
     def create(self, request):
         """POST: Create or update one or many model instances.
 
         request.data must be a dict or a list of dicts.
+
+        Return RestResponse(result, status)
+
+        result:
+
+        * Warning message if invalid data (status 406 not acceptable)
+        * Dict of object_id and message if one record
+        * List of one-record dicts if several records
         """
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
-            res = self.create_one(request.data)
-            return RestResponse([], status=status.HTTP_200_OK)
+            res = self.create_one(request.data).__dict__
+            return RestResponse(res, status=status.HTTP_200_OK)
         elif type(request.data) == list and self.uid_fields[0] in request.data[0]:
-            logger.info('[API][create] found batch of {0} records, creating/updating...'.format(len(request.data)))
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse([], status=status.HTTP_200_OK)
+            logger.info('[API][create] found batch of {0} records,'
+                        ' creating/updating...'.format(len(request.data)))
+            res = [self.create_one(data).__dict__ for data in request.data]
+            return RestResponse(res, status=status.HTTP_200_OK)
         else:
-            logger.warning("[API][BatchUpsertViewSet] unknown data format: {0}".format(str(request.data)))
-            return RestResponse([], status=status.HTTP_400_BAD_REQUEST)
+            msg = ("[API][BatchUpsertViewSet] unknown data format:"
+                   "{0}".format(str(request.data)))
+            logger.warning(msg)
+            return RestResponse({"msg": msg}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 class FastBatchUpsertViewSet(BatchUpsertViewSet):
