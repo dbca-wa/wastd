@@ -7,6 +7,7 @@ import logging
 from rest_framework.response import Response as RestResponse
 from rest_framework import viewsets, status, pagination  # , serializers, routers
 
+from shared.models import QualityControlMixin
 # from taxonomy.models import Taxon
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         """
         unique_data, update_data = self.split_data(data)
 
+        # Early exit 1: None value in unique data
         if None in unique_data.values():
             msg = '[API][create_one] Skipping invalid data: {0}'.format(str(data))
             logger.warning(msg)
@@ -85,15 +87,30 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         logger.debug('[API][create_one] Update or create '
                      '{0} with unique fields {1}'.format(
                          self.model._meta.verbose_name, str(unique_data)))
-        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        obj.save()  # to update caches
+
+        # Without the QA status deciding whether to update existing data:
+        # obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
+        # Since we need to inspect existing records' QA status:
+        obj, created = self.model.objects.get_or_create(**unique_data)
+
+        # Early exit 2: retain locally changed data (status not NEW)
+        if (not created and obj.status != QualityControlMixin.STATUS_NEW):
+            msg = ('[API][create_one] Not overwriting locally changed data '
+                   'with QA status: {0}'.format(obj.get_status_display()))
+            logger.info(msg)
+            content = {"msg": msg}
+            return RestResponse(content, status=status.HTTP_200_OK)
+        else:
+            # Continue on happy trail: New or existing but unchanged gets updated
+            self.model.objects.filter(**unique_data).update(**update_data)
+
+            obj = self.model.objects.get(**unique_data)
+            obj.save()  # to update cached fields
+
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
-        content = {
-            "id": obj.id,
-            "msg": msg
-        }
+        content = {"id": obj.id, "msg": msg}
         logger.info(msg)
         return RestResponse(content, status=st)
 

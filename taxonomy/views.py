@@ -99,7 +99,11 @@ class TaxonDetailView(DetailView):
     def get_context_data(self, **kwargs):
         """Custom context."""
         context = super(TaxonDetailView, self).get_context_data(**kwargs)
-        context['occurrences'] = TaxonAreaEncounterTable(self.get_object().taxon_occurrences.all())
+        occ = self.get_object().taxon_occurrences
+        context['occurrence_table'] = TaxonAreaEncounterTable(occ.all()[:100])
+        context['occurrences'] = occ.all()[:1000]
+        context['occurrence_shown'] = occ.all()[:100].count()
+        context['occurrence_total'] = occ.count()
         return context
 
 
@@ -112,5 +116,8 @@ class CommunityDetailView(DetailView):
     def get_context_data(self, **kwargs):
         """Custom context."""
         context = super(CommunityDetailView, self).get_context_data(**kwargs)
-        context['occurrences'] = CommunityAreaEncounterTable(self.get_object().community_occurrences.all())
+        occ = self.get_object().community_occurrences
+        context['occurrences'] = CommunityAreaEncounterTable(occ.all()[:100])
+        context['occurrence_shown'] = occ.all()[:100].count()
+        context['occurrence_total'] = occ.count()
         return context

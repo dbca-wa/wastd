@@ -36,6 +36,7 @@ leaflet_settings = {
         'map_width': '100%',
         'display_raw': 'true',
         'map_srid': 4326, })}
+
 formfield_overrides = {
     geo_models.PointField: leaflet_settings,
     geo_models.LineStringField: leaflet_settings,
@@ -51,7 +52,7 @@ class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
     form = AreaForm
     inlines = [CustomStateLogInline, ]
     list_display = ["area_type", "code", "name", "source", "source_id", ]
-    list_filter = ["area_type", "source"]
+    list_filter = ["area_type", "source", ]
     search_fields = ("code", "name", )
     raw_id_fields = ('encountered_by', )
     fsm_field = ['status', ]
@@ -80,6 +81,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
 
     form = TaxonAreaForm
     list_display = AreaEncounterAdmin.list_display + ["taxon"]
+    list_filter = AreaEncounterAdmin.list_filter + ["taxon"]
     list_select_related = ["taxon"]
     fieldsets = ((_('Taxon'), {
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
