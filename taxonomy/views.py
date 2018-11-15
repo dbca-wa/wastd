@@ -117,7 +117,8 @@ class CommunityDetailView(DetailView):
         """Custom context."""
         context = super(CommunityDetailView, self).get_context_data(**kwargs)
         occ = self.get_object().community_occurrences
-        context['occurrences'] = CommunityAreaEncounterTable(occ.all()[:100])
+        context['occurrence_table'] = CommunityAreaEncounterTable(occ.all()[:100])
+        context['occurrences'] = occ.all()[:1000]
         context['occurrence_shown'] = occ.all()[:100].count()
         context['occurrence_total'] = occ.count()
         return context

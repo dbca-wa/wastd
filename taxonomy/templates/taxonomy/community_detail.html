@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles compress leaflet_tags geojson_tags mptt_tags taxonomy_tags occurrence_tags crispy_forms_tags bootstrap4 %}
+{% load staticfiles compress leaflet_tags geojson_tags mptt_tags taxonomy_tags occurrence_tags observations crispy_forms_tags bootstrap4 %}
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
@@ -103,20 +103,72 @@
   </div><!-- /.row -->
 
 
-  <!-- Taxon occurrence records -->
-  <div class="row" id="occ-row">
+  <!-- Comunity occurrence records -->
+<div class="row" id="occ-row">
     <div class="col-12" id="occ-main">
       <div class="jumbotron">
         <p class="lead">
-        <h3>Occurrence records
+        <h3>Occurrences
           {% if occurrence_shown < occurrence_total %}
           <small>(First {{ occurrence_shown }} of {{ occurrence_total }})</small>
           {% endif %}
           <small class="float-right">
-            {% areaencounter_add request.user "community" block=False show_label_text=False %}
+            {% areaencounter_add request.user "taxon" block=False show_label_text=True %}
+
+            {% if request.user.is_staff %}
+            <a class="btn btn-sm btn-primary" target="_"
+                href="{% url 'admin:occurrence_communityareaencounter_changelist' %}?community__id__exact={{ original.id }}"
+                title="Because you have DBCA Curator privileges, you may view all occurrences of this community">
+              <span class="oi oi-eye" title="View all" aria-hidden="true"></span> View all {{ occurrence_total }} occurrences
+            </a>
+            {% endif %}
           </small>
         </h3>
-        {% render_table occurrences %}
+
+        <div class="row">
+        {% regroup occurrences|dictsort:"name" by name as occ_list %}
+        {% for site in occ_list %}
+            <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
+              <h5 class="card-header">{{ site.grouper }}</h5>
+              <div class="card-body">
+                {% for occ in site.list|dictsortreversed:"encountered_on" %}
+                <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
+                    <h6 class="card-header">
+                      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span> {{ occ.encountered_on }}<br/>
+                    </h6>
+
+                  <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                      <span class="oi oi-person" title="Encountered by" aria-hidden="true"></span> {{ occ.encountered_by }}<br/>
+                    </h6>
+
+                    <p class="card-text"><span class="oi oi-comment-square" title="Description" aria-hidden="true"></span> {{ occ.description }}</p>
+                    <p class="card-text"><span class="oi oi-info" title="Details" aria-hidden="true"></span> Occurrence details coming soon.</p>
+
+                  </div><!-- /.card-body -->
+
+                  <div class="card-footer">
+                    {% if request.user.is_staff %}
+                      <a href="{{ occ.absolute_admin_url }}"
+                      class="btn btn-block btn-{{ occ.status|tb_status_icon }} btn-sm"
+                      target="_" title="Edit Occurrence in new tab">
+                      <i class="fa fa-fw fa-pencil"></i>
+                      {{ occ.get_status_display }} Occurrence
+                    </a>
+                    {% endif %}
+                  </div><!-- /.footer -->
+
+                </div><!-- /.card -->
+                {% endfor %}
+
+              </div>
+            </div>
+        {% endfor %}
+        </div>
+
+
+
+        {# render_table occurrence_table #}
         </p>
       </div>
     </div>

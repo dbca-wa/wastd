@@ -95,6 +95,7 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
 
     form = CommunityAreaForm
     list_display = AreaEncounterAdmin.list_display + ["community"]
+    list_filter = AreaEncounterAdmin.list_filter + ["community"]
     list_select_related = ["community"]
     fieldsets = ((_('Community'), {
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
