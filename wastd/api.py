@@ -59,7 +59,9 @@ from django_filters import rest_framework as rf_filters
 
 from shared.api import (
     MyGeoJsonPagination,
-    FastBatchUpsertViewSet, BatchUpsertViewSet)
+    BatchUpsertViewSet,
+    FastBatchUpsertViewSet,
+    BatchUpsertQualityControlViewSet)
 from wastd.observations.models import (
     Area,
     Survey,  # SiteVisit,
@@ -1530,7 +1532,7 @@ class OccurrenceAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceAreaPolyViewSet(BatchUpsertViewSet):
+class OccurrenceAreaPolyViewSet(BatchUpsertQualityControlViewSet):
     """Occurrence Area view set."""
 
     queryset = occ_models.AreaEncounter.objects.all()
@@ -1541,7 +1543,7 @@ class OccurrenceAreaPolyViewSet(BatchUpsertViewSet):
     uid_fields = ("source", "source_id")
 
 
-class OccurrenceAreaPointViewSet(BatchUpsertViewSet):
+class OccurrenceAreaPointViewSet(BatchUpsertQualityControlViewSet):
     """Occurrence Area view set."""
 
     queryset = occ_models.AreaEncounter.objects.all()
@@ -1627,7 +1629,7 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
+class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertQualityControlViewSet):
     """TaxonEncounter polygon view set."""
 
     queryset = occ_models.TaxonAreaEncounter.objects.all()
@@ -1726,7 +1728,7 @@ class OccurrenceCommunityAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
+class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertQualityControlViewSet):
     """Occurrence CommunityAreaEncounter view set."""
 
     queryset = occ_models.CommunityAreaEncounter.objects.all()
@@ -2825,28 +2827,14 @@ class TaxonGazettalFilter(filters.FilterSet):
 
 
 class TaxonGazettalViewSet(BatchUpsertViewSet):
-    """View set for TaxonGazettal.
-
-    TODO add source and source_id to Gazettal as uid fields
-    """
+    """View set for TaxonGazettal."""
 
     queryset = TaxonGazettal.objects.all().select_related('taxon')
     serializer_class = TaxonGazettalSerializer
     filter_class = TaxonGazettalFilter
     pagination_class = pagination.LimitOffsetPagination
-    uid_field = "taxon"
+    uid_fields = ("taxon", "source", "source_id")
     model = TaxonGazettal
-
-    # def build_unique_fields(self, data):
-    #     """Custom unique fields for Vernaculars."""
-    #     return {"conservation_list": data["conservation_list"],
-    #             "code": data["code"]}
-
-    # @silk_profile(name='List TaxonGazettal')
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     serializer = TaxonGazettalSerializer(queryset, many=True)
-    #     return RestResponse(serializer.data)
 
 
 router.register("taxongazettal", TaxonGazettalViewSet)
@@ -2887,20 +2875,15 @@ class CommunityGazettalFilter(filters.FilterSet):
         }
 
 
-class CommunityGazettalViewSet(BatchUpsertViewSet):
+class CommunityGazettalViewSet(BatchUpsertQualityControlViewSet):
     """View set for CommunityGazettal."""
 
     queryset = CommunityGazettal.objects.all().select_related('community')
     serializer_class = CommunityGazettalSerializer
     filter_class = CommunityGazettalFilter
     pagination_class = pagination.LimitOffsetPagination
-    uid_field = "community"
+    uid_fields = ("community", "source", "source_id")
     model = CommunityGazettal
-
-    # def build_unique_fields(self, data):
-    #     """Custom unique fields for CommunityGazettal."""
-    #     return {"conservation_list": data["conservation_list"],
-    #             "code": data["code"]}
 
 
 router.register("communitygazettal", CommunityGazettalViewSet)
@@ -2941,20 +2924,15 @@ class DocumentFilter(filters.FilterSet):
         }
 
 
-class DocumentViewSet(BatchUpsertViewSet):
+class DocumentViewSet(BatchUpsertQualityControlViewSet):
     """View set for Document."""
 
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
     filter_class = DocumentFilter
     pagination_class = pagination.LimitOffsetPagination
-    uid_field = None
+    uid_fields = ("source", "source_id")
     model = Document
-
-    def build_unique_fields(self, data):
-        """Custom unique fields."""
-        return {"source": data["source"],
-                "source_id": data["source_id"]}
 
 
 router.register("document", DocumentViewSet)
