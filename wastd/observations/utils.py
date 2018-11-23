@@ -4133,6 +4133,94 @@ def import_odka_fs03(r):
     return enc
 
 
+def import_odka_tsi01(r):
+    """Import one ODK TurtleSighting 0.1 record from the OKA-A API into WAStD.
+
+    Arguments
+
+    r The submission record as dict, e.g.
+
+    save_all_odka(path="data/odka")
+    with open("data/odka/build_Turtle-Sighting-0-1_1535090015.json") as df:
+        d = json.load(df)
+    r = d[1]
+
+    r
+
+    {
+    "submission": {
+      "@xmlns": "http://opendatakit.org/submissions",
+      "@xmlns:orx": "http://openrosa.org/xforms",
+      "data": {
+        "data": {
+          "@id": "build_Turtle-Sighting-0-1_1535090015",
+          "@instanceID": "uuid:6cf7578d-027b-4187-81bf-a7c1f408301a",
+          "@submissionDate": "2018-08-27T10:52:34.872Z",
+          "@isComplete": "true",
+          "@markedAsCompleteDate": "2018-08-27T10:52:34.872Z",
+          "orx:meta": {
+            "orx:instanceID": "uuid:6cf7578d-027b-4187-81bf-a7c1f408301a"
+          },
+          "observation_start_time": "2018-08-27T06:47:31.153Z",
+          "reporter": "scott whiting",
+          "device_id": "d0:f8:8c:77:cc:77",
+          "phone_number": null,
+          "encounter": {
+            "observed_at": "-18.0297883333 122.2724933333 -10.1000000000 5.0000000000",
+            "species": "natator-depressus",
+            "sex": "male",
+            "maturity": "adult",
+            "activity": "na",
+            "observer_acticity": "na",
+            "photo_habitat": null
+          },
+          "observation_end_time": "2018-08-27T06:48:15.344Z"
+        }
+      }
+    }
+    },
+
+    Existing records will be overwritten unless marked in WAStD as "proofread"
+    or higher levels of QA.
+
+    Returns:
+        The WAStD Encounter object.
+    """
+    logger.info("Found Turtle Sighting...")
+    data = make_data(r)
+    media = make_media(r)
+    reporter_match = guess_user(data["reporter"])
+
+    unique_data = dict(
+        source="odk",
+        source_id=data["@instanceID"])
+    extra_data = dict(
+        where=odk_point_as_point(data["encounter"]["observed_at"]),
+        when=parse_datetime(data["observation_start_time"]),
+        location_accuracy="10",
+        observer=reporter_match["user"],
+        reporter=reporter_match["user"],
+        comments="{0}\n{1}".format(
+            reporter_match["message"],
+            data["encounter"]["observer_acticity"]),
+        species=data["encounter"]["species"],
+        sex=data["encounter"]["sex"],
+        maturity=data["encounter"]["maturity"],
+        activity=data["encounter"]["activity"]
+    )
+
+    enc, action = create_update_skip(
+        unique_data,
+        extra_data,
+        cls=AnimalEncounter,
+        base_cls=Encounter)
+
+    handle_media_attachment_odka(enc, media, data["encounter"]["photo_habitat"], title="Habitat")
+
+    logger.info("Done: {0}\n".format(enc))
+    return enc
+
+
 # ---------------------------------------------------------------------------#
 # Track or Treat 0.36-0.44
 #
@@ -4933,6 +5021,7 @@ def import_all_odka(path="."):
     """
     logger.info("[import_all_odka] Starting import of all downloaded ODKA data...")
     results = dict(
+        tsi01=[import_odka_tsi01(x) for x in downloaded_data("build_Turtle-Sighting-0-1_1535090015", path)],
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
         fs04=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-4_1534140913", path)],
