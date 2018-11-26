@@ -3,7 +3,7 @@
 from collections import OrderedDict
 import logging
 
-
+# from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response as RestResponse
 from rest_framework import viewsets, status, pagination  # , serializers, routers
 
@@ -90,7 +90,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         # Without the QA status deciding whether to update existing data:
         obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        obj = self.model.objects.get(**unique_data)
+        obj.refresh_from_db()
         obj.save()  # to update cached fields
 
         verb = "Created" if created else "Updated"
@@ -160,7 +160,20 @@ class BatchUpsertQualityControlViewSet(BatchUpsertViewSet):
         # Without the QA status deciding whether to update existing data:
         # obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
         # Since we need to inspect existing records' QA status:
-        obj, created = self.model.objects.get_or_create(**unique_data)
+        # obj, created = self.model.objects.get_or_create(**unique_data)
+        # However, "create" will fail if there are required fields (like taxon_id) in update_data.
+        # taxon_id could be updated, so can't be part of unique_data.
+        # taxon_id and any other mandatory fields are required to create the record.x`
+        if self.model.objects.filter(**unique_data).exists():
+            # logger.debug('[API][create_one] Object found, retrieving...')
+            obj = self.model.objects.get(**unique_data)
+            # logger.debug('[API][create_one] Object retrieved: {0}'.format(obj.__str__()))
+            created = False
+        else:
+            # logger.debug('[API][create_one] Object not found, creating with data {0}'.format(str(data)))
+            obj = self.model.objects.create(**data)
+            # logger.debug('[API][create_one] Object created: {0}'.format(obj.__str__()))
+            created = True
 
         # Early exit 2: retain locally changed data (status not NEW)
         if (not created and obj.status != QualityControlMixin.STATUS_NEW):
@@ -170,11 +183,14 @@ class BatchUpsertQualityControlViewSet(BatchUpsertViewSet):
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_200_OK)
         else:
-            # Continue on happy trail: New or existing but unchanged gets updated
+            # Continue on happy trail: update if new or existing but unchanged
             self.model.objects.filter(**unique_data).update(**update_data)
 
-            obj = self.model.objects.get(**unique_data)
-            obj.save()  # to update cached fields
+            # logger.debug('[API][create_one] Updating cached fields...')
+            # obj = self.model.objects.get(**unique_data)
+            obj.refresh_from_db()
+            obj.save()
+            # logger.debug('[API][create_one] Object caches updated: {0}'.format(obj.__str__()))
 
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK

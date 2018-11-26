@@ -1032,10 +1032,10 @@ class EncounterViewSet(viewsets.ModelViewSet):
       [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality)
     * Find your Site's ID in
       [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site)
-    * [/api/1/encounters/?area=19](/api/1/encounters/?area=19) Cable Beach Broome
-    * [/api/1/encounters/?area=13](/api/1/encounters/?area=13) Port Hedland
-    * [/api/1/encounters/?area=13](/api/1/encounters/?area=16) Karratha (Rosemary Is, Burrup)
-    * [/api/1/encounters/?area=17](/api/1/encounters/?area=17) Thevenard Island
+    * [/api/1/encounters/?site=19](/api/1/encounters/?site=19) Cable Beach Broome
+    * [/api/1/encounters/?site=13](/api/1/encounters/?site=13) Port Hedland
+    * [/api/1/encounters/?site=13](/api/1/encounters/?site=16) Karratha (Rosemary Is, Burrup)
+    * [/api/1/encounters/?site=17](/api/1/encounters/?site=17) Thevenard Island
     * All Encounters within Site 31 ("Broome DBCA Office and Training Area"):
       [/api/1/encounters/?site=31](/api/1/encounters/?site=31)
 
