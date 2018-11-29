@@ -113,7 +113,7 @@
           <small>(First {{ occurrence_shown }} of {{ occurrence_total }})</small>
           {% endif %}
           <small class="float-right">
-            {% areaencounter_add request.user "taxon" block=False show_label_text=True %}
+            {% areaencounter_add request.user "community" block=False show_label_text=True %}
 
             {% if request.user.is_staff %}
             <a class="btn btn-sm btn-primary" target="_"

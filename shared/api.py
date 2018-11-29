@@ -164,14 +164,17 @@ class BatchUpsertQualityControlViewSet(BatchUpsertViewSet):
         # However, "create" will fail if there are required fields (like taxon_id) in update_data.
         # taxon_id could be updated, so can't be part of unique_data.
         # taxon_id and any other mandatory fields are required to create the record.x`
-        if self.model.objects.filter(**unique_data).exists():
-            logger.debug('[API][create_one] Object found, retrieving...')
-            obj = self.model.objects.get(**unique_data)
-            logger.debug('[API][create_one] Object retrieved: {0}'.format(obj.__str__()))
-            created = False
-        else:
-            obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-            # logger.debug('[API][create_one] Object created ({1}): {0}'.format(obj.__str__(), created))
+
+        obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
+
+        # if self.model.objects.filter(**unique_data).exists():
+        #     logger.debug('[API][create_one] Object found, retrieving...')
+        #     obj = self.model.objects.get(**unique_data)
+        #     logger.debug('[API][create_one] Object retrieved: {0}'.format(obj.__str__()))
+        #     created = False
+        # else:
+        #     obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
+        #     logger.debug('[API][create_one] Object created ({1}): {0}'.format(obj.__str__(), created))
 
         # Early exit 2: retain locally changed data (status not NEW)
         if (not created and obj.status != QualityControlMixin.STATUS_NEW):
