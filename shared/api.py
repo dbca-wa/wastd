@@ -79,7 +79,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
-            msg = '[API][create_one] Skipping invalid data: {0}'.format(str(data))
+            msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
+                str(update_data), str(unique_data))
             logger.warning(msg)
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -153,9 +154,8 @@ class BatchUpsertQualityControlViewSet(BatchUpsertViewSet):
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        logger.debug('[API][create_one] Received '
-                     '{0} with unique fields {1}'.format(
-                         self.model._meta.verbose_name, str(unique_data)))
+        logger.debug('[API][create_one] Received {0} with unique fields {1}'.format(
+            self.model._meta.verbose_name, str(unique_data)))
 
         # Without the QA status deciding whether to update existing data:
         # obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
@@ -165,15 +165,13 @@ class BatchUpsertQualityControlViewSet(BatchUpsertViewSet):
         # taxon_id could be updated, so can't be part of unique_data.
         # taxon_id and any other mandatory fields are required to create the record.x`
         if self.model.objects.filter(**unique_data).exists():
-            # logger.debug('[API][create_one] Object found, retrieving...')
+            logger.debug('[API][create_one] Object found, retrieving...')
             obj = self.model.objects.get(**unique_data)
-            # logger.debug('[API][create_one] Object retrieved: {0}'.format(obj.__str__()))
+            logger.debug('[API][create_one] Object retrieved: {0}'.format(obj.__str__()))
             created = False
         else:
-            # logger.debug('[API][create_one] Object not found, creating with data {0}'.format(str(data)))
-            obj = self.model.objects.create(**data)
-            # logger.debug('[API][create_one] Object created: {0}'.format(obj.__str__()))
-            created = True
+            obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
+            # logger.debug('[API][create_one] Object created ({1}): {0}'.format(obj.__str__(), created))
 
         # Early exit 2: retain locally changed data (status not NEW)
         if (not created and obj.status != QualityControlMixin.STATUS_NEW):

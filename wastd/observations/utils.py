@@ -5013,7 +5013,8 @@ def import_all_odka(path="."):
 
     Example usage on shell_plus:
 
-    import sys; reload(sys); sys.setdefaultencoding('UTF8'); path="data/odka"; from wastd.observations.utils import *
+    import sys; reload(sys); sys.setdefaultencoding('UTF8');
+    path="data/odka"; from wastd.observations.utils import *
     save_all_odka(path="data/odka")
     enc = import_all_odka(path="data/odka")
 

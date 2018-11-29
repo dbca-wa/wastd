@@ -273,7 +273,9 @@ function map_init(map, options) {
     }
 
     function oef_rel (feature, layer) {
-      layer.bindTooltip('TSC<br/><span class="oi oi-calendar" aria-hidden="true">' + feature.properties.encountered_on);
+      layer.bindTooltip('<strong>' + feature.properties.label +
+        '</strong><br/><span class="oi oi-calendar" aria-hidden="true">' +
+        feature.properties.encountered_on);
       layer.bindPopup(feature.properties.as_html);
     }
 

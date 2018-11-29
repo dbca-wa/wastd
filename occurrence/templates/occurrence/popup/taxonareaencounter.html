@@ -1,21 +1,23 @@
 {% load staticfiles taxonomy_tags observations %}
-<div class="row">
-  <div class="col col-12">
-  <div class="mr-auto p-2">
-    <h5>{{ original.taxon }}</h5>
+<div class="d-flex flex-row">
+  <div class="mr-auto">
+    <h5>[{{ original.code }}] {{ original.name }}</h5>
   </div>
-
-  <div class="p-2">
-    <a href="{{ original.absolute_admin_url }}"
+  <div>
+     <a href="{{ original.absolute_admin_url }}"
         class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
         target="_" title="Edit record in new tab">
         <i class="oi oi-pencil"></i>
         {{ original.get_status_display }}
     </a>
   </div>
-  </div>
 </div>
 
+<div class="row">
+  <div class="col col-12">
+    <h6>{{ original.taxon }}</h6>
+  </div>
+</div>
 
 <!-- Time and location -->
 <div class="row">

@@ -1740,7 +1740,8 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertQualityControlViewS
 
     def split_data(self, data):
         """Custom split data: resolve community."""
-        unique_fields, update_data = super(OccurrenceCommunityAreaEncounterPolyViewSet, self).split_data(data)
+        unique_fields, update_data = super(
+            OccurrenceCommunityAreaEncounterPolyViewSet, self).split_data(data)
         update_data["community"] = Community.objects.get(code=data["community"])
         update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
         return (unique_fields, update_data)
@@ -2833,7 +2834,7 @@ class TaxonGazettalViewSet(BatchUpsertViewSet):
     serializer_class = TaxonGazettalSerializer
     filter_class = TaxonGazettalFilter
     pagination_class = pagination.LimitOffsetPagination
-    uid_fields = ("taxon", "source", "source_id")
+    uid_fields = ("source", "source_id")
     model = TaxonGazettal
 
 
@@ -2882,7 +2883,7 @@ class CommunityGazettalViewSet(BatchUpsertQualityControlViewSet):
     serializer_class = CommunityGazettalSerializer
     filter_class = CommunityGazettalFilter
     pagination_class = pagination.LimitOffsetPagination
-    uid_fields = ("community", "source", "source_id")
+    uid_fields = ("source", "source_id")
     model = CommunityGazettal
 
 

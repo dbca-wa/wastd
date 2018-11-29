@@ -70,6 +70,9 @@ class LegacySourceMixin(models.Model):
     SOURCE_THREATENED_FAUNA = 10
     SOURCE_THREATENED_FLORA = 11
     SOURCE_THREATENED_COMMUNITIES = 12
+    SOURCE_THREATENED_COMMUNITIES_BOUNDARIES = 13
+    SOURCE_THREATENED_COMMUNITIES_BUFFERS = 14
+    SOURCE_THREATENED_COMMUNITIES_SITES = 15
     SOURCE_WAMTRAM2 = 20
     SOURCE_NINGALOO_TURTLE_PROGRAM = 21
     SOURCE_BROOME_TURTLE_PROGRAM = 22
@@ -86,6 +89,9 @@ class LegacySourceMixin(models.Model):
         (SOURCE_THREATENED_FAUNA, 'Threatened Fauna'),
         (SOURCE_THREATENED_FLORA, 'Threatened Flora'),
         (SOURCE_THREATENED_COMMUNITIES, 'Threatened Communities'),
+        (SOURCE_THREATENED_COMMUNITIES_BOUNDARIES, 'Threatened Communities Boundaries'),
+        (SOURCE_THREATENED_COMMUNITIES_BUFFERS, 'Threatened Communities Buffers'),
+        (SOURCE_THREATENED_COMMUNITIES_SITES, 'Threatened Communities Sites'),
         (SOURCE_WAMTRAM2, "Turtle Tagging Database WAMTRAM2"),
         (SOURCE_NINGALOO_TURTLE_PROGRAM, "Ningaloo Turtle Program"),
         (SOURCE_BROOME_TURTLE_PROGRAM, "Broome  Turtle Program"),
