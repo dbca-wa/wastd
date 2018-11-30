@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import
 
 # import itertools
 import logging
+import uuid
 # import urllib
 # import slugify
 # from datetime import timedelta
@@ -110,7 +111,7 @@ class LegacySourceMixin(models.Model):
 
     source_id = models.CharField(
         max_length=1000,
-        blank=True, null=True,
+        default=uuid.uuid1(),
         verbose_name=_("Source ID"),
         help_text=_("The ID of the record in the original source, if available."), )
 

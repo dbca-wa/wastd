@@ -2564,7 +2564,7 @@ class CommunityViewSet(BatchUpsertViewSet):
     serializer_class = CommunitySerializer
     filter_class = CommunityFilter
     model = Community
-    uid_field = ("code",)
+    uid_fields = ("code",)
 
 router.register("community", CommunityViewSet)
 

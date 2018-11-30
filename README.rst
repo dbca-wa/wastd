@@ -1,7 +1,10 @@
-WAStD
+WAStD / TSC
 ==============================
+WAStD / TSC is a co-branded project to house:
 
-WA Stranding Database
+* WA Strandings Database: Marine Wildlife Incidents managed by DBCA
+* WA Sea Turtle Database: Sea turtle tagging and nesting census
+* Threatened Species and Communities: conservation listing, recovery planning and occurrences of WA TSCs
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/
@@ -18,9 +21,6 @@ WA Stranding Database
 .. image:: https://badge.waffle.io/dbca-wa/wastd.svg?label=ready&title=Ready
      :target: https://waffle.io/dbca-wa/wastd
      :alt: Open Issues
-
-Note: A bug in the version of functools used by the continuous integration provider
-currently lets all automated remote tests fail. Local testing passes however.
 
 LICENSE: MIT
 
@@ -75,10 +75,21 @@ Moved to `Live reloading and SASS compilation`_.
 .. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
 
 
-**TODO merge with maintainer docs.**
+Deployment - docker-compose
+----------------------i-----
+* Create prod and UAT dbs on a postgres cluster.
+* Set up TSC virtualenv as per instructions below and ``./manage.py migrate``.
+* Environment: Linux with Docker and docker-compose
+* Create a docker-compose file (TODO insert example)
+* ``docker pull dbcawa/wastd``
+* Adjust wastd image number in docker-compose file
+* ``docker-compose down``
+* ``docker-compose up &``
 
-Deployment
-----------
+Alternative: use docker swarm.
+
+Deployment - virtualenv
+-----------------------
 First, create a postgis database on an available database cluster.::
 
     export CLUSTERNAME=sdis
