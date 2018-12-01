@@ -24,6 +24,7 @@ from ajax_select import urls as ajax_select_urls
 # from wastd.schema import schema
 from wastd.api import router as wastd_router
 from wastd.observations.models import Area, Encounter, AnimalEncounter
+from occurrence.models import CommunityAreaEncounter
 from wastd.observations.views import (
     import_odka_view, schema_view, HomeView,
     EncounterTableView, AnimalEncounterTableView)
@@ -92,6 +93,14 @@ urlpatterns = [
                 properties=('as_html', 'leaflet_title', 'leaflet_icon', 'leaflet_colour'),
                 geometry_field="where"),
             name='encounter-tiled-geojson'),
+
+    # CommunityAreaEncounter as tiled GeoJSON
+    re_path(r'^community-encounters-poly/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
+            TiledGeoJSONLayerView.as_view(
+                model=CommunityAreaEncounter,
+                properties=('as_html', 'label',),
+                geometry_field="geom"),
+            name='community-area-encounter-tiled-geojson'),
 
     # url(r'^areas/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
     #     TiledGeoJSONLayerView.as_view(

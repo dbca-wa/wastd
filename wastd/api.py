@@ -1742,7 +1742,10 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertQualityControlViewS
         """Custom split data: resolve community."""
         unique_fields, update_data = super(
             OccurrenceCommunityAreaEncounterPolyViewSet, self).split_data(data)
-        update_data["community"] = Community.objects.get(code=data["community"])
+        try:
+            update_data["community"] = Community.objects.get(code=data["community"])
+        except Exception as e:
+            logger.error("Exception {0}: community {1} not known,".format(e, data["community"]))
         update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
         return (unique_fields, update_data)
 

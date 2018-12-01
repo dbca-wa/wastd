@@ -258,7 +258,7 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
     )
 
     readonly_fields = ('parent', )
-    inlines = [TaxonAreaEncounterInline, ]
+    # inlines = [TaxonAreaEncounterInline, ]
     formfield_overrides = formfield_overrides
 
 
@@ -273,5 +273,5 @@ class CommunityAdmin(VersionAdmin):
         'description',
     )
 
-    inlines = [CommunityAreaEncounterInline, ]
+    # inlines = [CommunityAreaEncounterInline, ]
     formfield_overrides = formfield_overrides

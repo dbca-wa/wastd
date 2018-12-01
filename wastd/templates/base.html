@@ -18,13 +18,17 @@
     {% block css %}
     <!-- bootstrap can't be compressed  -->
     {% bootstrap_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css"
+    integrity="sha256-+bdWuWOXMFkX0v9Cvr3OWClPiYefDQz9GGZP/7xZxdc=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css"
+    integrity="sha256-LWhzWaQGZRsWFrrJxg+6Zn8TT84k0/trtiHBc6qcGpY=" crossorigin="anonymous" />
     {% compress css %}
     {% leaflet_css %}
     <link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/project.css' %}">
     {% endcompress %}
 
-<!--     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+   <!--     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
    crossorigin=""/> -->
     {% endblock %}
@@ -250,10 +254,12 @@
   {% bootstrap_javascript jquery='full' %}
   <!-- Fontawesome: icons -->
   <!-- <script src="//use.fontawesome.com/f8f5501a45.js"></script> -->
-    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
-   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
-   crossorigin=""></script>
-  <!-- <script src="//static.dpaw.wa.gov.au/static/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.js"
+  integrity="sha256-tfcLorv/GWSrbbsn6NVgflWp1YOmTjyJ8HWtfXaOaJc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.min.js"
+  integrity="sha256-wAPWjo+rSGf0uCc0Bx0INODQ6En5mOPxSDGwKBLkfhg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"
+  integrity="sha256-WL6HHfYfbFEkZOFdsJQeY7lJG/E5airjvqbznghUzRw=" crossorigin="anonymous"></script>
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

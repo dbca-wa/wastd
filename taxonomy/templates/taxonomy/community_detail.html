@@ -267,12 +267,12 @@ function map_init(map, options) {
     }
 
     /* Actions taken on each feature: title, popup, info preview */
-    function oef (feature, layer) {
+    function oef_eoo (feature, layer) {
         layer.bindTooltip("Extent of Occurrence");
         // layer.bindPopup("Extent of Occurrence");
     }
 
-    function oef_rel (feature, layer) {
+    function oef (feature, layer) {
       layer.bindTooltip('<strong>' + feature.properties.label +
         '</strong><br/><span class="oi oi-calendar" aria-hidden="true">' +
         feature.properties.encountered_on);
@@ -288,25 +288,24 @@ function map_init(map, options) {
      */
     var eoo = L.geoJson(
         {{ original|geojsonfeature:"code,name:eoo"|safe }},
-        // {clipTiles: true, unique: getUnique},
-        {style: style, onEachFeature: oef}
+        {style: style, onEachFeature: oef_eoo}
     );
     eoo.addTo(map);
     map.fitBounds(eoo.getBounds());
 
+    /* CAE poly */
     L.geoJson(
-        {{ original.community_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
-        {style: polystyle,onEachFeature: oef_rel}
+        {{ original.community_occurrences.all|slice:":1000"|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
+        {style: polystyle, onEachFeature: oef}
     ).addTo(map);
 
-
-    // var markers = L.markerClusterGroup();
-    // var gj_markers = L.geoJson(
-    //     {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
-    //     // {clipTiles: true, unique: getUnique},
-    //     {style: style, pointToLayer: ptl, onEachFeature: oef});
-    // markers.addLayer(gj_markers);
-    // map.addLayer(markers);
+    /* CAE point */
+    var markers = L.markerClusterGroup();
+    var gj_markers = L.geoJson(
+        {{ original.community_occurrences.all|slice:":1000"|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+        {style: style, pointToLayer: ptl, onEachFeature: oef});
+    markers.addLayer(gj_markers);
+    map.addLayer(markers);
 
     /*
      * Option 2: GeoJSON view
@@ -328,9 +327,11 @@ function map_init(map, options) {
      * oef binds popup to marker
      */
     // var geojsonTileLayer = new L.TileLayer.GeoJSON(
-    //     'data/{z}/{x}/{y}.geojson',
+    //     'community-encounters-poly/{z}/{x}/{y}.geojson',
     //     {clipTiles: true, unique: getUnique},
-    //     {style: style, pointToLayer: ptl, onEachFeature: oef}
+    //     {style: polystyle,
+    //       //pointToLayer: ptl,
+    //       onEachFeature: oef}
     // ).addTo(map);
 
 
