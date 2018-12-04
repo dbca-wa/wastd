@@ -2849,6 +2849,7 @@ class CommunityGazettalSerializer(serializers.ModelSerializer):
     """Serializer for CommunityGazettal."""
 
     # community = FastTaxonSerializer(many=False)
+    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field='code')
 
     class Meta:
         """Opts."""
@@ -2879,7 +2880,7 @@ class CommunityGazettalFilter(filters.FilterSet):
         }
 
 
-class CommunityGazettalViewSet(BatchUpsertQualityControlViewSet):
+class CommunityGazettalViewSet(BatchUpsertViewSet):
     """View set for CommunityGazettal."""
 
     queryset = CommunityGazettal.objects.all().select_related('community')
@@ -2888,6 +2889,57 @@ class CommunityGazettalViewSet(BatchUpsertQualityControlViewSet):
     pagination_class = pagination.LimitOffsetPagination
     uid_fields = ("source", "source_id")
     model = CommunityGazettal
+
+    def split_data(self, data):
+        """Custom split data: resolve community."""
+        unique_fields, update_data = super(CommunityGazettalViewSet, self).split_data(data)
+        try:
+            update_data["community"] = Community.objects.get(code=data["community"])
+        except Exception as e:
+            logger.error("Exception {0}: community {1} not known,".format(e, data["community"]))
+        # update_data["category"] = [data["category"], ]
+        return (unique_fields, update_data)
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance.
+
+        The ViewSet must have a method ``split_data`` returning a dict
+        of the unique, mandatory fields to get_or_create,
+        and a dict of the other optional values to update.
+
+        Return RestResponse(content, status)
+        """
+        unique_data, update_data = self.split_data(data)
+
+        # Pop category and criterion out update_data
+        cat_ids = update_data.pop("category")
+        categories = [ConservationCategory.objects.get(id=x) for x in [cat_ids, ]]
+
+        # Early exit 1: None value in unique data
+        if None in unique_data.values():
+            msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
+                str(update_data), str(unique_data))
+            logger.warning(msg)
+            content = {"msg": msg}
+            return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        logger.debug('[API][create_one] Received '
+                     '{0} with unique fields {1}'.format(
+                         self.model._meta.verbose_name, str(unique_data)))
+
+        # Without the QA status deciding whether to update existing data:
+        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
+        obj.category.set(categories)
+        obj.save()  # better save() than sorry
+        obj.refresh_from_db()
+        obj.save()  # to update cached fields
+
+        verb = "Created" if created else "Updated"
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
+        content = {"id": obj.id, "msg": msg}
+        logger.info(msg)
+        return RestResponse(content, status=st)
 
 
 router.register("communitygazettal", CommunityGazettalViewSet)
