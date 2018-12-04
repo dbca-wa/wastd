@@ -37,6 +37,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 # from polymorphic.models import PolymorphicModel
 
 # from wastd.users.models import User
+from shared.models import LegacySourceMixin
 
 logger = logging.getLogger(__name__)
 
@@ -2055,7 +2056,7 @@ class Crossreference(models.Model):
 
 
 @python_2_unicode_compatible
-class Community(geo_models.Model):
+class Community(LegacySourceMixin, geo_models.Model):
     """Ecological Community."""
 
     code = models.CharField(

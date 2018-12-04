@@ -95,7 +95,7 @@ class LegacySourceMixin(models.Model):
         (SOURCE_THREATENED_COMMUNITIES_SITES, 'Threatened Communities Sites'),
         (SOURCE_WAMTRAM2, "Turtle Tagging Database WAMTRAM2"),
         (SOURCE_NINGALOO_TURTLE_PROGRAM, "Ningaloo Turtle Program"),
-        (SOURCE_BROOME_TURTLE_PROGRAM, "Broome  Turtle Program"),
+        (SOURCE_BROOME_TURTLE_PROGRAM, "Broome Turtle Program"),
         (SOURCE_PORT_HEDLAND_TURTLE_PROGRAM, "Pt Hedland Turtle Program"),
         (SOURCE_GNARALOO_TURTLE_PROGRAM, "Gnaraloo Turtle Program"),
         (SOURCE_ECO_BEACH_TURTLE_PROGRAM, "Eco Beach Turtle Program"),
