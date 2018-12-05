@@ -34,7 +34,7 @@ This section provides a condensed overview of the information management infrast
   DBCA's ODK Aggregate server.
 * The data manager (Florian Mayer) uploads data from DBCA's
   ODK Aggregate server to the WA Sea Turtle Database
-  `WAStD <https://strandings.dpaw.wa.gov.au/>`_.
+  `WAStD <https://tsc.dpaw.wa.gov.au/>`_.
 * Data anlysts access the WAStD API e.g. using the R package
   `wastdR <https://parksandwildlife.github.io/wastdr/>`_ to produce insight
   from the collected data.
@@ -169,6 +169,7 @@ Samsung Galaxy S2 9.7"
 * Large size is excellent to review visualisations and read
 * (-) Larger size (A4 page) requires two hands to hold
 * (-) too expensive to distribute widely or use in extreme conditions
+* (-) compass bearing measurements vary wildly between four identical devices
 
 Samsung Galaxy S2 8"
 --------------------
@@ -196,6 +197,7 @@ Lenovo Tab 3 7" TB3-730F
 * Fits in 7" sleeve, trouser pocket, can be held securely in one hand.
 * Very fast GPS fix, faster than Samsung S2, slower than a Moto G4+ phone.
 * Best cost-benefit for handing out in bulk.
+* (-) Being phased out as of early 2018, replaced by TB-7304F.
 
 Lenovo Tab 7 Essential TB-7304F
 ---------------------

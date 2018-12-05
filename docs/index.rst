@@ -39,7 +39,8 @@ Overview
 
 WAStD / TSC is a data warehouse for:
 
-* Turtle strandings in WA, as reported to the Department of Biodiversity, Conservation and Attractions, WA.
+* Turtle strandings in WA, as reported to the
+  Department of Biodiversity, Conservation and Attractions, WA.
 * Dugong and sea snake strandings in WA.
 * Turtle track observations, taken at sunrise after nesting (can involve nests,
   predation, nest tags, temperature loggers, egg excavation and hatchling measurements).
@@ -90,7 +91,7 @@ corrupting core departmental data,
 data custodians retiring or not being salaried,
 outdated datasheets collecting incomplete, inconsistent, incorrect data --,
 then a solution much like WAStD or BioSys would be required to mitigate that risk,
-and sufficient care had to be taken to hand over the not always documented,
+and sufficient care had to be taken to hand over the not always fully documented,
 often living business knowledge from current custodians to permanent departmental staff.
 
 The roll-out of the improvements in handling turtle strandings will cross over
@@ -116,21 +117,12 @@ The journey so far:
 * Feb 2017: Revised tracks form used in field.
 * Season 2017/2018: Six regions join digital data collection of turtle track census.
 * 2018: Threatened species and communities.
+* Season 2018/19: Bar two programs, all WA regions join digital data collection of
+  turtle track census. One program is relatively small and remote, the other lacks basic literacy among available data collectors, favouring pictogram-based and established solutions like CyberTracker.
 
-WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange standards and
-analytical knowledge pipelines.
 
-WAStD data flow as implemented
-
-.. image:: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
-    :target: https://www.lucidchart.com/publicSegments/view/f1a8e7cf-340a-43d0-8a32-887a004d1e21/image.jpeg
-    :alt: WAStD data flow as implemented
-
-Systems architecture
-
-.. image:: https://www.lucidchart.com/publicSegments/view/bfae841d-0548-44ed-b309-b9f65d3ab082/image.png
-    :target: https://www.lucidchart.com/publicSegments/view/bfae841d-0548-44ed-b309-b9f65d3ab082/image.png
-    :alt: Systems architecture
+WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange
+standards and analytical knowledge pipelines.
 
 
 Technical documentation
