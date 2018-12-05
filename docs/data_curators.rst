@@ -316,7 +316,20 @@ Create a `new LoggerEncounter <https://strandings.dpaw.wa.gov.au/admin/observati
 ====================
 Data upload from ODK
 ====================
-This section documents how to ingest data from digital data collection forms.
+To upload data from ODK, a curator hits "Import ODKA" in WAStD's main menu.
+This will automatically read all form definitions published on our own ODK Aggregate
+server, retrieve all not yet downloaded form submissions, then ingest each into WAStD
+using the Django ORM API. This code runs from inside WAStD's application code.
+
+In future, this functionality will be exposed through WAStD's API, so that the data
+ingest can be triggered from a scheduled cron-job.
+
+A better way of ingesting data would be to have a nice writeable API in WAStD (coming soon), and
+to ETL data from ODK-A to WAStD from an outside script.
+Implementing this solution requires some more work on exposing WAStD's
+mildly tricky data model (polymorphic inheritance) through the API (django-restframework).
+
+The remaining section documents how data from digital data collection forms was ingested previously.
 ODK forms are undergoing improvements, and therefore are versioned.
 
 On the ODK Aggregate server, the administrator opens the "Submissions > Filter
