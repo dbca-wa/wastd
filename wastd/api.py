@@ -227,13 +227,19 @@ class UserViewSet(viewsets.ModelViewSet):
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
         from wastd.observations.utils import lowersnake
-
         un = lowersnake(data["name"])
-        logger.debug("[UserViewSet][create_one] username", un)
+
         obj, created = self.model.objects.get_or_create(username=un, defaults=data)
         if not created:
             self.model.objects.filter(username=un).update(**data)
-        return RestResponse(data, status=status.HTTP_200_OK)
+
+        verb = "Created" if created else "Updated"
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        msg = '[API][UserViewSet][create_one] {0} {1}'.format(verb, obj.__str__())
+        content = {"id": obj.id, "msg": msg}
+        logger.info(msg)
+
+        return RestResponse(content, status=st)
 
     def create(self, request):
         """POST: Create or update one or many model instances.

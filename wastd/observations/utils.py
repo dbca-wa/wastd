@@ -260,9 +260,10 @@ def guess_user(un, default_username="FlorianM"):
         usr = usermodel.objects.get(username=username)
         msg = "[guess_user][OK] Exact match for {0} is {1}."
     except ObjectDoesNotExist:
-        usrs = usermodel.objects.filter(username__trigram_similar=username)
+        usrs = usermodel.objects.filter(username__trigram_similar=username,
+                                        name__trigram_similar=un)
         if usrs.count() == 0:
-            usr = usermodel.objects.create(username=un, name=un)
+            usr = usermodel.objects.create(username=username, name=un)
             msg = "[guess_user][CREATED] {0} not found. Created {1}."
         elif usrs.count() == 1:
             usr = usrs[0]
