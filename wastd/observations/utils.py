@@ -239,12 +239,16 @@ def make_user(d):
 def guess_user(un, default_username="FlorianM"):
     """Find exact or fuzzy match of username, or create User.
 
-    Returns the first or only trigram match of username
-    or a new user with username `un`.
+    Returns:
+
+    * An exact username match for lowersnake(un), or
+    * an exact name match for un, or
+    * the best or only trigram match of both username against lowersnake(un) and name against un, or
+    * if no match: a new user account for username lowersnake(un) and name un.
 
     Arguments
 
-    un A username
+    un A name
     default_username The default username if un is None
 
     Returns
@@ -254,25 +258,33 @@ def guess_user(un, default_username="FlorianM"):
     message: The debug message
     """
     usermodel = get_user_model()
+    name = default_username if not un else un
     username = default_username if not un else lowersnake(un)
 
     try:
         usr = usermodel.objects.get(username=username)
-        msg = "[guess_user][OK] Exact match for {0} is {1}."
+        msg = "[guess_user][OK] Exact match for username {username} is {user}."
     except ObjectDoesNotExist:
-        usrs = usermodel.objects.filter(username__trigram_similar=username,
-                                        name__trigram_similar=un)
-        if usrs.count() == 0:
-            usr = usermodel.objects.create(username=username, name=un)
-            msg = "[guess_user][CREATED] {0} not found. Created {1}."
-        elif usrs.count() == 1:
-            usr = usrs[0]
-            msg = "[guess_user][OK] Only match for {0} is {1}."
-        else:
-            usr = usrs[0]
-            msg = "[guess_user][NEEDS QA] Best match for {0} is {1}."
 
-    message = msg.format(username, usr)
+        try:
+            usr = usermodel.objects.get(name=name)
+            msg = "[guess_user][OK] Exact match for name {name} is {user}."
+        except ObjectDoesNotExist:
+
+            usrs = usermodel.objects.filter(username__trigram_similar=username,
+                                            name__trigram_similar=name)
+            if usrs.count() == 0:
+                usr = usermodel.objects.create(username=username, name=name)
+                msg = "[guess_user][CREATED] username {username} and name {name} not found. Created {user}."
+            elif usrs.count() == 1:
+                usr = usrs[0]
+                msg = "[guess_user][OK] Only match for username {username} and name {name} is {user}."
+            else:
+                usr = usrs[0]
+                msg = "[guess_user][NEEDS QA] Best match for username {username} and name {name} is {user}."
+
+    msgdict = {"username": username, "name": name, "user": usr}
+    message = msg.format(**msgdict)
     logger.info(message)
     return {'user': usr, 'message': message}
 
