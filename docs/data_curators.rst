@@ -19,6 +19,53 @@ supported data sources into WAStD.
 .. * for each format, map the fields of the paper form to the online form.
 
 
+.. _itp-tracks-curation:
+Turtle Tracks or Nests
+======================
+If data is not captured via the digital forms, it is still possible to enter data manually.
+
+With data curator access, open the [data curation portal](https://tsc.dbca.wa.gov.au/admin/)
+and [add a new TurtleNestEncounter](https://tsc.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/).
+
+Section "Encounter"
+-------------------
+
+* Area: ignore, will be chosen based on location
+* Surveyed site: ignore, will be chosen based on location
+* Survey: ignore, will be reconstructed on data import from digital forms
+* Observed at (location): this is a hacky way to enter given coordinates in WGS84.
+
+  * Click place marker icon (hover text: "Draw a marker"), then click anywhere on the map.
+  * The text field "Geometry" will show the valid GeoJSON geometry for the chosen location.
+  * Replace those (arbitrary) coordinates with the given coordinates from the datasheet.
+
+* Location accuracy: Select as appropriate, e.g. GPS (10m)
+* Observed on: use calendar and time widgets to select time of observation. Enter local time (AWST = GMT+08).
+* Measured by:
+
+  * Type data collector's name and select from auto-complete.
+  * If name not in auto-complete, click on the "Lookup" icon (magnifying glass symbol) to pop open the list of users.
+  * Search user, or add user as required, then select by clicking on username. This closes the user list popup and populates the form field.
+
+* Recorded by: same as measured by.
+* Data source: Direct entry or paper datasheet.
+* Source ID: leave blank.
+
+Section "Nest"
+--------------
+
+* Enter data as per datasheet, then hit "Save and continue editing".
+* Note that source ID is now set, reflecting the data entered above.
+* Review the "observed at" location and correct if necessary. Hand-written GPS coordinates are often wrong.
+
+Section "Media Attachments"
+---------------------------
+"Add another" and upload the scanned datasheet (as PDF). "Save and continue editing".
+
+Other sections
+--------------
+Add as required. "Save and continue editing".
+
 .. _itp-stranding-curation:
 
 Turtle Strandings
