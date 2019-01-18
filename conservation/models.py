@@ -83,6 +83,42 @@ class FileAttachment(models.Model):
 
 
 @python_2_unicode_compatible
+class Action(models.Model):
+    """A conservation management action."""
+
+    code = models.SlugField(
+        max_length=500,
+        unique=True,
+        verbose_name=_("Code"),
+        help_text=_("A unique, url-safe code."),
+    )
+
+    label = models.CharField(
+        blank=True, null=True,
+        max_length=500,
+        verbose_name=_("Label"),
+        help_text=_("A human-readable, self-explanatory label."),
+    )
+
+    description = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Description"),
+        help_text=_("A comprehensive description."),
+    )
+
+    class Meta:
+        """Class opts."""
+
+        verbose_name = "Conservation Management Action"
+        verbose_name_plural = "Conservation Management Actions"
+        ordering = ["label", ]
+
+    def __str__(self):
+        """The full name."""
+        return self.label
+
+
+@python_2_unicode_compatible
 class ConservationList(models.Model):
     """A Conservation List like BCA, EPBC, RedList."""
 
@@ -1110,6 +1146,15 @@ class Document(models.Model):
         blank=True,
         verbose_name=_("Staff involved in the writing, approval, "
                        "or publication of this document."),
+    )
+
+    intended_management_actions = models.ManyToManyField(
+        Action,
+        blank=True,
+        verbose_name=_("Intended Management Action"),
+        help_text=_("Actions to be undertaken on all occurences "
+                    "of the subject as specified in the document."),
+        related_name="intended_population_actions"
     )
 
     attachments = GenericRelation(FileAttachment, object_id_field="object_id")

@@ -21,6 +21,7 @@ from reversion.admin import VersionAdmin
 from shared.admin import CustomStateLogInline
 from conservation.models import (
     FileAttachment,
+    Action,
     ConservationList,
     ConservationCategory,
     ConservationCriterion,
@@ -64,6 +65,16 @@ class FileAttachmentInline(GenericTabularInline):
     form = FileAttachmentForm
     extra = 1
     classes = ('grp-collapse grp-closed wide extrapretty',)
+
+
+@admin.register(Action)
+class ActionAdmin(VersionAdmin):
+    """Admin for Conservation Management Actions."""
+
+    model = Action
+    prepopulated_fields = {"code": ("label",)}
+    list_display = ("code", "label", "description", )
+    save_on_top = True
 
 
 class ConservationCategoryInline(admin.TabularInline):
@@ -313,19 +324,21 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("title", "source_id", )
 
     # Detail View
-    filter_horizontal = ('taxa', 'communities', 'team')
+    filter_horizontal = ('taxa', 'communities', 'team', 'intended_management_actions')
     # raw_id_fields = ('taxa', 'communities', 'team')
     # autocomplete_lookup_fields = {'fk': ['taxa', 'communities', 'team']}
     form = AjaxDocumentForm
     formfield_overrides = FORMFIELD_OVERRIDES
-    inlines = [CustomStateLogInline,
-               FileAttachmentInline,
-               ]
+    inlines = [CustomStateLogInline, FileAttachmentInline, ]
 
     fieldsets = (
         ('Scope', {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
             'fields': ("document_type", "title", "taxa", "communities", "team",)}
+         ),
+        ('Intervention', {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': ("intended_management_actions", )}
          ),
         ('Approval milestones and log', {
             'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),

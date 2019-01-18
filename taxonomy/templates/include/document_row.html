@@ -63,6 +63,16 @@
 
         </p>
 
+        <p class="card-text">
+        {% for action in document.intended_management_actions.all %}
+        <span class="badge badge-primary" title="Intended management action">
+            <span class="oi oi-task" aria-hidden="true"></span>
+            {{ action }}
+          </span>
+        </span>
+        {% endfor %}
+        </p>
+
         {% for attachment in document.attachments.all %}
         <p class="card-text">
           <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
