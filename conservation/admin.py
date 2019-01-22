@@ -34,6 +34,8 @@ from conservation.models import (
 
 
 S2ATTRS = {'width': 'auto'}
+ManagementActionCategoryForm = s2form(ManagementActionCategory, attrs=S2ATTRS)
+ManagementActionForm = s2form(ManagementAction, attrs=S2ATTRS)
 ConservationCategoryForm = s2form(ConservationCategory, attrs=S2ATTRS)
 ConservationCriterionForm = s2form(ConservationCriterion, attrs=S2ATTRS)
 ConservationListForm = s2form(ConservationList, attrs=S2ATTRS)
@@ -73,6 +75,7 @@ class ManagementActionCategoryAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
 
     model = ManagementActionCategory
+    form = ManagementActionCategoryForm
     prepopulated_fields = {"code": ("label",)}
     list_display = ("code", "label", "description", )
     save_on_top = True
@@ -83,8 +86,37 @@ class ManagementActionAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
 
     model = ManagementAction
+    form = ManagementActionForm
     list_display = ("category", "instructions", )
     save_on_top = True
+    filter_horizontal = ("taxa", "communities", )
+    list_filter = (
+        "category",
+        # ('completion_date', admin.DateFieldListFilter),
+    )
+    search_fields = (
+        "occurrence_area_code",
+        "instructions",
+        # "implementation_notes",
+    )
+
+    formfield_overrides = FORMFIELD_OVERRIDES
+    taxa = AutoCompleteSelectMultipleField(
+        'taxon',
+        required=False,
+        help_text=_("Enter a part of the taxonomic name to search. "
+                    "The search is case-insensitive."))
+    fieldsets = (
+        ('Pertains to', {
+            'classes': ('grp-collapse', 'grp-open', 'wide'),
+            'fields': ("taxa", "communities", "target_area", "occurrence_area_code")
+        }),
+        ('Intent', {
+            'classes': ('grp-collapse', 'grp-open', 'wide'),
+            'fields': ("category", "instructions",)
+        }),
+    )
+    inlines = [FileAttachmentInline, ]
 
 
 class ConservationCategoryInline(admin.TabularInline):
