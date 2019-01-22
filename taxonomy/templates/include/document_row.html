@@ -64,8 +64,8 @@
         </p>
 
         <p class="card-text">
-        {% for action in document.intended_management_actions.all %}
-        <span class="badge badge-primary" title="Intended management action">
+        {% for action in document.management_actions.all %}
+        <span class="badge badge-primary" title="Management action">
             <span class="oi oi-task" aria-hidden="true"></span>
             {{ action }}
           </span>

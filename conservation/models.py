@@ -12,6 +12,7 @@ import logging
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
@@ -83,8 +84,8 @@ class FileAttachment(models.Model):
 
 
 @python_2_unicode_compatible
-class Action(models.Model):
-    """A conservation management action."""
+class ManagementActionCategory(models.Model):
+    """A conservation management action category."""
 
     code = models.SlugField(
         max_length=500,
@@ -109,13 +110,132 @@ class Action(models.Model):
     class Meta:
         """Class opts."""
 
-        verbose_name = "Conservation Management Action"
-        verbose_name_plural = "Conservation Management Actions"
-        ordering = ["label", ]
+        verbose_name = "Management Action Category"
+        verbose_name_plural = "Management Action Categories"
+        ordering = ["code", ]
 
     def __str__(self):
         """The full name."""
         return self.label
+
+
+@python_2_unicode_compatible
+class ManagementAction(models.Model):
+    """A management action is an intended conservation management measure.
+
+    The management action can pertain to:
+
+    * an entire species,
+    * an entire community,
+    * any combination of species and communities
+      (as per multi-species management plans),
+    * a management / recovery / interim recovery plan,
+    * an individual occurrence (fauna site, flora population
+      or subpopulation, TEC pr PEC boundary), or
+    * a subset of occurrences as indicated by a multipolygon.
+
+    The management action intent is specified by:
+
+    * an action category, and
+    * implementation instructions.
+
+    The partial or complete implementation is documented by:
+
+    * instructions,
+    * completion date,
+    * expenditure.
+
+    A management action has an implicit life cycle:
+
+    * new - no implementation notes,
+    * stale - implementation notes, but no changes in current fiscal year,
+    * in progress - implementation notes, changed in current fiscal year,
+    * complete - completion date set.
+
+    Attachments can be added to capture e.g. communication records with stakeholders,
+    reports on implementation outcomes and any other supporting information.
+    """
+
+    # Pertains to
+    taxa = models.ManyToManyField(
+        Taxon,
+        blank=True,
+        verbose_name=_("Taxa"),
+        help_text=_("All taxa this management action pertains to."),
+    )
+
+    communities = models.ManyToManyField(
+        Community,
+        blank=True,
+        verbose_name=_("Communities"),
+        help_text=_("All communities this management action pertains to."),
+    )
+
+    target_area = geo_models.MultiPolygonField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Target Area"),
+        help_text=_("If this action pertains to only some but not all occurrences, "
+                    "indicate the target area(s) here. This management action will "
+                    "be automatically affiliated with all intersecting occurrence areas."),
+    )
+
+    occurrence_area_code = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Occurence area code"),
+        help_text=_("The known code for the occurrence area this "
+                    "management action pertains to, either a Fauna site, "
+                    "a Flora (sub)population ID, or a TEC/PEC boundary name."),
+    )
+
+    # Intent
+    category = models.ForeignKey(
+        ManagementActionCategory,
+        blank=True, null=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Managment action category"),
+        help_text=_("Choose the overarching category."),
+    )
+
+    instructions = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Instructions"),
+        help_text=_("Details on the intended implementation."),
+    )
+
+    # Implementation - activate in TSC Phase III
+    # implementation_notes = models.TextField(
+    #     blank=True, null=True,
+    #     verbose_name=_("Implementation notes"),
+    #     help_text=_("Add notes as appropriate once the implementation is in progress. "
+    #                 "Separate progress from different fiscal years in paragraphs."),
+    # )
+
+    # completion_date = models.DateField(
+    #     blank=True, null=True,
+    #     verbose_name=_("Completion date"),
+    #     help_text=_("Set once the action is completed."),
+    # )
+
+    # expenditure = models.FloatField(
+    #     blank=True, null=True,
+    #     verbose_name=_("Expenditure"),
+    #     help_text=_("Keep a running tally of budget expended for the implementation."),
+    # )
+
+    attachments = GenericRelation(FileAttachment, object_id_field="object_id")
+
+    class Meta:
+        """Class opts."""
+
+        verbose_name = "Management Action"
+        verbose_name_plural = "Management Actions"
+        # ordering = ["", ]
+
+    def __str__(self):
+        """The full name."""
+        return "[{0}] {1}".format(self.category, self.instructions)
 
 
 @python_2_unicode_compatible
@@ -1148,13 +1268,13 @@ class Document(models.Model):
                        "or publication of this document."),
     )
 
-    intended_management_actions = models.ManyToManyField(
-        Action,
+    management_actions = models.ManyToManyField(
+        ManagementAction,
         blank=True,
-        verbose_name=_("Intended Management Action"),
-        help_text=_("Actions to be undertaken on all occurences "
+        verbose_name=_("Management Action"),
+        help_text=_("Management actions to be undertaken on all occurences "
                     "of the subject as specified in the document."),
-        related_name="intended_population_actions"
+        related_name="management_actions_per_document"
     )
 
     attachments = GenericRelation(FileAttachment, object_id_field="object_id")
