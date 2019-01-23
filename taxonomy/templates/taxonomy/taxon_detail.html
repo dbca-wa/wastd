@@ -124,6 +124,15 @@
       <p>{% taxongazettal_rows request.user %}</p>
 
       <hr class="my-4">
+      <h3>Management Actions
+        <small class="float-right">
+          <!-- management_action_add -->
+          {% management_action_add request.user "taxa" block=False show_label_text=False %}
+        </small>
+      </h3>
+      <p>{% managementaction_row request.user %}</p>
+
+      <hr class="my-4">
       <h3>Documents
         <small class="float-right">
           {% document_add request.user "taxa" block=False show_label_text=False %}
@@ -144,6 +153,7 @@
           </a>
           {% endif %}
           {% taxongazettal_add request.user block=False show_label_text=True %}
+          {% management_action_add request.user "taxa" block=False show_label_text=True %}
           {% document_add request.user "taxa" block=False show_label_text=True %}
           {% areaencounter_add request.user "taxon" block=False show_label_text=True %}
       </p>
@@ -184,9 +194,17 @@
 
         <div class="row">
         {% regroup occurrences|dictsort:"name" by name as occ_list %}
+
+        {% if occ_list %}
         {% for site in occ_list %}
             <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
-              <h5 class="card-header">{{ site.grouper }}</h5>
+              <h5 class="card-header">
+                {{ site.grouper }}
+                <small class="float-right">
+                  <!-- management_action_add -->
+                  {% management_action_add request.user "taxa" area=site.grouper block=False show_label_text=False %}
+                </small>
+              </h5>
               <div class="card-body">
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
                 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
@@ -221,11 +239,13 @@
               </div>
             </div>
         {% endfor %}
+        {% else %}
+        {% render_table occurrence_table %}
+        {% endif %}
         </div>
 
 
 
-        {# render_table occurrence_table #}
         </p>
       </div>
     </div>

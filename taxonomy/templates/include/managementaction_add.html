@@ -1,0 +1,8 @@
+<a href="{% url 'admin:conservation_managementaction_add' %}?{{ subject }}={{ original.pk }}{% if document %}&document={{ document.pk }}{% endif %}{% if area %}&occurrence_area_code={{ area }}{% endif %}"
+    title="Propose a new management action."
+    role="button"
+    class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+    target="_">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  {% if show_label_text %}Propose Management Action{% endif %}
+</a>

@@ -82,6 +82,9 @@ class FileAttachment(models.Model):
         """The full name."""
         return "{0} {1}".format(self.title, self.author)
 
+# -----------------------------------------------------------------------------
+# Management Actions
+
 
 @python_2_unicode_compatible
 class ManagementActionCategory(models.Model):
@@ -171,6 +174,14 @@ class ManagementAction(models.Model):
         help_text=_("All communities this management action pertains to."),
     )
 
+    document = models.ForeignKey(
+        "Document",
+        blank=True, null=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Plan document"),
+        help_text=_("The document in which this management action is specified."),
+    )
+
     target_area = geo_models.MultiPolygonField(
         srid=4326,
         blank=True, null=True,
@@ -237,7 +248,15 @@ class ManagementAction(models.Model):
         """The full name."""
         return "[{0}] {1}".format(self.category, self.instructions)
 
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+
+# -----------------------------------------------------------------------------
+# Conservation lists
 @python_2_unicode_compatible
 class ConservationList(models.Model):
     """A Conservation List like BCA, EPBC, RedList."""
@@ -1110,6 +1129,8 @@ def gazettal_caches(sender, instance, *args, **kwargs):
         logger.info("[gazettal_caches] New Gazettal, re-save to populate caches.")
 
 
+# -----------------------------------------------------------------------------
+# Documents
 @python_2_unicode_compatible
 class Document(models.Model):
     """A Document with attachments and approval workflow."""
@@ -1266,15 +1287,6 @@ class Document(models.Model):
         blank=True,
         verbose_name=_("Staff involved in the writing, approval, "
                        "or publication of this document."),
-    )
-
-    management_actions = models.ManyToManyField(
-        ManagementAction,
-        blank=True,
-        verbose_name=_("Management Action"),
-        help_text=_("Management actions to be undertaken on all occurences "
-                    "of the subject as specified in the document."),
-        related_name="management_actions_per_document"
     )
 
     attachments = GenericRelation(FileAttachment, object_id_field="object_id")

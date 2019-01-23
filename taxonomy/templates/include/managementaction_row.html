@@ -1,0 +1,23 @@
+{% load taxonomy_tags %}
+{% for action in original.managementaction_set.all %}
+<div class="row d-block">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          {{ action }}
+          <small class="float-right">
+            {% if is_staff %}
+            <a href="{{ action.absolute_admin_url }}"
+              title="Because you have DBCA Curator privileges, you may edit this Managment Action." target="_">
+              <span class="oi oi-pencil" aria-hidden="true"></span>
+            </a>
+            {% endif %}
+          </small>
+        </h5>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}

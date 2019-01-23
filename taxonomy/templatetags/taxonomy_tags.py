@@ -87,7 +87,8 @@ def document_row(context, user):
     """Render a Document in a card."""
     return {
         "original": context["original"],
-        "is_staff": user.is_staff
+        "is_staff": user.is_staff,
+        "user": user
     }
 
 
@@ -98,6 +99,29 @@ def document_add(context, user, subject, block=True, show_label_text=True):
         "original": context["original"],
         "is_staff": user.is_staff,
         "subject": subject,
+        "block": block,
+        "show_label_text": show_label_text
+    }
+
+
+@register.inclusion_tag('include/managementaction_row.html', takes_context=True)
+def managementaction_row(context, user):
+    """Render a Management Action in a card."""
+    return {
+        "original": context["original"],
+        "is_staff": user.is_staff
+    }
+
+
+@register.inclusion_tag('include/managementaction_add.html', takes_context=True)
+def management_action_add(context, user, subject, document=None, area=None, block=True, show_label_text=True):
+    """Render an "add management action" link for staff."""
+    return {
+        "original": context["original"],
+        "is_staff": user.is_staff,
+        "subject": subject,
+        "document": document,
+        "area": area,
         "block": block,
         "show_label_text": show_label_text
     }

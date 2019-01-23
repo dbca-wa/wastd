@@ -33,7 +33,7 @@ from conservation.models import (
 )
 
 
-S2ATTRS = {'width': 'auto'}
+S2ATTRS = {"width": "auto"}
 ManagementActionCategoryForm = s2form(ManagementActionCategory, attrs=S2ATTRS)
 ManagementActionForm = s2form(ManagementAction, attrs=S2ATTRS)
 ConservationCategoryForm = s2form(ConservationCategory, attrs=S2ATTRS)
@@ -49,15 +49,15 @@ class AjaxDocumentForm(DocumentForm):
     """A document form with a type-ahead widget for Taxa."""
 
     taxa = AutoCompleteSelectMultipleField(
-        'taxon',
+        "taxon",
         required=False,
         help_text=_("Enter a part of the taxonomic name to search. "
                     "The search is case-insensitive."))
     # taxa = HeavySelect2MultipleWidget()
 
 FORMFIELD_OVERRIDES = {
-    models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 80})},
-    models.ManyToManyField: {'widget': HeavySelect2MultipleWidget(data_url='/api/1/taxon/?format=json')}
+    models.TextField: {"widget": Textarea(attrs={"rows": 20, "cols": 80})},
+    models.ManyToManyField: {"widget": HeavySelect2MultipleWidget(data_url="/api/1/taxon/?format=json")}
 }
 
 
@@ -67,7 +67,7 @@ class FileAttachmentInline(GenericTabularInline):
     model = FileAttachment
     form = FileAttachmentForm
     extra = 1
-    classes = ('grp-collapse grp-closed wide extrapretty',)
+    classes = ("grp-collapse grp-closed wide extrapretty",)
 
 
 @admin.register(ManagementActionCategory)
@@ -92,7 +92,8 @@ class ManagementActionAdmin(VersionAdmin):
     filter_horizontal = ("taxa", "communities", )
     list_filter = (
         "category",
-        # ('completion_date', admin.DateFieldListFilter),
+        "document",
+        # ("completion_date", admin.DateFieldListFilter),
     )
     search_fields = (
         "occurrence_area_code",
@@ -102,21 +103,34 @@ class ManagementActionAdmin(VersionAdmin):
 
     formfield_overrides = FORMFIELD_OVERRIDES
     taxa = AutoCompleteSelectMultipleField(
-        'taxon',
+        "taxon",
         required=False,
         help_text=_("Enter a part of the taxonomic name to search. "
                     "The search is case-insensitive."))
     fieldsets = (
-        ('Pertains to', {
-            'classes': ('grp-collapse', 'grp-open', 'wide'),
-            'fields': ("taxa", "communities", "target_area", "occurrence_area_code")
+        ("Pertains to", {
+            "classes": ("grp-collapse", "grp-open", "wide"),
+            "fields": ("taxa", "communities", "document",
+                       "target_area", "occurrence_area_code")
         }),
-        ('Intent', {
-            'classes': ('grp-collapse', 'grp-open', 'wide'),
-            'fields': ("category", "instructions",)
+        ("Intent", {
+            "classes": ("grp-collapse", "grp-open", "wide"),
+            "fields": ("category", "instructions",)
         }),
     )
     inlines = [FileAttachmentInline, ]
+
+
+class ManagementActionInline(admin.TabularInline):
+    """Inline admin for Management Action."""
+
+    extra = 1
+    model = ManagementAction
+    form = ManagementActionForm
+    formfield_overrides = FORMFIELD_OVERRIDES
+    classes = ("grp-collapse grp-closed wide extrapretty",)
+    prepopulated_fields = {"taxa": ("taxa",), "communities": ("communities",), }
+    # TODO: https://stackoverflow.com/questions/5223048/django-set-initial-data-to-formset-with-manytomany
 
 
 class ConservationCategoryInline(admin.TabularInline):
@@ -124,7 +138,7 @@ class ConservationCategoryInline(admin.TabularInline):
 
     extra = 1
     model = ConservationCategory
-    classes = ('grp-collapse grp-closed wide extrapretty',)
+    classes = ("grp-collapse grp-closed wide extrapretty",)
     form = ConservationCategoryForm
     # formfield_overrides = FORMFIELD_OVERRIDES
 
@@ -134,7 +148,7 @@ class ConservationCriterionInline(admin.TabularInline):
 
     extra = 1
     model = ConservationCriterion
-    classes = ('grp-collapse grp-closed wide extrapretty',)
+    classes = ("grp-collapse grp-closed wide extrapretty",)
     form = ConservationCriterionForm
     # formfield_overrides = FORMFIELD_OVERRIDES
 
@@ -144,7 +158,7 @@ class ConservationListAdmin(VersionAdmin):
     """Admin for ConservationList."""
 
     save_on_top = True
-    date_hierarchy = 'active_to'
+    date_hierarchy = "active_to"
 
     # List View
     list_display = (
@@ -168,10 +182,10 @@ class ConservationListAdmin(VersionAdmin):
                    "approval_level",)
     search_fields = ("code", "label", "description", )
     fieldsets = (
-        ('Details', {'fields': ("code", "label", "description",)}),
-        ('Scope', {
-            'classes': ('grp-collapse', 'grp-closed', 'wide'),
-            'fields': ("active_from", "active_to",
+        ("Details", {"fields": ("code", "label", "description",)}),
+        ("Scope", {
+            "classes": ("grp-collapse", "grp-closed", "wide"),
+            "fields": ("active_from", "active_to",
                        "scope_wa", "scope_cmw", "scope_intl",
                        "scope_species", "scope_communities", "approval_level",)
 
@@ -188,10 +202,10 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for TaxonGazettal."""
 
     save_on_top = True
-    date_hierarchy = 'effective_from'
+    date_hierarchy = "effective_from"
 
     # FSM Transitions
-    fsm_field = ['status', ]
+    fsm_field = ["status", ]
 
     # List View
     list_display = (
@@ -214,35 +228,35 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "category",
         "scope",
         "status",
-        ('proposed_on', admin.DateFieldListFilter),
-        ('effective_from', admin.DateFieldListFilter),
-        ('effective_to', admin.DateFieldListFilter),
-        ('last_reviewed_on', admin.DateFieldListFilter),
-        ('review_due', admin.DateFieldListFilter),
+        ("proposed_on", admin.DateFieldListFilter),
+        ("effective_from", admin.DateFieldListFilter),
+        ("effective_to", admin.DateFieldListFilter),
+        ("last_reviewed_on", admin.DateFieldListFilter),
+        ("review_due", admin.DateFieldListFilter),
     )
 
     search_fields = ("comments", )
 
     # Detail View layout and widgets
-    filter_horizontal = ('category', 'criteria',)
-    raw_id_fields = ('taxon', )
-    autocomplete_lookup_fields = {'fk': ['taxon', ]}
+    filter_horizontal = ("category", "criteria",)
+    raw_id_fields = ("taxon", )
+    autocomplete_lookup_fields = {"fk": ["taxon", ]}
     form = TaxonGazettalForm
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [CustomStateLogInline, FileAttachmentInline]
 
     fieldsets = (
-        ('Conservation Status', {
-            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("taxon", "scope", "category", "criteria",)}
+        ("Conservation Status", {
+            "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
+            "fields": ("taxon", "scope", "category", "criteria",)}
          ),
-        ('Data lineage', {
-            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("source", "source_id", )}
+        ("Data lineage", {
+            "classes": ("grp-collapse", "grp-closed", "wide", "extrapretty"),
+            "fields": ("source", "source_id", )}
          ),
-        ('Approval milestones and log', {
-            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("proposed_on", "effective_from", "effective_to", "last_reviewed_on", "review_due", "comments",)}
+        ("Approval milestones and log", {
+            "classes": ("grp-collapse", "grp-closed", "wide", "extrapretty"),
+            "fields": ("proposed_on", "effective_from", "effective_to", "last_reviewed_on", "review_due", "comments",)}
          ),
     )
 
@@ -250,11 +264,11 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         """Restrict available cat and crit to lists relevant to species."""
         if db_field.name == "category":
             kwargs["queryset"] = ConservationCategory.objects.filter(
-                conservation_list__scope_species=True).order_by('conservation_list__code', 'rank')
+                conservation_list__scope_species=True).order_by("conservation_list__code", "rank")
 
         if db_field.name == "criteria":
             kwargs["queryset"] = ConservationCriterion.objects.filter(
-                conservation_list__scope_species=True).order_by('conservation_list__code', 'rank')
+                conservation_list__scope_species=True).order_by("conservation_list__code", "rank")
         return super(TaxonGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
@@ -263,10 +277,10 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for CommunityGazettal."""
 
     save_on_top = True
-    date_hierarchy = 'effective_from'
+    date_hierarchy = "effective_from"
 
     # FSM Transitions
-    fsm_field = ['status', ]
+    fsm_field = ["status", ]
 
     # List View
     list_display = (
@@ -285,33 +299,33 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         "category",
         "scope",
         "status",
-        ('proposed_on', admin.DateFieldListFilter),
-        ('effective_from', admin.DateFieldListFilter),
-        ('effective_to', admin.DateFieldListFilter),
-        ('review_due', admin.DateFieldListFilter),
+        ("proposed_on", admin.DateFieldListFilter),
+        ("effective_from", admin.DateFieldListFilter),
+        ("effective_to", admin.DateFieldListFilter),
+        ("review_due", admin.DateFieldListFilter),
     )
     search_fields = ("comments", )
 
     # Detail View
-    filter_horizontal = ('category', 'criteria',)
-    raw_id_fields = ('community', )
-    autocomplete_lookup_fields = {'fk': ['community', ]}
+    filter_horizontal = ("category", "criteria",)
+    raw_id_fields = ("community", )
+    autocomplete_lookup_fields = {"fk": ["community", ]}
     form = CommunityGazettalForm
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [CustomStateLogInline, FileAttachmentInline]
 
     fieldsets = (
-        ('Conservation Status', {
-            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("community", "scope", "category", "criteria",)}
+        ("Conservation Status", {
+            "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
+            "fields": ("community", "scope", "category", "criteria",)}
          ),
-        ('Data lineage', {
-            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("source", "source_id", )}
+        ("Data lineage", {
+            "classes": ("grp-collapse", "grp-closed", "wide", "extrapretty"),
+            "fields": ("source", "source_id", )}
          ),
-        ('Approval milestones and log', {
-            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("proposed_on", "effective_from", "effective_to", "last_reviewed_on", "review_due", "comments",)}
+        ("Approval milestones and log", {
+            "classes": ("grp-collapse", "grp-closed", "wide", "extrapretty"),
+            "fields": ("proposed_on", "effective_from", "effective_to", "last_reviewed_on", "review_due", "comments",)}
          ),
     )
 
@@ -319,11 +333,11 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         """Restrict available cat and crit to lists relevant to species."""
         if db_field.name == "category":
             kwargs["queryset"] = ConservationCategory.objects.filter(
-                conservation_list__scope_communities=True).order_by('conservation_list__code', 'rank')
+                conservation_list__scope_communities=True).order_by("conservation_list__code", "rank")
 
         if db_field.name == "criteria":
             kwargs["queryset"] = ConservationCriterion.objects.filter(
-                conservation_list__scope_communities=True).order_by('conservation_list__code', 'rank')
+                conservation_list__scope_communities=True).order_by("conservation_list__code", "rank")
         return super(CommunityGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
@@ -332,10 +346,10 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for Document."""
 
     save_on_top = True
-    date_hierarchy = 'effective_from'
+    date_hierarchy = "effective_from"
 
     # FSM Transitions
-    fsm_field = ['status', ]
+    fsm_field = ["status", ]
 
     # List View
     list_display = (
@@ -356,35 +370,34 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
         "source",
         "document_type",
         "status",
-        ('effective_from', admin.DateFieldListFilter),
-        ('effective_to', admin.DateFieldListFilter),
-        ('last_reviewed_on', admin.DateFieldListFilter),
-        ('review_due', admin.DateFieldListFilter),
-        ('effective_from_commonwealth', admin.DateFieldListFilter),
-        ('effective_to_commonwealth', admin.DateFieldListFilter),
+        ("effective_from", admin.DateFieldListFilter),
+        ("effective_to", admin.DateFieldListFilter),
+        ("last_reviewed_on", admin.DateFieldListFilter),
+        ("review_due", admin.DateFieldListFilter),
+        ("effective_from_commonwealth", admin.DateFieldListFilter),
+        ("effective_to_commonwealth", admin.DateFieldListFilter),
     )
     search_fields = ("title", "source_id", )
 
     # Detail View
-    filter_horizontal = ('taxa', 'communities', 'team', 'management_actions')
-    # raw_id_fields = ('taxa', 'communities', 'team')
-    # autocomplete_lookup_fields = {'fk': ['taxa', 'communities', 'team']}
+    filter_horizontal = ("taxa", "communities", "team",)
+    # raw_id_fields = ("taxa", "communities", "team")
+    # autocomplete_lookup_fields = {"fk": ["taxa", "communities", "team"]}
     form = AjaxDocumentForm
     formfield_overrides = FORMFIELD_OVERRIDES
-    inlines = [CustomStateLogInline, FileAttachmentInline, ]
+    inlines = [
+        # ManagementActionInline, # throws admin.E028
+        CustomStateLogInline,
+        FileAttachmentInline, ]
 
     fieldsets = (
-        ('Scope', {
-            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("document_type", "title", "taxa", "communities", "team",)}
+        ("Scope", {
+            "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
+            "fields": ("document_type", "title", "taxa", "communities", "team",)}
          ),
-        ('Intervention', {
-            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("management_actions", )}
-         ),
-        ('Approval milestones and log', {
-            'classes': ('grp-collapse', 'grp-closed', 'wide', 'extrapretty'),
-            'fields': ("effective_from", "effective_to",
+        ("Approval milestones and log", {
+            "classes": ("grp-collapse", "grp-closed", "wide", "extrapretty"),
+            "fields": ("effective_from", "effective_to",
                        "effective_from_commonwealth", "effective_to_commonwealth",
                        "last_reviewed_on", "review_due", "comments")}
          ),
