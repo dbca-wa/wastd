@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals
 # import floppyforms as ff
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.contrib.gis.db import models as geo_models
 from django.forms import Textarea
 from django.db import models
 
@@ -16,6 +17,7 @@ from ajax_select.fields import (  # AutoCompleteSelectField,
     AutoCompleteSelectMultipleField)
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
+from leaflet.forms.widgets import LeafletWidget
 
 from reversion.admin import VersionAdmin
 from shared.admin import CustomStateLogInline
@@ -55,9 +57,20 @@ class AjaxDocumentForm(DocumentForm):
                     "The search is case-insensitive."))
     # taxa = HeavySelect2MultipleWidget()
 
+leaflet_settings = {
+    'widget': LeafletWidget(attrs={
+        'map_height': '400px',
+        'map_width': '100%',
+        'display_raw': 'true',
+        'map_srid': 4326, })}
+
 FORMFIELD_OVERRIDES = {
     models.TextField: {"widget": Textarea(attrs={"rows": 20, "cols": 80})},
-    models.ManyToManyField: {"widget": HeavySelect2MultipleWidget(data_url="/api/1/taxon/?format=json")}
+    models.ManyToManyField: {"widget": HeavySelect2MultipleWidget(data_url="/api/1/taxon/?format=json")},
+    geo_models.PointField: leaflet_settings,
+    geo_models.LineStringField: leaflet_settings,
+    geo_models.MultiPolygonField: leaflet_settings,
+
 }
 
 
@@ -106,21 +119,22 @@ class ManagementActionAdmin(VersionAdmin):
     )
 
     save_on_top = True
-    filter_horizontal = ("taxa", "communities", )
+    # filter_horizontal = ("communities", )
     formfield_overrides = FORMFIELD_OVERRIDES
+
     taxa = AutoCompleteSelectMultipleField(
         "taxon",
         required=False,
         help_text=_("Enter a part of the taxonomic name to search. "
                     "The search is case-insensitive."))
     fieldsets = (
-        ("Pertains to", {
-            "classes": ("grp-collapse", "grp-open", "wide"),
+        ("Affiliation", {
+            "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
             "fields": ("taxa", "communities", "document",
                        "target_area", "occurrence_area_code")
         }),
         ("Intent", {
-            "classes": ("grp-collapse", "grp-open", "wide"),
+            "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
             "fields": ("category", "instructions",)
         }),
     )
@@ -145,7 +159,7 @@ class ManagementActionInline(admin.TabularInline):
     form = ManagementActionForm
     formfield_overrides = FORMFIELD_OVERRIDES
     classes = ("grp-collapse grp-closed wide extrapretty",)
-    prepopulated_fields = {"taxa": ("taxa",), "communities": ("communities",), }
+    # prepopulated_fields = {"taxa": ("taxa",), "communities": ("communities",), }
     # TODO: https://stackoverflow.com/questions/5223048/django-set-initial-data-to-formset-with-manytomany
 
 

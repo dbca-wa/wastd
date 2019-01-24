@@ -213,8 +213,9 @@
                 <!-- Occurrences -->
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
                 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
-                    <h6 class="card-header bg-{{ occ.status|tb_status_icon }}">
-                      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span> {{ occ.encountered_on }}<br/>
+                    <h6 class="card-header">
+                      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span> {{ occ.encountered_on }}
+                      <span class="badge badge-{{ occ.status|tb_status_icon }} pull-right" title="QA status">{{ occ.get_status_display }}</span>
                     </h6>
 
                   <div class="card-body">
@@ -230,10 +231,10 @@
                   <div class="card-footer">
                     {% if request.user.is_staff %}
                       <a href="{{ occ.absolute_admin_url }}"
-                      class="btn btn-block btn-{{ occ.status|tb_status_icon }} btn-sm"
-                      target="_" title="Edit Occurrence in new tab">
+                      class="btn btn-block btn-primary btn-sm"
+                      target="_" title="Edit occurrence in new tab">
                       <i class="fa fa-fw fa-pencil"></i>
-                      {{ occ.get_status_display }} Occurrence
+                      Edit occurrence
                     </a>
                     {% endif %}
                   </div><!-- /.footer -->
