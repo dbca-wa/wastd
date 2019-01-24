@@ -104,12 +104,21 @@ def document_add(context, user, subject, block=True, show_label_text=True):
     }
 
 
-@register.inclusion_tag('include/managementaction_row.html', takes_context=True)
-def managementaction_row(context, user):
+@register.inclusion_tag('include/managementaction_rows.html', takes_context=False)
+def managementaction_rows(user, actions, area=None):
+    """Render a Management Action in a row."""
+    return {
+        "is_staff": user.is_staff,
+        "actions": actions.filter(occurrence_area_code=area) if area else actions
+    }
+
+
+@register.inclusion_tag('include/managementaction_cards.html', takes_context=False)
+def managementaction_cards(user, actions, area=None):
     """Render a Management Action in a card."""
     return {
-        "original": context["original"],
-        "is_staff": user.is_staff
+        "is_staff": user.is_staff,
+        "actions": actions.filter(occurrence_area_code=area) if area else actions
     }
 
 

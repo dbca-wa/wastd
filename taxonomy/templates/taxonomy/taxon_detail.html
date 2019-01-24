@@ -130,7 +130,7 @@
           {% management_action_add request.user "taxa" block=False show_label_text=False %}
         </small>
       </h3>
-      <p>{% managementaction_row request.user %}</p>
+      <p>{% managementaction_rows request.user  management_actions_general %}</p>
 
       <hr class="my-4">
       <h3>Documents
@@ -201,14 +201,19 @@
               <h5 class="card-header">
                 {{ site.grouper }}
                 <small class="float-right">
-                  <!-- management_action_add -->
                   {% management_action_add request.user "taxa" area=site.grouper block=False show_label_text=False %}
                 </small>
               </h5>
               <div class="card-body">
+                <!-- Management actions for area {{ site.grouper }} -->
+                {% managementaction_cards request.user  management_actions_area area=site.grouper %}
+
+                <hr class="my-4">
+
+                <!-- Occurrences -->
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
                 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
-                    <h6 class="card-header">
+                    <h6 class="card-header bg-{{ occ.status|tb_status_icon }}">
                       <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span> {{ occ.encountered_on }}<br/>
                     </h6>
 

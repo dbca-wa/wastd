@@ -99,11 +99,15 @@ class TaxonDetailView(DetailView):
     def get_context_data(self, **kwargs):
         """Custom context."""
         context = super(TaxonDetailView, self).get_context_data(**kwargs)
-        occ = self.get_object().taxon_occurrences
+        obj = self.get_object()
+        occ = obj.taxon_occurrences
+        ma = obj.managementaction_set.all()
         context['occurrence_table'] = TaxonAreaEncounterTable(occ.all()[:100])
         context['occurrences'] = occ.all()[:1000]
         context['occurrence_shown'] = occ.all()[:100].count()
         context['occurrence_total'] = occ.count()
+        context['management_actions_general'] = ma.filter(document=None, occurrence_area_code=None)
+        context['management_actions_area'] = ma.exclude(occurrence_area_code=None)
         return context
 
 
@@ -116,9 +120,13 @@ class CommunityDetailView(DetailView):
     def get_context_data(self, **kwargs):
         """Custom context."""
         context = super(CommunityDetailView, self).get_context_data(**kwargs)
-        occ = self.get_object().community_occurrences
+        obj = self.get_object()
+        occ = obj.community_occurrences
+        ma = obj.managementaction_set.all()
         context['occurrence_table'] = CommunityAreaEncounterTable(occ.all()[:100])
         context['occurrences'] = occ.all()[:1000]
         context['occurrence_shown'] = occ.all()[:100].count()
         context['occurrence_total'] = occ.count()
+        context['management_actions_general'] = ma.filter(document=None, occurrence_area_code=None)
+        context['management_actions_area'] = ma.exclude(occurrence_area_code=None)
         return context

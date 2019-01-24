@@ -54,9 +54,9 @@
       {% endif %}
       </h1>
 
-    <h3 class="card-subtitle mb-2 text-muted">
-      {{ original.name }}
-    </h3>
+      <h3 class="card-subtitle mb-2 text-muted">
+        {{ original.name }}
+      </h3>
 
       <hr class="my-4">
       <h3>Conservation Listings
@@ -67,9 +67,18 @@
       <p>{% communitygazettal_rows request.user %}</p>
 
       <hr class="my-4">
+      <h3>Management Actions
+        <small class="float-right">
+          <!-- management_action_add -->
+          {% management_action_add request.user "communities" block=False show_label_text=False %}
+        </small>
+      </h3>
+      <p>{% managementaction_rows request.user  management_actions_general %}</p>
+
+      <hr class="my-4">
       <h3>Documents
         <small class="float-right">
-          {% document_add request.user "taxa" block=False show_label_text=False %}
+          {% document_add request.user "communities" block=False show_label_text=False %}
         </small>
       </h3>
       <p>{% document_row request.user %}</p>
@@ -87,7 +96,8 @@
           </a>
           {% endif %}
           {% communitygazettal_add request.user block=False show_label_text=True %}
-          {% document_add request.user "taxa" block=False show_label_text=True %}
+          {% management_action_add request.user "communities" block=False show_label_text=True %}
+          {% document_add request.user "communities" block=False show_label_text=True %}
           {% areaencounter_add request.user "community" block=False show_label_text=True %}
       </p>
 
@@ -129,12 +139,26 @@
         {% regroup occurrences|dictsort:"name" by name as occ_list %}
         {% for site in occ_list %}
             <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
-              <h5 class="card-header">{{ site.grouper }}</h5>
+              <h5 class="card-header">
+                {{ site.grouper }}
+                <small class="float-right">
+                  {% management_action_add request.user "communities" area=site.grouper block=False show_label_text=False %}
+                </small>
+              </h5>
               <div class="card-body">
+                <!-- Management actions for area {{ site.grouper }} -->
+                {% managementaction_cards request.user  management_actions_area area=site.grouper %}
+
+                <hr class="my-4">
+
+                <!-- Occurrences -->
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
+                <!-- TODO refactor into occurrence_card -->
                 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
                     <h6 class="card-header">
-                      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span> {{ occ.encountered_on }}<br/>
+                      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span> {{ occ.encountered_on }}
+                      <span class="badge badge-{{ occ.status|tb_status_icon }} pull-right" title="QA status">{{ occ.get_status_display }}</span>
+
                     </h6>
 
                   <div class="card-body">
@@ -150,10 +174,10 @@
                   <div class="card-footer">
                     {% if request.user.is_staff %}
                       <a href="{{ occ.absolute_admin_url }}"
-                      class="btn btn-block btn-{{ occ.status|tb_status_icon }} btn-sm"
+                      class="btn btn-block btn-primary btn-sm"
                       target="_" title="Edit Occurrence in new tab">
                       <i class="fa fa-fw fa-pencil"></i>
-                      {{ occ.get_status_display }} Occurrence
+                      Edit Occurrence
                     </a>
                     {% endif %}
                   </div><!-- /.footer -->
@@ -165,9 +189,6 @@
             </div>
         {% endfor %}
         </div>
-
-
-
         {# render_table occurrence_table #}
         </p>
       </div>

@@ -1,0 +1,18 @@
+{% for action in actions %}
+<div class="row d-block">
+  <div class="col-12">
+    <span class="badge badge-success" title="Management action">
+      <span class="oi oi-task" aria-hidden="true"></span> {{ action.category }}
+    </span>
+    {{ action.instructions }}
+    <small class="float-right">
+      {% if is_staff %}
+      <a href="{{ action.absolute_admin_url }}"
+        title="Because you have DBCA Curator privileges, you may edit this managment action." target="_">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+      </a>
+      {% endif %}
+    </small>
+  </div>
+</div>
+{% endfor %}

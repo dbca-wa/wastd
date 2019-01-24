@@ -8,7 +8,7 @@
           <span class="badge badge-warning" title="Document type">
             {{ document.get_document_type_display }}
           </span>
-           <span class="badge badge-success" title="Approval status">
+          <span class="badge badge-success" title="Approval status">
             {{ document.get_status_display }}
           </span>
           {{ document.title }}
@@ -64,16 +64,10 @@
         </p>
 
         <p class="card-text">
-        {% for action in document.managementaction_set.all %}
-        <span class="badge badge-primary" title="Management action">
-            <span class="oi oi-task" aria-hidden="true"></span>
-            {{ action }}
-          </span>
-        </span>
-        {% endfor %}
-        <small class="float-right">
-          {% management_action_add user "taxa" document=document block=False show_label_text=False %}
-        </small>
+          {% managementaction_rows user document.managementaction_set.all %}
+          <small class="float-right">
+            {% management_action_add user "taxa" document=document block=False show_label_text=False %}
+          </small>
         </p>
 
         {% for attachment in document.attachments.all %}

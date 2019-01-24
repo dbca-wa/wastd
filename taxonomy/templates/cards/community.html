@@ -28,6 +28,7 @@
       View Details
     </a>
     {% communitygazettal_add request.user %}
+    {% management_action_add request.user "communities" %}
     {% document_add request.user "communities" %}
     {% areaencounter_add request.user "community" %}
   </div>
