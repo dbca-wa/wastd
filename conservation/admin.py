@@ -87,9 +87,13 @@ class ManagementActionAdmin(VersionAdmin):
 
     model = ManagementAction
     form = ManagementActionForm
-    list_display = ("category", "instructions", )
-    save_on_top = True
-    filter_horizontal = ("taxa", "communities", )
+    list_display = (
+        "taxon_list",
+        "com_list",
+        "document",
+        "occurrence_area_code",
+        "category",
+        "instructions")
     list_filter = (
         "category",
         "document",
@@ -101,6 +105,8 @@ class ManagementActionAdmin(VersionAdmin):
         # "implementation_notes",
     )
 
+    save_on_top = True
+    filter_horizontal = ("taxa", "communities", )
     formfield_overrides = FORMFIELD_OVERRIDES
     taxa = AutoCompleteSelectMultipleField(
         "taxon",
@@ -119,6 +125,16 @@ class ManagementActionAdmin(VersionAdmin):
         }),
     )
     inlines = [FileAttachmentInline, ]
+
+    def taxon_list(self, obj):
+        """Make M2M taxa readable."""
+        return ", ".join([taxon.__str__() for taxon in obj.taxa.all()])
+    taxon_list.short_description = 'Species'
+
+    def com_list(self, obj):
+        """Make M2M taxa readable."""
+        return ", ".join([com.__str__() for com in obj.communities.all()])
+    com_list.short_description = 'Communities'
 
 
 class ManagementActionInline(admin.TabularInline):
