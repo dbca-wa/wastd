@@ -23,8 +23,8 @@ from reversion.admin import VersionAdmin
 from shared.admin import CustomStateLogInline
 from conservation.models import (
     FileAttachment,
-    ManagementActionCategory,
-    ManagementAction,
+    ConservationActionCategory,
+    ConservationAction,
     ConservationList,
     ConservationCategory,
     ConservationCriterion,
@@ -36,8 +36,8 @@ from conservation.models import (
 
 
 S2ATTRS = {"width": "auto"}
-ManagementActionCategoryForm = s2form(ManagementActionCategory, attrs=S2ATTRS)
-ManagementActionForm = s2form(ManagementAction, attrs=S2ATTRS)
+ConservationActionCategoryForm = s2form(ConservationActionCategory, attrs=S2ATTRS)
+ConservationActionForm = s2form(ConservationAction, attrs=S2ATTRS)
 ConservationCategoryForm = s2form(ConservationCategory, attrs=S2ATTRS)
 ConservationCriterionForm = s2form(ConservationCriterion, attrs=S2ATTRS)
 ConservationListForm = s2form(ConservationList, attrs=S2ATTRS)
@@ -83,39 +83,45 @@ class FileAttachmentInline(GenericTabularInline):
     classes = ("grp-collapse grp-closed wide extrapretty",)
 
 
-@admin.register(ManagementActionCategory)
-class ManagementActionCategoryAdmin(VersionAdmin):
+@admin.register(ConservationActionCategory)
+class ConservationActionCategoryAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
 
-    model = ManagementActionCategory
-    form = ManagementActionCategoryForm
+    model = ConservationActionCategory
+    form = ConservationActionCategoryForm
     prepopulated_fields = {"code": ("label",)}
     list_display = ("code", "label", "description", )
     save_on_top = True
 
 
-@admin.register(ManagementAction)
-class ManagementActionAdmin(VersionAdmin):
+@admin.register(ConservationAction)
+class ConservationActionAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
 
-    model = ManagementAction
-    form = ManagementActionForm
+    model = ConservationAction
+    form = ConservationActionForm
     list_display = (
+        "pk",
         "taxon_list",
         "com_list",
         "document",
         "occurrence_area_code",
         "category",
-        "instructions")
+        "instructions",
+        "implementation_notes",
+        "completion_date",
+        "expenditure",
+        "status")
     list_filter = (
+        "status",
         "category",
         "document",
-        # ("completion_date", admin.DateFieldListFilter),
+        ("completion_date", admin.DateFieldListFilter),
     )
     search_fields = (
         "occurrence_area_code",
         "instructions",
-        # "implementation_notes",
+        "implementation_notes",
     )
 
     save_on_top = True
@@ -137,6 +143,11 @@ class ManagementActionAdmin(VersionAdmin):
             "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
             "fields": ("category", "instructions",)
         }),
+        ("Implementation", {
+            "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
+            "fields": ("implementation_notes", "completion_date", "expenditure")
+        }),
+
     )
     inlines = [FileAttachmentInline, ]
 
@@ -150,13 +161,18 @@ class ManagementActionAdmin(VersionAdmin):
         return ", ".join([com.__str__() for com in obj.communities.all()])
     com_list.short_description = 'Communities'
 
+    def status(self, obj):
+        """Make status readable."""
+        return obj.status
+    status.short_description = 'Progress'
 
-class ManagementActionInline(admin.TabularInline):
+
+class ConservationActionInline(admin.TabularInline):
     """Inline admin for Management Action."""
 
     extra = 1
-    model = ManagementAction
-    form = ManagementActionForm
+    model = ConservationAction
+    form = ConservationActionForm
     formfield_overrides = FORMFIELD_OVERRIDES
     classes = ("grp-collapse grp-closed wide extrapretty",)
     # prepopulated_fields = {"taxa": ("taxa",), "communities": ("communities",), }
@@ -416,7 +432,7 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     form = AjaxDocumentForm
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [
-        # ManagementActionInline, # throws admin.E028
+        # ConservationActionInline, # throws admin.E028
         CustomStateLogInline,
         FileAttachmentInline, ]
 

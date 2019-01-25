@@ -87,7 +87,7 @@ class FileAttachment(models.Model):
 
 
 @python_2_unicode_compatible
-class ManagementActionCategory(models.Model):
+class ConservationActionCategory(models.Model):
     """A conservation management action category."""
 
     code = models.SlugField(
@@ -113,8 +113,8 @@ class ManagementActionCategory(models.Model):
     class Meta:
         """Class opts."""
 
-        verbose_name = "Management Action Category"
-        verbose_name_plural = "Management Action Categories"
+        verbose_name = "Conservation Action Category"
+        verbose_name_plural = "Conservation Action Categories"
         ordering = ["code", ]
 
     def __str__(self):
@@ -123,10 +123,10 @@ class ManagementActionCategory(models.Model):
 
 
 @python_2_unicode_compatible
-class ManagementAction(models.Model):
-    """A management action is an intended conservation management measure.
+class ConservationAction(models.Model):
+    """A conservation action is an intended conservation management measure.
 
-    The management action can pertain to:
+    The conservation action can pertain to:
 
     * an entire species,
     * an entire community,
@@ -137,7 +137,7 @@ class ManagementAction(models.Model):
       or subpopulation, TEC pr PEC boundary), or
     * a subset of occurrences as indicated by a multipolygon.
 
-    The management action intent is specified by:
+    The conservation action intent is specified by:
 
     * an action category, and
     * implementation instructions.
@@ -148,7 +148,7 @@ class ManagementAction(models.Model):
     * completion date,
     * expenditure.
 
-    A management action has an implicit life cycle:
+    A conservation action has an implicit life cycle:
 
     * new - no implementation notes,
     * stale - implementation notes, but no changes in current fiscal year,
@@ -158,6 +158,18 @@ class ManagementAction(models.Model):
     Attachments can be added to capture e.g. communication records with stakeholders,
     reports on implementation outcomes and any other supporting information.
     """
+
+    STATUS_NEW = 10
+    STATUS_STALE = 20
+    STATUS_INPROGRESS = 30
+    STATUS_COMPLETED = 40
+
+    STATUS_CHOICES = (
+        (STATUS_NEW, "New"),
+        (STATUS_STALE, "Stale"),
+        (STATUS_INPROGRESS, "In progress"),
+        (STATUS_COMPLETED, "Completed"),
+    )
 
     # Pertains to
     taxa = models.ManyToManyField(
@@ -202,7 +214,7 @@ class ManagementAction(models.Model):
 
     # Intent
     category = models.ForeignKey(
-        ManagementActionCategory,
+        ConservationActionCategory,
         blank=True, null=True,
         on_delete=models.SET_NULL,
         verbose_name=_("Managment action category"),
@@ -215,33 +227,39 @@ class ManagementAction(models.Model):
         help_text=_("Details on the intended implementation."),
     )
 
-    # Implementation - activate in TSC Phase III
-    # implementation_notes = models.TextField(
-    #     blank=True, null=True,
-    #     verbose_name=_("Implementation notes"),
-    #     help_text=_("Add notes as appropriate once the implementation is in progress. "
-    #                 "Separate progress from different fiscal years in paragraphs."),
-    # )
+    # Implementation
+    implementation_notes = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Implementation notes"),
+        help_text=_("Add notes as appropriate once the implementation is in progress. "
+                    "Separate progress from different fiscal years in paragraphs."),
+    )
 
-    # completion_date = models.DateField(
-    #     blank=True, null=True,
-    #     verbose_name=_("Completion date"),
-    #     help_text=_("Set once the action is completed."),
-    # )
+    completion_date = models.DateField(
+        blank=True, null=True,
+        verbose_name=_("Completion date"),
+        help_text=_("Set once the action is completed."),
+    )
 
-    # expenditure = models.FloatField(
-    #     blank=True, null=True,
-    #     verbose_name=_("Expenditure"),
-    #     help_text=_("Keep a running tally of budget expended for the implementation."),
-    # )
+    expenditure = models.FloatField(
+        blank=True, null=True,
+        verbose_name=_("Expenditure"),
+        help_text=_("Keep a running tally of budget expended for the implementation."),
+    )
+
+    status = models.PositiveIntegerField(
+        verbose_name=_("Status"),
+        default=STATUS_NEW,
+        choices=STATUS_CHOICES,
+        help_text=_("Completion status."), )
 
     attachments = GenericRelation(FileAttachment, object_id_field="object_id")
 
     class Meta:
         """Class opts."""
 
-        verbose_name = "Management Action"
-        verbose_name_plural = "Management Actions"
+        verbose_name = "Conservation Action"
+        verbose_name_plural = "Conservation Actions"
         # ordering = ["", ]
 
     def __str__(self):
@@ -254,9 +272,26 @@ class ManagementAction(models.Model):
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    def get_status(self):
+        """Return a string indicating the progress status."""
+        if not self.implementation_notes:
+            return "new"
+        elif self.implementation_notes and not self.completion_date:
+            return "in progress"
+        elif self.completion_date:
+            return "completed"
+
+
+@receiver(pre_save, sender=ConservationAction)
+def update_status_cache(sender, instance, *args, **kwargs):
+    """ConservationAction: Cache expensive lookups."""
+    logger.info("[ConservationAction.update_status_cache] Deriving completion status.")
+    instance.status = instance.get_status()
 
 # -----------------------------------------------------------------------------
 # Conservation lists
+
+
 @python_2_unicode_compatible
 class ConservationList(models.Model):
     """A Conservation List like BCA, EPBC, RedList."""

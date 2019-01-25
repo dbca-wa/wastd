@@ -1,20 +1,20 @@
 {% for action in actions %}
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
   <h6 class="card-header">
-    <span class="oi oi-task" title="Management action category" aria-hidden="true"></span> {{ action.category }}
+    <span class="oi oi-task" title="Conservation action category" aria-hidden="true"></span> {{ action.category }}
   </h6><!-- /.card-header -->
 
   <div class="card-body">
-    <p><span class="oi oi-comment-square" title="Intended management action" aria-hidden="true"></span> {{ action.instructions }}</p>
+    <p><span class="oi oi-comment-square" title="Intended conservation action" aria-hidden="true"></span> {{ action.instructions }}</p>
   </div><!-- /.card-body -->
 
   <div class="card-footer">
     {% if is_staff %}
       <a href="{{ action.absolute_admin_url }}"
       class="btn btn-block btn-primary btn-sm"
-      target="_" title="Edit management action in new tab">
+      target="_" title="Edit conservation action in new tab">
       <i class="fa fa-fw fa-pencil"></i>
-      Edit management action
+      Edit conservation action
     </a>
     {% endif %}
   </div><!-- /.card-footer -->

@@ -67,13 +67,13 @@
       <p>{% communitygazettal_rows request.user %}</p>
 
       <hr class="my-4">
-      <h3>Management Actions
+      <h3>Conservation Actions
         <small class="float-right">
-          <!-- management_action_add -->
-          {% management_action_add request.user "communities" block=False show_label_text=False %}
+          <!-- conservationaction_add -->
+          {% conservationaction_add request.user "communities" block=False show_label_text=False %}
         </small>
       </h3>
-      <p>{% managementaction_rows request.user  management_actions_general %}</p>
+      <p>{% conservationaction_rows request.user  conservationactions_general %}</p>
 
       <hr class="my-4">
       <h3>Documents
@@ -96,7 +96,7 @@
           </a>
           {% endif %}
           {% communitygazettal_add request.user block=False show_label_text=True %}
-          {% management_action_add request.user "communities" block=False show_label_text=True %}
+          {% conservationaction_add request.user "communities" block=False show_label_text=True %}
           {% document_add request.user "communities" block=False show_label_text=True %}
           {% areaencounter_add request.user "community" block=False show_label_text=True %}
       </p>
@@ -142,12 +142,12 @@
               <h5 class="card-header">
                 {{ site.grouper }}
                 <small class="float-right">
-                  {% management_action_add request.user "communities" area=site.grouper block=False show_label_text=False %}
+                  {% conservationaction_add request.user "communities" area=site.grouper block=False show_label_text=False %}
                 </small>
               </h5>
               <div class="card-body">
-                <!-- Management actions for area {{ site.grouper }} -->
-                {% managementaction_cards request.user  management_actions_area area=site.grouper %}
+                <!-- conservation actions for area {{ site.grouper }} -->
+                {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
 
                 <hr class="my-4">
 

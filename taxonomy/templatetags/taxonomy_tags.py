@@ -104,27 +104,27 @@ def document_add(context, user, subject, block=True, show_label_text=True):
     }
 
 
-@register.inclusion_tag('include/managementaction_rows.html', takes_context=False)
-def managementaction_rows(user, actions, area=None):
-    """Render a Management Action in a row."""
+@register.inclusion_tag('include/conservationaction_rows.html', takes_context=False)
+def conservationaction_rows(user, actions, area=None):
+    """Render a conservation Action in a row."""
     return {
         "is_staff": user.is_staff,
         "actions": actions.filter(occurrence_area_code=area) if area else actions
     }
 
 
-@register.inclusion_tag('include/managementaction_cards.html', takes_context=False)
-def managementaction_cards(user, actions, area=None):
-    """Render a Management Action in a card."""
+@register.inclusion_tag('include/conservationaction_cards.html', takes_context=False)
+def conservationaction_cards(user, actions, area=None):
+    """Render a conservation Action in a card."""
     return {
         "is_staff": user.is_staff,
         "actions": actions.filter(occurrence_area_code=area) if area else actions
     }
 
 
-@register.inclusion_tag('include/managementaction_add.html', takes_context=True)
-def management_action_add(context, user, subject, document=None, area=None, block=True, show_label_text=True):
-    """Render an "add management action" link for staff."""
+@register.inclusion_tag('include/conservationaction_add.html', takes_context=True)
+def conservationaction_add(context, user, subject, document=None, area=None, block=True, show_label_text=True):
+    """Render an "add conservation action" link for staff."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff,

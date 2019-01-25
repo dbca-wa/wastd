@@ -64,9 +64,9 @@
         </p>
 
         <p class="card-text">
-          {% managementaction_rows user document.managementaction_set.all %}
+          {% conservationaction_rows user document.conservationaction_set.all %}
           <small class="float-right">
-            {% management_action_add user "taxa" document=document block=False show_label_text=False %}
+            {% conservationaction_add user "taxa" document=document block=False show_label_text=False %}
           </small>
         </p>
 
