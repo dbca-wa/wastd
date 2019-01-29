@@ -275,11 +275,11 @@ class ConservationAction(models.Model):
     def get_status(self):
         """Return a string indicating the progress status."""
         if not self.implementation_notes:
-            return "new"
+            return ConservationAction.STATUS_NEW
         elif self.implementation_notes and not self.completion_date:
-            return "in progress"
+            return ConservationAction.STATUS_INPROGRESS
         elif self.completion_date:
-            return "completed"
+            return ConservationAction.STATUS_COMPLETED
 
 
 @receiver(pre_save, sender=ConservationAction)
