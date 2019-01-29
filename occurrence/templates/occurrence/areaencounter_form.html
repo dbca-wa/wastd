@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4  %}
+
+{% block content %}
+<div class="container-fluid" id="wrap">
+
+  <!-- Breadcrumbs -->
+  <div class="row">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/">
+            {{ settings.SITE_NAME }} Home
+          </a>
+        </li>
+        <li class="breadcrumb-item active">
+          <a href="#">
+            {% block breadcrumb_page_label %}Report an occurrence{% endblock %}
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+
+<div class="container centering">
+  <div class="row">
+    {% crispy form %}
+  </div><!-- .row -->
+</div><!-- .container -->
+</div><!-- #wrap -->
+{% endblock %}
+
+{% block extrastyle %}
+{{ form.media.css }}
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+{{ form.media.js }}
+{% endblock %}
+<!-- django_select2/django_select2.js included as hard copy in static files, not found from above -->

@@ -26,13 +26,13 @@ djangorestframework-gis==0.14
 djangorestframework-csv
 djangorestframework-yaml
 djangorestframework-jsonp
-djangorestframework-filters
+djangorestframework-filters==1.0.0.dev0
 django-url-filter
 #dynamic-rest
 rest-framework-latex
 # -e git+https://github.com/florianm/rest-framework-latex.git#egg=rest-framework-latex
 markdown
-django-filter==1.1.0
+django-filter==2.1.0
 django-rest-swagger
 coreapi==2.3.3
 coreapi-cli
@@ -119,7 +119,7 @@ Pillow==5.4.1
 
 # Python-PostgreSQL Database Adapter
 # ------------------------------------------------
-psycopg2==2.7.7
+psycopg2-binary==2.7.7
 
 # Unicode slugification
 # ------------------------------------------------

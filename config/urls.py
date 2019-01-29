@@ -30,6 +30,7 @@ from wastd.observations.views import (
     EncounterTableView, AnimalEncounterTableView)
 from taxonomy.views import (
     update_taxon, TaxonListView, CommunityListView, TaxonDetailView, CommunityDetailView)
+from occurrence.views import (TaxonAreaEncounterCreateView, CommunityAreaEncounterCreateView)
 
 # register all adminactions
 actions.add_to_site(site)
@@ -38,14 +39,23 @@ urlpatterns = [
     re_path(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
     re_path(r'^map/$', HomeView.as_view(), name='map'),
 
-    re_path(r'^species/(?P<name_id>[0-9]+)/$', TaxonDetailView.as_view(), name='taxon-detail'),
-    re_path(r'^communities/(?P<pk>[0-9]+)/$', CommunityDetailView.as_view(), name='community-detail'),
+    # Species
     re_path(r'^species/$', TaxonListView.as_view(), name='taxon-list'),
+    re_path(r'^species/(?P<name_id>[0-9]+)/$', TaxonDetailView.as_view(), name='taxon-detail'),
+    re_path(
+        r'^species/occurrences/report/$',
+        TaxonAreaEncounterCreateView.as_view(),
+        name='taxonareaencounter-create'),
+
+    # Communities
     re_path(r'^communities/$', CommunityListView.as_view(), name='community-list'),
+    re_path(r'^communities/(?P<pk>[0-9]+)/$', CommunityDetailView.as_view(), name='community-detail'),
+    re_path(r'^communities/occurrences/report/$',
+            CommunityAreaEncounterCreateView.as_view(),
+            name='communityareaencounter-create'),
 
-
+    # Helpers
     re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/healthcheck.html'), name='healthcheck'),
-
     re_path(r'^grappelli/', include('grappelli.urls')),  # grappelli URLs
     re_path(r'^ajax_select/', include(ajax_select_urls)),  # ajax select URLs
     # Django Admin, use {% url 'admin:index' %}

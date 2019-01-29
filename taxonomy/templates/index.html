@@ -80,12 +80,18 @@
             title="Map Threatened Species and Communities">
           View Map »
         </a>
-        </p>
+      </p>
       <p>
         <a class="btn btn-secondary"
-        href="#"
-        title="Submit occurrences (coming soon)">
-      Submit occurrences »</a>
+        href="{% url 'taxonareaencounter-create' %}"
+        title="Submit species occurrences">
+        Submit species occurrence »</a>
+      </p>
+      <p>
+        <a class="btn btn-secondary"
+        href="{% url 'communityareaencounter-create' %}"
+        title="Submit community occurrences">
+        Submit community occurrence »</a>
       </p>
     </div>
 

@@ -2238,10 +2238,10 @@ class TaxonFilter(filters.FilterSet):
 
         model = Taxon
         fields = {
-            'name_id': '__all__',
+            'name_id': ['exact', ],
             'name': '__all__',
             'rank': '__all__',
-            'parent': ['exact', ],  # performance bomb
+            'parent': ['exact', ],  # __all__ is a performance bomb
             'publication_status': '__all__',
             'current': ['exact', ],
             'author': '__all__',
@@ -2250,6 +2250,23 @@ class TaxonFilter(filters.FilterSet):
             'vernacular_name': '__all__',
             'vernacular_names': '__all__',
             # 'eoo' requires polygon filter
+        }
+
+
+class FastTaxonFilter(filters.FilterSet):
+    """Taxon filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Taxon
+        fields = {
+            'name_id': '__all__',
+            'name': '__all__',
+            'canonical_name': '__all__',
+            'taxonomic_name': '__all__',
+            'vernacular_name': '__all__',
+            'vernacular_names': '__all__',
         }
 
 
@@ -2527,7 +2544,17 @@ class TaxonViewSet(FastBatchUpsertViewSet):
     model = Taxon
     uid_fields = ("name_id", )
 
-router.register("taxon", TaxonViewSet)
+router.register("taxon", TaxonViewSet, base_name="taxon_full")
+
+
+class FastTaxonViewSet(FastBatchUpsertViewSet):
+    """Fast View set for Taxon."""
+
+    queryset = Taxon.objects.all()
+    serializer_class = FastTaxonSerializer
+    filter_class = FastTaxonFilter
+
+router.register("taxon-fast", FastTaxonViewSet, base_name="taxon_fast")
 
 
 class VernacularViewSet(BatchUpsertViewSet):

@@ -43,7 +43,7 @@ class TaxonFilter(django_filters.FilterSet):
         """Class opts."""
 
         model = Taxon
-        fields = ['taxonomic_name', 'vernacular_names', 'rank',
+        fields = ['name_id', 'taxonomic_name', 'vernacular_names', 'rank',
                   'current', 'publication_status', 'taxon_gazettal__category', 'eoo']
         filter_overrides = FILTER_OVERRIDES
 
