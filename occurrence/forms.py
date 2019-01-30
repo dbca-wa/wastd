@@ -2,11 +2,13 @@
 """Occurrence forms."""
 
 from django import forms
+from django.contrib.auth import get_user_model
 from leaflet.forms.widgets import LeafletWidget
 from django_select2.forms import ModelSelect2Widget
 
 from .models import (AreaEncounter, TaxonAreaEncounter, CommunityAreaEncounter)
 from taxonomy.models import (Taxon, Community)
+# from wastd.users.models import User
 
 
 class AreaEncounterForm(forms.ModelForm):
@@ -36,7 +38,16 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
                 search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
             ),
             'geom': LeafletWidget(
-                attrs={'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326})}
+                attrs={'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326}
+            ),
+            'encountered_on': forms.widgets.DateTimeInput(format="%d %b %Y %H:%M:%S %Z"),
+            'encountered_by': ModelSelect2Widget(
+                model=get_user_model(),
+                search_fields=["name__icontains", "username__icontains", "role__icontains", "email__icontains"]
+            ),
+        }
+
+    # If name_id in kwargs: taxon = Taxon.objects.get(name_id=self.kwargs.get("name_id"))
 
 
 class CommunityAreaEncounterForm(AreaEncounterForm):

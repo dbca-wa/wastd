@@ -43,6 +43,14 @@ urlpatterns = [
     re_path(r'^species/$', TaxonListView.as_view(), name='taxon-list'),
     re_path(r'^species/(?P<name_id>[0-9]+)/$', TaxonDetailView.as_view(), name='taxon-detail'),
     re_path(
+        r'^species/(?P<name_id>[0-9]+)/occurrences/report$',
+        TaxonAreaEncounterCreateView.as_view(),
+        name='taxon-occurrence-create'),
+    re_path(
+        r'^species/(?P<name_id>[0-9]+)/occurrences/area/(?P<area_code>[\w]+)/report$',
+        TaxonAreaEncounterCreateView.as_view(),
+        name='taxon-occurrence-create'),
+    re_path(
         r'^species/occurrences/report/$',
         TaxonAreaEncounterCreateView.as_view(),
         name='taxonareaencounter-create'),

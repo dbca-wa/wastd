@@ -180,6 +180,14 @@
           <small class="float-right">
             {% areaencounter_add request.user "taxon" block=False show_label_text=True %}
 
+            <!-- TODO refactor as tempate tag taxon_occurrence_add -->
+            <a href="{% url 'taxon-occurrence-create' name_id=original.name_id %}"
+              class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+              title="Report a new occurrence record of {{ original }}."
+              target="_">
+              <span class="oi oi-plus" aria-hidden="true"></span> Report occurrence
+            </a>
+
             <!-- /admin/occurrence/taxonareaencounter/?taxon__id__exact=1033 -->
             {% if request.user.is_staff %}
             <a class="btn btn-sm btn-primary" target="_"
@@ -202,12 +210,28 @@
                 <small class="float-right">
                   {% conservationaction_add request.user "taxa" area=site.grouper block=False show_label_text=False %}
                 </small>
+                <small class="float-right">
+                  <a href="{% url 'taxon-occurrence-create' name_id=original.name_id area_code=site.grouper %}"
+                    class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+                    title="Report a new occurrence record of {{ original }} at site {{ site.grouper }}."
+                    target="_">
+                    <span class="oi oi-eye" aria-hidden="true"></span>
+                  </a>
+                </small>
               </h5>
               <div class="card-body">
                 <!-- conservation actions for area {{ site.grouper }} -->
                 {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
 
                 <hr class="my-4">
+
+            <!-- TODO refactor as tempate tag taxon_occurrence_add -->
+            <a href="{% url 'taxon-occurrence-create' name_id=original.name_id area_code=site.grouper %}"
+              class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+              title="Report a new occurrence record of {{ original }} at site {{ site.grouper }}."
+              target="_">
+              <span class="oi oi-plus" aria-hidden="true"></span> Report occurrence at site {{ site.grouper }}
+            </a>
 
                 <!-- Occurrences -->
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
