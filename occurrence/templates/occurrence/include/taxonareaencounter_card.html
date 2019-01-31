@@ -1,0 +1,30 @@
+{% load observations %}
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
+
+    <h6 class="card-header">
+      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span> {{ original.encountered_on }}
+      <span class="badge badge-{{ original.status|tb_status_icon }} pull-right" title="QA status">{{ original.get_status_display }}</span>
+    </h6><!-- /.card-header -->
+
+  <div class="card-body">
+    <h6 class="card-subtitle mb-2 text-muted">
+      <span class="oi oi-person" title="Encountered by" aria-hidden="true"></span> {{ original.encountered_by }}<br/>
+    </h6>
+
+    <p class="card-text"><span class="oi oi-comment-square" title="Description" aria-hidden="true"></span> {{ original.description }}</p>
+    <p class="card-text"><span class="oi oi-info" title="Details" aria-hidden="true"></span> Occurrence details coming soon.</p>
+
+  </div><!-- /.card-body -->
+
+  <div class="card-footer">
+    {% if is_staff %}
+      <a href="{{ original.absolute_admin_url }}"
+      class="btn btn-block btn-primary btn-sm"
+      target="_" title="Edit occurrence in new tab">
+      <i class="fa fa-fw fa-pencil"></i>
+      Edit occurrence
+    </a>
+    {% endif %}
+  </div><!-- /.card-footer -->
+
+</div><!-- /.card -->

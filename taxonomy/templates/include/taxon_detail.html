@@ -1,0 +1,6 @@
+<a href="{% url 'taxon-detail' original.name_id %}"
+  class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+  title="View details.">
+  <span class="oi oi-arrow-thick-right" aria-hidden="true"></span>
+  {% if show_label_text %}View details{% endif %}
+</a>

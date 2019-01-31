@@ -31,6 +31,28 @@ def gazettal_labels(context, user):
     }
 
 
+@register.inclusion_tag('include/taxon_change.html', takes_context=True)
+def taxon_change(context, user, btn=True, block=False, show_label_text=False):
+    """Render a link to the admin taxon change view."""
+    return {
+        "original": context["original"],
+        "is_staff": user.is_staff,
+        "btn": btn,
+        "block": block,
+        "show_label_text": show_label_text
+    }
+
+
+@register.inclusion_tag('include/taxon_detail.html', takes_context=True)
+def taxon_detail(context, block=False, show_label_text=False):
+    """Render a link to the taxon detail view."""
+    return {
+        "original": context["original"],
+        "block": block,
+        "show_label_text": show_label_text
+    }
+
+
 @register.inclusion_tag('include/gazettal_row.html', takes_context=True)
 def taxongazettal_rows(context, user):
     """Render a Gazettal as row."""
@@ -52,7 +74,7 @@ def communitygazettal_rows(context, user):
 
 
 @register.inclusion_tag('include/taxongazettal_add.html', takes_context=True)
-def taxongazettal_add(context, user, block=True, show_label_text=True):
+def taxongazettal_add(context, user, block=False, show_label_text=False):
     """Render an "add cons listing" link for staff."""
     return {
         "original": context["original"],
@@ -63,7 +85,7 @@ def taxongazettal_add(context, user, block=True, show_label_text=True):
 
 
 @register.inclusion_tag('include/communitygazettal_add.html', takes_context=True)
-def communitygazettal_add(context, user, block=True, show_label_text=True):
+def communitygazettal_add(context, user, block=False, show_label_text=False):
     """Render an "add cons listing" link for staff."""
     return {
         "original": context["original"],
@@ -93,7 +115,7 @@ def document_row(context, user):
 
 
 @register.inclusion_tag('include/document_add.html', takes_context=True)
-def document_add(context, user, subject, block=True, show_label_text=True):
+def document_add(context, user, subject, block=False, show_label_text=False):
     """Render an "add document" link for staff."""
     return {
         "original": context["original"],
@@ -123,7 +145,7 @@ def conservationaction_cards(user, actions, area=None):
 
 
 @register.inclusion_tag('include/conservationaction_add.html', takes_context=True)
-def conservationaction_add(context, user, subject, document=None, area=None, block=True, show_label_text=True):
+def conservationaction_add(context, user, subject, document=None, area=None, block=False, show_label_text=False):
     """Render an "add conservation action" link for staff."""
     return {
         "original": context["original"],

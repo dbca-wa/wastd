@@ -74,17 +74,9 @@
 
       <h1 class="display-4">
         {{ original.canonical_name }}
-        {% if request.user.is_staff %}
         <small class="float-right">
-          <a href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
-          class="btn btn-primary btn-sm"
-          role="button"
-          target="_"
-          title="Edit Taxon details.">
-            <span class="oi oi-pencil" aria-hidden="true"></span>
-          </a>
-      </small>
-      {% endif %}
+          {% taxon_change request.user btn=True %}
+        </small>
       </h1>
 
       <!-- Author -->
@@ -118,7 +110,7 @@
       <hr class="my-4">
       <h3>Conservation Listings
         <small class="float-right">
-          {% taxongazettal_add request.user block=False show_label_text=False %}
+          {% taxongazettal_add request.user %}
         </small>
       </h3>
       <p>{% taxongazettal_rows request.user %}</p>
@@ -126,7 +118,7 @@
       <hr class="my-4">
       <h3>Conservation Actions
         <small class="float-right">
-          {% conservationaction_add request.user "taxa" block=False show_label_text=False %}
+          {% conservationaction_add request.user "taxa" %}
         </small>
       </h3>
       <p>{% conservationaction_rows request.user  conservationactions_general %}</p>
@@ -134,27 +126,19 @@
       <hr class="my-4">
       <h3>Documents
         <small class="float-right">
-          {% document_add request.user "taxa" block=False show_label_text=False %}
+          {% document_add request.user "taxa" %}
         </small>
       </h3>
       <p>{% document_row request.user %}</p>
 
       <hr class="my-4">
       <p class="lead">
-        {% if request.user.is_staff %}
-        <a href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
-          class="btn btn-primary btn-sm"
-          role="button"
-          target="_"
-          title="Edit Taxon details.">
-            <span class="oi oi-pencil" aria-hidden="true"></span>
-            Edit Taxon details
-          </a>
-          {% endif %}
-          {% taxongazettal_add request.user block=False show_label_text=True %}
-          {% conservationaction_add request.user "taxa" block=False show_label_text=True %}
-          {% document_add request.user "taxa" block=False show_label_text=True %}
-          {% areaencounter_add request.user "taxon" block=False show_label_text=True %}
+          {% taxon_change request.user show_label_text=True %}
+          {% taxongazettal_add request.user show_label_text=True %}
+          {% conservationaction_add request.user "taxa" show_label_text=True %}
+          {% document_add request.user "taxa" show_label_text=True %}
+          <!-- {% areaencounter_add request.user "taxon" show_label_text=True %} -->
+          {% taxonareaencounter_add request.user show_label_text=True %}
       </p>
 
     </div><!-- /.jumbotron -->
@@ -178,26 +162,13 @@
           <small>(First {{ occurrence_shown }} of {{ occurrence_total }})</small>
           {% endif %}
           <small class="float-right">
-            {% areaencounter_add request.user "taxon" block=False show_label_text=True %}
+            {% taxonareaencounter_add request.user %}
           </small>
           <small class="float-right">
-            <!-- TODO refactor as tempate tag taxon_occurrence_add -->
-            <a href="{% url 'taxon-occurrence-create' name_id=original.name_id %}"
-              class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
-              title="Report a new occurrence record of {{ original }}."
-              target="_">
-              <span class="oi oi-plus" aria-hidden="true"></span> Report occurrence
-            </a>
+            {% areaencounter_add request.user "taxon" %}
           </small>
           <small class="float-right">
-            <!-- /admin/occurrence/taxonareaencounter/?taxon__id__exact=1033 -->
-            {% if request.user.is_staff %}
-            <a class="btn btn-sm btn-primary" target="_"
-                href="{% url 'admin:occurrence_taxonareaencounter_changelist' %}?taxon__id__exact={{ original.id }}"
-                title="Because you have DBCA Curator privileges, you may view all occurrences of this taxon">
-              <span class="oi oi-eye" title="View all" aria-hidden="true"></span> View all {{ occurrence_total }} occurrences
-            </a>
-            {% endif %}
+            {% taxonareaencounter_list request.user %}
           </small>
         </h3>
 
@@ -210,61 +181,20 @@
               <h5 class="card-header">
                 {{ site.grouper }}
                 <small class="float-right">
-                  {% conservationaction_add request.user "taxa" area=site.grouper block=False show_label_text=False %}
+                  {% conservationaction_add request.user "taxa" area=site.grouper %}
                 </small>
                 <small class="float-right">
-                  <a href="{% url 'taxon-occurrence-area-create' name_id=original.name_id area_code=site.grouper %}"
-                    class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
-                    title="Report a new occurrence record of {{ original }} at site {{ site.grouper }}."
-                    target="_">
-                    <span class="oi oi-eye" aria-hidden="true"></span>
-                  </a>
+                  {% taxonareaencounter_add request.user area_code=site.grouper %}
                 </small>
               </h5>
               <div class="card-body">
-                <!-- conservation actions for area {{ site.grouper }} -->
                 {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
 
                 <hr class="my-4">
 
-            <!-- TODO refactor as tempate tag taxon_occurrence_add -->
-            <a href="{% url 'taxon-occurrence-create' name_id=original.name_id area_code=site.grouper %}"
-              class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
-              title="Report a new occurrence record of {{ original }} at site {{ site.grouper }}."
-              target="_">
-              <span class="oi oi-plus" aria-hidden="true"></span> Report occurrence at site {{ site.grouper }}
-            </a>
-
                 <!-- Occurrences -->
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
-                <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
-                    <h6 class="card-header">
-                      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span> {{ occ.encountered_on }}
-                      <span class="badge badge-{{ occ.status|tb_status_icon }} pull-right" title="QA status">{{ occ.get_status_display }}</span>
-                    </h6>
-
-                  <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                      <span class="oi oi-person" title="Encountered by" aria-hidden="true"></span> {{ occ.encountered_by }}<br/>
-                    </h6>
-
-                    <p class="card-text"><span class="oi oi-comment-square" title="Description" aria-hidden="true"></span> {{ occ.description }}</p>
-                    <p class="card-text"><span class="oi oi-info" title="Details" aria-hidden="true"></span> Occurrence details coming soon.</p>
-
-                  </div><!-- /.card-body -->
-
-                  <div class="card-footer">
-                    {% if request.user.is_staff %}
-                      <a href="{{ occ.absolute_admin_url }}"
-                      class="btn btn-block btn-primary btn-sm"
-                      target="_" title="Edit occurrence in new tab">
-                      <i class="fa fa-fw fa-pencil"></i>
-                      Edit occurrence
-                    </a>
-                    {% endif %}
-                  </div><!-- /.footer -->
-
-                </div><!-- /.card -->
+                {% taxonareaencounter_card request.user occ block=False show_label_text=False %}
                 {% endfor %}
 
               </div>

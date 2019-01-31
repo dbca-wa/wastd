@@ -1,0 +1,11 @@
+<a
+  {% if area_code %}
+  href="{% url 'taxon-occurrence-area-create' name_id=original.name_id area_code=area_code %}"
+  {% else %}
+  href="{% url 'taxon-occurrence-create' name_id=original.name_id %}"
+  {% endif %}
+  class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+  title="Report a new occurrence record of {{ original }}.">
+  <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-eye" aria-hidden="true"></span>
+  {% if show_label_text %} Report occurrence{% if area_code %} at {{ area_code }}{% endif %}{% endif %}
+</a>

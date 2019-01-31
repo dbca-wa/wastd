@@ -7,6 +7,8 @@ from django.contrib.auth import get_user_model
 from leaflet.forms.widgets import LeafletWidget
 from django_select2.forms import ModelSelect2Widget
 from bootstrap_datepicker_plus import DateTimePickerInput
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 
 from .models import (AreaEncounter, TaxonAreaEncounter, CommunityAreaEncounter)
 from taxonomy.models import (Taxon, Community)
@@ -51,7 +53,36 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             ),
         }
 
-    # If name_id in kwargs: taxon = Taxon.objects.get(name_id=self.kwargs.get("name_id"))
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(TaxonAreaEncounterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Who',
+                'encountered_by',
+            ),
+            Fieldset(
+                'When',
+                'encountered_on',
+            ),
+            Fieldset(
+                'What',
+                'taxon',
+                'description',
+            ),
+            Fieldset(
+                'Where',
+                'area_type',
+                'code',
+                'geom',
+                'point',
+                'accuracy',
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
 
 
 class CommunityAreaEncounterForm(AreaEncounterForm):
@@ -75,3 +106,34 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
                 search_fields=["name__icontains", "username__icontains", "role__icontains", "email__icontains"]
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(CommunityAreaEncounterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Who',
+                'encountered_by',
+            ),
+            Fieldset(
+                'When',
+                'encountered_on',
+            ),
+            Fieldset(
+                'What',
+                'community',
+                'description',
+            ),
+            Fieldset(
+                'Where',
+                'area_type',
+                'code',
+                'geom',
+                'point',
+                'accuracy',
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )

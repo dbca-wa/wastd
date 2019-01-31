@@ -58,13 +58,7 @@
   <div class="card-footer">
     <div class="row">
 
-
-    <a href="{% url 'taxon-detail' original.name_id %}"
-      class="btn btn-primary btn-sm btn-block"
-      title="View details.">
-      <span class="oi oi-eye" aria-hidden="true"></span>
-      View Details
-    </a>
+    {% taxon_detail block=True show_label_text=True %}
 
     <a href="?name_id={{ original.name_id }}"
       class="btn btn-secondary btn-sm btn-block"
@@ -73,10 +67,10 @@
       Explore taxonomy
     </a>
 
-    {% taxongazettal_add request.user %}
-    {% conservationaction_add request.user "taxa" %}
-    {% document_add request.user "taxa" %}
-    {% areaencounter_add request.user "taxon" %}
+    {% taxongazettal_add request.user block=True show_label_text=True %}
+    {% conservationaction_add request.user "taxa" block=True show_label_text=True %}
+    {% document_add request.user "taxa" block=True show_label_text=True %}
+    {% taxonareaencounter_add request.user block=True show_label_text=True %}
 
     </div>
   </div>
