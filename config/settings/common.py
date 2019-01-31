@@ -47,6 +47,7 @@ THIRD_PARTY_APPS = (
     'django_extensions',            # shell_plus and others
     'crispy_forms',                 # Form layouts
     'bootstrap4',                   # bootstrap4
+    'bootstrap_datepicker_plus',    # Date widgets
     'floppyforms',                  # Floppyforms: Admin GIS widgets
     'easy_select2',                 # Select2 dropdowns
     'ajax_select',                  # Ajax dropdowns
@@ -313,7 +314,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStora
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder'
 )
 

@@ -37,8 +37,6 @@
 {{ form.media.css }}
 {% endblock %}
 
-{% block javascript %}
-{{ block.super }}
+{% block extrajs %}
 {{ form.media.js }}
-{% endblock %}
-<!-- django_select2/django_select2.js included as hard copy in static files, not found from above -->
+{% endblock extrajs %}
