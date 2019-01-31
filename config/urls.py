@@ -42,22 +42,25 @@ urlpatterns = [
     # Species
     re_path(r'^species/$', TaxonListView.as_view(), name='taxon-list'),
     re_path(r'^species/(?P<name_id>[0-9]+)/$', TaxonDetailView.as_view(), name='taxon-detail'),
-    re_path(
-        r'^species/(?P<name_id>[0-9]+)/occurrences/report$',
-        TaxonAreaEncounterCreateView.as_view(),
-        name='taxon-occurrence-create'),
-    re_path(
-        r'^species/(?P<name_id>[0-9]+)/occurrences/area/(?P<area_code>[\w]+)/report$',
-        TaxonAreaEncounterCreateView.as_view(),
-        name='taxon-occurrence-create'),
-    re_path(
-        r'^species/occurrences/report/$',
-        TaxonAreaEncounterCreateView.as_view(),
-        name='taxonareaencounter-create'),
+    re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/report$',
+            TaxonAreaEncounterCreateView.as_view(),
+            name='taxon-occurrence-create'),
+    re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/area/(?P<area_code>[\w]+)/report$',
+            TaxonAreaEncounterCreateView.as_view(),
+            name='taxon-occurrence-area-create'),
+    re_path(r'^species/occurrences/report/$',
+            TaxonAreaEncounterCreateView.as_view(),
+            name='taxonareaencounter-create'),
 
     # Communities
     re_path(r'^communities/$', CommunityListView.as_view(), name='community-list'),
     re_path(r'^communities/(?P<pk>[0-9]+)/$', CommunityDetailView.as_view(), name='community-detail'),
+    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/report$',
+            CommunityAreaEncounterCreateView.as_view(),
+            name='community-occurrence-create'),
+    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/area/(?P<area_code>[\w]+)/report$',
+            CommunityAreaEncounterCreateView.as_view(),
+            name='community-occurrence-area-create'),
     re_path(r'^communities/occurrences/report/$',
             CommunityAreaEncounterCreateView.as_view(),
             name='communityareaencounter-create'),

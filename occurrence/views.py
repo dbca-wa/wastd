@@ -9,7 +9,7 @@ from django.views.generic.edit import (
     # DeleteView,
     # UpdateView
 )
-from taxonomy.models import Taxon
+from taxonomy.models import (Taxon, Community)
 
 # ModelForms
 from .forms import (AreaEncounterForm, TaxonAreaEncounterForm, CommunityAreaEncounterForm)
@@ -31,15 +31,14 @@ class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
 
     template_name = "occurrence/taxonareaencounter_form.html"
     form_class = TaxonAreaEncounterForm
-    success_url = "/"
 
     def get_initial(self):
         """Initial form values."""
         initial = dict()
         if "name_id" in self.kwargs:
-            initial['taxon'] = Taxon.objects.get(name_id=self.kwargs["name_id"])
+            initial["taxon"] = Taxon.objects.get(name_id=self.kwargs["name_id"])
         if "area_code" in self.kwargs:
-            initial['code'] = self.kwargs["area_code"]
+            initial["code"] = self.kwargs["area_code"]
         return initial
 
 
@@ -48,4 +47,12 @@ class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
 
     template_name = "occurrence/communityareaencounter_form.html"
     form_class = CommunityAreaEncounterForm
-    success_url = "/"
+
+    def get_initial(self):
+        """Initial form values."""
+        initial = dict()
+        if "pk" in self.kwargs:
+            initial["community"] = Community.objects.get(pk=self.kwargs["pk"])
+        if "area_code" in self.kwargs:
+            initial["code"] = self.kwargs["area_code"]
+        return initial

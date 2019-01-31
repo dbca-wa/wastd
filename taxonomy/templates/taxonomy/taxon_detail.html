@@ -179,7 +179,8 @@
           {% endif %}
           <small class="float-right">
             {% areaencounter_add request.user "taxon" block=False show_label_text=True %}
-
+          </small>
+          <small class="float-right">
             <!-- TODO refactor as tempate tag taxon_occurrence_add -->
             <a href="{% url 'taxon-occurrence-create' name_id=original.name_id %}"
               class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
@@ -187,7 +188,8 @@
               target="_">
               <span class="oi oi-plus" aria-hidden="true"></span> Report occurrence
             </a>
-
+          </small>
+          <small class="float-right">
             <!-- /admin/occurrence/taxonareaencounter/?taxon__id__exact=1033 -->
             {% if request.user.is_staff %}
             <a class="btn btn-sm btn-primary" target="_"
@@ -211,7 +213,7 @@
                   {% conservationaction_add request.user "taxa" area=site.grouper block=False show_label_text=False %}
                 </small>
                 <small class="float-right">
-                  <a href="{% url 'taxon-occurrence-create' name_id=original.name_id area_code=site.grouper %}"
+                  <a href="{% url 'taxon-occurrence-area-create' name_id=original.name_id area_code=site.grouper %}"
                     class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
                     title="Report a new occurrence record of {{ original }} at site {{ site.grouper }}."
                     target="_">

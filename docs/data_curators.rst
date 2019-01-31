@@ -12,11 +12,161 @@ animal - e.g. "dead and not doing much else" is a Stranding Observation
 while "alive and nesting" is a Tagging Observation (morphometrics, tags, photos,
 damage, nest, eggs).
 
+TSC's data model is built around an extended concept of AreaEncounter, which is
+the physical encounter of an observer with individuals of a species (mainly animals or plants)
+or an ecological community (threatened, priority, or neither) at a location.
+The extent occupied by the species or community can be described either as a point
+(animal location) or polygon (community boundary or plant population).
+The encounter can incur any range of additional observations of the species or community,
+the location, or the surroundings.
+
 The following sections will instruct data curators how to enter data from
-supported data sources into WAStD.
+supported data sources into WAStD/TSC.
 
 .. * link to example data sheets of all supported formats, and
 .. * for each format, map the fields of the paper form to the online form.
+
+
+.. _itp-species-fauna:
+Threatened Fauna Occurrence
+===========================
+Coming soon.
+
+
+.. _itp-species-flora:
+Threatened Flora Occurrence
+===========================
+Coming soon.
+
+
+.. _itp-community:
+Ecological Community Occurrence
+===============================
+
+Paper form
+----------
+This section discusses changes to the legacy paper form to streamline it for TSC use.
+
+Audience: TSC stakeholders, Species and Communities Branch.
+
+Form version: 6.0 July 2013
+
+Glossary
+^^^^^^^^
+
+* [A] Assumption
+* [D] Derived information, can be reconstructed from other information, not required to capture. Exclude from paper form.
+* [R] Redundant information, duplicates other information, not required to capture.
+* [K] Keep, already implemented.
+* [N] New, add.
+* [X] Remove as per stakeholder advice.
+
+Section "Community"
+^^^^^^^^^^^^^^^^^^^
+
+* Community: [K][A] The data collector must know the community code.
+* Observation date: [K] ``encountered_on``.
+* New occurrence: [D]
+* Observers: ``encountered_by`` is the primary observer. [A] Clearly associated responsibility of reported information and person reporting.
+* Role, email, organisation: [D] already in TSC. [A] every data reporter is or will be registered as user in TSC.
+
+Section "Location"
+^^^^^^^^^^^^^^^^^^
+
+* Description of location: [R] hand-waving about location is replaced with polygon or point.
+* District, LGA, Reserve no: [D]
+* Land manager present: [N] - what other fields are included in "Land manager attendance"?
+* Datum: [R] default is WGS84.
+* Coodinates: [R] replaced by polygon / point map widgets.
+* Method used: [R] replaced by ``location_accuracy``.
+* Land tenure: [D]
+
+Section "Area assessment"
+^^^^^^^^^^^^^^^^^^^^^^^^^
+* Type (edge, partial, full): [N] add as area types: TEC boundary (edge), TEC boundary (partial)
+* Area observed (m2): [D] from polygon
+* Effort: [D] from [N] survey start time / [N] survey end time
+* Time spent per area: [D] from survey end - start time / area observed
+
+Section "Threats"
+^^^^^^^^^^^^^^^^^
+Repeating group. [N]
+
+* Threat [N] - category or free text?
+* Cause / agent [X]
+* Area affected percentage [N]
+* Current impact severity [N] Nil, low, medium, high, extreme
+* Potential impact severity [N] low, medium, high, extreme
+* Potential threat onset [N] short term (whithin next 12 months), medium term (within 1-5 years), long term (after more than 5 years)
+
+Section "Condition of occurrence"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Single group. [N]
+
+Percentage of occurrence being rated on the Bush Forever scale as:
+
+* Pristine
+* Excellent
+* Very good
+* Good
+* Degraded
+* Completely degraded
+
+
+Section "Recommended management actions" & "Actions implemented"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Repeating groups, correspond to area management actions (including reporting).
+
+Section "Habitat information"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Single group. [N]
+
+* Land form
+* Rock type
+* Loose rock
+* Soil type
+* Soil colour
+* Drainage
+* Specific landform element (see field manual)
+* Soil condition
+* Vegetation classification
+
+Section "Fire history"
+^^^^^^^^^^^^^^^^^^^^^^
+Single group. [N]
+
+* Last fire (date)
+* Fire intensity (high/medium/low)
+* No evidence of fire
+
+Section "Associated species"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Repeating group. [N]
+
+Section "Comments"
+^^^^^^^^^^^^^^^^^^
+Single group. [N]
+
+* Text comments.
+
+Section "Attachments"
+^^^^^^^^^^^^^^^^^^^^^
+Repeating group.
+
+* File, title, category.
+
+Section "Submission"
+^^^^^^^^^^^^^^^^^^^^
+
+* Person submitting record [A] is that person entering record in TSC?
+
+
+TSC data entry
+--------------
+This section explains how to use the TSC data entry forms.
+
+Comin soon.
 
 
 .. _itp-tracks-curation:

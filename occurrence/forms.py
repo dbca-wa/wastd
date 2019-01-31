@@ -13,6 +13,9 @@ from taxonomy.models import (Taxon, Community)
 # from wastd.users.models import User
 
 
+LEAFLET_ATTRS = {'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326}
+
+
 class AreaEncounterForm(forms.ModelForm):
     """Common form for AreaEncounter."""
 
@@ -22,7 +25,7 @@ class AreaEncounterForm(forms.ModelForm):
         model = AreaEncounter
         fields = ("area_type", "code", "name", "description", "geom", "accuracy", "encountered_on", "encountered_by")
         widgets = {'geom': LeafletWidget(
-            attrs={'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326})}
+            attrs=LEAFLET_ATTRS)}
 
 
 class TaxonAreaEncounterForm(AreaEncounterForm):
@@ -33,18 +36,15 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
 
         model = TaxonAreaEncounter
         fields = ('taxon', "area_type", "code", "name", "description",
-                  "geom", "accuracy", "encountered_on", "encountered_by")
+                  "geom", "point", "accuracy", "encountered_on", "encountered_by")
         widgets = {
             'taxon': ModelSelect2Widget(
                 model=Taxon,
                 search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
             ),
-            'geom': LeafletWidget(
-                attrs={'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326}
-            ),
-            'encountered_on': DateTimePickerInput(
-                options={"format": "D/MM/YYYY HH:mm"}
-            ),
+            'geom': LeafletWidget(attrs=LEAFLET_ATTRS),
+            'point': LeafletWidget(attrs=LEAFLET_ATTRS),
+            'encountered_on': DateTimePickerInput(options={"format": "D/MM/YYYY HH:mm"}),
             'encountered_by': ModelSelect2Widget(
                 model=get_user_model(),
                 search_fields=["name__icontains", "username__icontains", "role__icontains", "email__icontains"]
@@ -68,5 +68,10 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
                 model=Community,
                 search_fields=["name__icontains", "code__icontains", ]
             ),
-            'geom': LeafletWidget(
-                attrs={'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326})}
+            'geom': LeafletWidget(attrs=LEAFLET_ATTRS),
+            'encountered_on': DateTimePickerInput(options={"format": "D/MM/YYYY HH:mm"}),
+            'encountered_by': ModelSelect2Widget(
+                model=get_user_model(),
+                search_fields=["name__icontains", "username__icontains", "role__icontains", "email__icontains"]
+            ),
+        }
