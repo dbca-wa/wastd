@@ -70,7 +70,7 @@
     {% taxongazettal_add request.user block=True show_label_text=True %}
     {% conservationaction_add request.user "taxa" block=True show_label_text=True %}
     {% document_add request.user "taxa" block=True show_label_text=True %}
-    {% taxonareaencounter_add request.user block=True show_label_text=True %}
+    {% taxonareaencounter_add_link block=True label=True %}
 
     </div>
   </div>

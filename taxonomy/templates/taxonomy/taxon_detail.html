@@ -137,8 +137,8 @@
           {% taxongazettal_add request.user show_label_text=True %}
           {% conservationaction_add request.user "taxa" show_label_text=True %}
           {% document_add request.user "taxa" show_label_text=True %}
-          <!-- {% areaencounter_add request.user "taxon" show_label_text=True %} -->
-          {% taxonareaencounter_add request.user show_label_text=True %}
+          <!-- {% if request.user.is_staff %}{% admin_areaencounter_create_link original.pk "taxon" label=True %}{% endif %} -->
+          {% taxonareaencounter_add_link label=True %}
       </p>
 
     </div><!-- /.jumbotron -->
@@ -162,14 +162,16 @@
           <small>(First {{ occurrence_shown }} of {{ occurrence_total }})</small>
           {% endif %}
           <small class="float-right">
-            {% taxonareaencounter_add request.user %}
+            {% taxonareaencounter_add_link %}
+          </small>
+          {% if request.user.is_staff %}
+          <small class="float-right">
+            {% admin_areaencounter_create_link original.pk "taxon" %}
           </small>
           <small class="float-right">
-            {% areaencounter_add request.user "taxon" %}
+            {% admin_taxonareaencounter_list_link original.pk %}
           </small>
-          <small class="float-right">
-            {% taxonareaencounter_list request.user %}
-          </small>
+          {% endif %}
         </h3>
 
         <div class="row">
@@ -184,7 +186,7 @@
                   {% conservationaction_add request.user "taxa" area=site.grouper %}
                 </small>
                 <small class="float-right">
-                  {% taxonareaencounter_add request.user area_code=site.grouper %}
+                  {% taxonareaencounter_add_link area_code=site.grouper %}
                 </small>
               </h5>
               <div class="card-body">

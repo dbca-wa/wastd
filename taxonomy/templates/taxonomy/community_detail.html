@@ -98,7 +98,9 @@
           {% communitygazettal_add request.user block=False show_label_text=True %}
           {% conservationaction_add request.user "communities" block=False show_label_text=True %}
           {% document_add request.user "communities" block=False show_label_text=True %}
-          {% areaencounter_add request.user "community" block=False show_label_text=True %}
+          {% if request.user.is_staff %}
+          {% admin_areaencounter_create_link original.pk "community" label=True %}
+          {% endif %}
       </p>
 
     </div><!-- /.jumbotron -->
@@ -123,9 +125,9 @@
           <small>(First {{ occurrence_shown }} of {{ occurrence_total }})</small>
           {% endif %}
           <small class="float-right">
-            {% areaencounter_add request.user "community" block=False show_label_text=True %}
 
             {% if request.user.is_staff %}
+            {% admin_areaencounter_create_link original.pk "community" label=True %}
             <a class="btn btn-sm btn-primary" target="_"
                 href="{% url 'admin:occurrence_communityareaencounter_changelist' %}?community__id__exact={{ original.id }}"
                 title="Because you have DBCA Curator privileges, you may view all occurrences of this community">

@@ -13,39 +13,36 @@ from django import template
 register = template.Library()
 
 
-@register.inclusion_tag('occurrence/include/areaencounter_add.html', takes_context=True)
-def areaencounter_add(context, user, subject, block=False, show_label_text=False):
+@register.inclusion_tag('occurrence/include/admin_areaencounter_create_link.html', takes_context=False)
+def admin_areaencounter_create_link(pk, subject, block=False, label=False):
     """Render an "add occurrence" link for staff."""
     return {
-        "original": context["original"],
-        "is_staff": user.is_staff,
-        "block": block,
+        "pk": pk,
         "subject": subject,
         "change_url": reverse('admin:occurrence_{0}areaencounter_add'.format(subject)),
-        "show_label_text": show_label_text
+        "block": block,
+        "label": label
     }
 
 
-@register.inclusion_tag('occurrence/include/taxonareaencounter_add.html', takes_context=True)
-def taxonareaencounter_add(context, user, area_code=None, block=False, show_label_text=False):
+@register.inclusion_tag('occurrence/include/admin_taxonareaencounter_list_link.html', takes_context=False)
+def admin_taxonareaencounter_list_link(pk, block=False, label=False):
+    """Render an "list taxon area occurrences" link for a taxon."""
+    return {
+        "pk": pk,
+        "block": block,
+        "label": label
+    }
+
+
+@register.inclusion_tag('occurrence/include/taxonareaencounter_add_link.html', takes_context=True)
+def taxonareaencounter_add_link(context, area_code=None, block=False, label=False):
     """Render an "add taxon area occurrence" link for a taxon."""
     return {
         "original": context["original"],
-        "is_staff": user.is_staff,
         "area_code": area_code,
         "block": block,
-        "show_label_text": show_label_text
-    }
-
-
-@register.inclusion_tag('occurrence/include/taxonareaencounter_list.html', takes_context=True)
-def taxonareaencounter_list(context, user, block=False, show_label_text=False):
-    """Render an "list taxon area occurrences" link for a taxon."""
-    return {
-        "original": context["original"],
-        "is_staff": user.is_staff,
-        "block": block,
-        "show_label_text": show_label_text
+        "label": label
     }
 
 

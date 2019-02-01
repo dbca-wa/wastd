@@ -1,0 +1,7 @@
+<a href="{{ change_url }}?{{ subject }}={{ original.pk }}"
+  class="btn btn-success btn-sm{% if block %} btn-block{% endif%}"
+  title="Create a new {{ subject }} occurrence record through the the data curation portal."
+  target="_">
+  <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-eye" aria-hidden="true"></span>
+  {% if label %}Add occurrence{% endif %}
+</a>
