@@ -27,9 +27,13 @@
       <span class="oi oi-eye" aria-hidden="true"></span>
       View Details
     </a>
-    {% communitygazettal_add request.user %}
-    {% conservationaction_add request.user "communities" %}
-    {% document_add request.user "communities" %}
-    {% areaencounter_add request.user "community" %}
+    {% if request.user.is_staff %}
+    {% communitygazettal_add request.user block=True show_label_text=True %}
+    {% conservationaction_add request.user "communities" block=True show_label_text=True %}
+    {% document_add request.user "communities" block=True show_label_text=True %}
+    {% admin_areaencounter_create_link original.pk "community" block=True label=True %}
+    {% endif %}
+    {% communityareaencounter_add_link original.pk block=True label=True %}
+
   </div>
 </div>

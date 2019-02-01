@@ -32,14 +32,14 @@ def gazettal_labels(context, user):
 
 
 @register.inclusion_tag('include/taxon_change.html', takes_context=True)
-def taxon_change(context, user, btn=True, block=False, show_label_text=False):
+def admin_taxon_change_link(context, user, btn=True, block=False, label=False):
     """Render a link to the admin taxon change view."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff,
         "btn": btn,
         "block": block,
-        "show_label_text": show_label_text
+        "label": label
     }
 
 

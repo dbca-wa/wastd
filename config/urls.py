@@ -58,7 +58,7 @@ urlpatterns = [
     re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/report$',
             CommunityAreaEncounterCreateView.as_view(),
             name='community-occurrence-create'),
-    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/area/(?P<area_code>[\w]+)/report$',
+    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/area/(?P<area_code>[\w_-]+)/report$',
             CommunityAreaEncounterCreateView.as_view(),
             name='community-occurrence-area-create'),
     re_path(r'^communities/occurrences/report/$',

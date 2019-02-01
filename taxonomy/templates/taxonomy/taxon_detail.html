@@ -38,7 +38,6 @@
 
   <div class="container-fluid">
 
-
     <div class="row">
     <!-- Taxon details -->
     <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
@@ -75,7 +74,9 @@
       <h1 class="display-4">
         {{ original.canonical_name }}
         <small class="float-right">
-          {% taxon_change request.user btn=True %}
+          {% if request.user.is_staff %}
+            {% admin_absoluteadminurl_link original "taxon" %}
+          {% endif %}
         </small>
       </h1>
 
@@ -133,12 +134,14 @@
 
       <hr class="my-4">
       <p class="lead">
-          {% taxon_change request.user show_label_text=True %}
+        {% if request.user.is_staff %}
+          {% admin_absoluteadminurl_link original "taxon" label=True %}
           {% taxongazettal_add request.user show_label_text=True %}
           {% conservationaction_add request.user "taxa" show_label_text=True %}
           {% document_add request.user "taxa" show_label_text=True %}
-          <!-- {% if request.user.is_staff %}{% admin_areaencounter_create_link original.pk "taxon" label=True %}{% endif %} -->
-          {% taxonareaencounter_add_link label=True %}
+        {% endif %}
+
+        {% taxonareaencounter_add_link original.name_id label=True %}
       </p>
 
     </div><!-- /.jumbotron -->
@@ -159,17 +162,19 @@
         <p class="lead">
         <h3>Occurrences
           {% if occurrence_shown < occurrence_total %}
-          <small>(First {{ occurrence_shown }} of {{ occurrence_total }})</small>
+          <small>
+            (First {{ occurrence_shown }} of {{ occurrence_total }})
+          </small>
           {% endif %}
           <small class="float-right">
-            {% taxonareaencounter_add_link %}
+            {% taxonareaencounter_add_link original.name_id %}
           </small>
           {% if request.user.is_staff %}
           <small class="float-right">
             {% admin_areaencounter_create_link original.pk "taxon" %}
           </small>
           <small class="float-right">
-            {% admin_taxonareaencounter_list_link original.pk %}
+            {% admin_areaencounter_list_link original.pk "taxon" %}
           </small>
           {% endif %}
         </h3>
@@ -186,7 +191,7 @@
                   {% conservationaction_add request.user "taxa" area=site.grouper %}
                 </small>
                 <small class="float-right">
-                  {% taxonareaencounter_add_link area_code=site.grouper %}
+                  {% taxonareaencounter_add_link original.name_id area_code=site.grouper %}
                 </small>
               </h5>
               <div class="card-body">
@@ -196,7 +201,7 @@
 
                 <!-- Occurrences -->
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
-                {% taxonareaencounter_card occ request.user %}
+                {% areaencounter_card occ "taxon" request.user %}
                 {% endfor %}
 
               </div>

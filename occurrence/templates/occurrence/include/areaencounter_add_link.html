@@ -1,0 +1,7 @@
+<a href="{{ add_url }}"
+  class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+  title="Report a new occurrence record of this {{ subject }}.">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  <span class="oi oi-eye" aria-hidden="true"></span>
+  {% if label %}Report occurrence{% if area_code %} at {{ area_code }}{% endif %}{% endif %}
+</a>

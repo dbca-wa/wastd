@@ -20,7 +20,7 @@ from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
-# from django.urls import reverse
+from django.urls import reverse
 # from rest_framework.reverse import reverse as rest_reverse
 # from django.template import loader
 from django.utils.encoding import python_2_unicode_compatible
@@ -1788,6 +1788,12 @@ class Taxon(MPTTModel, geo_models.Model):
         # ordering = ['-rank', 'current']
 
     @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    @property
     def build_canonical_name(self):
         """Build the canonical name.
 
@@ -2098,6 +2104,12 @@ class Community(LegacySourceMixin, geo_models.Model):
     def __str__(self):
         """The name."""
         return self.code
+
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     @property
     def gazettals(self):
