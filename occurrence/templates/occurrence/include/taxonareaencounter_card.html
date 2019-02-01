@@ -18,12 +18,8 @@
 
   <div class="card-footer">
     {% if is_staff %}
-      <a href="{{ original.absolute_admin_url }}"
-      class="btn btn-block btn-primary btn-sm"
-      target="_" title="Edit occurrence in new tab">
-      <i class="fa fa-fw fa-pencil"></i>
-      Edit occurrence
-    </a>
+      {% admin_absoluteadminurl_link original %}
+
     {% endif %}
   </div><!-- /.card-footer -->
 

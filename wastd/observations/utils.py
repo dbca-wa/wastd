@@ -2727,7 +2727,7 @@ def odka_forms(url=env('ODKA_URL'),
 
 
 def odka_submission_ids(form_id,
-                        limit=10000,
+                        limit=1000000,
                         url=env('ODKA_URL'),
                         un=env('ODKA_UN'),
                         pw=env('ODKA_PW'),
@@ -2742,7 +2742,7 @@ def odka_submission_ids(form_id,
 
     form_id An existing xform formID,
         e.g. 'build_Site-Visit-End-0-1_1490756971'.
-    limit The maximum number of submission IDs to retrieve, default: 10000.
+    limit The maximum number of submission IDs to retrieve, default: 1 000 000.
     url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
         default: the value of environment variable "ODKA_URL".
     un A username that exists on the ODK-A instance.

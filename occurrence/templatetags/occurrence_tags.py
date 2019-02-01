@@ -25,6 +25,16 @@ def admin_areaencounter_create_link(pk, subject, block=False, label=False):
     }
 
 
+@register.inclusion_tag('occurrence/include/admin_absoluteadminurl_link.html', takes_context=False)
+def admin_absoluteadminurl_link(original, block=False, label=False):
+    """Render an "add occurrence" link for staff."""
+    return {
+        "change_url": original.absolute_admin_url,
+        "block": block,
+        "label": label
+    }
+
+
 @register.inclusion_tag('occurrence/include/admin_taxonareaencounter_list_link.html', takes_context=False)
 def admin_taxonareaencounter_list_link(pk, block=False, label=False):
     """Render an "list taxon area occurrences" link for a taxon."""
@@ -46,12 +56,12 @@ def taxonareaencounter_add_link(context, area_code=None, block=False, label=Fals
     }
 
 
-@register.inclusion_tag('occurrence/include/taxonareaencounter_card.html', takes_context=True)
-def taxonareaencounter_card(context, user, subject, block=False, show_label_text=False):
+@register.inclusion_tag('occurrence/include/taxonareaencounter_card.html', takes_context=False)
+def taxonareaencounter_card(occurrence, user, block=False, label=False):
     """Render a card for a taxon area encounter."""
     return {
-        "original": subject,
+        "original": occurrence,
         "is_staff": user.is_staff,
         "block": block,
-        "show_label_text": show_label_text
+        "label": label
     }

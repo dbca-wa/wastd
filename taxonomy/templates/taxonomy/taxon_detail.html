@@ -196,7 +196,7 @@
 
                 <!-- Occurrences -->
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
-                {% taxonareaencounter_card request.user occ block=False show_label_text=False %}
+                {% taxonareaencounter_card occ request.user %}
                 {% endfor %}
 
               </div>
