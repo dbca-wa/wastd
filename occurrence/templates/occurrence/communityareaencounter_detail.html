@@ -1,4 +1,19 @@
-{% load staticfiles taxonomy_tags observations %}
+{% extends "base.html" %}
+{% load staticfiles compress leaflet_tags geojson_tags mptt_tags taxonomy_tags occurrence_tags observations crispy_forms_tags bootstrap4 %}
+{% load render_table from django_tables2 %}
+
+{% block extrastyle %}
+{% compress css %}
+<style>
+.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
+  width: 350px; /* narrower popup */
+  padding: -10px;  /* fix close button position */
+}
+</style>
+{% endcompress %}
+{% endblock %}
+
+{% block content %}
 <div class="d-flex flex-row">
   <div class="mr-auto">
     <h5>[{{ original.code }}] {{ original.name }}</h5>
@@ -50,3 +65,4 @@
   {{ original.description|safe }}
 </div>
 </div><!-- /.row -->
+{% endblock content %}

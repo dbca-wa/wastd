@@ -27,6 +27,7 @@ from django.urls import reverse
 # from rest_framework.reverse import reverse as rest_reverse
 from django.template import loader
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
@@ -75,6 +76,7 @@ class AreaEncounter(PolymorphicModel,
     AREA_TYPE_EPHEMERAL_SITE = 0
     AREA_TYPE_PERMANENT_SITE = 1
     AREA_TYPE_CRITICAL_HABITAT = 2
+    AREA_TYPE_PARTIAL_SURVEY = 3
     AREA_TYPE_TEC_BOUNDARY = 10
     AREA_TYPE_TEC_BUFFER = 11
     AREA_TYPE_TEC_SITE = 12
@@ -87,6 +89,7 @@ class AreaEncounter(PolymorphicModel,
     AREA_TYPES = (
         (AREA_TYPE_EPHEMERAL_SITE, "Ephemeral Site"),
         (AREA_TYPE_PERMANENT_SITE, "Permanent Site"),
+        (AREA_TYPE_PARTIAL_SURVEY, "Partial survey"),
         (AREA_TYPE_CRITICAL_HABITAT, "Critical Habitat"),
         (AREA_TYPE_TEC_BOUNDARY, "TEC Boundary"),
         (AREA_TYPE_TEC_BUFFER, "TEC Buffer"),
@@ -98,8 +101,23 @@ class AreaEncounter(PolymorphicModel,
         (AREA_TYPE_LOCALITY, "Locality"),
     )
 
+    COMMUNITY_AREA_TYPES = (
+        (AREA_TYPE_PARTIAL_SURVEY, "Partial survey"),
+        (AREA_TYPE_TEC_BOUNDARY, "TEC Boundary"),
+        (AREA_TYPE_TEC_BUFFER, "TEC Buffer"),
+        (AREA_TYPE_TEC_SITE, "TEC Site"),
+    )
+
+    TAXON_AREA_TYPES = (
+        (AREA_TYPE_EPHEMERAL_SITE, "Ephemeral Site"),
+        (AREA_TYPE_PERMANENT_SITE, "Permanent Site"),
+        (AREA_TYPE_PARTIAL_SURVEY, "Partial survey"),
+        (AREA_TYPE_FLORA_POPULATION, "Flora Population"),
+        (AREA_TYPE_FLORA_SUBPOPULATION, "Flora Subpopulation"),
+    )
+
     # Naming -----------------------------------------------------------------#
-    code = models.CharField(
+    code = models.SlugField(
         max_length=1000,
         blank=True, null=True,
         verbose_name=_("Area code"),
@@ -137,7 +155,12 @@ class AreaEncounter(PolymorphicModel,
         verbose_name=_("Area type"),
         default=AREA_TYPE_EPHEMERAL_SITE,
         choices=AREA_TYPES,
-        help_text=_("The area type."), )
+        help_text=_(
+            "What type describes the area occupied by the encounter "
+            "most accurately? The area can be an opportunistic, once-off chance "
+            "encounter (point), a fixed survey site (polygon), a partial or a "
+            "complete survey of an area occupied by the encountered subject (polygon)."),
+    )
 
     accuracy = models.FloatField(
         blank=True, null=True,
@@ -149,20 +172,23 @@ class AreaEncounter(PolymorphicModel,
         srid=4326,
         blank=True, null=True,
         verbose_name=_("Representative Point"),
-        help_text=_("A Point representing the Area."
-                    " If empty, the centroid will be calculated from the Area's polygon extent."))
+        help_text=_(
+            "A point representing the area occupied by the encountered subject."
+            " If empty, the point will be calculated as the centroid of the polygon extent."))
 
     northern_extent = models.FloatField(
         verbose_name=_("Northernmost latitude"),
         editable=False,
         blank=True, null=True,
-        help_text=_("The northernmost latitude serves to sort areas."),)
+        help_text=_("The northernmost latitude is derived from location "
+                    "polygon or point and serves to sort areas."),)
 
     geom = geo_models.PolygonField(
         srid=4326,
         blank=True, null=True,
         verbose_name=_("Location"),
-        help_text=_("The exact extent of the area as polygon in WGS84, if available."))
+        help_text=_("The exact extent of the area occupied by the encountered "
+                    "subject as polygon in WGS84, if available."))
 
     # Cached fields ----------------------------------------------------------#
     as_html = models.TextField(
@@ -196,7 +222,7 @@ class AreaEncounter(PolymorphicModel,
 
     @property
     def derived_northern_extent(self):
-        """The northern extent, derived from the polygon."""
+        """The northernmost extent of the polygon, or the latitude of the point."""
         if self.geom:
             return self.geom.extent[3]
         elif self.point:
@@ -209,6 +235,11 @@ class AreaEncounter(PolymorphicModel,
         """Return the absolute admin change URL."""
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    @property
+    def detail_url(self):
+        """Hook for detail url."""
+        return '/'
 
     @property
     def derived_html(self):
@@ -256,6 +287,12 @@ class TaxonAreaEncounter(AreaEncounter):
             self.encountered_by,
             self.taxon)
 
+    @property
+    def detail_url(self):
+        """Hook for detail url."""
+        return reverse('taxon-occurrence-detail',
+                       kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
+
     def nearby_same(self, dist_dd=0.005):
         """Return encounters with same taxon within search radius (dist_dd).
 
@@ -294,6 +331,12 @@ class CommunityAreaEncounter(AreaEncounter):
             self.encountered_by,
             self.community)
 
+    @property
+    def detail_url(self):
+        """Hook for detail url."""
+        return reverse('community-occurrence-detail',
+                       kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
+
     def nearby_same(self, dist_dd=0.005):
         """Return encounters with same community within search radius (dist_dd).
 
@@ -323,6 +366,8 @@ def area_caches(sender, instance, *args, **kwargs):
         instance.as_html = instance.derived_html
     else:
         logger.info("[area_caches] New Area, re-save to populate caches.")
+    if instance.code:
+        instance.code = slugify(instance.code)
 
     # FAUNA ENC
     # Survey

@@ -49,13 +49,18 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             'encountered_on': DateTimePickerInput(options={"format": "D/MM/YYYY HH:mm"}),
             'encountered_by': ModelSelect2Widget(
                 model=get_user_model(),
-                search_fields=["name__icontains", "username__icontains", "role__icontains", "email__icontains"]
+                search_fields=[
+                    "name__icontains",
+                    "username__icontains",
+                    "role__icontains",
+                    "email__icontains"]
             ),
         }
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
         super(TaxonAreaEncounterForm, self).__init__(*args, **kwargs)
+        self.fields['area_type'].choices = AreaEncounter.TAXON_AREA_TYPES
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
@@ -103,13 +108,19 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
             'encountered_on': DateTimePickerInput(options={"format": "D/MM/YYYY HH:mm"}),
             'encountered_by': ModelSelect2Widget(
                 model=get_user_model(),
-                search_fields=["name__icontains", "username__icontains", "role__icontains", "email__icontains"]
+                search_fields=[
+                    "name__icontains",
+                    "username__icontains",
+                    "role__icontains",
+                    "email__icontains"
+                ]
             ),
         }
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
         super(CommunityAreaEncounterForm, self).__init__(*args, **kwargs)
+        self.fields['area_type'].choices = AreaEncounter.COMMUNITY_AREA_TYPES
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
@@ -130,7 +141,6 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
                 'area_type',
                 'code',
                 'geom',
-                'point',
                 'accuracy',
             ),
             ButtonHolder(

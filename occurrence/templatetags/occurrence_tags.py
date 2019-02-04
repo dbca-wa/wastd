@@ -98,3 +98,25 @@ def areaencounter_card(occurrence, subject, user, block=False, label=False):
         "block": block,
         "label": label
     }
+
+
+@register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
+def taxonareaencounter_detail_link(original, block=False, label=False):
+    """Render an "view taxon area occurrence" link for a taxon."""
+    return {
+        "detail_url": original.detail_url,
+        "subject": "taxon",
+        "block": block,
+        "label": label
+    }
+
+
+@register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
+def communityareaencounter_detail_link(original, block=False, label=False):
+    """Render an "view community area occurrence" link for a taxon."""
+    return {
+        "detail_url": original.detail_url,
+        "subject": "community",
+        "block": block,
+        "label": label
+    }

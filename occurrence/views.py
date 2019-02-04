@@ -9,15 +9,22 @@ from django.views.generic.edit import (
     # DeleteView,
     # UpdateView
 )
-from taxonomy.models import (Taxon, Community)
+from django.views.generic.detail import DetailView
 
-# ModelForms
-from .forms import (AreaEncounterForm, TaxonAreaEncounterForm, CommunityAreaEncounterForm)
+from taxonomy.models import (Taxon, Community)
+from occurrence.models import (TaxonAreaEncounter, CommunityAreaEncounter)
+from occurrence.forms import (
+    AreaEncounterForm,
+    TaxonAreaEncounterForm,
+    CommunityAreaEncounterForm)
 
 # select2 forms
 # from .admin import (AreaForm, TaxonAreaForm, CommunityAreaForm)
 
 
+# ---------------------------------------------------------------------------#
+# Create Views
+#
 class AreaEncounterCreateView(CreateView):
     """Create view for AreaEncounter."""
 
@@ -56,3 +63,46 @@ class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
         if "area_code" in self.kwargs:
             initial["code"] = self.kwargs["area_code"]
         return initial
+
+
+# ---------------------------------------------------------------------------#
+# Detail Views
+#
+class TaxonAreaEncounterDetailView(DetailView):
+    """DetailView for TaxonAreaEncounter."""
+
+    model = TaxonAreaEncounter
+    context_object_name = "original"
+    template_name = "occurrence/taxonareaencounter_detail.html"
+
+    def get_object(self):
+        """Get Object by name_id."""
+        object = TaxonAreaEncounter.objects.get(pk=self.kwargs.get("occ_pk"))
+        return object
+
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(TaxonAreaEncounterDetailView, self).get_context_data(**kwargs)
+        # obj = self.get_object()
+        #
+        return context
+
+
+class CommunityAreaEncounterDetailView(DetailView):
+    """DetailView for CommunityAreaEncounter."""
+
+    model = TaxonAreaEncounter
+    context_object_name = "original"
+    template_name = "occurrence/communityareaencounter_detail.html"
+
+    def get_object(self):
+        """Get Object by name_id."""
+        object = CommunityAreaEncounter.objects.get(pk=self.kwargs.get("occ_pk"))
+        return object
+
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(CommunityAreaEncounterDetailView, self).get_context_data(**kwargs)
+        # obj = self.get_object()
+        #
+        return context

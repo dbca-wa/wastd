@@ -26,11 +26,22 @@ from wastd.api import router as wastd_router
 from wastd.observations.models import Area, Encounter, AnimalEncounter
 from occurrence.models import CommunityAreaEncounter
 from wastd.observations.views import (
-    import_odka_view, schema_view, HomeView,
-    EncounterTableView, AnimalEncounterTableView)
+    import_odka_view,
+    schema_view,
+    HomeView,
+    EncounterTableView,
+    AnimalEncounterTableView)
 from taxonomy.views import (
-    update_taxon, TaxonListView, CommunityListView, TaxonDetailView, CommunityDetailView)
-from occurrence.views import (TaxonAreaEncounterCreateView, CommunityAreaEncounterCreateView)
+    update_taxon,
+    TaxonListView,
+    TaxonDetailView,
+    CommunityListView,
+    CommunityDetailView)
+from occurrence.views import (
+    TaxonAreaEncounterCreateView,
+    TaxonAreaEncounterDetailView,
+    CommunityAreaEncounterCreateView,
+    CommunityAreaEncounterDetailView)
 
 # register all adminactions
 actions.add_to_site(site)
@@ -42,6 +53,7 @@ urlpatterns = [
     # Species
     re_path(r'^species/$', TaxonListView.as_view(), name='taxon-list'),
     re_path(r'^species/(?P<name_id>[0-9]+)/$', TaxonDetailView.as_view(), name='taxon-detail'),
+    # Taxon occ create
     re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/report$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxon-occurrence-create'),
@@ -51,10 +63,16 @@ urlpatterns = [
     re_path(r'^species/occurrences/report/$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxonareaencounter-create'),
+    # Taxon occ detail
+    re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)$',
+            TaxonAreaEncounterDetailView.as_view(),
+            name='taxon-occurrence-detail'),
+
 
     # Communities
     re_path(r'^communities/$', CommunityListView.as_view(), name='community-list'),
     re_path(r'^communities/(?P<pk>[0-9]+)/$', CommunityDetailView.as_view(), name='community-detail'),
+    # Com occ create
     re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/report$',
             CommunityAreaEncounterCreateView.as_view(),
             name='community-occurrence-create'),
@@ -64,6 +82,10 @@ urlpatterns = [
     re_path(r'^communities/occurrences/report/$',
             CommunityAreaEncounterCreateView.as_view(),
             name='communityareaencounter-create'),
+    # Com occ detail
+    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)$',
+            CommunityAreaEncounterDetailView.as_view(),
+            name='community-occurrence-detail'),
 
     # Helpers
     re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/healthcheck.html'), name='healthcheck'),

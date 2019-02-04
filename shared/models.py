@@ -68,6 +68,7 @@ class LegacySourceMixin(models.Model):
     SOURCE_MANUAL_ENTRY = 0
     SOURCE_PAPER_DATASHEET = 1
     SOURCE_DIGITAL_CAPTURE_ODK = 2
+    SOURCE_PARTIAL_SURVEY = 3
     SOURCE_THREATENED_FAUNA = 10
     SOURCE_THREATENED_FLORA = 11
     SOURCE_THREATENED_COMMUNITIES = 12
@@ -87,6 +88,7 @@ class LegacySourceMixin(models.Model):
         (SOURCE_MANUAL_ENTRY, 'Direct entry'),
         (SOURCE_PAPER_DATASHEET, 'Manual entry from paper datasheet'),
         (SOURCE_DIGITAL_CAPTURE_ODK, 'Digital data capture (ODK)'),
+        (SOURCE_PARTIAL_SURVEY, 'Partial survey'),
         (SOURCE_THREATENED_FAUNA, 'Threatened Fauna'),
         (SOURCE_THREATENED_FLORA, 'Threatened Flora'),
         (SOURCE_THREATENED_COMMUNITIES, 'Threatened Communities'),
