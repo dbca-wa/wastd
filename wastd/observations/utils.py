@@ -2727,7 +2727,7 @@ def odka_forms(url=env('ODKA_URL'),
 
 
 def odka_submission_ids(form_id,
-                        limit=1000000,
+                        limit=10000,
                         url=env('ODKA_URL'),
                         un=env('ODKA_UN'),
                         pw=env('ODKA_PW'),
@@ -2775,23 +2775,36 @@ def odka_submission_ids(form_id,
     logger.info("[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(form_id))
     logger.debug("[odka_submission_ids] Retrieving submission IDs from '{0}'...".format(api))
 
-    res = requests.get(api, auth=au, params=pars)
-    parsed = xmltodict.parse(res.content, xml_attribs=True)
+    resumption_cursor = ''
+    resume = True
+    id_list = []
+    counter = 1
 
-    if not parsed["idChunk"]["idList"]:
-        # No submissions.
-        ids = []
-    elif type(parsed["idChunk"]["idList"]["id"]) == str:
-        # One submission.
-        ids = [parsed["idChunk"]["idList"]["id"], ]
-    else:
-        # More than one submission.
-        ids = parsed["idChunk"]["idList"]["id"]
+    while resume:
 
-    # resumption_cursor = parsed["idChunk"]["resumptionCursor"]
+        logger.info("[odka_submission_ids] Retrieving chunk {0}...".format(counter))
+        res = requests.get(api, auth=au, params=pars)
+        parsed = xmltodict.parse(res.content, xml_attribs=True)
 
-    logger.info("[odka_submission_ids] Done, retrieved {0} submission IDs.".format(len(ids)))
-    return ids
+        if not parsed["idChunk"]["idList"]:
+            # No submissions.
+            ids = []
+        elif type(parsed["idChunk"]["idList"]["id"]) == str:
+            # One submission.
+            ids = [parsed["idChunk"]["idList"]["id"], ]
+        else:
+            # More than one submission.
+            ids = parsed["idChunk"]["idList"]["id"]
+
+        id_list += ids
+        logger.info("[odka_submission_ids] Got {0} new IDs, total {1}".format(len(ids), len(id_list)))
+        resume = (resumption_cursor != parsed["idChunk"]["resumptionCursor"])
+        resumption_cursor = parsed["idChunk"]["resumptionCursor"]
+        pars["cursor"] = resumption_cursor
+        counter += 1
+
+    logger.info("[odka_submission_ids] Done, retrieved {0} submission IDs.".format(len(id_list)))
+    return id_list
 
 
 def odka_submission(form_id,
