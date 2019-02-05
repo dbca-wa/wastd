@@ -1,5 +1,5 @@
 [run]
 include = wastd/*
-omit = *migrations*, *tests*, venv/*
+omit = *migrations*, *tests*, venv/*, *site-packages*, node_modules/*, htmlcov/*, docs/*, __init__*
 plugins =
     django_coverage_plugin
