@@ -57,8 +57,6 @@ def reconstruct_missing_surveys(buffer_mins=30):
     create a Survey with aggregated data.
 
     Crosstab: See pandas
-
-
     """
     logger.info("[QA][reconstruct_missing_surveys] Rounding up the orphans...")
     tne = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)

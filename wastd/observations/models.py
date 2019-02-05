@@ -1362,12 +1362,20 @@ def claim_encounters(survey_instance):
 
 
 @receiver(pre_save, sender=Survey)
-def survey_pre_save(sender, instance, *args, **kwargs):
-    """Survey: Claim site, end point."""
+def survey_pre_save(sender, instance, buffer_mins=30, *args, **kwargs):
+    """Survey: Claim site, end point, adjust end time if encounters already claimed."""
     if instance.status == Survey.STATUS_NEW and not instance.site:
         instance.site = guess_site(instance)
     if instance.status == Survey.STATUS_NEW and not instance.end_time:
         claim_end_points(instance)
+    if instance.encounters and (
+            instance.end_time == instance.start_time + timedelta(hours=6)):
+        et = instance.end_time
+        instance.end_time = instance.encounters.last().when + timedelta(minutes=buffer_mins)
+        instance.end_comments = "[QA][Adjusted SiteVisitEnd] Survey end adjusted."
+        logger.info("[survey_pre_save] End time adjusted from {0} to {1}, "
+                    "{2} minutes after last of {3} encounters.".format(
+                        et, instance.end_time, buffer_mins, len(instance.encounters)))
 
 
 @receiver(post_save, sender=Survey)
