@@ -3006,12 +3006,7 @@ class NestTagObservation(Observation):
 
     def save(self, *args, **kwargs):
         """Cache name, centroid and northern extent."""
-        if self.encounter.status == Encounter.STATUS_NEW and (not self.encounter.name):
-            self.encounter.name = self.name
-            self.encounter.save(update_fields=['name', ])
-        if self.encounter.status == Encounter.STATUS_NEW:
-            self.tag_label = self.tag_label.upper().replace(" ", "")
-            self.encounter.save(update_fields=['tag_label', ])
+
         super(NestTagObservation, self).save(*args, **kwargs)
 
     @property
@@ -3031,6 +3026,17 @@ class NestTagObservation(Observation):
             '' if not self.date_nest_laid else self.date_nest_laid.strftime("%Y-%m-%d"),
             '' if not self.tag_label else self.tag_label.upper().replace(" ", ""),
         ])
+
+
+@receiver(pre_save, sender=NestTagObservation)
+def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
+    """NestTagObservation pre_save: sanitise tag_label, name Encounter after tag."""
+    if instance.encounter.status == Encounter.STATUS_NEW:
+        instance.tag_label = instance.tag_label.upper().replace(
+            " ", "").replace("-", "").replace("_", "").replace(".", "")
+    if instance.encounter.status == Encounter.STATUS_NEW and (not instance.encounter.name):
+        instance.encounter.name = instance.name
+        instance.encounter.save(update_fields=['name', ])
 
 
 @python_2_unicode_compatible
