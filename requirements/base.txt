@@ -93,6 +93,10 @@ django-ajax-selects
 django-map-widgets==0.1.9
 django-bootstrap-datepicker-plus
 
+# Logging
+# ------------------------------------------------
+sentry-sdk==0.7.0
+
 # Models
 # ------------------------------------------------
 django-polymorphic==2.0.3
