@@ -3514,8 +3514,9 @@ class TurtleNestObservation(Observation):
     @property
     def no_emerged(self):
         """The number of hatchlings leaving or departed from nest is S-(L+D)."""
-        return self.no_egg_shells - (
-            self.no_live_hatchlings + self.no_dead_hatchlings)
+        return (self.no_egg_shells or 0) - (
+            (self.no_live_hatchlings or 0) + (self.no_dead_hatchlings or 0)
+        )
 
     @property
     def egg_count_calculated(self):
