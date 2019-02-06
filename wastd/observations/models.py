@@ -3004,10 +3004,9 @@ class NestTagObservation(Observation):
         """The unicode representation."""
         return u"{0} ({1})".format(self.name, self.get_status_display())
 
-    def save(self, *args, **kwargs):
-        """Cache name, centroid and northern extent."""
-
-        super(NestTagObservation, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     """Cache name, centroid and northern extent."""
+    #     super(NestTagObservation, self).save(*args, **kwargs)
 
     @property
     def history_url(self):
@@ -3031,7 +3030,7 @@ class NestTagObservation(Observation):
 @receiver(pre_save, sender=NestTagObservation)
 def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
     """NestTagObservation pre_save: sanitise tag_label, name Encounter after tag."""
-    if instance.encounter.status == Encounter.STATUS_NEW:
+    if instance.encounter.status == Encounter.STATUS_NEW and instance.tag_label:
         instance.tag_label = instance.tag_label.upper().replace(
             " ", "").replace("-", "").replace("_", "").replace(".", "")
     if instance.encounter.status == Encounter.STATUS_NEW and (not instance.encounter.name):
