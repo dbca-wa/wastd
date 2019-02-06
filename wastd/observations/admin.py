@@ -14,6 +14,9 @@ from django.utils.safestring import mark_safe
 
 # from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
+from django_select2.forms import ModelSelect2Widget
+from django import forms
+
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
@@ -234,6 +237,7 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
         'status_display', 'comments')
     list_filter = ('encounter__area', 'flipper_tag_id', 'tag_label', 'status')
     search_fields = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
+    readonly_fields = ('encounter', )
 
     def area(self, obj):
         """Make data source readable."""
@@ -291,6 +295,12 @@ leaflet_settings = {
         'map_width': '100%',
         'display_raw': 'true',
         'map_srid': 4326, })}
+survey_settings = {
+    'widget': ModelSelect2Widget(
+        model=Survey,
+        search_fields=["site_name__icontains", "reporter__name__icontains", ]
+    )
+}
 
 
 class FieldMediaAttachmentInline(admin.TabularInline):
@@ -389,6 +399,12 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
     # select2 widgets for searchable dropdowns
     form = EncounterAdminForm
+    survey = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Survey,
+            search_fields=["site_name__icontains", "reporter__name__icontains", ]
+        )
+    )
 
     # Date filter widget
     date_hierarchy = 'when'
