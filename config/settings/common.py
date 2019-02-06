@@ -79,7 +79,7 @@ THIRD_PARTY_APPS = (
     'background_task',              # Job queue
 
     'gunicorn',                      # Web server
-    'raven.contrib.django.raven_compat',  # Sentry logging
+    # 'raven.contrib.django.raven_compat',  # Sentry logging Raven client
 )
 
 # Apps specific for this project go here.
@@ -203,10 +203,14 @@ FIXTURE_DIRS = (
 # ------------------------------------------------------------------------------
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
                     default='django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = env('EMAIL_HOST', default='smtp.corporateict.domain')
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.lan.fyi')
 EMAIL_PORT = env('EMAIL_PORT', default=25)
-DEFAULT_FROM_EMAIL = '"TSC" <tsc-noreply@dbca.wa.gov.au>'
+DEFAULT_FROM_EMAIL = 'tsc-noreply@dbca.wa.gov.au'
 EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[TSC] ')
+
+# Sentry email settings
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+SENTRY_ADMINS = ("Florian.Mayer@dbca.wa.gov.au",)
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------

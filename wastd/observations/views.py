@@ -7,6 +7,7 @@
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from rest_framework.renderers import CoreJSONRenderer
+from sentry_sdk import capture_message
 
 
 # Tables
@@ -29,8 +30,10 @@ from wastd.observations.tasks import import_odka
 @csrf_exempt
 def import_odka_view(request):
     """Import all available ODK-Aggregate forms."""
+    capture_message("[wastd.observations.views.import_odka_view] Starting ODKA import.", level="error")
     msg = import_odka.now()
     messages.success(request, msg)
+    capture_message(msg, level="error")
     return HttpResponseRedirect("/")
 
 
