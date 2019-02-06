@@ -3009,6 +3009,9 @@ class NestTagObservation(Observation):
         if self.encounter.status == Encounter.STATUS_NEW and (not self.encounter.name):
             self.encounter.name = self.name
             self.encounter.save(update_fields=['name', ])
+        if self.encounter.status == Encounter.STATUS_NEW:
+            self.tag_label = self.tag_label.upper().replace(" ", "")
+            self.encounter.save(update_fields=['tag_label', ])
         super(NestTagObservation, self).save(*args, **kwargs)
 
     @property
