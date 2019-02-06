@@ -13,6 +13,8 @@ import environ
 from confy import env, database
 from unipath import Path
 import os
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # import confy
 # confy.read_environment_file()
@@ -667,6 +669,10 @@ LOGGING = {
 # Logging to sentry.dbca.wa.gov.au
 if env('RAVEN_DSN', False):
     RAVEN_CONFIG = {'dsn': env('RAVEN_DSN')}
+    sentry_sdk.init(
+        dsn=env('RAVEN_DSN'),
+        integrations=[DjangoIntegration()]
+    )
 
 
 SETTINGS_EXPORT = [
