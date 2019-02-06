@@ -14,6 +14,40 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="container-fluid" id="wrap">
+
+<!-- Breadcrumbs -->
+  <div class="row" id="occ-detail-breadcrumb">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{% url 'taxon-list' %}">Species</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{% url 'taxon-list' %}?name_id={{ original.taxon.name_id }}"
+          title="List {{ original.taxon.taxonomic_name }} with its parents and immediate children.">
+            Taxonomy of {{ original.taxon }}</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{% url 'taxon-detail' original.taxon.name_id %}">{{ original.taxon }}</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="#">{{ original }}</a>
+        </li>
+      </ol>
+    </nav>
+  </div><!-- /#taxon-detail-breadcrumb -->
+
+  <div class="container-fluid">
+
+    <div class="row">
+    <!-- Taxon details -->
+    <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
+    <div class="jumbotron">
+
+
 <div class="d-flex flex-row">
   <div class="mr-auto">
     <h5>[{{ original.code }}] {{ original.name }}</h5>
@@ -34,7 +68,12 @@
   </div>
 </div>
 
-<!-- Time and location -->
+<div class="row">
+  <div class="col col-12">
+    <h6>{{ original.get_area_type_display }}</h6>
+  </div>
+</div>
+
 <div class="row">
   <div class="col col-12">
   <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
@@ -66,4 +105,15 @@
   {{ original.description|safe }}
 </div>
 </div><!-- /.row -->
+
+ </div><!-- /.jumbotron -->
+    </div><!-- /.col#taxon-detail-main -->
+
+    <div class="col-12 col-md-6 col-lg-4" id="occ-map">
+        <div id="map">
+          {% leaflet_map "detailmap" callback="window.map_init" %}
+        </div>
+    </div><!-- /.col#taxon-occ -->
+
+
 {% endblock content %}

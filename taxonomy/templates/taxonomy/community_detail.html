@@ -128,7 +128,7 @@
         {% for site in occ_list %}
             <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
               <h5 class="card-header">
-                {{ site.grouper|upper }}
+                {{ site.name }} <p class="small text-muted">{{ site.grouper|upper }}</small>
                 <small class="float-right">
                   {% conservationaction_add request.user "communities" area=site.grouper %}
                 </small>
