@@ -51,6 +51,8 @@ from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
 
 from wastd.users.models import User
+from shared.utils import sanitize_tag_label
+
 
 logger = logging.getLogger(__name__)
 
@@ -3031,8 +3033,7 @@ class NestTagObservation(Observation):
 def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
     """NestTagObservation pre_save: sanitise tag_label, name Encounter after tag."""
     if instance.encounter.status == Encounter.STATUS_NEW and instance.tag_label:
-        instance.tag_label = instance.tag_label.upper().replace(
-            " ", "").replace("-", "").replace("_", "").replace(".", "")
+        instance.tag_label = sanitize_tag_label(instance.tag_label)
     if instance.encounter.status == Encounter.STATUS_NEW and (not instance.encounter.name):
         instance.encounter.name = instance.name
         instance.encounter.save(update_fields=['name', ])

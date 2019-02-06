@@ -28,6 +28,8 @@ from django.utils.dateparse import parse_datetime
 
 from wastd.observations.models import *
 from wastd.users.models import User
+from shared.utils import sanitize_tag_label
+
 
 logger = logging.getLogger(__name__)
 
@@ -745,7 +747,7 @@ def handle_turtlenesttagobs(d, e, m=None):
             status=m["tag_status"][d["status"]] if m else d["status"],
             flipper_tag_id=d["flipper_tag_id"],
             date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
-            tag_label=d["tag_label"])
+            tag_label=sanitize_tag_label(d["tag_label"]))
         logger.debug("[handle_turtlenesttagobs] created new NTO")
         dd.save()
         logger.debug("[handle_turtlenesttagobs] saved NTO")
