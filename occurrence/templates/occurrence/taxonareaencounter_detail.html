@@ -9,6 +9,7 @@
   width: 350px; /* narrower popup */
   padding: -10px;  /* fix close button position */
 }
+.leaflet-tooltip { width: 200px; word-wrap: break-word; }
 </style>
 {% endcompress %}
 {% endblock %}
@@ -17,7 +18,7 @@
 
 <div class="container-fluid" id="wrap">
 
-<!-- Breadcrumbs -->
+  <!-- Breadcrumbs -->
   <div class="row" id="occ-detail-breadcrumb">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
@@ -38,77 +39,88 @@
         </li>
       </ol>
     </nav>
-  </div><!-- /#taxon-detail-breadcrumb -->
+  </div><!-- /.row#occ-detail-breadcrumb -->
 
   <div class="container-fluid">
 
-    <div class="row">
-    <!-- Taxon details -->
-    <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
-    <div class="jumbotron">
+    <div class="row" id="row-occ-detail">
+      <!-- Taxon details -->
+      <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="occ-detail-main">
+        <div class="jumbotron">
 
 
-<div class="d-flex flex-row">
-  <div class="mr-auto">
-    <h3>Species occurrence</h3>
-  </div>
-  <div>
-     <a href="{{ original.absolute_admin_url }}"
-        class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
-        target="_" title="Edit record in new tab">
-        <i class="oi oi-pencil"></i>
-        {{ original.get_status_display }}
-    </a>
-  </div>
-</div>
+          <div class="d-flex flex-row">
+            <div class="mr-auto">
+              <h3>Species occurrence</h3>
+            </div>
+            <div>
+               <a href="{{ original.absolute_admin_url }}"
+                  class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
+                  target="_" title="Edit record in new tab">
+                  <i class="oi oi-pencil"></i>
+                  {{ original.get_status_display }}
+              </a>
+              {% areaencounter_update_link original block=False label=False %}
+            </div>
+          </div>
 
-<div class="row">
-  <div class="col col-12">
-    <h6>{{ original.taxon }}</h6>
-  </div>
-</div>
+          <div class="row">
+            <div class="col col-12">
+              <h6>{{ original.taxon }}</h6>
+            </div>
+          </div>
 
-<div class="row">
-  <div class="col col-12">
-  <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
-  {{ original.encountered_on|date:"r" }}
-</div>
-</div>
+          <div class="row">
+            <div class="col col-12">
+            <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
+            {{ original.encountered_on|date:"r" }}
+            </div>
+          </div>
 
-<div class="row">
-  <div class="col col-12">
-  <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
-  {{ original.get_area_type_display }} [{{ original.code }}] {% if original.name %}{{ original.name }}{% endif %}
-</div>
-</div>
+          <div class="row">
+            <div class="col col-12">
+            <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
+            {{ original.get_area_type_display }} [{{ original.code }}] {% if original.name %}{{ original.name }}{% endif %}
+            </div>
+          </div>
 
-<div class="row">
-  <div class="col col-12">
-  <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
-  <a href="mailto:{{ original.encountered_by.email }}"
-     target="_"
-     title="Send email to {{ original.encountered_by.fullname }}"
-     subject="Question about TSC Encounter {{ original }}">
-    {{ original.encountered_by.name }}
-  </a>
-</div>
-</div><!-- /.row -->
+          <div class="row">
+            <div class="col col-12">
+            <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
+            <a href="mailto:{{ original.encountered_by.email }}"
+               target="_"
+               title="Send email to {{ original.encountered_by.fullname }}"
+               subject="Question about TSC Encounter {{ original }}">
+              {{ original.encountered_by.name }}
+            </a>
+          </div>
+          </div><!-- /.row -->
 
-<div class="row">
-  <div class="col col-12">
-    <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
-    {{ original.description|safe }}
-</div>
-</div><!-- /.row -->
+          <div class="row">
+            <div class="col col-12">
+              <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
+              {{ original.description|safe }}
+            </div>
+          </div><!-- /.row -->
 
- </div><!-- /.jumbotron -->
-    </div><!-- /.col#taxon-detail-main -->
+        </div><!-- /.jumbotron -->
+      </div><!-- /.col#occ-detail-main -->
 
-    <div class="col-12 col-md-6 col-lg-4" id="occ-map">
-        <div id="map">
-          {% leaflet_map "detailmap" callback="window.map_init" %}
-        </div>
-    </div><!-- /.col#taxon-occ -->
+      <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
+          <div id="map">
+            {% leaflet_map "detailmap" callback="window.map_init" %}
+          </div>
+      </div><!-- /.col#occ-map -->
+
+    </div><!-- .row#row-occ-detail -->
+
+    <div class="row" id="row-occ-extra">
+      <div class="col col-12">
+      </div>
+    </div><!-- .row#row-occ-extra -->
+
+  </div><!-- /.container-fluid#container-coredata -->
+</div><!-- /.wrap -->
 
 
 {% endblock content %}
@@ -201,9 +213,8 @@ function map_init(map, options) {
 
     /* Actions taken on each feature: title, popup, info preview */
     function oef_rel (feature, layer) {
-      layer.bindTooltip('<strong>' + feature.properties.label +
-        '</strong><br/><span class="oi oi-calendar" aria-hidden="true">' +
-        feature.properties.encountered_on);
+      layer.bindTooltip('<strong><span class="oi oi-calendar" aria-hidden="true">' +
+        feature.properties.encountered_on + '</strong><br/>');
       layer.bindPopup(feature.properties.as_html);
     }
 

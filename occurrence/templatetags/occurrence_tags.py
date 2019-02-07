@@ -120,3 +120,13 @@ def communityareaencounter_detail_link(original, block=False, label=False):
         "block": block,
         "label": label
     }
+
+
+@register.inclusion_tag('occurrence/include/areaencounter_update_link.html', takes_context=False)
+def areaencounter_update_link(original, block=False, label=False):
+    """Render an "update taxon area occurrence" link for a taxon."""
+    return {
+        "update_url": original.update_url,
+        "block": block,
+        "label": label
+    }

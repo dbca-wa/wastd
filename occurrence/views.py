@@ -3,11 +3,12 @@
 from __future__ import unicode_literals
 
 # from django.shortcuts import render
+from django.urls import reverse
 from django.views.generic.edit import (
     # FormView,
-    CreateView
+    CreateView,
     # DeleteView,
-    # UpdateView
+    UpdateView
 )
 from django.views.generic.detail import DetailView
 
@@ -33,6 +34,22 @@ class AreaEncounterCreateView(CreateView):
     success_url = "/"  # default: form model's get_absolute_url()
 
 
+class AreaEncounterUpdateView(UpdateView):
+    """Update view for AreaEncounter."""
+
+    template_name = "occurrence/areaencounter_form.html"
+    form_class = AreaEncounterForm
+    success_url = "/"  # default: form model's get_absolute_url()
+
+    def get_object(self, queryset=None):
+        """Accommodate custom object pk from url conf."""
+        return self.model.objects.get(pk=self.kwargs["occ_pk"])
+
+    def get_success_url(self):
+        """Success: show AE detail view."""
+        return self.model.detail_url
+
+
 class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
     """Create view for TaxonAreaEncounter."""
 
@@ -49,6 +66,20 @@ class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
         return initial
 
 
+class TaxonAreaEncounterUpdateView(AreaEncounterUpdateView):
+    """UpdateView for TaxonAreaEncounter."""
+
+    template_name = "occurrence/taxonareaencounter_form.html"
+    form_class = TaxonAreaEncounterForm
+    model = TaxonAreaEncounter
+
+    def get_success_url(self):
+        """Success: show TAE detail view."""
+        obj = self.get_object()
+        return reverse('taxon-occurrence-detail',
+                       kwargs={'name_id': obj.taxon.name_id, 'occ_pk': obj.pk})
+
+
 class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
     """Create view for CommunityAreaEncounter."""
 
@@ -63,6 +94,20 @@ class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
         if "area_code" in self.kwargs:
             initial["code"] = self.kwargs["area_code"]
         return initial
+
+
+class CommunityAreaEncounterUpdateView(AreaEncounterUpdateView):
+    """UpdateView for CommunityAreaEncounter."""
+
+    template_name = "occurrence/communityareaencounter_form.html"
+    form_class = CommunityAreaEncounterForm
+    model = CommunityAreaEncounter
+
+    def get_success_url(self):
+        """Success: show CAE detail view."""
+        obj = self.get_object()
+        return reverse('community-occurrence-detail',
+                       kwargs={'pk': obj.community.pk, 'occ_pk': obj.pk})
 
 
 # ---------------------------------------------------------------------------#

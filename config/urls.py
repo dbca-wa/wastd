@@ -39,8 +39,10 @@ from taxonomy.views import (
     CommunityDetailView)
 from occurrence.views import (
     TaxonAreaEncounterCreateView,
+    TaxonAreaEncounterUpdateView,
     TaxonAreaEncounterDetailView,
     CommunityAreaEncounterCreateView,
+    CommunityAreaEncounterUpdateView,
     CommunityAreaEncounterDetailView)
 
 # register all adminactions
@@ -63,10 +65,12 @@ urlpatterns = [
     re_path(r'^species/occurrences/report/$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxonareaencounter-create'),
-    # Taxon occ detail
     re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)$',
             TaxonAreaEncounterDetailView.as_view(),
             name='taxon-occurrence-detail'),
+    re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)/update$',
+            TaxonAreaEncounterUpdateView.as_view(),
+            name='taxon-occurrence-update'),
 
 
     # Communities
@@ -82,10 +86,12 @@ urlpatterns = [
     re_path(r'^communities/occurrences/report/$',
             CommunityAreaEncounterCreateView.as_view(),
             name='communityareaencounter-create'),
-    # Com occ detail
     re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)$',
             CommunityAreaEncounterDetailView.as_view(),
             name='community-occurrence-detail'),
+    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)/update$',
+            CommunityAreaEncounterUpdateView.as_view(),
+            name='community-occurrence-update'),
 
     # Helpers
     re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/healthcheck.html'), name='healthcheck'),

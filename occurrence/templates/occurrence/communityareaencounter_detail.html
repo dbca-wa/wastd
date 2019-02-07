@@ -9,60 +9,234 @@
   width: 350px; /* narrower popup */
   padding: -10px;  /* fix close button position */
 }
+.leaflet-tooltip { width: 200px; word-wrap: break-word; }
 </style>
 {% endcompress %}
 {% endblock %}
 
 {% block content %}
-<div class="d-flex flex-row">
-  <div class="mr-auto">
-    <h5>[{{ original.code }}] {{ original.name }}</h5>
-  </div>
-  <div>
-     <a href="{{ original.absolute_admin_url }}"
-        class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
-        target="_" title="Edit record in new tab">
-        <i class="oi oi-pencil"></i>
-        {{ original.get_status_display }}
-    </a>
-  </div>
-</div>
 
-<div class="row">
-  <div class="col col-12">
-    <h6>{{ original.community }}</h6>
-  </div>
-</div>
+<div class="container-fluid" id="wrap">
 
-<div class="row">
-  <div class="col col-12">
-    <h6>{{ original.get_area_type_display }}</h6>
-  </div>
-</div>
+  <!-- Breadcrumbs -->
+  <div class="row" id="occ-detail-breadcrumb">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{% url 'community-list' %}">Communities</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{% url 'community-detail' original.community.pk %}">{{ original.community }}</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="#">{{ original }}</a>
+        </li>
+      </ol>
+    </nav>
+  </div><!-- /.row#occ-detail-breadcrumb -->
 
-<!-- Time and location -->
-<div class="row">
-  <div class="col col-12">
-  <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
-  {{ original.encountered_on|date:"r" }}
-</div>
-</div>
+  <div class="container-fluid">
 
-<div class="row">
-  <div class="col col-12">
-  <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
-  <a href="mailto:{{ original.encountered_by.email }}"
-     target="_"
-     title="Send email to {{ original.encountered_by.fullname }}"
-     subject="Question about TSC Encounter {{ original }}">
-    {{ original.encountered_by.name }}
-  </a>
-</div>
-</div><!-- /.row -->
+    <div class="row" id="row-occ-detail">
+      <!-- Taxon details -->
+      <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="occ-detail-main">
+        <div class="jumbotron">
 
-<div class="row">
-  <div class="col col-12">
-  {{ original.description|safe }}
-</div>
-</div><!-- /.row -->
+
+          <div class="d-flex flex-row">
+            <div class="mr-auto">
+              <h3>Community occurrence</h3>
+            </div>
+            <div>
+               <a href="{{ original.absolute_admin_url }}"
+                  class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
+                  target="_" title="Edit record in new tab">
+                  <i class="oi oi-pencil"></i>
+                  {{ original.get_status_display }}
+              </a>
+              {% areaencounter_update_link original block=False label=False %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-12">
+              <h6>{{ original.community }}</h6>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-12">
+            <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
+            {{ original.encountered_on|date:"r" }}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-12">
+            <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
+            {{ original.get_area_type_display }} [{{ original.code }}] {% if original.name %}{{ original.name }}{% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-12">
+            <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
+            <a href="mailto:{{ original.encountered_by.email }}"
+               target="_"
+               title="Send email to {{ original.encountered_by.fullname }}"
+               subject="Question about TSC Encounter {{ original }}">
+              {{ original.encountered_by.name }}
+            </a>
+          </div>
+          </div><!-- /.row -->
+
+          <div class="row">
+            <div class="col col-12">
+              <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
+              {{ original.description|safe }}
+            </div>
+          </div><!-- /.row -->
+
+        </div><!-- /.jumbotron -->
+      </div><!-- /.col#occ-detail-main -->
+
+      <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
+          <div id="map">
+            {% leaflet_map "detailmap" callback="window.map_init" %}
+          </div>
+      </div><!-- /.col#occ-map -->
+
+      </div><!-- .row#row-occ-detail -->
+
+      <div class="row" id="row-occ-extra">
+        <div class="col col-12">
+        </div>
+      </div><!-- .row#row-occ-extra -->
+
+  </div><!-- /.container-fluid#container-coredata -->
+</div><!-- /.wrap -->
+
+
 {% endblock content %}
+
+{% block javascript%}
+{{ block.super }}
+{% compress js %}
+<script type="text/javascript">
+/*
+ * Workaround for 1px lines appearing in some browsers due to fractional transforms
+ * and resulting anti-aliasing.
+ * https://github.com/Leaflet/Leaflet/issues/3575
+ */
+(function(){
+    // L.Icon.Default.imagePath = '/static/leaflet/images/';
+    delete L.Icon.Default.prototype._getIconUrl
+
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
+      iconUrl: "/static/leaflet/images/marker-icon.png",
+      shadowUrl: "/static/leaflet/images/marker-shadow.png"
+    })
+
+
+    var originalInitTile = L.GridLayer.prototype._initTile
+    L.GridLayer.include({
+        _initTile: function (tile) {
+            originalInitTile.call(this, tile);
+
+            var tileSize = this.getTileSize();
+
+            tile.style.width = tileSize.x + 1 + 'px';
+            tile.style.height = tileSize.y + 1 + 'px';
+        }
+    });
+})();
+
+function map_init(map, options) {
+
+    /* Point style */
+    var pointstyle = {
+        "clickable": true
+    };
+
+    /* Polygon style */
+    var polystyle = {
+        "color": "#0009ff",
+        "weight": 1,
+        "opacity": 0.65
+    };
+
+    /* Map a feature to an icon class */
+    function getIcon(feature){
+        if (feature.properties.leaflet_icon){
+            return feature.properties.leaflet_icon
+        } else {
+            return "eye"
+        }
+    }
+
+    /* Map a feature to an marker colour */
+    function getMarkerColor(feature){
+        if (feature.properties.leaflet_colour){
+            return feature.properties.leaflet_colour
+        } else {
+            return "red"
+        }
+    }
+
+    /* Use FontAwesome icons for Leafet.awesome-markers */
+    L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
+
+    /* Return a grouping variable - using feature.id disables grouping */
+    function getUnique(feature){return feature.id}
+
+    /* Override default Marker, set colour, symbol; add mouse hover title */
+    function ptl(feature, latlng) {
+        /* https://github.com/lvoogdt/Leaflet.awesome-markers */
+        var icon = new L.AwesomeMarkers.icon({
+            icon: getIcon(feature),
+            iconColor: "white",
+            markerColor: getMarkerColor(feature)
+            // prefix: 'fa',
+            // spin:false
+        });
+
+        return L.marker(latlng, {icon: icon});
+        //title: feature.properties.leaflet_title,
+    }
+
+    /* Actions taken on each feature: title, popup, info preview */
+    function oef_rel (feature, layer) {
+      layer.bindTooltip('<strong><span class="oi oi-calendar" aria-hidden="true">' +
+        feature.properties.encountered_on + '</strong><br/>');
+      layer.bindPopup(feature.properties.as_html);
+    }
+
+    /* Data loading */
+    /*
+     * Option 1: List view queryset plus djgeojson filter tag = GeoJSON
+     * Ideal for filters with sensible defaults (e.g. show only current year)
+     * https://github.com/makinacorpus/django-geojson#geojson-template-filter
+     */
+    var occ_point = L.geoJson(
+      {{ original|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+      {style: pointstyle, onEachFeature: oef_rel, pointToLayer: ptl}
+    );
+    occ_point.addTo(map);
+
+    {% if original.geom %}
+    occ_poly = L.geoJson(
+      {{ original|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
+      {style: polystyle, onEachFeature: oef_rel}
+    );
+    occ_poly.addTo(map);
+    map.fitBounds(occ_poly.getBounds());
+    {% else %}
+    map.fitBounds(occ_point.getBounds());
+    {% endif %}
+
+}
+</script>
+{% endcompress %}
+{% endblock %}

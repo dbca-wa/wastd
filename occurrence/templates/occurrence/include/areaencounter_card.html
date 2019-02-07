@@ -20,8 +20,9 @@
 
   <div class="card-footer">
     {% if is_staff %}
-      {% admin_absoluteadminurl_link original "occurrence" block=True label=True %}
       {% taxonareaencounter_detail_link original block=True label=True %}
+      {% areaencounter_update_link original block=True label=True %}
+      {% admin_absoluteadminurl_link original "occurrence" block=True label=True %}
     {% endif %}
   </div><!-- /.card-footer -->
 

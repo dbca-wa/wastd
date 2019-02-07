@@ -242,6 +242,11 @@ class AreaEncounter(PolymorphicModel,
         return '/'
 
     @property
+    def update_url(self):
+        """Hook for update url."""
+        return '/'
+
+    @property
     def derived_html(self):
         """Generate HTML popup content."""
         template = "occurrence/popup/{0}.html".format(self._meta.model_name)
@@ -293,6 +298,12 @@ class TaxonAreaEncounter(AreaEncounter):
         return reverse('taxon-occurrence-detail',
                        kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
 
+    @property
+    def update_url(self):
+        """Hook for update url."""
+        return reverse('taxon-occurrence-update',
+                       kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
+
     def nearby_same(self, dist_dd=0.005):
         """Return encounters with same taxon within search radius (dist_dd).
 
@@ -335,6 +346,12 @@ class CommunityAreaEncounter(AreaEncounter):
     def detail_url(self):
         """Hook for detail url."""
         return reverse('community-occurrence-detail',
+                       kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
+
+    @property
+    def update_url(self):
+        """Hook for update url."""
+        return reverse('community-occurrence-update',
                        kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
 
     def nearby_same(self, dist_dd=0.005):
