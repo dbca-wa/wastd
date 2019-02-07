@@ -745,7 +745,7 @@ def handle_turtlenesttagobs(d, e, m=None):
         dd, created = NestTagObservation.objects.get_or_create(
             encounter=e,
             status=m["tag_status"][d["status"]] if m else d["status"],
-            flipper_tag_id=d["flipper_tag_id"],
+            flipper_tag_id=sanitize_tag_label(d["flipper_tag_id"]),
             date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
             tag_label=sanitize_tag_label(d["tag_label"]))
         logger.debug("[handle_turtlenesttagobs] created new NTO")

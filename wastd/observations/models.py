@@ -3034,6 +3034,8 @@ def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
     """NestTagObservation pre_save: sanitise tag_label, name Encounter after tag."""
     if instance.encounter.status == Encounter.STATUS_NEW and instance.tag_label:
         instance.tag_label = sanitize_tag_label(instance.tag_label)
+    if instance.encounter.status == Encounter.STATUS_NEW and instance.flipper_tag_id:
+        instance.flipper_tag_id = sanitize_tag_label(instance.flipper_tag_id)
     if instance.encounter.status == Encounter.STATUS_NEW and (not instance.encounter.name):
         instance.encounter.name = instance.name
         instance.encounter.save(update_fields=['name', ])
