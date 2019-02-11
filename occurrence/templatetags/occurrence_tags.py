@@ -8,6 +8,7 @@
 from django.urls import reverse  # resolve
 # from django.utils.encoding import force_str
 from django import template
+from shared.utils import sanitize_tag_label
 
 
 register = template.Library()
@@ -55,7 +56,7 @@ def taxonareaencounter_add_link(name_id, area_code=None, block=False, label=Fals
     if area_code:
         add_url = reverse('taxon-occurrence-area-create',
                           kwargs={'name_id': name_id,
-                                  'area_code': area_code})
+                                  'area_code': sanitize_tag_label(area_code)})
     else:
         add_url = reverse('taxon-occurrence-create',
                           kwargs={'name_id': name_id})
@@ -63,7 +64,7 @@ def taxonareaencounter_add_link(name_id, area_code=None, block=False, label=Fals
     return {
         "add_url": add_url,
         "subject": "taxon",
-        "area_code": area_code,
+        "area_code": sanitize_tag_label(area_code),
         "block": block,
         "label": label
     }
@@ -74,7 +75,7 @@ def communityareaencounter_add_link(pk, area_code=None, block=False, label=False
     """Render an "add community area occurrence" link for a community."""
     if area_code:
         add_url = reverse('community-occurrence-area-create',
-                          kwargs={'pk': pk, 'area_code': area_code})
+                          kwargs={'pk': pk, 'area_code': sanitize_tag_label(area_code)})
     else:
         add_url = reverse('community-occurrence-create',
                           kwargs={'pk': pk})
@@ -82,7 +83,7 @@ def communityareaencounter_add_link(pk, area_code=None, block=False, label=False
     return {
         "add_url": add_url,
         "subject": "community",
-        "area_code": area_code,
+        "area_code": sanitize_tag_label(area_code),
         "block": block,
         "label": label
     }
