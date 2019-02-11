@@ -195,11 +195,10 @@
                 </small>
               </h5>
               <div class="card-body">
+                <!-- Conservation actions for area {{ site.grouper }} -->
                 {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
 
-                <hr class="my-4">
-
-                <!-- Occurrences -->
+                <!-- Occurrences for area {{ site.grouper }} -->
                 {% for occ in site.list|dictsortreversed:"encountered_on" %}
                 {% areaencounter_card occ "taxon" request.user %}
                 {% endfor %}
