@@ -11,6 +11,9 @@ django-test-plus
 factory_boy
 pytest-django
 pytest-sugar
+model_mommy
+# mommy_spatial_generators
+-e git+https://github.com/sigma-geosistemas/mommy_spatial_generators.git#egg=mommy_spatial_generators
 
 # Debug
 # ------------------------------------------------

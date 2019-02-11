@@ -78,7 +78,8 @@ THIRD_PARTY_APPS = (
     'mptt',                         # Graph database: tree models
     'background_task',              # Job queue
 
-    'gunicorn',                      # Web server
+    'gunicorn',                     # Web server
+    # 'test_utils'                    # Testing
     # 'raven.contrib.django.raven_compat',  # Sentry logging Raven client
 )
 
@@ -562,6 +563,10 @@ SILKY_META = True
 # https://github.com/jazzband/django-silk#profiling
 SILKY_PYTHON_PROFILER = True
 SILKY_PYTHON_PROFILER_BINARY = True
+
+# Testing
+# ------------------------------------------------------------------------------
+
 
 # Data
 # ------------------------------------------------------------------------------

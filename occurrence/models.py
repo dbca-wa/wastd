@@ -386,6 +386,112 @@ def area_caches(sender, instance, *args, **kwargs):
     if instance.code:
         instance.code = slugify(instance.code)
 
+
+# Observation models ---------------------------------------------------------#
+@python_2_unicode_compatible
+class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
+    """The Observation base class for area encounter observations.
+
+    Everything happens somewhere, at a time, to someone, and someone records it.
+    Therefore, an ObservationGroup must happen during an Encounter.
+
+    The ObservationGroup shares with Encounter:
+
+    * location,
+    * datetime,
+    * reporter,
+    * subject (species or community).
+
+    The ObservationGroup has its own:
+
+    * QA trust levels.
+
+    Having separate QA trust levels allows to synthesize the "best available information"
+    about a Species / Community occurrence, hand-selected by custodians from different
+    TAE/CAE.
+    """
+
+    encounter = models.ForeignKey(
+        AreaEncounter,
+        on_delete=models.CASCADE,
+        verbose_name=_("Area Encounter"),
+        help_text=("The Area Encounter during which the observation group was observed."),)
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Observation Group"
+
+    def __str__(self):
+        """The unicode representation."""
+        return u"Obs {0} for {1}".format(self.pk, self.encounter.__str__())
+
+    @property
+    def get_absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    @property
+    def get_absolute_url(self):
+        """Return the detail URL. TODO: is admin url for now."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    # Location and date
+    @property
+    def point(self):
+        """Return the encounter point location."""
+        return self.encounter.point
+
+    @property
+    def latitude(self):
+        """The encounter's latitude."""
+        return self.encounter.point.y or ''
+
+    @property
+    def longitude(self):
+        """The encounter's longitude."""
+        return self.encounter.point.x or ''
+
+    def datetime(self):
+        """The encounter's timestamp."""
+        return self.encounter.observed_on or ''
+
+    # Display and cached properties
+    @property
+    def as_html(self):
+        """Return as rendered HTML popup."""
+        t = loader.get_template("occurrence/popup/{0}.html".format(self._meta.model_name))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
+
+    @property
+    def as_card(self):
+        """Return as rendered HTML card."""
+        t = loader.get_template("occurrence/cards/{0}.html".format(self._meta.model_name))
+        return mark_safe(t.render({"original": self}))
+
+    @property
+    def as_latex(self):
+        """Return as raw Latex fragment."""
+        t = loader.get_template("occurrence/latex/{0}.tex".format(self._meta.model_name))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
+
+    @property
+    def observation_name(self):
+        """The concrete model name.
+
+        This method will inherit down the polymorphic chain, and always return
+        the actual child model's name.
+
+        `observation_name` can be included as field e.g. in API serializers,
+        so e.g. a writeable serializer would know which child model to `create`
+        or `update`.
+        """
+        return self.polymorphic_ctype.model
+
     # FAUNA ENC
     # Survey
     # Threats
@@ -400,17 +506,23 @@ def area_caches(sender, instance, *args, **kwargs):
     # TaxonSampleEncounter
 
     # FLORA ENC
+    # Location Description
     # Survey: often no survey as most fauna enc are opportunistic
+    # Plant count
     # Threats
     # Habitat and habitat conditions
+    # Fire response
     # Fire history
     # Vegetation class
     # Associated species: mostly empty, flora
     # mgmt actions required
     # comments
     # DRF permit no
+    # Plant count
     # TaxonSpecimenEncounter
     # TaxonSampleEncounter
+    # VoucherSpecimen
+    # File attachments
 
     # COM ENC
     # Survey: often no survey as most fauna enc are opportunistic
@@ -418,6 +530,7 @@ def area_caches(sender, instance, *args, **kwargs):
     # Habitat and habitat conditions
     # Fire history
     # Vegetation class
+
     # Associated species: mostly empty, flora
     # mgmt actions required
     # comments

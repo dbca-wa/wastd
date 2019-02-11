@@ -1794,6 +1794,11 @@ class Taxon(MPTTModel, geo_models.Model):
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     @property
+    def absolute_url(self):
+        """Return the absolute url for the detail view."""
+        return reverse('taxon-detail', kwargs={"name_id": self.name_id})
+
+    @property
     def build_canonical_name(self):
         """Build the canonical name.
 
@@ -2110,6 +2115,11 @@ class Community(LegacySourceMixin, geo_models.Model):
         """Return the absolute admin change URL."""
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    @property
+    def absolute_url(self):
+        """Return the absolute url for the detail view."""
+        return reverse('community-detail', kwargs={"pk": self.pk})
 
     @property
     def gazettals(self):
