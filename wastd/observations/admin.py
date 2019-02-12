@@ -12,7 +12,7 @@ from django.contrib import admin
 from django.contrib.gis.db import models as geo_models
 from django.utils.safestring import mark_safe
 
-# from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
 from django_select2.forms import ModelSelect2Widget
 from django import forms
@@ -355,14 +355,23 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     list_select_related = ('site', 'reporter', )
     search_fields = ('start_comments', 'end_comments')
     fieldsets = (
-        ('Device', {'fields': ('source', 'source_id', 'device_id',
-                               'end_source_id', 'end_device_id', 'production',)}),
-        ('Location', {'fields': ('transect', 'start_location', 'end_location', 'site',)}),
-        ('Time', {'fields': ('start_time', 'end_time',)}),
-        ('Team', {'fields': ('start_comments', 'end_comments', 'reporter', 'team',
-                             'start_photo', 'end_photo',
-                             )}),
+        (_('Device'),
+            {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+             'fields': ('source', 'source_id', 'device_id',
+                        'end_source_id', 'end_device_id', 'production',)}),
+        (_('Location'),
+            {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+             'fields': ('transect', 'start_location', 'end_location', 'site',)}),
+        (_('Time'),
+            {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+             'fields': ('start_time', 'end_time',)}),
+        (_('Team'),
+            {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+             'fields': ('start_comments', 'end_comments', 'reporter', 'team',
+                        'start_photo', 'end_photo',
+                        )}),
     )
+
     formfield_overrides = {
         geo_models.PointField: leaflet_settings,
         geo_models.LineStringField: leaflet_settings,
@@ -517,7 +526,12 @@ class AnimalEncounterAdmin(EncounterAdmin):
                      'checked_for_injuries',
                      'scanned_for_pit_tags',
                      'checked_for_flipper_tags',)}), )
-
+    survey = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Survey,
+            search_fields=["site_name__icontains", "reporter__name__icontains", ]
+        )
+    )
     # Custom set of inlines excludes some Encounter inlines
     inlines = [
         MediaAttachmentInline,
@@ -574,6 +588,12 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
             'nest_age', 'nest_type', 'species',
             'habitat', 'disturbance', 'comments')}), )
 
+    survey = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Survey,
+            search_fields=["site_name__icontains", "reporter__name__icontains", ]
+        )
+    )
     # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
@@ -612,7 +632,12 @@ class LineTransectEncounterAdmin(EncounterAdmin):
     # list_filter = EncounterAdmin.list_filter + ()
     fieldsets = EncounterAdmin.fieldsets + (
         ('Location', {'fields': ('transect', )}), )
-
+    survey = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Survey,
+            search_fields=["site_name__icontains", "reporter__name__icontains", ]
+        )
+    )
     inlines = [
         TrackTallyObservationInline,
         TurtleNestDisturbanceTallyObservationInline,
@@ -635,7 +660,12 @@ class LoggerEncounterAdmin(EncounterAdmin):
     fieldsets = EncounterAdmin.fieldsets + (
         ('Logger', {'fields': (
             'logger_type', 'deployment_status', 'logger_id', 'comments',)}), )
-
+    survey = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Survey,
+            search_fields=["site_name__icontains", "reporter__name__icontains", ]
+        )
+    )
     # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
