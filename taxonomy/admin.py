@@ -2,32 +2,38 @@
 """Admin module for wastd.observations."""
 from __future__ import absolute_import, unicode_literals
 
-# from leaflet.admin import LeafletGeoAdmin
-# from leaflet.forms.widgets import LeafletWidget
-
 # from django import forms as django_forms
 # import floppyforms as ff
 from django.contrib import admin
-from mptt.admin import MPTTModelAdmin  # TreeRelatedFieldListFilter
-# from django.contrib.gis import forms
 from django.contrib.gis.db import models as geo_models
-
+from easy_select2 import select2_modelform as s2form
 # from django.utils.translation import ugettext_lazy as _
 # from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 # from fsm_admin.mixins import FSMTransitionMixin
 from leaflet.forms.widgets import LeafletWidget
-from reversion.admin import VersionAdmin
-
-from taxonomy.models import (
-    HbvName, HbvSupra, HbvGroup, HbvFamily,
-    HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent,
-    Taxon,  # Crossreference, Vernacular,
-    Community)
-from occurrence.models import TaxonAreaEncounter, CommunityAreaEncounter
+from mptt.admin import MPTTModelAdmin  # TreeRelatedFieldListFilter
+from occurrence.models import CommunityAreaEncounter, TaxonAreaEncounter
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
-from easy_select2 import select2_modelform as s2form
+from reversion.admin import VersionAdmin
+from taxonomy.models import Taxon  # Crossreference, Vernacular,
+from taxonomy.models import (
+    Community,
+    HbvFamily,
+    HbvGenus,
+    HbvGroup,
+    HbvName,
+    HbvParent,
+    HbvSpecies,
+    HbvSupra,
+    HbvVernacular,
+    HbvXref
+)
+
+# from leaflet.admin import LeafletGeoAdmin
+# from leaflet.forms.widgets import LeafletWidget
+
 
 S2ATTRS = {'width': 'auto'}
 TaxonAreaEncounterForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)

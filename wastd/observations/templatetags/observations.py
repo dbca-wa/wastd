@@ -1,11 +1,13 @@
-from django import template
 import os
-from django_fsm_log.models import StateLog
-from django.template.defaultfilters import stringfilter, register
-from wastd.observations.models import Encounter, OBSERVATION_ICONS
-from rest_framework.authtoken.models import Token
-from django.conf import settings
+
 import pypandoc
+from django import template
+from django.conf import settings
+from django.template.defaultfilters import register, stringfilter
+from django_fsm_log.models import StateLog
+from rest_framework.authtoken.models import Token
+
+from wastd.observations.models import OBSERVATION_ICONS, Encounter
 
 register = template.Library()
 

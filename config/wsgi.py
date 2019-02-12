@@ -14,8 +14,12 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-import confy
 import os
+
+import confy
+from dj_static import Cling, MediaCling  # noqa
+from django.core.wsgi import get_wsgi_application  # noqa
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 
 d = os.path.abspath('.')
@@ -26,7 +30,5 @@ if os.path.exists(dot_env):
 else:
     print("wsgi.py: .env missing at {0}, ignoring.".format(dot_env))
 
-from django.core.wsgi import get_wsgi_application   # noqa
-from dj_static import Cling, MediaCling             # noqa
 
 application = Cling(MediaCling(get_wsgi_application()))

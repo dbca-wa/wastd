@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Forms for WAStD Observations."""
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (Layout, ButtonHolder, Submit)  # Div, Field, Fieldset, MultiField
+from crispy_forms.layout import (Layout, ButtonHolder, Submit)
 
 from wastd.observations.models import Encounter, AnimalEncounter
 

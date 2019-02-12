@@ -2,10 +2,9 @@
 """Unit tests for Conservation module."""
 from __future__ import unicode_literals
 
-from django.test import TestCase
-
-from taxonomy.models import Taxon
 from conservation.models import ConservationList, TaxonGazettal
+from django.test import TestCase
+from taxonomy.models import Taxon
 
 # from requests import RequestsClient
 # client = RequestsClient()

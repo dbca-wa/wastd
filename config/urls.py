@@ -2,48 +2,42 @@
 """WAStD URLs."""
 from __future__ import unicode_literals
 
+from adminactions import actions
+from ajax_select import urls as ajax_select_urls
 from django.conf import settings
-from django.urls import re_path, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.admin import site
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.views.generic import TemplateView
+from django.urls import include, re_path
 from django.views import defaults as default_views
-
-from adminactions import actions
+from django.views.generic import TemplateView
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
+from occurrence.models import CommunityAreaEncounter
+from occurrence.views import (
+    CommunityAreaEncounterCreateView,
+    CommunityAreaEncounterDetailView,
+    CommunityAreaEncounterUpdateView,
+    TaxonAreaEncounterCreateView,
+    TaxonAreaEncounterDetailView,
+    TaxonAreaEncounterUpdateView
+)
 from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
+from taxonomy.views import CommunityDetailView, CommunityListView, TaxonDetailView, TaxonListView, update_taxon
 
-from ajax_select import urls as ajax_select_urls
+from wastd.api import router as wastd_router
+from wastd.observations.models import AnimalEncounter, Area, Encounter
+from wastd.observations.views import (
+    AnimalEncounterTableView,
+    EncounterTableView,
+    HomeView,
+    import_odka_view,
+    schema_view
+)
 
 # from dynamic_rest import routers as dr
 
-# from graphene_django.views import GraphQLView
-# from wastd.schema import schema
-from wastd.api import router as wastd_router
-from wastd.observations.models import Area, Encounter, AnimalEncounter
-from occurrence.models import CommunityAreaEncounter
-from wastd.observations.views import (
-    import_odka_view,
-    schema_view,
-    HomeView,
-    EncounterTableView,
-    AnimalEncounterTableView)
-from taxonomy.views import (
-    update_taxon,
-    TaxonListView,
-    TaxonDetailView,
-    CommunityListView,
-    CommunityDetailView)
-from occurrence.views import (
-    TaxonAreaEncounterCreateView,
-    TaxonAreaEncounterUpdateView,
-    TaxonAreaEncounterDetailView,
-    CommunityAreaEncounterCreateView,
-    CommunityAreaEncounterUpdateView,
-    CommunityAreaEncounterDetailView)
 
 # register all adminactions
 actions.add_to_site(site)

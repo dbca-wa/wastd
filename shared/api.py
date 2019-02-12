@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """Shared API utilities."""
-from collections import OrderedDict
 import logging
+from collections import OrderedDict
 
-# from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import pagination, status, viewsets  # , serializers, routers
 from rest_framework.response import Response as RestResponse
-from rest_framework import viewsets, status, pagination  # , serializers, routers
-
 from shared.models import QualityControlMixin
+
 # from taxonomy.models import Taxon
 
 logger = logging.getLogger(__name__)

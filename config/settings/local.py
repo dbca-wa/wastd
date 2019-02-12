@@ -8,10 +8,12 @@ Local settings file.
 - Add django-extensions as app
 """
 
-from .common import *  # noqa
-import socket
 import os
+import socket
+
 from confy import env
+
+from .common import *  # noqa
 
 # Mail settings
 # ------------------------------------------------------------------------------

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """manage.py for Django app."""
-import confy
 import os
 import sys
+
+import confy
 
 # These lines are required for interoperability between local and container environments.
 dot_env = os.path.join(os.getcwd(), '.env')

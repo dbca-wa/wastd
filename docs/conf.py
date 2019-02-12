@@ -13,12 +13,13 @@
 # serve to show the default.
 
 from __future__ import unicode_literals
-import django
-import confy
-from confy import env, database
+
 import os
 import sys
 
+import confy
+import django
+from confy import database, env
 
 # -- Django configuration -------------------------------------------------
 # 1. Add Django ROOT_DIR to sys.path, so conf.py can discover django settings

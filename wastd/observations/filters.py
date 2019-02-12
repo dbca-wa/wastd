@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 """Filters for WAStD Observations."""
-from django.contrib.admin import SimpleListFilter
-from django.utils.translation import ugettext_lazy as _
-
-# import django_filters
-
-from django_filters import widgets
-from rest_framework_gis.filterset import GeoFilterSet
-from rest_framework_gis import filters as gis_filters
-
 # from leaflet.forms.widgets import LeafletWidget
 import rest_framework_filters as filters
-from wastd.observations.models import Area, Encounter, AnimalEncounter
+from django.contrib.admin import SimpleListFilter
+from django.utils.translation import ugettext_lazy as _
+from django_filters import widgets
+from rest_framework_gis import filters as gis_filters
+from rest_framework_gis.filterset import GeoFilterSet
+
+from wastd.observations.models import AnimalEncounter, Area, Encounter
 
 
 class AreaFilter(GeoFilterSet):
+    """AreaFilter."""
+
     name = filters.CharFilter(name='name', lookup_type='istartswith')
     contains_geom = gis_filters.GeometryFilter(name='geom', lookup_type='contains')
 
     class Meta:
+        """Class opts."""
+
         model = Area
         fields = ['name', ]
 
@@ -34,8 +35,9 @@ class LocationListFilter(SimpleListFilter):
     parameter_name = 'where'
 
     def lookups(self, request, model_admin):
-        """
-        Returns a list of tuples. The first element in each
+        """Return a list of tuples.
+
+        The first element in each
         tuple is the coded value for the option that will
         appear in the URL query. The second element is the
         human-readable name for the option that will appear
@@ -45,10 +47,10 @@ class LocationListFilter(SimpleListFilter):
         # Area.objects.filter(area_type=Area.AREATYPE_MPA)]
 
     def queryset(self, request, queryset):
-        """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
-        `self.value()`.
+        """Return the filtered queryset.
+
+        QS is based on the value provided in the query string
+        and retrievable via `self.value()`.
         """
         if self.value():
             a = Area.objects.get(pk=self.value())
@@ -56,6 +58,8 @@ class LocationListFilter(SimpleListFilter):
         return queryset
 
     class Meta:
+        """Class opts."""
+
         model = Area
         fields = ['name', ]
 
@@ -65,6 +69,7 @@ class EncounterFilter(filters.FilterSet):
 
     https://django-filter.readthedocs.io/en/latest/usage.html
     """
+
     # name = filters.CharFilter(
     #     lookup_expr='icontains',
     #     help_text=_("Name supports partial match, e.g. searching for "
@@ -96,6 +101,7 @@ class AnimalEncounterFilter(EncounterFilter):
     """AnimalEncounter Filter."""
 
     class Meta:
-        """Options for AnimalEncounterFilter."""
+        """Class opts."""
+
         model = AnimalEncounter
         exclude = ['where', ]

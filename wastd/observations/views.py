@@ -4,26 +4,23 @@
 # from rest_framework.decorators import api_view, renderer_classes, permission_classes
 # from rest_framework import response, schemas, permissions
 
-from rest_framework.schemas import get_schema_view
-from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
-from rest_framework.renderers import CoreJSONRenderer
-from sentry_sdk import capture_message
-
-
-# Tables
-from django_tables2 import RequestConfig, SingleTableView, tables
-
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
 # from django.views.generic import ListView, TemplateView
 from django.http import HttpResponseRedirect
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.list import ListView
-from django.utils import timezone
+# Tables
+from django_tables2 import RequestConfig, SingleTableView, tables
+from rest_framework.renderers import CoreJSONRenderer
+from rest_framework.schemas import get_schema_view
+from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
+from sentry_sdk import capture_message
 
-from wastd.observations.models import Encounter, AnimalEncounter
-from wastd.observations.filters import EncounterFilter, AnimalEncounterFilter
-from wastd.observations.forms import (EncounterListFormHelper, AnimalEncounterListFormHelper)
+from wastd.observations.filters import AnimalEncounterFilter, EncounterFilter
+from wastd.observations.forms import AnimalEncounterListFormHelper, EncounterListFormHelper
+from wastd.observations.models import AnimalEncounter, Encounter
 from wastd.observations.tasks import import_odka
 
 

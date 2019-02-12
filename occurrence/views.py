@@ -4,20 +4,11 @@ from __future__ import unicode_literals
 
 # from django.shortcuts import render
 from django.urls import reverse
-from django.views.generic.edit import (
-    # FormView,
-    CreateView,
-    # DeleteView,
-    UpdateView
-)
 from django.views.generic.detail import DetailView
-
-from taxonomy.models import (Taxon, Community)
-from occurrence.models import (TaxonAreaEncounter, CommunityAreaEncounter)
-from occurrence.forms import (
-    AreaEncounterForm,
-    TaxonAreaEncounterForm,
-    CommunityAreaEncounterForm)
+from django.views.generic.edit import CreateView, UpdateView  # FormView,; DeleteView,
+from occurrence.forms import AreaEncounterForm, CommunityAreaEncounterForm, TaxonAreaEncounterForm
+from occurrence.models import CommunityAreaEncounter, TaxonAreaEncounter
+from taxonomy.models import Community, Taxon
 
 # select2 forms
 # from .admin import (AreaForm, TaxonAreaForm, CommunityAreaForm)

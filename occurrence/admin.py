@@ -6,12 +6,7 @@ from __future__ import absolute_import, unicode_literals
 # import floppyforms as ff
 from django.contrib import admin
 from django.contrib.gis.db import models as geo_models
-# from django.contrib.contenttypes.admin import GenericTabularInline
-# from django.forms import Textarea
-# from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
-
 from easy_select2 import select2_modelform as s2form
 # from django_select2.forms import HeavySelect2MultipleWidget
 # from ajax_select.fields import (
@@ -19,11 +14,9 @@ from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from leaflet.forms.widgets import LeafletWidget
+from occurrence.models import AreaEncounter, CommunityAreaEncounter, TaxonAreaEncounter
 from reversion.admin import VersionAdmin
-
 from shared.admin import CustomStateLogInline
-from occurrence.models import AreaEncounter, TaxonAreaEncounter, CommunityAreaEncounter
-
 
 # Select2Widget forms
 S2ATTRS = {'width': '350px'}

@@ -7,42 +7,42 @@ Fauna, Flora and Comunities (defined in taxonomy).
 Observer name / address / phone / email is captured through the observer being
 a system user.
 """
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
 # import itertools
 import logging
-# import os
-# import urllib
-# import slugify
-# from datetime import timedelta
-# from dateutil import tz
 
+from django.contrib.gis.db import models as geo_models
 # from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.signals import pre_delete, pre_save, post_save  # noqa
+from django.db.models.signals import post_save, pre_delete, pre_save  # noqa
 from django.dispatch import receiver
-from django.contrib.gis.db import models as geo_models
-# from django.contrib.gis.db.models.query import GeoQuerySet
-from django.urls import reverse
 # from rest_framework.reverse import reverse as rest_reverse
 from django.template import loader
+# from django.contrib.gis.db.models.query import GeoQuerySet
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.utils.safestring import mark_safe
-
 # from durationfield.db.models.fields.duration import DurationField
 # from django.db.models.fields import DurationField
 # from django_fsm import FSMField, transition
 # from django_fsm_log.decorators import fsm_log_by
 # from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
-
 # from wastd.users.models import User
-from shared.models import (LegacySourceMixin,
-                           ObservationAuditMixin,
-                           QualityControlMixin)
-from taxonomy.models import Taxon, Community
+from shared.models import LegacySourceMixin, ObservationAuditMixin, QualityControlMixin
+from taxonomy.models import Community, Taxon
+
+# import os
+# import urllib
+# import slugify
+# from datetime import timedelta
+# from dateutil import tz
+
+
+
 
 logger = logging.getLogger(__name__)
 

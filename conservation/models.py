@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Conservation models."""
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
 # import itertools
 # import urllib
@@ -9,9 +9,8 @@ from __future__ import unicode_literals, absolute_import
 # from dateutil import tz
 import logging
 
-
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models.signals import pre_save  # , post_save
@@ -23,17 +22,19 @@ from django.urls import reverse
 # from django.template import loader
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-# from django.utils.safestring import mark_safe
-
 # from polymorphic.models import PolymorphicModel
 # from durationfield.db.models.fields.duration import DurationField
 # from django.db.models.fields import DurationField
 from django_fsm import FSMIntegerField, transition
 from django_fsm_log.decorators import fsm_log_by
+from taxonomy.models import Community, Taxon
+
+from wastd.users.models import User
+
+# from django.utils.safestring import mark_safe
+
 # from django_fsm_log.models import StateLog
 
-from taxonomy.models import Taxon, Community
-from wastd.users.models import User
 
 logger = logging.getLogger(__name__)
 

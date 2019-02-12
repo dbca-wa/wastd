@@ -1,36 +1,31 @@
 # -*- coding: utf-8 -*-
 """Shared models."""
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
 # import itertools
 import logging
 import uuid
+
+# from django.core.urlresolvers import reverse
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+# from durationfield.db.models.fields.duration import DurationField
+# from django.db.models.fields import DurationField
+from django_fsm import FSMField, transition
+from django_fsm_log.decorators import fsm_log_by
+
+from wastd.users.models import User
+
 # import urllib
 # import slugify
 # from datetime import timedelta
 # from dateutil import tz
 
-# from django.core.urlresolvers import reverse
-from django.db import models
-# from django.db.models.signals import pre_delete, pre_save, post_save
-# from django.dispatch import receiver
-# from django.contrib.gis.db import models as geo_models
-# from django.contrib.gis.db.models.query import GeoQuerySet
-# from django.urls import reverse
-# from rest_framework.reverse import reverse as rest_reverse
-# from django.template import loader
-# from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
 # from django.utils.safestring import mark_safe
 
-# from durationfield.db.models.fields.duration import DurationField
-# from django.db.models.fields import DurationField
-from django_fsm import FSMField, transition
-from django_fsm_log.decorators import fsm_log_by
 # from django_fsm_log.models import StateLog
 # from polymorphic.models import PolymorphicModel
 
-from wastd.users.models import User
 
 logger = logging.getLogger(__name__)
 

@@ -2,54 +2,51 @@
 """Admin module for wastd.observations."""
 from __future__ import absolute_import, unicode_literals
 
-# from leaflet.admin import LeafletGeoAdmin
-from leaflet.forms.widgets import LeafletWidget
-
 # from django import forms as django_forms
 import floppyforms as ff
+from django import forms
 from django.contrib import admin
-# from django.contrib.gis import forms
 from django.contrib.gis.db import models as geo_models
 from django.utils.safestring import mark_safe
-
 from django.utils.translation import ugettext_lazy as _
-from easy_select2 import select2_modelform as s2form
 from django_select2.forms import ModelSelect2Widget
-from django import forms
-
+from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
-from reversion.admin import VersionAdmin
-
-from shared.admin import CustomStateLogInline
-from wastd.observations.models import (
-    Area,
-    Expedition,
-    SiteVisit,
-    Survey,
-    FieldMediaAttachment,
-    Encounter,
-    TurtleNestEncounter,
-    AnimalEncounter,
-    LoggerEncounter,
-    LineTransectEncounter,
-    MediaAttachment,
-    TagObservation,
-    NestTagObservation,
-    ManagementAction,
-    TrackTallyObservation,
-    TurtleNestDisturbanceTallyObservation,
-    TurtleMorphometricObservation,
-    HatchlingMorphometricObservation,
-    DugongMorphometricObservation,
-    TurtleDamageObservation,
-    TurtleNestObservation,
-    TurtleNestDisturbanceObservation,
-    TemperatureLoggerSettings,
-    DispatchRecord,
-    TemperatureLoggerDeployment)
+# from leaflet.admin import LeafletGeoAdmin
+from leaflet.forms.widgets import LeafletWidget
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
+from reversion.admin import VersionAdmin
+from shared.admin import CustomStateLogInline
+
+from wastd.observations.models import (
+    AnimalEncounter,
+    Area,
+    DispatchRecord,
+    DugongMorphometricObservation,
+    Encounter,
+    Expedition,
+    FieldMediaAttachment,
+    HatchlingMorphometricObservation,
+    LineTransectEncounter,
+    LoggerEncounter,
+    ManagementAction,
+    MediaAttachment,
+    NestTagObservation,
+    SiteVisit,
+    Survey,
+    TagObservation,
+    TemperatureLoggerDeployment,
+    TemperatureLoggerSettings,
+    TrackTallyObservation,
+    TurtleDamageObservation,
+    TurtleMorphometricObservation,
+    TurtleNestDisturbanceObservation,
+    TurtleNestDisturbanceTallyObservation,
+    TurtleNestEncounter,
+    TurtleNestObservation
+)
 
 TokenAdmin.raw_id_fields = ('user',)
 

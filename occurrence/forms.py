@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """Occurrence forms."""
 
-from django import forms
-from django.contrib.auth import get_user_model
-
-from leaflet.forms.widgets import LeafletWidget
-from django_select2.forms import ModelSelect2Widget
 from bootstrap_datepicker_plus import DateTimePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
+from django import forms
+from django.contrib.auth import get_user_model
+from django_select2.forms import ModelSelect2Widget
+from leaflet.forms.widgets import LeafletWidget
+from taxonomy.models import Community, Taxon
 
-from .models import (AreaEncounter, TaxonAreaEncounter, CommunityAreaEncounter)
-from taxonomy.models import (Taxon, Community)
+from .models import AreaEncounter, CommunityAreaEncounter, TaxonAreaEncounter
+
 # from wastd.users.models import User
 
 

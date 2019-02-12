@@ -2,15 +2,15 @@
 """Taxonomy filters."""
 # from django.contrib.auth.models import User
 import django_filters
+from conservation.models import ConservationCategory
 from django.contrib.gis.db import models as geo_models
+from django.db import models
 from django_filters.filters import BooleanFilter, ModelMultipleChoiceFilter
 from django_filters.widgets import BooleanWidget
 from leaflet.forms.widgets import LeafletWidget
-from django.db import models
-# from django import forms
-from .models import Taxon, Community
-from conservation.models import ConservationCategory
 
+# from django import forms
+from .models import Community, Taxon
 
 FILTER_OVERRIDES = {
     models.CharField: {

@@ -2,38 +2,33 @@
 """Admin module for wastd.observations."""
 from __future__ import absolute_import, unicode_literals
 
+from ajax_select.fields import AutoCompleteSelectMultipleField  # AutoCompleteSelectField,
+from conservation.models import (  # Gazettal,
+    CommunityGazettal,
+    ConservationAction,
+    ConservationActionCategory,
+    ConservationCategory,
+    ConservationCriterion,
+    ConservationList,
+    Document,
+    FileAttachment,
+    TaxonGazettal
+)
 # from django import forms as django_forms
 # import floppyforms as ff
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.gis.db import models as geo_models
-from django.forms import Textarea
 from django.db import models
-
+from django.forms import Textarea
 from django.utils.translation import ugettext_lazy as _
-from easy_select2 import select2_modelform as s2form
 from django_select2.forms import HeavySelect2MultipleWidget
-from ajax_select.fields import (  # AutoCompleteSelectField,
-    AutoCompleteSelectMultipleField)
+from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from leaflet.forms.widgets import LeafletWidget
-
 from reversion.admin import VersionAdmin
 from shared.admin import CustomStateLogInline
-from conservation.models import (
-    FileAttachment,
-    ConservationActionCategory,
-    ConservationAction,
-    ConservationList,
-    ConservationCategory,
-    ConservationCriterion,
-    # Gazettal,
-    TaxonGazettal,
-    CommunityGazettal,
-    Document
-)
-
 
 S2ATTRS = {"width": "auto"}
 ConservationActionCategoryForm = s2form(ConservationActionCategory, attrs=S2ATTRS)

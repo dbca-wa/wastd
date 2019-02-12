@@ -1,8 +1,7 @@
 """Django-Tables2 config for Occurrence data."""
 import django_tables2 as tables
 from django_tables2.utils import A
-
-from occurrence.models import TaxonAreaEncounter, CommunityAreaEncounter
+from occurrence.models import CommunityAreaEncounter, TaxonAreaEncounter
 
 
 class TaxonAreaEncounterTable(tables.Table):

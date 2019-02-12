@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 """Taxonomy views."""
-from __future__ import unicode_literals, absolute_import
-# from itertools import chain
+from __future__ import absolute_import, unicode_literals
 
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from django.views.generic.list import ListView
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
-
+from django.views.generic.list import ListView
+from taxonomy.filters import CommunityFilter, TaxonFilter
+from taxonomy.models import Community, Taxon
+from taxonomy.tables import CommunityAreaEncounterTable, TaxonAreaEncounterTable
 from taxonomy.utils import update_taxon as update_taxon_util
-from taxonomy.models import Taxon, Community
-from taxonomy.filters import TaxonFilter, CommunityFilter
-from taxonomy.tables import TaxonAreaEncounterTable, CommunityAreaEncounterTable
 
 
 @csrf_exempt

@@ -9,12 +9,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 from __future__ import absolute_import, unicode_literals
-import environ
-from confy import env, database
-from unipath import Path
+
 import os
+
+import environ
 import sentry_sdk
+from confy import database, env
 from sentry_sdk.integrations.django import DjangoIntegration
+from unipath import Path
 
 # import confy
 # confy.read_environment_file()

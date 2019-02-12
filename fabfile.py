@@ -3,8 +3,9 @@
 
 Convenience wrapper for often used operations.
 """
-from fabric.api import local, env  # settings, cd, run
+from fabric.api import env, local  # settings, cd, run
 from fabric.colors import green, yellow  # red
+
 # from fabric.contrib.files import exists, upload_template
 
 env.hosts = ['localhost', ]

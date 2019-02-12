@@ -2,14 +2,14 @@
 """Template tags for occurrence."""
 # import json
 
+
 # import django
+# from django.utils.encoding import force_str
+from django import template
 # from django.contrib.admin.util import lookup_field, quote
 # from django.conf import settings
 from django.urls import reverse  # resolve
-# from django.utils.encoding import force_str
-from django import template
 from shared.utils import sanitize_tag_label
-
 
 register = template.Library()
 

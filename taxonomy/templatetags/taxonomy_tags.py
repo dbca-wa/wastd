@@ -9,7 +9,6 @@
 # from django.utils.encoding import force_str
 from django import template
 
-
 register = template.Library()
 
 

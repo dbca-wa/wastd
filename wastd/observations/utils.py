@@ -1,34 +1,33 @@
 # -*- coding: utf-8 -*-
 """Observation untilities."""
 import csv
-import json
 import io
-import os
-
-from confy import env
-from datetime import datetime, timedelta
-from dateutil import parser
+import json
 # from plogger.debug import plogger.debug
 import logging
-import requests
+import os
 import shutil
-import xmltodict
+from datetime import datetime, timedelta
+
 import pandas
-
-from requests.auth import HTTPDigestAuth
-
+import requests
+import xmltodict
+from confy import env
+from dateutil import parser
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import LineString
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import LineString, Point
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
-# from django.utils.timezone import get_fixed_timezone, utc
+from requests.auth import HTTPDigestAuth
+from shared.utils import sanitize_tag_label
 
 from wastd.observations.models import *
 from wastd.users.models import User
-from shared.utils import sanitize_tag_label
+
+# from django.utils.timezone import get_fixed_timezone, utc
+
 
 
 logger = logging.getLogger(__name__)

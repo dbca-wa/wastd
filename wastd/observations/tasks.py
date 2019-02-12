@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
 """Tasks for WAStD."""
-from background_task import background
 import logging
 import os
+
+from background_task import background
 from django.conf import settings
 from django.utils import timezone
 from sentry_sdk import capture_message
+
 from wastd.observations.utils import (
-    allocate_animal_names, save_all_odka, import_all_odka, reconstruct_missing_surveys)
+    allocate_animal_names,
+    import_all_odka,
+    reconstruct_missing_surveys,
+    save_all_odka
+)
 
 logger = logging.getLogger(__name__)
 

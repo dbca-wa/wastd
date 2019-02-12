@@ -33,69 +33,92 @@ This API is built using:
 
 
 import logging
+
+import rest_framework_filters as filters
+from conservation.models import (
+    CommunityGazettal,
+    ConservationCategory,
+    ConservationCriterion,
+    ConservationList,
+    Document,
+    TaxonGazettal
+)
+# from django.db import models as django_models
+from django.template import Context, Template
+from django_filters import rest_framework as rf_filters
+from occurrence import models as occ_models
+from rest_framework import pagination, routers, serializers, status, viewsets
+from rest_framework.response import Response as RestResponse
+from rest_framework_gis.fields import GeometryField
+from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from shared.api import BatchUpsertQualityControlViewSet, BatchUpsertViewSet, FastBatchUpsertViewSet, MyGeoJsonPagination
+from taxonomy.models import (
+    Community,
+    Crossreference,
+    HbvFamily,
+    HbvGenus,
+    HbvGroup,
+    HbvName,
+    HbvParent,
+    HbvSpecies,
+    HbvSupra,
+    HbvVernacular,
+    HbvXref,
+    Taxon,
+    Vernacular
+)
+
+from wastd.observations.models import Observation  # LineTransectEncounter
+from wastd.observations.models import Survey  # SiteVisit,
+from wastd.observations.models import (
+    AnimalEncounter,
+    Area,
+    DispatchRecord,
+    DugongMorphometricObservation,
+    Encounter,
+    HatchlingMorphometricObservation,
+    LoggerEncounter,
+    ManagementAction,
+    MediaAttachment,
+    NestTagObservation,
+    TagObservation,
+    TemperatureLoggerDeployment,
+    TemperatureLoggerSettings,
+    TrackTallyObservation,
+    TurtleDamageObservation,
+    TurtleMorphometricObservation,
+    TurtleNestDisturbanceObservation,
+    TurtleNestDisturbanceTallyObservation,
+    TurtleNestEncounter,
+    TurtleNestObservation
+)
+from wastd.users.models import User
+
 # from pdb import set_trace
 # from silk.profiling.profiler import silk_profile
 
-# from django.db import models as django_models
-from django.template import Context, Template
 
-from rest_framework import serializers, viewsets, routers, pagination, status
-from rest_framework.response import Response as RestResponse
 
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
 # from dynamic_rest import serializers as ds, viewsets as dv
 # from drf_extra_fields.geo_fields import PointField
 
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from rest_framework_gis.fields import GeometryField
-from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 # from rest_framework_gis.pagination import GeoJsonPagination
 
-import rest_framework_filters as filters
-from django_filters import rest_framework as rf_filters
 
 # from rest_framework_gis.filterset import GeoFilterSet
 
-from shared.api import (
-    MyGeoJsonPagination,
-    BatchUpsertViewSet,
-    FastBatchUpsertViewSet,
-    BatchUpsertQualityControlViewSet)
-from wastd.observations.models import (
-    Area,
-    Survey,  # SiteVisit,
-    Encounter, TurtleNestEncounter, AnimalEncounter, LoggerEncounter,
-    Observation,  # LineTransectEncounter
-    MediaAttachment, TagObservation, NestTagObservation, ManagementAction,
-    TrackTallyObservation, TurtleNestDisturbanceTallyObservation,
-    TurtleMorphometricObservation, HatchlingMorphometricObservation,
-    DugongMorphometricObservation, TurtleDamageObservation,
-    TurtleNestObservation, TurtleNestDisturbanceObservation,
-    TemperatureLoggerSettings, DispatchRecord, TemperatureLoggerDeployment)
 # from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
 try:
     from wastd.observations.utils import symlink_resources
 except:
     # Docker image build migrate falls over this import
     pass
-from wastd.users.models import User
 
-from taxonomy.models import (
-    HbvName, HbvSupra, HbvGroup, HbvFamily,
-    HbvGenus, HbvSpecies, HbvVernacular, HbvXref, HbvParent,
-    Taxon, Vernacular, Crossreference, Community)
 
-from conservation.models import (
-    ConservationList,
-    ConservationCategory,
-    ConservationCriterion,
-    TaxonGazettal,
-    CommunityGazettal,
-    Document
-)
 
-from occurrence import models as occ_models
 
 logger = logging.getLogger(__name__)
 

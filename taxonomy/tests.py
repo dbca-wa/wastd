@@ -9,10 +9,9 @@ from __future__ import unicode_literals
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-
 from model_mommy import mommy
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
-from taxonomy.models import (Taxon, Community)
+from taxonomy.models import Community, Taxon
 
 MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
 

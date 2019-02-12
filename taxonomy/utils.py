@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
 """Helpers for Taxonomy module."""
-from __future__ import division, print_function, unicode_literals, absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import logging
-from django.utils.dateparse import parse_datetime
+
 # from django.utils.timezone import is_aware, make_aware
 # from pdb import set_trace
 from django.db import transaction
+from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_text
 from taxonomy.models import (
-    Taxon, Vernacular, Crossreference,
-    HbvName, HbvFamily, HbvGenus, HbvSpecies,
-    HbvParent, HbvVernacular, HbvXref)
+    Crossreference,
+    HbvFamily,
+    HbvGenus,
+    HbvName,
+    HbvParent,
+    HbvSpecies,
+    HbvVernacular,
+    HbvXref,
+    Taxon,
+    Vernacular
+)
 
 logger = logging.getLogger(__name__)
 
