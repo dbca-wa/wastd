@@ -29,7 +29,6 @@ from wastd.users.models import User
 # from django.utils.timezone import get_fixed_timezone, utc
 
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -636,6 +635,8 @@ def handle_turtlenestobs(d, e, m):
         encounter=e,
         nest_position=m["habitat"][d["habitat"]],
         no_egg_shells=d["no_egg_shells"],
+        no_live_hatchlings_neck_of_nest=d[
+            "no_live_hatchlings_neck_of_nest"] if "no_live_hatchlings_neck_of_nest" in d else None,
         no_live_hatchlings=d["no_live_hatchlings"],
         no_dead_hatchlings=d["no_dead_hatchlings"],
         no_undeveloped_eggs=d["no_undeveloped_eggs"],
@@ -643,7 +644,8 @@ def handle_turtlenestobs(d, e, m):
         no_unhatched_term=d["no_unhatched_term"],
         no_depredated_eggs=d["no_depredated_eggs"],
         nest_depth_top=d["nest_depth_top"],
-        nest_depth_bottom=d["nest_depth_bottom"]
+        nest_depth_bottom=d["nest_depth_bottom"],
+        comments=d["comments"] if "comments" in d else ""
     )
     dd.save()
     action = "created" if created else "updated"
@@ -694,6 +696,8 @@ def handle_turtlenestobs31(d, e):
         encounter=e,
         nest_position=d["habitat"],
         no_egg_shells=int_or_none(d["no_egg_shells"]),
+        no_live_hatchlings_neck_of_nest=int_or_none(d[
+            "no_live_hatchlings_neck_of_nest"] if "no_live_hatchlings_neck_of_nest" in d else None),
         no_live_hatchlings=int_or_none(d["no_live_hatchlings"]),
         no_dead_hatchlings=int_or_none(d["no_dead_hatchlings"]),
         no_undeveloped_eggs=int_or_none(d["no_undeveloped_eggs"]),
@@ -701,7 +705,8 @@ def handle_turtlenestobs31(d, e):
         no_unhatched_term=int_or_none(d["no_unhatched_term"]),
         no_depredated_eggs=int_or_none(d["no_depredated_eggs"]),
         nest_depth_top=int_or_none(d["nest_depth_top"]),
-        nest_depth_bottom=int_or_none(d["nest_depth_bottom"])
+        nest_depth_bottom=int_or_none(d["nest_depth_bottom"]),
+        comments=d["comments"] if "comments" in d else ""
     )
     dd.save()
     action = "created" if created else "updated"

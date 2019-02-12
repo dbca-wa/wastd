@@ -227,12 +227,12 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     save_on_top = True
     date_hierarchy = 'encounter__when'
     list_display = (
-        'pk', 'area',
+        'pk', 'area', 'site',
         'latitude', 'longitude',  'date',
         'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
         'encounter_link',
-        'status_display', 'comments')
-    list_filter = ('encounter__area', 'flipper_tag_id', 'tag_label', 'status')
+        'status', 'comments')
+    list_filter = ('encounter__area', 'encounter__site', 'flipper_tag_id', 'tag_label', 'encounter__status')
     search_fields = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
     readonly_fields = ('encounter', )
 
@@ -241,15 +241,20 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
         return obj.encounter.area
     area.short_description = 'Area'
 
+    def site(self, obj):
+        """Make data source readable."""
+        return obj.encounter.site
+    site.short_description = 'Site'
+
     def tag_name(self, obj):
         """Nest tag name."""
         return obj.name
     tag_name.short_description = 'Nest Tag ID'
 
-    def status_display(self, obj):
+    def status(self, obj):
         """Make health status human readable."""
-        return obj.get_status_display()
-    status_display.short_description = 'Status'
+        return obj.encounter.get_status_display()
+    status.short_description = 'Status'
 
     def latitude(self, obj):
         """Make data source readable."""
@@ -274,6 +279,71 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     encounter_link.short_description = 'Encounter'
     encounter_link.allow_tags = True
 
+
+@admin.register(TurtleNestObservation)
+class TurtleNestObservationAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for TurtleNestObservation."""
+
+    save_on_top = True
+    date_hierarchy = 'encounter__when'
+    list_display = (
+        'pk', 'area', 'site',
+        'latitude', 'longitude',  'date',
+        'nest_position', 'eggs_laid', 'egg_count',
+        'hatching_success', 'emergence_success',
+        'no_egg_shells', 'no_live_hatchlings_neck_of_nest', 'no_live_hatchlings',
+        'no_dead_hatchlings', 'no_undeveloped_eggs',
+        'no_unhatched_eggs', 'no_unhatched_term', 'no_depredated_eggs',
+        'nest_depth_top', 'nest_depth_bottom',
+        # 'sand_temp', 'air_temp', 'water_temp', 'egg_temp', 'comments',
+        'encounter_link',
+        'status', 'comments')
+    list_filter = ('encounter__area', 'encounter__site', 'nest_position', 'eggs_laid', 'encounter__status')
+    search_fields = ('comments', )
+    readonly_fields = ('encounter', )
+
+    def area(self, obj):
+        """Make data source readable."""
+        return obj.encounter.area
+    area.short_description = 'Area'
+
+    def site(self, obj):
+        """Make data source readable."""
+        return obj.encounter.site
+    site.short_description = 'Site'
+
+    def tag_name(self, obj):
+        """Nest tag name."""
+        return obj.name
+    tag_name.short_description = 'Nest Tag ID'
+
+    def status(self, obj):
+        """Make health status human readable."""
+        return obj.encounter.get_status_display()
+    status.short_description = 'Status'
+
+    def latitude(self, obj):
+        """Make data source readable."""
+        return obj.encounter.latitude
+    latitude.short_description = 'Latitude'
+
+    def longitude(self, obj):
+        """Make data source readable."""
+        return obj.encounter.longitude
+    longitude.short_description = 'Longitude'
+
+    def date(self, obj):
+        """Make data source readable."""
+        return obj.encounter.when
+    date.short_description = 'Date'
+
+    def encounter_link(self, obj):
+        """A link to the encounter."""
+        return mark_safe(
+            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
+                                           obj.encounter.__str__()))
+    encounter_link.short_description = 'Encounter'
+    encounter_link.allow_tags = True
 
 # Select2Widget forms
 S2ATTRS = {'width': '350px'}

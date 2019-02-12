@@ -99,7 +99,6 @@ from wastd.users.models import User
 # from silk.profiling.profiler import silk_profile
 
 
-
 # from rest_framework.renderers import BrowsableAPIRenderer
 # from rest_framework_latex import renderers
 # from dynamic_rest import serializers as ds, viewsets as dv
@@ -116,8 +115,6 @@ try:
 except:
     # Docker image build migrate falls over this import
     pass
-
-
 
 
 logger = logging.getLogger(__name__)
@@ -589,12 +586,14 @@ class TurtleNestObservationSerializer(serializers.ModelSerializer):
                   'nest_position', 'eggs_laid', 'egg_count',
                   'egg_count_calculated',
                   'no_emerged', 'no_egg_shells',
+                  'no_live_hatchlings_neck_of_nest',
                   'no_live_hatchlings', 'no_dead_hatchlings',
                   'no_undeveloped_eggs', 'no_unhatched_eggs',
                   'no_unhatched_term', 'no_depredated_eggs',
                   'nest_depth_top', 'nest_depth_bottom',
                   'sand_temp', 'air_temp', 'water_temp', 'egg_temp',
-                  'hatching_success', 'emergence_success', )
+                  'hatching_success', 'emergence_success',
+                  'comments')
 
 
 class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
@@ -1007,6 +1006,31 @@ class TagObservationEncounterSerializer(GeoFeatureModelSerializer):
         geo_field = "point"
         fields = ('encounter', 'observation_name', 'tag_type', 'name',
                   'tag_location', 'status', 'comments', )
+
+
+class TurtleNestObservationEncounterSerializer(GeoFeatureModelSerializer):
+    """TurtleNestObservation serializer including encounter for standalone viewset."""
+
+    encounter = FastEncounterSerializer(many=False, read_only=True)
+    point = GeometryField()
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleNestObservation
+        geo_field = "point"
+        fields = (
+            'encounter', 'observation_name',
+
+            'latitude', 'longitude',
+            'nest_position', 'eggs_laid', 'egg_count',
+            'hatching_success', 'emergence_success',
+            'no_egg_shells', 'no_live_hatchlings_neck_of_nest', 'no_live_hatchlings',
+            'no_dead_hatchlings', 'no_undeveloped_eggs',
+            'no_unhatched_eggs', 'no_unhatched_term', 'no_depredated_eggs',
+            'nest_depth_top', 'nest_depth_bottom',
+            'sand_temp', 'air_temp', 'water_temp', 'egg_temp', 'comments',
+        )
 
 
 class EncounterFilter(filters.FilterSet):
@@ -1435,6 +1459,16 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
+class TurtleNestObservationViewSet(viewsets.ModelViewSet):
+    """TagObservation view set."""
+
+    queryset = TurtleNestObservation.objects.all()
+    serializer_class = TurtleNestObservationEncounterSerializer
+    filter_fields = ['encounter__area', 'encounter__site', 'nest_position', 'eggs_laid', 'encounter__status']
+    search_fields = ('comments', )
+    pagination_class = MyGeoJsonPagination
+
+
 # ----------------------------------------------------------------------------#
 # Tagged nests with Encounters
 class NestTagObservationEncounterSerializer(GeoFeatureModelSerializer):
@@ -1509,9 +1543,11 @@ router.register(r'observations', ObservationViewSet)
 router.register(r'media-attachments', MediaAttachmentViewSet)
 router.register(r'tag-observations', TagObservationViewSet)
 router.register(r'disturbance-observations', TurtleNestDisturbanceObservationEncounterViewSet)
-
+router.register(r'turtle-nest-excavations', TurtleNestObservationViewSet)
 
 # Area -------------------------------------------------------------------#
+
+
 class OccurrenceAreaEncounterPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence AreaEncounter."""
 

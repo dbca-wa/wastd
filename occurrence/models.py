@@ -42,8 +42,6 @@ from taxonomy.models import Community, Taxon
 # from dateutil import tz
 
 
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -212,6 +210,30 @@ class AreaEncounter(PolymorphicModel,
             self.encountered_on,
             self.encountered_by)
 
+    # -------------------------------------------------------------------------
+    # URLs
+    def get_absolute_url(self):
+        """Detail url."""
+        return "/"
+
+    @property
+    def detail_url(self):
+        """Hook for detail url."""
+        return self.get_absolute_url()
+
+    @property
+    def update_url(self):
+        """Hook for update url."""
+        return "/"
+
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    # -------------------------------------------------------------------------
+    # Derived properties
     @property
     def derived_point(self):
         """The point, derived from the polygon."""
@@ -231,22 +253,6 @@ class AreaEncounter(PolymorphicModel,
             return None
 
     @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
-    @property
-    def detail_url(self):
-        """Hook for detail url."""
-        return '/'
-
-    @property
-    def update_url(self):
-        """Hook for update url."""
-        return '/'
-
-    @property
     def derived_html(self):
         """Generate HTML popup content."""
         template = "occurrence/popup/{0}.html".format(self._meta.model_name)
@@ -254,9 +260,13 @@ class AreaEncounter(PolymorphicModel,
             t = loader.get_template(template)
             return mark_safe(t.render({"original": self}))
         except:
-            logger.info("[occurrence.models.{0}] Template missing: {1}".format(self._meta.model_name, template))
+            logger.info(
+                "[occurrence.models.{0}] Template missing: {1}".format(
+                    self._meta.model_name, template))
             return self.__str__()
 
+    # -------------------------------------------------------------------------
+    # Functions
     def get_nearby_encounters(self, dist_dd=0.005):
         """Get encounters within dist_dd (default 0.005 degrees, ca 500m).
 
@@ -292,18 +302,31 @@ class TaxonAreaEncounter(AreaEncounter):
             self.encountered_by,
             self.taxon)
 
+    # -------------------------------------------------------------------------
+    # URLs
+    def get_absolute_url(self):
+        """Detail url."""
+        return reverse(
+            'taxon-occurrence-detail',
+            kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
+
     @property
     def detail_url(self):
         """Hook for detail url."""
-        return reverse('taxon-occurrence-detail',
-                       kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
+        return self.get_absolute_url()
 
     @property
     def update_url(self):
         """Hook for update url."""
-        return reverse('taxon-occurrence-update',
-                       kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
+        return reverse(
+            'taxon-occurrence-update',
+            kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
 
+    # -------------------------------------------------------------------------
+    # Derived properties
+
+    # -------------------------------------------------------------------------
+    # Functions
     def nearby_same(self, dist_dd=0.005):
         """Return encounters with same taxon within search radius (dist_dd).
 
@@ -342,18 +365,30 @@ class CommunityAreaEncounter(AreaEncounter):
             self.encountered_by,
             self.community)
 
+    # -------------------------------------------------------------------------
+    # URLs
+    def get_absolute_url(self):
+        """Detail url."""
+        return reverse(
+            'community-occurrence-detail',
+            kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
+
     @property
     def detail_url(self):
         """Hook for detail url."""
-        return reverse('community-occurrence-detail',
-                       kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
+        return self.get_absolute_url()
 
     @property
     def update_url(self):
         """Hook for update url."""
-        return reverse('community-occurrence-update',
-                       kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
+        reverse('community-occurrence-update',
+                kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
 
+    # -------------------------------------------------------------------------
+    # Derived properties
+
+    # -------------------------------------------------------------------------
+    # Functions
     def nearby_same(self, dist_dd=0.005):
         """Return encounters with same community within search radius (dist_dd).
 
@@ -426,18 +461,33 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
         """The unicode representation."""
         return u"Obs {0} for {1}".format(self.pk, self.encounter.__str__())
 
-    @property
-    def get_absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
-    @property
+    # -------------------------------------------------------------------------
+    # URLs
     def get_absolute_url(self):
-        """Return the detail URL. TODO: is admin url for now."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+        """Detail url."""
+        return reverse(
+            'admin:{0}_{1}_change'.format(
+                self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    @property
+    def detail_url(self):
+        """Hook for detail url."""
+        return self.get_absolute_url()
+
+    @property
+    def update_url(self):
+        """Hook for update url."""
+        return "/"
+
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse(
+            'admin:{0}_{1}_change'.format(
+                self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    # -------------------------------------------------------------------------
+    # Derived properties
     # Location and date
     @property
     def point(self):
@@ -491,6 +541,9 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
         or `update`.
         """
         return self.polymorphic_ctype.model
+
+    # -------------------------------------------------------------------------
+    # Functions
 
     # FAUNA ENC
     # Survey

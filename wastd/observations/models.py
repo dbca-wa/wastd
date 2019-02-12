@@ -3445,6 +3445,11 @@ class TurtleNestObservation(Observation):
         help_text=_("The number of empty shells counted which were "
                     "more than 50 percent complete."), )
 
+    no_live_hatchlings_neck_of_nest = models.PositiveIntegerField(
+        verbose_name=_("Live hatchlings in neck of nest"),
+        blank=True, null=True,
+        help_text=_("The number of live hatchlings in the neck of the nest."),)
+
     no_live_hatchlings = models.PositiveIntegerField(
         verbose_name=_("Live hatchlings in nest (L)"),
         blank=True, null=True,
@@ -3512,6 +3517,16 @@ class TurtleNestObservation(Observation):
         blank=True, null=True,
         help_text=_("The egg temperature in degree Celsius."),)
 
+    comments = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
+
+    class Meta:
+        """Class opts."""
+
+        verbose_name = "Turtle Nest Excavation"
+
     def __str__(self):
         """The unicode representation."""
         return u"Nest Obs {0} eggs, hatching succ {1}, emerg succ {2}".format(
@@ -3523,8 +3538,10 @@ class TurtleNestObservation(Observation):
     @property
     def no_emerged(self):
         """The number of hatchlings leaving or departed from nest is S-(L+D)."""
-        return (self.no_egg_shells or 0) - (
-            (self.no_live_hatchlings or 0) + (self.no_dead_hatchlings or 0)
+        return (
+            (self.no_egg_shells or 0) -
+            (self.no_live_hatchlings or 0) -
+            (self.no_dead_hatchlings or 0)
         )
 
     @property
@@ -3556,7 +3573,7 @@ class TurtleNestObservation(Observation):
         if (self.egg_count_calculated == 0):
             return 0
         else:
-            return 100 * (self.no_egg_shells or 0) / self.egg_count_calculated
+            return round(100 * (self.no_egg_shells or 0) / self.egg_count_calculated, 2)
 
     @property
     def emergence_success(self):
@@ -3572,11 +3589,11 @@ class TurtleNestObservation(Observation):
         if (self.egg_count_calculated == 0):
             return 0
         else:
-            return 100 * (
+            return round(100 * (
                 (self.no_egg_shells or 0) -
                 (self.no_live_hatchlings or 0) -
                 (self.no_dead_hatchlings or 0)
-            ) / self.egg_count_calculated
+            ) / self.egg_count_calculated, 2)
 
 
 @python_2_unicode_compatible
