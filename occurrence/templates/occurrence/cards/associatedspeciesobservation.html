@@ -3,28 +3,28 @@
 
   <h5>
     {{ original.taxon.taxonomic_name }}
-    <span class="badge badge-sm badge-{{ original.status|tb_status_icon }} float-right"
-          title="QA status">
-      {{ original.get_status_display }}
+    <span class="float-right">
+
     </span>
   </h5>
 
   {{ original.taxon.vernacular_name }}
 
   <div>
-      <a href="{% url 'community-occurrence-associatedspecies-update' pk=original.encounter.community.pk occ_pk=original.encounter.id obs_pk=original.id %}"
-      class="btn btn-primary btn-sm"
-      title="Edit associated species."
-      target="_">
-      <span class="oi oi-plus" aria-hidden="true"></span>
-      Edit
-    </a>
-    <a href="{{ original.absolute_admin_url }}"
-      class="btn btn-success btn-sm"
-      title="Edit in data curation portal."
-      target="_">
-      <span class="oi oi-pencil" aria-hidden="true"></span>
-      Edit
-    </a>
+     <a href="{% url 'community-occurrence-associatedspecies-update' pk=original.encounter.community.pk occ_pk=original.encounter.id obs_pk=original.id %}"
+        class="btn btn-primary btn-sm"
+        title="Edit associated species."
+        target="_">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+        Edit
+      </a>
+
+      <a href="{{ original.absolute_admin_url }}"
+        class="btn btn-sm btn-{{ original.status|tb_status_icon }}"
+        title="Edit and QA in data curation portal."
+        target="_">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+        QA: {{ original.get_status_display }}
+      </a>
   </div>
 </div>

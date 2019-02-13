@@ -51,9 +51,9 @@
             <div>
                <a href="{{ original.absolute_admin_url }}"
                   class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
-                  target="_" title="Edit record in new tab">
+                  target="_" title="Edit and QA in data curation portal.">
                   <i class="oi oi-pencil"></i>
-                  {{ original.get_status_display }}
+                  QA: {{ original.get_status_display }}
               </a>
               {% areaencounter_update_link original block=False label=False %}
             </div>
