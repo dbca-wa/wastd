@@ -43,28 +43,39 @@ from wastd.observations.views import (
 actions.add_to_site(site)
 
 urlpatterns = [
-    re_path(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
-    re_path(r'^map/$', HomeView.as_view(), name='map'),
+    re_path(r'^$',
+            TemplateView.as_view(template_name='index.html'),
+            name='home'),
+
+    re_path(r'^map/$',
+            HomeView.as_view(),
+            name='map'),
 
     # Species
     re_path(r'^species/$',
             TaxonListView.as_view(),
             name='taxon-list'),
+
     re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/$',
             TaxonDetailView.as_view(),
             name='taxon-detail'),
+
     re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/report/$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxon-occurrence-create'),
+
     re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/area/(?P<area_code>[\w-]+)/report/$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxon-occurrence-area-create'),
+
     re_path(r'^species/occurrences/report/$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxonareaencounter-create'),
+
     re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/(?P<occ_pk>\d+)/$',
             TaxonAreaEncounterDetailView.as_view(),
             name='taxon-occurrence-detail'),
+
     re_path(r'species/(?P<name_id>[-+]?[0-9]+)/occurrences/(?P<occ_pk>\d+)/update/$',
             TaxonAreaEncounterUpdateView.as_view(),
             name='taxon-occurrence-update'),
@@ -73,27 +84,34 @@ urlpatterns = [
     re_path(r'^communities/$',
             CommunityListView.as_view(),
             name='community-list'),
+
     re_path(r'^communities/(?P<pk>\d+)/$',
             CommunityDetailView.as_view(),
             name='community-detail'),
+
     re_path(r'^communities/(?P<pk>\d+)/occurrences/report$',
             CommunityAreaEncounterCreateView.as_view(),
             name='community-occurrence-create'),
+
     re_path(r'^communities/(?P<pk>\d+)/occurrences/area/(?P<area_code>[\w_-]+)/report$',
             CommunityAreaEncounterCreateView.as_view(),
             name='community-occurrence-area-create'),
+
     re_path(r'^communities/occurrences/report/$',
             CommunityAreaEncounterCreateView.as_view(),
             name='communityareaencounter-create'),
+
     re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)$',
             CommunityAreaEncounterDetailView.as_view(),
             name='community-occurrence-detail'),
+
     re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/update$',
             CommunityAreaEncounterUpdateView.as_view(),
             name='community-occurrence-update'),
 
     re_path(r'^grappelli/',
             include('grappelli.urls')),  # grappelli URLs
+
     re_path(r'^ajax_select/',
             include(ajax_select_urls)),  # ajax select URLs
 
@@ -104,6 +122,7 @@ urlpatterns = [
     # User management
     path('users/',
          include(('wastd.users.urls', 'users'), namespace='users')),
+
     path('accounts/',
          include('allauth.urls')),
 
@@ -111,6 +130,7 @@ urlpatterns = [
     path('encounters/',
          EncounterTableView.as_view(),
          name="encounter_list"),
+
     path('animal-encounters/',
          AnimalEncounterTableView.as_view(),
          name="animalencounter_list"),
@@ -119,12 +139,16 @@ urlpatterns = [
     re_path(r'^api/1/swagger/$',
             schema_view,
             name="api-docs"),
+
     re_path(r'^api/1/docs/',
             include_docs_urls(title='API')),
+
     re_path(r'^api/1/',
             include((wastd_router.urls, 'api'), namespace="api")),
+
     re_path(r'^api-auth/',
             include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
+
     re_path(r'^api-token-auth/',
             drf_authviews.obtain_auth_token, name="api-auth"),
 
@@ -136,8 +160,10 @@ urlpatterns = [
     re_path(r'^healthcheck/$',
             TemplateView.as_view(template_name='pages/healthcheck.html'),
             name='healthcheck'),
+
     re_path(r'^adminactions/',
             include('adminactions.urls')),
+
     re_path(r'^select2/',
             include('django_select2.urls')),
 
@@ -179,6 +205,7 @@ urlpatterns = [
     re_path(r'^action/update-taxon/$',
             update_taxon,
             name="update-taxon"),
+
     re_path(r'^action/import-odka/$',
             import_odka_view,
             name="import-odka"),
