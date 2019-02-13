@@ -180,7 +180,7 @@ def symlink_resources(t_dir, data):
 #
 def lowersnake(unsafe_string):
     """Slugify an unsafe string, e.g. turn a full name into a username."""
-    return unsafe_string.replace(" ", "_").replace(".", "_").lower()
+    return unsafe_string.replace(" ", "_").replace(".", "_").replace("-", "_").lower()
 
 
 def upperwhite(safe_string):
