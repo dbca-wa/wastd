@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-'''
-Test settings
+"""
+Test settings.
 
 - Used to run tests fast on the continuous integration server and locally
-'''
+"""
 
 from .common import *  # noqa
 
@@ -75,3 +75,6 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
         'django.template.loaders.app_directories.Loader',
     ]),
 ]
+
+# Staticfiles storage
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'

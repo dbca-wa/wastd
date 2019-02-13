@@ -1,8 +1,8 @@
 # Django
 # ------------------------------------------------
 # >=1.11.9,<2.0
-django==2.1.6
-django-extensions==2.1.4
+django==2.1.7
+django-extensions==2.1.5
 
 # breaking django-1.10:
 # https://github.com/django-polymorphic/django-polymorphic/issues/225 - fixed
@@ -48,7 +48,7 @@ git+git://github.com/dbca-wa/dpaw-utils@minimal
 
 # Background tasks
 # ------------------------------------------------
-django-background-tasks
+django-background-tasks==1.2.0
 
 
 # DevOps
@@ -95,7 +95,7 @@ django-bootstrap-datepicker-plus
 
 # Logging
 # ------------------------------------------------
-sentry-sdk==0.7.0
+sentry-sdk==0.7.2
 
 # Models
 # ------------------------------------------------
