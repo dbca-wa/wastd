@@ -9,7 +9,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.admin import site
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
@@ -47,76 +47,99 @@ urlpatterns = [
     re_path(r'^map/$', HomeView.as_view(), name='map'),
 
     # Species
-    re_path(r'^species/$', TaxonListView.as_view(), name='taxon-list'),
-    re_path(r'^species/(?P<name_id>[0-9]+)/$', TaxonDetailView.as_view(), name='taxon-detail'),
-    # Taxon occ create
-    re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/report$',
+    re_path(r'^species/$',
+            TaxonListView.as_view(),
+            name='taxon-list'),
+    re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/$',
+            TaxonDetailView.as_view(),
+            name='taxon-detail'),
+    re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/report/$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxon-occurrence-create'),
-    re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/area/(?P<area_code>[\w_-]+)/report$',
+    re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/area/(?P<area_code>[\w-]+)/report/$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxon-occurrence-area-create'),
     re_path(r'^species/occurrences/report/$',
             TaxonAreaEncounterCreateView.as_view(),
             name='taxonareaencounter-create'),
-    re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)$',
+    re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/(?P<occ_pk>\d+)/$',
             TaxonAreaEncounterDetailView.as_view(),
             name='taxon-occurrence-detail'),
-    re_path(r'^species/(?P<name_id>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)/update$',
+    re_path(r'species/(?P<name_id>[-+]?[0-9]+)/occurrences/(?P<occ_pk>\d+)/update/$',
             TaxonAreaEncounterUpdateView.as_view(),
             name='taxon-occurrence-update'),
 
-
     # Communities
-    re_path(r'^communities/$', CommunityListView.as_view(), name='community-list'),
-    re_path(r'^communities/(?P<pk>[0-9]+)/$', CommunityDetailView.as_view(), name='community-detail'),
-    # Com occ create
-    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/report$',
+    re_path(r'^communities/$',
+            CommunityListView.as_view(),
+            name='community-list'),
+    re_path(r'^communities/(?P<pk>\d+)/$',
+            CommunityDetailView.as_view(),
+            name='community-detail'),
+    re_path(r'^communities/(?P<pk>\d+)/occurrences/report$',
             CommunityAreaEncounterCreateView.as_view(),
             name='community-occurrence-create'),
-    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/area/(?P<area_code>[\w_-]+)/report$',
+    re_path(r'^communities/(?P<pk>\d+)/occurrences/area/(?P<area_code>[\w_-]+)/report$',
             CommunityAreaEncounterCreateView.as_view(),
             name='community-occurrence-area-create'),
     re_path(r'^communities/occurrences/report/$',
             CommunityAreaEncounterCreateView.as_view(),
             name='communityareaencounter-create'),
-    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)$',
+    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)$',
             CommunityAreaEncounterDetailView.as_view(),
             name='community-occurrence-detail'),
-    re_path(r'^communities/(?P<pk>[0-9]+)/occurrences/(?P<occ_pk>[0-9]+)/update$',
+    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/update$',
             CommunityAreaEncounterUpdateView.as_view(),
             name='community-occurrence-update'),
 
-    # Helpers
-    re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/healthcheck.html'), name='healthcheck'),
-    re_path(r'^grappelli/', include('grappelli.urls')),  # grappelli URLs
-    re_path(r'^ajax_select/', include(ajax_select_urls)),  # ajax select URLs
+    re_path(r'^grappelli/',
+            include('grappelli.urls')),  # grappelli URLs
+    re_path(r'^ajax_select/',
+            include(ajax_select_urls)),  # ajax select URLs
+
     # Django Admin, use {% url 'admin:index' %}
-    re_path(settings.ADMIN_URL, admin.site.urls),
+    re_path(settings.ADMIN_URL,
+            admin.site.urls),
 
     # User management
-    re_path(r'^users/', include(('wastd.users.urls', 'users'), namespace='users')),
-    re_path(r'^accounts/', include('allauth.urls')),
+    path('users/',
+         include(('wastd.users.urls', 'users'), namespace='users')),
+    path('accounts/',
+         include('allauth.urls')),
 
     # Encounters
-    re_path(r'^encounters/$', EncounterTableView.as_view(), name="encounter_list"),
-    re_path(r'^animal-encounters/$', AnimalEncounterTableView.as_view(), name="animalencounter_list"),
+    path('encounters/',
+         EncounterTableView.as_view(),
+         name="encounter_list"),
+    path('animal-encounters/',
+         AnimalEncounterTableView.as_view(),
+         name="animalencounter_list"),
 
     # API
-    re_path(r'^api/1/swagger/$', schema_view, name="api-docs"),
-    re_path(r'^api/1/docs/', include_docs_urls(title='API')),
-    re_path(r'^api/1/', include((wastd_router.urls, 'api'), namespace="api")),
-    re_path(r'^api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
-    re_path(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
+    re_path(r'^api/1/swagger/$',
+            schema_view,
+            name="api-docs"),
+    re_path(r'^api/1/docs/',
+            include_docs_urls(title='API')),
+    re_path(r'^api/1/',
+            include((wastd_router.urls, 'api'), namespace="api")),
+    re_path(r'^api-auth/',
+            include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
+    re_path(r'^api-token-auth/',
+            drf_authviews.obtain_auth_token, name="api-auth"),
 
     # GraphQL
     # url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=schema)),
 
     # Synctools
     # url("^sync/", include(sync_route.urlpatterns)),
-
-    re_path(r'^adminactions/', include('adminactions.urls')),
-    re_path(r'^select2/', include('django_select2.urls')),
+    re_path(r'^healthcheck/$',
+            TemplateView.as_view(template_name='pages/healthcheck.html'),
+            name='healthcheck'),
+    re_path(r'^adminactions/',
+            include('adminactions.urls')),
+    re_path(r'^select2/',
+            include('django_select2.urls')),
 
     # Djgeojson
     re_path(r'^observations.geojson$',
@@ -126,7 +149,8 @@ urlpatterns = [
             name='observation-geojson'),
 
     re_path(r'^areas.geojson$',
-            GeoJSONLayerView.as_view(model=Area, properties=('leaflet_title', 'as_html')),
+            GeoJSONLayerView.as_view(model=Area,
+                                     properties=('leaflet_title', 'as_html')),
             name='areas-geojson'),
 
     # Encounter as tiled GeoJSON
@@ -152,16 +176,23 @@ urlpatterns = [
     #         geometry_field="geom"),
     #     name='area-tiled-geojson'),
 
-    re_path(r'^action/update-taxon/$', update_taxon, name="update-taxon"),
-    re_path(r'^action/import-odka/$', import_odka_view, name="import-odka"),
+    re_path(r'^action/update-taxon/$',
+            update_taxon,
+            name="update-taxon"),
+    re_path(r'^action/import-odka/$',
+            import_odka_view,
+            name="import-odka"),
 
-    re_path(r'^400/$', default_views.bad_request,
+    re_path(r'^400/$',
+            default_views.bad_request,
             kwargs={'exception': Exception('Bad Request!')}),
 
-    re_path(r'^403/$', default_views.permission_denied,
+    re_path(r'^403/$',
+            default_views.permission_denied,
             kwargs={'exception': Exception('Permission Denied')}),
 
-    re_path(r'^404/$', default_views.page_not_found,
+    re_path(r'^404/$',
+            default_views.page_not_found,
             kwargs={'exception': Exception('Page not Found')}),
 
     # url(r'^500/$', default_views.server_error,
@@ -173,6 +204,8 @@ urlpatterns = [
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [
-        re_path(r'^__debug__/', include(debug_toolbar.urls)),
-        re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')),
+        re_path(r'^__debug__/',
+                include(debug_toolbar.urls)),
+        re_path(r'^performance/',
+                include(('silk.urls', 'silk'), namespace='silk')),
     ]

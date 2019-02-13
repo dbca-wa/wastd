@@ -1788,16 +1788,27 @@ class Taxon(MPTTModel, geo_models.Model):
         verbose_name_plural = "Taxa"
         # ordering = ['-rank', 'current']
 
+    # -------------------------------------------------------------------------
+    # URLs
     @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    def get_absolute_url(self):
+        """Detail url."""
+        return reverse('taxon-detail', kwargs={"name_id": self.name_id})
+
     @property
     def absolute_url(self):
         """Return the absolute url for the detail view."""
-        return reverse('taxon-detail', kwargs={"name_id": self.name_id})
+        return self.get_absolute_url()
+
+    @property
+    def detail_url(self):
+        """Return the absolute url for the detail view."""
+        return self.get_absolute_url()
 
     @property
     def build_canonical_name(self):
@@ -2111,16 +2122,27 @@ class Community(LegacySourceMixin, geo_models.Model):
         """The name."""
         return self.code
 
+    # -------------------------------------------------------------------------
+    # URLs
     @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    def get_absolute_url(self):
+        """URL of detail view."""
+        return reverse('community-detail', kwargs={"pk": self.pk})
+
     @property
     def absolute_url(self):
         """Return the absolute url for the detail view."""
-        return reverse('community-detail', kwargs={"pk": self.pk})
+        return self.get_absolute_url()
+
+    @property
+    def detail_url(self):
+        """Return the absolute url for the detail view."""
+        return self.get_absolute_url()
 
     @property
     def gazettals(self):

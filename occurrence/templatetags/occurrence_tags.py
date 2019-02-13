@@ -58,8 +58,8 @@ def taxonareaencounter_add_link(name_id, area_code=None, block=False, label=Fals
                           kwargs={'name_id': name_id,
                                   'area_code': sanitize_tag_label(area_code)})
     else:
-        add_url = reverse('taxon-occurrence-create',
-                          kwargs={'name_id': name_id})
+        add_url = reverse("taxon-occurrence-create",
+                          kwargs={"name_id": name_id})
 
     return {
         "add_url": add_url,

@@ -267,6 +267,8 @@ class ConservationAction(models.Model):
         """The full name."""
         return "[{0}] {1}".format(self.category, self.instructions)
 
+    # -------------------------------------------------------------------------
+    # URLs
     @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
@@ -687,6 +689,22 @@ class Gazettal(models.Model):
         """The full name."""
         return unicode(self.pk)
 
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    @property
+    def absolute_admin_add_url(self):
+        """Return the absolute admin add URL."""
+        return reverse('admin:{0}_{1}_add'.format(
+            self._meta.app_label, self._meta.model_name))
+
+    # -------------------------------------------------------------------------
+    # Derived properties
     @property
     def build_category_cache(self):
         """Build a string of all attached categories."""
@@ -704,18 +722,6 @@ class Gazettal(models.Model):
             self.get_scope_display(),
             self.build_category_cache
         ).strip()
-
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
-    @property
-    def absolute_admin_add_url(self):
-        """Return the absolute admin add URL."""
-        return reverse('admin:{0}_{1}_add'.format(
-            self._meta.app_label, self._meta.model_name))
 
     @property
     def max_approval_level(self):
@@ -1042,6 +1048,12 @@ class TaxonGazettal(Gazettal):
                               on_delete=models.CASCADE,
                               related_name="taxon_gazettal")
 
+    class Meta:
+        """Class opts."""
+
+        verbose_name = "Taxon Conservation Listing"
+        verbose_name_plural = "Taxon Conservation Listings"
+
     def __str__(self):
         """The full name."""
         return "{0} {1} {2} {3}".format(
@@ -1051,12 +1063,14 @@ class TaxonGazettal(Gazettal):
             self.criteria_cache
         ).strip()
 
-    class Meta:
-        """Class opts."""
+    # -------------------------------------------------------------------------
+    # URLs
+    def get_absolute_url(self):
+        """Detail url."""
+        return self.taxon.get_absolute_url()
 
-        verbose_name = "Taxon Conservation Listing"
-        verbose_name_plural = "Taxon Conservation Listings"
-
+    # -------------------------------------------------------------------------
+    # Transitions
     @fsm_log_by
     @transition(
         field='status',
@@ -1117,6 +1131,14 @@ class CommunityGazettal(Gazettal):
             self.criteria_cache
         ).strip()
 
+    # -------------------------------------------------------------------------
+    # URLs
+    def get_absolute_url(self):
+        """Detail url."""
+        return self.community.get_absolute_url()
+
+    # -------------------------------------------------------------------------
+    # Transitions
     @fsm_log_by
     @transition(
         field='status',
@@ -1337,6 +1359,12 @@ class Document(models.Model):
     def __str__(self):
         """The full name."""
         return "[{0}] {1}".format(self.get_document_type_display(), self.title)
+
+    # -------------------------------------------------------------------------
+    # URLs
+    # def get_absolute_url(self):
+    #     """Detail url."""
+    #     return "/"
 
     @property
     def absolute_admin_url(self):

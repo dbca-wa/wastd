@@ -8,8 +8,10 @@
           <small class="float-right">
             {% if is_staff %}
             <a href="{{ gazettal.absolute_admin_url }}"
+              class="btn btn-success btn-sm"
               title="Because you have DBCA Curator privileges, you may edit this conservation listing." target="_">
               <span class="oi oi-pencil" aria-hidden="true"></span>
+              <span class="oi oi-shield" aria-hidden="true"></span>
             </a>
             {% endif %}
           </small>
