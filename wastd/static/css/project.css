@@ -108,3 +108,8 @@ li.breadcrumb-item.active a {color: black;}
   max-width: 21rem;
   min-width: 9rem;
 }
+
+/* Select2 */
+.related-widget-wrapper, .select2-container {
+  min-width: 350px;
+}

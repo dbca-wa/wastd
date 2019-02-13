@@ -6,8 +6,12 @@ from __future__ import unicode_literals
 from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView  # FormView,; DeleteView,
-from occurrence.forms import AreaEncounterForm, CommunityAreaEncounterForm, TaxonAreaEncounterForm
-from occurrence.models import CommunityAreaEncounter, TaxonAreaEncounter
+from occurrence.forms import (
+    AreaEncounterForm, CommunityAreaEncounterForm, TaxonAreaEncounterForm,
+    AssociatedSpeciesObservationForm)
+from occurrence.models import (
+    AreaEncounter, TaxonAreaEncounter, CommunityAreaEncounter,
+    ObservationGroup, AssociatedSpeciesObservation)
 from taxonomy.models import Community, Taxon
 
 # select2 forms
@@ -142,3 +146,61 @@ class CommunityAreaEncounterDetailView(DetailView):
         # obj = self.get_object()
         #
         return context
+
+
+# ---------------------------------------------------------------------------#
+# AssociatedSpeciesObservation Views
+#
+
+class ObservationGroupCreateView(CreateView):
+    """Base CreateView for ObservationGroup."""
+
+    template_name = "occurrence/obsgroup_form.html"
+    model = ObservationGroup
+
+    def get_initial(self):
+        """Initial form values."""
+        initial = dict()
+        if "occ_pk" in self.kwargs:
+            initial["encounter"] = AreaEncounter.objects.get(pk=self.kwargs["occ_pk"])
+        return initial
+
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(ObservationGroupCreateView, self
+                        ).get_context_data(**kwargs)
+        context["subject"] = self.model._meta.verbose_name
+        return context
+
+    def get_success_url(self):
+        """Success: show AE detail view."""
+        return self.object.encounter.get_absolute_url()
+
+
+class ObservationGroupUpdateView(UpdateView):
+    """Update view for ObservationGroup."""
+
+    template_name = "occurrence/obsgroup_form.html"
+    model = ObservationGroup
+
+    def get_object(self, queryset=None):
+        """Accommodate custom object pk from url conf."""
+        return self.model.objects.get(pk=self.kwargs["obs_pk"])
+
+    def get_success_url(self):
+        """Success: show AE detail view."""
+        return self.object.encounter.get_absolute_url()
+
+
+class AssociatedSpeciesObservationCreateView(ObservationGroupCreateView):
+    """Create view for AssociatedSpeciesObservation."""
+
+    model = AssociatedSpeciesObservation
+    form_class = AssociatedSpeciesObservationForm
+
+
+class AssociatedSpeciesObservationUpdateView(ObservationGroupUpdateView):
+    """Update view for AssociatedSpeciesObservation."""
+
+    model = AssociatedSpeciesObservation
+    form_class = AssociatedSpeciesObservationForm

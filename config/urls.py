@@ -20,11 +20,18 @@ from occurrence.views import (
     CommunityAreaEncounterUpdateView,
     TaxonAreaEncounterCreateView,
     TaxonAreaEncounterDetailView,
-    TaxonAreaEncounterUpdateView
+    TaxonAreaEncounterUpdateView,
+    AssociatedSpeciesObservationCreateView,
+    AssociatedSpeciesObservationUpdateView
 )
 from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
-from taxonomy.views import CommunityDetailView, CommunityListView, TaxonDetailView, TaxonListView, update_taxon
+from taxonomy.views import (
+    CommunityDetailView,
+    CommunityListView,
+    TaxonDetailView,
+    TaxonListView,
+    update_taxon)
 
 from wastd.api import router as wastd_router
 from wastd.observations.models import AnimalEncounter, Area, Encounter
@@ -108,6 +115,17 @@ urlpatterns = [
     re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/update$',
             CommunityAreaEncounterUpdateView.as_view(),
             name='community-occurrence-update'),
+
+    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/associated-species/report$',
+            AssociatedSpeciesObservationCreateView.as_view(),
+            name='community-occurrence-associatedspecies-create'),
+
+    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/associated-species/(?P<obs_pk>\d+)/$',
+            AssociatedSpeciesObservationUpdateView.as_view(),
+            name='community-occurrence-associatedspecies-update'),
+
+
+
 
     re_path(r'^grappelli/',
             include('grappelli.urls')),  # grappelli URLs

@@ -4,7 +4,7 @@
     <h6 class="card-header">
       <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span>
       {{ original.encountered_on }}
-      <span class="badge badge-{{ original.status|tb_status_icon }} pull-right" title="QA status">
+      <span class="badge badge-{{ original.status|tb_status_icon }}" title="QA status">
         {{ original.get_status_display }}
       </span>
     </h6><!-- /.card-header -->
@@ -20,7 +20,7 @@
 
   <div class="card-footer">
     {% if is_staff %}
-      {% taxonareaencounter_detail_link original block=True label=True %}
+      {% areaencounter_detail_link original block=True label=True %}
       {% areaencounter_update_link original block=True label=True %}
       {% admin_absoluteadminurl_link original "occurrence" block=True label=True %}
     {% endif %}

@@ -381,8 +381,8 @@ class CommunityAreaEncounter(AreaEncounter):
     @property
     def update_url(self):
         """Hook for update url."""
-        reverse('community-occurrence-update',
-                kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
+        return reverse('community-occurrence-update',
+                       kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
 
     # -------------------------------------------------------------------------
     # Derived properties
@@ -450,6 +450,7 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
         AreaEncounter,
         on_delete=models.CASCADE,
         verbose_name=_("Area Encounter"),
+        related_name="observations",
         help_text=("The Area Encounter during which the observation group was observed."),)
 
     class Meta:
@@ -465,9 +466,7 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
     # URLs
     def get_absolute_url(self):
         """Detail url."""
-        return reverse(
-            'admin:{0}_{1}_change'.format(
-                self._meta.app_label, self._meta.model_name), args=[self.pk])
+        return self.encounter.get_absolute_url()
 
     @property
     def detail_url(self):
@@ -509,6 +508,11 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
         return self.encounter.observed_on or ''
 
     # Display and cached properties
+    @property
+    def model_name(self):
+        """Return the model's verbose name."""
+        return self._meta.verbose_name
+
     @property
     def as_html(self):
         """Return as rendered HTML popup."""
@@ -590,3 +594,65 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
     # DRF permit no
     # TaxonSpecimenEncounter
     # TaxonSampleEncounter
+
+
+class AssociatedSpeciesObservation(ObservationGroup):
+    """Observation of an associated species."""
+
+    taxon = models.ForeignKey(
+        Taxon,
+        on_delete=models.CASCADE,
+        related_name="associated_species")
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Associated Species"
+        verbose_name_plural = "Associated Species"
+
+    def __str__(self):
+        """The unicode representation."""
+        return u"Encounter {0} Obs {1}: Associated species {2}".format(
+            self.encounter.pk, self.pk, self.taxon)
+
+
+class FireHistoryObservation(ObservationGroup):
+    """Evidence of past fire."""
+
+    HMLN_DEFAULT = "NA"
+    HMLN_CHOICES = (
+        (HMLN_DEFAULT, "NA"),
+        ("low", "Low"),
+        ("medium", "Medium"),
+        ("high", "High"),
+    )
+
+    last_fire_date = models.DateField(
+        verbose_name=_("Date of last fire"),
+        blank=True, null=True,
+        help_text=_("The estimated date of the last fire, if evident."))
+
+    fire_intensity = models.CharField(
+        verbose_name=_("Fire intensity"),
+        max_length=100,
+        default=HMLN_DEFAULT,
+        choices=HMLN_CHOICES,
+        help_text=_(
+            "Estimated intensity of last fire on a scale from High to Low, "
+            "or NA if no evidence of past fires."
+        ),
+    )
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Fire History"
+        verbose_name_plural = "Fire Histories"
+
+    def __str__(self):
+        """The unicode representation."""
+        return u"Encounter {0} Obs {1}: Fire on {2}, intensity {3}".format(
+            self.encounter.pk,
+            self.pk,
+            self.last_fire_date.strftime("%d/%m/%Y"),
+            self.get_fire_intensity_display())

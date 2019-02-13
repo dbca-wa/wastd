@@ -2,42 +2,73 @@
 """Admin module for occurrence."""
 from __future__ import absolute_import, unicode_literals
 
-# from django import forms as django_forms
+from django import forms
 # import floppyforms as ff
 from django.contrib import admin
 from django.contrib.gis.db import models as geo_models
 from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
 # from django_select2.forms import HeavySelect2MultipleWidget
+from django_select2.forms import ModelSelect2Widget
+
 # from ajax_select.fields import (
 # AutoCompleteSelectField, AutoCompleteSelectMultipleField)
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
-from leaflet.forms.widgets import LeafletWidget
-from occurrence.models import AreaEncounter, CommunityAreaEncounter, TaxonAreaEncounter
 from reversion.admin import VersionAdmin
+from leaflet.forms.widgets import LeafletWidget
+
+from occurrence.models import (  # noqa
+    AreaEncounter, CommunityAreaEncounter, TaxonAreaEncounter,
+    ObservationGroup,
+    AssociatedSpeciesObservation, FireHistoryObservation)
+
 from shared.admin import CustomStateLogInline
+from taxonomy.models import Community, Taxon  # noqa
+from occurrence.forms import (
+    TaxonAreaEncounterForm,
+    AssociatedSpeciesObservationForm)
+
 
 # Select2Widget forms
 S2ATTRS = {'width': '350px'}
 AreaForm = s2form(AreaEncounter, attrs=S2ATTRS)
 TaxonAreaForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
 CommunityAreaForm = s2form(CommunityAreaEncounter, attrs=S2ATTRS)
-leaflet_settings = {
+
+LEAFLET_SETTINGS = {
     'widget': LeafletWidget(attrs={
         'map_height': '400px',
         'map_width': '100%',
         'display_raw': 'true',
         'map_srid': 4326, })}
 
-formfield_overrides = {
-    geo_models.PointField: leaflet_settings,
-    geo_models.LineStringField: leaflet_settings,
-    geo_models.PolygonField: leaflet_settings,
+TAXON_SETTINGS = {
+    'widget': ModelSelect2Widget(
+        model=Taxon,
+        search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
+    ),
+}
+
+FORMFIELD_OVERRIDES = {
+    geo_models.PointField: LEAFLET_SETTINGS,
+    geo_models.LineStringField: LEAFLET_SETTINGS,
+    geo_models.PolygonField: LEAFLET_SETTINGS,
 }
 
 
-@admin.register(AreaEncounter)
+class AssociatedSpeciesObservationInline(FSMTransitionMixin, admin.TabularInline):
+    """Associated Species Observation Inline."""
+
+    extra = 1
+    # max_num = 1  # limit max number
+    model = AssociatedSpeciesObservation
+    form = AssociatedSpeciesObservationForm
+    fsm_field = ['status', ]
+    classes = ('grp-collapse grp-open',)
+
+
+# @admin.register(AreaEncounter)
 class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for Area."""
 
@@ -65,21 +96,21 @@ class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
          ),
     )
     # Leaflet geolocation widget
-    formfield_overrides = formfield_overrides
+    formfield_overrides = FORMFIELD_OVERRIDES
 
 
 @admin.register(TaxonAreaEncounter)
 class TaxonAreaAdmin(AreaEncounterAdmin):
     """Admin for TaxonArea."""
 
-    form = TaxonAreaForm
+    form = TaxonAreaEncounterForm
     list_display = AreaEncounterAdmin.list_display + ["taxon"]
     list_filter = AreaEncounterAdmin.list_filter + ["taxon"]
     list_select_related = ["taxon"]
-    fieldsets = ((_('Taxon'), {
-        'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-        'fields': ("taxon", )}
-    ),) + AreaEncounterAdmin.fieldsets
+    # fieldsets = ((_('Taxon'), {
+    #     'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+    #     'fields': ("taxon", )}
+    # ),) + AreaEncounterAdmin.fieldsets
 
 
 @admin.register(CommunityAreaEncounter)
@@ -94,3 +125,22 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
         'fields': ("community", )}
     ),) + AreaEncounterAdmin.fieldsets
+    inlines = [
+        AssociatedSpeciesObservationInline,
+    ]
+
+
+@admin.register(AssociatedSpeciesObservation)
+class AssociatedSpeciesObservationAdmin(FSMTransitionMixin, VersionAdmin):
+    """Associated Species Observation Admin."""
+
+    list_display = ["encounter", "taxon", ]
+    # list_select_related = ObservationGroupAdmin.list_select_related + ["taxon", ]
+    form = AssociatedSpeciesObservationForm
+    fsm_field = ['status', ]
+    taxon = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Taxon,
+            search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
+        )
+    )

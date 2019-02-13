@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4  %}
+
+{% block content %}
+<div class="container-fluid" id="wrap">
+
+  <!-- Breadcrumbs -->
+  <div class="row">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/">
+            {{ settings.SITE_NAME }} Home
+          </a>
+        </li>
+        <li class="breadcrumb-item active">
+            {% block breadcrumb_page_label %}Add {{ subject }}{% endblock %}
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+
+<div class="container centering">
+  <div class="row">
+    <div class="col-12">
+    {% crispy form form.helper %}
+    </div><!-- .col -->
+  </div><!-- .row -->
+</div><!-- .container -->
+</div><!-- #wrap -->
+{% endblock %}
+
+{% block extrastyle %}
+{{ form.media.css }}
+{% endblock %}
+
+{% block extrajs %}
+{{ form.media.js }}
+{% endblock extrajs %}

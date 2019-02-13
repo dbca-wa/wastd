@@ -10,12 +10,15 @@ from django_select2.forms import ModelSelect2Widget
 from leaflet.forms.widgets import LeafletWidget
 from taxonomy.models import Community, Taxon
 
-from .models import AreaEncounter, CommunityAreaEncounter, TaxonAreaEncounter
+from .models import (
+    AreaEncounter, CommunityAreaEncounter, TaxonAreaEncounter,
+    AssociatedSpeciesObservation)
 
 # from wastd.users.models import User
 
 
 LEAFLET_ATTRS = {'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326}
+S2ATTRS = {'width': '350px'}
 
 
 class AreaEncounterForm(forms.ModelForm):
@@ -142,6 +145,46 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
                 'code',
                 'geom',
                 'accuracy',
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+
+
+# ----------------------------------------------------------------------------#
+# ObservationGroup forms
+#
+class AssociatedSpeciesObservationForm(forms.ModelForm):
+    """AssociatedSpeciesObservation Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = AssociatedSpeciesObservation
+        fields = ("encounter", "taxon",)
+        widgets = {
+            "encounter": ModelSelect2Widget(
+                model=AreaEncounter,
+                search_fields=["code", "name", "area_type", ],
+                attrs={'size': 80}
+            ),
+            "taxon": ModelSelect2Widget(
+                model=Taxon,
+                search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ],
+                attrs={'size': 80}
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(AssociatedSpeciesObservationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Associated Species',
+                "encounter",
+                'taxon',
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')

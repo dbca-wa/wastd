@@ -1,6 +1,6 @@
 <a href="{{ detail_url }}"
   class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
-  title="View and add details of this {{ subject }} occurrence.">
+  title="View and add details of this{% if subject %} {{ subject }}{% endif %} occurrence.">
   <span class="oi oi-eye" aria-hidden="true"></span>
   <span class="oi oi-target" aria-hidden="true"></span>
   {% if label %}View occurrence{% endif %}
