@@ -509,31 +509,6 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
 
     # Display and cached properties
     @property
-    def model_name(self):
-        """Return the model's verbose name."""
-        return self._meta.verbose_name
-
-    @property
-    def as_html(self):
-        """Return as rendered HTML popup."""
-        t = loader.get_template("occurrence/popup/{0}.html".format(self._meta.model_name))
-        # c = Context({"original": self})
-        return mark_safe(t.render({"original": self}))
-
-    @property
-    def as_card(self):
-        """Return as rendered HTML card."""
-        t = loader.get_template("occurrence/cards/{0}.html".format(self._meta.model_name))
-        return mark_safe(t.render({"original": self}))
-
-    @property
-    def as_latex(self):
-        """Return as raw Latex fragment."""
-        t = loader.get_template("occurrence/latex/{0}.tex".format(self._meta.model_name))
-        # c = Context({"original": self})
-        return mark_safe(t.render({"original": self}))
-
-    @property
     def observation_name(self):
         """The concrete model name.
 
@@ -545,6 +520,31 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
         or `update`.
         """
         return self.polymorphic_ctype.model
+
+    @property
+    def model_name_verbose(self):
+        """Return the model's verbose name."""
+        return self._meta.verbose_name
+
+    @property
+    def as_html(self):
+        """Return as rendered HTML popup."""
+        t = loader.get_template("occurrence/popup/{0}.html".format(self.observation_name))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
+
+    @property
+    def as_card(self):
+        """Return as rendered HTML card."""
+        t = loader.get_template("occurrence/cards/{0}.html".format(self.observation_name))
+        return mark_safe(t.render({"original": self}))
+
+    @property
+    def as_latex(self):
+        """Return as raw Latex fragment."""
+        t = loader.get_template("occurrence/latex/{0}.tex".format(self.observation_name))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
 
     # -------------------------------------------------------------------------
     # Functions
