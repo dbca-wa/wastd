@@ -30,13 +30,54 @@ supported data sources into WAStD/TSC.
 .. _itp-species-fauna:
 Threatened Fauna Occurrence
 ===========================
-Coming soon.
+
+Paper form
+----------
+This section discusses changes to the legacy paper form to streamline it for TSC use.
+
+Audience: TSC stakeholders, Species and Communities Branch.
+
+Form version: NA, long version
+
+* Species ID: proof (photos, samples, text description), certainty of ID,
+* Specimen: label, location
+* Population Observation: number at age classes
+* Survey: methodology, type
+* Animal observation: secondary signs, cause of death, reproductive state
+* Habitat: landform, veg type
+* Fire history
+* Associated flora species
+* Associated communities
+
+Digital form
+------------
+Needs a lot of thought to streamline the very different scenarios in which an animal occurrence might be recorded.
 
 
 .. _itp-species-flora:
 Threatened Flora Occurrence
 ===========================
-Coming soon.
+
+Paper form
+----------
+This section discusses changes to the legacy paper form to streamline it for TSC use.
+
+Audience: TSC stakeholders, Species and Communities Branch.
+
+Form version: 1.1 Jan 2012
+
+* DRF permit
+* Area assessment
+* Quadrats
+* Population structure
+* Population condition
+* Threats
+* Habitat information
+* Habitat condition
+* Fire history
+* Vegetation classification
+* Associated species
+
 
 
 .. _itp-community:

@@ -11,8 +11,14 @@ from django.test import TestCase
 from django.urls import reverse
 from model_mommy import mommy
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
-from occurrence.models import CommunityAreaEncounter, TaxonAreaEncounter
-from taxonomy.models import Community, Taxon
+from occurrence.models import (  # noqa
+    CommunityAreaEncounter,
+    TaxonAreaEncounter,
+    AssociatedSpeciesObservation,
+    FireHistoryObservation
+)
+from taxonomy.models import Community, Taxon  # noqa
+from django.contrib.contenttypes.models import ContentType
 
 MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
 
@@ -23,9 +29,14 @@ class TaxonAreaEncounterTestMommy(TestCase):
     def setUp(self):
         """Shared objects."""
         self.taxon = mommy.make(Taxon, name_id=1000, _fill_optional=['name', 'rank', 'eoo'])
+        self.taxon1 = mommy.make(Taxon, name_id=1001, _fill_optional=['name', 'rank', 'eoo'])
+        self.taxon2 = mommy.make(Taxon, name_id=1002, _fill_optional=['name', 'rank', 'eoo'])
         self.obj = mommy.make(TaxonAreaEncounter, taxon=self.taxon, _fill_optional=True)
         self.user = get_user_model().objects.create_superuser(
             username="superuser", email="super@gmail.com", password="test")
+        self.asssp1 = mommy.make(AssociatedSpeciesObservation, encounter=self.obj, taxon=self.taxon1)
+        self.asssp2 = mommy.make(AssociatedSpeciesObservation, encounter=self.obj, taxon=self.taxon2)
+        ContentType.objects.clear_cache()
         self.client.force_login(self.user)
 
     def test_tae_creation_mommy(self):
@@ -36,9 +47,8 @@ class TaxonAreaEncounterTestMommy(TestCase):
     def test_tae_absolute_admin_url_loads(self):
         """Test absolute admin url."""
         url = self.obj.absolute_admin_url
-        # response = self.client.get(url)
-        # self.assertEqual(response.status_code, 200)
-        pass
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_tae_detail_url_loads(self):
         """Test taxon detail url works and loads."""
@@ -48,5 +58,5 @@ class TaxonAreaEncounterTestMommy(TestCase):
         self.assertEqual(detail_url_constructed, self.obj.detail_url)
 
         # throws https://github.com/django-polymorphic/django-polymorphic/issues/109
-        # response = self.client.get(self.obj.detail_url)
-        # self.assertEqual(response.status_code, 200)
+        response = self.client.get(self.obj.detail_url)
+        self.assertEqual(response.status_code, 200)
