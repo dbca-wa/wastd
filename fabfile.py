@@ -85,7 +85,7 @@ def test():
     """Run test suite, re-use db."""
     print(yellow("Running tests..."))
     local('coverage run --source="." manage.py test'
-          ' --settings=config.settings.test --keepdb -v 2'
+          ' --settings=config.settings.test -v 2'
           ' && coverage report -m', shell='/bin/bash')
     local('honcho run coveralls')
     print(green("Completed running tests."))
