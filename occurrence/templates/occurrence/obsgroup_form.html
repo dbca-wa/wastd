@@ -13,6 +13,17 @@
             {{ settings.SITE_NAME }} Home
           </a>
         </li>
+        <!-- Tax/Com list -->
+        <!-- Tax/Com detail -->
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{{ encounter.subject.detail_url }}">
+          {{ encounter.subject }}</a>
+        </li>
+        <!-- AE detail -->
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="{{ encounter.detail_url }}">
+          {{ encounter }}</a>
+        </li>
         <li class="breadcrumb-item active">
             {% block breadcrumb_page_label %}Add {{ subject }}{% endblock %}
         </li>

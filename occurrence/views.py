@@ -178,6 +178,7 @@ class ObservationGroupCreateView(CreateView):
         context = super(ObservationGroupCreateView, self
                         ).get_context_data(**kwargs)
         context["subject"] = self.model._meta.verbose_name
+        context["encounter"] = self.get_initial()["encounter"]
         return context
 
     def get_success_url(self):
@@ -194,6 +195,14 @@ class ObservationGroupUpdateView(UpdateView):
     def get_object(self, queryset=None):
         """Accommodate custom object pk from url conf."""
         return self.model.objects.get(pk=self.kwargs["obs_pk"])
+
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(ObservationGroupUpdateView, self
+                        ).get_context_data(**kwargs)
+        context["subject"] = self.model._meta.verbose_name
+        context["encounter"] = self.get_object().encounter
+        return context
 
     def get_success_url(self):
         """Success: show AE detail view."""
