@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Occurrence forms."""
 
-from bootstrap_datepicker_plus import DateTimePickerInput
+from bootstrap_datepicker_plus import DateTimePickerInput, DatePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
 from django import forms
@@ -11,8 +11,12 @@ from leaflet.forms.widgets import LeafletWidget
 from taxonomy.models import Community, Taxon
 
 from .models import (
-    AreaEncounter, CommunityAreaEncounter, TaxonAreaEncounter,
-    AssociatedSpeciesObservation)
+    AreaEncounter,
+    CommunityAreaEncounter,
+    TaxonAreaEncounter,
+    AssociatedSpeciesObservation,
+    FireHistoryObservation
+)
 
 # from wastd.users.models import User
 
@@ -156,7 +160,7 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
 # ObservationGroup forms
 #
 class AssociatedSpeciesObservationForm(forms.ModelForm):
-    """AssociatedSpeciesObservation Form."""
+    """Associated Species Observation Form."""
 
     class Meta:
         """Class options."""
@@ -182,9 +186,49 @@ class AssociatedSpeciesObservationForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
                 'Associated Species',
-                "encounter",
                 'taxon',
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+
+
+class FireHistoryObservationForm(forms.ModelForm):
+    """Fire History Observation Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = FireHistoryObservation
+        fields = ("encounter", "last_fire_date", "fire_intensity")
+        widgets = {
+            "encounter": ModelSelect2Widget(
+                model=AreaEncounter,
+                search_fields=["code", "name", "area_type", ],
+                attrs={'size': 80}
+            ),
+            'last_fire_date': DatePickerInput(options={"format": "DD/MM/YYYY"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(FireHistoryObservationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "Fire History",
+                "last_fire_date",
+                "fire_intensity"
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')

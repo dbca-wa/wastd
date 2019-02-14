@@ -112,29 +112,42 @@
       <div class="row" id="row-occ-extra">
         <div class="col col-12">
           <div class="jumbotron">
+            <h3 id="obsgroup-add">
+              <small>
+                <a href="{% url 'community-occurrence-associatedspecies-create' pk=original.community.pk occ_pk=original.id %}"
+                  class="btn btn-primary btn-sm"
+                  title="Report an associated species.">
+                  <span class="oi oi-plus" aria-hidden="true"></span>
+                  Report associated species
+                </a>
+                <a href="{% url 'community-occurrence-firehistory-create' pk=original.community.pk occ_pk=original.id %}"
+                  class="btn btn-primary btn-sm"
+                  title="Report evidence of a past fire.">
+                  <span class="oi oi-plus" aria-hidden="true"></span>
+                  Report fire history
+                </a>
+              </small>
+            </h3>
+            <!-- /#obsgroup-add -->
 
-            <a href="{% url 'community-occurrence-associatedspecies-create' pk=original.community.pk occ_pk=original.id %}"
-              class="btn btn-primary btn-sm"
-              title="Report an associated species."
-              target="_">
-              <span class="oi oi-plus" aria-hidden="true"></span>
-              Report associated species
-            </a>
-
-            {% regroup original.observations.all|dictsort:"model_name_verbose" by model_name_verbose as observations %}
-            {% for obstype in observations %}
-              <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12"
-                id="occ-{{ obstype.grouper }}">
-                <h5 class="card-header">
-                  {{ obstype.grouper }}
-                </h5>
-                <div class="card-body">
-                {% for obs in obstype.list %}
-                {{ obs.as_card }}
-                {% endfor %}
-                </div>
+            <!-- obsgroup-cards -->
+            <div class="row">
+              {% regroup original.observations.all|dictsort:"model_name_verbose" by model_name_verbose as observations %}
+              {% for obstype in observations %}
+                <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12"
+                  id="occ-{{ obstype.grouper }}">
+                  <h5 class="card-header">
+                    {{ obstype.grouper }}
+                  </h5>
+                  <div class="card-body">
+                  {% for obs in obstype.list %}
+                  {{ obs.as_card }}
+                  {% endfor %}
+                  </div>
+              </div>
+              {% endfor %}
             </div>
-            {% endfor %}
+            <!-- obsgroup-cards -->
 
           </div>
         </div>

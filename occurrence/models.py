@@ -265,6 +265,11 @@ class AreaEncounter(PolymorphicModel,
                     self._meta.model_name, template))
             return self.__str__()
 
+    @property
+    def subject(self):
+        """Return the subject of the encounter."""
+        return self
+
     # -------------------------------------------------------------------------
     # Functions
     def get_nearby_encounters(self, dist_dd=0.005):
@@ -324,6 +329,10 @@ class TaxonAreaEncounter(AreaEncounter):
 
     # -------------------------------------------------------------------------
     # Derived properties
+    @property
+    def subject(self):
+        """Return the subject of the encounter."""
+        return self.taxon
 
     # -------------------------------------------------------------------------
     # Functions
@@ -386,6 +395,10 @@ class CommunityAreaEncounter(AreaEncounter):
 
     # -------------------------------------------------------------------------
     # Derived properties
+    @property
+    def subject(self):
+        """Return the subject of the encounter."""
+        return self.community
 
     # -------------------------------------------------------------------------
     # Functions
@@ -615,6 +628,14 @@ class AssociatedSpeciesObservation(ObservationGroup):
         return u"Encounter {0} Obs {1}: Associated species {2}".format(
             self.encounter.pk, self.pk, self.taxon)
 
+    @property
+    def update_url(self):
+        """Update url."""
+        return reverse('community-occurrence-associatedspecies-update',
+                       kwargs={'pk': self.encounter.community.pk,
+                               'occ_pk': self.encounter.pk,
+                               'obs_pk': self.pk})
+
 
 class FireHistoryObservation(ObservationGroup):
     """Evidence of past fire."""
@@ -656,3 +677,11 @@ class FireHistoryObservation(ObservationGroup):
             self.pk,
             self.last_fire_date.strftime("%d/%m/%Y"),
             self.get_fire_intensity_display())
+
+    @property
+    def update_url(self):
+        """Update url."""
+        return reverse('community-occurrence-firehistory-update',
+                       kwargs={'pk': self.encounter.community.pk,
+                               'occ_pk': self.encounter.pk,
+                               'obs_pk': self.pk})

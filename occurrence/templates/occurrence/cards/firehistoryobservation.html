@@ -2,13 +2,13 @@
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
 
   <h5>
-    {{ original.taxon.taxonomic_name }}
+    {{ original.last_fire_date }}
     <span class="float-right">
 
     </span>
   </h5>
 
-  {{ original.taxon.vernacular_name }}
+  Fire intensity: {{ original.get_fire_intensity_display }}
 
   <div>
      <a href="{{ original.update_url }}"
@@ -26,3 +26,4 @@
       </a>
   </div>
 </div>
+

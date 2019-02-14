@@ -18,16 +18,22 @@ from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 from leaflet.forms.widgets import LeafletWidget
 
-from occurrence.models import (  # noqa
-    AreaEncounter, CommunityAreaEncounter, TaxonAreaEncounter,
-    ObservationGroup,
-    AssociatedSpeciesObservation, FireHistoryObservation)
+from occurrence.models import (
+    AreaEncounter,
+    CommunityAreaEncounter,
+    TaxonAreaEncounter,
+    # ObservationGroup,
+    AssociatedSpeciesObservation,
+    FireHistoryObservation
+)
 
 from shared.admin import CustomStateLogInline
 from taxonomy.models import Community, Taxon  # noqa
 from occurrence.forms import (
     TaxonAreaEncounterForm,
-    AssociatedSpeciesObservationForm)
+    AssociatedSpeciesObservationForm,
+    FireHistoryObservationForm
+)
 
 
 # Select2Widget forms
@@ -57,14 +63,23 @@ FORMFIELD_OVERRIDES = {
 }
 
 
-class AssociatedSpeciesObservationInline(FSMTransitionMixin, admin.TabularInline):
+class AssociatedSpeciesObservationInline(admin.TabularInline):
     """Associated Species Observation Inline."""
 
     extra = 1
     # max_num = 1  # limit max number
     model = AssociatedSpeciesObservation
     form = AssociatedSpeciesObservationForm
-    fsm_field = ['status', ]
+    classes = ('grp-collapse grp-open',)
+
+
+class FireHistoryObservationInline(admin.TabularInline):
+    """FireHistoryObservation Inline."""
+
+    extra = 1
+    # max_num = 1  # limit max number
+    model = FireHistoryObservation
+    form = FireHistoryObservationForm
     classes = ('grp-collapse grp-open',)
 
 
@@ -111,6 +126,10 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
     #     'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
     #     'fields': ("taxon", )}
     # ),) + AreaEncounterAdmin.fieldsets
+    inlines = [
+        # AssociatedSpeciesObservationInline,
+        FireHistoryObservationInline
+    ]
 
 
 @admin.register(CommunityAreaEncounter)
@@ -127,6 +146,7 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
     ),) + AreaEncounterAdmin.fieldsets
     inlines = [
         AssociatedSpeciesObservationInline,
+        FireHistoryObservationInline
     ]
 
 
@@ -144,3 +164,13 @@ class AssociatedSpeciesObservationAdmin(FSMTransitionMixin, VersionAdmin):
             search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
         )
     )
+
+
+@admin.register(FireHistoryObservation)
+class FireHistoryObservationAdmin(FSMTransitionMixin, VersionAdmin):
+    """FireHistoryObservation Admin."""
+
+    list_display = ["encounter", "last_fire_date", "fire_intensity"]
+    # list_select_related = ObservationGroupAdmin.list_select_related + ["taxon", ]
+    form = FireHistoryObservationForm
+    fsm_field = ['status', ]

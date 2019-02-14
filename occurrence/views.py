@@ -7,11 +7,20 @@ from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView  # FormView,; DeleteView,
 from occurrence.forms import (
-    AreaEncounterForm, CommunityAreaEncounterForm, TaxonAreaEncounterForm,
-    AssociatedSpeciesObservationForm)
+    AreaEncounterForm,
+    CommunityAreaEncounterForm,
+    TaxonAreaEncounterForm,
+    AssociatedSpeciesObservationForm,
+    FireHistoryObservationForm
+)
 from occurrence.models import (
-    AreaEncounter, TaxonAreaEncounter, CommunityAreaEncounter,
-    ObservationGroup, AssociatedSpeciesObservation)
+    AreaEncounter,
+    TaxonAreaEncounter,
+    CommunityAreaEncounter,
+    ObservationGroup,
+    AssociatedSpeciesObservation,
+    FireHistoryObservation
+)
 from taxonomy.models import Community, Taxon
 
 # select2 forms
@@ -149,9 +158,8 @@ class CommunityAreaEncounterDetailView(DetailView):
 
 
 # ---------------------------------------------------------------------------#
-# AssociatedSpeciesObservation Views
+# ObservationGroup Views
 #
-
 class ObservationGroupCreateView(CreateView):
     """Base CreateView for ObservationGroup."""
 
@@ -192,6 +200,9 @@ class ObservationGroupUpdateView(UpdateView):
         return self.object.encounter.get_absolute_url()
 
 
+# ---------------------------------------------------------------------------#
+# ObservationGroup Instance Views
+#
 class AssociatedSpeciesObservationCreateView(ObservationGroupCreateView):
     """Create view for AssociatedSpeciesObservation."""
 
@@ -204,3 +215,17 @@ class AssociatedSpeciesObservationUpdateView(ObservationGroupUpdateView):
 
     model = AssociatedSpeciesObservation
     form_class = AssociatedSpeciesObservationForm
+
+
+class FireHistoryObservationCreateView(ObservationGroupCreateView):
+    """Create view for AssociatedSpeciesObservation."""
+
+    model = FireHistoryObservation
+    form_class = FireHistoryObservationForm
+
+
+class FireHistoryObservationUpdateView(ObservationGroupUpdateView):
+    """Update view for AssociatedSpeciesObservation."""
+
+    model = FireHistoryObservation
+    form_class = FireHistoryObservationForm

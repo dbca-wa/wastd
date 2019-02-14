@@ -22,7 +22,9 @@ from occurrence.views import (
     TaxonAreaEncounterDetailView,
     TaxonAreaEncounterUpdateView,
     AssociatedSpeciesObservationCreateView,
-    AssociatedSpeciesObservationUpdateView
+    AssociatedSpeciesObservationUpdateView,
+    FireHistoryObservationCreateView,
+    FireHistoryObservationUpdateView
 )
 from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
@@ -124,7 +126,13 @@ urlpatterns = [
             AssociatedSpeciesObservationUpdateView.as_view(),
             name='community-occurrence-associatedspecies-update'),
 
+    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/fire-history/report$',
+            FireHistoryObservationCreateView.as_view(),
+            name='community-occurrence-firehistory-create'),
 
+    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/fire-history/(?P<obs_pk>\d+)/$',
+            FireHistoryObservationUpdateView.as_view(),
+            name='community-occurrence-firehistory-update'),
 
 
     re_path(r'^grappelli/',
