@@ -118,21 +118,21 @@ urlpatterns = [
             CommunityAreaEncounterUpdateView.as_view(),
             name='community-occurrence-update'),
 
-    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/associated-species/report$',
+    re_path(r'^occurrences/(?P<occ_pk>\d+)/associated-species/report$',
             AssociatedSpeciesObservationCreateView.as_view(),
-            name='community-occurrence-associatedspecies-create'),
+            name='occurrence-associatedspecies-create'),
 
-    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/associated-species/(?P<obs_pk>\d+)/$',
+    re_path(r'^occurrences/(?P<occ_pk>\d+)/associated-species/(?P<obs_pk>\d+)/$',
             AssociatedSpeciesObservationUpdateView.as_view(),
-            name='community-occurrence-associatedspecies-update'),
+            name='occurrence-associatedspecies-update'),
 
-    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/fire-history/report$',
+    re_path(r'^occurrences/(?P<occ_pk>\d+)/fire-history/report$',
             FireHistoryObservationCreateView.as_view(),
-            name='community-occurrence-firehistory-create'),
+            name='occurrence-firehistory-create'),
 
-    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/fire-history/(?P<obs_pk>\d+)/$',
+    re_path(r'^occurrences/(?P<occ_pk>\d+)/fire-history/(?P<obs_pk>\d+)/$',
             FireHistoryObservationUpdateView.as_view(),
-            name='community-occurrence-firehistory-update'),
+            name='occurrence-firehistory-update'),
 
 
     re_path(r'^grappelli/',

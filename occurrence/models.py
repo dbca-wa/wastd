@@ -631,9 +631,8 @@ class AssociatedSpeciesObservation(ObservationGroup):
     @property
     def update_url(self):
         """Update url."""
-        return reverse('community-occurrence-associatedspecies-update',
-                       kwargs={'pk': self.encounter.community.pk,
-                               'occ_pk': self.encounter.pk,
+        return reverse('occurrence-associatedspecies-update',
+                       kwargs={'occ_pk': self.encounter.pk,
                                'obs_pk': self.pk})
 
 
@@ -681,7 +680,6 @@ class FireHistoryObservation(ObservationGroup):
     @property
     def update_url(self):
         """Update url."""
-        return reverse('community-occurrence-firehistory-update',
-                       kwargs={'pk': self.encounter.community.pk,
-                               'occ_pk': self.encounter.pk,
+        return reverse('occurrence-firehistory-update',
+                       kwargs={'occ_pk': self.encounter.pk,
                                'obs_pk': self.pk})

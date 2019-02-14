@@ -66,7 +66,7 @@ FORMFIELD_OVERRIDES = {
 class AssociatedSpeciesObservationInline(admin.TabularInline):
     """Associated Species Observation Inline."""
 
-    extra = 1
+    extra = 0
     # max_num = 1  # limit max number
     model = AssociatedSpeciesObservation
     form = AssociatedSpeciesObservationForm
@@ -76,7 +76,7 @@ class AssociatedSpeciesObservationInline(admin.TabularInline):
 class FireHistoryObservationInline(admin.TabularInline):
     """FireHistoryObservation Inline."""
 
-    extra = 1
+    extra = 0
     # max_num = 1  # limit max number
     model = FireHistoryObservation
     form = FireHistoryObservationForm

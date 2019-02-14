@@ -213,7 +213,7 @@ class FireHistoryObservationForm(forms.ModelForm):
                 search_fields=["code", "name", "area_type", ],
                 attrs={'size': 80}
             ),
-            'last_fire_date': DatePickerInput(options={"format": "DD/MM/YYYY"}),
+            'last_fire_date': DatePickerInput(),
         }
 
     def __init__(self, *args, **kwargs):

@@ -13,6 +13,31 @@ In this chapter, we will discuss:
 * the custom User app
 * remaining modules of the observations app
 
+
+.. _extend-app:
+Extending the application
+=========================
+
+ObservationGroup
+----------------
+
+TFA, TFL, TEC paper forms contain further observation groups, which
+are reviewed and evaluated for trustworthiness separately.
+
+Each group becomes a model in TSC, inheriting from ``occurrences.models.ObservationGroup``.
+
+* Model: add model to ``occurrences.models`` inheriting from ObservationGroup.
+* Migration: create, run in dev.
+* Form: create form for use in admin and views.
+* Admin: add Inline and standalone admin.
+* Views: CreateView, UpdateView. DetailView is that of related encounter.
+* URLs: create and update URLs. Add ``update_url`` to model.
+* Templates: card template for obsgroup model, add "create" link to either CAE/TAE detail template where applicable.
+* Tests: Create sample instances, view on detail page. Call create and update urls.
+* Docs: Migrate legacy docs on how to fill in the obsgroup sections.
+* DevOps: git, docker, deploy, migrate.
+
+
 .. _data-model:
 
 Data model
