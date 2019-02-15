@@ -94,6 +94,17 @@ class CommunityAreaEncounterTests(TestCase):
         """Test creating a CommunityAreaEncounter."""
         self.assertTrue(isinstance(self.cae, CommunityAreaEncounter))
 
+    def test_cae_str(self):
+        """Test CAE str."""
+        label = "Encounter of {5} at [{0}] ({1}) {2} on {3} by {4}".format(
+            self.cae.get_area_type_display(),
+            self.cae.code,
+            self.cae.name,
+            self.cae.encountered_on,
+            self.cae.encountered_by,
+            self.cae.community)
+        self.assertEqual(label, self.cae.__str__())
+
     def test_cae_absolute_admin_url_loads(self):
         """Test CommunityAreaEncounter absolute_admin_url."""
         response = self.client.get(self.cae.absolute_admin_url)
@@ -235,6 +246,17 @@ class TaxonAreaEncounterTests(TestCase):
     def test_tae_creation(self):
         """Test creating a TaxonAreaEncounter."""
         self.assertTrue(isinstance(self.tae, TaxonAreaEncounter))
+
+    def test_tae_str(self):
+        """Test TAE str."""
+        label = "Encounter of {5} at [{0}] ({1}) {2} on {3} by {4}".format(
+            self.tae.get_area_type_display(),
+            self.tae.code,
+            self.tae.name,
+            self.tae.encountered_on,
+            self.tae.encountered_by,
+            self.tae.taxon)
+        self.assertEqual(label, self.tae.__str__())
 
     def test_tae_absolute_admin_url_loads(self):
         """Test absolute admin url."""

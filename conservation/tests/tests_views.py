@@ -70,3 +70,38 @@ class ConservationActionViewTests(TestCase):
         """Test ConservationAction absolute admin url."""
         response = self.client.get(self.consaction.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
+
+
+class ConservationActivityViewTests(TestCase):
+    """View tests for ConservationActivity."""
+
+    def setUp(self):
+        """Set up."""
+        self.consactioncat = ConservationActionCategory.objects.create(
+            code="burn", label="Burn", description="Burn everything")
+        self.consaction = ConservationAction.objects.create(
+            category=self.consactioncat,
+            instructions="burn some stuff"
+        )
+        self.consact = ConservationActivity.objects.create(
+            conservation_action=self.consaction,
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+    def test_conservation_activity_absolute_admin_url(self):
+        """Test ConservationActivity absolute admin url."""
+        response = self.client.get(self.consact.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_conservation_activity_str(self):
+        """Test ConservationActivity str."""
+        label = "[{0}][{1}] {2}".format(
+            self.consact.conservation_action.category,
+            self.consact.completion_date.strftime("%d/%m/%Y") if self.consact.completion_date else "in progress",
+            self.consact.implementation_notes)
+        self.assertEqual(label, self.consact.__str__())

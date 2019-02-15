@@ -104,6 +104,31 @@ class ConservationActionModelTests(TestCase):
         ca = ConservationActivity.objects.create(
             conservation_action=self.consaction
         )
+        self.assertTrue(isinstance(ca, ConservationActivity))
         self.assertEqual(self.consaction.conservationactivity_set.count(), 1)
         self.assertEqual(self.consaction.implementation_notes, None)
         self.assertEqual(self.consaction.status, ConservationAction.STATUS_INPROGRESS)
+
+
+class ConservationActivityModelTests(TestCase):
+    """Unit tests for ConservationActivity."""
+
+    def setUp(self):
+        """Set up."""
+        self.consactioncat = ConservationActionCategory.objects.create(
+            code="burn", label="Burn", description="Burn everything")
+        self.consaction = ConservationAction.objects.create(
+            category=self.consactioncat,
+            instructions="burn some stuff"
+        )
+        self.consact = ConservationActivity.objects.create(
+            conservation_action=self.consaction,
+        )
+
+    def test_conservation_activity_str(self):
+        """Test ConservationActivity str."""
+        label = "[{0}][{1}] {2}".format(
+            self.consact.conservation_action.category,
+            self.consact.completion_date.strftime("%d/%m/%Y") if self.consact.completion_date else "in progress",
+            self.consact.implementation_notes)
+        self.assertEqual(label, self.consact.__str__())
