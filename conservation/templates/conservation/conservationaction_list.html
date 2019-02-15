@@ -30,24 +30,121 @@
       <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
         <div class="row">
           {% for action in object_list %}
-          <div class="row d-block">
-            <div class="col-12">
-              <span class="badge badge-success" title="Management action">
-                <span class="oi oi-task" aria-hidden="true"></span> {{ action.category }}
-              </span>
+            <!-- conservation/cards/conservationaction.html -->
+            <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
+              <h5 class="card-header">
+                <div>
+                  <span class="badge badge-secondary" title="Conservation Action">
+                    <span class="oi oi-list" aria-hidden="true"></span>
+                    {{ action.category }}
+                  </span>
+                  <span class="badge badge-success" title="Completion Status">
+                    <span class="oi oi-task" aria-hidden="true"></span>
+                    {{ action.get_status_display }}
+                  </span>
+                  <small class="float-right">
+                    {% if request.user.is_staff %}
+                    <a href="{{ action.absolute_admin_url }}"
+                      title="Because you have DBCA Curator privileges, you may edit this managment action." target="_">
+                      <span class="oi oi-pencil" aria-hidden="true"></span>
+                    </a>
+                    {% endif %}
+                  </small>
+                </div>
               {{ action.instructions }}
-              <small class="float-right">
-                {% if is_staff %}
-                <a href="{{ action.absolute_admin_url }}"
-                  title="Because you have DBCA Curator privileges, you may edit this managment action." target="_">
-                  <span class="oi oi-pencil" aria-hidden="true"></span>
+              </h5>
+
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">
+                  <!-- taxa -->
+                  {% for taxon in action.taxa.all %}
+                  <p class="card-text">
+                    <span class="oi oi-eye"
+                      title="Species" aria-hidden="true"></span>
+                    {{ taxon }}
+                  </p>
+                  {% endfor %}
+
+                  <!-- communities -->
+                  {% for com in action.communities.all %}
+                  <p class="card-text">
+                    <span class="oi oi-eye"
+                      title="Communities" aria-hidden="true"></span>
+                    {{ com }}
+                  </p>
+                  {% endfor %}
+                  <!-- documents -->
+
+                  {% for doc in action.documents.all %}
+                  <p class="card-text">
+                    <span class="oi oi-document"
+                      title="Documents" aria-hidden="true"></span>
+                    {{ doc }}
+                  </p>
+                  {% endfor %}
+                  <!-- area code -->
+
+                </h6>
+                <p class="card-text">
+                  <span class="oi oi-calendar"
+                    title="Completion date" aria-hidden="true"></span>
+                  {{ action.completion_date }}
+                  <span class="float-right">
+                    <span class="oi oi-dollar"
+                    title="Total Expenditure" aria-hidden="true"></span>
+                  {{ action.expenditure }}
+                  </span>
+                </p>
+                <p class="card-text">
+                  <span class="oi oi-comment-square"
+                    title="Notes" aria-hidden="true"></span>
+                  {{ action.implementation_notes }}
+                </p>
+
+                <!-- activities -->
+                {% for act in action.conservationactivity_set.all %}
+                    <div class="card card-md col-12">
+                      <div class="card-header">
+                        <p class="card-text">
+                          <span class="oi oi-calendar"
+                          title="Expenditure" aria-hidden="true"></span>
+                            {{ act.completion_date }}
+                          <span class="float-right">
+                            <span class="oi oi-dollar"
+                                  title="Expenditure" aria-hidden="true"></span>
+                            {{ act.expenditure }}
+                          </span>
+                        </p>
+                      </div>
+                      <div class="card-body">
+                        <p class="card-text">
+                          <span class="oi oi-comment-square"
+                            title="Notes" aria-hidden="true"></span>
+                          {{ act.implementation_notes }}
+                        </p>
+                      </div>
+                    </div>
+                {% endfor %}
+                <!-- /activities -->
+
+              </div><!-- /.card-body -->
+
+              <div class="card-footer">
+                <!-- Conservation activity add -->
+                <a href=""
+                    title="Report a new conservation activity."
+                    role="button"
+                    class="btn btn-primary btn-sm"
+                    target="_">
+                  <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-task" aria-hidden="true"></span>
+                  Report conservation activity
                 </a>
-                {% endif %}
-              </small>
-            </div>
-          </div>
+                <!-- /Conservation activity add -->
+              </div><!-- /.card-footer -->
+            </div><!-- /.card -->
+            <!-- conservation/cards/conservationaction.html -->
           {% endfor %}
-        </div>
+          </div><!-- /.row -->
       </div><!-- /#dash-data -->
 
       <!-- Search -->

@@ -40,6 +40,6 @@ class ConservationActionFilter(django_filters.FilterSet):
         """Class opts."""
 
         model = ConservationAction
-        fields = ['target_area', 'category', ]
+        fields = ['target_area', 'category', 'status', ]
         # widgets = {'eoo': LeafletWidget()}
         filter_overrides = FILTER_OVERRIDES
