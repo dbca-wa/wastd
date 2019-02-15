@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 from django.utils import timezone
 
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry, Point, Polygon
+from django.contrib.gis.geos import GEOSGeometry  # Point, Polygon
 from django.test import TestCase
 from django.urls import reverse
 from model_mommy import mommy
@@ -56,22 +56,22 @@ class TaxonAreaEncounterTestMommy(TestCase):
         # Fixes django-polymorphic/django-polymorphic/issues/280. sometimes.
         # self.tae.save()
 
-        self.tae = TaxonAreaEncounter.objects.get_or_create(
-            taxon__pk=self.taxon0.pk,
+        self.tae = TaxonAreaEncounter.objects.create(
+            taxon=self.taxon0,
             encountered_on=timezone.now(),
             encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
 
-        self.asssp1 = AssociatedSpeciesObservation.objects.get_or_create(
+        self.asssp1 = AssociatedSpeciesObservation.objects.create(
             encounter=self.tae,
-            taxon__pk=self.taxon1.pk
+            taxon=self.taxon1
         )
         self.asssp1.save()
 
-        self.asssp2 = AssociatedSpeciesObservation.objects.get_or_create(
-            encounter__pk=self.tae.pk,
-            taxon__pk=self.taxon2.pk
+        self.asssp2 = AssociatedSpeciesObservation.objects.create(
+            encounter=self.tae,
+            taxon=self.taxon2
         )
         self.asssp2.save()
         # new_ct = ContentType.objects.get_for_model(TaxonAreaEncounter)
