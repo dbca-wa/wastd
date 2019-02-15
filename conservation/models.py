@@ -20,6 +20,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 # from rest_framework.reverse import reverse as rest_reverse
 # from django.template import loader
+from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 # from polymorphic.models import PolymorphicModel
@@ -84,7 +85,7 @@ class FileAttachment(models.Model):
         return "{0} {1}".format(self.title, self.author)
 
 # -----------------------------------------------------------------------------
-# Management Actions
+# Conservation (Management) Actions
 
 
 @python_2_unicode_compatible
@@ -233,7 +234,9 @@ class ConservationAction(models.Model):
         blank=True, null=True,
         verbose_name=_("Implementation notes"),
         help_text=_("Add notes as appropriate once the implementation is in progress. "
-                    "Separate progress from different fiscal years in paragraphs."),
+                    "Separate progress from different fiscal years in paragraphs. "
+                    "If this conservation action requires several separate activities, "
+                    "consider reporting a them separately as conservation activities."),
     )
 
     completion_date = models.DateField(
@@ -242,10 +245,12 @@ class ConservationAction(models.Model):
         help_text=_("Set once the action is completed."),
     )
 
-    expenditure = models.FloatField(
+    expenditure = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
         blank=True, null=True,
         verbose_name=_("Expenditure"),
-        help_text=_("Keep a running tally of budget expended for the implementation."),
+        help_text=_("The running tally of budget expended as sum of reported activities."),
     )
 
     status = models.PositiveIntegerField(
@@ -276,20 +281,77 @@ class ConservationAction(models.Model):
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     def get_status(self):
-        """Return a string indicating the progress status."""
-        if not self.implementation_notes:
-            return ConservationAction.STATUS_NEW
-        elif self.implementation_notes and not self.completion_date:
-            return ConservationAction.STATUS_INPROGRESS
-        elif self.completion_date:
+        """Return a string indicating the progress status.
+
+        * If completion date exists and in the past: completed
+        * If neither impl notes added, nor cons activities reported: new (no work done)
+        * else: in progress.
+        """
+        if self.completion_date and self.completion_date < timezone.now():
             return ConservationAction.STATUS_COMPLETED
+        elif (not self.implementation_notes and self.conservationactivity_set.count() == 0):
+            return ConservationAction.STATUS_NEW
+        else:
+            return ConservationAction.STATUS_INPROGRESS
 
 
 @receiver(pre_save, sender=ConservationAction)
 def update_status_cache(sender, instance, *args, **kwargs):
-    """ConservationAction: Cache expensive lookups."""
+    """ConservationAction: Cache expensive lookups.
+
+    * Derive status
+    * Calculate total expenditure.
+    """
     logger.info("[ConservationAction.update_status_cache] Deriving completion status.")
     instance.status = instance.get_status()
+
+
+@python_2_unicode_compatible
+class ConservationActivity(models.Model):
+    """An implementation of a conservation management measure."""
+
+    conservation_action = models.ForeignKey(
+        ConservationAction,
+        on_delete=models.CASCADE
+    )
+
+    implementation_notes = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Implementation notes"),
+        help_text=_("Describe the executed work."),
+    )
+
+    completion_date = models.DateField(
+        blank=True, null=True,
+        verbose_name=_("Completion date"),
+        help_text=_("The date on which this activity was completed."),
+    )
+
+    expenditure = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        blank=True, null=True,
+        verbose_name=_("Expenditure"),
+        help_text=_("The estimated cost of this activity."),
+    )
+
+    attachments = GenericRelation(FileAttachment, object_id_field="object_id")
+
+    def __str__(self):
+        """The full name."""
+        return "[{0}][{1}] {2}".format(
+            self.conservation_action.category,
+            self.completion_date.strftime("%d/%m/%Y"),
+            self.implementation_notes)
+
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
 
 # -----------------------------------------------------------------------------
 # Conservation lists
@@ -395,6 +457,14 @@ class ConservationList(models.Model):
         """The full name."""
         return self.code
 
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
 
 @python_2_unicode_compatible
 class ConservationCategory(models.Model):
@@ -451,6 +521,14 @@ class ConservationCategory(models.Model):
         """The full name."""
         return "[{0}] {1}".format(self.conservation_list.code, self.code)
 
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
 
 @python_2_unicode_compatible
 class ConservationCriterion(models.Model):
@@ -498,6 +576,14 @@ class ConservationCriterion(models.Model):
     def __str__(self):
         """The full name."""
         return "[{0}] {1}".format(self.conservation_list.code, self.code)
+
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
 class ActiveGazettalManager(models.Manager):
@@ -1065,6 +1151,12 @@ class TaxonGazettal(Gazettal):
 
     # -------------------------------------------------------------------------
     # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
     def get_absolute_url(self):
         """Detail url."""
         return self.taxon.get_absolute_url()
@@ -1133,6 +1225,12 @@ class CommunityGazettal(Gazettal):
 
     # -------------------------------------------------------------------------
     # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
     def get_absolute_url(self):
         """Detail url."""
         return self.community.get_absolute_url()

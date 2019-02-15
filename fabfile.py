@@ -82,10 +82,10 @@ def pep():
 
 
 def test():
-    """Run test suite, re-use db."""
+    """Run test suite."""
     print(yellow("Running tests..."))
     local('coverage run --source="." manage.py test'
-          ' --settings=config.settings.test -v 2'
+          ' --settings=config.settings.test --keepdb -v 2'  # --noinput to drop db
           ' && coverage report -m', shell='/bin/bash')
     local('honcho run coveralls')
     print(green("Completed running tests."))
