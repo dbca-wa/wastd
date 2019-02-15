@@ -104,7 +104,7 @@ class CommunityAreaEncounterTests(TestCase):
         """Test CommunityAreaEncounter detail_url."""
         url = reverse(
             'community-occurrence-detail',
-            kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
+            kwargs={'pk': self.cae.community.pk, 'occ_pk': self.cae.pk})
         self.assertEqual(url, self.cae.detail_url)
 
         response = self.client.get(self.cae.detail_url)

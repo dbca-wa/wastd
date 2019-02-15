@@ -105,8 +105,8 @@ First, create a postgis database on an available database cluster.::
 Create a virtualenv project, clone this repo and pip install the requirements::
 
     $ mkproject wastd
-    (wastd) path/to/wastd:$ git clone git@github.com:florianm/wastd.git
-    $ pip install -r requirements/all.txt
+    (wastd) path/to/wastd:$ git clone git@github.com:dbca-wa/wastd.git
+    $ pip install -r requirements/dev.txt
     $ cp env.example .env
 
 .env must contain a working DATABASE_URL, such as (with your respective DBUSER,
