@@ -43,7 +43,6 @@ class CommunityAreaEncounterTests(TestCase):
         """
         self.com0 = mommy.make(
             Community,
-            name_id=1000,
             code="code0",
             name="name0",
             _fill_optional=['eoo'])
@@ -51,7 +50,6 @@ class CommunityAreaEncounterTests(TestCase):
 
         self.com1 = mommy.make(
             Community,
-            name_id=1000,
             code="code1",
             name="name1",
             _fill_optional=['eoo'])
