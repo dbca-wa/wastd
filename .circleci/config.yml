@@ -48,7 +48,7 @@ jobs:
           name: Install system packages for GDAL
           command: |
             sudo apt-get update
-            sudo apt-get install -qq binutils libproj-dev gdal-bin
+            sudo apt-get install -qq binutils libproj-dev gdal-bin redis-server
 
       - run:
           name: Install Python module dependencies
