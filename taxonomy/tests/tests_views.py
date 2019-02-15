@@ -72,6 +72,12 @@ class CommunityViewTests(TestCase):
         response = self.client.get(self.com.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
+    def test_com_list_url_loads(self):
+        """Test community-list."""
+        url = reverse('community-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
     def test_com_detail_url_loads(self):
         """Test Community detail_url."""
         url = reverse('community-detail', kwargs={'pk': self.com.pk})
@@ -130,6 +136,12 @@ class TaxonViewTests(TestCase):
     def test_taxon_absolute_admin_url_loads(self):
         """Test Taxon absolute_admin_url."""
         response = self.client.get(self.taxon.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_taxon_list_url_loads(self):
+        """Test taxon-list."""
+        url = reverse('taxon-list')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_detail_url_loads(self):
