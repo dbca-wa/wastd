@@ -424,7 +424,7 @@ def area_caches(sender, instance, *args, **kwargs):
     """AreaEncounter: Cache expensive lookups."""
     if instance.pk:
         logger.info("[area_caches] Updating cache fields.")
-        instance.label = instance.__str__()
+        instance.label = instance.__str__()[0:1000]
         if not instance.point:
             instance.point = instance.derived_point
         instance.northern_extent = instance.derived_northern_extent
