@@ -6,7 +6,10 @@ https://github.com/sigma-geosistemas/mommy_spatial_generators
 """
 from __future__ import unicode_literals
 
+from django.utils import timezone
+
 from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import GEOSGeometry, Point, Polygon
 from django.test import TestCase
 from django.urls import reverse
 from model_mommy import mommy
@@ -36,39 +39,45 @@ class TaxonAreaEncounterTestMommy(TestCase):
           and not issubclass(model, self.__class__._meta.proxy_for_model):
           TypeError: issubclass() arg 2 must be a class or tuple of classes
         """
-        self.taxon0 = mommy.make(Taxon, name_id=1000, _fill_optional=['name', 'rank', 'eoo'])
+        self.taxon0 = mommy.make(Taxon, name_id=1000, name="name0", _fill_optional=['rank', 'eoo'])
         self.taxon0.save()
 
-        self.taxon1 = mommy.make(Taxon, name_id=1001, _fill_optional=['name', 'rank', 'eoo'])
+        self.taxon1 = mommy.make(Taxon, name_id=1001, name="name1", _fill_optional=['rank', 'eoo'])
         self.taxon1.save()
 
-        self.taxon2 = mommy.make(Taxon, name_id=1002, _fill_optional=['name', 'rank', 'eoo'])
+        self.taxon2 = mommy.make(Taxon, name_id=1002, name="name2", _fill_optional=['rank', 'eoo'])
         self.taxon2.save()
-
-        self.tae = mommy.make(TaxonAreaEncounter, taxon=self.taxon0, _fill_optional=True)
-        # Fixes django-polymorphic/django-polymorphic/issues/280:
-        self.tae.save()
 
         self.user = get_user_model().objects.create_superuser(
             username="superuser", email="super@gmail.com", password="test")
         self.user.save()
 
-        self.asssp1 = mommy.make(
-            AssociatedSpeciesObservation,
+        # self.tae = mommy.make(TaxonAreaEncounter, taxon=self.taxon0, _fill_optional=True)
+        # Fixes django-polymorphic/django-polymorphic/issues/280. sometimes.
+        # self.tae.save()
+
+        self.tae = TaxonAreaEncounter.objects.get_or_create(
+            taxon__pk=self.taxon0.pk,
+            encountered_on=timezone.now(),
+            encountered_by=self.user,
+            point=GEOSGeometry('POINT (115 -32)', srid=4326)
+        )
+
+        self.asssp1 = AssociatedSpeciesObservation.objects.get_or_create(
             encounter=self.tae,
-            taxon=self.taxon1
+            taxon__pk=self.taxon1.pk
         )
         self.asssp1.save()
 
-        self.asssp2 = mommy.make(
-            AssociatedSpeciesObservation,
-            encounter=self.tae,
-            taxon=self.taxon2
+        self.asssp2 = AssociatedSpeciesObservation.objects.get_or_create(
+            encounter__pk=self.tae.pk,
+            taxon__pk=self.taxon2.pk
         )
         self.asssp2.save()
         # new_ct = ContentType.objects.get_for_model(TaxonAreaEncounter)
         # TaxonAreaEncounter.objects.filter(polymorphic_ctype__isnull=True
         # ).update(polymorphic_ctype=new_ct)
+
         self.client.force_login(self.user)
 
     def test_tae_creation_mommy(self):
