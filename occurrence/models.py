@@ -640,11 +640,14 @@ class FireHistoryObservation(ObservationGroup):
     """Evidence of past fire."""
 
     HMLN_DEFAULT = "NA"
+    HMLN_LOW = "low"
+    HMLN_MEDIUM = "medium"
+    HMLN_HIGH = "high"
     HMLN_CHOICES = (
         (HMLN_DEFAULT, "NA"),
-        ("low", "Low"),
-        ("medium", "Medium"),
-        ("high", "High"),
+        (HMLN_LOW, "Low"),
+        (HMLN_MEDIUM, "Medium"),
+        (HMLN_HIGH, "High"),
     )
 
     last_fire_date = models.DateField(
