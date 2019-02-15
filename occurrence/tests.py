@@ -81,12 +81,6 @@ class CommunityAreaEncounterTests(TestCase):
         )
         self.asssp1.save()
 
-        self.asssp2 = AssociatedSpeciesObservation.objects.create(
-            encounter=self.cae,
-            community=self.com2
-        )
-        self.asssp2.save()
-
         self.fh1 = FireHistoryObservation.objects.create(
             encounter=self.cae,
             last_fire_date=timezone.now(),
