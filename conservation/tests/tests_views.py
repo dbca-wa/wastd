@@ -24,6 +24,29 @@ from conservation.models import (  # noqa
 )
 
 
+class ConservationListViewTests(TestCase):
+    """ConservationList view tests."""
+
+    def setUp(self):
+        """Setup: create a new list."""
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+        self.cl = ConservationList(
+            code='test',
+            label='test list',
+            approval_level=ConservationList.APPROVAL_IMMEDIATE)
+
+    def test_conservation_list_absolute_admin_url(self):
+        """Test ConservationList absolute admin url."""
+        response = self.client.get(self.cl.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+
 class ConservationActionCategoryViewTests(TestCase):
     """View tests for ConservationActionCategory."""
 
@@ -69,6 +92,12 @@ class ConservationActionViewTests(TestCase):
     def test_conservation_action_absolute_admin_url(self):
         """Test ConservationAction absolute admin url."""
         response = self.client.get(self.consaction.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_conservation_action_list_url_loads(self):
+        """Test conservationaction-list."""
+        url = reverse('conservationaction-list')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
 
