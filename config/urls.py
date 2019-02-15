@@ -60,6 +60,7 @@ urlpatterns = [
             HomeView.as_view(),
             name='map'),
 
+    # ------------------------------------------------------------------------#
     # Species
     re_path(r'^species/$',
             TaxonListView.as_view(),
@@ -89,6 +90,7 @@ urlpatterns = [
             TaxonAreaEncounterUpdateView.as_view(),
             name='taxon-occurrence-update'),
 
+    # ------------------------------------------------------------------------#
     # Communities
     re_path(r'^communities/$',
             CommunityListView.as_view(),
@@ -118,6 +120,9 @@ urlpatterns = [
             CommunityAreaEncounterUpdateView.as_view(),
             name='community-occurrence-update'),
 
+
+    # ------------------------------------------------------------------------#
+    # Occurrence ObsGroups
     re_path(r'^occurrences/(?P<occ_pk>\d+)/associated-species/report$',
             AssociatedSpeciesObservationCreateView.as_view(),
             name='occurrence-associatedspecies-create'),

@@ -224,7 +224,7 @@ class AreaEncounter(PolymorphicModel,
     @property
     def update_url(self):
         """Hook for update url."""
-        return "/"
+        return self.get_absolute_url()
 
     @property
     def absolute_admin_url(self):
@@ -628,6 +628,8 @@ class AssociatedSpeciesObservation(ObservationGroup):
         return u"Encounter {0} Obs {1}: Associated species {2}".format(
             self.encounter.pk, self.pk, self.taxon)
 
+    # -------------------------------------------------------------------------
+    # URLs
     @property
     def update_url(self):
         """Update url."""
@@ -680,6 +682,8 @@ class FireHistoryObservation(ObservationGroup):
             self.last_fire_date.strftime("%d/%m/%Y"),
             self.get_fire_intensity_display())
 
+    # -------------------------------------------------------------------------
+    # URLs
     @property
     def update_url(self):
         """Update url."""
