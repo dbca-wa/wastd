@@ -13,7 +13,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models as geo_models
 from django.db import models
-from django.db.models.signals import pre_save  # , post_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 # from django.contrib.gis.db import models as geo_models
 # from django.contrib.gis.db.models.query import GeoQuerySet
@@ -122,6 +122,14 @@ class ConservationActionCategory(models.Model):
     def __str__(self):
         """The full name."""
         return self.label
+
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
 @python_2_unicode_compatible
@@ -284,15 +292,18 @@ class ConservationAction(models.Model):
         """Return a string indicating the progress status.
 
         * If completion date exists and in the past: completed
-        * If neither impl notes added, nor cons activities reported: new (no work done)
-        * else: in progress.
+        * If cons activities added: in progress
+        * If impl notes added: in progress
+        * else: new.
         """
         if self.completion_date and self.completion_date < timezone.now():
             return ConservationAction.STATUS_COMPLETED
-        elif (not self.implementation_notes and self.conservationactivity_set.count() == 0):
-            return ConservationAction.STATUS_NEW
-        else:
+        elif self.conservationactivity_set.count() > 0:
             return ConservationAction.STATUS_INPROGRESS
+        elif self.implementation_notes:
+            return ConservationAction.STATUS_INPROGRESS
+        else:
+            return ConservationAction.STATUS_NEW
 
 
 @receiver(pre_save, sender=ConservationAction)
@@ -304,6 +315,8 @@ def update_status_cache(sender, instance, *args, **kwargs):
     """
     logger.info("[ConservationAction.update_status_cache] Deriving completion status.")
     instance.status = instance.get_status()
+    instance.expenditure = instance.conservationactivity_set.aggregate(
+        models.Sum('expenditure'))['expenditure__sum']
 
 
 @python_2_unicode_compatible
@@ -341,7 +354,7 @@ class ConservationActivity(models.Model):
         """The full name."""
         return "[{0}][{1}] {2}".format(
             self.conservation_action.category,
-            self.completion_date.strftime("%d/%m/%Y"),
+            self.completion_date.strftime("%d/%m/%Y") if self.completion_date else "in progress",
             self.implementation_notes)
 
     # -------------------------------------------------------------------------
@@ -349,8 +362,18 @@ class ConservationActivity(models.Model):
     @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+        return self.conservation_action.absolute_admin_url
+
+
+@receiver(post_save, sender=ConservationActivity)
+def update_consaction_caches(sender, instance, *args, **kwargs):
+    """ConservationActivity: Update Conservation Action status and budget cache.
+
+    * Derive status
+    * Calculate total expenditure.
+    """
+    logger.info("[ConservationAction.update_caches] Updating cached fields.")
+    instance.conservation_action.save()
 
 
 # -----------------------------------------------------------------------------

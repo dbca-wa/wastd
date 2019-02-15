@@ -5,8 +5,9 @@ from __future__ import absolute_import, unicode_literals
 from ajax_select.fields import AutoCompleteSelectMultipleField  # AutoCompleteSelectField,
 from conservation.models import (  # Gazettal,
     CommunityGazettal,
-    ConservationAction,
     ConservationActionCategory,
+    ConservationAction,
+    ConservationActivity,
     ConservationCategory,
     ConservationCriterion,
     ConservationList,
@@ -33,6 +34,7 @@ from shared.admin import CustomStateLogInline
 S2ATTRS = {"width": "auto"}
 ConservationActionCategoryForm = s2form(ConservationActionCategory, attrs=S2ATTRS)
 ConservationActionForm = s2form(ConservationAction, attrs=S2ATTRS)
+ConservationActivityForm = s2form(ConservationActivity, attrs=S2ATTRS)
 ConservationCategoryForm = s2form(ConservationCategory, attrs=S2ATTRS)
 ConservationCriterionForm = s2form(ConservationCriterion, attrs=S2ATTRS)
 ConservationListForm = s2form(ConservationList, attrs=S2ATTRS)
@@ -89,6 +91,16 @@ class ConservationActionCategoryAdmin(VersionAdmin):
     save_on_top = True
 
 
+class ConservationActivityInline(admin.TabularInline):
+    """Inline admin for ConservationActivity."""
+
+    extra = 1
+    model = ConservationActivity
+    form = ConservationActivityForm
+    formfield_overrides = FORMFIELD_OVERRIDES
+    classes = ("grp-collapse grp-open wide extrapretty",)
+
+
 @admin.register(ConservationAction)
 class ConservationActionAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
@@ -122,6 +134,7 @@ class ConservationActionAdmin(VersionAdmin):
     save_on_top = True
     # filter_horizontal = ("communities", )
     formfield_overrides = FORMFIELD_OVERRIDES
+    readonly_fields = ["expenditure", ]
 
     taxa = AutoCompleteSelectMultipleField(
         "taxon",
@@ -144,7 +157,10 @@ class ConservationActionAdmin(VersionAdmin):
         }),
 
     )
-    inlines = [FileAttachmentInline, ]
+    inlines = [
+        FileAttachmentInline,
+        ConservationActivityInline,
+    ]
 
     def taxon_list(self, obj):
         """Make M2M taxa readable."""

@@ -98,3 +98,12 @@ class ConservationActionModelTests(TestCase):
         self.consaction.implementation_notes = "Some notes have been added to show progress."
         self.consaction.save()
         self.assertEqual(self.consaction.status, ConservationAction.STATUS_INPROGRESS)
+
+    def test_create_consactivity(self):
+        """Test creating a cons activity."""
+        ca = ConservationActivity.objects.create(
+            conservation_action=self.consaction
+        )
+        self.assertEqual(self.consaction.conservationactivity_set.count(), 1)
+        self.assertEqual(self.consaction.implementation_notes, None)
+        self.assertEqual(self.consaction.status, ConservationAction.STATUS_INPROGRESS)
