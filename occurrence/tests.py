@@ -96,8 +96,7 @@ class CommunityAreaEncounterTests(TestCase):
 
     def test_cae_absolute_admin_url_loads(self):
         """Test CommunityAreaEncounter absolute_admin_url."""
-        url = self.cae.absolute_admin_url
-        response = self.client.get(url)
+        response = self.client.get(self.cae.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
     def test_cae_detail_url_loads(self):
@@ -110,7 +109,7 @@ class CommunityAreaEncounterTests(TestCase):
         response = self.client.get(self.cae.detail_url)
         self.assertEqual(response.status_code, 200)
 
-    def test_tae_update_url_loads(self):
+    def test_cae_update_url_loads(self):
         """Test CommunityAreaEncounter update_url."""
         url = reverse(
             'community-occurrence-update',
