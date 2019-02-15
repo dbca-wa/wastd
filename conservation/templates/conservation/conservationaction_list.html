@@ -75,7 +75,7 @@
                   {% endfor %}
                   <!-- documents -->
 
-                  {% for doc in action.documents.all %}
+                  {% for doc in action.document.all %}
                   <p class="card-text">
                     <span class="oi oi-document"
                       title="Documents" aria-hidden="true"></span>
@@ -88,7 +88,11 @@
                 <p class="card-text">
                   <span class="oi oi-calendar"
                     title="Completion date" aria-hidden="true"></span>
-                  {{ action.completion_date }}
+                  {% if action.completion_date%}
+                  {{ action.completion_date|date:"D d M Y" }}
+                  {% else %}
+                  ongoing
+                  {% endif %}
                   <span class="float-right">
                     <span class="oi oi-dollar"
                     title="Total Expenditure" aria-hidden="true"></span>
@@ -98,7 +102,9 @@
                 <p class="card-text">
                   <span class="oi oi-comment-square"
                     title="Notes" aria-hidden="true"></span>
+                  {% if action.implementation_notes %}
                   {{ action.implementation_notes }}
+                  {% endif %}
                 </p>
 
                 <!-- activities -->
@@ -108,7 +114,11 @@
                         <p class="card-text">
                           <span class="oi oi-calendar"
                           title="Expenditure" aria-hidden="true"></span>
-                            {{ act.completion_date }}
+                            {% if act.completion_date%}
+                            {{ act.completion_date|date:"D d M Y" }}
+                            {% else %}
+                            ongoing
+                            {% endif %}
                           <span class="float-right">
                             <span class="oi oi-dollar"
                                   title="Expenditure" aria-hidden="true"></span>
@@ -120,7 +130,9 @@
                         <p class="card-text">
                           <span class="oi oi-comment-square"
                             title="Notes" aria-hidden="true"></span>
+                          {% if act.implementation_notes %}
                           {{ act.implementation_notes }}
+                          {% endif %}
                         </p>
                       </div>
                     </div>
