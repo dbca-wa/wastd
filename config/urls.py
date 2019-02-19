@@ -14,7 +14,10 @@ from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from occurrence.models import CommunityAreaEncounter
-from conservation.views import ConservationActionListView
+from conservation.views import (
+    ConservationActionListView,
+    ConservationActionUpdateView
+)
 from occurrence.views import (
     CommunityAreaEncounterCreateView,
     CommunityAreaEncounterDetailView,
@@ -65,6 +68,9 @@ urlpatterns = [
     re_path(r'^actions/$',
             ConservationActionListView.as_view(),
             name="conservationaction-list"),
+    re_path(r'^actions/(?P<pk>\d+)/$',
+            ConservationActionUpdateView.as_view(),
+            name="conservationaction-update"),
 
     # ------------------------------------------------------------------------#
     # Species

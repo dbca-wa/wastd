@@ -102,6 +102,12 @@ class ConservationActionViewTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_conservationaction_update_url_loads(self):
+        """Test conservationaction-update."""
+        url = reverse('conservationaction-update', kwargs={'pk': self.consaction.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
 
 class ConservationActivityViewTests(TestCase):
     """View tests for ConservationActivity."""

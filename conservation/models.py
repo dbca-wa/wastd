@@ -296,7 +296,7 @@ class ConservationAction(models.Model):
         * If impl notes added: in progress
         * else: new.
         """
-        if self.completion_date and self.completion_date < timezone.now():
+        if self.completion_date and self.completion_date.date() <= timezone.now().date():
             return ConservationAction.STATUS_COMPLETED
         elif self.conservationactivity_set.count() > 0:
             return ConservationAction.STATUS_INPROGRESS

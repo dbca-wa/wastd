@@ -107,6 +107,8 @@ class ConservationActionAdmin(VersionAdmin):
 
     model = ConservationAction
     form = ConservationActionForm
+    autocomplete_fields = ['taxa', 'communities', ]
+
     list_display = (
         "pk",
         "taxon_list",
