@@ -48,7 +48,8 @@ class TaxonListView(ListView):
           and all children. Do not process the other filter fields.
         * Search filter: name (icontains), rank, is current, publication status.
 
-        DO NOT use taxon_filter.qs in template: https://github.com/django-mptt/django-mptt/issues/632
+        DO NOT use taxon_filter.qs in template:
+        https://github.com/django-mptt/django-mptt/issues/632
         """
         queryset = Taxon.objects.order_by(
             '-rank', '-current'
@@ -60,7 +61,9 @@ class TaxonListView(ListView):
         if self.request.GET.get('name_id'):
             # t = queryset.filter(name_id=self.request.GET.get('name_id'))
             # return list(chain(t.first().get_ancestors(), t, t.first().get_children()))
-            return queryset.filter(name_id=self.request.GET.get('name_id')).get().get_family()
+            return queryset.filter(
+                name_id=self.request.GET.get('name_id')
+            ).get().get_family()
 
         return TaxonFilter(self.request.GET, queryset=queryset).qs
 
@@ -75,13 +78,18 @@ class CommunityListView(ListView):
         """Add extra items to context."""
         context = super(CommunityListView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
-        context['community_filter'] = CommunityFilter(self.request.GET, queryset=self.get_queryset())
+        context['community_filter'] = CommunityFilter(
+            self.request.GET,
+            queryset=self.get_queryset()
+        )
         return context
 
     def get_queryset(self):
         """Queryset."""
         queryset = Community.objects.all().prefetch_related(
-            "community_gazettal", "conservationaction_set",  "document_set"
+            "community_gazettal",
+            "conservationaction_set",
+            "document_set"
         )
         return CommunityFilter(self.request.GET, queryset=queryset).qs
 
@@ -100,7 +108,8 @@ class TaxonDetailView(DetailView):
         return Taxon.objects.filter(
             name_id=self.kwargs.get("name_id")
         ).prefetch_related(
-            "taxon_occurrences", "conservationaction_set"
+            "taxon_occurrences",
+            "conservationaction_set"
         ).first()
 
     def get_context_data(self, **kwargs):
@@ -128,16 +137,29 @@ class CommunityDetailView(DetailView):
     model = Community
     context_object_name = "original"
 
+    def get_object(self):
+        """Get Object by pk."""
+        return Community.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            "community_occurrences",
+            "conservationaction_set"
+        ).first()
+
     def get_context_data(self, **kwargs):
         """Custom context."""
         context = super(CommunityDetailView, self).get_context_data(**kwargs)
         obj = self.get_object()
         occ = obj.community_occurrences
         ma = obj.conservationaction_set.all()
-        context['occurrence_table'] = CommunityAreaEncounterTable(occ.all()[:100])
-        context['occurrences'] = occ.all()[:1000]
-        context['occurrence_shown'] = occ.all()[:100].count()
-        context['occurrence_total'] = occ.count()
+        max_cards = 100
+        context['max_cards'] = max_cards
+        if occ:
+            context['occurrence_total'] = occ.count()
+        else:
+            context['occurrence_total'] = 0
+        context['occurrence_table'] = CommunityAreaEncounterTable(occ.all()[:max_cards])
+        context['occurrences'] = occ.all()
         context['conservationactions_general'] = ma.filter(document=None, occurrence_area_code=None)
         context['conservationactions_area'] = ma.exclude(occurrence_area_code=None)
         return context

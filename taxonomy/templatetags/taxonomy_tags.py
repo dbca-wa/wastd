@@ -43,12 +43,12 @@ def admin_taxon_change_link(context, user, btn=True, block=False, label=False):
 
 
 @register.inclusion_tag('include/taxon_detail.html', takes_context=True)
-def taxon_detail(context, block=False, show_label_text=False):
+def taxon_detail(context, block=False, label=False):
     """Render a link to the taxon detail view."""
     return {
         "original": context["original"],
         "block": block,
-        "show_label_text": show_label_text
+        "label": label
     }
 
 

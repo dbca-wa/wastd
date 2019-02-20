@@ -105,9 +105,9 @@
       <div class="jumbotron">
         <p class="lead">
         <h3>Occurrences
-          {% if occurrence_shown < occurrence_total %}
+          {% if occurrence_total > max_cards %}
           <small>
-            (First {{ occurrence_shown }} of {{ occurrence_total }})
+            (First {{ max_cards }} of {{ occurrence_total }})
           </small>
           {% endif %}
           <small class="float-right">
