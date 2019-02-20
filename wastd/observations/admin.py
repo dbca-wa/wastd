@@ -24,7 +24,6 @@ from wastd.observations.models import (
     DispatchRecord,
     DugongMorphometricObservation,
     Encounter,
-    Expedition,
     FieldMediaAttachment,
     HatchlingMorphometricObservation,
     LineTransectEncounter,
@@ -32,7 +31,6 @@ from wastd.observations.models import (
     ManagementAction,
     MediaAttachment,
     NestTagObservation,
-    SiteVisit,
     Survey,
     TagObservation,
     TemperatureLoggerDeployment,
@@ -189,7 +187,27 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
                     'status_display', 'encounter_link', 'comments')
     list_filter = ('tag_type', 'tag_location', 'status')
     search_fields = ('name', 'comments')
-    autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
+    # autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
+    handler = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=get_user_model(),
+            search_fields=[
+                "username__icontains",
+                "name__icontains",
+                "role__icontains",
+                "email__icontains"]
+        )
+    )
+    recorder = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=get_user_model(),
+            search_fields=[
+                "username__icontains",
+                "name__icontains",
+                "role__icontains",
+                "email__icontains"]
+        )
+    )
 
     def type_display(self, obj):
         """Make tag type human readable."""
@@ -235,6 +253,18 @@ class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
     list_filter = ('encounter__area', 'encounter__site', 'flipper_tag_id', 'tag_label', 'encounter__status')
     search_fields = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
     readonly_fields = ('encounter', )
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
 
     def area(self, obj):
         """Make data source readable."""
@@ -301,6 +331,18 @@ class TurtleNestObservationAdmin(VersionAdmin, admin.ModelAdmin):
     list_filter = ('encounter__area', 'encounter__site', 'nest_position', 'eggs_laid', 'encounter__status')
     search_fields = ('comments', )
     readonly_fields = ('encounter', )
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
 
     def area(self, obj):
         """Make data source readable."""
@@ -344,17 +386,6 @@ class TurtleNestObservationAdmin(VersionAdmin, admin.ModelAdmin):
                                            obj.encounter.__str__()))
     encounter_link.short_description = 'Encounter'
     encounter_link.allow_tags = True
-
-# Select2Widget forms
-ExpeditionForm = s2form(Expedition, attrs=S2ATTRS)
-SiteVisitForm = s2form(SiteVisit, attrs=S2ATTRS)
-SurveyForm = s2form(Survey, attrs=S2ATTRS)
-AreaForm = s2form(Area, attrs=S2ATTRS)
-EncounterAdminForm = s2form(Encounter, attrs=S2ATTRS)
-AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
-TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
-LineTransectEncounterAdminForm = s2form(LineTransectEncounter, attrs=S2ATTRS)
-LoggerEncounterAdminForm = s2form(LoggerEncounter, attrs=S2ATTRS)
 
 
 class FieldMediaAttachmentInline(admin.TabularInline):
@@ -420,6 +451,7 @@ class AreaAdmin(admin.ModelAdmin):
     list_display = ("area_type", "name", "northern_extent", "centroid", )
     list_filter = ("area_type", )
     search_fields = ("name", )
+    form = s2form(Area, attrs=S2ATTRS)
 
 
 @admin.register(Encounter)
@@ -429,13 +461,38 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     This admin can be extended by other Encounter Admin classes.
     """
 
-    # Grappelli User lookup overrides select2 select widget
-    # raw_id_fields = ('observer', 'reporter')
-    # autocomplete_lookup_fields = {'fk': ['observer', 'reporter']}
+    # -------------------------------------------------------------------------
+    # Change list
     change_list_filter_template = "admin/filter_listing.html"
 
+    date_hierarchy = 'when'
+    # Filters for change_list
+    list_filter = (
+        'area', 'site', 'status', 'observer', 'reporter',
+        'location_accuracy', 'encounter_type', 'source')  # 'survey',
+
+    # Columns for change_list, allow re-use and inserting fields
+    FIRST_COLS = ('when', 'area', 'site', 'latitude', 'longitude',
+                  'location_accuracy', 'name')
+    LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
+                 'status', 'encounter_type')  # 'survey',
+    list_display = FIRST_COLS + LAST_COLS
+    # Layout: save buttons also on top - overridden by Grapelli admin skin
+    # save_on_top = True
+
+    # Change_list fulltext search fields
+    search_fields = ('observer__name', 'observer__username', 'name',
+                     'reporter__name', 'reporter__username', 'source_id',)
+
+    # Performance
+    # https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
+    # #django.contrib.admin.ModelAdmin.list_select_related
+    list_select_related = ('area', 'site', 'observer', 'reporter', )
+
+    # -------------------------------------------------------------------------
+    # Change form
     # select2 widgets for searchable dropdowns
-    form = EncounterAdminForm
+    form = s2form(Encounter, attrs=S2ATTRS)
     observer = forms.ChoiceField(
         widget=ModelSelect2Widget(
             model=get_user_model(),
@@ -474,32 +531,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
             search_fields=["site_name__icontains", "reporter__name__icontains", ]
         )
     )
-    date_hierarchy = 'when'
     formfield_overrides = FORMFIELD_OVERRIDES
-
-    # Filters for change_list
-    list_filter = (
-        'area', 'site', 'status', 'observer', 'reporter',
-        'location_accuracy', 'encounter_type', 'source')  # 'survey',
-
-    # Columns for change_list, allow re-use and inserting fields
-    FIRST_COLS = ('when', 'area', 'site', 'latitude', 'longitude',
-                  'location_accuracy', 'name')
-    LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
-                 'status', 'encounter_type')  # 'survey',
-    list_display = FIRST_COLS + LAST_COLS
-
-    # Performance
-    # https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
-    # #django.contrib.admin.ModelAdmin.list_select_related
-    list_select_related = True  # 'survey',
-
-    # Layout: save buttons also on top - overridden by Grapelli admin skin
-    # save_on_top = True
-
-    # Change_list fulltext search fields
-    search_fields = ('observer__name', 'observer__username', 'name',
-                     'reporter__name', 'reporter__username', 'source_id',)
 
     # Django-fsm transitions config
     fsm_field = ['status', ]
@@ -550,7 +582,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 class AnimalEncounterAdmin(EncounterAdmin):
     """Admin for AnimalEncounter."""
 
-    form = AnimalEncounterForm
+    form = s2form(AnimalEncounter, attrs=S2ATTRS)
     list_display = EncounterAdmin.FIRST_COLS + (
         'taxon', 'species', 'health_display',
         'cause_of_death', 'cause_of_death_confidence',
@@ -622,7 +654,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
 class TurtleNestEncounterAdmin(EncounterAdmin):
     """Admin for TurtleNestEncounter."""
 
-    form = TurtleNestEncounterAdminForm
+    form = s2form(TurtleNestEncounter, attrs=S2ATTRS)
     list_display = EncounterAdmin.FIRST_COLS + (
         'age_display', 'type_display', 'species',
         'habitat_display', 'disturbance', 'comments'
@@ -634,25 +666,6 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         ('Nest', {'fields': (
             'nest_age', 'nest_type', 'species',
             'habitat', 'disturbance', 'comments')}), )
-
-    area = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    site = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    survey = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Survey,
-            search_fields=["site_name__icontains", "reporter__name__icontains", ]
-        )
-    )
     # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
@@ -683,7 +696,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
 class LineTransectEncounterAdmin(EncounterAdmin):
     """Admin for LineTransectEncounter."""
 
-    form = LineTransectEncounterAdminForm
+    form = s2form(LineTransectEncounter, attrs=S2ATTRS)
     list_display = EncounterAdmin.FIRST_COLS + (
         'transect',
     ) + EncounterAdmin.LAST_COLS
@@ -720,7 +733,7 @@ class LineTransectEncounterAdmin(EncounterAdmin):
 class LoggerEncounterAdmin(EncounterAdmin):
     """Admin for LoggerEncounter."""
 
-    form = LoggerEncounterAdminForm
+    form = s2form(LoggerEncounter, attrs=S2ATTRS)
     list_display = EncounterAdmin.FIRST_COLS + (
         'logger_type_display', 'deployment_status_display',
         'logger_id', 'comments',
@@ -731,24 +744,6 @@ class LoggerEncounterAdmin(EncounterAdmin):
     fieldsets = EncounterAdmin.fieldsets + (
         ('Logger', {'fields': (
             'logger_type', 'deployment_status', 'logger_id', 'comments',)}), )
-    area = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    site = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    survey = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Survey,
-            search_fields=["site_name__icontains", "reporter__name__icontains", ]
-        )
-    )
     # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
