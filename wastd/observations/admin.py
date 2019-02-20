@@ -450,7 +450,7 @@ class AreaAdmin(admin.ModelAdmin):
 
     list_display = ("area_type", "name", "northern_extent", "centroid", )
     list_filter = ("area_type", )
-    search_fields = ("name", )
+    search_fields = ("name__icontains", )
     form = s2form(Area, attrs=S2ATTRS)
 
 
@@ -487,59 +487,66 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # Performance
     # https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
     # #django.contrib.admin.ModelAdmin.list_select_related
-    list_select_related = ('area', 'site', 'observer', 'reporter', )
+    list_select_related = ('area', 'site', 'survey', 'observer', 'reporter', )
 
     # -------------------------------------------------------------------------
     # Change form
     # select2 widgets for searchable dropdowns
     form = s2form(Encounter, attrs=S2ATTRS)
-    observer = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=get_user_model(),
-            search_fields=[
-                "username__icontains",
-                "name__icontains",
-                "role__icontains",
-                "email__icontains"]
-        )
-    )
-    reporter = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=get_user_model(),
-            search_fields=[
-                "username__icontains",
-                "name__icontains",
-                "role__icontains",
-                "email__icontains"]
-        )
-    )
-    area = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    site = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    survey = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Survey,
-            search_fields=["site_name__icontains", "reporter__name__icontains", ]
-        )
-    )
     formfield_overrides = FORMFIELD_OVERRIDES
+    autocomplete_fields = ['area', 'site', 'survey', 'observer', 'reporter', ]
+    # observer = forms.ChoiceField(
+    #     widget=ModelSelect2Widget(
+    #         model=get_user_model(),
+    #         search_fields=[
+    #             "username__icontains",
+    #             "name__icontains",
+    #             "role__icontains",
+    #             "email__icontains"]
+    #     )
+    # )
+    # reporter = forms.ChoiceField(
+    #     widget=ModelSelect2Widget(
+    #         model=get_user_model(),
+    #         search_fields=[
+    #             "username__icontains",
+    #             "name__icontains",
+    #             "role__icontains",
+    #             "email__icontains"]
+    #     )
+    # )
+    # area = forms.ChoiceField(
+    #     widget=ModelSelect2Widget(
+    #         model=Area,
+    #         search_fields=["name__icontains", ]
+    #     )
+    # )
+    # site = forms.ChoiceField(
+    #     widget=ModelSelect2Widget(
+    #         model=Area,
+    #         search_fields=["name__icontains", ]
+    #     )
+    # )
+    # survey = forms.ChoiceField(
+    #     widget=ModelSelect2Widget(
+    #         model=Survey,
+    #         search_fields=["site_name__icontains", "reporter__name__icontains", ]
+    #     )
+    # )
 
     # Django-fsm transitions config
     fsm_field = ['status', ]
 
     # Change_view form layout
-    fieldsets = (('Encounter', {'fields': (
-        'area', 'site', 'survey', 'where', 'location_accuracy', 'when',
-        'observer', 'reporter', 'source', 'source_id', )}),)
+    fieldsets = (
+        ('Encounter',
+            {
+                'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+                'fields': ('area', 'site', 'survey', 'where', 'location_accuracy',
+                           'when', 'observer', 'reporter', 'source', 'source_id', )
+            }
+         ),
+    )
 
     # Change_view inlines
     inlines = [
@@ -611,7 +618,6 @@ class AnimalEncounterAdmin(EncounterAdmin):
                      'checked_for_injuries',
                      'scanned_for_pit_tags',
                      'checked_for_flipper_tags',)}), )
-    # Custom set of inlines excludes some Encounter inlines
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
@@ -666,7 +672,6 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         ('Nest', {'fields': (
             'nest_age', 'nest_type', 'species',
             'habitat', 'disturbance', 'comments')}), )
-    # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
         NestTagObservationInline,
@@ -704,24 +709,6 @@ class LineTransectEncounterAdmin(EncounterAdmin):
     # list_filter = EncounterAdmin.list_filter + ()
     fieldsets = EncounterAdmin.fieldsets + (
         ('Location', {'fields': ('transect', )}), )
-    area = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    site = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    survey = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Survey,
-            search_fields=["site_name__icontains", "reporter__name__icontains", ]
-        )
-    )
     inlines = [
         TrackTallyObservationInline,
         TurtleNestDisturbanceTallyObservationInline,
@@ -744,7 +731,6 @@ class LoggerEncounterAdmin(EncounterAdmin):
     fieldsets = EncounterAdmin.fieldsets + (
         ('Logger', {'fields': (
             'logger_type', 'deployment_status', 'logger_id', 'comments',)}), )
-    # Exclude some EncounterAdmin inlines
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
