@@ -114,3 +114,7 @@ ul.grp-tools.grp-related-widget-tools {
   position: relative!important;
   right: 0px!important;
 }
+
+
+/* Custom styles for leaflet/widget.html */
+.leaflet-textarea {width: 100%;}

@@ -579,24 +579,6 @@ class AnimalEncounterAdmin(EncounterAdmin):
                      'checked_for_injuries',
                      'scanned_for_pit_tags',
                      'checked_for_flipper_tags',)}), )
-    area = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    site = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    survey = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Survey,
-            search_fields=["site_name__icontains", "reporter__name__icontains", ]
-        )
-    )
     # Custom set of inlines excludes some Encounter inlines
     inlines = [
         MediaAttachmentInline,
