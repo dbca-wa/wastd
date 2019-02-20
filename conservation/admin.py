@@ -2,20 +2,12 @@
 """Admin module for wastd.observations."""
 from __future__ import absolute_import, unicode_literals
 
-from ajax_select.fields import AutoCompleteSelectMultipleField  # AutoCompleteSelectField,
-# from django import forms as django_forms
-# import floppyforms as ff
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django.contrib.gis.db import models as geo_models
-from django.db import models
-from django.forms import Textarea
-from django.utils.translation import ugettext_lazy as _
-from django_select2.forms import HeavySelect2MultipleWidget, ModelSelect2MultipleWidget
+# from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
-from leaflet.forms.widgets import LeafletWidget
 from reversion.admin import VersionAdmin
 from shared.admin import CustomStateLogInline
 
@@ -31,67 +23,14 @@ from conservation.models import (  # Gazettal,
     FileAttachment,
     TaxonGazettal
 )
-from taxonomy.models import Taxon, Community
-
-S2ATTRS = {"width": "auto"}
-ConservationActionCategoryForm = s2form(ConservationActionCategory, attrs=S2ATTRS)
-ConservationActionForm = s2form(ConservationAction, attrs=S2ATTRS)
-ConservationActivityForm = s2form(ConservationActivity, attrs=S2ATTRS)
-ConservationCategoryForm = s2form(ConservationCategory, attrs=S2ATTRS)
-ConservationCriterionForm = s2form(ConservationCriterion, attrs=S2ATTRS)
-ConservationListForm = s2form(ConservationList, attrs=S2ATTRS)
-TaxonGazettalForm = s2form(TaxonGazettal, attrs=S2ATTRS)
-CommunityGazettalForm = s2form(CommunityGazettal, attrs=S2ATTRS)
-FileAttachmentForm = s2form(FileAttachment, attrs=S2ATTRS)
-DocumentForm = s2form(Document, attrs=S2ATTRS)
-
-
-class AjaxDocumentForm(DocumentForm):
-    """A document form with a type-ahead widget for Taxa."""
-
-    # taxa = AutoCompleteSelectMultipleField(
-    #     "taxon",
-    #     required=False,
-    #     help_text=_("Enter a part of the taxonomic name to search. "
-    #                 "The search is case-insensitive."))
-    taxa = ModelSelect2MultipleWidget(
-        model=Taxon,
-        search_fields=[
-            "taxonomic_name__icontains",
-            "vernacular_names__icontains",
-        ]
-    )
-    communities = ModelSelect2MultipleWidget(
-        model=Community,
-        search_fields=[
-            "code__icontains",
-            "name__icontains",
-            "description__icontains",
-        ]
-    )
-
-leaflet_settings = {
-    'widget': LeafletWidget(attrs={
-        'map_height': '400px',
-        'map_width': '100%',
-        'display_raw': 'true',
-        'map_srid': 4326, })}
-
-FORMFIELD_OVERRIDES = {
-    models.TextField: {"widget": Textarea(attrs={"rows": 20, "cols": 80})},
-    models.ManyToManyField: {"widget": HeavySelect2MultipleWidget(data_url="/api/1/taxon/?format=json")},
-    geo_models.PointField: leaflet_settings,
-    geo_models.LineStringField: leaflet_settings,
-    geo_models.MultiPolygonField: leaflet_settings,
-
-}
+from shared.admin import S2ATTRS, FORMFIELD_OVERRIDES
 
 
 class FileAttachmentInline(GenericTabularInline):
     """Inline for FileAttachment."""
 
     model = FileAttachment
-    form = FileAttachmentForm
+    form = s2form(FileAttachment, attrs=S2ATTRS)
     extra = 1
     classes = ("grp-collapse grp-closed wide extrapretty",)
 
@@ -101,7 +40,7 @@ class ConservationActionCategoryAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
 
     model = ConservationActionCategory
-    form = ConservationActionCategoryForm
+    form = s2form(ConservationActionCategory, attrs=S2ATTRS)
     prepopulated_fields = {"code": ("label",)}
     list_display = ("code", "label", "description", )
     search_fields = ("code", "label", "description")
@@ -113,7 +52,7 @@ class ConservationActivityInline(admin.TabularInline):
 
     extra = 1
     model = ConservationActivity
-    form = ConservationActivityForm
+    form = s2form(ConservationActivity, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     classes = ("grp-collapse grp-open wide extrapretty",)
 
@@ -123,7 +62,7 @@ class ConservationActionAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
 
     model = ConservationAction
-    form = ConservationActionForm
+    form = s2form(ConservationAction, attrs=S2ATTRS)
     autocomplete_fields = ['taxa', 'communities', "category", ]
 
     list_display = (
@@ -155,11 +94,6 @@ class ConservationActionAdmin(VersionAdmin):
     formfield_overrides = FORMFIELD_OVERRIDES
     readonly_fields = ["expenditure", ]
 
-    taxa = AutoCompleteSelectMultipleField(
-        "taxon",
-        required=False,
-        help_text=_("Enter a part of the taxonomic name to search. "
-                    "The search is case-insensitive."))
     fieldsets = (
         ("Affiliation", {
             "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
@@ -202,7 +136,7 @@ class ConservationActionInline(admin.TabularInline):
 
     extra = 1
     model = ConservationAction
-    form = ConservationActionForm
+    form = s2form(ConservationAction, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     classes = ("grp-collapse grp-closed wide extrapretty",)
     # prepopulated_fields = {"taxa": ("taxa",), "communities": ("communities",), }
@@ -215,7 +149,7 @@ class ConservationCategoryInline(admin.TabularInline):
     extra = 1
     model = ConservationCategory
     classes = ("grp-collapse grp-closed wide extrapretty",)
-    form = ConservationCategoryForm
+    form = s2form(ConservationCategory, attrs=S2ATTRS)
     # formfield_overrides = FORMFIELD_OVERRIDES
 
 
@@ -225,7 +159,7 @@ class ConservationCriterionInline(admin.TabularInline):
     extra = 1
     model = ConservationCriterion
     classes = ("grp-collapse grp-closed wide extrapretty",)
-    form = ConservationCriterionForm
+    form = s2form(ConservationCriterion, attrs=S2ATTRS)
     # formfield_overrides = FORMFIELD_OVERRIDES
 
 
@@ -267,6 +201,7 @@ class ConservationListAdmin(VersionAdmin):
 
         }),
     )
+    form = s2form(ConservationList, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [ConservationCategoryInline,
                ConservationCriterionInline,
@@ -314,12 +249,10 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("comments", )
 
     # Detail View layout and widgets
-    filter_horizontal = ("category", "criteria",)
-    autocomplete_fields = ["taxon", ]
-    # raw_id_fields = ("taxon", )
-    # autocomplete_lookup_fields = {"fk": ["taxon", ]}
-    form = TaxonGazettalForm
+    form = s2form(TaxonGazettal, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
+    autocomplete_fields = ["taxon", ]
+    filter_horizontal = ("category", "criteria",)
     inlines = [CustomStateLogInline, FileAttachmentInline]
 
     fieldsets = (
@@ -391,12 +324,10 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("comments", )
 
     # Detail View
-    filter_horizontal = ("category", "criteria",)
-    autocomplete_fields = ["community", ]
-    # raw_id_fields = ("community", )
-    # autocomplete_lookup_fields = {"fk": ["community", ]}
-    form = CommunityGazettalForm
+    form = s2form(CommunityGazettal, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
+    autocomplete_fields = ["community", ]
+    filter_horizontal = ("category", "criteria",)
     inlines = [CustomStateLogInline, FileAttachmentInline]
 
     fieldsets = (
@@ -465,13 +396,9 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("title", "source_id", )
 
     # Detail View
-    # filter_horizontal = ("taxa", "communities", "team",)
-    # raw_id_fields = ("taxa", "communities", "team")
-    # autocomplete_lookup_fields = {"fk": ["taxa", "communities", "team"]}
-
-    # autocomplete_fields = ["taxa", "communities", "team", ]
-    form = AjaxDocumentForm
+    form = s2form(Document, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
+    autocomplete_fields = ["taxa", "communities", "team", ]
     inlines = [
         # ConservationActionInline, # throws admin.E028
         CustomStateLogInline,

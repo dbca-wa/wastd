@@ -34,7 +34,7 @@ from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS
 
 
 TaxonAreaEncounterForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
-CommunityAreaEncounterForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
+CommunityAreaEncounterForm = s2form(CommunityAreaEncounter, attrs=S2ATTRS)
 
 TokenAdmin.raw_id_fields = ('user',)
 
@@ -58,6 +58,7 @@ class HbvNameAdmin(VersionAdmin, admin.ModelAdmin):
     search_fields = (
         'name_id', 'name', 'full_name', 'vernacular', 'all_vernaculars', 'author')
     # autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
+    # autocomplete_fields = ["", ]
 
     # def type_display(self, obj):
     #     """Make tag type human readable."""
@@ -242,7 +243,8 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
         # ('parent', TreeRelatedFieldListFilter),  # performance bomb - DO NOT ENABLE
     )
 
-    readonly_fields = ('parent', )
+    # readonly_fields = ('parent', )
+    autocomplete_fields = ["parent", ]
     # inlines = [TaxonAreaEncounterInline, ]
     formfield_overrides = FORMFIELD_OVERRIDES
 

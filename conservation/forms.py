@@ -16,12 +16,8 @@ from conservation.models import (
     # ConservationActivity,
     Document
 )
-
+from shared.admin import LEAFLET_SETTINGS
 # from wastd.users.models import User
-
-
-LEAFLET_ATTRS = {'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326}
-S2ATTRS = {'width': '350px'}
 
 
 class ConservationActionForm(forms.ModelForm):
@@ -93,7 +89,7 @@ class ConservationActionForm(forms.ModelForm):
                     "comments__icontains",
                 ]
             ),
-            'geom': LeafletWidget(attrs=LEAFLET_ATTRS),
+            'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'category': ModelSelect2Widget(
                 model=ConservationActionCategory,
                 search_fields=[
@@ -103,6 +99,6 @@ class ConservationActionForm(forms.ModelForm):
                 ]
             ),
             'completion_date': DatePickerInput(
-                # options={"format": "D/MM/YYYY"}
+                options={"format": "DD/MM/YYYY"}
             ),
         }

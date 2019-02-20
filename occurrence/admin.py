@@ -2,13 +2,10 @@
 """Admin module for occurrence."""
 from __future__ import absolute_import, unicode_literals
 
-from django import forms
-# import floppyforms as ff
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
 # from django_select2.forms import HeavySelect2MultipleWidget
-from django_select2.forms import ModelSelect2Widget
 
 # from ajax_select.fields import (
 # AutoCompleteSelectField, AutoCompleteSelectMultipleField)
@@ -27,17 +24,11 @@ from occurrence.models import (
 
 from shared.admin import CustomStateLogInline, S2ATTRS, FORMFIELD_OVERRIDES
 from taxonomy.models import Community, Taxon  # noqa
-from occurrence.forms import (
+from occurrence.forms import (  # noqa
     TaxonAreaEncounterForm,
     AssociatedSpeciesObservationForm,
     FireHistoryObservationForm
 )
-
-
-# Select2Widget forms
-AreaForm = s2form(AreaEncounter, attrs=S2ATTRS)
-TaxonAreaForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
-CommunityAreaForm = s2form(CommunityAreaEncounter, attrs=S2ATTRS)
 
 
 class AssociatedSpeciesObservationInline(admin.TabularInline):
@@ -64,15 +55,17 @@ class FireHistoryObservationInline(admin.TabularInline):
 class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for Area."""
 
-    date_hierarchy = 'encountered_on'
-    form = AreaForm
-    inlines = [CustomStateLogInline, ]
+    # Change list
     list_display = ["area_type", "code", "name", "source", "source_id", ]
     list_filter = ["area_type", "source", ]
     search_fields = ("code", "name", )
+    date_hierarchy = 'encountered_on'
+
+    # Change view
+    form = s2form(AreaEncounter, attrs=S2ATTRS)
+    formfield_overrides = FORMFIELD_OVERRIDES
     fsm_field = ['status', ]
-    raw_id_fields = ('encountered_by', )
-    autocomplete_lookup_fields = {'fk': ['encountered_by', ]}
+    autocomplete_fields = ['encountered_by', ]
     fieldsets = (
         (_('Details'), {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -87,17 +80,24 @@ class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
             'fields': ("source", "source_id", "encountered_on", "encountered_by")}
          ),
     )
-    formfield_overrides = FORMFIELD_OVERRIDES
+    inlines = [CustomStateLogInline, ]
 
 
 @admin.register(TaxonAreaEncounter)
 class TaxonAreaAdmin(AreaEncounterAdmin):
     """Admin for TaxonArea."""
 
-    form = TaxonAreaEncounterForm
+    # # Change list
     list_display = AreaEncounterAdmin.list_display + ["taxon"]
     list_filter = AreaEncounterAdmin.list_filter + ["taxon"]
-    list_select_related = ["taxon"]
+    list_select_related = ["taxon", ]
+    show_full_result_count = False
+
+    # # Change view
+    # form = TaxonAreaEncounterForm
+    form = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
+    formfield_overrides = FORMFIELD_OVERRIDES
+    autocomplete_fields = AreaEncounterAdmin.autocomplete_fields + ["taxon"]
     inlines = [
         # AssociatedSpeciesObservationInline,
         FireHistoryObservationInline
@@ -108,10 +108,14 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
 class CommunityAreaAdmin(AreaEncounterAdmin):
     """Admin for CommunityArea."""
 
-    form = CommunityAreaForm
+    # Change list
     list_display = AreaEncounterAdmin.list_display + ["community"]
     list_filter = AreaEncounterAdmin.list_filter + ["community"]
     list_select_related = ["community"]
+
+    # Change view
+    form = s2form(CommunityAreaEncounter, attrs=S2ATTRS)
+    formfield_overrides = FORMFIELD_OVERRIDES
     fieldsets = ((_('Community'), {
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
         'fields': ("community", )}
@@ -129,12 +133,7 @@ class AssociatedSpeciesObservationAdmin(FSMTransitionMixin, VersionAdmin):
     list_display = ["encounter", "taxon", ]
     form = AssociatedSpeciesObservationForm
     fsm_field = ['status', ]
-    taxon = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Taxon,
-            search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
-        )
-    )
+    autocomplete_fields = ['taxon', ]
 
 
 @admin.register(FireHistoryObservation)

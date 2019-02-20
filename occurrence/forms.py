@@ -17,12 +17,8 @@ from .models import (
     AssociatedSpeciesObservation,
     FireHistoryObservation
 )
-
+from shared.admin import S2ATTRS, LEAFLET_SETTINGS  # noqa
 # from wastd.users.models import User
-
-
-LEAFLET_ATTRS = {'map_height': '400px', 'map_width': '100%', 'display_raw': 'true', 'map_srid': 4326}
-S2ATTRS = {'width': '350px'}
 
 
 class AreaEncounterForm(forms.ModelForm):
@@ -33,8 +29,7 @@ class AreaEncounterForm(forms.ModelForm):
 
         model = AreaEncounter
         fields = ("area_type", "code", "name", "description", "geom", "accuracy", "encountered_on", "encountered_by")
-        widgets = {'geom': LeafletWidget(
-            attrs=LEAFLET_ATTRS)}
+        widgets = {'geom': LeafletWidget(attrs=LEAFLET_SETTINGS)}
 
 
 class TaxonAreaEncounterForm(AreaEncounterForm):
@@ -51,9 +46,11 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
                 model=Taxon,
                 search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
             ),
-            'geom': LeafletWidget(attrs=LEAFLET_ATTRS),
-            'point': LeafletWidget(attrs=LEAFLET_ATTRS),
-            'encountered_on': DateTimePickerInput(options={"format": "D/MM/YYYY HH:mm"}),
+            'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
+            'point': LeafletWidget(attrs=LEAFLET_SETTINGS),
+            'encountered_on': DateTimePickerInput(
+                options={"format": "DD/MM/YYYY HH:mm"}
+            ),
             'encountered_by': ModelSelect2Widget(
                 model=get_user_model(),
                 search_fields=[
@@ -111,10 +108,10 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
                 model=Community,
                 search_fields=["name__icontains", "code__icontains", ]
             ),
-            'geom': LeafletWidget(attrs=LEAFLET_ATTRS),
-            'point': LeafletWidget(attrs=LEAFLET_ATTRS),
+            'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
+            'point': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'encountered_on': DateTimePickerInput(
-                # options={"format": "D/MM/YYYY HH:mm"}
+                options={"format": "DD/MM/YYYY HH:mm"}
             ),
             'encountered_by': ModelSelect2Widget(
                 model=get_user_model(),

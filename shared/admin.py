@@ -8,7 +8,8 @@ from django_fsm_log.admin import StateLogInline
 from leaflet.forms.widgets import LeafletWidget
 
 S2ATTRS = {
-    'min-width': '300px;',  # prevent select2 widgets from collapsing
+    'width': '50%',
+    'min-width': '400px;',  # prevent select2 widgets from collapsing
 }
 
 LEAFLET_SETTINGS = {
