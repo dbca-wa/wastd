@@ -20,7 +20,8 @@ from conservation.models import (  # noqa
     TaxonGazettal,
     ConservationActionCategory,
     ConservationAction,
-    ConservationActivity
+    ConservationActivity,
+    Document
 )
 
 
@@ -29,24 +30,21 @@ class ConservationListViewTests(TestCase):
 
     def setUp(self):
         """Setup: create a new list."""
-        self.cl = ConservationList(
+        self.cl = ConservationList.objects.create(
             code='test',
             label='test list',
             approval_level=ConservationList.APPROVAL_IMMEDIATE)
-
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
             email="super@gmail.com",
             password="test")
         self.user.save()
-
         self.client.force_login(self.user)
 
     def test_conservation_list_absolute_admin_url(self):
         """Test ConservationList absolute admin url."""
         response = self.client.get(self.cl.absolute_admin_url)
-        # self.assertEqual(response.status_code, 200) # 302 - why
-        pass
+        self.assertEqual(response.status_code, 200)
 
 
 class ConservationActionCategoryViewTests(TestCase):
@@ -142,3 +140,25 @@ class ConservationActivityViewTests(TestCase):
             self.consact.completion_date.strftime("%d/%m/%Y") if self.consact.completion_date else "in progress",
             self.consact.implementation_notes)
         self.assertEqual(label, self.consact.__str__())
+
+
+class DocumentViewTests(TestCase):
+    """View tests for Document."""
+
+    def setUp(self):
+        """Set up."""
+        self.document = Document.objects.create(
+            title="test doc",
+            document_type=Document.TYPE_RECOVERY_PLAN
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+    def test_document_absolute_admin_url(self):
+        """Test Document absolute admin url."""
+        response = self.client.get(self.document.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)

@@ -3,6 +3,22 @@
 from __future__ import absolute_import, unicode_literals
 
 from ajax_select.fields import AutoCompleteSelectMultipleField  # AutoCompleteSelectField,
+# from django import forms as django_forms
+# import floppyforms as ff
+from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
+from django.contrib.gis.db import models as geo_models
+from django.db import models
+from django.forms import Textarea
+from django.utils.translation import ugettext_lazy as _
+from django_select2.forms import HeavySelect2MultipleWidget, ModelSelect2MultipleWidget
+from easy_select2 import select2_modelform as s2form
+# from easy_select2.widgets import Select2
+from fsm_admin.mixins import FSMTransitionMixin
+from leaflet.forms.widgets import LeafletWidget
+from reversion.admin import VersionAdmin
+from shared.admin import CustomStateLogInline
+
 from conservation.models import (  # Gazettal,
     CommunityGazettal,
     ConservationActionCategory,
@@ -15,21 +31,7 @@ from conservation.models import (  # Gazettal,
     FileAttachment,
     TaxonGazettal
 )
-# from django import forms as django_forms
-# import floppyforms as ff
-from django.contrib import admin
-from django.contrib.contenttypes.admin import GenericTabularInline
-from django.contrib.gis.db import models as geo_models
-from django.db import models
-from django.forms import Textarea
-from django.utils.translation import ugettext_lazy as _
-from django_select2.forms import HeavySelect2MultipleWidget
-from easy_select2 import select2_modelform as s2form
-# from easy_select2.widgets import Select2
-from fsm_admin.mixins import FSMTransitionMixin
-from leaflet.forms.widgets import LeafletWidget
-from reversion.admin import VersionAdmin
-from shared.admin import CustomStateLogInline
+from taxonomy.models import Taxon, Community
 
 S2ATTRS = {"width": "auto"}
 ConservationActionCategoryForm = s2form(ConservationActionCategory, attrs=S2ATTRS)
@@ -47,12 +49,26 @@ DocumentForm = s2form(Document, attrs=S2ATTRS)
 class AjaxDocumentForm(DocumentForm):
     """A document form with a type-ahead widget for Taxa."""
 
-    taxa = AutoCompleteSelectMultipleField(
-        "taxon",
-        required=False,
-        help_text=_("Enter a part of the taxonomic name to search. "
-                    "The search is case-insensitive."))
-    # taxa = HeavySelect2MultipleWidget()
+    # taxa = AutoCompleteSelectMultipleField(
+    #     "taxon",
+    #     required=False,
+    #     help_text=_("Enter a part of the taxonomic name to search. "
+    #                 "The search is case-insensitive."))
+    taxa = ModelSelect2MultipleWidget(
+        model=Taxon,
+        search_fields=[
+            "taxonomic_name__icontains",
+            "vernacular_names__icontains",
+        ]
+    )
+    communities = ModelSelect2MultipleWidget(
+        model=Community,
+        search_fields=[
+            "code__icontains",
+            "name__icontains",
+            "description__icontains",
+        ]
+    )
 
 leaflet_settings = {
     'widget': LeafletWidget(attrs={
@@ -88,6 +104,7 @@ class ConservationActionCategoryAdmin(VersionAdmin):
     form = ConservationActionCategoryForm
     prepopulated_fields = {"code": ("label",)}
     list_display = ("code", "label", "description", )
+    search_fields = ("code", "label", "description")
     save_on_top = True
 
 
@@ -107,7 +124,7 @@ class ConservationActionAdmin(VersionAdmin):
 
     model = ConservationAction
     form = ConservationActionForm
-    autocomplete_fields = ['taxa', 'communities', ]
+    autocomplete_fields = ['taxa', 'communities', "category", ]
 
     list_display = (
         "pk",
@@ -298,8 +315,9 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
 
     # Detail View layout and widgets
     filter_horizontal = ("category", "criteria",)
-    raw_id_fields = ("taxon", )
-    autocomplete_lookup_fields = {"fk": ["taxon", ]}
+    autocomplete_fields = ["taxon", ]
+    # raw_id_fields = ("taxon", )
+    # autocomplete_lookup_fields = {"fk": ["taxon", ]}
     form = TaxonGazettalForm
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [CustomStateLogInline, FileAttachmentInline]
@@ -315,7 +333,8 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
          ),
         ("Approval milestones and log", {
             "classes": ("grp-collapse", "grp-closed", "wide", "extrapretty"),
-            "fields": ("proposed_on", "effective_from", "effective_to", "last_reviewed_on", "review_due", "comments",)}
+            "fields": ("proposed_on", "effective_from", "effective_to",
+                       "last_reviewed_on", "review_due", "comments",)}
          ),
     )
 
@@ -323,11 +342,17 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         """Restrict available cat and crit to lists relevant to species."""
         if db_field.name == "category":
             kwargs["queryset"] = ConservationCategory.objects.filter(
-                conservation_list__scope_species=True).order_by("conservation_list__code", "rank")
+                conservation_list__scope_species=True
+            ).order_by(
+                "conservation_list__code", "rank"
+            )
 
         if db_field.name == "criteria":
             kwargs["queryset"] = ConservationCriterion.objects.filter(
-                conservation_list__scope_species=True).order_by("conservation_list__code", "rank")
+                conservation_list__scope_species=True
+            ).order_by(
+                "conservation_list__code", "rank"
+            )
         return super(TaxonGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
@@ -367,8 +392,9 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
 
     # Detail View
     filter_horizontal = ("category", "criteria",)
-    raw_id_fields = ("community", )
-    autocomplete_lookup_fields = {"fk": ["community", ]}
+    autocomplete_fields = ["community", ]
+    # raw_id_fields = ("community", )
+    # autocomplete_lookup_fields = {"fk": ["community", ]}
     form = CommunityGazettalForm
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [CustomStateLogInline, FileAttachmentInline]
@@ -439,9 +465,11 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("title", "source_id", )
 
     # Detail View
-    filter_horizontal = ("taxa", "communities", "team",)
+    # filter_horizontal = ("taxa", "communities", "team",)
     # raw_id_fields = ("taxa", "communities", "team")
     # autocomplete_lookup_fields = {"fk": ["taxa", "communities", "team"]}
+
+    # autocomplete_fields = ["taxa", "communities", "team", ]
     form = AjaxDocumentForm
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [

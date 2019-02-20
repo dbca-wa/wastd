@@ -84,8 +84,8 @@ Form version: 1.1 Jan 2012
 Ecological Community Occurrence
 ===============================
 
-Paper form
-----------
+TEC Occurrence Report Form
+--------------------------
 This section discusses changes to the legacy paper form to streamline it for TSC use.
 
 Audience: TSC stakeholders, Species and Communities Branch.
@@ -128,7 +128,7 @@ Section "Location":
 * Method used: [R] replaced by ``location_accuracy``.
 * Land tenure: [D]
 
-Section "Area assessment":
+Section "Area assessment" -- keep and migrate legacy data, no new form
 
 * Type (edge, partial, full): [N] add as area types: TEC boundary (edge), TEC boundary (partial)
 * Area observed (m2): [D] from polygon
@@ -142,7 +142,7 @@ Condition, composition, threats and mitigation.
 Section "Condition of occurrence":
 
 * Single group. [N]
-* Percentage of occurrence being rated on the Bush Forever scale as:
+* Percentage of occurrence being rated on the Bush Forever scale as Decimal(2,0):
 
   * Pristine
   * Excellent
@@ -151,10 +151,13 @@ Section "Condition of occurrence":
   * Degraded
   * Completely degraded
 
+Fields must add up to 100.
+
 Section "Associated species":
 * Repeating group. [N] m2m to species.
 
-Section "Threats":
+Section "Threats": make compatible with IUCN criteria.
+
 
 * Repeating group. [N]
 * Threat [N] - category or free text?
@@ -172,18 +175,18 @@ Part 3: Location
 ^^^^^^^^^^^^^^^^
 Habitat, fire history.
 
-Section "Habitat information":
+Section "Habitat information": Add "other, see comments", "comments".
 
 * Single group. [N]
-* Land form
-* Rock type
-* Loose rock
-* Soil type
-* Soil colour
-* Drainage
-* Specific landform element (see field manual)
-* Soil condition
-* Vegetation classification
+* Land form: multiple select.
+* Rock type: multiple select.
+* Loose rock: [X], but keep legacy.
+* Soil type: multiple select.
+* Soil colour: multiple select.
+* Drainage: single select.
+* Specific landform element (see field manual) [X] but keep legacy.
+* Soil condition -> rename as soil moisture: single select.
+* Vegetation classification: [X] but keep legacy.
 
 Section "Fire history":
 
@@ -205,6 +208,27 @@ Section "Attachments"
 
 * Repeating group.
 * File, title, category.
+
+
+TEC Bushland Plant Survey Recording Sheet
+-----------------------------------------
+* Encounter
+* Location
+* Habitat
+* Veg structure and cover [R]
+
+  * life form (trees over 30m, trees 10-30m, trees < 10m, mallees > 8m, mallees < 8m, ...)
+  * cover class (select)
+  * dominant species (m2m)
+* Section "Condition of occurrence"
+* Species presence observation
+
+  * Taxon
+  * Collecting ID: made up in the field, unique to collected specimen within survey
+  * Reproductive state: flowering or not etc
+  * Identified in the field or not
+
+
 
 
 TSC data entry

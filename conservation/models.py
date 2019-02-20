@@ -5,7 +5,7 @@ from __future__ import absolute_import, unicode_literals
 # import itertools
 # import urllib
 # import slugify
-# from datetime import timedelta
+from datetime import datetime
 # from dateutil import tz
 import logging
 
@@ -296,7 +296,7 @@ class ConservationAction(models.Model):
         * If impl notes added: in progress
         * else: new.
         """
-        if self.completion_date and self.completion_date.date() <= timezone.now().date():
+        if self.completion_date and self.completion_date <= timezone.now().date():
             return ConservationAction.STATUS_COMPLETED
         elif self.conservationactivity_set.count() > 0:
             return ConservationAction.STATUS_INPROGRESS
@@ -314,6 +314,8 @@ def update_status_cache(sender, instance, *args, **kwargs):
     * Calculate total expenditure.
     """
     logger.info("[ConservationAction.update_status_cache] Deriving completion status.")
+    if instance.completion_date and type(instance.completion_date) == datetime:
+        instance.completion_date = instance.completion_date.date()
     instance.status = instance.get_status()
     instance.expenditure = instance.conservationactivity_set.aggregate(
         models.Sum('expenditure'))['expenditure__sum']
@@ -349,6 +351,12 @@ class ConservationActivity(models.Model):
     )
 
     attachments = GenericRelation(FileAttachment, object_id_field="object_id")
+
+    class Meta:
+        """Class opts."""
+
+        verbose_name = "Conservation Activity"
+        verbose_name_plural = "Conservation Activities"
 
     def __str__(self):
         """The full name."""

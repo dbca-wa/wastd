@@ -423,7 +423,7 @@ class CommunityAreaEncounter(AreaEncounter):
 def area_caches(sender, instance, *args, **kwargs):
     """AreaEncounter: Cache expensive lookups."""
     if instance.pk:
-        logger.info("[area_caches] Updating cache fields.")
+        logger.info("[areaencounter_caches] Updating cache fields.")
         instance.label = instance.__str__()[0:1000]
         if not instance.point:
             instance.point = instance.derived_point

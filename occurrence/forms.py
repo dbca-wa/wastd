@@ -105,14 +105,17 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
 
         model = CommunityAreaEncounter
         fields = ('community', "area_type", "code", "name", "description",
-                  "geom", "accuracy", "encountered_on", "encountered_by")
+                  "geom", "point", "accuracy", "encountered_on", "encountered_by")
         widgets = {
             'community': ModelSelect2Widget(
                 model=Community,
                 search_fields=["name__icontains", "code__icontains", ]
             ),
             'geom': LeafletWidget(attrs=LEAFLET_ATTRS),
-            'encountered_on': DateTimePickerInput(options={"format": "D/MM/YYYY HH:mm"}),
+            'point': LeafletWidget(attrs=LEAFLET_ATTRS),
+            'encountered_on': DateTimePickerInput(
+                # options={"format": "D/MM/YYYY HH:mm"}
+            ),
             'encountered_by': ModelSelect2Widget(
                 model=get_user_model(),
                 search_fields=[
@@ -148,6 +151,7 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
                 'area_type',
                 'code',
                 'geom',
+                'point',
                 'accuracy',
             ),
             ButtonHolder(

@@ -60,7 +60,6 @@ class CommunityViewTests(TestCase):
             email="super@gmail.com",
             password="test")
         self.user.save()
-
         self.client.force_login(self.user)
 
     def test_com_creation(self):

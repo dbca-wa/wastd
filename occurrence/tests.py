@@ -83,7 +83,7 @@ class CommunityAreaEncounterTests(TestCase):
 
         self.fh1 = FireHistoryObservation.objects.create(
             encounter=self.cae,
-            last_fire_date=timezone.now(),
+            last_fire_date=timezone.now().date(),
             fire_intensity=FireHistoryObservation.HMLN_HIGH
         )
         self.fh1.save()
