@@ -50,7 +50,11 @@ class TaxonListView(ListView):
 
         DO NOT use taxon_filter.qs in template: https://github.com/django-mptt/django-mptt/issues/632
         """
-        queryset = Taxon.objects.order_by('-rank', '-current')
+        queryset = Taxon.objects.order_by(
+            '-rank', '-current'
+        ).prefetch_related(
+            "taxon_gazettal", "conservationaction_set",  "document_set"
+        )
 
         # name_id is mutually exclusive to other parameters
         if self.request.GET.get('name_id'):
@@ -76,7 +80,9 @@ class CommunityListView(ListView):
 
     def get_queryset(self):
         """Queryset."""
-        queryset = Community.objects.all()
+        queryset = Community.objects.all().prefetch_related(
+            "community_gazettal", "conservationaction_set",  "document_set"
+        )
         return CommunityFilter(self.request.GET, queryset=queryset).qs
 
 
@@ -91,8 +97,11 @@ class TaxonDetailView(DetailView):
 
     def get_object(self):
         """Get Object by name_id."""
-        object = Taxon.objects.get(name_id=self.kwargs.get("name_id"))
-        return object
+        return Taxon.objects.filter(
+            name_id=self.kwargs.get("name_id")
+        ).prefetch_related(
+            "taxon_occurrences", "conservationaction_set"
+        ).first()
 
     def get_context_data(self, **kwargs):
         """Custom context."""
@@ -100,10 +109,14 @@ class TaxonDetailView(DetailView):
         obj = self.get_object()
         occ = obj.taxon_occurrences
         ma = obj.conservationaction_set.all()
-        context['occurrence_table'] = TaxonAreaEncounterTable(occ.all()[:100])
-        context['occurrences'] = occ.all()[:1000]
-        context['occurrence_shown'] = occ.all()[:100].count()
-        context['occurrence_total'] = occ.count()
+        max_cards = 100
+        context['occurrence_table'] = TaxonAreaEncounterTable(occ.all()[:max_cards])
+        context['occurrences'] = occ.all()
+        context['max_cards'] = max_cards
+        if occ:
+            context['occurrence_total'] = occ.count()
+        else:
+            context['occurrence_total'] = 0
         context['conservationactions_general'] = ma.filter(document=None, occurrence_area_code=None)
         context['conservationactions_area'] = ma.exclude(occurrence_area_code=None)
         return context

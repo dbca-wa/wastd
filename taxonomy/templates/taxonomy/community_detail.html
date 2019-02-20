@@ -53,7 +53,7 @@
       <hr class="my-4">
       <h3>Conservation Listings
         <small class="float-right">
-          {% communitygazettal_add request.user block=False show_label_text=False %}
+          {% communitygazettal_add request.user block=False label=False %}
         </small>
       </h3>
       <p>{% communitygazettal_rows request.user %}</p>
@@ -61,7 +61,7 @@
       <hr class="my-4">
       <h3>Conservation Actions
         <small class="float-right">
-          {% conservationaction_add request.user "communities" block=False show_label_text=False %}
+          {% conservationaction_add request.user "communities" block=False label=False %}
         </small>
       </h3>
       <p>{% conservationaction_rows request.user  conservationactions_general %}</p>
@@ -69,7 +69,7 @@
       <hr class="my-4">
       <h3>Documents
         <small class="float-right">
-          {% document_add request.user "communities" block=False show_label_text=False %}
+          {% document_add request.user "communities" %}
         </small>
       </h3>
       <p>{% document_row request.user %}</p>
@@ -78,9 +78,9 @@
       <p class="lead">
         {% if request.user.is_staff %}
           {% admin_absoluteadminurl_link original "community" label=True %}
-          {% communitygazettal_add request.user block=False show_label_text=True %}
-          {% conservationaction_add request.user "communities" block=False show_label_text=True %}
-          {% document_add request.user "communities" block=False show_label_text=True %}
+          {% communitygazettal_add request.user block=False label=True %}
+          {% conservationaction_add request.user "communities" label=True %}
+          {% document_add request.user "communities" label=True %}
           {% admin_areaencounter_create_link original.pk "community" label=True %}
         {% endif %}
 
@@ -163,35 +163,6 @@
 {{ block.super }}
 {% compress js %}
 <script type="text/javascript">
-/*
- * Workaround for 1px lines appearing in some browsers due to fractional transforms
- * and resulting anti-aliasing.
- * https://github.com/Leaflet/Leaflet/issues/3575
- */
-(function(){
-    // L.Icon.Default.imagePath = '/static/leaflet/images/';
-    delete L.Icon.Default.prototype._getIconUrl
-
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
-      iconUrl: "/static/leaflet/images/marker-icon.png",
-      shadowUrl: "/static/leaflet/images/marker-shadow.png"
-    })
-
-
-    var originalInitTile = L.GridLayer.prototype._initTile
-    L.GridLayer.include({
-        _initTile: function (tile) {
-            originalInitTile.call(this, tile);
-
-            var tileSize = this.getTileSize();
-
-            tile.style.width = tileSize.x + 1 + 'px';
-            tile.style.height = tileSize.y + 1 + 'px';
-        }
-    });
-})()
-
 function map_init(map, options) {
 
     /* Point style */

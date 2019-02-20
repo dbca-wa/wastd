@@ -58,7 +58,7 @@
   <div class="card-footer">
     <div class="row">
 
-    {% taxon_detail block=True show_label_text=True %}
+    {% taxon_detail block=True label=True %}
 
     <a href="?name_id={{ original.name_id }}"
       class="btn btn-secondary btn-sm btn-block"
@@ -66,13 +66,10 @@
       <span class="oi oi-project" aria-hidden="true"></span>
       Explore taxonomy
     </a>
-    {% if request.user.is_staff %}
-    {% taxongazettal_add request.user block=True show_label_text=True %}
-    {% conservationaction_add request.user "taxa" block=True show_label_text=True %}
-    {% document_add request.user "taxa" block=True show_label_text=True %}
+    {% taxongazettal_add request.user block=True label=True %}
+    {% conservationaction_add request.user "taxa" block=True label=True %}
+    {% document_add request.user "taxa" block=True label=True %}
     {% taxonareaencounter_add_link original.name_id block=True label=True %}
-    {% endif %}
-
     </div>
   </div>
 </div>

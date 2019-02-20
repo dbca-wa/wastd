@@ -51,7 +51,6 @@ THIRD_PARTY_APPS = (
     'django_extensions',            # shell_plus and others
     'crispy_forms',                 # Form layouts
     'bootstrap4',                   # bootstrap4
-    'bootstrap_datepicker_plus',    # Date widgets
     'floppyforms',                  # Floppyforms: Admin GIS widgets
     'easy_select2',                 # Select2 dropdowns
     'ajax_select',                  # Ajax dropdowns
@@ -96,7 +95,7 @@ LOCAL_APPS = (
 )
 
 DEBUG_APPS = (
-    'silk',                         # Performance profiling
+    # 'silk',                         # Performance profiling
     'debug_toolbar',                # Debug toolbar
 )
 
@@ -131,7 +130,7 @@ MIDDLEWARE_CLASSES_LAST = (
 )
 
 DEBUG_MIDDLEWARE_CLASSES = (
-    'silk.middleware.SilkyMiddleware',
+    # 'silk.middleware.SilkyMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 

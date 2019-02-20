@@ -35,6 +35,10 @@ class User(AbstractUser):
                     'e.g. +61 4 12 345 678. '
                     'Spaces are accepted but will be removed on saving.'), )
 
+    class Meta:
+        """Class opts."""
+        ordering = ["name", "username"]
+
     def __str__(self):
         """The unicode representation."""
         return self.name or self.username

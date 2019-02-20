@@ -91,7 +91,6 @@ django_select2==6.3.1
 django-bootstrap4
 django-ajax-selects
 django-map-widgets==0.1.9
-django-bootstrap-datepicker-plus
 
 # Logging
 # ------------------------------------------------

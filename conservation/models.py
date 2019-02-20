@@ -274,7 +274,7 @@ class ConservationAction(models.Model):
 
         verbose_name = "Conservation Action"
         verbose_name_plural = "Conservation Actions"
-        # ordering = ["", ]
+        ordering = ["status", "completion_date", "category", ]
 
     def __str__(self):
         """The full name."""

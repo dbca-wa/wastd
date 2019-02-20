@@ -73,24 +73,24 @@ def communitygazettal_rows(context, user):
 
 
 @register.inclusion_tag('include/taxongazettal_add.html', takes_context=True)
-def taxongazettal_add(context, user, block=False, show_label_text=False):
+def taxongazettal_add(context, user, block=False, label=False):
     """Render an "add cons listing" link for staff."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff,
         "block": block,
-        "show_label_text": show_label_text
+        "label": label
     }
 
 
 @register.inclusion_tag('include/communitygazettal_add.html', takes_context=True)
-def communitygazettal_add(context, user, block=False, show_label_text=False):
+def communitygazettal_add(context, user, block=False, label=False):
     """Render an "add cons listing" link for staff."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff,
         "block": block,
-        "show_label_text": show_label_text
+        "label": label
     }
 
 
@@ -114,14 +114,14 @@ def document_row(context, user):
 
 
 @register.inclusion_tag('include/document_add.html', takes_context=True)
-def document_add(context, user, subject, block=False, show_label_text=False):
+def document_add(context, user, subject, block=False, label=False):
     """Render an "add document" link for staff."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff,
         "subject": subject,
         "block": block,
-        "show_label_text": show_label_text
+        "label": label
     }
 
 
@@ -144,7 +144,7 @@ def conservationaction_cards(user, actions, area=None):
 
 
 @register.inclusion_tag('include/conservationaction_add.html', takes_context=True)
-def conservationaction_add(context, user, subject, document=None, area=None, block=False, show_label_text=False):
+def conservationaction_add(context, user, subject, document=None, area=None, block=False, label=False):
     """Render an "add conservation action" link for staff."""
     return {
         "original": context["original"],
@@ -153,7 +153,7 @@ def conservationaction_add(context, user, subject, document=None, area=None, blo
         "document": document,
         "area": area,
         "block": block,
-        "show_label_text": show_label_text
+        "label": label
     }
 
 

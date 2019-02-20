@@ -35,7 +35,12 @@ class TaxonFilter(django_filters.FilterSet):
     current = BooleanFilter(widget=BooleanWidget())
     taxon_gazettal__category = ModelMultipleChoiceFilter(
         queryset=ConservationCategory.objects.filter(
-            conservation_list__scope_species=True).order_by('conservation_list__code', 'rank')
+            conservation_list__scope_species=True
+        ).order_by(
+            'conservation_list__code', 'rank'
+        ).prefetch_related(
+            "conservation_list"
+        )
     )
     eoo = geo_models.PolygonField()
 
@@ -54,7 +59,11 @@ class CommunityFilter(django_filters.FilterSet):
     community_gazettal__category = ModelMultipleChoiceFilter(
         queryset=ConservationCategory.objects.filter(
             conservation_list__scope_communities=True
-        ).order_by('conservation_list__code', 'rank')
+        ).order_by(
+            'conservation_list__code', 'rank'
+        ).prefetch_related(
+            "conservation_list"
+        )
     )
     eoo = geo_models.PolygonField()
 

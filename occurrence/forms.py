@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Occurrence forms."""
 
-from bootstrap_datepicker_plus import DateTimePickerInput, DatePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
 from django import forms
@@ -18,6 +17,7 @@ from .models import (
     FireHistoryObservation
 )
 from shared.admin import S2ATTRS, LEAFLET_SETTINGS  # noqa
+from shared.forms import DateInput, DateTimeInput
 # from wastd.users.models import User
 
 
@@ -48,9 +48,7 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             ),
             'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'point': LeafletWidget(attrs=LEAFLET_SETTINGS),
-            'encountered_on': DateTimePickerInput(
-                options={"format": "DD/MM/YYYY HH:mm"}
-            ),
+            'encountered_on': DateTimeInput(),
             'encountered_by': ModelSelect2Widget(
                 model=get_user_model(),
                 search_fields=[
@@ -110,9 +108,7 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
             ),
             'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'point': LeafletWidget(attrs=LEAFLET_SETTINGS),
-            'encountered_on': DateTimePickerInput(
-                options={"format": "DD/MM/YYYY HH:mm"}
-            ),
+            'encountered_on': DateTimeInput(),
             'encountered_by': ModelSelect2Widget(
                 model=get_user_model(),
                 search_fields=[
@@ -214,7 +210,7 @@ class FireHistoryObservationForm(forms.ModelForm):
                 search_fields=["code", "name", "area_type", ],
                 attrs={'size': 80}
             ),
-            'last_fire_date': DatePickerInput(),
+            'last_fire_date': DateInput(),
         }
 
     def __init__(self, *args, **kwargs):

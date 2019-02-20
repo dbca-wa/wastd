@@ -5,25 +5,29 @@
       <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span>
       {{ original.encountered_on }}
       <span class="badge badge-{{ original.status|tb_status_icon }}" title="QA status">
-        {{ original.get_status_display }}
+        QA: {{ original.get_status_display }}
       </span>
     </h6><!-- /.card-header -->
 
   <div class="card-body">
     <h6 class="card-subtitle mb-2 text-muted">
-      <span class="oi oi-person" title="Encountered by" aria-hidden="true"></span> {{ original.encountered_by }}<br/>
+      <span class="oi oi-person" title="Encountered by" aria-hidden="true"></span>
+      {{ original.encountered_by }}
     </h6>
 
-    <p class="card-text"><span class="oi oi-comment-square" title="Description" aria-hidden="true"></span> {{ original.description }}</p>
-    <p class="card-text"><span class="oi oi-info" title="Details" aria-hidden="true"></span> Occurrence details coming soon.</p>
+    <p class="card-text">
+      <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
+      {{ original.description }}
+    </p>
+    <!-- <p class="card-text"><span class="oi oi-info" title="Details" aria-hidden="true"></span> Occurrence details coming soon.</p> -->
   </div><!-- /.card-body -->
 
   <div class="card-footer">
-    {% if is_staff %}
       {% areaencounter_detail_link original block=True label=True %}
       {% areaencounter_update_link original block=True label=True %}
+      {% if request.user.is_staff %}
       {% admin_absoluteadminurl_link original "occurrence" block=True label=True %}
-    {% endif %}
+      {% endif %}
   </div><!-- /.card-footer -->
 
 </div><!-- /.card -->

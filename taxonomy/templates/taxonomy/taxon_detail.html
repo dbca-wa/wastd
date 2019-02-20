@@ -134,14 +134,11 @@
 
       <hr class="my-4">
       <p class="lead">
-        {% if request.user.is_staff %}
           {% admin_absoluteadminurl_link original "taxon" label=True %}
-          {% taxongazettal_add request.user show_label_text=True %}
-          {% conservationaction_add request.user "taxa" show_label_text=True %}
-          {% document_add request.user "taxa" show_label_text=True %}
-        {% endif %}
-
-        {% taxonareaencounter_add_link original.name_id label=True %}
+          {% taxongazettal_add request.user label=True %}
+          {% conservationaction_add request.user "taxa" label=True %}
+          {% document_add request.user "taxa" label=True %}
+          {% taxonareaencounter_add_link original.name_id label=True %}
       </p>
 
     </div><!-- /.jumbotron -->
@@ -161,9 +158,9 @@
       <div class="jumbotron">
         <p class="lead">
         <h3>Occurrences
-          {% if occurrence_shown < occurrence_total %}
+          {% if occurrence_total > 100 %}
           <small>
-            (First {{ occurrence_shown }} of {{ occurrence_total }})
+            (First {{ max_cards }} of {{ occurrence_total }})
           </small>
           {% endif %}
           <small class="float-right">
@@ -226,35 +223,6 @@
 {{ block.super }}
 {% compress js %}
 <script type="text/javascript">
-/*
- * Workaround for 1px lines appearing in some browsers due to fractional transforms
- * and resulting anti-aliasing.
- * https://github.com/Leaflet/Leaflet/issues/3575
- */
-(function(){
-    // L.Icon.Default.imagePath = '/static/leaflet/images/';
-    delete L.Icon.Default.prototype._getIconUrl
-
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
-      iconUrl: "/static/leaflet/images/marker-icon.png",
-      shadowUrl: "/static/leaflet/images/marker-shadow.png"
-    })
-
-
-    var originalInitTile = L.GridLayer.prototype._initTile
-    L.GridLayer.include({
-        _initTile: function (tile) {
-            originalInitTile.call(this, tile);
-
-            var tileSize = this.getTileSize();
-
-            tile.style.width = tileSize.x + 1 + 'px';
-            tile.style.height = tileSize.y + 1 + 'px';
-        }
-    });
-})()
-
 function map_init(map, options) {
 
     /* Point style */
@@ -335,12 +303,12 @@ function map_init(map, options) {
     map.fitBounds(eoo.getBounds());
 
     L.geoJson(
-        {{ original.taxon_occurrences.all|slice:":1000"|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
+        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
         {style: polystyle, onEachFeature: oef_rel}
     ).addTo(map);
 
     var taxon_points = L.geoJson(
-        {{ original.taxon_occurrences.all|slice:":1000"|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
         {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_rel}
     );
 
@@ -402,7 +370,10 @@ function map_init(map, options) {
         feature.properties.dataset + '/record/' + feature.id + '">' +
         '<i class="oi oi-pencil"></i> Edit this record in BioSys</a></p>'
       );
-      layer.bindTooltip('BioSys <br/><span class="oi oi-calendar" aria-hidden="true">' + feature.properties.datetime);
+      layer.bindTooltip(
+        'BioSys <br/><span class="oi oi-calendar" aria-hidden="true">' +
+        feature.properties.datetime
+      );
     }
 
     /* Turn a BioSys API record into a GeoJSON Feature. */

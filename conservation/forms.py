@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Conservation forms."""
 
-from bootstrap_datepicker_plus import DatePickerInput  # , DateTimePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
 from django import forms
@@ -17,6 +16,7 @@ from conservation.models import (
     Document
 )
 from shared.admin import LEAFLET_SETTINGS
+from shared.forms import DateInput  # DateTimeInput
 # from wastd.users.models import User
 
 
@@ -98,7 +98,5 @@ class ConservationActionForm(forms.ModelForm):
                     "description__icontains",
                 ]
             ),
-            'completion_date': DatePickerInput(
-                options={"format": "DD/MM/YYYY"}
-            ),
+            'completion_date': DateInput(),
         }

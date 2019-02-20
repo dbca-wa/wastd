@@ -16,7 +16,8 @@ from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from occurrence.models import CommunityAreaEncounter
 from conservation.views import (
     ConservationActionListView,
-    ConservationActionUpdateView
+    ConservationActionUpdateView,
+    ConservationActionCreateView
 )
 from occurrence.views import (
     CommunityAreaEncounterCreateView,
@@ -71,6 +72,9 @@ urlpatterns = [
     re_path(r'^actions/(?P<pk>\d+)/$',
             ConservationActionUpdateView.as_view(),
             name="conservationaction-update"),
+    re_path(r'^actions/create/$',
+            ConservationActionCreateView.as_view(),
+            name="conservationaction-create"),
 
     # ------------------------------------------------------------------------#
     # Species
@@ -276,6 +280,6 @@ if settings.DEBUG:
     urlpatterns += [
         re_path(r'^__debug__/',
                 include(debug_toolbar.urls)),
-        re_path(r'^performance/',
-                include(('silk.urls', 'silk'), namespace='silk')),
+        # re_path(r'^performance/',
+        #         include(('silk.urls', 'silk'), namespace='silk')),
     ]
