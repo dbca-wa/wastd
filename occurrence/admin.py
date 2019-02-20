@@ -5,7 +5,6 @@ from __future__ import absolute_import, unicode_literals
 from django import forms
 # import floppyforms as ff
 from django.contrib import admin
-from django.contrib.gis.db import models as geo_models
 from django.utils.translation import ugettext_lazy as _
 from easy_select2 import select2_modelform as s2form
 # from django_select2.forms import HeavySelect2MultipleWidget
@@ -16,7 +15,6 @@ from django_select2.forms import ModelSelect2Widget
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
-from leaflet.forms.widgets import LeafletWidget
 
 from occurrence.models import (
     AreaEncounter,
@@ -27,7 +25,7 @@ from occurrence.models import (
     FireHistoryObservation
 )
 
-from shared.admin import CustomStateLogInline
+from shared.admin import CustomStateLogInline, S2ATTRS, FORMFIELD_OVERRIDES
 from taxonomy.models import Community, Taxon  # noqa
 from occurrence.forms import (
     TaxonAreaEncounterForm,
@@ -37,30 +35,9 @@ from occurrence.forms import (
 
 
 # Select2Widget forms
-S2ATTRS = {'width': '350px'}
 AreaForm = s2form(AreaEncounter, attrs=S2ATTRS)
 TaxonAreaForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
 CommunityAreaForm = s2form(CommunityAreaEncounter, attrs=S2ATTRS)
-
-LEAFLET_SETTINGS = {
-    'widget': LeafletWidget(attrs={
-        'map_height': '400px',
-        'map_width': '100%',
-        'display_raw': 'true',
-        'map_srid': 4326, })}
-
-TAXON_SETTINGS = {
-    'widget': ModelSelect2Widget(
-        model=Taxon,
-        search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
-    ),
-}
-
-FORMFIELD_OVERRIDES = {
-    geo_models.PointField: LEAFLET_SETTINGS,
-    geo_models.LineStringField: LEAFLET_SETTINGS,
-    geo_models.PolygonField: LEAFLET_SETTINGS,
-}
 
 
 class AssociatedSpeciesObservationInline(admin.TabularInline):
@@ -93,8 +70,8 @@ class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
     list_display = ["area_type", "code", "name", "source", "source_id", ]
     list_filter = ["area_type", "source", ]
     search_fields = ("code", "name", )
-    raw_id_fields = ('encountered_by', )
     fsm_field = ['status', ]
+    raw_id_fields = ('encountered_by', )
     autocomplete_lookup_fields = {'fk': ['encountered_by', ]}
     fieldsets = (
         (_('Details'), {
@@ -110,7 +87,6 @@ class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
             'fields': ("source", "source_id", "encountered_on", "encountered_by")}
          ),
     )
-    # Leaflet geolocation widget
     formfield_overrides = FORMFIELD_OVERRIDES
 
 
@@ -122,10 +98,6 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
     list_display = AreaEncounterAdmin.list_display + ["taxon"]
     list_filter = AreaEncounterAdmin.list_filter + ["taxon"]
     list_select_related = ["taxon"]
-    # fieldsets = ((_('Taxon'), {
-    #     'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-    #     'fields': ("taxon", )}
-    # ),) + AreaEncounterAdmin.fieldsets
     inlines = [
         # AssociatedSpeciesObservationInline,
         FireHistoryObservationInline
@@ -155,7 +127,6 @@ class AssociatedSpeciesObservationAdmin(FSMTransitionMixin, VersionAdmin):
     """Associated Species Observation Admin."""
 
     list_display = ["encounter", "taxon", ]
-    # list_select_related = ObservationGroupAdmin.list_select_related + ["taxon", ]
     form = AssociatedSpeciesObservationForm
     fsm_field = ['status', ]
     taxon = forms.ChoiceField(
@@ -171,6 +142,5 @@ class FireHistoryObservationAdmin(FSMTransitionMixin, VersionAdmin):
     """FireHistoryObservation Admin."""
 
     list_display = ["encounter", "last_fire_date", "fire_intensity"]
-    # list_select_related = ObservationGroupAdmin.list_select_related + ["taxon", ]
     form = FireHistoryObservationForm
     fsm_field = ['status', ]

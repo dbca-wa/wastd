@@ -5,6 +5,12 @@
 {{ block.super }}
 {% leaflet_css plugins="draw,forms" %}
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+<style>
+.grp-tools.grp-related-widget-tools {
+  position: relative;
+  right: 0px;
+}
+</style>
 {% endblock %}
 
 {% block javascripts %}

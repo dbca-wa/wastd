@@ -1713,6 +1713,34 @@ class Encounter(PolymorphicModel, geo_models.Model):
         """The unicode representation."""
         return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.observer)
 
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    def make_rest_listurl(self, format='json'):
+        """Return the API list URL in given format (default: JSON).
+
+        Permissible formats depend on configured renderers:
+        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
+        """
+        return rest_reverse(self._meta.model_name + '-list',
+                            kwargs={'format': format})
+
+    def make_rest_detailurl(self, format='json'):
+        """Return the API detail URL in given format (default: JSON).
+
+        Permissible formats depend on configured renderers:
+        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
+        """
+        return rest_reverse(self._meta.model_name + '-detail',
+                            kwargs={'pk': self.pk, 'format': format})
+
+    # -------------------------------------------------------------------------
+    # Derived properties
     @property
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
@@ -2000,30 +2028,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         except:
             return None
 
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
-    def make_rest_listurl(self, format='json'):
-        """Return the API list URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(self._meta.model_name + '-list',
-                            kwargs={'format': format})
-
-    def make_rest_detailurl(self, format='json'):
-        """Return the API detail URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(self._meta.model_name + '-detail',
-                            kwargs={'pk': self.pk, 'format': format})
-
     # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
         """Return true if this document can be proofread."""
@@ -2202,7 +2206,7 @@ class AnimalEncounter(Encounter):
         max_length=300,
         verbose_name=_("Species"),
         choices=SPECIES_CHOICES,
-        default="unidentified",
+        default=NA_VALUE,
         help_text=_("The species of the animal."), )
 
     sex = models.CharField(

@@ -155,15 +155,17 @@ class AreaEncounter(PolymorphicModel,
         choices=AREA_TYPES,
         help_text=_(
             "What type describes the area occupied by the encounter "
-            "most accurately? The area can be an opportunistic, once-off chance "
-            "encounter (point), a fixed survey site (polygon), a partial or a "
-            "complete survey of an area occupied by the encountered subject (polygon)."),
+            "most accurately? The area can be an opportunistic, once-off "
+            "chance encounter (point), a fixed survey site (polygon), a "
+            "partial or a complete survey of an area occupied by the "
+            "encountered subject (polygon)."),
     )
 
     accuracy = models.FloatField(
         blank=True, null=True,
         verbose_name=_("Accuracy [m]"),
-        help_text=_("The measured or estimated accuracy of the location in meters."),
+        help_text=_("The measured or estimated accuracy "
+                    "of the location in meters."),
     )
 
     point = geo_models.PointField(
@@ -171,8 +173,9 @@ class AreaEncounter(PolymorphicModel,
         blank=True, null=True,
         verbose_name=_("Representative Point"),
         help_text=_(
-            "A point representing the area occupied by the encountered subject."
-            " If empty, the point will be calculated as the centroid of the polygon extent."))
+            "A point representing the area occupied by the encountered "
+            "subject. If empty, the point will be calculated as the centroid "
+            "of the polygon extent."))
 
     northern_extent = models.FloatField(
         verbose_name=_("Northernmost latitude"),
@@ -188,7 +191,8 @@ class AreaEncounter(PolymorphicModel,
         help_text=_("The exact extent of the area occupied by the encountered "
                     "subject as polygon in WGS84, if available."))
 
-    # Cached fields ----------------------------------------------------------#
+    # -------------------------------------------------------------------------
+    # Cached fields
     as_html = models.TextField(
         verbose_name=_("HTML representation"),
         blank=True, null=True, editable=False,

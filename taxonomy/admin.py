@@ -5,13 +5,11 @@ from __future__ import absolute_import, unicode_literals
 # from django import forms as django_forms
 # import floppyforms as ff
 from django.contrib import admin
-from django.contrib.gis.db import models as geo_models
 from easy_select2 import select2_modelform as s2form
 # from django.utils.translation import ugettext_lazy as _
 # from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 # from fsm_admin.mixins import FSMTransitionMixin
-from leaflet.forms.widgets import LeafletWidget
 from mptt.admin import MPTTModelAdmin  # TreeRelatedFieldListFilter
 from occurrence.models import CommunityAreaEncounter, TaxonAreaEncounter
 # from wastd.observations.filters import LocationListFilter
@@ -30,34 +28,15 @@ from taxonomy.models import (
     HbvVernacular,
     HbvXref
 )
-
+from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS
 # from leaflet.admin import LeafletGeoAdmin
 # from leaflet.forms.widgets import LeafletWidget
 
 
-S2ATTRS = {'width': 'auto'}
 TaxonAreaEncounterForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
 CommunityAreaEncounterForm = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
 
 TokenAdmin.raw_id_fields = ('user',)
-
-leaflet_settings = {
-    'widget': LeafletWidget(attrs={
-        'map_height': '400px',
-        'map_width': '100%',
-        'display_raw': 'true',
-        'map_srid': 4326,
-        # 'settings_overrides': {
-        #     'DEFAULT_CENTER': (-25, 120),
-        #     'DEFAULT_ZOOM': 5
-        # } # doesn't fix the leaflet tiles now showing
-    })}
-
-formfield_overrides = {
-    geo_models.PointField: leaflet_settings,
-    geo_models.LineStringField: leaflet_settings,
-    geo_models.PolygonField: leaflet_settings,
-}
 
 
 @admin.register(HbvName)
@@ -238,7 +217,7 @@ class TaxonAreaEncounterInline(admin.StackedInline):
     form = TaxonAreaEncounterForm
     extra = 1
     classes = ('wide extrapretty grp-open',)
-    formfield_overrides = formfield_overrides
+    formfield_overrides = FORMFIELD_OVERRIDES
 
 
 class CommunityAreaEncounterInline(admin.StackedInline):
@@ -248,7 +227,7 @@ class CommunityAreaEncounterInline(admin.StackedInline):
     form = CommunityAreaEncounterForm
     extra = 1
     classes = ('wide extrapretty',)
-    formfield_overrides = formfield_overrides
+    formfield_overrides = FORMFIELD_OVERRIDES
 
 
 @admin.register(Taxon)
@@ -265,7 +244,7 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
 
     readonly_fields = ('parent', )
     # inlines = [TaxonAreaEncounterInline, ]
-    formfield_overrides = formfield_overrides
+    formfield_overrides = FORMFIELD_OVERRIDES
 
 
 @admin.register(Community)
@@ -280,4 +259,4 @@ class CommunityAdmin(VersionAdmin):
     )
 
     # inlines = [CommunityAreaEncounterInline, ]
-    formfield_overrides = formfield_overrides
+    formfield_overrides = FORMFIELD_OVERRIDES

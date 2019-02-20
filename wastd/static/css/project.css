@@ -110,6 +110,7 @@ li.breadcrumb-item.active a {color: black;}
 }
 
 /* Select2 */
-.related-widget-wrapper, .select2-container {
-  min-width: 350px;
+ul.grp-tools.grp-related-widget-tools {
+  position: relative!important;
+  right: 0px!important;
 }

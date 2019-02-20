@@ -6,15 +6,13 @@ from __future__ import absolute_import, unicode_literals
 import floppyforms as ff
 from django import forms
 from django.contrib import admin
-from django.contrib.gis.db import models as geo_models
+from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
-# from leaflet.admin import LeafletGeoAdmin
-from leaflet.forms.widgets import LeafletWidget
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
@@ -47,6 +45,8 @@ from wastd.observations.models import (
     TurtleNestEncounter,
     TurtleNestObservation
 )
+
+from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS
 
 TokenAdmin.raw_id_fields = ('user',)
 
@@ -346,7 +346,6 @@ class TurtleNestObservationAdmin(VersionAdmin, admin.ModelAdmin):
     encounter_link.allow_tags = True
 
 # Select2Widget forms
-S2ATTRS = {'width': '350px'}
 ExpeditionForm = s2form(Expedition, attrs=S2ATTRS)
 SiteVisitForm = s2form(SiteVisit, attrs=S2ATTRS)
 SurveyForm = s2form(Survey, attrs=S2ATTRS)
@@ -356,18 +355,6 @@ AnimalEncounterForm = s2form(AnimalEncounter, attrs=S2ATTRS)
 TurtleNestEncounterAdminForm = s2form(TurtleNestEncounter, attrs=S2ATTRS)
 LineTransectEncounterAdminForm = s2form(LineTransectEncounter, attrs=S2ATTRS)
 LoggerEncounterAdminForm = s2form(LoggerEncounter, attrs=S2ATTRS)
-leaflet_settings = {
-    'widget': LeafletWidget(attrs={
-        'map_height': '400px',
-        'map_width': '100%',
-        'display_raw': 'true',
-        'map_srid': 4326, })}
-survey_settings = {
-    'widget': ModelSelect2Widget(
-        model=Survey,
-        search_fields=["site_name__icontains", "reporter__name__icontains", ]
-    )
-}
 
 
 class FieldMediaAttachmentInline(admin.TabularInline):
@@ -377,24 +364,6 @@ class FieldMediaAttachmentInline(admin.TabularInline):
     model = FieldMediaAttachment
     classes = ('grp-collapse grp-open',)
     widgets = {'attachment': ImageThumbnailFileInput}  # seems inactive
-
-
-# @admin.register(Expedition)
-# class ExpeditionAdmin(admin.ModelAdmin):
-#     form = ExpeditionForm
-#     list_display = ('site', 'started_on', 'finished_on', 'comments')
-#     date_hierarchy = 'started_on'
-#     inlines = [FieldMediaAttachmentInline, ]
-#     # Leaflet geolocation widget
-#     formfield_overrides = {
-#         geo_models.PointField: leaflet_settings,
-#         geo_models.LineStringField: leaflet_settings,
-#     }
-
-
-# @admin.register(SiteVisit)
-# class SiteVisitAdmin(ExpeditionAdmin):
-#     form = SiteVisitForm
 
 
 @admin.register(Survey)
@@ -420,7 +389,7 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     )
     list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
     list_select_related = ('site', 'reporter', )
-    search_fields = ('start_comments', 'end_comments')
+    search_fields = ('area__name', 'site__name', 'start_comments', 'end_comments')
     fieldsets = (
         (_('Device'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -439,10 +408,7 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                         )}),
     )
 
-    formfield_overrides = {
-        geo_models.PointField: leaflet_settings,
-        geo_models.LineStringField: leaflet_settings,
-    }
+    formfield_overrides = FORMFIELD_OVERRIDES
     fsm_field = ['status', ]
     inlines = [CustomStateLogInline, ]
 
@@ -455,11 +421,6 @@ class AreaAdmin(admin.ModelAdmin):
     list_filter = ("area_type", )
     search_fields = ("name", )
 
-    # Leaflet geolocation widget
-    formfield_overrides = {
-        geo_models.PolygonField: leaflet_settings,
-    }
-
 
 @admin.register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
@@ -469,27 +430,52 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     """
 
     # Grappelli User lookup overrides select2 select widget
-    raw_id_fields = ('observer', 'reporter')
-    autocomplete_lookup_fields = {'fk': ['observer', 'reporter']}
+    # raw_id_fields = ('observer', 'reporter')
+    # autocomplete_lookup_fields = {'fk': ['observer', 'reporter']}
     change_list_filter_template = "admin/filter_listing.html"
 
     # select2 widgets for searchable dropdowns
     form = EncounterAdminForm
+    observer = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=get_user_model(),
+            search_fields=[
+                "username__icontains",
+                "name__icontains",
+                "role__icontains",
+                "email__icontains"]
+        )
+    )
+    reporter = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=get_user_model(),
+            search_fields=[
+                "username__icontains",
+                "name__icontains",
+                "role__icontains",
+                "email__icontains"]
+        )
+    )
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
     survey = forms.ChoiceField(
         widget=ModelSelect2Widget(
             model=Survey,
             search_fields=["site_name__icontains", "reporter__name__icontains", ]
         )
     )
-
-    # Date filter widget
     date_hierarchy = 'when'
-
-    # Leaflet geolocation widget
-    formfield_overrides = {
-        geo_models.PointField: leaflet_settings,
-        geo_models.LineStringField: leaflet_settings,
-    }
+    formfield_overrides = FORMFIELD_OVERRIDES
 
     # Filters for change_list
     list_filter = (
@@ -593,6 +579,18 @@ class AnimalEncounterAdmin(EncounterAdmin):
                      'checked_for_injuries',
                      'scanned_for_pit_tags',
                      'checked_for_flipper_tags',)}), )
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
     survey = forms.ChoiceField(
         widget=ModelSelect2Widget(
             model=Survey,
@@ -655,6 +653,18 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
             'nest_age', 'nest_type', 'species',
             'habitat', 'disturbance', 'comments')}), )
 
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
     survey = forms.ChoiceField(
         widget=ModelSelect2Widget(
             model=Survey,
@@ -699,6 +709,18 @@ class LineTransectEncounterAdmin(EncounterAdmin):
     # list_filter = EncounterAdmin.list_filter + ()
     fieldsets = EncounterAdmin.fieldsets + (
         ('Location', {'fields': ('transect', )}), )
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
     survey = forms.ChoiceField(
         widget=ModelSelect2Widget(
             model=Survey,
@@ -727,6 +749,18 @@ class LoggerEncounterAdmin(EncounterAdmin):
     fieldsets = EncounterAdmin.fieldsets + (
         ('Logger', {'fields': (
             'logger_type', 'deployment_status', 'logger_id', 'comments',)}), )
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
     survey = forms.ChoiceField(
         widget=ModelSelect2Widget(
             model=Survey,
