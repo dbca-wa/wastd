@@ -30,13 +30,13 @@ def update_names():
            "Task successfully finished.".format(
                len(surveys), len(names), len(loggers)))
     logger.info(msg)
-    capture_message(msg, level="info")
+    capture_message(msg, level="warning")
 
 
 @background(queue="admin-tasks", schedule=timezone.now())
 def import_odka():
     """Download and import new ODKA submissions."""
-    capture_message("[wastd.observations.tasks.import_odka] Starting ODKA import.", level="info")
+    capture_message("[wastd.observations.tasks.import_odka] Starting ODKA import.", level="warning")
     path = os.path.join(settings.MEDIA_ROOT, "odka")
     os.makedirs(path, exist_ok=True)
     save_all_odka(path=path)
@@ -46,4 +46,4 @@ def import_odka():
     reconstruct_missing_surveys()
     capture_message(
         "[wastd.observations.tasks.import_odka] "
-        "ODKA surveys reconstructed, task successfully finished.", level="info")
+        "ODKA surveys reconstructed, task successfully finished.", level="warning")

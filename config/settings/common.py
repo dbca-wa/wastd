@@ -13,8 +13,8 @@ from __future__ import absolute_import, unicode_literals
 import os
 import environ
 from confy import database, env
-# import sentry_sdk
-# from sentry_sdk.integrations.django import DjangoIntegration
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 from unipath import Path
 
 # import confy
@@ -680,12 +680,11 @@ LOGGING = {
 }
 
 # Logging to sentry.dbca.wa.gov.au
-if env('RAVEN_DSN', False):
-    RAVEN_CONFIG = {'dsn': env('RAVEN_DSN')}
-    # sentry_sdk.init(
-    #     dsn=env('RAVEN_DSN'),
-    #     integrations=[DjangoIntegration()]
-    # )
+# if env('RAVEN_DSN', False):
+#     RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
+if env('SENTRY_DSN', False):
+    sentry_sdk.init(env('SENTRY_DSN'),
+                    integrations=[DjangoIntegration()])
 
 
 SETTINGS_EXPORT = [
