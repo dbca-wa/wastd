@@ -679,12 +679,10 @@ LOGGING = {
     }
 }
 
-# Logging to sentry.dbca.wa.gov.au
-# if env('RAVEN_DSN', False):
-#     RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
+# Error reporting
 if env('SENTRY_DSN', False):
-    sentry_sdk.init(env('SENTRY_DSN'),
-                    integrations=[DjangoIntegration()])
+    RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
+    sentry_sdk.init(env('SENTRY_DSN'), integrations=[DjangoIntegration()])
 
 
 SETTINGS_EXPORT = [

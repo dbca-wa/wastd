@@ -106,13 +106,7 @@ li.breadcrumb-item.active a {color: black;}
 
 .card-md {
   max-width: 21rem;
-  min-width: 9rem;
-}
-
-/* Select2 */
-ul.grp-tools.grp-related-widget-tools {
-  position: relative!important;
-  right: 0px!important;
+  min-width: 8rem;
 }
 
 
