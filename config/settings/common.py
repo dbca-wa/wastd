@@ -11,11 +11,10 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import os
-
 import environ
-import sentry_sdk
 from confy import database, env
-from sentry_sdk.integrations.django import DjangoIntegration
+# import sentry_sdk
+# from sentry_sdk.integrations.django import DjangoIntegration
 from unipath import Path
 
 # import confy
@@ -81,7 +80,7 @@ THIRD_PARTY_APPS = (
 
     'gunicorn',                     # Web server
     # 'test_utils'                    # Testing
-    # 'raven.contrib.django.raven_compat',  # Sentry logging Raven client
+    'raven.contrib.django.raven_compat',  # Sentry logging Raven client
 )
 
 # Apps specific for this project go here.
@@ -558,7 +557,7 @@ MAX_RUN_TIME = 7200  # 2h
 # Django-silk performance monitoring
 # ------------------------------------------------------------------------------
 # https://github.com/jazzband/django-silk#limiting-requestresponse-data
-SILKY_MAX_RECORDED_REQUESTS = 10**4
+SILKY_MAX_RECORDED_REQUESTS = 100
 # https://github.com/jazzband/django-silk#meta-profiling
 SILKY_META = True
 # https://github.com/jazzband/django-silk#profiling
@@ -604,6 +603,10 @@ LOGGING = {
         },
     },
     'handlers': {
+        'sentry': {
+            'level': 'WARNING',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        },
         'mail_admins': {
             'level': 'WARNING',
             'filters': ['require_debug_false'],
@@ -624,23 +627,23 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'sentry'],
             'level': 'INFO',
             'propagate': True
         },
         'django.security.DisallowedHost': {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'sentry'],
             'propagate': True
         },
         'django': {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'sentry'],
             'propagate': True
         },
         "background_task": {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'sentry'],
             'propagate': True,
         },
         "silk": {
@@ -648,29 +651,29 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'propagate': True,
         },
-        'wastd': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'file'],
-            'propagate': True,
-        },
         'shared': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'sentry'],
+            'propagate': True,
+        },
+        'wastd': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'file', 'sentry'],
             'propagate': True,
         },
         'taxonomy': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'sentry'],
             'propagate': True,
         },
         'conservation': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'sentry'],
             'propagate': True,
         },
         'occurrence': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'sentry'],
             'propagate': True,
         },
     }
@@ -679,10 +682,10 @@ LOGGING = {
 # Logging to sentry.dbca.wa.gov.au
 if env('RAVEN_DSN', False):
     RAVEN_CONFIG = {'dsn': env('RAVEN_DSN')}
-    sentry_sdk.init(
-        dsn=env('RAVEN_DSN'),
-        integrations=[DjangoIntegration()]
-    )
+    # sentry_sdk.init(
+    #     dsn=env('RAVEN_DSN'),
+    #     integrations=[DjangoIntegration()]
+    # )
 
 
 SETTINGS_EXPORT = [
