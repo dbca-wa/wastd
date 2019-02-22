@@ -611,7 +611,8 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'checked_for_flipper_tags', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
-         {'fields': ('taxon', 'species', 'maturity', 'sex',
+         {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+          'fields': ('taxon', 'species', 'maturity', 'sex',
                      'activity', 'behaviour', 'habitat',
                      'health', 'cause_of_death', 'cause_of_death_confidence',
                      'nesting_event',
@@ -669,9 +670,15 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
     list_filter = EncounterAdmin.list_filter + (
         'nest_age', 'nest_type', 'species', 'habitat', 'disturbance')
     fieldsets = EncounterAdmin.fieldsets + (
-        ('Nest', {'fields': (
-            'nest_age', 'nest_type', 'species',
-            'habitat', 'disturbance', 'comments')}), )
+        ('Nest',
+            {
+                'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+                'fields': (
+                    'nest_age', 'nest_type', 'species',
+                    'habitat', 'disturbance', 'comments')
+            }
+         ),
+    )
     inlines = [
         MediaAttachmentInline,
         NestTagObservationInline,
@@ -708,7 +715,11 @@ class LineTransectEncounterAdmin(EncounterAdmin):
     list_select_related = ('area', 'site', 'survey', )
     # list_filter = EncounterAdmin.list_filter + ()
     fieldsets = EncounterAdmin.fieldsets + (
-        ('Location', {'fields': ('transect', )}), )
+        ('Location',
+            {
+                'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+                'fields': ('transect', )
+            }), )
     inlines = [
         TrackTallyObservationInline,
         TurtleNestDisturbanceTallyObservationInline,
@@ -729,8 +740,12 @@ class LoggerEncounterAdmin(EncounterAdmin):
     list_filter = EncounterAdmin.list_filter + ('logger_type', 'deployment_status',)
     search_fields = ('logger_id', 'source_id')
     fieldsets = EncounterAdmin.fieldsets + (
-        ('Logger', {'fields': (
-            'logger_type', 'deployment_status', 'logger_id', 'comments',)}), )
+        ('Logger',
+            {
+                'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+                'fields': (
+                    'logger_type', 'deployment_status', 'logger_id', 'comments',)
+            }), )
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
