@@ -420,7 +420,14 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     )
     list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
     list_select_related = ('site', 'reporter', )
-    search_fields = ('area__name', 'site__name', 'start_comments', 'end_comments')
+    search_fields = (
+        'area__name',
+        'site__name',
+        'start_comments',
+        'end_comments',
+        'reporter__name',
+        'reporter__username'
+    )
     fieldsets = (
         (_('Device'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -452,6 +459,7 @@ class AreaAdmin(admin.ModelAdmin):
     list_filter = ("area_type", )
     search_fields = ("name__icontains", )
     form = s2form(Area, attrs=S2ATTRS)
+    formfield_overrides = FORMFIELD_OVERRIDES
 
 
 @admin.register(Encounter)
