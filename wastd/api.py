@@ -292,7 +292,16 @@ class AreaSerializer(GeoFeatureModelSerializer):
 
         model = Area
         geo_field = "geom"
-        fields = ("pk", "area_type", "name", "geom", "northern_extent", "centroid", )
+        fields = (
+            "pk",
+            "area_type",
+            "name",
+            "geom",
+            "northern_extent",
+            "centroid",
+            "length_surveyed_m",
+            "length_survey_roundtrip_m"
+        )
 
 
 class FastAreaSerializer(serializers.ModelSerializer):

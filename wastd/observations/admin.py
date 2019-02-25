@@ -421,7 +421,6 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
     list_select_related = ('site', 'reporter', )
     search_fields = (
-        'area__name',
         'site__name',
         'start_comments',
         'end_comments',

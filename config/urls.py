@@ -12,7 +12,10 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, re_path, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
+
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
+
 from occurrence.models import CommunityAreaEncounter
 from conservation.views import (
     ConservationActionListView,
@@ -52,6 +55,7 @@ from wastd.observations.views import (
 
 # from dynamic_rest import routers as dr
 
+favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
 # register all adminactions
 actions.add_to_site(site)
@@ -271,6 +275,8 @@ urlpatterns = [
 
     # url(r'^500/$', default_views.server_error,
     #     kwargs={'exception': Exception('Internal Server Error')}),
+
+    re_path(r'^favicon\.ico$', favicon_view),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
     staticfiles_urlpatterns()

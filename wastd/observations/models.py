@@ -844,6 +844,22 @@ class Area(geo_models.Model):
         blank=True, null=True,
         help_text=_("The northernmost latitude serves to sort areas."),)
 
+    length_surveyed_m = models.DecimalField(
+        max_digits=10, decimal_places=0,
+        verbose_name=_("Surveyed length [m]"),
+        blank=True, null=True,
+        help_text=_("The length of meters covered by a survey of this area. "
+                    "E.g., the meters of high water mark along a beach."),
+    )
+
+    length_survey_roundtrip_m = models.DecimalField(
+        max_digits=10, decimal_places=0,
+        verbose_name=_("Survey roundtrip [m]"),
+        blank=True, null=True,
+        help_text=_("The total length of meters walked during an end to end "
+                    "survey of this area."),
+    )
+
     as_html = models.TextField(
         verbose_name=_("HTML representation"),
         blank=True, null=True, editable=False,

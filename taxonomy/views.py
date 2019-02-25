@@ -3,8 +3,11 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
+# from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -35,8 +38,8 @@ class TaxonListView(ListView):
     def get_context_data(self, **kwargs):
         """Add extra items to context."""
         context = super(TaxonListView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        context['taxon_filter'] = TaxonFilter(self.request.GET, queryset=self.get_queryset())
+        context["now"] = timezone.now()
+        context["taxon_filter"] = TaxonFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
     def get_queryset(self):
@@ -52,18 +55,22 @@ class TaxonListView(ListView):
         https://github.com/django-mptt/django-mptt/issues/632
         """
         queryset = Taxon.objects.order_by(
-            '-rank', '-current'
+            "-rank", "-current"
         ).prefetch_related(
             "taxon_gazettal", "conservationaction_set",  "document_set"
         )
 
         # name_id is mutually exclusive to other parameters
-        if self.request.GET.get('name_id'):
-            # t = queryset.filter(name_id=self.request.GET.get('name_id'))
+        if self.request.GET.get("name_id"):
+            # t = queryset.filter(name_id=self.request.GET.get("name_id"))
             # return list(chain(t.first().get_ancestors(), t, t.first().get_children()))
-            return queryset.filter(
-                name_id=self.request.GET.get('name_id')
-            ).get().get_family()
+            try:
+                return queryset.filter(
+                    name_id=self.request.GET.get("name_id")
+                ).get().get_family()
+            except ObjectDoesNotExist:
+                messages.warning(self.request, "This Name ID does not exist.")
+                return queryset
 
         return TaxonFilter(self.request.GET, queryset=queryset).qs
 
@@ -77,8 +84,8 @@ class CommunityListView(ListView):
     def get_context_data(self, **kwargs):
         """Add extra items to context."""
         context = super(CommunityListView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        context['community_filter'] = CommunityFilter(
+        context["now"] = timezone.now()
+        context["community_filter"] = CommunityFilter(
             self.request.GET,
             queryset=self.get_queryset()
         )
@@ -105,29 +112,32 @@ class TaxonDetailView(DetailView):
 
     def get_object(self):
         """Get Object by name_id."""
-        return Taxon.objects.filter(
+        t = Taxon.objects.filter(
             name_id=self.kwargs.get("name_id")
         ).prefetch_related(
             "taxon_occurrences",
             "conservationaction_set"
         ).first()
+        if not t:
+            raise Http404
+        return t
 
     def get_context_data(self, **kwargs):
         """Custom context."""
         context = super(TaxonDetailView, self).get_context_data(**kwargs)
-        obj = self.get_object()
+        obj = self.object
         occ = obj.taxon_occurrences
         ma = obj.conservationaction_set.all()
         max_cards = 100
-        context['occurrence_table'] = TaxonAreaEncounterTable(occ.all()[:max_cards])
-        context['occurrences'] = occ.all()
-        context['max_cards'] = max_cards
+        context["occurrence_table"] = TaxonAreaEncounterTable(occ.all()[:max_cards])
+        context["occurrences"] = occ.all()
+        context["max_cards"] = max_cards
         if occ:
-            context['occurrence_total'] = occ.count()
+            context["occurrence_total"] = occ.count()
         else:
-            context['occurrence_total'] = 0
-        context['conservationactions_general'] = ma.filter(document=None, occurrence_area_code=None)
-        context['conservationactions_area'] = ma.exclude(occurrence_area_code=None)
+            context["occurrence_total"] = 0
+        context["conservationactions_general"] = ma.filter(document=None, occurrence_area_code=None)
+        context["conservationactions_area"] = ma.exclude(occurrence_area_code=None)
         return context
 
 
@@ -139,12 +149,14 @@ class CommunityDetailView(DetailView):
 
     def get_object(self):
         """Get Object by pk."""
-        return Community.objects.filter(
-            pk=self.kwargs.get("pk")
-        ).prefetch_related(
-            "community_occurrences",
-            "conservationaction_set"
-        ).first()
+        return get_object_or_404(
+            Community.objects.filter(
+                pk=self.kwargs.get("pk")
+            ).prefetch_related(
+                "community_occurrences",
+                "conservationaction_set"
+            ).first()
+        )
 
     def get_context_data(self, **kwargs):
         """Custom context."""
@@ -153,13 +165,13 @@ class CommunityDetailView(DetailView):
         occ = obj.community_occurrences
         ma = obj.conservationaction_set.all()
         max_cards = 100
-        context['max_cards'] = max_cards
+        context["max_cards"] = max_cards
         if occ:
-            context['occurrence_total'] = occ.count()
+            context["occurrence_total"] = occ.count()
         else:
-            context['occurrence_total'] = 0
-        context['occurrence_table'] = CommunityAreaEncounterTable(occ.all()[:max_cards])
-        context['occurrences'] = occ.all()
-        context['conservationactions_general'] = ma.filter(document=None, occurrence_area_code=None)
-        context['conservationactions_area'] = ma.exclude(occurrence_area_code=None)
+            context["occurrence_total"] = 0
+        context["occurrence_table"] = CommunityAreaEncounterTable(occ.all()[:max_cards])
+        context["occurrences"] = occ.all()
+        context["conservationactions_general"] = ma.filter(document=None, occurrence_area_code=None)
+        context["conservationactions_area"] = ma.exclude(occurrence_area_code=None)
         return context

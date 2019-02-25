@@ -458,6 +458,7 @@ LEAFLET_CONFIG = {
     'DEFAULT_ZOOM': 5,
     'SCALE': 'metric',
     'MINIMAP': False,
+    # 'FORCE_IMAGE_PATH': True,
     'PLUGINS': {
         'forms': {'auto-include': True},
         'markers': {

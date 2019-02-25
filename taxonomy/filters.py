@@ -14,17 +14,17 @@ from .models import Community, Taxon
 
 FILTER_OVERRIDES = {
     models.CharField: {
-        'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'icontains', },
+        "filter_class": django_filters.CharFilter,
+        "extra": lambda f: {"lookup_expr": "icontains", },
     },
     models.TextField: {
-        'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'icontains', },
+        "filter_class": django_filters.CharFilter,
+        "extra": lambda f: {"lookup_expr": "icontains", },
     },
     geo_models.PolygonField: {
-        'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'intersects',
-                            'widget': LeafletWidget()},
+        "filter_class": django_filters.CharFilter,
+        "extra": lambda f: {"lookup_expr": "intersects",
+                            "widget": LeafletWidget()},
     }
 }
 
@@ -37,7 +37,7 @@ class TaxonFilter(django_filters.FilterSet):
         queryset=ConservationCategory.objects.filter(
             conservation_list__scope_species=True
         ).order_by(
-            'conservation_list__code', 'rank'
+            "conservation_list__code", "rank"
         ).prefetch_related(
             "conservation_list"
         )
@@ -48,8 +48,16 @@ class TaxonFilter(django_filters.FilterSet):
         """Class opts."""
 
         model = Taxon
-        fields = ['name_id', 'taxonomic_name', 'vernacular_names', 'rank',
-                  'current', 'publication_status', 'taxon_gazettal__category', 'eoo']
+        fields = [
+            "name_id",
+            "taxonomic_name",
+            "vernacular_names",
+            "rank",
+            "current",
+            "publication_status",
+            "taxon_gazettal__category",
+            "eoo"
+        ]
         filter_overrides = FILTER_OVERRIDES
 
 
@@ -60,7 +68,8 @@ class CommunityFilter(django_filters.FilterSet):
         queryset=ConservationCategory.objects.filter(
             conservation_list__scope_communities=True
         ).order_by(
-            'conservation_list__code', 'rank'
+            "conservation_list__code",
+            "rank"
         ).prefetch_related(
             "conservation_list"
         )
@@ -71,6 +80,12 @@ class CommunityFilter(django_filters.FilterSet):
         """Class opts."""
 
         model = Community
-        fields = ['code', 'name', 'description', 'community_gazettal__category', 'eoo']
-        # widgets = {'eoo': LeafletWidget()}
+        fields = [
+            "code",
+            "name",
+            "description",
+            "community_gazettal__category",
+            "eoo"
+        ]
+        # widgets = {"eoo": LeafletWidget()}
         filter_overrides = FILTER_OVERRIDES
