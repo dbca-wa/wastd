@@ -401,9 +401,10 @@ class FieldMediaAttachmentInline(admin.TabularInline):
 class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     """Survey Admin."""
 
-    form = s2form(Survey, attrs=S2ATTRS)
     # model = Survey
+    # change list
     date_hierarchy = 'start_time'
+    list_select_related = ('site', 'reporter', )
     list_display = (
         '__str__',
         'source',
@@ -419,7 +420,6 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         'production',
     )
     list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
-    list_select_related = ('site', 'reporter', )
     search_fields = (
         'site__name',
         'start_comments',
@@ -427,6 +427,11 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         'reporter__name',
         'reporter__username'
     )
+
+    # change view
+    form = s2form(Survey, attrs=S2ATTRS)
+    formfield_overrides = FORMFIELD_OVERRIDES
+    fsm_field = ['status', ]
     fieldsets = (
         (_('Device'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -444,9 +449,6 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                         'start_photo', 'end_photo',
                         )}),
     )
-
-    formfield_overrides = FORMFIELD_OVERRIDES
-    fsm_field = ['status', ]
     inlines = [CustomStateLogInline, ]
 
 

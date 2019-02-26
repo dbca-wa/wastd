@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""User models."""
 from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings
@@ -15,12 +16,14 @@ from rest_framework.authtoken.models import Token
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
+    """Create API auth token."""
     if created:
         Token.objects.create(user=instance)
 
 
 @python_2_unicode_compatible
 class User(AbstractUser):
+    """WAStD User."""
 
     # First Name and Last Name do not cover name patterns around the globe.
     name = models.CharField(_('Name of User'), blank=True, max_length=255)
@@ -32,11 +35,12 @@ class User(AbstractUser):
         verbose_name=_('Phone Number'),
         blank=True, null=True,
         help_text=_('The primary contact number including national prefix, '
-                    'e.g. +61 4 12 345 678. '
+                    'e.g. +61 412 345 678. '
                     'Spaces are accepted but will be removed on saving.'), )
 
     class Meta:
         """Class opts."""
+
         ordering = ["name", "username"]
 
     def __str__(self):
