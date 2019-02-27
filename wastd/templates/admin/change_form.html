@@ -7,10 +7,15 @@
 <!-- Fix missing favicon -->
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 <style>
-/* Fix https://github.com/sehmaschine/django-grappelli/issues/884 */
-.grp-tools.grp-related-widget-tools {position: relative; right: 0px;}
+/* Resolved https://github.com/sehmaschine/django-grappelli/issues/884 */
+/*.grp-tools.grp-related-widget-tools {position: relative; right: 0px;} */
 
-/* Force leaflet controls underneath header (z-index 1000) and above leaflet tiles (z-index 400)*/
+/* Fixed through shared.admin.S2ATTRS data-width
+   https://github.com/applegrew/django-select2/issues/252 */
+/*.select2-selection, .select2-search {min-width: 200px;}*/
+
+/* Force leaflet controls underneath header (z-index 1000) and
+   above leaflet tiles (z-index 400)*/
 .leaflet-top{z-index:999;}
 
 /* https://github.com/makinacorpus/django-leaflet/issues/247 */

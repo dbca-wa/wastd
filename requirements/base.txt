@@ -16,7 +16,10 @@ django-extensions==2.1.5
 # ------------------------------------------------
 django-adminactions==1.6.0
 # -e git+https://github.com/saxix/django-adminactions.git@florianm-develop#egg=django-adminactions
-django-grappelli==2.12.2
+
+# https://github.com/sehmaschine/django-grappelli/issues/884
+#django-grappelli
+-e git+https://github.com/sehmaschine/django-grappelli@master#egg=django-grappelli
 
 
 # API
