@@ -5,7 +5,7 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404, redirect
+# from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 # from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -149,14 +149,15 @@ class CommunityDetailView(DetailView):
 
     def get_object(self):
         """Get Object by pk."""
-        return get_object_or_404(
-            Community.objects.filter(
-                pk=self.kwargs.get("pk")
-            ).prefetch_related(
-                "community_occurrences",
-                "conservationaction_set"
-            ).first()
-        )
+        com = Community.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            "community_occurrences",
+            "conservationaction_set"
+        ).first()
+        if not com:
+            raise Http404
+        return com
 
     def get_context_data(self, **kwargs):
         """Custom context."""
