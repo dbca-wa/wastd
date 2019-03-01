@@ -1,0 +1,135 @@
+<!-- conservation/include/conservationaction_card.html -->
+            <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
+              <h5 class="card-header">
+                <div class="row">
+                  <span class="badge badge-secondary" title="Conservation Action">
+                    <span class="oi oi-list" aria-hidden="true"></span>
+                    {{ object.category }}
+                  </span>
+                  <span class="badge badge-success" title="Completion Status">
+                    <span class="oi oi-task" aria-hidden="true"></span>
+                    {{ object.get_status_display }}
+                  </span>
+                </div>
+              {{ object.instructions }}
+              </h5>
+
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">
+                  <!-- taxa -->
+                  {% for taxon in object.taxa.all %}
+                  <p class="card-text">
+                    <span class="oi oi-eye"
+                      title="Species" aria-hidden="true"></span>
+                    {{ taxon }}
+                  </p>
+                  {% endfor %}
+
+                  <!-- communities -->
+                  {% for com in object.communities.all %}
+                  <p class="card-text">
+                    <span class="oi oi-eye"
+                      title="Communities" aria-hidden="true"></span>
+                    {{ com }}
+                  </p>
+                  {% endfor %}
+                  <!-- documents -->
+
+                  {% if object.document %}
+                  <p class="card-text">
+                    <span class="oi oi-document"
+                      title="Document" aria-hidden="true"></span>
+                    {{ object.document }}
+                  </p>
+                  {% endif %}
+                  <!-- area code -->
+
+                </h6>
+                <p class="card-text">
+                  <span class="oi oi-calendar"
+                    title="Completion date" aria-hidden="true"></span>
+                  {% if object.completion_date%}
+                  {{ object.completion_date|date:"D d M Y" }}
+                  {% else %}
+                  ongoing
+                  {% endif %}
+                  <span class="float-right">
+                    <span class="oi oi-dollar"
+                    title="Total Expenditure" aria-hidden="true"></span>
+                  {{ object.expenditure }}
+                  </span>
+                </p>
+                <p class="card-text">
+                  <span class="oi oi-comment-square"
+                    title="Notes" aria-hidden="true"></span>
+                  {% if object.implementation_notes %}
+                  {{ object.implementation_notes }}
+                  {% endif %}
+                </p>
+
+                <!-- activities -->
+                {% for act in object.conservationactivity_set.all %}
+                    <div class="card card-md col-12">
+                      <div class="card-header">
+                        <p class="card-text">
+                          <span class="oi oi-calendar"
+                          title="Expenditure" aria-hidden="true"></span>
+                            {% if act.completion_date%}
+                            {{ act.completion_date|date:"D d M Y" }}
+                            {% else %}
+                            ongoing
+                            {% endif %}
+                          <span class="float-right">
+                            <span class="oi oi-dollar"
+                                  title="Expenditure" aria-hidden="true"></span>
+                            {{ act.expenditure }}
+                          </span>
+                        </p>
+                      </div>
+                      <div class="card-body">
+                        <p class="card-text">
+                          <span class="oi oi-comment-square"
+                            title="Notes" aria-hidden="true"></span>
+                          {% if act.implementation_notes %}
+                          {{ act.implementation_notes }}
+                          {% endif %}
+                        </p>
+                      </div>
+                    </div>
+                {% endfor %}
+                <!-- /activities -->
+
+              </div><!-- /.card-body -->
+
+              <div class="card-footer">
+                <!-- Conservation activity view -->
+                <a href="{% url 'conservationaction-detail' pk=object.pk %}"
+                    title="View conservation action"
+                    role="button"
+                    class="btn btn-primary btn-sm btn-block">
+                  <span class="oi oi-eye" aria-hidden="true"></span> <span class="oi oi-task" aria-hidden="true"></span>
+                  View details
+                </a>
+                <!-- /Conservation activity view -->
+                <!-- Conservation activity add -->
+                <a href=""
+                    title="Report a new conservation activity."
+                    role="button"
+                    class="btn btn-primary btn-sm btn-block">
+                  <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-task" aria-hidden="true"></span>
+                  Report progress
+                </a>
+                <!-- /Conservation activity add -->
+                <!-- Conservation action update -->
+                <a href="{% url 'conservationaction-update' pk=object.pk %}"
+                    title="Report completion of the entire conservation action."
+                    role="button"
+                    class="btn btn-primary btn-sm btn-block">
+                  <span class="oi oi-pencil" aria-hidden="true"></span>
+                  <span class="oi oi-task" aria-hidden="true"></span>
+                  Report completion
+                </a>
+                <!-- /Conservation action update -->
+              </div><!-- /.card-footer -->
+            </div><!-- /.card -->
+            <!-- conservation/includes/conservationaction_card.html -->

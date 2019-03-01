@@ -19,6 +19,7 @@ from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from occurrence.models import CommunityAreaEncounter
 from conservation.views import (
     ConservationActionListView,
+    ConservationActionDetailView,
     ConservationActionUpdateView,
     ConservationActionCreateView
 )
@@ -69,11 +70,15 @@ urlpatterns = [
             HomeView.as_view(),
             name='map'),
 
+    # ------------------------------------------------------------------------#
     # Conservation
     re_path(r'^actions/$',
             ConservationActionListView.as_view(),
             name="conservationaction-list"),
     re_path(r'^actions/(?P<pk>\d+)/$',
+            ConservationActionDetailView.as_view(),
+            name="conservationaction-detail"),
+    re_path(r'^actions/(?P<pk>\d+)/update/$',
             ConservationActionUpdateView.as_view(),
             name="conservationaction-update"),
     re_path(r'^actions/create/$',

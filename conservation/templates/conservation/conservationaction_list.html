@@ -1,200 +1,52 @@
 {% extends "base.html" %}
 {% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
-
 {% block content %}
-<div class="container-fluid" id="wrap">
-
-  <!-- Breadcrumbs -->
+ <!-- Breadcrumbs -->
   <div class="row">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item active" aria-current="page">
-          <a href="{% url 'conservationaction-list' %}">Conservation Actions</a>
+        {% for breadcrumb in breadcrumbs %}
+        {% if breadcrumb.url %}
+        <li class="breadcrumb-item {% if forloop.last %}active{% endif %}">
+          <a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a>
         </li>
+        {% else %}
+        <li>{{ breadcrumb.name }}</li>
+        {% endif %}
+        {% endfor %}
       </ol>
     </nav>
   </div>
 
-  <div class="container-fluid">
-
-    <!-- Pagination -->
-    <div class="row">
-      <div class="col-12">
-        {% bootstrap_pagination page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
-      </div>
+<div class="container-fluid">
+  <div class="row" id="pagination-row">
+    <div class="col-12">
+      {% bootstrap_pagination page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
     </div>
-
-    <div class="row">
-      <!-- Data -->
-      <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
-        <div class="row">
-          {% for action in object_list %}
-            <!-- conservation/cards/conservationaction.html -->
-            <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
-              <h5 class="card-header">
-                <div>
-                  <span class="badge badge-secondary" title="Conservation Action">
-                    <span class="oi oi-list" aria-hidden="true"></span>
-                    {{ action.category }}
-                  </span>
-                  <span class="badge badge-success" title="Completion Status">
-                    <span class="oi oi-task" aria-hidden="true"></span>
-                    {{ action.get_status_display }}
-                  </span>
-                  <small class="float-right">
-                    <a href="{% url 'conservationaction-update' pk=action.pk %}"
-                      title="Edit this conservation action."
-                      role="button"
-                      class="btn btn-primary btn-sm">
-                      <span class="oi oi-pencil" aria-hidden="true"></span>
-                      <span class="oi oi-task" aria-hidden="true"></span>
-                    </a>
-                    {% if request.user.is_staff %}
-                    <a href="{{ action.absolute_admin_url }}"
-                      role="button"
-                      class="btn btn-success btn-sm"
-                      title="Because you have DBCA Curator privileges, you may edit this managment action through the data curation portal." target="_">
-                      <span class="oi oi-pencil" aria-hidden="true"></span>
-                    </a>
-                    {% endif %}
-                  </small>
-                </div>
-              {{ action.instructions }}
-              </h5>
-
-              <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted">
-                  <!-- taxa -->
-                  {% for taxon in action.taxa.all %}
-                  <p class="card-text">
-                    <span class="oi oi-eye"
-                      title="Species" aria-hidden="true"></span>
-                    {{ taxon }}
-                  </p>
-                  {% endfor %}
-
-                  <!-- communities -->
-                  {% for com in action.communities.all %}
-                  <p class="card-text">
-                    <span class="oi oi-eye"
-                      title="Communities" aria-hidden="true"></span>
-                    {{ com }}
-                  </p>
-                  {% endfor %}
-                  <!-- documents -->
-
-                  {% for doc in action.document.all %}
-                  <p class="card-text">
-                    <span class="oi oi-document"
-                      title="Documents" aria-hidden="true"></span>
-                    {{ doc }}
-                  </p>
-                  {% endfor %}
-                  <!-- area code -->
-
-                </h6>
-                <p class="card-text">
-                  <span class="oi oi-calendar"
-                    title="Completion date" aria-hidden="true"></span>
-                  {% if action.completion_date%}
-                  {{ action.completion_date|date:"D d M Y" }}
-                  {% else %}
-                  ongoing
-                  {% endif %}
-                  <span class="float-right">
-                    <span class="oi oi-dollar"
-                    title="Total Expenditure" aria-hidden="true"></span>
-                  {{ action.expenditure }}
-                  </span>
-                </p>
-                <p class="card-text">
-                  <span class="oi oi-comment-square"
-                    title="Notes" aria-hidden="true"></span>
-                  {% if action.implementation_notes %}
-                  {{ action.implementation_notes }}
-                  {% endif %}
-                </p>
-
-                <!-- activities -->
-                {% for act in action.conservationactivity_set.all %}
-                    <div class="card card-md col-12">
-                      <div class="card-header">
-                        <p class="card-text">
-                          <span class="oi oi-calendar"
-                          title="Expenditure" aria-hidden="true"></span>
-                            {% if act.completion_date%}
-                            {{ act.completion_date|date:"D d M Y" }}
-                            {% else %}
-                            ongoing
-                            {% endif %}
-                          <span class="float-right">
-                            <span class="oi oi-dollar"
-                                  title="Expenditure" aria-hidden="true"></span>
-                            {{ act.expenditure }}
-                          </span>
-                        </p>
-                      </div>
-                      <div class="card-body">
-                        <p class="card-text">
-                          <span class="oi oi-comment-square"
-                            title="Notes" aria-hidden="true"></span>
-                          {% if act.implementation_notes %}
-                          {{ act.implementation_notes }}
-                          {% endif %}
-                        </p>
-                      </div>
-                    </div>
-                {% endfor %}
-                <!-- /activities -->
-
-              </div><!-- /.card-body -->
-
-              <div class="card-footer">
-                <!-- Conservation activity add -->
-                <a href=""
-                    title="Report a new conservation activity."
-                    role="button"
-                    class="btn btn-primary btn-sm btn-block"
-                    target="_">
-                  <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-task" aria-hidden="true"></span>
-                  Report progress
-                </a>
-                <!-- /Conservation activity add -->
-                <!-- Conservation action update -->
-                <a href="{% url 'conservationaction-update' pk=action.pk %}"
-                    title="Report completion of the entire conservation action."
-                    role="button"
-                    class="btn btn-primary btn-sm btn-block"
-                    target="_">
-                  <span class="oi oi-pencil" aria-hidden="true"></span>
-                  <span class="oi oi-task" aria-hidden="true"></span>
-                  Report completion
-                </a>
-                <!-- /Conservation action update -->
-              </div><!-- /.card-footer -->
-            </div><!-- /.card -->
-            <!-- conservation/cards/conservationaction.html -->
-          {% endfor %}
-          </div><!-- /.row -->
-      </div><!-- /#dash-data -->
-
-      <!-- Search -->
-      <div id="dash-filters" class="col-lg-3 col-md-4 col-sm-6 col-12">
-        <form method="get">
-          <div class="row-fluid">
-            {% bootstrap_form list_filter.form %}
-          </div>
-          <button
-            class="btn btn-primary my-2 my-sm-0"
-            title="Filter by above criteria." type="submit">
-            Go
-          </button>
-        </form>
-      </div><!-- /#dash-filters -->
-    </div><!-- .row -->
-  </div><!-- .container-fluid -->
-</div><!-- #wrap -->
+  </div>
+  <!-- /#pagination-row -->
+  <div class="row" id="data-row">
+    <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
+      <div class="row">
+        {% for object in object_list %}
+          {% include 'conservation/includes/conservationaction_card.html' %}
+        {% endfor %}
+        </div><!-- /.row -->
+    </div><!-- /#dash-data -->
+    <div id="filters-row" class="col-lg-3 col-md-4 col-sm-6 col-12">
+      <form method="get">
+        <div class="row-fluid">
+          {% bootstrap_form list_filter.form %}
+        </div>
+        <button
+          class="btn btn-primary my-2 my-sm-0"
+          title="Filter by above criteria." type="submit">
+          Go
+        </button>
+      </form>
+    </div><!-- /#filters-row -->
+  </div><!-- /#data-row-->
+</div><!-- .container-fluid -->
 {% endblock %}
 
 {% block css%}

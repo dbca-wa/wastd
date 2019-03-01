@@ -15,7 +15,7 @@
 */
 [hidden][style="display: block;"] {display: block !important;}
 
-html, body {height: 100%; width: 100%;}
+/* html, body {height: 100%; width: 100%;} */
 
 .centering {text-align: center;}
 
@@ -32,21 +32,51 @@ li.breadcrumb-item.active a {color: black;}
 
 
 /* Wrapper for page content to push down footer */
-#wrap {
-    /*min-height: 100%;*/
-    /*height: auto !important;*/
+/*#wrap {
+    min-height: 100%;
+    height: auto !important;
     height: 100%;
-    margin-bottom: -40px;   /* Negative indent footer by its height */
-    //padding-top: 55px;    /* Pad top by floating navbar height */
-    /*padding-bottom: 55px;  Pad bottom by footer height */
+    margin-bottom: -40px;   // Negative indent footer by its height
+    // padding-top: 55px;    // Pad top by floating navbar height
+    // padding-bottom: 55px;  Pad bottom by footer height
+    background-image: url('/static/images/80mile.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+}
+*/
+
+/* make sure HTML is at least as tall as the viewport */
+html{
+    min-height:100%;
+    position:relative;
+}
+
+/* force the BODY element to match the height of the HTML element */
+body{
+    height:100%;
+}
+
+#main{
+    /*margin-top: 40px;*/
+    /*position:absolute;*/
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    /*overflow:hidden;*/
+    z-index:-1; /* Remove this line if it's not going to be a background! */
     background-image: url('/static/images/80mile.jpg');
     background-size: cover;
     background-attachment: fixed;
 }
 
+
 /* Force fullscreen map */
 #mapholder {height:100%; width: 100%;}
-#wastdmap {width: auto; height: 100%;}
+#map, #wastdmap {
+  height: 100%;
+  min-height: 800px;
+}
 #detailmap {width: auto; min-height:500px;}
 
 #searchmapholder {width: 100% auto; height: 18rem;}

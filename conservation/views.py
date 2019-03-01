@@ -2,10 +2,14 @@
 """Conservation views."""
 from __future__ import unicode_literals
 
+from collections import namedtuple
+
 # from django.shortcuts import render
+from django.http import Http404
 from django.urls import reverse
 from django.utils import timezone
-# from django.views.generic.detail import DetailView
+from django.utils.translation import ugettext_lazy as _
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView  # FormView,; DeleteView,  # noqa
 from django.views.generic.list import ListView
 
@@ -14,11 +18,12 @@ from conservation.filters import ConservationActionFilter
 from conservation.models import ConservationAction
 from conservation.forms import ConservationActionForm
 
+Breadcrumb = namedtuple('Breadcrumb', ['name', 'url'])
+
+
 # ---------------------------------------------------------------------------#
 # List Views
 #
-
-
 class ConservationActionListView(ListView):
     """A ListView for ConservationAction."""
 
@@ -32,6 +37,7 @@ class ConservationActionListView(ListView):
         context['now'] = timezone.now()
         context['list_filter'] = ConservationActionFilter(
             self.request.GET, queryset=self.get_queryset())
+        context['breadcrumbs'] = self.get_breadcrumbs(self.request)
         return context
 
     def get_queryset(self):
@@ -40,6 +46,37 @@ class ConservationActionListView(ListView):
             "taxa", "communities", "document", "conservationactivity_set", "category")
 
         return ConservationActionFilter(self.request.GET, queryset=queryset).qs
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (Breadcrumb(_('Home'), reverse('home')),
+                Breadcrumb(self.model._meta.verbose_name_plural,
+                           reverse('conservationaction-list')))
+
+
+class ConservationActionDetailView(DetailView):
+    """Conservation Action DetailView."""
+
+    model = ConservationAction
+    template_name = "conservation/conservationaction_detail.html"
+
+    def get_object(self):
+        """Get Object by pk."""
+        obj = self.model.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            "communities",
+            "taxa",
+            "document"
+        ).first()
+        if not obj:
+            raise Http404
+        return obj
+
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(ConservationActionDetailView, self).get_context_data(**kwargs)
+        return context
 
 
 class ConservationActionUpdateView(UpdateView):
@@ -54,7 +91,16 @@ class ConservationActionUpdateView(UpdateView):
 
         TODO prefetch taxa, communities, document.
         """
-        return self.model.objects.get(pk=self.kwargs["pk"])
+        obj = self.model.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            "communities",
+            "taxa",
+            "document"
+        ).first()
+        if not obj:
+            raise Http404
+        return obj
 
     def get_success_url(self):
         """Success: TODO show ConservationAction detail view."""

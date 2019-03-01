@@ -49,14 +49,14 @@ class TaxonFilter(django_filters.FilterSet):
 
         model = Taxon
         fields = [
-            "name_id",
+            "eoo",
+            "taxon_gazettal__category",
             "taxonomic_name",
             "vernacular_names",
             "rank",
             "current",
             "publication_status",
-            "taxon_gazettal__category",
-            "eoo"
+            "name_id",
         ]
         filter_overrides = FILTER_OVERRIDES
 
@@ -81,11 +81,11 @@ class CommunityFilter(django_filters.FilterSet):
 
         model = Community
         fields = [
+            "eoo",
+            "community_gazettal__category",
             "code",
             "name",
             "description",
-            "community_gazettal__category",
-            "eoo"
         ]
         # widgets = {"eoo": LeafletWidget()}
         filter_overrides = FILTER_OVERRIDES

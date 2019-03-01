@@ -241,11 +241,15 @@
     </div>
   </nav>
 
-
+  {% block map %}{% endblock %}
+  <div id="main">
+    <div class="container-fluid">
+  {% block breadcrumbs %}{% endblock breadcrumbs %}
+  {% block modal %}{% endblock modal %}
   {% block content %}{% endblock content %}
   {% block fullwidthcontent %}{% endblock %}
-  {% block map %}{% endblock %}
-  {% block modal %}{% endblock modal %}
+    </div>
+  </div><!-- #wrap -->
 
   {% block javascript %}
   <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js"

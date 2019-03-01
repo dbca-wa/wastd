@@ -2,7 +2,7 @@
 {% load staticfiles compress leaflet_tags geojson_tags %}
 
 {% block map %}
-<div id="mapholder">
+<div id="map">
     {% leaflet_map "wastdmap" callback="window.map_init" %}
 </div>
 {% endblock %}
