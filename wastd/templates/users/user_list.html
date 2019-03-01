@@ -15,8 +15,8 @@
           <a href="{% url 'users:detail' user.username %}">
             <h4 class="list-group-item-heading">{{ user }}</h4>
           </a>
-            <i class="fa fa-envelope" aria-hidden="true"></i> {{ user.email }}
-            <i class="fa fa-mobile" aria-hidden="true"></i> {{ user.phone }}
+            <span class="oi oi-envelope-closed" aria-hidden="true"></span> {{ user.email }}
+            <span class="oi oi-phone" aria-hidden="true"></span> {{ user.phone }}
         </div>
         {% endfor %}
 
