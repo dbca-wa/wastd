@@ -241,7 +241,8 @@ def guess_user(un, default_username="FlorianM"):
 
     * An exact username match for lowersnake(un), or
     * an exact name match for un, or
-    * the best or only trigram match of both username against lowersnake(un) and name against un, or
+    * the best or only trigram match of both username against lowersnake(un)
+      and name, nickname, and aliases against un, or
     * if no match: a new user account for username lowersnake(un) and name un.
 
     Arguments
@@ -270,7 +271,9 @@ def guess_user(un, default_username="FlorianM"):
         except ObjectDoesNotExist:
 
             usrs = usermodel.objects.filter(username__trigram_similar=username,
-                                            name__trigram_similar=name)
+                                            name__trigram_similar=name,
+                                            nickname__trigram_similar=name,
+                                            aliases__trigram_similat=name)
             if usrs.count() == 0:
                 usr = usermodel.objects.create(username=username, name=name)
                 msg = "[guess_user][CREATED] username {username} and name {name} not found. Created {user}."

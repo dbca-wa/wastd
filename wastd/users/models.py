@@ -26,17 +26,28 @@ class User(AbstractUser):
     """WAStD User."""
 
     # First Name and Last Name do not cover name patterns around the globe.
-    name = models.CharField(_('Name of User'), blank=True, max_length=255)
-    role = models.CharField(_('Role of User'),
+    name = models.CharField(_("Name of User"), blank=True, max_length=255)
+
+    nickname = models.CharField(_("Preferred name"), blank=True, max_length=255)
+
+    aliases = models.TextField(
+        _("Aliases of User"),
+        blank=True,
+        help_text=_("Any names this user is known as in other "
+                    "databases and data collection forms. "
+                    "Separate names by comma.")
+    )
+
+    role = models.CharField(_("Role of User"),
                             blank=True, null=True,
                             max_length=1000,
-                            help_text=_('The role of the user.'))
+                            help_text=_("The role of the user."))
     phone = PhoneNumberField(
-        verbose_name=_('Phone Number'),
+        verbose_name=_("Phone Number"),
         blank=True, null=True,
-        help_text=_('The primary contact number including national prefix, '
-                    'e.g. +61 412 345 678. '
-                    'Spaces are accepted but will be removed on saving.'), )
+        help_text=_("The primary contact number including national prefix, "
+                    "e.g. +61 412 345 678. "
+                    "Spaces are accepted but will be removed on saving."), )
 
     class Meta:
         """Class opts."""
@@ -53,7 +64,7 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         """The absolute URL."""
-        return reverse('users:detail', kwargs={'username': self.username})
+        return reverse("users:detail", kwargs={"username": self.username})
 
     @staticmethod
     def autocomplete_search_fields():
