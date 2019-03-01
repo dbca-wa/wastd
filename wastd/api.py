@@ -221,7 +221,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = ('pk', 'username', 'name', 'role', 'email', 'phone', )
+        fields = ('pk', 'username', 'name', 'nickname', 'aliases', 'role', 'email', 'phone', )
 
 
 class FastUserSerializer(serializers.ModelSerializer):

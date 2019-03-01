@@ -33,10 +33,10 @@ li.breadcrumb-item.active a {color: black;}
 
 /* Wrapper for page content to push down footer */
 #wrap {
-    min-height: 100%;
-    height: auto !important;
+    /*min-height: 100%;*/
+    /*height: auto !important;*/
     height: 100%;
-    margin-bottom: -40px; /* Negative indent footer by its height */
+    margin-bottom: -40px;   /* Negative indent footer by its height */
     //padding-top: 55px;    /* Pad top by floating navbar height */
     /*padding-bottom: 55px;  Pad bottom by footer height */
     background-image: url('/static/images/80mile.jpg');

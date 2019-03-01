@@ -4,75 +4,79 @@
 {% block title %}User: {{ object.username }}{% endblock %}
 
 {% block content %}
-<div class="container">
-
+<div class="container-fluid" id="wrap">
+  <div class="container">
   <div class="row">
-    <div class="col-sm-12">
-      <h2>{{ object }}</h2>
-      <p>
-          <span class="oi oi-comment-square" aria-hidden="true"></span> {{ object.nickname }}
-          <span class="oi oi-comment-tags" aria-hidden="true"></span> {{ object.aliases }}
-          <span class="oi oi-envelope-closed" aria-hidden="true"></span> {{ object.email }}
-          <span class="oi oi-phone" aria-hidden="true"></span> {{ object.phone }}
-          <span class="oi oi-person" aria-hidden="true"></span> {{ object.role }}
-      </p>
-  </div>
-</div>
+    <div class="col-8 col-md-12">
+      <div class="row">
+        <div class="col-12">
 
-<div class="row">
-  <div class="col-sm-12">
-    <p>
-      <a href="/api/1/encounters/?format=latex&observer={{ object.pk }}"
-          class="btn btn-primary btn-sm"
-          target="_" title="Export contributions of {% firstof object.name object.username %}">
-          <span class="oi oi-file" aria-hidden="true"></span>
-          Export all encounters observed by {% firstof object.name object.username %}
-      </a>
-    </p>
-  </div>
-</div>
+          <h2>{{ object }}</h2>
+          <p>
+            <span class="oi oi-comment-square" aria-hidden="true"></span> {{ object.nickname }}
+            <span class="oi oi-tags" aria-hidden="true"></span> {{ object.aliases }}
+            <span class="oi oi-envelope-closed" aria-hidden="true"></span> {{ object.email }}
+            <span class="oi oi-phone" aria-hidden="true"></span> {{ object.phone }}
+            <span class="oi oi-person" aria-hidden="true"></span> {{ object.role }}
+          </p>
+        </div>
+      </div>
 
-{% if object == request.user %}
-<!-- Action buttons -->
-<div class="row">
+      <div class="row">
+        <div class="col-12">
+          <p>
+            <a href="/api/1/encounters/?format=latex&observer={{ object.pk }}"
+                class="btn btn-primary btn-sm"
+                target="_" title="Export contributions of {% firstof object.name object.username %}">
+                <span class="oi oi-file" aria-hidden="true"></span>
+                Export all encounters observed by {% firstof object.name object.username %}
+            </a>
+          </p>
+        </div>
+      </div>
 
-  <div class="col-sm-12 ">
-    <p>
-    <a class="btn btn-primary" href="{% url 'users:update' %}">My Info</a>
-    <a class="btn btn-primary" href="{% url 'account_email' %}">E-Mail</a>
-    </p>
-  </div>
+      {% if object == request.user %}
+      <!-- Action buttons -->
+      <div class="row">
+        <div class="col-12">
+          <p>
+            <a class="btn btn-primary" href="{% url 'users:update' %}">My Info</a>
+            <a class="btn btn-primary" href="{% url 'account_email' %}">E-Mail</a>
+          </p>
+        </div>
+      </div>
+      <!-- End Action buttons -->
+      <!-- API auth -->
+      <div class="row">
+        <div class="col-12">
+          <h2>Accessing the data</h2>
+          <p>You can access all data through the API using your API token:
+              <strong>{{ request.user.apitoken }}</strong>.
+          </p>
 
-</div>
-<!-- End Action buttons -->
-<!-- API auth -->
-<div class="row">
-    <div class="col-sm-12 ">
-        <h2>Accessing the data</h2>
-        <p>You can access all data through the API using your API token:
-            <strong>{{ request.user.apitoken }}</strong>.</p>
+          <h3>Code example in R</h3>
+          See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.
 
-            <h3>Code example in R</h3>
-            See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.
-
-            <h3>Code example in Python</h3>
-            <pre>
+          <h3>Code example in Python</h3>
+          <pre>
 import requests
 url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
 headers = {"Authorization": "Token {{ request.user.apitoken }}"}
 j = requests.get(url + "?format=json", headers=headers).json()
 d = requests.get(url + "?format=csv", headers=headers).content
-            </pre>
+          </pre>
 
-            <h3>Code example on the command line</h3>
-            <pre>
+          <h3>Code example on the command line</h3>
+          <pre>
 curl {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/?format=json -H 'Authorization: Token {{ request.user.apitoken }}'
-            </pre>
+          </pre>
+        </div>
+      </div><!-- /.row "-->
+      <!-- End API auth -->
+      {% endif %}
 
-        </div><!-- /.col-sm-12 "-->
-</div><!-- /.row "-->
-<!-- End API auth -->
-{% endif %}
-
-</div><!-- /.container "-->
+    </div><!-- .col-8 -->
+  </div><!-- .row -->
+</div>
+</div><!-- /.container -->
 {% endblock content %}
