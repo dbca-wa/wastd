@@ -288,6 +288,10 @@ class ConservationAction(models.Model):
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    def get_absolute_url(self):
+        """Detail url."""
+        return reverse('conservationaction-detail', kwargs={'pk': self.object.pk})
+
     def get_status(self):
         """Return a string indicating the progress status.
 

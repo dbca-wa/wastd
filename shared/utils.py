@@ -1,5 +1,9 @@
 """Shared utilities."""
 import slugify
+from collections import namedtuple
+
+
+Breadcrumb = namedtuple('Breadcrumb', ['name', 'url'])
 
 
 def sanitize_tag_label(label_string):

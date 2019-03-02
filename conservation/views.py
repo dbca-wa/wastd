@@ -2,8 +2,6 @@
 """Conservation views."""
 from __future__ import unicode_literals
 
-from collections import namedtuple
-
 # from django.shortcuts import render
 from django.http import Http404
 from django.urls import reverse
@@ -17,8 +15,7 @@ from django.views.generic.list import ListView
 from conservation.filters import ConservationActionFilter
 from conservation.models import ConservationAction
 from conservation.forms import ConservationActionForm
-
-Breadcrumb = namedtuple('Breadcrumb', ['name', 'url'])
+from shared.utils import Breadcrumb
 
 
 # ---------------------------------------------------------------------------#
@@ -76,7 +73,19 @@ class ConservationActionDetailView(DetailView):
     def get_context_data(self, **kwargs):
         """Custom context."""
         context = super(ConservationActionDetailView, self).get_context_data(**kwargs)
+        context['breadcrumbs'] = self.get_breadcrumbs(self.request)
         return context
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(self.model._meta.verbose_name_plural,
+                       reverse('conservationaction-list')),
+            Breadcrumb(self.object.__str__(),
+                       reverse('conservationaction-detail',
+                               kwargs={'pk': self.object.pk}))
+        )
 
 
 class ConservationActionUpdateView(UpdateView):
@@ -102,9 +111,27 @@ class ConservationActionUpdateView(UpdateView):
             raise Http404
         return obj
 
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(ConservationActionUpdateView, self).get_context_data(**kwargs)
+        context['breadcrumbs'] = self.get_breadcrumbs(self.request)
+        return context
+
     def get_success_url(self):
-        """Success: TODO show ConservationAction detail view."""
-        return reverse('conservationaction-list')
+        """Success: ConservationAction detail view."""
+        return reverse('conservationaction-detail', kwargs={'pk': self.object.pk})
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(self.model._meta.verbose_name_plural,
+                       reverse('conservationaction-list')),
+            Breadcrumb(self.object.__str__(),
+                       reverse('conservationaction-detail',
+                               kwargs={'pk': self.object.pk})),
+            Breadcrumb("Update", None)
+        )
 
 
 class ConservationActionCreateView(CreateView):
@@ -114,9 +141,23 @@ class ConservationActionCreateView(CreateView):
     form_class = ConservationActionForm
     model = ConservationAction
 
-    def get_success_url(self):
-        """Success: TODO show ConservationAction detail view."""
-        return reverse('conservationaction-list')
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(self.model._meta.verbose_name_plural,
+                       reverse('conservationaction-list')),
+            Breadcrumb(self.object.__str__(),
+                       reverse('conservationaction-detail',
+                               kwargs={'pk': self.object.pk})),
+            Breadcrumb("Create a new {0}".format(self.model.verbose_name), None)
+        )
+
+    def get_context_data(self, **kwargs):
+        """Custom context."""
+        context = super(ConservationActionCreateView, self).get_context_data(**kwargs)
+        context['breadcrumbs'] = self.get_breadcrumbs(self.request)
+        return context
 
     def get_initial(self):
         """Initial form values.
@@ -129,3 +170,7 @@ class ConservationActionCreateView(CreateView):
         # if "area_code" in self.kwargs:
         #     initial["area_code"] = self.kwargs["area_code"]
         return initial
+
+    def get_success_url(self):
+        """Success: ConservationAction detail view."""
+        return reverse('conservationaction-detail', kwargs={'pk': self.object.pk})
