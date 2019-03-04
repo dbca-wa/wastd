@@ -27,7 +27,7 @@ from shared.utils import Breadcrumb
 from shared.views import (  # noqa
     SuccessUrlMixin,
     # ListViewBreadcrumbMixin,
-    # DetailViewBreadcrumbMixin,
+    DetailViewBreadcrumbMixin,
     UpdateViewBreadcrumbMixin,
     CreateViewBreadcrumbMixin
 )
@@ -38,30 +38,39 @@ from shared.views import (  # noqa
 # ---------------------------------------------------------------------------#
 # Create Views
 #
-class AreaEncounterCreateView(CreateView):
+class AreaEncounterCreateView(CreateViewBreadcrumbMixin, CreateView):
     """Create view for AreaEncounter."""
 
-    template_name = "occurrence/areaencounter_form.html"
+    model = AreaEncounter
     form_class = AreaEncounterForm
-    success_url = "/"  # default: form model's get_absolute_url()
+    template_name = "occurrence/areaencounter_form.html"
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            # Breadcrumb(self.model.verbose_name_plural, self.model.list_url()),
+            Breadcrumb("Report new {0}".format(self.model._meta.verbose_name), None)
+        )
 
 
 class AreaEncounterUpdateView(
         SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for AreaEncounter."""
 
-    template_name = "occurrence/areaencounter_form.html"
+    model = AreaEncounter
     form_class = AreaEncounterForm
+    template_name = "occurrence/areaencounter_form.html"
 
     def get_object(self, queryset=None):
         """Accommodate custom object pk from url conf."""
-        return self.model.objects.get(pk=self.kwargs["occ_pk"])
+        return self.model.objects.get(pk=self.kwargs["pk"])
 
 
 class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
     """Create view for TaxonAreaEncounter."""
 
-    template_name = "occurrence/taxonareaencounter_form.html"
+    model = TaxonAreaEncounter
     form_class = TaxonAreaEncounterForm
 
     def get_initial(self):
@@ -77,15 +86,15 @@ class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
 class TaxonAreaEncounterUpdateView(AreaEncounterUpdateView):
     """UpdateView for TaxonAreaEncounter."""
 
-    template_name = "occurrence/taxonareaencounter_form.html"
-    form_class = TaxonAreaEncounterForm
     model = TaxonAreaEncounter
+    form_class = TaxonAreaEncounterForm
+    template_name = "occurrence/taxonareaencounter_form.html"
 
 
 class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
     """Create view for CommunityAreaEncounter."""
 
-    template_name = "occurrence/communityareaencounter_form.html"
+    model = CommunityAreaEncounter
     form_class = CommunityAreaEncounterForm
 
     def get_initial(self):
@@ -101,15 +110,15 @@ class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
 class CommunityAreaEncounterUpdateView(AreaEncounterUpdateView):
     """UpdateView for CommunityAreaEncounter."""
 
-    template_name = "occurrence/communityareaencounter_form.html"
-    form_class = CommunityAreaEncounterForm
     model = CommunityAreaEncounter
+    form_class = CommunityAreaEncounterForm
+    template_name = "occurrence/communityareaencounter_form.html"
 
 
 # ---------------------------------------------------------------------------#
 # Detail Views
 #
-class TaxonAreaEncounterDetailView(DetailView):
+class TaxonAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
     """DetailView for TaxonAreaEncounter."""
 
     model = TaxonAreaEncounter
@@ -125,13 +134,13 @@ class TaxonAreaEncounterDetailView(DetailView):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
         return (
             Breadcrumb(_('Home'), reverse('home')),
-            Breadcrumb(self.subject._meta.verbose_name_plural, self.subject.list_url()),
-            Breadcrumb(self.subject.__str__(), self.subject.get_absolute_url()),
+            Breadcrumb(self.object.subject._meta.verbose_name_plural, self.object.subject.list_url()),
+            Breadcrumb(self.object.subject.__str__(), self.object.subject.get_absolute_url()),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
         )
 
 
-class CommunityAreaEncounterDetailView(DetailView):
+class CommunityAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
     """DetailView for CommunityAreaEncounter."""
 
     model = TaxonAreaEncounter
@@ -147,8 +156,8 @@ class CommunityAreaEncounterDetailView(DetailView):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
         return (
             Breadcrumb(_('Home'), reverse('home')),
-            Breadcrumb(self.subject._meta.verbose_name_plural, self.subject.list_url()),
-            Breadcrumb(self.subject.__str__(), self.subject.get_absolute_url()),
+            Breadcrumb(self.object.subject._meta.verbose_name_plural, self.object.subject.list_url()),
+            Breadcrumb(self.object.subject.__str__(), self.object.subject.get_absolute_url()),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
         )
 
@@ -156,7 +165,7 @@ class CommunityAreaEncounterDetailView(DetailView):
 # ---------------------------------------------------------------------------#
 # ObservationGroup Views
 #
-class ObservationGroupCreateView(CreateView):
+class ObservationGroupCreateView(CreateViewBreadcrumbMixin, CreateView):
     """Base CreateView for ObservationGroup."""
 
     template_name = "occurrence/obsgroup_form.html"
@@ -180,6 +189,23 @@ class ObservationGroupCreateView(CreateView):
     def get_success_url(self):
         """Success: show AE detail view."""
         return self.object.encounter.get_absolute_url()
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        if "occ_pk" in self.kwargs:
+            enc = AreaEncounter.objects.get(pk=self.kwargs["occ_pk"])
+            return (
+                Breadcrumb(_('Home'), reverse('home')),
+                Breadcrumb(enc._meta.verbose_name_plural, enc.list_url()),
+                Breadcrumb(enc.__str__(), enc.get_absolute_url()),
+                Breadcrumb("Report new {0}".format(self.model._meta.verbose_name), None)
+            )
+
+        else:
+            return (
+                Breadcrumb(_('Home'), reverse('home')),
+                Breadcrumb("Report new {0}".format(self.model._meta.verbose_name), None)
+            )
 
 
 class ObservationGroupUpdateView(UpdateViewBreadcrumbMixin, UpdateView):

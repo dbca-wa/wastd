@@ -20,7 +20,7 @@ from django.dispatch import receiver
 # from rest_framework.reverse import reverse as rest_reverse
 from django.template import loader
 # from django.contrib.gis.db.models.query import GeoQuerySet
-from django.urls import reverse
+# from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
@@ -219,7 +219,7 @@ class AreaEncounter(PolymorphicModel,
     # URLs
     def list_url(self):
         """The Taxon/Community detail view lists all AreaEncounters."""
-        return self.subject.get_absolute_url()
+        return self.get_absolute_url()
 
     # -------------------------------------------------------------------------
     # Derived properties
@@ -297,9 +297,19 @@ class TaxonAreaEncounter(AreaEncounter):
             self.taxon)
 
     # -------------------------------------------------------------------------
+    # URLs
+    def list_url(self):
+        """The Taxon/Community detail view lists all AreaEncounters."""
+        return self.taxon.get_absolute_url()
+
+    # -------------------------------------------------------------------------
     # Derived properties
     @property
     def subject(self):
+        """Return the subject of the encounter."""
+        return self.taxon
+
+    def get_subject(self):
         """Return the subject of the encounter."""
         return self.taxon
 
@@ -342,6 +352,12 @@ class CommunityAreaEncounter(AreaEncounter):
             self.encountered_on,
             self.encountered_by,
             self.community)
+
+    # -------------------------------------------------------------------------
+    # URLs
+    def list_url(self):
+        """The Taxon/Community detail view lists all AreaEncounters."""
+        return self.community.get_absolute_url()
 
     # -------------------------------------------------------------------------
     # Derived properties

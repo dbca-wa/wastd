@@ -54,11 +54,11 @@ def admin_areaencounter_list_link(pk, subject, block=False, label=False):
 def taxonareaencounter_add_link(name_id, area_code=None, block=False, label=False):
     """Render an "add taxon area occurrence" link for a taxon."""
     if area_code:
-        add_url = reverse('taxon-occurrence-area-create',
+        add_url = reverse('occurrence:taxon-occurrence-area-create',
                           kwargs={'name_id': name_id,
                                   'area_code': sanitize_tag_label(area_code)})
     else:
-        add_url = reverse("taxon-occurrence-create",
+        add_url = reverse("occurrence:taxon-occurrence-create",
                           kwargs={"name_id": name_id})
 
     return {
@@ -74,10 +74,10 @@ def taxonareaencounter_add_link(name_id, area_code=None, block=False, label=Fals
 def communityareaencounter_add_link(pk, area_code=None, block=False, label=False):
     """Render an "add community area occurrence" link for a community."""
     if area_code:
-        add_url = reverse('community-occurrence-area-create',
+        add_url = reverse('occurrence:community-occurrence-area-create',
                           kwargs={'pk': pk, 'area_code': sanitize_tag_label(area_code)})
     else:
-        add_url = reverse('community-occurrence-create',
+        add_url = reverse('occurrence:community-occurrence-create',
                           kwargs={'pk': pk})
 
     return {
@@ -105,7 +105,7 @@ def areaencounter_card(occurrence, subject, user, block=False, label=False):
 def taxonareaencounter_detail_link(original, block=False, label=False):
     """Render an "view taxon area occurrence" link for a taxon."""
     return {
-        "detail_url": original.detail_url,
+        "detail_url": original.get_absolute_url(),
         "subject": "taxon",
         "block": block,
         "label": label
@@ -114,9 +114,9 @@ def taxonareaencounter_detail_link(original, block=False, label=False):
 
 @register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
 def communityareaencounter_detail_link(original, block=False, label=False):
-    """Render an "view community area occurrence" link for a taxon."""
+    """Render an "view community area occurrence" link for a community."""
     return {
-        "detail_url": original.detail_url,
+        "detail_url": original.get_absolute_url(),
         "subject": "community",
         "block": block,
         "label": label
@@ -135,9 +135,9 @@ def areaencounter_update_link(original, block=False, label=False):
 
 @register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
 def areaencounter_detail_link(original, block=False, label=False):
-    """Render an "view community area occurrence" link for a taxon."""
+    """Render an "view area occurrence" link."""
     return {
-        "detail_url": original.detail_url,
+        "detail_url": original.get_absolute_url(),
         "block": block,
         "label": label
     }
