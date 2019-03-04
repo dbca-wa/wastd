@@ -31,6 +31,7 @@ from django_fsm_log.decorators import fsm_log_by
 from taxonomy.models import Community, Taxon
 
 from wastd.users.models import User
+from shared.models import UrlsMixin
 
 # from django.utils.safestring import mark_safe
 
@@ -133,7 +134,7 @@ class ConservationActionCategory(models.Model):
 
 
 @python_2_unicode_compatible
-class ConservationAction(models.Model):
+class ConservationAction(UrlsMixin, models.Model):
     """A conservation action is an intended conservation management measure.
 
     The conservation action can pertain to:
@@ -281,17 +282,7 @@ class ConservationAction(models.Model):
         return "[{0}] {1}".format(self.category, self.instructions)
 
     # -------------------------------------------------------------------------
-    # URLs
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
-    def get_absolute_url(self):
-        """Detail url."""
-        return reverse('conservationaction-detail', kwargs={'pk': self.object.pk})
-
+    # django-fsm QA status
     def get_status(self):
         """Return a string indicating the progress status.
 

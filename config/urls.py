@@ -17,12 +17,12 @@ from django.views.generic.base import RedirectView
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 
 from occurrence.models import CommunityAreaEncounter
-from conservation.views import (
-    ConservationActionListView,
-    ConservationActionDetailView,
-    ConservationActionUpdateView,
-    ConservationActionCreateView
-)
+# from conservation.views import (
+#     ConservationActionListView,
+#     ConservationActionDetailView,
+#     ConservationActionUpdateView,
+#     ConservationActionCreateView
+# )
 from occurrence.views import (
     CommunityAreaEncounterCreateView,
     CommunityAreaEncounterDetailView,
@@ -72,19 +72,20 @@ urlpatterns = [
 
     # ------------------------------------------------------------------------#
     # Conservation
-    re_path(r'^actions/$',
-            ConservationActionListView.as_view(),
-            name="conservationaction-list"),
-    re_path(r'^actions/(?P<pk>\d+)/$',
-            ConservationActionDetailView.as_view(),
-            name="conservationaction-detail"),
-    re_path(r'^actions/(?P<pk>\d+)/update/$',
-            ConservationActionUpdateView.as_view(),
-            name="conservationaction-update"),
-    re_path(r'^actions/create/$',
-            ConservationActionCreateView.as_view(),
-            name="conservationaction-create"),
+    # re_path(r'^actions/$',
+    #         ConservationActionListView.as_view(),
+    #         name="conservationaction-list"),
+    # re_path(r'^actions/(?P<pk>\d+)/$',
+    #         ConservationActionDetailView.as_view(),
+    #         name="conservationaction-detail"),
+    # re_path(r'^actions/(?P<pk>\d+)/update/$',
+    #         ConservationActionUpdateView.as_view(),
+    #         name="conservationaction-update"),
+    # re_path(r'^actions/create/$',
+    #         ConservationActionCreateView.as_view(),
+    #         name="conservationaction-create"),
 
+    path('conservation/', include(('conservation.urls'), namespace='conservation')),
     # ------------------------------------------------------------------------#
     # Species
     re_path(r'^species/$',

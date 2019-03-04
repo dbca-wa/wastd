@@ -7,7 +7,7 @@
   {% if label %}Propose conservation action{% endif %}
 </a>
 {% endif %}
-<a href="{% url 'conservationaction-create' %}{% if area %}&occurrence_area_code={{ area }}{% endif %}"
+<a href="{% url 'conservation:conservationaction-create' %}{% if area %}&occurrence_area_code={{ area }}{% endif %}"
     title="Propose a new conservation action."
     role="button"
     class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}">

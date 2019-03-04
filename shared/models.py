@@ -6,8 +6,8 @@ from __future__ import absolute_import, unicode_literals
 import logging
 import uuid
 
-# from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 # from durationfield.db.models.fields.duration import DurationField
 # from django.db.models.fields import DurationField
@@ -31,6 +31,76 @@ logger = logging.getLogger(__name__)
 
 
 # Abstract models ------------------------------------------------------------#
+class UrlsMixin(models.Model):
+    """Mixin class to add absolute admin, list, update and detail urls.
+
+    To use, inherit from UrlsMixin and define a custom get_absolute_url(),
+    plus any of list/create/update url not following the standard
+    {app}:{model}-{action}(**pk) scheme defined in the methods in this mixin.
+
+    This mixin provides the following URLs:
+
+    * absolute_admin_url() - implement or receive NotImplementedError
+    * get_absolute_url() - available in templates as object.get_absolute_url
+    * list_url (classmethod)
+    * create_url (classmethod)
+    * update_url
+    """
+
+    class Meta:
+        """Class opts."""
+
+        abstract = True
+
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL.
+
+        Default: admin:app_model_change(**pk)
+        """
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    def get_absolute_url(self):
+        """Detail url, used by Django to link admin to site.
+
+        Default: app:model-detail(**pk).
+        """
+        return reverse('{0}:{1}-detail'.format(
+            self._meta.app_label, self._meta.model_name),
+            kwargs={'pk': self.pk})
+        # raise NotImplementedError(
+        # "Error: please implement {0}.get_absolute_url().".format(
+        # self._meta.model_name))
+
+    @classmethod
+    def list_url(cls):
+        """List url property. Default: app:model-list."""
+        return reverse('{0}:{1}-list'.format(
+            cls._meta.app_label, cls._meta.model_name))
+
+    @classmethod
+    def create_url(cls):
+        """Create url. Default: app:model-create."""
+        return reverse('{0}:{1}-create'.format(
+            cls._meta.app_label, cls._meta.model_name))
+        # raise NotImplementedError(
+        # "Error: please implement {0}.create_url().".format(
+        #         self._meta.model_name))
+
+    @property
+    def update_url(self):
+        """Update url. Default: app:model-update(**pk)."""
+        return reverse('{0}:{1}-update'.format(
+            self._meta.app_label, self._meta.model_name),
+            kwargs={'pk': self.pk})
+        # raise NotImplementedError(
+        # "Error: please implement {0}.update_url().".format(
+        #         self._meta.model_name))
+
+
 class ObservationAuditMixin(models.Model):
     """Mixin class to track observer and observation date."""
 

@@ -94,16 +94,24 @@ class ConservationActionViewTests(TestCase):
         response = self.client.get(self.consaction.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
+    def test_conservation_action_get_absolute_url(self):
+        """Test ConservationAction get absolute url."""
+        response = self.client.get(self.consaction.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
     def test_conservation_action_list_url_loads(self):
         """Test conservationaction-list."""
-        url = reverse('conservationaction-list')
-        response = self.client.get(url)
+        response = self.client.get(self.consaction.list_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_conservation_action_create_url_loads(self):
+        """Test conservationaction-create."""
+        response = self.client.get(self.consaction.create_url())
         self.assertEqual(response.status_code, 200)
 
     def test_conservationaction_update_url_loads(self):
         """Test conservationaction-update."""
-        url = reverse('conservationaction-update', kwargs={'pk': self.consaction.pk})
-        response = self.client.get(url)
+        response = self.client.get(self.consaction.update_url)
         self.assertEqual(response.status_code, 200)
 
 
@@ -137,7 +145,8 @@ class ConservationActivityViewTests(TestCase):
         """Test ConservationActivity str."""
         label = "[{0}][{1}] {2}".format(
             self.consact.conservation_action.category,
-            self.consact.completion_date.strftime("%d/%m/%Y") if self.consact.completion_date else "in progress",
+            self.consact.completion_date.strftime("%d/%m/%Y")
+            if self.consact.completion_date else "in progress",
             self.consact.implementation_notes)
         self.assertEqual(label, self.consact.__str__())
 
