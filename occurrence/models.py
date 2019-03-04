@@ -217,19 +217,9 @@ class AreaEncounter(PolymorphicModel,
 
     # -------------------------------------------------------------------------
     # URLs
-    def get_absolute_url(self):
-        """Detail url."""
-        return "/"
-
-    @property
-    def detail_url(self):
-        """Hook for detail url."""
-        return self.get_absolute_url()
-
-    @property
-    def update_url(self):
-        """Hook for update url."""
-        return self.get_absolute_url()
+    def list_url(self):
+        """The Taxon/Community detail view lists all AreaEncounters."""
+        return self.subject.get_absolute_url()
 
     # -------------------------------------------------------------------------
     # Derived properties
@@ -307,14 +297,6 @@ class TaxonAreaEncounter(AreaEncounter):
             self.taxon)
 
     # -------------------------------------------------------------------------
-    # URLs
-    def get_absolute_url(self):
-        """Detail url."""
-        return reverse(
-            'occurrence:taxon-occurrence-detail',
-            kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
-
-    # -------------------------------------------------------------------------
     # Derived properties
     @property
     def subject(self):
@@ -360,14 +342,6 @@ class CommunityAreaEncounter(AreaEncounter):
             self.encountered_on,
             self.encountered_by,
             self.community)
-
-    # -------------------------------------------------------------------------
-    # URLs
-    def get_absolute_url(self):
-        """Detail url."""
-        return reverse(
-            'community-occurrence-detail',
-            kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
 
     # -------------------------------------------------------------------------
     # Derived properties

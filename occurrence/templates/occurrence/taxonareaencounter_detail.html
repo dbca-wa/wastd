@@ -15,154 +15,94 @@
 {% endblock %}
 
 {% block content %}
+{% include 'shared/breadcrumbs.html' %}
+<div class="row" id="row-occ-detail">
+  <!-- Taxon details -->
+  <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="occ-detail-main">
+    <div class="jumbotron">
 
-<div class="container-fluid" id="wrap">
-
-  <!-- Breadcrumbs -->
-  <div class="row" id="occ-detail-breadcrumb">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item" aria-current="page">
-          <a href="{% url 'taxonomy:taxon-list' %}">Species</a>
-        </li>
-        <li class="breadcrumb-item" aria-current="page">
-          <a href="{% url 'taxonomy:taxon-list' %}?name_id={{ original.taxon.name_id }}"
-          title="List {{ original.taxon.taxonomic_name }} with its parents and immediate children.">
-            Taxonomy of {{ original.taxon }}</a>
-        </li>
-        <li class="breadcrumb-item" aria-current="page">
-          <a href="{% url 'taxonomy:taxon-detail' original.taxon.name_id %}">
-            {{ original.taxon }}</a>
-        </li>
-        <li class="breadcrumb-item" aria-current="page">
-          <a href="#">{{ original }}</a>
-        </li>
-      </ol>
-    </nav>
-  </div><!-- /.row#occ-detail-breadcrumb -->
-
-  <div class="container-fluid">
-
-    <div class="row" id="row-occ-detail">
-      <!-- Taxon details -->
-      <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="occ-detail-main">
-        <div class="jumbotron">
-
-
-          <div class="d-flex flex-row">
-            <div class="mr-auto">
-              <h3>Species occurrence</h3>
-            </div>
-            <div>
-               <a href="{{ original.absolute_admin_url }}"
-                  class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
-                  target="_" title="Edit record in new tab">
-                  <i class="oi oi-pencil"></i>
-                  {{ original.get_status_display }}
-              </a>
-              {% areaencounter_update_link original block=False label=False %}
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col col-12">
-              <h6>{{ original.taxon }}</h6>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col col-12">
-            <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
-            {{ original.encountered_on|date:"r" }}
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col col-12">
-            <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
-            {{ original.get_area_type_display }} [{{ original.code }}] {% if original.name %}{{ original.name }}{% endif %}
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col col-12">
-            <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
-            <a href="mailto:{{ original.encountered_by.email }}"
-               target="_"
-               title="Send email to {{ original.encountered_by.fullname }}"
-               subject="Question about TSC Encounter {{ original }}">
-              {{ original.encountered_by.name }}
-            </a>
-          </div>
-          </div><!-- /.row -->
-
-          <div class="row">
-            <div class="col col-12">
-              <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
-              {{ original.description|safe }}
-            </div>
-          </div><!-- /.row -->
-
-        </div><!-- /.jumbotron -->
-      </div><!-- /.col#occ-detail-main -->
-
-      <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
-          <div id="map">
-            {% leaflet_map "detailmap" callback="window.map_init" %}
-          </div>
-      </div><!-- /.col#occ-map -->
-
-    </div><!-- .row#row-occ-detail -->
-
-      <div class="row" id="row-occ-extra">
-        <div class="col col-12">
-          <div class="jumbotron">
-            <h3 id="obsgroup-add">
-              <small>
-                <a href="{% url 'occurrence:associatedspeciesobservation-create' occ_pk=original.id %}"
-                  class="btn btn-primary btn-sm"
-                  title="Report an associated species.">
-                  <span class="oi oi-plus" aria-hidden="true"></span>
-                  Report associated species
-                </a>
-                <a href="{% url 'occurrence:firehistoryobservation-create' occ_pk=original.id %}"
-                  class="btn btn-primary btn-sm"
-                  title="Report evidence of a past fire.">
-                  <span class="oi oi-plus" aria-hidden="true"></span>
-                  Report fire history
-                </a>
-              </small>
-            </h3>
-            <!-- /#obsgroup-add -->
-
-            <!-- obsgroup-cards -->
-            <div class="row">
-              {% regroup original.observations.all|dictsort:"model_name_verbose" by model_name_verbose as observations %}
-              {% for obstype in observations %}
-                <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12"
-                  id="occ-{{ obstype.grouper }}">
-                  <h5 class="card-header">
-                    {{ obstype.grouper }}
-                  </h5>
-                  <div class="card-body">
-                  {% for obs in obstype.list %}
-                  {{ obs.as_card }}
-                  {% endfor %}
-                  </div>
-              </div>
-              {% endfor %}
-            </div>
-            <!-- obsgroup-cards -->
-
-          </div>
+      <div class="d-flex flex-row">
+        <div class="mr-auto">
+          <h3>Species occurrence</h3>
         </div>
-      </div><!-- .row#row-occ-extra -->
+        <div>
+           <a href="{{ original.absolute_admin_url }}"
+              class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
+              target="_" title="Edit record in new tab">
+              <i class="oi oi-pencil"></i>
+              {{ original.get_status_display }}
+          </a>
+          {% areaencounter_update_link original block=False label=False %}
+        </div>
+      </div>
 
-  </div><!-- /.container-fluid#container-coredata -->
-</div><!-- /.wrap -->
+      <div class="row">
+        <div class="col col-12">
+          <h6>{{ original.taxon }}</h6>
+        </div>
+      </div>
 
+      <div class="row">
+        <div class="col col-12">
+        <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
+        {{ original.encountered_on|date:"r" }}
+        </div>
+      </div>
 
+      <div class="row">
+        <div class="col col-12">
+        <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
+        {{ original.get_area_type_display }} [{{ original.code }}] {% if original.name %}{{ original.name }}{% endif %}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col col-12">
+        <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
+        <a href="mailto:{{ original.encountered_by.email }}"
+           target="_"
+           title="Send email to {{ original.encountered_by.fullname }}"
+           subject="Question about TSC Encounter {{ original }}">
+          {{ original.encountered_by.name }}
+        </a>
+      </div>
+      </div><!-- /.row -->
+
+      <div class="row">
+        <div class="col col-12">
+          <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
+          {{ original.description|safe }}
+        </div>
+      </div><!-- /.row -->
+
+    </div><!-- /.jumbotron -->
+  </div><!-- /.col#occ-detail-main -->
+
+  <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
+      <div id="map">
+        {% leaflet_map "detailmap" callback="window.map_init" %}
+      </div>
+  </div><!-- /.col#occ-map -->
+
+</div><!-- .row#row-occ-detail -->
+
+  <div class="row" id="row-occ-extra">
+    <div class="col col-12">
+      <div class="jumbotron">
+
+        <h3 id="obsgroup-add">
+          <small>
+           {% include 'occurrence/include/obsgroup_add.html' %}
+          </small>
+        </h3><!-- /#obsgroup-add -->
+
+        <div class="row">
+          {% include 'occurrence/include/obsgroup_cards.html' %}
+        </div>
+
+      </div>
+    </div>
+  </div><!-- .row#row-occ-extra -->
 {% endblock content %}
 
 {% block javascript%}

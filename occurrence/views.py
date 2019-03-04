@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 # from django.shortcuts import render
 from django.urls import reverse
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView  # FormView,; DeleteView,
 from occurrence.forms import (
@@ -22,7 +23,14 @@ from occurrence.models import (
     FireHistoryObservation
 )
 from taxonomy.models import Community, Taxon
-
+from shared.utils import Breadcrumb
+from shared.views import (  # noqa
+    SuccessUrlMixin,
+    # ListViewBreadcrumbMixin,
+    # DetailViewBreadcrumbMixin,
+    UpdateViewBreadcrumbMixin,
+    CreateViewBreadcrumbMixin
+)
 # select2 forms
 # from .admin import (AreaForm, TaxonAreaForm, CommunityAreaForm)
 
@@ -38,20 +46,16 @@ class AreaEncounterCreateView(CreateView):
     success_url = "/"  # default: form model's get_absolute_url()
 
 
-class AreaEncounterUpdateView(UpdateView):
+class AreaEncounterUpdateView(
+        SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for AreaEncounter."""
 
     template_name = "occurrence/areaencounter_form.html"
     form_class = AreaEncounterForm
-    success_url = "/"  # default: form model's get_absolute_url()
 
     def get_object(self, queryset=None):
         """Accommodate custom object pk from url conf."""
         return self.model.objects.get(pk=self.kwargs["occ_pk"])
-
-    def get_success_url(self):
-        """Success: show AE detail view."""
-        return self.model.detail_url
 
 
 class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
@@ -77,12 +81,6 @@ class TaxonAreaEncounterUpdateView(AreaEncounterUpdateView):
     form_class = TaxonAreaEncounterForm
     model = TaxonAreaEncounter
 
-    def get_success_url(self):
-        """Success: show TAE detail view."""
-        obj = self.get_object()
-        return reverse('taxon-occurrence-detail',
-                       kwargs={'name_id': obj.taxon.name_id, 'occ_pk': obj.pk})
-
 
 class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
     """Create view for CommunityAreaEncounter."""
@@ -107,12 +105,6 @@ class CommunityAreaEncounterUpdateView(AreaEncounterUpdateView):
     form_class = CommunityAreaEncounterForm
     model = CommunityAreaEncounter
 
-    def get_success_url(self):
-        """Success: show CAE detail view."""
-        obj = self.get_object()
-        return reverse('community-occurrence-detail',
-                       kwargs={'pk': obj.community.pk, 'occ_pk': obj.pk})
-
 
 # ---------------------------------------------------------------------------#
 # Detail Views
@@ -126,15 +118,17 @@ class TaxonAreaEncounterDetailView(DetailView):
 
     def get_object(self):
         """Get Object by name_id."""
-        object = TaxonAreaEncounter.objects.get(pk=self.kwargs.get("occ_pk"))
+        object = TaxonAreaEncounter.objects.get(pk=self.kwargs.get("pk"))
         return object
 
-    def get_context_data(self, **kwargs):
-        """Custom context."""
-        context = super(TaxonAreaEncounterDetailView, self).get_context_data(**kwargs)
-        # obj = self.get_object()
-        #
-        return context
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(self.subject._meta.verbose_name_plural, self.subject.list_url()),
+            Breadcrumb(self.subject.__str__(), self.subject.get_absolute_url()),
+            Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
+        )
 
 
 class CommunityAreaEncounterDetailView(DetailView):
@@ -145,16 +139,18 @@ class CommunityAreaEncounterDetailView(DetailView):
     template_name = "occurrence/communityareaencounter_detail.html"
 
     def get_object(self):
-        """Get Object by name_id."""
-        object = CommunityAreaEncounter.objects.get(pk=self.kwargs.get("occ_pk"))
+        """Get Object by pk."""
+        object = CommunityAreaEncounter.objects.get(pk=self.kwargs.get("pk"))
         return object
 
-    def get_context_data(self, **kwargs):
-        """Custom context."""
-        context = super(CommunityAreaEncounterDetailView, self).get_context_data(**kwargs)
-        # obj = self.get_object()
-        #
-        return context
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(self.subject._meta.verbose_name_plural, self.subject.list_url()),
+            Breadcrumb(self.subject.__str__(), self.subject.get_absolute_url()),
+            Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
+        )
 
 
 # ---------------------------------------------------------------------------#
@@ -186,7 +182,7 @@ class ObservationGroupCreateView(CreateView):
         return self.object.encounter.get_absolute_url()
 
 
-class ObservationGroupUpdateView(UpdateView):
+class ObservationGroupUpdateView(UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for ObservationGroup."""
 
     template_name = "occurrence/obsgroup_form.html"

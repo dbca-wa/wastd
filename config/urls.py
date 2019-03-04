@@ -36,7 +36,7 @@ urlpatterns = [
     re_path(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
     re_path(r'^map/$', HomeView.as_view(), name='map'),
 
-    path('/', include(('taxonomy.urls'), namespace='taxonomy')),
+    path('', include(('taxonomy.urls'), namespace='taxonomy')),
     path('conservation/', include(('conservation.urls'), namespace='conservation')),
     path('occurrence/', include(('occurrence.urls'), namespace='occurrence')),
     re_path(r'^grappelli/', include('grappelli.urls')),
