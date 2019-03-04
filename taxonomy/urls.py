@@ -12,7 +12,7 @@ urlpatterns = [
     # Tasks
     re_path(r'^tasks/update-taxon/$',
             views.update_taxon,
-            name="update-taxon"),
+            name="task-update-taxon"),
 
     # ------------------------------------------------------------------------#
     # Species

@@ -32,7 +32,7 @@
         Browse and search WA species, view conservation status and suggest conservation status changes.
       </p>
       <p>
-        <a class="btn btn-primary" href="{% url 'taxon-list' %}"
+        <a class="btn btn-primary" href="{% url 'taxonomy:taxon-list' %}"
             title="Browse, filter and search Species">
           Browse species »
         </a>
@@ -54,7 +54,7 @@
         Browse and search WA ecological communities, view conservation status and suggest conservation status changes.
       </p>
       <p>
-        <a class="btn btn-primary" href="{% url 'community-list' %}"
+        <a class="btn btn-primary" href="{% url 'taxonomy:community-list' %}"
             title="Browse, filter and search Communities">
           Browse communities »
         </a>
@@ -83,13 +83,13 @@
       </p>
       <p>
         <a class="btn btn-secondary"
-        href="{% url 'taxonareaencounter-create' %}"
+        href="{% url 'occurrence:taxonareaencounter-create' %}"
         title="Submit species occurrences">
         Submit species occurrence »</a>
       </p>
       <p>
         <a class="btn btn-secondary"
-        href="{% url 'communityareaencounter-create' %}"
+        href="{% url 'occurrence:communityareaencounter-create' %}"
         title="Submit community occurrences">
         Submit community occurrence »</a>
       </p>

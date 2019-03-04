@@ -95,22 +95,22 @@ class ConservationActionViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_absolute_url(self):
-        """Test ConservationAction get absolute url."""
+        """Test ConservationAction get absolute url loads."""
         response = self.client.get(self.object.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_list_url_loads(self):
-        """Test conservationaction-list."""
+        """Test conservationaction-list loads."""
         response = self.client.get(self.object.list_url())
         self.assertEqual(response.status_code, 200)
 
     def test_create_url_loads(self):
-        """Test conservationaction-create."""
+        """Test conservationaction-create loads."""
         response = self.client.get(self.object.create_url())
         self.assertEqual(response.status_code, 200)
 
     def test_update_url_loads(self):
-        """Test conservationaction-update."""
+        """Test conservationaction-update url loads."""
         response = self.client.get(self.object.update_url)
         self.assertEqual(response.status_code, 200)
 

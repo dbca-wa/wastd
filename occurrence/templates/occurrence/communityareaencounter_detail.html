@@ -24,10 +24,12 @@
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Home</a></li>
         <li class="breadcrumb-item" aria-current="page">
-          <a href="{% url 'community-list' %}">Communities</a>
+          <a href="{% url 'taxonomy:community-list' %}">Communities</a>
         </li>
         <li class="breadcrumb-item" aria-current="page">
-          <a href="{% url 'community-detail' original.community.pk %}">{{ original.community }}</a>
+          <a href="{% url 'taxonomy:community-detail' original.community.pk %}">
+            {{ original.community }}
+          </a>
         </li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="#">{{ original }}</a>
@@ -114,13 +116,13 @@
           <div class="jumbotron">
             <h3 id="obsgroup-add">
               <small>
-                <a href="{% url 'occurrence-associatedspecies-create' occ_pk=original.id %}"
+               <a href="{% url 'occurrence:associatedspeciesobservation-create' occ_pk=original.id %}"
                   class="btn btn-primary btn-sm"
                   title="Report an associated species.">
                   <span class="oi oi-plus" aria-hidden="true"></span>
                   Report associated species
                 </a>
-                <a href="{% url 'occurrence-firehistory-create' occ_pk=original.id %}"
+                <a href="{% url 'occurrence:firehistoryobservation-create' occ_pk=original.id %}"
                   class="btn btn-primary btn-sm"
                   title="Report evidence of a past fire.">
                   <span class="oi oi-plus" aria-hidden="true"></span>

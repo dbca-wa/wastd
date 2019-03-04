@@ -158,7 +158,7 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
             Breadcrumb(
                 "List {0} with its parents and immediate children.".format(
                     self.object.taxonomic_name),
-                reverse('taxonomy:taxon-list', kwargs={'name_id': self.object.name_id})),
+                reverse('taxonomy:taxon-detail', kwargs={'name_id': self.object.name_id})),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
         )
 
