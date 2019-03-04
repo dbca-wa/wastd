@@ -15,35 +15,10 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
-
-from occurrence.models import CommunityAreaEncounter
-# from conservation.views import (
-#     ConservationActionListView,
-#     ConservationActionDetailView,
-#     ConservationActionUpdateView,
-#     ConservationActionCreateView
-# )
-from occurrence.views import (
-    CommunityAreaEncounterCreateView,
-    CommunityAreaEncounterDetailView,
-    CommunityAreaEncounterUpdateView,
-    TaxonAreaEncounterCreateView,
-    TaxonAreaEncounterDetailView,
-    TaxonAreaEncounterUpdateView,
-    AssociatedSpeciesObservationCreateView,
-    AssociatedSpeciesObservationUpdateView,
-    FireHistoryObservationCreateView,
-    FireHistoryObservationUpdateView
-)
 from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
-from taxonomy.views import (
-    CommunityDetailView,
-    CommunityListView,
-    TaxonDetailView,
-    TaxonListView,
-    update_taxon)
 
+from occurrence.models import CommunityAreaEncounter
 from wastd.api import router as wastd_router
 from wastd.observations.models import AnimalEncounter, Area, Encounter
 from wastd.observations.views import (
@@ -54,175 +29,40 @@ from wastd.observations.views import (
     schema_view
 )
 
-# from dynamic_rest import routers as dr
-
-favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
-
 # register all adminactions
 actions.add_to_site(site)
 
 urlpatterns = [
-    re_path(r'^$',
-            TemplateView.as_view(template_name='index.html'),
-            name='home'),
+    re_path(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
+    re_path(r'^map/$', HomeView.as_view(), name='map'),
 
-    re_path(r'^map/$',
-            HomeView.as_view(),
-            name='map'),
-
-    # ------------------------------------------------------------------------#
-    # Conservation
-    # re_path(r'^actions/$',
-    #         ConservationActionListView.as_view(),
-    #         name="conservationaction-list"),
-    # re_path(r'^actions/(?P<pk>\d+)/$',
-    #         ConservationActionDetailView.as_view(),
-    #         name="conservationaction-detail"),
-    # re_path(r'^actions/(?P<pk>\d+)/update/$',
-    #         ConservationActionUpdateView.as_view(),
-    #         name="conservationaction-update"),
-    # re_path(r'^actions/create/$',
-    #         ConservationActionCreateView.as_view(),
-    #         name="conservationaction-create"),
-
+    path('/', include(('taxonomy.urls'), namespace='taxonomy')),
     path('conservation/', include(('conservation.urls'), namespace='conservation')),
-    # ------------------------------------------------------------------------#
-    # Species
-    re_path(r'^species/$',
-            TaxonListView.as_view(),
-            name='taxon-list'),
+    path('occurrence/', include(('occurrence.urls'), namespace='occurrence')),
+    re_path(r'^grappelli/', include('grappelli.urls')),
+    re_path(r'^ajax_select/', include(ajax_select_urls)),
+    re_path(settings.ADMIN_URL, admin.site.urls),
+    path('users/', include(('wastd.users.urls', 'users'), namespace='users')),
+    path('accounts/', include('allauth.urls')),
+    re_path(r'^adminactions/', include('adminactions.urls')),
+    re_path(r'^select2/', include('django_select2.urls')),
 
-    re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/$',
-            TaxonDetailView.as_view(),
-            name='taxon-detail'),
-
-    re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/report/$',
-            TaxonAreaEncounterCreateView.as_view(),
-            name='taxon-occurrence-create'),
-
-    re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/area/(?P<area_code>[\w-]+)/report/$',
-            TaxonAreaEncounterCreateView.as_view(),
-            name='taxon-occurrence-area-create'),
-
-    re_path(r'^species/occurrences/report/$',
-            TaxonAreaEncounterCreateView.as_view(),
-            name='taxonareaencounter-create'),
-
-    re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/occurrences/(?P<occ_pk>\d+)/$',
-            TaxonAreaEncounterDetailView.as_view(),
-            name='taxon-occurrence-detail'),
-
-    re_path(r'species/(?P<name_id>[-+]?[0-9]+)/occurrences/(?P<occ_pk>\d+)/update/$',
-            TaxonAreaEncounterUpdateView.as_view(),
-            name='taxon-occurrence-update'),
-
-    # ------------------------------------------------------------------------#
-    # Communities
-    re_path(r'^communities/$',
-            CommunityListView.as_view(),
-            name='community-list'),
-
-    re_path(r'^communities/(?P<pk>\d+)/$',
-            CommunityDetailView.as_view(),
-            name='community-detail'),
-
-    re_path(r'^communities/(?P<pk>\d+)/occurrences/report$',
-            CommunityAreaEncounterCreateView.as_view(),
-            name='community-occurrence-create'),
-
-    re_path(r'^communities/(?P<pk>\d+)/occurrences/area/(?P<area_code>[\w_-]+)/report$',
-            CommunityAreaEncounterCreateView.as_view(),
-            name='community-occurrence-area-create'),
-
-    re_path(r'^communities/occurrences/report/$',
-            CommunityAreaEncounterCreateView.as_view(),
-            name='communityareaencounter-create'),
-
-    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)$',
-            CommunityAreaEncounterDetailView.as_view(),
-            name='community-occurrence-detail'),
-
-    re_path(r'^communities/(?P<pk>\d+)/occurrences/(?P<occ_pk>\d+)/update$',
-            CommunityAreaEncounterUpdateView.as_view(),
-            name='community-occurrence-update'),
-
-
-    # ------------------------------------------------------------------------#
-    # Occurrence ObsGroups
-    re_path(r'^occurrences/(?P<occ_pk>\d+)/associated-species/report$',
-            AssociatedSpeciesObservationCreateView.as_view(),
-            name='occurrence-associatedspecies-create'),
-
-    re_path(r'^occurrences/(?P<occ_pk>\d+)/associated-species/(?P<obs_pk>\d+)/$',
-            AssociatedSpeciesObservationUpdateView.as_view(),
-            name='occurrence-associatedspecies-update'),
-
-    re_path(r'^occurrences/(?P<occ_pk>\d+)/fire-history/report$',
-            FireHistoryObservationCreateView.as_view(),
-            name='occurrence-firehistory-create'),
-
-    re_path(r'^occurrences/(?P<occ_pk>\d+)/fire-history/(?P<obs_pk>\d+)/$',
-            FireHistoryObservationUpdateView.as_view(),
-            name='occurrence-firehistory-update'),
-
-
-    re_path(r'^grappelli/',
-            include('grappelli.urls')),  # grappelli URLs
-
-    re_path(r'^ajax_select/',
-            include(ajax_select_urls)),  # ajax select URLs
-
-    # Django Admin, use {% url 'admin:index' %}
-    re_path(settings.ADMIN_URL,
-            admin.site.urls),
-
-    # User management
-    path('users/',
-         include(('wastd.users.urls', 'users'), namespace='users')),
-
-    path('accounts/',
-         include('allauth.urls')),
-
-    # Encounters
-    path('encounters/',
-         EncounterTableView.as_view(),
-         name="encounter_list"),
-
-    path('animal-encounters/',
-         AnimalEncounterTableView.as_view(),
-         name="animalencounter_list"),
+    # wastd Encounters
+    path('encounters/', EncounterTableView.as_view(), name="encounter_list"),
+    path('animal-encounters/', AnimalEncounterTableView.as_view(), name="animalencounter_list"),
 
     # API
-    re_path(r'^api/1/swagger/$',
-            schema_view,
-            name="api-docs"),
-
-    re_path(r'^api/1/docs/',
-            include_docs_urls(title='API')),
-
-    re_path(r'^api/1/',
-            include((wastd_router.urls, 'api'), namespace="api")),
-
-    re_path(r'^api-auth/',
-            include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
+    re_path(r'^api/1/swagger/$', schema_view, name="api-docs"),
+    re_path(r'^api/1/docs/', include_docs_urls(title='API')),
+    re_path(r'^api/1/', include((wastd_router.urls, 'api'), namespace="api")),
+    re_path(r'^api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
 
     re_path(r'^api-token-auth/',
             drf_authviews.obtain_auth_token, name="api-auth"),
 
-    # GraphQL
-    # url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=schema)),
-
-    # Synctools
-    # url("^sync/", include(sync_route.urlpatterns)),
     re_path(r'^healthcheck/$',
             TemplateView.as_view(template_name='pages/healthcheck.html'),
             name='healthcheck'),
-
-    re_path(r'^adminactions/',
-            include('adminactions.urls')),
-
-    re_path(r'^select2/',
-            include('django_select2.urls')),
 
     # Djgeojson
     re_path(r'^observations.geojson$',
@@ -232,8 +72,7 @@ urlpatterns = [
             name='observation-geojson'),
 
     re_path(r'^areas.geojson$',
-            GeoJSONLayerView.as_view(model=Area,
-                                     properties=('leaflet_title', 'as_html')),
+            GeoJSONLayerView.as_view(model=Area, properties=('leaflet_title', 'as_html')),
             name='areas-geojson'),
 
     # Encounter as tiled GeoJSON
@@ -259,11 +98,7 @@ urlpatterns = [
     #         geometry_field="geom"),
     #     name='area-tiled-geojson'),
 
-    re_path(r'^action/update-taxon/$',
-            update_taxon,
-            name="update-taxon"),
-
-    re_path(r'^action/import-odka/$',
+    re_path(r'^tasks/import-odka/$',
             import_odka_view,
             name="import-odka"),
 
@@ -282,7 +117,7 @@ urlpatterns = [
     # url(r'^500/$', default_views.server_error,
     #     kwargs={'exception': Exception('Internal Server Error')}),
 
-    re_path(r'^favicon\.ico$', favicon_view),
+    re_path(r'favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
     staticfiles_urlpatterns()

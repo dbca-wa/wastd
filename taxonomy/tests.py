@@ -21,29 +21,27 @@ class TaxonTestMommy(TestCase):
 
     def setUp(self):
         """Shared objects."""
-        self.obj = mommy.make(Taxon, name_id=1000, _fill_optional=['name', 'rank', 'eoo'])
+        self.object = mommy.make(Taxon, name_id=1000, _fill_optional=['name', 'rank', 'eoo'])
         self.user = get_user_model().objects.create_superuser(
             username="superuser", email="super@gmail.com", password="test")
         self.client.force_login(self.user)
 
     def test_taxon_creation_mommy(self):
         """Test creating a Taxon."""
-        self.assertTrue(isinstance(self.obj, Taxon))
+        self.assertTrue(isinstance(self.object, Taxon))
         # self.assertEqual(what.__unicode__(), what.title)
 
     def test_taxon_absolute_admin_url_loads(self):
         """Test absolute admin url."""
-        url = self.obj.absolute_admin_url
-        response = self.client.get(url)
+        response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_detail_url_loads(self):
         """Test taxon detail url works and loads."""
-        url_detail = reverse('taxon-detail', kwargs={"name_id": self.obj.name_id})
-        url_absolute = self.obj.absolute_url
-        self.assertEqual(url_detail, url_absolute)
+        url_detail = reverse('taxonomy:taxon-detail', kwargs={"name_id": self.object.name_id})
+        self.assertEqual(url_detail, self.object.get_absolute_url())
 
-        response = self.client.get(url_detail)
+        response = self.client.get(self.object.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
 
@@ -52,27 +50,26 @@ class CommunityTestMommy(TestCase):
 
     def setUp(self):
         """Shared objects."""
-        self.obj = mommy.make(Community, _fill_optional=['code', 'name', 'eoo'])
+        self.object = mommy.make(Community, _fill_optional=['code', 'name', 'eoo'])
         self.user = get_user_model().objects.create_superuser(
             username="superuser", email="super@gmail.com", password="test")
         self.client.force_login(self.user)
 
     def test_community_creation_mommy(self):
         """Test creating a Community."""
-        self.assertTrue(isinstance(self.obj, Community))
-        # self.assertEqual(obj.__unicode__(), obj.name)
+        self.assertTrue(isinstance(self.object, Community))
+        # self.assertEqual(object.__unicode__(), object.name)
 
     def test_taxon_absolute_admin_url_loads(self):
         """Test absolute admin url."""
-        url = self.obj.absolute_admin_url
+        url = self.object.absolute_admin_url
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_community_detail_url_loads(self):
         """Test community detail url works and loads."""
-        url_detail = reverse('community-detail', kwargs={"pk": self.obj.pk})
-        url_absolute = self.obj.absolute_url
-        self.assertEqual(url_detail, url_absolute)
+        url_detail = reverse('taxonomy:community-detail', kwargs={"pk": self.object.pk})
+        self.assertEqual(url_detail, self.object.get_absolute_url())
 
-        response = self.client.get(url_detail)
+        response = self.client.get(self.object.get_absolute_url())
         self.assertEqual(response.status_code, 200)

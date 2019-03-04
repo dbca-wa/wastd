@@ -32,7 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 # from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
 # from wastd.users.models import User
-from shared.models import LegacySourceMixin, ObservationAuditMixin, QualityControlMixin
+from shared.models import LegacySourceMixin, ObservationAuditMixin, QualityControlMixin, UrlsMixin
 from taxonomy.models import Community, Taxon
 
 # import os
@@ -46,6 +46,7 @@ logger = logging.getLogger(__name__)
 
 
 class AreaEncounter(PolymorphicModel,
+                    UrlsMixin,
                     LegacySourceMixin,
                     ObservationAuditMixin,
                     QualityControlMixin,
@@ -230,12 +231,6 @@ class AreaEncounter(PolymorphicModel,
         """Hook for update url."""
         return self.get_absolute_url()
 
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
     # -------------------------------------------------------------------------
     # Derived properties
     @property
@@ -316,19 +311,7 @@ class TaxonAreaEncounter(AreaEncounter):
     def get_absolute_url(self):
         """Detail url."""
         return reverse(
-            'taxon-occurrence-detail',
-            kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
-
-    @property
-    def detail_url(self):
-        """Hook for detail url."""
-        return self.get_absolute_url()
-
-    @property
-    def update_url(self):
-        """Hook for update url."""
-        return reverse(
-            'taxon-occurrence-update',
+            'occurrence:taxon-occurrence-detail',
             kwargs={'name_id': self.taxon.name_id, 'occ_pk': self.pk})
 
     # -------------------------------------------------------------------------
@@ -385,17 +368,6 @@ class CommunityAreaEncounter(AreaEncounter):
         return reverse(
             'community-occurrence-detail',
             kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
-
-    @property
-    def detail_url(self):
-        """Hook for detail url."""
-        return self.get_absolute_url()
-
-    @property
-    def update_url(self):
-        """Hook for update url."""
-        return reverse('community-occurrence-update',
-                       kwargs={'pk': self.community.pk, 'occ_pk': self.pk})
 
     # -------------------------------------------------------------------------
     # Derived properties
@@ -484,23 +456,6 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
     def get_absolute_url(self):
         """Detail url."""
         return self.encounter.get_absolute_url()
-
-    @property
-    def detail_url(self):
-        """Hook for detail url."""
-        return self.get_absolute_url()
-
-    @property
-    def update_url(self):
-        """Hook for update url."""
-        return "/"
-
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse(
-            'admin:{0}_{1}_change'.format(
-                self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     # -------------------------------------------------------------------------
     # Derived properties
@@ -632,15 +587,6 @@ class AssociatedSpeciesObservation(ObservationGroup):
         return u"Encounter {0} Obs {1}: Associated species {2}".format(
             self.encounter.pk, self.pk, self.taxon)
 
-    # -------------------------------------------------------------------------
-    # URLs
-    @property
-    def update_url(self):
-        """Update url."""
-        return reverse('occurrence-associatedspecies-update',
-                       kwargs={'occ_pk': self.encounter.pk,
-                               'obs_pk': self.pk})
-
 
 class FireHistoryObservation(ObservationGroup):
     """Evidence of past fire."""
@@ -685,12 +631,3 @@ class FireHistoryObservation(ObservationGroup):
             self.pk,
             self.last_fire_date.strftime("%d/%m/%Y"),
             self.get_fire_intensity_display())
-
-    # -------------------------------------------------------------------------
-    # URLs
-    @property
-    def update_url(self):
-        """Update url."""
-        return reverse('occurrence-firehistory-update',
-                       kwargs={'occ_pk': self.encounter.pk,
-                               'obs_pk': self.pk})

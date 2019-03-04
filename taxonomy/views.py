@@ -7,14 +7,24 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, Http404
 # from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
-# from django.urls import reverse
+from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+
 from taxonomy.filters import CommunityFilter, TaxonFilter
 from taxonomy.models import Community, Taxon
 from taxonomy.tables import CommunityAreaEncounterTable, TaxonAreaEncounterTable
 from taxonomy.utils import update_taxon as update_taxon_util
+from shared.utils import Breadcrumb
+from shared.views import (
+    # SuccessUrlMixin,
+    ListViewBreadcrumbMixin,
+    DetailViewBreadcrumbMixin,
+    # UpdateViewBreadcrumbMixin,
+    # CreateViewBreadcrumbMixin
+)
 
 
 @csrf_exempt
@@ -28,7 +38,7 @@ def update_taxon(request):
 # ---------------------------------------------------------------------------#
 # List Views
 #
-class TaxonListView(ListView):
+class TaxonListView(ListViewBreadcrumbMixin, ListView):
     """A ListView for Taxon."""
 
     model = Taxon
@@ -104,7 +114,7 @@ class CommunityListView(ListView):
 # ---------------------------------------------------------------------------#
 # Detail Views
 #
-class TaxonDetailView(DetailView):
+class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
     """DetailView for Taxon."""
 
     model = Taxon
@@ -140,8 +150,20 @@ class TaxonDetailView(DetailView):
         context["conservationactions_area"] = ma.exclude(occurrence_area_code=None)
         return context
 
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
+            Breadcrumb(
+                "List {0} with its parents and immediate children.".format(
+                    self.object.taxonomic_name),
+                reverse('taxonomy:taxon-list', kwargs={'name_id': self.object.name_id})),
+            Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
+        )
 
-class CommunityDetailView(DetailView):
+
+class CommunityDetailView(DetailViewBreadcrumbMixin, DetailView):
     """DetailView for Community."""
 
     model = Community

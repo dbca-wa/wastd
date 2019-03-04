@@ -52,10 +52,10 @@ class ConservationActionCategoryViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.consactioncat = ConservationActionCategory.objects.create(
+        self.object = ConservationActionCategory.objects.create(
             code="burn", label="Burn", description="Burn everything")
         self.consaction = ConservationAction.objects.create(
-            category=self.consactioncat,
+            category=self.object,
             instructions="burn some stuff"
         )
         self.user = get_user_model().objects.create_superuser(
@@ -67,7 +67,7 @@ class ConservationActionCategoryViewTests(TestCase):
 
     def test_conservation_action_category_absolute_admin_url(self):
         """Test ConservationActionCategory absolute admin url."""
-        response = self.client.get(self.consactioncat.absolute_admin_url)
+        response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
 
@@ -78,7 +78,7 @@ class ConservationActionViewTests(TestCase):
         """Set up."""
         self.consactioncat = ConservationActionCategory.objects.create(
             code="burn", label="Burn", description="Burn everything")
-        self.consaction = ConservationAction.objects.create(
+        self.object = ConservationAction.objects.create(
             category=self.consactioncat,
             instructions="burn some stuff"
         )
@@ -91,27 +91,27 @@ class ConservationActionViewTests(TestCase):
 
     def test_conservation_action_absolute_admin_url(self):
         """Test ConservationAction absolute admin url."""
-        response = self.client.get(self.consaction.absolute_admin_url)
+        response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
-    def test_conservation_action_get_absolute_url(self):
+    def test_get_absolute_url(self):
         """Test ConservationAction get absolute url."""
-        response = self.client.get(self.consaction.get_absolute_url())
+        response = self.client.get(self.object.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
-    def test_conservation_action_list_url_loads(self):
+    def test_list_url_loads(self):
         """Test conservationaction-list."""
-        response = self.client.get(self.consaction.list_url())
+        response = self.client.get(self.object.list_url())
         self.assertEqual(response.status_code, 200)
 
-    def test_conservation_action_create_url_loads(self):
+    def test_create_url_loads(self):
         """Test conservationaction-create."""
-        response = self.client.get(self.consaction.create_url())
+        response = self.client.get(self.object.create_url())
         self.assertEqual(response.status_code, 200)
 
-    def test_conservationaction_update_url_loads(self):
+    def test_update_url_loads(self):
         """Test conservationaction-update."""
-        response = self.client.get(self.consaction.update_url)
+        response = self.client.get(self.object.update_url)
         self.assertEqual(response.status_code, 200)
 
 
@@ -126,7 +126,7 @@ class ConservationActivityViewTests(TestCase):
             category=self.consactioncat,
             instructions="burn some stuff"
         )
-        self.consact = ConservationActivity.objects.create(
+        self.object = ConservationActivity.objects.create(
             conservation_action=self.consaction,
         )
         self.user = get_user_model().objects.create_superuser(
@@ -138,17 +138,37 @@ class ConservationActivityViewTests(TestCase):
 
     def test_conservation_activity_absolute_admin_url(self):
         """Test ConservationActivity absolute admin url."""
-        response = self.client.get(self.consact.absolute_admin_url)
+        response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
+
+    # def test_get_absolute_url(self):
+    #     """Test ConservationAction get absolute url."""
+    #     response = self.client.get(self.object.get_absolute_url())
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_list_url_loads(self):
+    #     """Test conservationaction-list."""
+    #     response = self.client.get(self.object.list_url())
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_create_url_loads(self):
+    #     """Test conservationaction-create."""
+    #     response = self.client.get(self.object.create_url())
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_update_url_loads(self):
+    #     """Test conservationaction-update."""
+    #     response = self.client.get(self.object.update_url)
+    #     self.assertEqual(response.status_code, 200)
 
     def test_conservation_activity_str(self):
         """Test ConservationActivity str."""
         label = "[{0}][{1}] {2}".format(
-            self.consact.conservation_action.category,
-            self.consact.completion_date.strftime("%d/%m/%Y")
-            if self.consact.completion_date else "in progress",
-            self.consact.implementation_notes)
-        self.assertEqual(label, self.consact.__str__())
+            self.object.conservation_action.category,
+            self.object.completion_date.strftime("%d/%m/%Y")
+            if self.object.completion_date else "in progress",
+            self.object.implementation_notes)
+        self.assertEqual(label, self.object.__str__())
 
 
 class DocumentViewTests(TestCase):
@@ -156,7 +176,7 @@ class DocumentViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.document = Document.objects.create(
+        self.object = Document.objects.create(
             title="test doc",
             document_type=Document.TYPE_RECOVERY_PLAN
         )
@@ -167,7 +187,27 @@ class DocumentViewTests(TestCase):
         self.user.save()
         self.client.force_login(self.user)
 
-    def test_document_absolute_admin_url(self):
+    def test_absolute_admin_url(self):
         """Test Document absolute admin url."""
-        response = self.client.get(self.document.absolute_admin_url)
+        response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
+
+    # def test_get_absolute_url(self):
+    #     """Test ConservationAction get absolute url."""
+    #     response = self.client.get(self.object.get_absolute_url())
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_list_url_loads(self):
+    #     """Test conservationaction-list."""
+    #     response = self.client.get(self.object.list_url())
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_create_url_loads(self):
+    #     """Test conservationaction-create."""
+    #     response = self.client.get(self.object.create_url())
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_update_url_loads(self):
+    #     """Test conservationaction-update."""
+    #     response = self.client.get(self.object.update_url)
+    #     self.assertEqual(response.status_code, 200)

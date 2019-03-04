@@ -7,7 +7,7 @@ from django.http import Http404
 from django.utils import timezone
 # from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView  # FormView, DeleteView  # noqa
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 

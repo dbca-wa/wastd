@@ -27,7 +27,8 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 # from wastd.users.models import User
-from shared.models import LegacySourceMixin
+from shared.models import LegacySourceMixin, UrlsMixin
+
 
 # from django.utils.safestring import mark_safe
 
@@ -1586,7 +1587,7 @@ class HbvParent(models.Model):
 
 # django-mptt tree models ----------------------------------------------------#
 @python_2_unicode_compatible
-class Taxon(MPTTModel, geo_models.Model):
+class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
     """A taxonomic name at any taxonomic rank.
 
     A taxonomy is a directed graph with exactly one root node (Domain) and
@@ -1790,26 +1791,17 @@ class Taxon(MPTTModel, geo_models.Model):
 
     # -------------------------------------------------------------------------
     # URLs
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
     def get_absolute_url(self):
         """Detail url."""
-        return reverse('taxon-detail', kwargs={"name_id": self.name_id})
+        return reverse('taxonomy:taxon-detail', kwargs={"name_id": self.name_id})
 
     @property
-    def absolute_url(self):
-        """Return the absolute url for the detail view."""
-        return self.get_absolute_url()
+    def update_url(self):
+        """Admin update url."""
+        return reverse('admin:taxonomy_taxon_change', kwargs={'pk': self.pk})
 
-    @property
-    def detail_url(self):
-        """Return the absolute url for the detail view."""
-        return self.get_absolute_url()
-
+    # -------------------------------------------------------------------------
+    # Derived properties
     @property
     def build_canonical_name(self):
         """Build the canonical name.
@@ -2079,7 +2071,7 @@ class Crossreference(models.Model):
 
 
 @python_2_unicode_compatible
-class Community(LegacySourceMixin, geo_models.Model):
+class Community(UrlsMixin, LegacySourceMixin, geo_models.Model):
     """Ecological Community."""
 
     code = models.CharField(
@@ -2125,25 +2117,12 @@ class Community(LegacySourceMixin, geo_models.Model):
     # -------------------------------------------------------------------------
     # URLs
     @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+    def update_url(self):
+        """Admin update url."""
+        return reverse('admin:taxonomy_community_change', kwargs={'pk': self.pk})
 
-    def get_absolute_url(self):
-        """URL of detail view."""
-        return reverse('community-detail', kwargs={"pk": self.pk})
-
-    @property
-    def absolute_url(self):
-        """Return the absolute url for the detail view."""
-        return self.get_absolute_url()
-
-    @property
-    def detail_url(self):
-        """Return the absolute url for the detail view."""
-        return self.get_absolute_url()
-
+    # -------------------------------------------------------------------------
+    # Derived properties
     @property
     def gazettals(self):
         """Return a dict of Gazettal labels and admin URLs.

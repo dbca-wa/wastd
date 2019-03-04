@@ -14,35 +14,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid" id="wrap">
+{% include 'shared/breadcrumbs.html' %}
+<div class="row">
 
-<!-- Breadcrumbs -->
-  <div class="row" id="taxon-detail-breadcrumb">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item" aria-current="page">
-          <a href="{% url 'taxon-list' %}">Species</a>
-        </li>
-        <li class="breadcrumb-item" aria-current="page">
-          <a href="{% url 'taxon-list' %}?name_id={{ original.name_id }}"
-          title="List {{ original.taxonomic_name }} with its parents and immediate children.">
-            Taxonomy of {{ original }}</a>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">
-          <a href="{% url 'taxon-detail' original.name_id %}">{{ original }}</a>
-        </li>
-      </ol>
-    </nav>
-  </div><!-- /#taxon-detail-breadcrumb -->
-
-  <div class="container-fluid">
-
-    <div class="row">
-    <!-- Taxon details -->
-    <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
+  <!-- Taxon details -->
+  <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
     <div class="jumbotron">
-
       <p>
         <!-- Name ID -->
           <span class="badge badge-primary" title="WACensus Name ID: {{original.name_id}}">
@@ -142,81 +119,75 @@
       </p>
 
     </div><!-- /.jumbotron -->
-    </div><!-- /.col#taxon-detail-main -->
+  </div><!-- /.col#taxon-detail-main -->
 
-    <div class="col-12 col-md-6 col-lg-4" id="taxon-occ">
-        <div id="map">
-          {% leaflet_map "detailmap" callback="window.map_init" %}
-        </div>
-    </div><!-- /.col#taxon-occ -->
-
-  </div><!-- /.row -->
-
-  <!-- Taxon occurrence records -->
-  <div class="row" id="occ-row">
-    <div class="col-12" id="occ-main">
-      <div class="jumbotron">
-        <p class="lead">
-        <h3>Occurrences
-          {% if occurrence_total > 100 %}
-          <small>
-            (First {{ max_cards }} of {{ occurrence_total }})
-          </small>
-          {% endif %}
-          <small class="float-right">
-            {% taxonareaencounter_add_link original.name_id %}
-          </small>
-          {% if request.user.is_staff %}
-          <small class="float-right">
-            {% admin_areaencounter_create_link original.pk "taxon" %}
-          </small>
-          <small class="float-right">
-            {% admin_areaencounter_list_link original.pk "taxon" %}
-          </small>
-          {% endif %}
-        </h3>
-
-        <div class="row">
-        {% regroup occurrences|dictsort:"code" by code as occ_list %}
-
-        {% if occ_list %}
-        {% for site in occ_list %}
-            <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
-              <h5 class="card-header">
-                {{ site.name }} <p class="small text-muted">{{ site.grouper|title }}</small>
-                <small class="float-right">
-                  {% conservationaction_add request.user "taxa" area=site.grouper %}
-                </small>
-                <small class="float-right">
-                  {% taxonareaencounter_add_link original.name_id area_code=site.grouper %}
-                </small>
-              </h5>
-              <div class="card-body">
-                <!-- Conservation actions for area {{ site.grouper }} -->
-                {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
-
-                <!-- Occurrences for area {{ site.grouper }} -->
-                {% for occ in site.list|dictsortreversed:"encountered_on" %}
-                {% areaencounter_card occ "taxon" request.user %}
-                {% endfor %}
-
-              </div>
-            </div>
-        {% endfor %}
-        {% else %}
-        {% render_table occurrence_table %}
-        {% endif %}
-        </div>
-
-
-
-        </p>
+  <div class="col-12 col-md-6 col-lg-4" id="taxon-occ">
+      <div id="map">
+        {% leaflet_map "detailmap" callback="window.map_init" %}
       </div>
-    </div>
-  </div><!-- /#occ-row -->
+  </div><!-- /.col#taxon-occ -->
 
-  </div><!-- /.container-fluid -->
-</div><!-- /.container-fluid#wrap -->
+</div><!-- /.row -->
+
+<!-- Taxon occurrence records -->
+<div class="row" id="occ-row">
+  <div class="col-12" id="occ-main">
+    <div class="jumbotron">
+      <p class="lead">
+      <h3>Occurrences
+        {% if occurrence_total > 100 %}
+        <small>
+          (First {{ max_cards }} of {{ occurrence_total }})
+        </small>
+        {% endif %}
+        <small class="float-right">
+          {% taxonareaencounter_add_link original.name_id %}
+        </small>
+        {% if request.user.is_staff %}
+        <small class="float-right">
+          {% admin_areaencounter_create_link original.pk "taxon" %}
+        </small>
+        <small class="float-right">
+          {% admin_areaencounter_list_link original.pk "taxon" %}
+        </small>
+        {% endif %}
+      </h3>
+
+      <div class="row">
+      {% regroup occurrences|dictsort:"code" by code as occ_list %}
+
+      {% if occ_list %}
+      {% for site in occ_list %}
+          <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
+            <h5 class="card-header">
+              {{ site.name }} <p class="small text-muted">{{ site.grouper|title }}</small>
+              <small class="float-right">
+                {% conservationaction_add request.user "taxa" area=site.grouper %}
+              </small>
+              <small class="float-right">
+                {% taxonareaencounter_add_link original.name_id area_code=site.grouper %}
+              </small>
+            </h5>
+            <div class="card-body">
+              <!-- Conservation actions for area {{ site.grouper }} -->
+              {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
+
+              <!-- Occurrences for area {{ site.grouper }} -->
+              {% for occ in site.list|dictsortreversed:"encountered_on" %}
+              {% areaencounter_card occ "taxon" request.user %}
+              {% endfor %}
+
+            </div>
+          </div>
+      {% endfor %}
+      {% else %}
+      {% render_table occurrence_table %}
+      {% endif %}
+      </div>
+      </p>
+    </div>
+  </div>
+</div><!-- /#occ-row -->
 {% endblock %}
 
 {% block javascript%}

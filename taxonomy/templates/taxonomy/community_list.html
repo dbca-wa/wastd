@@ -2,55 +2,32 @@
 {% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
 
 {% block content %}
-<div class="container-fluid" id="wrap">
-
-  <!-- Breadcrumbs -->
-  <div class="row">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item active" aria-current="page">
-          <a href="{% url 'community-list' %}">Communities</a>
-        </li>
-      </ol>
-    </nav>
-  </div>
-
-  <div class="container-fluid">
-
-    <!-- Pagination -->
+{% include 'shared/breadcrumbs.html' %}
+{% include 'shared/pagination_row.html' %}
+<div class="row">
+  <!-- Data -->
+  <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
     <div class="row">
-      <div class="col-12">
-        {% bootstrap_pagination page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
-      </div>
+      {% for original in object_list %}
+      {% include "cards/community.html" with original=original %}
+      {% endfor %}
     </div>
+  </div><!-- /#dash-data -->
 
-    <div class="row">
-      <!-- Data -->
-      <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
-        <div class="row">
-          {% for original in object_list %}
-          {% include "cards/community.html" with original=original %}
-          {% endfor %}
-        </div>
-      </div><!-- /#dash-data -->
-
-      <!-- Search -->
-      <div id="dash-filters" class="col-lg-3 col-md-4 col-sm-6 col-12">
-        <form method="get">
-          <div class="row-fluid">
-            {% bootstrap_form community_filter.form %}
-          </div>
-          <button
-            class="btn btn-primary my-2 my-sm-0"
-            title="Filter by above criteria." type="submit">
-            Go
-          </button>
-        </form>
-      </div><!-- /#dash-filters -->
-    </div><!-- .row -->
-  </div><!-- .container-fluid -->
-</div><!-- #wrap -->
+  <!-- Search -->
+  <div id="dash-filters" class="col-lg-3 col-md-4 col-sm-6 col-12">
+    <form method="get">
+      <div class="row-fluid">
+        {% bootstrap_form community_filter.form %}
+      </div>
+      <button
+        class="btn btn-primary my-2 my-sm-0"
+        title="Filter by above criteria." type="submit">
+        Go
+      </button>
+    </form>
+  </div><!-- /#dash-filters -->
+</div><!-- .row -->
 {% endblock %}
 
 {% block css%}

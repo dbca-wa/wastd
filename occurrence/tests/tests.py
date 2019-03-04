@@ -113,17 +113,17 @@ class CommunityAreaEncounterTests(TestCase):
     def test_cae_detail_url_loads(self):
         """Test CommunityAreaEncounter detail_url."""
         url = reverse(
-            'community-occurrence-detail',
+            'occurrence:community-occurrence-detail',
             kwargs={'pk': self.cae.community.pk, 'occ_pk': self.cae.pk})
         self.assertEqual(url, self.cae.detail_url)
 
-        response = self.client.get(self.cae.detail_url)
+        response = self.client.get(self.cae.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_cae_update_url_loads(self):
         """Test CommunityAreaEncounter update_url."""
         url = reverse(
-            'community-occurrence-update',
+            'occurrence:community-occurrence-update',
             kwargs={'pk': self.cae.community.pk, 'occ_pk': self.cae.pk})
         self.assertEqual(url, self.cae.update_url)
 
@@ -164,7 +164,7 @@ class CommunityAreaEncounterTests(TestCase):
 
     def test_fh_detail_url_loads(self):
         """Test FireHistoryObservation detail_url."""
-        response = self.client.get(self.fh1.detail_url)
+        response = self.client.get(self.fh1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_fh_update_url_loads(self):
@@ -266,17 +266,17 @@ class TaxonAreaEncounterTests(TestCase):
     def test_tae_detail_url_loads(self):
         """Test taxon detail url works and loads."""
         detail_url_constructed = reverse(
-            'taxon-occurrence-detail',
+            'occurrence:taxon-occurrence-detail',
             kwargs={'name_id': self.tae.taxon.name_id, 'occ_pk': self.tae.pk})
-        self.assertEqual(detail_url_constructed, self.tae.detail_url)
+        self.assertEqual(detail_url_constructed, self.tae.get_absolute_url())
 
-        response = self.client.get(self.tae.detail_url)
+        response = self.client.get(self.tae.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_tae_update_url_loads(self):
         """Test taxon update url works and loads."""
         update_url_constructed = reverse(
-            'taxon-occurrence-update',
+            'occurrence:taxon-occurrence-update',
             kwargs={'name_id': self.tae.taxon.name_id, 'occ_pk': self.tae.pk})
         self.assertEqual(update_url_constructed, self.tae.update_url)
 
@@ -297,7 +297,7 @@ class TaxonAreaEncounterTests(TestCase):
 
     def test_asssp_detail_url_loads(self):
         """Test AssociatedSpeciesObservation detail_url."""
-        response = self.client.get(self.asssp1.detail_url)
+        response = self.client.get(self.asssp1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_asssp_update_url_loads(self):
@@ -318,7 +318,7 @@ class TaxonAreaEncounterTests(TestCase):
 
     def test_fh_detail_url_loads(self):
         """Test FireHistoryObservation detail_url."""
-        response = self.client.get(self.fh1.detail_url)
+        response = self.client.get(self.fh1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_fh_update_url_loads(self):

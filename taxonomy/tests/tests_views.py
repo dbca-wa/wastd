@@ -73,23 +73,16 @@ class CommunityViewTests(TestCase):
 
     def test_com_list_url_loads(self):
         """Test community-list."""
-        url = reverse('community-list')
-        response = self.client.get(url)
+        response = self.client.get(self.com.list_url())
         self.assertEqual(response.status_code, 200)
 
     def test_com_detail_url_loads(self):
         """Test Community detail_url."""
-        url = reverse('community-detail', kwargs={'pk': self.com.pk})
-        self.assertEqual(url, self.com.detail_url)
-
-        response = self.client.get(self.com.detail_url)
+        response = self.client.get(self.com.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_com_update_url_loads(self):
         """Test Community update_url."""
-        url = reverse('community-update', kwargs={'pk': self.com.pk})
-        self.assertEqual(url, self.com.update_url)
-
         response = self.client.get(self.com.update_url)
         self.assertEqual(response.status_code, 200)
 
@@ -139,22 +132,15 @@ class TaxonViewTests(TestCase):
 
     def test_taxon_list_url_loads(self):
         """Test taxon-list."""
-        url = reverse('taxon-list')
-        response = self.client.get(url)
+        response = self.client.get(self.taxon.list_url())
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_detail_url_loads(self):
         """Test Taxon detail_url."""
-        url = reverse('taxon-detail', kwargs={'name_id': self.taxon.name_id})
-        self.assertEqual(url, self.taxon.detail_url)
-
-        response = self.client.get(self.taxon.detail_url)
+        response = self.client.get(self.taxon.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_update_url_loads(self):
         """Test Taxon update_url."""
-        url = reverse('taxon-update', kwargs={'name_id': self.taxon.name_id})
-        self.assertEqual(url, self.taxon.update_url)
-
         response = self.client.get(self.taxon.update_url)
         self.assertEqual(response.status_code, 200)
