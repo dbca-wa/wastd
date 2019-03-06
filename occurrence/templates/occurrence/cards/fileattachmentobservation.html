@@ -1,0 +1,35 @@
+{% load taxonomy_tags occurrence_tags observations bootstrap4 %}
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
+
+  <img src="{{ original.attachment.url }}" class="card-img-top" alt="">
+
+  <div class="card-body">
+
+    <p class="card-text">
+      <span class="oi oi-document" aria-hidden="true"></span>
+      <a href="{{ original.attachment.url }}" target="_" title="Open {{ original.title }} in a new tab">
+        {{ original.title }}
+      </a>
+    </p>
+
+    <p class="card-text">
+      <span class="oi oi-person" aria-hidden="true"></span>
+      {{ original.author }}
+    </p>
+
+    <p class="card-text">
+      {% if attachment.confidential == True%}
+      <span class="oi oi-lock-locked" aria-hidden="true"></span>
+      Confidential
+      {% else %}
+      <span class="oi oi-lock-unlocked" aria-hidden="true"></span>
+      Public
+      {% endif %}
+    </p>
+
+  </div><!-- /.card-body -->
+
+  {% include 'occurrence/include/obsgroup_card_footer.html' %}
+
+</div><!-- /.card -->
+

@@ -1,0 +1,15 @@
+{% load observations bootstrap4 %}
+<div class="card-footer">
+   <a href="{{ original.update_url }}"
+      class="btn btn-primary btn-sm"
+      title="Edit {{ original }}.">
+      <span class="oi oi-pencil" aria-hidden="true"></span>
+      Edit
+    </a>
+    <a href="{{ original.absolute_admin_url }}"
+      class="btn btn-sm btn-{{ original.status|tb_status_icon }} float-right"
+      title="Edit and QA {{ original }} in data curation portal.">
+      <span class="oi oi-pencil" aria-hidden="true"></span>
+      QA: {{ original.get_status_display }}
+    </a>
+</div><!-- /.card-footer -->

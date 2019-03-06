@@ -34,7 +34,7 @@ class CommunityViewTests(TestCase):
 
     def setUp(self):
         """Shared objects."""
-        self.com = mommy.make(
+        self.com0 = mommy.make(
             Community,
             code="code0",
             name="name0",
@@ -64,27 +64,27 @@ class CommunityViewTests(TestCase):
 
     def test_com_creation(self):
         """Test creating a Community."""
-        self.assertTrue(isinstance(self.com, Community))
+        self.assertTrue(isinstance(self.com0, Community))
 
     def test_com_absolute_admin_url_loads(self):
         """Test Community absolute_admin_url."""
-        response = self.client.get(self.com.absolute_admin_url)
+        response = self.client.get(self.com0.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
     def test_com_list_url_loads(self):
         """Test community-list."""
-        response = self.client.get(self.com.list_url())
+        response = self.client.get(self.com0.list_url())
         self.assertEqual(response.status_code, 200)
 
     def test_com_detail_url_loads(self):
         """Test Community detail_url."""
-        response = self.client.get(self.com.get_absolute_url())
+        response = self.client.get(self.com0.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
-    def test_com_update_url_loads(self):
-        """Test Community update_url."""
-        response = self.client.get(self.com.update_url)
-        self.assertEqual(response.status_code, 200)
+    # def test_com_update_url_loads(self):
+    #     """Test Community update_url."""
+    #     response = self.client.get(self.com0.update_url)
+    #     self.assertEqual(response.status_code, 200)
 
 
 class TaxonViewTests(TestCase):
@@ -92,7 +92,7 @@ class TaxonViewTests(TestCase):
 
     def setUp(self):
         """Shared objects."""
-        self.com = mommy.make(
+        self.com0 = mommy.make(
             Community,
             code="code0",
             name="name0",
@@ -106,7 +106,7 @@ class TaxonViewTests(TestCase):
             _fill_optional=['eoo'])
         self.com1.save()
 
-        self.taxon = mommy.make(
+        self.taxon0 = mommy.make(
             Taxon,
             name_id=1000,
             name="name0",
@@ -123,24 +123,24 @@ class TaxonViewTests(TestCase):
 
     def test_taxon_creation(self):
         """Test creating a Taxon."""
-        self.assertTrue(isinstance(self.taxon, Taxon))
+        self.assertTrue(isinstance(self.taxon0, Taxon))
 
     def test_taxon_absolute_admin_url_loads(self):
         """Test Taxon absolute_admin_url."""
-        response = self.client.get(self.taxon.absolute_admin_url)
+        response = self.client.get(self.taxon0.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_list_url_loads(self):
         """Test taxon-list."""
-        response = self.client.get(self.taxon.list_url())
+        response = self.client.get(self.taxon0.list_url())
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_detail_url_loads(self):
         """Test Taxon detail_url."""
-        response = self.client.get(self.taxon.get_absolute_url())
+        response = self.client.get(self.taxon0.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
-    def test_taxon_update_url_loads(self):
-        """Test Taxon update_url."""
-        response = self.client.get(self.taxon.update_url)
-        self.assertEqual(response.status_code, 200)
+    # def test_taxon_update_url_loads(self):
+    #     """Test Taxon update_url."""
+    #     response = self.client.get(self.taxon0.update_url)
+    #     self.assertEqual(response.status_code, 200)

@@ -14,7 +14,7 @@ from django.test import TestCase
 from django.urls import reverse  # noqa
 from model_mommy import mommy  # noqa
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
-
+from taxonomy.models import Taxon, Community
 from conservation.models import (  # noqa
     ConservationList,
     TaxonGazettal,
@@ -78,10 +78,24 @@ class ConservationActionViewTests(TestCase):
         """Set up."""
         self.consactioncat = ConservationActionCategory.objects.create(
             code="burn", label="Burn", description="Burn everything")
+        self.taxon0 = mommy.make(
+            Taxon,
+            name_id=1000,
+            name="name0",
+            _fill_optional=['rank', 'eoo'])
+        self.taxon0.save()
+        self.com0 = mommy.make(
+            Community,
+            code="code0",
+            name="name0",
+            _fill_optional=['eoo'])
+        self.com0.save()
         self.object = ConservationAction.objects.create(
             category=self.consactioncat,
             instructions="burn some stuff"
         )
+        self.object.taxa.add(self.taxon0)
+        self.object.communities.add(self.com0)
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
             email="super@gmail.com",

@@ -7,21 +7,8 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView  # FormView,; DeleteView,
-from occurrence.forms import (
-    AreaEncounterForm,
-    CommunityAreaEncounterForm,
-    TaxonAreaEncounterForm,
-    AssociatedSpeciesObservationForm,
-    FireHistoryObservationForm
-)
-from occurrence.models import (
-    AreaEncounter,
-    TaxonAreaEncounter,
-    CommunityAreaEncounter,
-    ObservationGroup,
-    AssociatedSpeciesObservation,
-    FireHistoryObservation
-)
+from occurrence import forms as occ_forms
+from occurrence import models as occ_models
 from taxonomy.models import Community, Taxon
 from shared.utils import Breadcrumb
 from shared.views import (  # noqa
@@ -41,8 +28,8 @@ from shared.views import (  # noqa
 class AreaEncounterCreateView(CreateViewBreadcrumbMixin, CreateView):
     """Create view for AreaEncounter."""
 
-    model = AreaEncounter
-    form_class = AreaEncounterForm
+    model = occ_models.AreaEncounter
+    form_class = occ_forms.AreaEncounterForm
     template_name = "occurrence/areaencounter_form.html"
 
     def get_breadcrumbs(self, request, obj=None, add=False):
@@ -58,20 +45,20 @@ class AreaEncounterUpdateView(
         SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for AreaEncounter."""
 
-    model = AreaEncounter
-    form_class = AreaEncounterForm
+    model = occ_models.AreaEncounter
+    form_class = occ_forms.AreaEncounterForm
     template_name = "occurrence/areaencounter_form.html"
 
-    def get_object(self, queryset=None):
-        """Accommodate custom object pk from url conf."""
-        return self.model.objects.get(pk=self.kwargs["pk"])
+    # def get_object(self, queryset=None):
+    #     """Accommodate custom object pk from url conf."""
+    #     return self.model.objects.get(pk=self.kwargs["pk"])
 
 
 class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
     """Create view for TaxonAreaEncounter."""
 
-    model = TaxonAreaEncounter
-    form_class = TaxonAreaEncounterForm
+    model = occ_models.TaxonAreaEncounter
+    form_class = occ_forms.TaxonAreaEncounterForm
 
     def get_initial(self):
         """Initial form values."""
@@ -86,16 +73,16 @@ class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
 class TaxonAreaEncounterUpdateView(AreaEncounterUpdateView):
     """UpdateView for TaxonAreaEncounter."""
 
-    model = TaxonAreaEncounter
-    form_class = TaxonAreaEncounterForm
+    model = occ_models.TaxonAreaEncounter
+    form_class = occ_forms.TaxonAreaEncounterForm
     template_name = "occurrence/taxonareaencounter_form.html"
 
 
 class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
     """Create view for CommunityAreaEncounter."""
 
-    model = CommunityAreaEncounter
-    form_class = CommunityAreaEncounterForm
+    model = occ_models.CommunityAreaEncounter
+    form_class = occ_forms.CommunityAreaEncounterForm
 
     def get_initial(self):
         """Initial form values."""
@@ -110,8 +97,8 @@ class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
 class CommunityAreaEncounterUpdateView(AreaEncounterUpdateView):
     """UpdateView for CommunityAreaEncounter."""
 
-    model = CommunityAreaEncounter
-    form_class = CommunityAreaEncounterForm
+    model = occ_models.CommunityAreaEncounter
+    form_class = occ_forms.CommunityAreaEncounterForm
     template_name = "occurrence/communityareaencounter_form.html"
 
 
@@ -121,14 +108,9 @@ class CommunityAreaEncounterUpdateView(AreaEncounterUpdateView):
 class TaxonAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
     """DetailView for TaxonAreaEncounter."""
 
-    model = TaxonAreaEncounter
+    model = occ_models.TaxonAreaEncounter
     context_object_name = "original"
     template_name = "occurrence/taxonareaencounter_detail.html"
-
-    def get_object(self):
-        """Get Object by name_id."""
-        object = TaxonAreaEncounter.objects.get(pk=self.kwargs.get("pk"))
-        return object
 
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
@@ -143,14 +125,9 @@ class TaxonAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
 class CommunityAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
     """DetailView for CommunityAreaEncounter."""
 
-    model = TaxonAreaEncounter
+    model = occ_models.CommunityAreaEncounter
     context_object_name = "original"
     template_name = "occurrence/communityareaencounter_detail.html"
-
-    def get_object(self):
-        """Get Object by pk."""
-        object = CommunityAreaEncounter.objects.get(pk=self.kwargs.get("pk"))
-        return object
 
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
@@ -169,13 +146,13 @@ class ObservationGroupCreateView(CreateViewBreadcrumbMixin, CreateView):
     """Base CreateView for ObservationGroup."""
 
     template_name = "occurrence/obsgroup_form.html"
-    model = ObservationGroup
+    model = occ_models.ObservationGroup
 
     def get_initial(self):
         """Initial form values."""
         initial = dict()
         if "occ_pk" in self.kwargs:
-            initial["encounter"] = AreaEncounter.objects.get(pk=self.kwargs["occ_pk"])
+            initial["encounter"] = occ_models.AreaEncounter.objects.get(pk=self.kwargs["occ_pk"])
         return initial
 
     def get_context_data(self, **kwargs):
@@ -193,18 +170,18 @@ class ObservationGroupCreateView(CreateViewBreadcrumbMixin, CreateView):
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
         if "occ_pk" in self.kwargs:
-            enc = AreaEncounter.objects.get(pk=self.kwargs["occ_pk"])
+            enc = occ_models.AreaEncounter.objects.get(pk=self.kwargs["occ_pk"])
             return (
                 Breadcrumb(_('Home'), reverse('home')),
                 Breadcrumb(enc._meta.verbose_name_plural, enc.list_url()),
                 Breadcrumb(enc.__str__(), enc.get_absolute_url()),
-                Breadcrumb("Report new {0}".format(self.model._meta.verbose_name), None)
+                Breadcrumb(_("Report new {0}").format(self.model._meta.verbose_name), None)
             )
 
         else:
             return (
                 Breadcrumb(_('Home'), reverse('home')),
-                Breadcrumb("Report new {0}".format(self.model._meta.verbose_name), None)
+                Breadcrumb(_("Report new {0}").format(self.model._meta.verbose_name), None)
             )
 
 
@@ -212,7 +189,7 @@ class ObservationGroupUpdateView(UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for ObservationGroup."""
 
     template_name = "occurrence/obsgroup_form.html"
-    model = ObservationGroup
+    model = occ_models.ObservationGroup
 
     def get_object(self, queryset=None):
         """Accommodate custom object pk from url conf."""
@@ -237,26 +214,46 @@ class ObservationGroupUpdateView(UpdateViewBreadcrumbMixin, UpdateView):
 class AssociatedSpeciesObservationCreateView(ObservationGroupCreateView):
     """Create view for AssociatedSpeciesObservation."""
 
-    model = AssociatedSpeciesObservation
-    form_class = AssociatedSpeciesObservationForm
+    model = occ_models.AssociatedSpeciesObservation
+    form_class = occ_forms.AssociatedSpeciesObservationForm
 
 
 class AssociatedSpeciesObservationUpdateView(ObservationGroupUpdateView):
     """Update view for AssociatedSpeciesObservation."""
 
-    model = AssociatedSpeciesObservation
-    form_class = AssociatedSpeciesObservationForm
+    model = occ_models.AssociatedSpeciesObservation
+    form_class = occ_forms.AssociatedSpeciesObservationForm
 
 
 class FireHistoryObservationCreateView(ObservationGroupCreateView):
-    """Create view for AssociatedSpeciesObservation."""
+    """Create view for FireHistoryObservation."""
 
-    model = FireHistoryObservation
-    form_class = FireHistoryObservationForm
+    model = occ_models.FireHistoryObservation
+    form_class = occ_forms.FireHistoryObservationForm
 
 
 class FireHistoryObservationUpdateView(ObservationGroupUpdateView):
-    """Update view for AssociatedSpeciesObservation."""
+    """Update view for FireHistoryObservation."""
 
-    model = FireHistoryObservation
-    form_class = FireHistoryObservationForm
+    model = occ_models.FireHistoryObservation
+    form_class = occ_forms.FireHistoryObservationForm
+
+
+class FileAttachmentObservationCreateView(ObservationGroupCreateView):
+    """Create view for FileAttachmentObservation."""
+
+    model = occ_models.FileAttachmentObservation
+    form_class = occ_forms.FileAttachmentObservationForm
+
+    def get_initial(self):
+        """Initial form values."""
+        initial = super(FileAttachmentObservationCreateView, self).get_initial()
+        initial["author"] = initial["encounter"].encountered_by
+        return initial
+
+
+class FileAttachmentObservationUpdateView(ObservationGroupUpdateView):
+    """Update view for FileAttachmentObservation."""
+
+    model = occ_models.FileAttachmentObservation
+    form_class = occ_forms.FileAttachmentObservationForm

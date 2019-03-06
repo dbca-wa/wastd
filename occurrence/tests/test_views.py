@@ -8,18 +8,15 @@ from __future__ import unicode_literals
 
 from django.utils import timezone
 
+
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry  # Point, Polygon
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 from model_mommy import mommy
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
-from occurrence.models import (  # noqa
-    CommunityAreaEncounter,
-    TaxonAreaEncounter,
-    AssociatedSpeciesObservation,
-    FireHistoryObservation
-)
+from occurrence import models as occ_models
 from taxonomy.models import Community, Taxon  # noqa
 # from django.contrib.contenttypes.models import ContentType
 
@@ -68,23 +65,23 @@ class CommunityAreaEncounterTests(TestCase):
             password="test")
         self.user.save()
 
-        self.cae = CommunityAreaEncounter.objects.create(
+        self.cae = occ_models.CommunityAreaEncounter.objects.create(
             community=self.com0,
             encountered_on=timezone.now(),
             encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
 
-        self.asssp1 = AssociatedSpeciesObservation.objects.create(
+        self.asssp1 = occ_models.AssociatedSpeciesObservation.objects.create(
             encounter=self.cae,
             taxon=self.taxon0
         )
         self.asssp1.save()
 
-        self.fh1 = FireHistoryObservation.objects.create(
+        self.fh1 = occ_models.FireHistoryObservation.objects.create(
             encounter=self.cae,
             last_fire_date=timezone.now().date(),
-            fire_intensity=FireHistoryObservation.HMLN_HIGH
+            fire_intensity=occ_models.FireHistoryObservation.HMLN_HIGH
         )
         self.fh1.save()
 
@@ -92,7 +89,7 @@ class CommunityAreaEncounterTests(TestCase):
 
     def test_cae_creation(self):
         """Test creating a CommunityAreaEncounter."""
-        self.assertTrue(isinstance(self.cae, CommunityAreaEncounter))
+        self.assertTrue(isinstance(self.cae, occ_models.CommunityAreaEncounter))
 
     def test_cae_str(self):
         """Test CAE str."""
@@ -120,17 +117,16 @@ class CommunityAreaEncounterTests(TestCase):
     def test_cae_detail_url_loads(self):
         """Test CommunityAreaEncounter detail_url."""
         url = reverse('occurrence:communityareaencounter-detail',
-                      kwargs={'pk': self.cae.community.pk})
-        self.assertEqual(url, self.cae.detail_url)
+                      kwargs={'pk': self.cae.pk})
+        self.assertEqual(url, self.cae.get_absolute_url())
 
         response = self.client.get(self.cae.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_cae_update_url_loads(self):
         """Test CommunityAreaEncounter update_url."""
-        url = reverse(
-            'occurrence:communityareaencounter-update',
-            kwargs={'pk': self.cae.community.pk})
+        url = reverse('occurrence:communityareaencounter-update',
+                      kwargs={'pk': self.cae.pk})
         self.assertEqual(url, self.cae.update_url)
 
         response = self.client.get(self.cae.update_url)
@@ -139,16 +135,16 @@ class CommunityAreaEncounterTests(TestCase):
     def test_cae_create_url_loads(self):
         """Test CommunityAreaEncounter create_url."""
         url = reverse('occurrence:communityareaencounter-create')
-        self.assertEqual(url, self.cae.update_url)
+        self.assertEqual(url, occ_models.CommunityAreaEncounter.create_url())
 
-        response = self.client.get(self.cae.update_url)
+        response = self.client.get(occ_models.CommunityAreaEncounter.create_url())
         self.assertEqual(response.status_code, 200)
 
     # ------------------------------------------------------------------------#
     # CAE AssociatedSpeciesObservation
     def test_asssp_creation(self):
         """Test creating a AssociatedSpeciesObservation."""
-        self.assertTrue(isinstance(self.asssp1, AssociatedSpeciesObservation))
+        self.assertTrue(isinstance(self.asssp1, occ_models.AssociatedSpeciesObservation))
 
     def test_asssp_absolute_admin_url_loads(self):
         """Test AssociatedSpeciesObservation absolute_admin_url."""
@@ -156,8 +152,9 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_asssp_detail_url_loads(self):
-        """Test AssociatedSpeciesObservation detail_url."""
-        response = self.client.get(self.asssp1.detail_url)
+        """Test AssociatedSpeciesObservation get_absolute_url()."""
+        response = self.client.get(self.asssp1.get_absolute_url())
+        self.assertEqual(self.asssp1.get_absolute_url(), self.asssp1.encounter.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_asssp_update_url_loads(self):
@@ -169,7 +166,7 @@ class CommunityAreaEncounterTests(TestCase):
     # CAE FireHistoryObservation
     def test_fh_creation(self):
         """Test creating a FireHistoryObservation."""
-        self.assertTrue(isinstance(self.fh1, FireHistoryObservation))
+        self.assertTrue(isinstance(self.fh1, occ_models.FireHistoryObservation))
 
     def test_fh_absolute_admin_url_loads(self):
         """Test FireHistoryObservation absolute_admin_url."""
@@ -177,7 +174,7 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_fh_detail_url_loads(self):
-        """Test FireHistoryObservation detail_url."""
+        """Test FireHistoryObservation get_absolute_url()."""
         response = self.client.get(self.fh1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
@@ -229,37 +226,45 @@ class TaxonAreaEncounterTests(TestCase):
             password="test")
         self.user.save()
 
-        self.tae = TaxonAreaEncounter.objects.create(
+        self.tae = occ_models.TaxonAreaEncounter.objects.create(
             taxon=self.taxon0,
             encountered_on=timezone.now(),
             encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
 
-        self.asssp1 = AssociatedSpeciesObservation.objects.create(
+        self.asssp1 = occ_models.AssociatedSpeciesObservation.objects.create(
             encounter=self.tae,
             taxon=self.taxon1
         )
         self.asssp1.save()
 
-        self.asssp2 = AssociatedSpeciesObservation.objects.create(
+        self.asssp2 = occ_models.AssociatedSpeciesObservation.objects.create(
             encounter=self.tae,
             taxon=self.taxon2
         )
         self.asssp2.save()
 
-        self.fh1 = FireHistoryObservation.objects.create(
+        self.fh1 = occ_models.FireHistoryObservation.objects.create(
             encounter=self.tae,
             last_fire_date=timezone.now(),
-            fire_intensity=FireHistoryObservation.HMLN_HIGH
+            fire_intensity=occ_models.FireHistoryObservation.HMLN_HIGH
         )
         self.fh1.save()
+
+        self.fatt = occ_models.FileAttachmentObservation.objects.create(
+            encounter=self.tae,
+            attachment=SimpleUploadedFile('testfile.txt', b'These are the file contents.'),
+            title="test",
+            author=self.user
+        )
+        self.fatt.save()
 
         self.client.force_login(self.user)
 
     def test_tae_creation(self):
         """Test creating a TaxonAreaEncounter."""
-        self.assertTrue(isinstance(self.tae, TaxonAreaEncounter))
+        self.assertTrue(isinstance(self.tae, occ_models.TaxonAreaEncounter))
 
     def test_tae_str(self):
         """Test TAE str."""
@@ -283,6 +288,9 @@ class TaxonAreaEncounterTests(TestCase):
 
         response = self.client.get(self.tae.list_url())
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'taxonomy/taxon_detail.html')
+
+        self.assertContains(response, self.taxon0.name)
 
     def test_tae_detail_url_loads(self):
         """Test taxon detail url works and loads."""
@@ -292,6 +300,11 @@ class TaxonAreaEncounterTests(TestCase):
 
         response = self.client.get(self.tae.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.taxon0.name)
+        self.assertContains(response, self.fatt.title)
+        self.assertContains(response, self.fatt.author)
+        self.assertTemplateUsed(response, 'occurrence/taxonareaencounter_detail.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/firehistoryobservation.html')
 
     def test_tae_update_url_loads(self):
         """Test taxon update url works and loads."""
@@ -306,7 +319,7 @@ class TaxonAreaEncounterTests(TestCase):
     # TAE AssociatedSpeciesObservation
     def test_asssp_creation(self):
         """Test creating a AssociatedSpeciesObservation."""
-        self.assertTrue(isinstance(self.asssp1, AssociatedSpeciesObservation))
+        self.assertTrue(isinstance(self.asssp1, occ_models.AssociatedSpeciesObservation))
 
     def test_asssp_absolute_admin_url_loads(self):
         """Test AssociatedSpeciesObservation absolute_admin_url."""
@@ -315,7 +328,7 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_asssp_detail_url_loads(self):
-        """Test AssociatedSpeciesObservation detail_url."""
+        """Test AssociatedSpeciesObservation get_absolute_url."""
         response = self.client.get(self.asssp1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
@@ -328,7 +341,7 @@ class TaxonAreaEncounterTests(TestCase):
     # TAE FireHistoryObservation
     def test_fh_creation(self):
         """Test creating a FireHistoryObservation."""
-        self.assertTrue(isinstance(self.fh1, FireHistoryObservation))
+        self.assertTrue(isinstance(self.fh1, occ_models.FireHistoryObservation))
 
     def test_fh_absolute_admin_url_loads(self):
         """Test FireHistoryObservation absolute_admin_url."""
@@ -336,11 +349,32 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_fh_detail_url_loads(self):
-        """Test FireHistoryObservation detail_url."""
+        """Test FireHistoryObservation get_absolute_url."""
         response = self.client.get(self.fh1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_fh_update_url_loads(self):
         """Test FireHistoryObservation update_url."""
         response = self.client.get(self.fh1.update_url)
+        self.assertEqual(response.status_code, 200)
+
+    # ------------------------------------------------------------------------#
+    # TAE FileAttachmentObservation
+    def test_fatt_creation(self):
+        """Test creating a FileAttachmentObservation."""
+        self.assertTrue(isinstance(self.fatt, occ_models.FileAttachmentObservation))
+
+    def test_fatt_absolute_admin_url_loads(self):
+        """Test FileAttachmentObservation absolute_admin_url."""
+        response = self.client.get(self.fatt.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_fatt_detail_url_loads(self):
+        """Test FileAttachmentObservation get_absolute_url."""
+        response = self.client.get(self.fatt.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_fatt_update_url_loads(self):
+        """Test FileAttachmentObservation update_url."""
+        response = self.client.get(self.fatt.update_url)
         self.assertEqual(response.status_code, 200)

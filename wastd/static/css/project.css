@@ -25,7 +25,7 @@
 
 .brandimg {margin-top:-18px; height:50px; margin-bottom: -13px;}
 
-/* Breadcrumb */
+/* Breadcrumbs */
 .breadcrumb {background: none;}
 li.breadcrumb-item a {color: black;}
 .breadcrumb-item.active {
@@ -52,14 +52,14 @@ body{
 
 /* Force fullscreen map: height minus navbar */
 #mapholder {height:100%; width: 100%;}
-#map, #wastdmap {
-  height: calc(100vh - 72px);
-  position: relative;
-}
-#detailmap {width: auto; min-height:500px;}
-
 #searchmapholder {width: 100% auto; height: 18rem;}
 #searchmap {height:100%; width: auto;}
+#detailmap {width: auto; min-height:500px;}
+#map, #wastdmap {
+  height: calc(100vh - 72px); /* Viewport minus navbar */
+  position: relative;
+}
+
 
 /* Leaflet popup fixed width */
 .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {width: 540px;}
@@ -114,10 +114,18 @@ body{
 }
 
 .card-md {
-  max-width: 21rem;
+  max-width: 20rem;
   min-width: 8rem;
 }
 
+/*.card-columns {
+  @include media-breakpoint-only(lg) {
+    column-count: 6;
+  }
+  @include media-breakpoint-only(xl) {
+    column-count: 8;
+  }
+}*/
 
 /* Custom styles for leaflet/widget.html */
 .leaflet-textarea {width: 100%;}

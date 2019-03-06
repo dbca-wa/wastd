@@ -12,12 +12,14 @@ from __future__ import absolute_import, unicode_literals
 # import itertools
 import logging
 
+from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as geo_models
-# from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save  # noqa
 from django.dispatch import receiver
 # from rest_framework.reverse import reverse as rest_reverse
+
 from django.template import loader
 # from django.contrib.gis.db.models.query import GeoQuerySet
 # from django.urls import reverse
@@ -43,6 +45,7 @@ from taxonomy.models import Community, Taxon
 
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
 
 
 class AreaEncounter(PolymorphicModel,
@@ -403,7 +406,11 @@ def area_caches(sender, instance, *args, **kwargs):
 
 # Observation models ---------------------------------------------------------#
 @python_2_unicode_compatible
-class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
+class ObservationGroup(
+        QualityControlMixin,
+        UrlsMixin,
+        PolymorphicModel,
+        models.Model):
     """The Observation base class for area encounter observations.
 
     Everything happens somewhere, at a time, to someone, and someone records it.
@@ -428,9 +435,9 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
     encounter = models.ForeignKey(
         AreaEncounter,
         on_delete=models.CASCADE,
-        verbose_name=_("Area Encounter"),
+        verbose_name=_("Occurrence"),
         related_name="observations",
-        help_text=("The Area Encounter during which the observation group was observed."),)
+        help_text=("The Occurrence report containing the observation group."),)
 
     class Meta:
         """Class options."""
@@ -446,6 +453,17 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
     def get_absolute_url(self):
         """Detail url."""
         return self.encounter.get_absolute_url()
+
+    def list_url(self):
+        """ObsGroup list is not defined."""
+        return NotImplementedError("TODO: implement ObservationGroup list view.")
+
+    @property
+    def update_url(self):
+        """Custom update url contains occ pk and obsgroup pk."""
+        return reverse('{0}:{1}-update'.format(
+            self._meta.app_label, self._meta.model_name),
+            kwargs={'occ_pk': self.encounter.pk, 'obs_pk': self.pk})
 
     # -------------------------------------------------------------------------
     # Derived properties
@@ -510,52 +528,7 @@ class ObservationGroup(QualityControlMixin, PolymorphicModel, models.Model):
 
     # -------------------------------------------------------------------------
     # Functions
-
-    # FAUNA ENC
-    # Survey
-    # Threats
-    # Habitat and habitat conditions
-    # Fire history
-    # Vegetation class
-    # Associated species
-    # mgmt actions required
-    # comments
-    # DRF permit no
-    # TaxonSpecimenEncounter
-    # TaxonSampleEncounter
-
-    # FLORA ENC
-    # Location Description
-    # Survey: often no survey as most fauna enc are opportunistic
-    # Plant count
-    # Threats
-    # Habitat and habitat conditions
-    # Fire response
-    # Fire history
-    # Vegetation class
-    # Associated species: mostly empty, flora
-    # mgmt actions required
-    # comments
-    # DRF permit no
-    # Plant count
-    # TaxonSpecimenEncounter
-    # TaxonSampleEncounter
-    # VoucherSpecimen
-    # File attachments
-
-    # COM ENC
-    # Survey: often no survey as most fauna enc are opportunistic
-    # Threats
-    # Habitat and habitat conditions
-    # Fire history
-    # Vegetation class
-
-    # Associated species: mostly empty, flora
-    # mgmt actions required
-    # comments
-    # DRF permit no
-    # TaxonSpecimenEncounter
-    # TaxonSampleEncounter
+    # none yet
 
 
 class AssociatedSpeciesObservation(ObservationGroup):
@@ -579,7 +552,7 @@ class AssociatedSpeciesObservation(ObservationGroup):
 
 
 class FireHistoryObservation(ObservationGroup):
-    """Evidence of past fire."""
+    """Evidence of past fire date and intensity."""
 
     HMLN_DEFAULT = "NA"
     HMLN_LOW = "low"
@@ -621,3 +594,85 @@ class FireHistoryObservation(ObservationGroup):
             self.pk,
             self.last_fire_date.strftime("%d/%m/%Y"),
             self.get_fire_intensity_display())
+
+
+def fileattachmentobservation_media(instance, filename):
+    """Return an upload path for FileAttachmentObservation media."""
+    return 'files/{0}/{1}/{2}'.format(
+        instance.encounter.pk,
+        instance.pk,
+        filename
+    )
+
+
+class FileAttachmentObservation(ObservationGroup):
+    """A file attachment to an ObservationGroup.
+
+    The file attachment can be a photo, a paper datasheet scanned to PDF,
+    a video or audio clip, a communication record or any other digital resource
+    up to the maximum upload size.
+
+    Copyright is handled at application level, i.e. by submitting a file
+    as attachment, the author permits use by the application and downstream
+    systems under the application's agreed license, e.g. cc-by-sa.
+
+    Each attachment can be marked as confidential to be excluded from publication.
+    """
+
+    attachment = models.FileField(upload_to=fileattachmentobservation_media)
+
+    title = models.CharField(
+        blank=True, null=True,
+        max_length=500,
+        verbose_name=_("Title"),
+        help_text=_("A self-explanatory title for the file attachment."))
+
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name=_("Author"),
+        blank=True, null=True,
+        help_text=_("The person who authored and endorsed this file."))
+
+    confidential = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Is confidential"),
+        help_text=_("Whether this file is confidential or "
+                    "can be released to the public."),)
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "File Attachment"
+        verbose_name_plural = "File Attachments"
+
+    def __str__(self):
+        """The full name."""
+        return "{0} ({1})".format(self.title, self.author.fullname)
+
+
+# TFL
+# AreaAssessmentObservation
+# PlantCountObservation
+# ThreatObservation
+# HabitatCompositionObservation
+# HabitatConditionObservation
+# VegetationClassificationObservation
+# PhysicalSpecimenObservation
+# PermitObservation
+# Survey: often no survey as most fauna enc are opportunistic
+# Fire response?
+
+# TEC
+# OccurrenceConditionObservation
+# Uses: AreaAss, Thr, OccCond, Hab, VegClass, FireHist, AssSp, FileAtt
+
+# TFA
+# AnimalObservation
+# PhysicalSampleObservation
+# PhysicalSpecimenObservation
+# SurveyMethodObservation
+# EncounterTypeObservation
+# WildlifeIncidentObservation
+# Uses: SpecimenObs, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen

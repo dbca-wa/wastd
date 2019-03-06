@@ -13,22 +13,11 @@ from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
-from occurrence.models import (
-    AreaEncounter,
-    CommunityAreaEncounter,
-    TaxonAreaEncounter,
-    # ObservationGroup,
-    AssociatedSpeciesObservation,
-    FireHistoryObservation
-)
 
 from shared.admin import CustomStateLogInline, S2ATTRS, FORMFIELD_OVERRIDES
 from taxonomy.models import Community, Taxon  # noqa
-from occurrence.forms import (  # noqa
-    TaxonAreaEncounterForm,
-    AssociatedSpeciesObservationForm,
-    FireHistoryObservationForm
-)
+from occurrence import models as occ_models
+from occurrence import forms as occ_forms
 
 
 class AssociatedSpeciesObservationInline(admin.TabularInline):
@@ -36,8 +25,8 @@ class AssociatedSpeciesObservationInline(admin.TabularInline):
 
     extra = 0
     # max_num = 1  # limit max number
-    model = AssociatedSpeciesObservation
-    form = AssociatedSpeciesObservationForm
+    model = occ_models.AssociatedSpeciesObservation
+    form = occ_forms.AssociatedSpeciesObservationForm
     classes = ('grp-collapse grp-open',)
 
 
@@ -46,8 +35,8 @@ class FireHistoryObservationInline(admin.TabularInline):
 
     extra = 0
     # max_num = 1  # limit max number
-    model = FireHistoryObservation
-    form = FireHistoryObservationForm
+    model = occ_models.FireHistoryObservation
+    form = occ_forms.FireHistoryObservationForm
     classes = ('grp-collapse grp-open',)
 
 
@@ -62,7 +51,7 @@ class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
     date_hierarchy = 'encountered_on'
 
     # Change view
-    form = s2form(AreaEncounter, attrs=S2ATTRS)
+    form = s2form(occ_models.AreaEncounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     fsm_field = ['status', ]
     autocomplete_fields = ['encountered_by', ]
@@ -83,7 +72,7 @@ class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
     inlines = [CustomStateLogInline, ]
 
 
-@admin.register(TaxonAreaEncounter)
+@admin.register(occ_models.TaxonAreaEncounter)
 class TaxonAreaAdmin(AreaEncounterAdmin):
     """Admin for TaxonArea."""
 
@@ -95,7 +84,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
 
     # # Change view
     # form = TaxonAreaEncounterForm
-    form = s2form(TaxonAreaEncounter, attrs=S2ATTRS)
+    form = s2form(occ_models.TaxonAreaEncounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = AreaEncounterAdmin.autocomplete_fields + ["taxon"]
     inlines = [
@@ -104,7 +93,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
     ]
 
 
-@admin.register(CommunityAreaEncounter)
+@admin.register(occ_models.CommunityAreaEncounter)
 class CommunityAreaAdmin(AreaEncounterAdmin):
     """Admin for CommunityArea."""
 
@@ -114,7 +103,7 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
     list_select_related = ["community"]
 
     # Change view
-    form = s2form(CommunityAreaEncounter, attrs=S2ATTRS)
+    form = s2form(occ_models.CommunityAreaEncounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     fieldsets = ((_('Community'), {
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -126,20 +115,29 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
     ]
 
 
-@admin.register(AssociatedSpeciesObservation)
+@admin.register(occ_models.AssociatedSpeciesObservation)
 class AssociatedSpeciesObservationAdmin(FSMTransitionMixin, VersionAdmin):
     """Associated Species Observation Admin."""
 
     list_display = ["encounter", "taxon", ]
-    form = AssociatedSpeciesObservationForm
+    form = occ_forms.AssociatedSpeciesObservationForm
     fsm_field = ['status', ]
     autocomplete_fields = ['taxon', ]
 
 
-@admin.register(FireHistoryObservation)
+@admin.register(occ_models.FireHistoryObservation)
 class FireHistoryObservationAdmin(FSMTransitionMixin, VersionAdmin):
     """FireHistoryObservation Admin."""
 
     list_display = ["encounter", "last_fire_date", "fire_intensity"]
-    form = FireHistoryObservationForm
+    form = occ_forms.FireHistoryObservationForm
+    fsm_field = ['status', ]
+
+
+@admin.register(occ_models.FileAttachmentObservation)
+class FileAttachmentObservationAdmin(FSMTransitionMixin, VersionAdmin):
+    """FileAttachmentObservation Admin."""
+
+    list_display = ["encounter", "attachment", "title", "author", "confidential"]
+    form = occ_forms.FileAttachmentObservationForm
     fsm_field = ['status', ]

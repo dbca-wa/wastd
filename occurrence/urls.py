@@ -21,11 +21,11 @@ urlpatterns = [
             views.TaxonAreaEncounterCreateView.as_view(),
             name='taxonareaencounter-create'),
 
-    re_path(r'^(?P<pk>\d+)/$',
+    re_path(r'^species/(?P<pk>\d+)/$',
             views.TaxonAreaEncounterDetailView.as_view(),
             name='taxonareaencounter-detail'),
 
-    re_path(r'(?P<pk>\d+)/update/$',
+    re_path(r'species/(?P<pk>\d+)/update/$',
             views.TaxonAreaEncounterUpdateView.as_view(),
             name='taxonareaencounter-update'),
 
@@ -43,11 +43,11 @@ urlpatterns = [
             views.CommunityAreaEncounterCreateView.as_view(),
             name='communityareaencounter-create'),
 
-    re_path(r'^(?P<pk>\d+)/$',
+    re_path(r'^communities/(?P<pk>\d+)/$',
             views.CommunityAreaEncounterDetailView.as_view(),
             name='communityareaencounter-detail'),
 
-    re_path(r'^(?P<pk>\d+)/update/$',
+    re_path(r'^communities/(?P<pk>\d+)/update/$',
             views.CommunityAreaEncounterUpdateView.as_view(),
             name='communityareaencounter-update'),
 
@@ -68,4 +68,12 @@ urlpatterns = [
     re_path(r'^(?P<occ_pk>\d+)/fire-history/(?P<obs_pk>\d+)/$',
             views.FireHistoryObservationUpdateView.as_view(),
             name='firehistoryobservation-update'),
+
+    re_path(r'^(?P<occ_pk>\d+)/file-attachment/report$',
+            views.FileAttachmentObservationCreateView.as_view(),
+            name='fileattachmentobservation-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/file-attachment/(?P<obs_pk>\d+)/$',
+            views.FileAttachmentObservationUpdateView.as_view(),
+            name='fileattachmentobservation-update'),
 ]

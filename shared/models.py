@@ -29,6 +29,8 @@ from wastd.users.models import User
 
 logger = logging.getLogger(__name__)
 
+# Instantiated models --------------------------------------------------------#
+
 
 # Abstract models ------------------------------------------------------------#
 class UrlsMixin(models.Model):

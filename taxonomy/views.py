@@ -85,10 +85,11 @@ class TaxonListView(ListViewBreadcrumbMixin, ListView):
         return TaxonFilter(self.request.GET, queryset=queryset).qs
 
 
-class CommunityListView(ListView):
+class CommunityListView(ListViewBreadcrumbMixin, ListView):
     """A ListView for Community."""
 
     model = Community
+    template_name = "taxonomy/community_list.html"
     paginate_by = 12
 
     def get_context_data(self, **kwargs):

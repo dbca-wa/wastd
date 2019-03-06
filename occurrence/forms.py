@@ -14,7 +14,8 @@ from .models import (
     CommunityAreaEncounter,
     TaxonAreaEncounter,
     AssociatedSpeciesObservation,
-    FireHistoryObservation
+    FireHistoryObservation,
+    FileAttachmentObservation
 )
 from shared.admin import S2ATTRS, LEAFLET_SETTINGS  # noqa
 from shared.forms import DateInput, DateTimeInput
@@ -226,6 +227,53 @@ class FireHistoryObservationForm(forms.ModelForm):
                 "Fire History",
                 "last_fire_date",
                 "fire_intensity"
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+
+
+class FileAttachmentObservationForm(forms.ModelForm):
+    """FileAttachmentObservation Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = FileAttachmentObservation
+        fields = ("encounter", "attachment", "title", "author", "confidential")
+        widgets = {
+            "encounter": ModelSelect2Widget(
+                model=AreaEncounter,
+                search_fields=["code", "name", "area_type", ],
+                attrs={'size': 80}
+            ),
+            'author': ModelSelect2Widget(
+                model=get_user_model(),
+                search_fields=[
+                    "name__icontains",
+                    "username__icontains",
+                    "role__icontains",
+                    "email__icontains"
+                ]
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(FileAttachmentObservationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "File attachment",
+                "attachment",
+                "title",
+                "author",
+                "confidential"
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')
