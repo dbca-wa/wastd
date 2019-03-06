@@ -46,7 +46,7 @@
           {% conservationaction_add request.user "communities" block=False label=False %}
         </small>
       </h3>
-      <p>{% conservationaction_rows request.user  conservationactions_general %}</p>
+      <p>{% include 'conservation/includes/conservationaction_rows.html' with actions=conservationactions_general %}</p>
 
       <hr class="my-4">
       <h3>Documents

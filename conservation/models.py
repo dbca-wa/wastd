@@ -367,6 +367,14 @@ class ConservationActivity(models.Model):
         """Return the absolute admin change URL."""
         return self.conservation_action.absolute_admin_url
 
+    def list_url(self):
+        """ObsGroup list is not defined."""
+        return self.conservation_action.get_absolute_url()
+
+    def get_absolute_url(self):
+        """Detail url."""
+        return self.conservation_action.get_absolute_url()
+
 
 @receiver(post_save, sender=ConservationActivity)
 def update_consaction_caches(sender, instance, *args, **kwargs):

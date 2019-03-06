@@ -12,13 +12,17 @@
             {{ document.get_status_display }}
           </span>
           {{ document.title }}
-          <small class="float-right">
+          <small class="float-right ml-1">
             {% if is_staff %}
-            <a href="{{ document.absolute_admin_url }}"
+            <a href="{{ document.absolute_admin_url }}" class="btn btn-success btn-sm"
               title="Because you have DBCA Curator privileges, you may edit this Document." target="_">
               <span class="oi oi-pencil" aria-hidden="true"></span>
+              <span class="oi oi-document" aria-hidden="true"></span>
             </a>
             {% endif %}
+          </small>
+          <small class="float-right">
+            {% conservationaction_add user "taxa" document=document %}
           </small>
         </h5>
 
@@ -64,10 +68,7 @@
         </p>
 
         <p class="card-text">
-          {% conservationaction_rows user document.conservationaction_set.all %}
-          <small class="float-right">
-            {% conservationaction_add user "taxa" document=document %}
-          </small>
+          {% include 'conservation/includes/conservationaction_rows.html' with actions=document.conservationaction_set.all %}
         </p>
 
         {% for attachment in document.attachments.all %}

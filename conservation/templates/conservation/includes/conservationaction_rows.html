@@ -7,11 +7,17 @@
     {{ action.instructions }}
     <small class="float-right">
       {% if is_staff %}
-      <a href="{{ action.absolute_admin_url }}"
+      <a href="{{ action.absolute_admin_url }}" class="btn btn-sm btn-success"
         title="Because you have DBCA Curator privileges, you may edit this managment action." target="_">
         <span class="oi oi-pencil" aria-hidden="true"></span>
+        <span class="oi oi-task" aria-hidden="true"></span>
       </a>
       {% endif %}
+      <a href="{{ action.update_url }}" class="btn btn-sm btn-primary"
+        title="Edit this managment action." target="_">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+        <span class="oi oi-task" aria-hidden="true"></span>
+      </a>
     </small>
   </div>
 </div>

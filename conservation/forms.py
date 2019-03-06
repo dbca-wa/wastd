@@ -9,12 +9,7 @@ from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from leaflet.forms.widgets import LeafletWidget
 from taxonomy.models import Community, Taxon
 
-from conservation.models import (
-    ConservationActionCategory,
-    ConservationAction,
-    # ConservationActivity,
-    Document
-)
+from conservation import models as cons_models
 from shared.admin import LEAFLET_SETTINGS
 from shared.forms import DateInput  # DateTimeInput
 # from wastd.users.models import User
@@ -44,7 +39,8 @@ class ConservationActionForm(forms.ModelForm):
                 'Implementation',
                 'implementation_notes',
                 'completion_date',
-                'expenditure'
+                'expenditure',
+                # 'attachments'
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')
@@ -54,7 +50,7 @@ class ConservationActionForm(forms.ModelForm):
     class Meta:
         """Class options."""
 
-        model = ConservationAction
+        model = cons_models.ConservationAction
         fields = (
             "taxa",
             "communities",
@@ -65,11 +61,14 @@ class ConservationActionForm(forms.ModelForm):
             "instructions",
             "implementation_notes",
             "completion_date",
-            "expenditure")
+            "expenditure",
+            # "attachments"
+        )
         widgets = {
             'taxa': ModelSelect2MultipleWidget(
                 model=Taxon,
                 search_fields=[
+                    "name_id__icontains",
                     "taxonomic_name__icontains",
                     "vernacular_names__icontains",
                 ]
@@ -83,7 +82,7 @@ class ConservationActionForm(forms.ModelForm):
                 ]
             ),
             'document': ModelSelect2Widget(
-                model=Document,
+                model=cons_models.Document,
                 search_fields=[
                     "title__icontains",
                     "comments__icontains",
@@ -91,11 +90,58 @@ class ConservationActionForm(forms.ModelForm):
             ),
             'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'category': ModelSelect2Widget(
-                model=ConservationActionCategory,
+                model=cons_models.ConservationActionCategory,
                 search_fields=[
                     "code__icontains",
                     "label__icontains",
                     "description__icontains",
+                ]
+            ),
+            'completion_date': DateInput(),
+        }
+
+
+class ConservationActivityForm(forms.ModelForm):
+    """Common form for ConservationActivity."""
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(ConservationActivityForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Task',
+                'conservation_action',
+            ),
+            Fieldset(
+                'Implementation',
+                'implementation_notes',
+                'completion_date',
+                'expenditure',
+                # 'attachments'
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+
+    class Meta:
+        """Class options."""
+
+        model = cons_models.ConservationActivity
+        fields = (
+            "conservation_action",
+            "implementation_notes",
+            "completion_date",
+            "expenditure",
+            # "attachments"
+        )
+        widgets = {
+            'conservation_action': ModelSelect2Widget(
+                model=cons_models.ConservationAction,
+                search_fields=[
+                    "category__icontains",
+                    "instructions__icontains",
                 ]
             ),
             'completion_date': DateInput(),

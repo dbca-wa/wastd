@@ -19,4 +19,11 @@ urlpatterns = [
     re_path(r'^actions/create/$',
             views.ConservationActionCreateView.as_view(),
             name="conservationaction-create"),
+
+    re_path(r'^actions/(?P<pk>\d+)/report-progress/$',
+            views.ConservationActivityCreateView.as_view(),
+            name="conservationactivity-create"),
+    re_path(r'^actions/activities/(?P<pk>\d+)/update/$',
+            views.ConservationActivityUpdateView.as_view(),
+            name="conservationactivity-update"),
 ]

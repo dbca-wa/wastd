@@ -19,18 +19,22 @@
       <!-- taxa -->
       {% for taxon in object.taxa.all %}
       <p class="card-text">
-        <span class="oi oi-eye"
-          title="Species" aria-hidden="true"></span>
-        {{ taxon }}
+        <a href="{{ taxon.get_absolute_url }}">
+          <span class="oi oi-eye"
+            title="Species" aria-hidden="true"></span>
+          {{ taxon }}
+        </a>
       </p>
       {% endfor %}
 
       <!-- communities -->
       {% for com in object.communities.all %}
       <p class="card-text">
-        <span class="oi oi-eye"
-          title="Communities" aria-hidden="true"></span>
-        {{ com }}
+        <a href="{{ com.get_absolute_url }}">
+          <span class="oi oi-eye"
+            title="Communities" aria-hidden="true"></span>
+          {{ com }}
+          </a>
       </p>
       {% endfor %}
       <!-- documents -->
@@ -95,6 +99,15 @@
               {% endif %}
             </p>
           </div>
+
+          <div class="card-footer">
+            <a href="{{ act.update_url }}" class="btn btn-sm btn-block btn-primary">
+              <span class="oi oi-pencil" aria-hidden="true"></span>
+              <span class="oi oi-task" aria-hidden="true"></span>
+              Update progress
+            </a>
+          </div>
+
         </div>
     {% endfor %}
     <!-- /activities -->
@@ -112,12 +125,12 @@
     </a>
     <!-- /Conservation activity view -->
     <!-- Conservation activity add -->
-    <a href=""
+    <a href="{% url 'conservation:conservationactivity-create' pk=object.pk %}"
         title="Report a new conservation activity."
         role="button"
         class="btn btn-primary btn-sm btn-block">
       <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-task" aria-hidden="true"></span>
-      Report progress (TODO)
+      Report progress
     </a>
     <!-- /Conservation activity add -->
     <!-- Conservation action update -->
