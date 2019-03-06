@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 export_download %}
+{% block content %}
+<span class="float-right">{% resource_download_menu %}</span>
+{% include 'shared/breadcrumbs.html' %}
+{% include 'shared/pagination_row.html' %}
+<div class="row" id="data-row">
+  <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
+    <div class="row">
+      {% for original in object_list %}
+      <!-- {{ object }} -->
+        {% include 'occurrence/include/areaencounter_card.html' %}
+      {% endfor %}
+      </div><!-- /.row -->
+  </div><!-- /#dash-data -->
+  <div id="filters-row" class="col-lg-3 col-md-4 col-sm-6 col-12">
+    <form method="get">
+      <div class="row-fluid">
+        {% bootstrap_form list_filter.form %}
+      </div>
+      <button
+        class="btn btn-primary my-2 my-sm-0"
+        title="Filter by above criteria." type="submit">
+        Go
+      </button>
+    </form>
+  </div><!-- /#filters-row -->
+</div><!-- /#data-row-->
+{% endblock %}
+
+{% block css%}
+{{ block.super }}
+{% leaflet_css %}
+{{ form.media.css }}
+{% endblock %}
+
+{% block javascript%}
+{{ block.super }}
+{% leaflet_js %}
+{{ form.media.js }}
+{% endblock %}

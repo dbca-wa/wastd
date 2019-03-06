@@ -10,6 +10,7 @@ from easy_select2 import select2_modelform as s2form
 # from ajax_select.fields import (
 # AutoCompleteSelectField, AutoCompleteSelectMultipleField)
 # from easy_select2.widgets import Select2
+from import_export.admin import ImportExportModelAdmin
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
 
@@ -18,6 +19,7 @@ from shared.admin import CustomStateLogInline, S2ATTRS, FORMFIELD_OVERRIDES
 from taxonomy.models import Community, Taxon  # noqa
 from occurrence import models as occ_models
 from occurrence import forms as occ_forms
+from occurrence import resources as occ_resources
 
 
 class AssociatedSpeciesObservationInline(admin.TabularInline):
@@ -41,7 +43,7 @@ class FireHistoryObservationInline(admin.TabularInline):
 
 
 # @admin.register(AreaEncounter)
-class AreaEncounterAdmin(FSMTransitionMixin, VersionAdmin):
+class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmin):
     """Admin for Area."""
 
     # Change list
@@ -81,6 +83,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
     list_filter = AreaEncounterAdmin.list_filter + ["taxon"]
     list_select_related = ["taxon", ]
     show_full_result_count = False
+    resource_class = occ_resources.TaxonAreaEncounterResource
 
     # # Change view
     # form = TaxonAreaEncounterForm
@@ -101,6 +104,8 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
     list_display = AreaEncounterAdmin.list_display + ["community"]
     list_filter = AreaEncounterAdmin.list_filter + ["community"]
     list_select_related = ["community"]
+    show_full_result_count = False
+    resource_class = occ_resources.CommunityAreaEncounterResource
 
     # Change view
     form = s2form(occ_models.CommunityAreaEncounter, attrs=S2ATTRS)

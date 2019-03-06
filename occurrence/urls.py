@@ -9,6 +9,10 @@ app_name = 'occurrence'
 urlpatterns = [
     # ------------------------------------------------------------------------#
     # Species: TaxonAreaEncounter
+    re_path(r'^species/$',
+            views.TaxonAreaEncounterListView.as_view(),
+            name='taxonareaencounter-list'),
+
     re_path(r'^species/(?P<name_id>[-+]?[0-9]+)/report/$',
             views.TaxonAreaEncounterCreateView.as_view(),
             name='taxon-occurrence-create'),
@@ -31,6 +35,10 @@ urlpatterns = [
 
     # ------------------------------------------------------------------------#
     # Communities: CommunityAreaEncounter
+    re_path(r'^communities/$',
+            views.CommunityAreaEncounterListView.as_view(),
+            name='communityareaencounter-list'),
+
     re_path(r'^communities/(?P<pk>\d+)/report/$',
             views.CommunityAreaEncounterCreateView.as_view(),
             name='community-occurrence-create'),

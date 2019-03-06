@@ -220,12 +220,19 @@ class AreaEncounter(PolymorphicModel,
 
     # -------------------------------------------------------------------------
     # URLs
-    def list_url(self):
-        """The Taxon/Community detail view lists all AreaEncounters."""
-        return self.get_absolute_url()
 
     # -------------------------------------------------------------------------
     # Derived properties
+    @property
+    def latitude(self):
+        """The latitude of the point."""
+        return self.point.y if self.point else None
+
+    @property
+    def longitude(self):
+        """The longitude of the point."""
+        return self.point.x if self.point else None
+
     @property
     def derived_point(self):
         """The point, derived from the polygon."""
@@ -300,12 +307,6 @@ class TaxonAreaEncounter(AreaEncounter):
             self.taxon)
 
     # -------------------------------------------------------------------------
-    # URLs
-    def list_url(self):
-        """The Taxon/Community detail view lists all AreaEncounters."""
-        return self.taxon.get_absolute_url()
-
-    # -------------------------------------------------------------------------
     # Derived properties
     @property
     def subject(self):
@@ -355,12 +356,6 @@ class CommunityAreaEncounter(AreaEncounter):
             self.encountered_on,
             self.encountered_by,
             self.community)
-
-    # -------------------------------------------------------------------------
-    # URLs
-    def list_url(self):
-        """The Taxon/Community detail view lists all AreaEncounters."""
-        return self.community.get_absolute_url()
 
     # -------------------------------------------------------------------------
     # Derived properties

@@ -6,20 +6,99 @@ from __future__ import unicode_literals
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView  # FormView,; DeleteView,
+from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.list import ListView
+
+from export_download.views import ResourceDownloadMixin
+
 from occurrence import forms as occ_forms
 from occurrence import models as occ_models
+from occurrence import resources as occ_resources
+from occurrence import filters as occ_filters
 from taxonomy.models import Community, Taxon
 from shared.utils import Breadcrumb
 from shared.views import (  # noqa
     SuccessUrlMixin,
-    # ListViewBreadcrumbMixin,
+    ListViewBreadcrumbMixin,
     DetailViewBreadcrumbMixin,
     UpdateViewBreadcrumbMixin,
     CreateViewBreadcrumbMixin
 )
 # select2 forms
 # from .admin import (AreaForm, TaxonAreaForm, CommunityAreaForm)
+
+
+# ---------------------------------------------------------------------------#
+# List Views
+#
+class TaxonAreaEncounterListView(
+        ListViewBreadcrumbMixin,
+        ResourceDownloadMixin,
+        ListView):
+    """A ListView for TaxonAreaEncounter."""
+
+    model = occ_models.TaxonAreaEncounter
+    template_name = "occurrence/areaencounter_list.html"
+    resource_class = occ_resources.TaxonAreaEncounterResource
+    resource_formats = ['csv', 'tsv', 'xls', 'json']
+    filter_class = occ_filters.TaxonAreaEncounterFilter
+    paginate_by = 12
+
+    def get_context_data(self, **kwargs):
+        """Context with list filter and current time."""
+        context = super(TaxonAreaEncounterListView, self).get_context_data(**kwargs)
+        context['show_subject'] = True
+        context['list_filter'] = occ_filters.TaxonAreaEncounterFilter(
+            self.request.GET,
+            queryset=self.get_queryset()
+        )
+        return context
+
+    def get_queryset(self):
+        """Queryset with custom filter."""
+        queryset = occ_models.TaxonAreaEncounter.objects.all().prefetch_related(
+            "taxon",
+            # "conservationactivity_set",
+        )
+        return occ_filters.TaxonAreaEncounterFilter(
+            self.request.GET,
+            queryset=queryset
+        ).qs
+
+
+class CommunityAreaEncounterListView(
+        ListViewBreadcrumbMixin,
+        ResourceDownloadMixin,
+        ListView):
+    """A ListView for CommunityAreaEncounter."""
+
+    model = occ_models.CommunityAreaEncounter
+    template_name = "occurrence/areaencounter_list.html"
+    resource_class = occ_resources.CommunityAreaEncounterResource
+    resource_formats = ['csv', 'tsv', 'xls', 'json']
+    filter_class = occ_filters.CommunityAreaEncounterFilter
+    paginate_by = 12
+
+    def get_context_data(self, **kwargs):
+        """Context with list filter and current time."""
+        context = super(CommunityAreaEncounterListView, self).get_context_data(**kwargs)
+        context['show_subject'] = True
+        context['list_filter'] = occ_filters.CommunityAreaEncounterFilter(
+            self.request.GET,
+            queryset=self.get_queryset()
+        )
+        return context
+
+    def get_queryset(self):
+        """Queryset with custom filter."""
+        queryset = occ_models.CommunityAreaEncounter.objects.all().prefetch_related(
+            "community",
+            # "conservationactivity_set",
+        )
+        return occ_filters.CommunityAreaEncounterFilter(
+            self.request.GET,
+            queryset=queryset
+        ).qs
 
 
 # ---------------------------------------------------------------------------#
@@ -36,7 +115,7 @@ class AreaEncounterCreateView(CreateViewBreadcrumbMixin, CreateView):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
         return (
             Breadcrumb(_('Home'), reverse('home')),
-            # Breadcrumb(self.model.verbose_name_plural, self.model.list_url()),
+            Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
             Breadcrumb("Report new {0}".format(self.model._meta.verbose_name), None)
         )
 
@@ -117,6 +196,7 @@ class TaxonAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
         return (
             Breadcrumb(_('Home'), reverse('home')),
             Breadcrumb(self.object.subject._meta.verbose_name_plural, self.object.subject.list_url()),
+            Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
             Breadcrumb(self.object.subject.__str__(), self.object.subject.get_absolute_url()),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
         )
@@ -134,6 +214,7 @@ class CommunityAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
         return (
             Breadcrumb(_('Home'), reverse('home')),
             Breadcrumb(self.object.subject._meta.verbose_name_plural, self.object.subject.list_url()),
+            Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
             Breadcrumb(self.object.subject.__str__(), self.object.subject.get_absolute_url()),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
         )

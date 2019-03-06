@@ -1,18 +1,29 @@
 {% load observations occurrence_tags %}
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
 
-    <h6 class="card-header">
-      <div class="row">
-      <span class="badge badge-{{ original.status|tb_status_icon }}" title="QA status">
-        QA: {{ original.get_status_display }}
-      </span>
-    </div>
-      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span>
-      {{ original.encountered_on }}
-    </h6><!-- /.card-header -->
+  <h6 class="card-header">
+
+    <span class="badge badge-{{ original.status|tb_status_icon }}" title="QA status">
+      QA: {{ original.get_status_display }}
+    </span>
+
+    <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span>
+    {{ original.encountered_on }}
+
+  </h6><!-- /.card-header -->
 
   <div class="card-body">
-    <h6 class="card-subtitle mb-2 text-muted">
+
+    {% if show_subject %}
+      <p class="card-text">
+        <a href="{{ subject.get_absolute_url }}">
+          <span class="oi oi-eye" title="Subject" aria-hidden="true"></span>
+          {{ original.subject }}
+        </a>
+    </p>
+    {% endif %}
+
+    <h6 class="card-text">
       <span class="oi oi-person" title="Encountered by" aria-hidden="true"></span>
       {{ original.encountered_by }}
     </h6>
@@ -21,7 +32,7 @@
       <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
       {{ original.description }}
     </p>
-    <!-- <p class="card-text"><span class="oi oi-info" title="Details" aria-hidden="true"></span> Occurrence details coming soon.</p> -->
+
   </div><!-- /.card-body -->
 
   <div class="card-footer">

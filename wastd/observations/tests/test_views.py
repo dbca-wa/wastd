@@ -51,16 +51,19 @@ class AnimalEncounterViewTests(TestCase):
 
     def setUp(self):
         """Setup: create a new list."""
-        self.cl = AnimalEncounter.objects.create(
-            where=GEOSGeometry('POINT (115 -32)', srid=4326),
-            when=timezone.now(),
-            taxon=TAXON_CHOICES_DEFAULT,
-            species=NA
-        )
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
             email="super@gmail.com",
             password="test")
+        self.cl = AnimalEncounter.objects.create(
+            where=GEOSGeometry('POINT (115 -32)', srid=4326),
+            when=timezone.now(),
+            taxon=TAXON_CHOICES_DEFAULT,
+            species=NA,
+            source_id='12345',
+            observer=self.user,
+            reporter=self.user
+        )
         self.user.save()
         self.client.force_login(self.user)
 
