@@ -31,11 +31,11 @@
 {% block css%}
 {{ block.super }}
 {% leaflet_css %}
-{{ form.media.css }}
+{{ list_filter.form.media.css }}
 {% endblock %}
 
-{% block javascript%}
+{% block javascript %}
 {{ block.super }}
 {% leaflet_js %}
-{{ form.media.js }}
+{{ list_filter.form.media.js }}
 {% endblock %}

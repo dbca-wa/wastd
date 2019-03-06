@@ -109,10 +109,11 @@ class CommunityAreaEncounterTests(TestCase):
 
     def test_cae_list_url_loads(self):
         """Test that CommunityAreaEncounter list_url is com detail url and loads."""
-        self.assertEqual(self.cae.list_url(), self.cae.community.get_absolute_url())
+        self.assertEqual(self.cae.list_url(), reverse('occurrence:communityareaencounter-list'))
 
         response = self.client.get(self.cae.list_url())
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'occurrence/areaencounter_list.html')
 
     def test_cae_detail_url_loads(self):
         """Test CommunityAreaEncounter detail_url."""
@@ -284,11 +285,11 @@ class TaxonAreaEncounterTests(TestCase):
 
     def test_tae_list_url_loads(self):
         """Test that TaxonAreaEncounter list_url is taxon detail url and loads."""
-        self.assertEqual(self.tae.list_url(), self.tae.taxon.get_absolute_url())
+        self.assertEqual(self.tae.list_url(), reverse('occurrence:taxonareaencounter-list'))
 
         response = self.client.get(self.tae.list_url())
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'taxonomy/taxon_detail.html')
+        self.assertTemplateUsed(response, 'occurrence/areaencounter_list.html')
 
         self.assertContains(response, self.taxon0.name)
 

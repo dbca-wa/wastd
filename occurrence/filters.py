@@ -47,18 +47,19 @@ class TaxonAreaEncounterFilter(django_filters.FilterSet):
 
     # geom = geo_models.PolygonField()
     # point = geo_models.PointField()
-    # taxon = django_filters.ModelChoiceFilter(
-    #     queryset=tax_models.Taxon.objects.values(
-    #         "taxonomic_name",
-    #         "vernacular_names",),
-    #     # widget=ModelSelect2Widget(
-    #     #     model=tax_models.Taxon,
-    #     #     search_fields=[
-    #     #         "taxonomic_name__icontains",
-    #     #         "vernacular_names__icontains",
-    #     #     ]
-    #     # )  # doesn't work
-    # )
+    taxon = django_filters.ModelChoiceFilter(
+        queryset=tax_models.Taxon.objects.all(),
+        # values(
+        #     "taxonomic_name",
+        #     "vernacular_names",),
+        widget=ModelSelect2Widget(
+            model=tax_models.Taxon,
+            search_fields=[
+                "taxonomic_name__icontains",
+                "vernacular_names__icontains",
+            ]
+        )
+    )
     encountered_by = django_filters.ModelChoiceFilter(
         queryset=get_user_model().objects.all(),
         widget=ModelSelect2Widget(
