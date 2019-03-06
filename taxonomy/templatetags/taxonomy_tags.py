@@ -144,13 +144,15 @@ def conservationaction_cards(user, actions, area=None):
 
 
 @register.inclusion_tag('include/conservationaction_add.html', takes_context=True)
-def conservationaction_add(context, user, subject, document=None, area=None, block=False, label=False):
+def conservationaction_add(context, user, subject,
+                           document_id=None, area=None,
+                           block=False, label=False):
     """Render an "add conservation action" link for staff."""
     return {
         "original": context["original"],
         "is_staff": user.is_staff,
         "subject": subject,
-        "document": document,
+        "document_id": document_id,
         "area": area,
         "block": block,
         "label": label

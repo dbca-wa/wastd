@@ -1,6 +1,6 @@
 <!-- conservation/include/conservationaction_card.html -->
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
-  <h5 class="card-header">
+  <h6 class="card-header">
     <div class="row">
       <span class="badge badge-secondary" title="Conservation Action">
         <span class="oi oi-list" aria-hidden="true"></span>
@@ -8,11 +8,11 @@
       </span>
       <span class="badge badge-success" title="Completion Status">
         <span class="oi oi-task" aria-hidden="true"></span>
-        {{ object.get_status_display }}
+        Progress: {{ object.get_status_display }}
       </span>
     </div>
   {{ object.instructions }}
-  </h5>
+  </h6>
 
   <div class="card-body">
     <h6 class="card-subtitle mb-2 text-muted">
@@ -120,7 +120,8 @@
         title="View conservation action"
         role="button"
         class="btn btn-primary btn-sm btn-block">
-      <span class="oi oi-eye" aria-hidden="true"></span> <span class="oi oi-task" aria-hidden="true"></span>
+      <span class="oi oi-eye" aria-hidden="true"></span>
+      <span class="oi oi-task" aria-hidden="true"></span>
       View details
     </a>
     <!-- /Conservation activity view -->
@@ -129,7 +130,8 @@
         title="Report a new conservation activity."
         role="button"
         class="btn btn-primary btn-sm btn-block">
-      <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-task" aria-hidden="true"></span>
+      <span class="oi oi-plus" aria-hidden="true"></span>
+      <span class="oi oi-task" aria-hidden="true"></span>
       Report progress
     </a>
     <!-- /Conservation activity add -->

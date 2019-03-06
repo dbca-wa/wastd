@@ -77,6 +77,8 @@ THIRD_PARTY_APPS = (
     # 'dynamic_rest',                 # Parameterised API queries
     'mptt',                         # Graph database: tree models
     'background_task',              # Job queue
+    'export_download',              # listview exports
+    'import_export',                # data import/export
 
     'gunicorn',                     # Web server
     # 'test_utils'                    # Testing

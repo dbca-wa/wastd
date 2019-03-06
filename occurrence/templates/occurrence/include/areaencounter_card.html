@@ -2,11 +2,13 @@
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
 
     <h6 class="card-header">
-      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span>
-      {{ original.encountered_on }}
+      <div class="row">
       <span class="badge badge-{{ original.status|tb_status_icon }}" title="QA status">
         QA: {{ original.get_status_display }}
       </span>
+    </div>
+      <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span>
+      {{ original.encountered_on }}
     </h6><!-- /.card-header -->
 
   <div class="card-body">

@@ -9,38 +9,28 @@ from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
-from shared.admin import CustomStateLogInline
+from import_export.admin import ImportExportModelAdmin
 
-from conservation.models import (  # Gazettal,
-    CommunityGazettal,
-    ConservationActionCategory,
-    ConservationAction,
-    ConservationActivity,
-    ConservationCategory,
-    ConservationCriterion,
-    ConservationList,
-    Document,
-    FileAttachment,
-    TaxonGazettal
-)
-from shared.admin import S2ATTRS, FORMFIELD_OVERRIDES
+from conservation import resources as cons_resources
+from conservation import models as cons_models
+from shared.admin import S2ATTRS, FORMFIELD_OVERRIDES, CustomStateLogInline
 
 
 class FileAttachmentInline(GenericTabularInline):
     """Inline for FileAttachment."""
 
-    model = FileAttachment
-    form = s2form(FileAttachment, attrs=S2ATTRS)
+    model = cons_models.FileAttachment
+    form = s2form(cons_models.FileAttachment, attrs=S2ATTRS)
     extra = 1
     classes = ("grp-collapse grp-closed wide extrapretty",)
 
 
-@admin.register(ConservationActionCategory)
+@admin.register(cons_models.ConservationActionCategory)
 class ConservationActionCategoryAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
 
-    model = ConservationActionCategory
-    form = s2form(ConservationActionCategory, attrs=S2ATTRS)
+    model = cons_models.ConservationActionCategory
+    form = s2form(cons_models.ConservationActionCategory, attrs=S2ATTRS)
     prepopulated_fields = {"code": ("label",)}
     list_display = ("code", "label", "description", )
     search_fields = ("code", "label", "description")
@@ -51,18 +41,19 @@ class ConservationActivityInline(admin.TabularInline):
     """Inline admin for ConservationActivity."""
 
     extra = 1
-    model = ConservationActivity
-    form = s2form(ConservationActivity, attrs=S2ATTRS)
+    model = cons_models.ConservationActivity
+    form = s2form(cons_models.ConservationActivity, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     classes = ("grp-collapse grp-open wide extrapretty",)
 
 
-@admin.register(ConservationAction)
-class ConservationActionAdmin(VersionAdmin):
+@admin.register(cons_models.ConservationAction)
+class ConservationActionAdmin(ImportExportModelAdmin, VersionAdmin):
     """Admin for Conservation Management Actions."""
 
-    model = ConservationAction
-    form = s2form(ConservationAction, attrs=S2ATTRS)
+    model = cons_models.ConservationAction
+    form = s2form(cons_models.ConservationAction, attrs=S2ATTRS)
+    resource_class = cons_resources.ConservationActionResource
     autocomplete_fields = ['taxa', 'communities', "category", ]
 
     list_display = (
@@ -135,8 +126,8 @@ class ConservationActionInline(admin.TabularInline):
     """Inline admin for Management Action."""
 
     extra = 1
-    model = ConservationAction
-    form = s2form(ConservationAction, attrs=S2ATTRS)
+    model = cons_models.ConservationAction
+    form = s2form(cons_models.ConservationAction, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     classes = ("grp-collapse grp-closed wide extrapretty",)
     # prepopulated_fields = {"taxa": ("taxa",), "communities": ("communities",), }
@@ -147,9 +138,9 @@ class ConservationCategoryInline(admin.TabularInline):
     """Inline admin for ConservationCategory."""
 
     extra = 1
-    model = ConservationCategory
+    model = cons_models.ConservationCategory
     classes = ("grp-collapse grp-closed wide extrapretty",)
-    form = s2form(ConservationCategory, attrs=S2ATTRS)
+    form = s2form(cons_models.ConservationCategory, attrs=S2ATTRS)
     # formfield_overrides = FORMFIELD_OVERRIDES
 
 
@@ -157,13 +148,13 @@ class ConservationCriterionInline(admin.TabularInline):
     """Inline admin for ConservationCriterion."""
 
     extra = 1
-    model = ConservationCriterion
+    model = cons_models.ConservationCriterion
     classes = ("grp-collapse grp-closed wide extrapretty",)
-    form = s2form(ConservationCriterion, attrs=S2ATTRS)
+    form = s2form(cons_models.ConservationCriterion, attrs=S2ATTRS)
     # formfield_overrides = FORMFIELD_OVERRIDES
 
 
-@admin.register(ConservationList)
+@admin.register(cons_models.ConservationList)
 class ConservationListAdmin(VersionAdmin):
     """Admin for ConservationList."""
 
@@ -201,14 +192,14 @@ class ConservationListAdmin(VersionAdmin):
 
         }),
     )
-    form = s2form(ConservationList, attrs=S2ATTRS)
+    form = s2form(cons_models.ConservationList, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     inlines = [ConservationCategoryInline,
                ConservationCriterionInline,
                FileAttachmentInline]
 
 
-@admin.register(TaxonGazettal)
+@admin.register(cons_models.TaxonGazettal)
 class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for TaxonGazettal."""
 
@@ -249,7 +240,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("comments", )
 
     # Detail View layout and widgets
-    form = s2form(TaxonGazettal, attrs=S2ATTRS)
+    form = s2form(cons_models.TaxonGazettal, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = ["taxon", ]
     filter_horizontal = ("category", "criteria",)
@@ -274,7 +265,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """Restrict available cat and crit to lists relevant to species."""
         if db_field.name == "category":
-            kwargs["queryset"] = ConservationCategory.objects.filter(
+            kwargs["queryset"] = cons_models.ConservationCategory.objects.filter(
                 conservation_list__scope_species=True
             ).prefetch_related(
                 'conservation_list'
@@ -283,7 +274,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             )
 
         if db_field.name == "criteria":
-            kwargs["queryset"] = ConservationCriterion.objects.filter(
+            kwargs["queryset"] = cons_models.ConservationCriterion.objects.filter(
                 conservation_list__scope_species=True
             ).prefetch_related(
                 'conservation_list'
@@ -293,7 +284,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         return super(TaxonGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
-@admin.register(CommunityGazettal)
+@admin.register(cons_models.CommunityGazettal)
 class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for CommunityGazettal."""
 
@@ -328,7 +319,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("comments", )
 
     # Detail View
-    form = s2form(CommunityGazettal, attrs=S2ATTRS)
+    form = s2form(cons_models.CommunityGazettal, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = ["community", ]
     filter_horizontal = ("category", "criteria",)
@@ -352,7 +343,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """Restrict available cat and crit to lists relevant to species."""
         if db_field.name == "category":
-            kwargs["queryset"] = ConservationCategory.objects.filter(
+            kwargs["queryset"] = cons_models.ConservationCategory.objects.filter(
                 conservation_list__scope_communities=True
             ).prefetch_related(
                 'conservation_list'
@@ -361,7 +352,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             )
 
         if db_field.name == "criteria":
-            kwargs["queryset"] = ConservationCriterion.objects.filter(
+            kwargs["queryset"] = cons_models.ConservationCriterion.objects.filter(
                 conservation_list__scope_communities=True
             ).prefetch_related(
                 'conservation_list'
@@ -371,7 +362,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
         return super(CommunityGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
-@admin.register(Document)
+@admin.register(cons_models.Document)
 class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for Document."""
 
@@ -410,7 +401,7 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("title", "source_id", )
 
     # Detail View
-    form = s2form(Document, attrs=S2ATTRS)
+    form = s2form(cons_models.Document, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = ["taxa", "communities", "team", ]
     inlines = [
