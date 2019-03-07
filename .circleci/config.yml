@@ -63,7 +63,7 @@ jobs:
           name: Install Pandoc
           command: |
             wget https://github.com/jgm/pandoc/releases/download/2.7/pandoc-2.7-1-amd64.deb
-            dpkg -i pandoc-2.7-1-amd64.deb
+            sudo dpkg -i pandoc-2.7-1-amd64.deb
             rm pandoc-2.7-1-amd64.deb
 
       - save_cache:
