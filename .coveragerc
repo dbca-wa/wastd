@@ -1,4 +1,4 @@
 [run]
-omit = *migrations*, *tests*, venv/*, *site-packages*, node_modules/*, config/*, htmlcov/*, docs/*, __init__*, /*grappelli*, fabfile.py
+omit = wastd/*, *migrations*, *tests*, venv/*, *site-packages*, node_modules/*, config/*, htmlcov/*, docs/*, __init__*, /*grappelli*, fabfile.py
 plugins =
     django_coverage_plugin

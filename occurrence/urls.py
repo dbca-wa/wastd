@@ -84,4 +84,13 @@ urlpatterns = [
     re_path(r'^(?P<occ_pk>\d+)/file-attachment/(?P<obs_pk>\d+)/$',
             views.FileAttachmentObservationUpdateView.as_view(),
             name='fileattachmentobservation-update'),
+
+    re_path(r'^(?P<occ_pk>\d+)/area-assessment/report$',
+            views.AreaAssessmentObservationCreateView.as_view(),
+            name='areaassessmentobservation-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/area-assessment/(?P<obs_pk>\d+)/$',
+            views.AreaAssessmentObservationUpdateView.as_view(),
+            name='areaassessmentobservation-update'),
+
 ]

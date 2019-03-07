@@ -647,8 +647,67 @@ class FileAttachmentObservation(ObservationGroup):
         return "{0} ({1})".format(self.title, self.author.fullname)
 
 
-# TFL
-# AreaAssessmentObservation
+class AreaAssessmentObservation(ObservationGroup):
+    """A description of survey effort at a flora or TEC site."""
+
+    SURVEY_TYPE_DEFAULT = 'partial'
+    SURVEY_TYPE_CHOICES = (
+        (SURVEY_TYPE_DEFAULT, "Partial survey"),
+        ("edge", "Edge Survey"),
+        ("full", "Full Survey"),
+        ("opportunistic", "Opportunistic Encounter"),
+        ("monitoring", "Monitoring"),
+        ("translocation", "Fauna Translocation Event"),
+        ("historical", "Historical Report"),
+    )
+
+    survey_type = models.CharField(
+        verbose_name=_("Survey Type"),
+        max_length=100,
+        default=SURVEY_TYPE_DEFAULT,
+        choices=SURVEY_TYPE_CHOICES,
+        help_text=_(
+            "How much of the occurrence has been surveyed?"
+        ),
+    )
+
+    area_surveyed_m2 = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Surveyed Area [m2]"),
+        help_text=_("An estimate of surveyed area in square meters."),
+    )
+
+    survey_duration_min = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Survey Duration [min]"),
+        help_text=_("An estimate of survey duration minutes."),
+    )
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Area Assessment"
+        verbose_name_plural = "Area Assessments"
+
+    def __str__(self):
+        """The full name."""
+        return "{0} of {1} m2 in {2} mins".format(
+            self.get_survey_type_display(),
+            self.area_surveyed_m2,
+            self.survey_duration_min)
+
+    @property
+    def survey_effort_minutes_per_100sqm(self):
+        """Give an estimate of survey intensity as time spent per area.
+
+        Calculated from area surveyed and survey duration, or None.
+        Unit is minutes / 100 m2.
+        """
+        if self.area_surveyed_m2 and self.survey_duration_min:
+            return round(100 * (self.survey_duration_min / self.area_surveyed_m2))
+        else:
+            return None
+
 # PlantCountObservation
 # ThreatObservation
 # HabitatCompositionObservation
@@ -656,7 +715,6 @@ class FileAttachmentObservation(ObservationGroup):
 # VegetationClassificationObservation
 # PhysicalSpecimenObservation
 # PermitObservation
-# Survey: often no survey as most fauna enc are opportunistic
 # Fire response?
 
 # TEC
@@ -667,7 +725,7 @@ class FileAttachmentObservation(ObservationGroup):
 # AnimalObservation
 # PhysicalSampleObservation
 # PhysicalSpecimenObservation
-# SurveyMethodObservation
+# SurveyMethodObservation > roll into AreaAssessment
 # EncounterTypeObservation
 # WildlifeIncidentObservation
 # Uses: SpecimenObs, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen

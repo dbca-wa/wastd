@@ -42,7 +42,18 @@ class FireHistoryObservationInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
+class AreaAssessmentObservationInline(admin.TabularInline):
+    """AreaAssessmentObservation Inline."""
+
+    extra = 0
+    # max_num = 1  # limit max number
+    model = occ_models.AreaAssessmentObservation
+    form = occ_forms.AreaAssessmentObservationForm
+    classes = ('grp-collapse grp-open',)
+
 # @admin.register(AreaEncounter)
+
+
 class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmin):
     """Admin for Area."""
 
@@ -91,8 +102,9 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = AreaEncounterAdmin.autocomplete_fields + ["taxon"]
     inlines = [
-        # AssociatedSpeciesObservationInline,
-        FireHistoryObservationInline
+        AreaAssessmentObservationInline,
+        AssociatedSpeciesObservationInline,
+        FireHistoryObservationInline,
     ]
 
 
@@ -115,8 +127,9 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
         'fields': ("community", )}
     ),) + AreaEncounterAdmin.fieldsets
     inlines = [
+        AreaAssessmentObservationInline,
         AssociatedSpeciesObservationInline,
-        FireHistoryObservationInline
+        FireHistoryObservationInline,
     ]
 
 
@@ -134,7 +147,11 @@ class AssociatedSpeciesObservationAdmin(FSMTransitionMixin, VersionAdmin):
 class FireHistoryObservationAdmin(FSMTransitionMixin, VersionAdmin):
     """FireHistoryObservation Admin."""
 
-    list_display = ["encounter", "last_fire_date", "fire_intensity"]
+    list_display = [
+        "encounter",
+        "last_fire_date",
+        "fire_intensity"
+    ]
     form = occ_forms.FireHistoryObservationForm
     fsm_field = ['status', ]
 
@@ -143,6 +160,26 @@ class FireHistoryObservationAdmin(FSMTransitionMixin, VersionAdmin):
 class FileAttachmentObservationAdmin(FSMTransitionMixin, VersionAdmin):
     """FileAttachmentObservation Admin."""
 
-    list_display = ["encounter", "attachment", "title", "author", "confidential"]
+    list_display = [
+        "encounter",
+        "attachment",
+        "title",
+        "author",
+        "confidential"
+    ]
     form = occ_forms.FileAttachmentObservationForm
+    fsm_field = ['status', ]
+
+
+@admin.register(occ_models.AreaAssessmentObservation)
+class AreaAssessmentObservationAdmin(FSMTransitionMixin, VersionAdmin):
+    """AreaAssessmentObservation Admin."""
+
+    list_display = [
+        "encounter",
+        "survey_type",
+        "area_surveyed_m2",
+        "survey_duration_min",
+    ]
+    form = occ_forms.AreaAssessmentObservationForm
     fsm_field = ['status', ]

@@ -338,3 +338,17 @@ class FileAttachmentObservationUpdateView(ObservationGroupUpdateView):
 
     model = occ_models.FileAttachmentObservation
     form_class = occ_forms.FileAttachmentObservationForm
+
+
+class AreaAssessmentObservationCreateView(ObservationGroupCreateView):
+    """Create view for AreaAssessmentObservation."""
+
+    model = occ_models.AreaAssessmentObservation
+    form_class = occ_forms.AreaAssessmentObservationForm
+
+
+class AreaAssessmentObservationUpdateView(ObservationGroupUpdateView):
+    """Update view for AreaAssessmentObservation."""
+
+    model = occ_models.AreaAssessmentObservation
+    form_class = occ_forms.AreaAssessmentObservationForm

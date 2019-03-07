@@ -1,18 +1,24 @@
+<a href="{% url 'occurrence:areaassessmentobservation-create' occ_pk=original.id %}"
+  class="btn btn-primary btn-sm"
+  title="Attach a file.">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  Report Area Assessment
+</a>
 <a href="{% url 'occurrence:associatedspeciesobservation-create' occ_pk=original.id %}"
   class="btn btn-primary btn-sm"
   title="Report an associated species.">
   <span class="oi oi-plus" aria-hidden="true"></span>
-  Report associated species
+  Report Associated Species
 </a>
 <a href="{% url 'occurrence:firehistoryobservation-create' occ_pk=original.id %}"
   class="btn btn-primary btn-sm"
   title="Report evidence of a past fire.">
   <span class="oi oi-plus" aria-hidden="true"></span>
-  Report fire history
+  Report Fire History
 </a>
 <a href="{% url 'occurrence:fileattachmentobservation-create' occ_pk=original.id %}"
   class="btn btn-primary btn-sm"
   title="Attach a file.">
   <span class="oi oi-plus" aria-hidden="true"></span>
-  Attach file
+  Attach File
 </a>

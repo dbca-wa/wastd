@@ -276,6 +276,10 @@ class ConservationAction(UrlsMixin, models.Model):
         verbose_name = "Conservation Action"
         verbose_name_plural = "Conservation Actions"
         ordering = ["status", "completion_date", "category", ]
+        index_together = [
+            ["status", "completion_date", "category", ],
+            ["document", "occurrence_area_code"],
+        ]
 
     def __str__(self):
         """The full name."""

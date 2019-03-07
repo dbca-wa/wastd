@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
 """Occurrence forms."""
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
 from django import forms
 from django.contrib.auth import get_user_model
 from django_select2.forms import ModelSelect2Widget
-from leaflet.forms.widgets import LeafletWidget
-from taxonomy.models import Community, Taxon
 
-from .models import (
-    AreaEncounter,
-    CommunityAreaEncounter,
-    TaxonAreaEncounter,
-    AssociatedSpeciesObservation,
-    FireHistoryObservation,
-    FileAttachmentObservation
-)
+from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
+from crispy_forms.helper import FormHelper
+from leaflet.forms.widgets import LeafletWidget
+
+from taxonomy.models import Community, Taxon
+from occurrence import models as occ_models
 from shared.admin import S2ATTRS, LEAFLET_SETTINGS  # noqa
 from shared.forms import DateInput, DateTimeInput
 # from wastd.users.models import User
@@ -28,9 +22,18 @@ class AreaEncounterForm(forms.ModelForm):
     class Meta:
         """Class options."""
 
-        model = AreaEncounter
-        fields = ("area_type", "code", "name", "description", "geom", "accuracy", "encountered_on", "encountered_by")
-        widgets = {'geom': LeafletWidget(attrs=LEAFLET_SETTINGS)}
+        model = occ_models.AreaEncounter
+        fields = (
+            "area_type",
+            "code",
+            "name",
+            "description",
+            "geom",
+            "accuracy",
+            "encountered_on",
+            "encountered_by"
+        )
+        widgets = {"geom": LeafletWidget(attrs=LEAFLET_SETTINGS)}
 
 
 class TaxonAreaEncounterForm(AreaEncounterForm):
@@ -39,18 +42,31 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
     class Meta:
         """Class options."""
 
-        model = TaxonAreaEncounter
-        fields = ('taxon', "area_type", "code", "name", "description",
-                  "geom", "point", "accuracy", "encountered_on", "encountered_by")
+        model = occ_models.TaxonAreaEncounter
+        fields = (
+            "taxon",
+            "area_type",
+            "code",
+            "name",
+            "description",
+            "geom",
+            "point",
+            "accuracy",
+            "encountered_on",
+            "encountered_by"
+        )
         widgets = {
-            'taxon': ModelSelect2Widget(
+            "taxon": ModelSelect2Widget(
                 model=Taxon,
-                search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ]
+                search_fields=[
+                    "taxonomic_name__icontains",
+                    "vernacular_names__icontains",
+                ]
             ),
-            'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
-            'point': LeafletWidget(attrs=LEAFLET_SETTINGS),
-            'encountered_on': DateTimeInput(),
-            'encountered_by': ModelSelect2Widget(
+            "geom": LeafletWidget(attrs=LEAFLET_SETTINGS),
+            "point": LeafletWidget(attrs=LEAFLET_SETTINGS),
+            "encountered_on": DateTimeInput(),
+            "encountered_by": ModelSelect2Widget(
                 model=get_user_model(),
                 search_fields=[
                     "name__icontains",
@@ -63,32 +79,34 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
         super(TaxonAreaEncounterForm, self).__init__(*args, **kwargs)
-        self.fields['area_type'].choices = AreaEncounter.TAXON_AREA_TYPES
+        self.fields["area_type"].choices = occ_models.AreaEncounter.TAXON_AREA_TYPES
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                'Who',
-                'encountered_by',
+                "Who",
+                "encountered_by",
             ),
             Fieldset(
-                'When',
-                'encountered_on',
+                "When",
+                "encountered_on",
             ),
             Fieldset(
-                'What',
-                'taxon',
-                'description',
+                "What",
+                "taxon",
+                "description",
             ),
             Fieldset(
-                'Where',
-                'area_type',
-                'code',
-                'geom',
-                'point',
-                'accuracy',
+                "Where",
+                "area_type",
+                "code",
+                "geom",
+                "point",
+                "accuracy",
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit("submit",
+                       "Submit",
+                       css_class="button white")
             )
         )
 
@@ -99,18 +117,31 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
     class Meta:
         """Class options."""
 
-        model = CommunityAreaEncounter
-        fields = ('community', "area_type", "code", "name", "description",
-                  "geom", "point", "accuracy", "encountered_on", "encountered_by")
+        model = occ_models.CommunityAreaEncounter
+        fields = (
+            "community",
+            "area_type",
+            "code",
+            "name",
+            "description",
+            "geom",
+            "point",
+            "accuracy",
+            "encountered_on",
+            "encountered_by"
+        )
         widgets = {
-            'community': ModelSelect2Widget(
+            "community": ModelSelect2Widget(
                 model=Community,
-                search_fields=["name__icontains", "code__icontains", ]
+                search_fields=[
+                    "name__icontains",
+                    "code__icontains",
+                ]
             ),
-            'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
-            'point': LeafletWidget(attrs=LEAFLET_SETTINGS),
-            'encountered_on': DateTimeInput(),
-            'encountered_by': ModelSelect2Widget(
+            "geom": LeafletWidget(attrs=LEAFLET_SETTINGS),
+            "point": LeafletWidget(attrs=LEAFLET_SETTINGS),
+            "encountered_on": DateTimeInput(),
+            "encountered_by": ModelSelect2Widget(
                 model=get_user_model(),
                 search_fields=[
                     "name__icontains",
@@ -124,32 +155,34 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
         super(CommunityAreaEncounterForm, self).__init__(*args, **kwargs)
-        self.fields['area_type'].choices = AreaEncounter.COMMUNITY_AREA_TYPES
+        self.fields["area_type"].choices = occ_models.AreaEncounter.COMMUNITY_AREA_TYPES
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                'Who',
-                'encountered_by',
+                "Who",
+                "encountered_by",
             ),
             Fieldset(
-                'When',
-                'encountered_on',
+                "When",
+                "encountered_on",
             ),
             Fieldset(
-                'What',
-                'community',
-                'description',
+                "What",
+                "community",
+                "description",
             ),
             Fieldset(
-                'Where',
-                'area_type',
-                'code',
-                'geom',
-                'point',
-                'accuracy',
+                "Where",
+                "area_type",
+                "code",
+                "geom",
+                "point",
+                "accuracy",
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit("submit",
+                       "Submit",
+                       css_class="button white")
             )
         )
 
@@ -163,18 +196,25 @@ class AssociatedSpeciesObservationForm(forms.ModelForm):
     class Meta:
         """Class options."""
 
-        model = AssociatedSpeciesObservation
+        model = occ_models.AssociatedSpeciesObservation
         fields = ("encounter", "taxon",)
         widgets = {
             "encounter": ModelSelect2Widget(
-                model=AreaEncounter,
-                search_fields=["code", "name", "area_type", ],
-                attrs={'size': 80}
+                model=occ_models.AreaEncounter,
+                search_fields=[
+                    "code",
+                    "name",
+                    "area_type",
+                ],
+                attrs={"size": 80}
             ),
             "taxon": ModelSelect2Widget(
                 model=Taxon,
-                search_fields=["taxonomic_name__icontains", "vernacular_names__icontains", ],
-                attrs={'size': 80}
+                search_fields=[
+                    "taxonomic_name__icontains",
+                    "vernacular_names__icontains",
+                ],
+                attrs={"size": 80}
             ),
         }
 
@@ -188,11 +228,13 @@ class AssociatedSpeciesObservationForm(forms.ModelForm):
                 "encounter"
             ),
             Fieldset(
-                'Associated Species',
-                'taxon',
+                "Associated Species",
+                "taxon",
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit("submit",
+                       "Submit",
+                       css_class="button white")
             )
         )
 
@@ -203,15 +245,23 @@ class FireHistoryObservationForm(forms.ModelForm):
     class Meta:
         """Class options."""
 
-        model = FireHistoryObservation
-        fields = ("encounter", "last_fire_date", "fire_intensity")
+        model = occ_models.FireHistoryObservation
+        fields = (
+            "encounter",
+            "last_fire_date",
+            "fire_intensity"
+        )
         widgets = {
             "encounter": ModelSelect2Widget(
-                model=AreaEncounter,
-                search_fields=["code", "name", "area_type", ],
-                attrs={'size': 80}
+                model=occ_models.AreaEncounter,
+                search_fields=[
+                    "code",
+                    "name",
+                    "area_type",
+                ],
+                attrs={"size": 80}
             ),
-            'last_fire_date': DateInput(),
+            "last_fire_date": DateInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -229,7 +279,9 @@ class FireHistoryObservationForm(forms.ModelForm):
                 "fire_intensity"
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit("submit",
+                       "Submit",
+                       css_class="button white")
             )
         )
 
@@ -240,15 +292,25 @@ class FileAttachmentObservationForm(forms.ModelForm):
     class Meta:
         """Class options."""
 
-        model = FileAttachmentObservation
-        fields = ("encounter", "attachment", "title", "author", "confidential")
+        model = occ_models.FileAttachmentObservation
+        fields = (
+            "encounter",
+            "attachment",
+            "title",
+            "author",
+            "confidential"
+        )
         widgets = {
             "encounter": ModelSelect2Widget(
-                model=AreaEncounter,
-                search_fields=["code", "name", "area_type", ],
-                attrs={'size': 80}
+                model=occ_models.AreaEncounter,
+                search_fields=[
+                    "code",
+                    "name",
+                    "area_type",
+                ],
+                attrs={"size": 80}
             ),
-            'author': ModelSelect2Widget(
+            "author": ModelSelect2Widget(
                 model=get_user_model(),
                 search_fields=[
                     "name__icontains",
@@ -276,6 +338,56 @@ class FileAttachmentObservationForm(forms.ModelForm):
                 "confidential"
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit("submit",
+                       "Submit",
+                       css_class="button white")
+            )
+        )
+
+
+class AreaAssessmentObservationForm(forms.ModelForm):
+    """AreaAssessmentObservation Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.AreaAssessmentObservation
+        fields = (
+            "encounter",
+            "survey_type",
+            "area_surveyed_m2",
+            "survey_duration_min",
+        )
+        widgets = {
+            "encounter": ModelSelect2Widget(
+                model=occ_models.AreaEncounter,
+                search_fields=[
+                    "code",
+                    "name",
+                    "area_type",
+                ],
+                attrs={"size": 80}
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(AreaAssessmentObservationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "Survey Effort",
+                "survey_type",
+                "area_surveyed_m2",
+                "survey_duration_min",
+            ),
+            ButtonHolder(
+                Submit("submit",
+                       "Submit",
+                       css_class="button white")
             )
         )

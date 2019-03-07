@@ -126,9 +126,8 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
         t = Taxon.objects.filter(
             name_id=self.kwargs.get("name_id")
         ).prefetch_related(
-            # TODO FK to user
             "taxon_occurrences",
-            "conservationaction_set"
+            "conservationaction_set",
         ).first()
         if not t:
             raise Http404
@@ -138,7 +137,7 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
         """Custom context."""
         context = super(TaxonDetailView, self).get_context_data(**kwargs)
         obj = self.object
-        occ = obj.taxon_occurrences
+        occ = obj.taxon_occurrences.prefetch_related("encountered_by")
         ma = obj.conservationaction_set.all()
         max_cards = 100
         context["occurrence_table"] = TaxonAreaEncounterTable(occ.all()[:max_cards])
@@ -158,7 +157,7 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
             Breadcrumb(_('Home'), reverse('home')),
             Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
             Breadcrumb(
-                "Taxonomy of {0}".format(self.object.taxonomic_name),
+                "Taxonomy of {0}".format(self.object.canonical_name),
                 '{0}?name_id={1}'.format(reverse('taxonomy:taxon-list'), self.object.name_id)
             ),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url())

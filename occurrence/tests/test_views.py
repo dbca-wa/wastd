@@ -85,22 +85,28 @@ class CommunityAreaEncounterTests(TestCase):
         )
         self.fh1.save()
 
+        self.aa0 = occ_models.AreaAssessmentObservation.objects.create(
+            encounter=self.cae,
+            area_surveyed_m2=None,
+            survey_duration_min=None
+        )
+        self.aa0.save()
+
+        self.aa1 = occ_models.AreaAssessmentObservation.objects.create(
+            encounter=self.cae,
+            area_surveyed_m2=200,
+            survey_duration_min=None
+        )
+        self.aa1.save()
+
+        self.aa2 = occ_models.AreaAssessmentObservation.objects.create(
+            encounter=self.cae,
+            area_surveyed_m2=532,
+            survey_duration_min=47
+        )
+        self.aa2.save()
+
         self.client.force_login(self.user)
-
-    def test_cae_creation(self):
-        """Test creating a CommunityAreaEncounter."""
-        self.assertTrue(isinstance(self.cae, occ_models.CommunityAreaEncounter))
-
-    def test_cae_str(self):
-        """Test CAE str."""
-        label = "Encounter of {5} at [{0}] ({1}) {2} on {3} by {4}".format(
-            self.cae.get_area_type_display(),
-            self.cae.code,
-            self.cae.name,
-            self.cae.encountered_on,
-            self.cae.encountered_by,
-            self.cae.community)
-        self.assertEqual(label, self.cae.__str__())
 
     def test_cae_absolute_admin_url_loads(self):
         """Test CommunityAreaEncounter absolute_admin_url."""
@@ -143,10 +149,6 @@ class CommunityAreaEncounterTests(TestCase):
 
     # ------------------------------------------------------------------------#
     # CAE AssociatedSpeciesObservation
-    def test_asssp_creation(self):
-        """Test creating a AssociatedSpeciesObservation."""
-        self.assertTrue(isinstance(self.asssp1, occ_models.AssociatedSpeciesObservation))
-
     def test_asssp_absolute_admin_url_loads(self):
         """Test AssociatedSpeciesObservation absolute_admin_url."""
         response = self.client.get(self.asssp1.absolute_admin_url)
@@ -165,10 +167,6 @@ class CommunityAreaEncounterTests(TestCase):
 
     # ------------------------------------------------------------------------#
     # CAE FireHistoryObservation
-    def test_fh_creation(self):
-        """Test creating a FireHistoryObservation."""
-        self.assertTrue(isinstance(self.fh1, occ_models.FireHistoryObservation))
-
     def test_fh_absolute_admin_url_loads(self):
         """Test FireHistoryObservation absolute_admin_url."""
         response = self.client.get(self.fh1.absolute_admin_url)
@@ -182,6 +180,41 @@ class CommunityAreaEncounterTests(TestCase):
     def test_fh_update_url_loads(self):
         """Test FireHistoryObservation update_url."""
         response = self.client.get(self.fh1.update_url)
+        self.assertEqual(response.status_code, 200)
+
+    # ------------------------------------------------------------------------#
+    # TAE AreaAssessmentObservation
+    def test_aa_absolute_admin_url_loads(self):
+        """Test AreaAssessmentObservation absolute_admin_url."""
+        response = self.client.get(self.aa0.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa1.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa2.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_aa_detail_url_loads(self):
+        """Test AreaAssessmentObservation get_absolute_url."""
+        response = self.client.get(self.aa0.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa1.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa2.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_aa_update_url_loads(self):
+        """Test AreaAssessmentObservation update_url."""
+        response = self.client.get(self.aa0.update_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa1.update_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa2.update_url)
         self.assertEqual(response.status_code, 200)
 
 
@@ -261,22 +294,40 @@ class TaxonAreaEncounterTests(TestCase):
         )
         self.fatt.save()
 
+        self.aa0 = occ_models.AreaAssessmentObservation.objects.create(
+            encounter=self.tae,
+            area_surveyed_m2=None,
+            survey_duration_min=None
+        )
+        self.aa0.save()
+
+        self.aa1 = occ_models.AreaAssessmentObservation.objects.create(
+            encounter=self.tae,
+            area_surveyed_m2=200,
+            survey_duration_min=None
+        )
+        self.aa1.save()
+
+        self.aa2 = occ_models.AreaAssessmentObservation.objects.create(
+            encounter=self.tae,
+            area_surveyed_m2=532,
+            survey_duration_min=47
+        )
+        self.aa2.save()
+
         self.client.force_login(self.user)
 
-    def test_tae_creation(self):
-        """Test creating a TaxonAreaEncounter."""
-        self.assertTrue(isinstance(self.tae, occ_models.TaxonAreaEncounter))
+    def test_home_loads(self):
+        """Test index page."""
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'index.html')
 
-    def test_tae_str(self):
-        """Test TAE str."""
-        label = "Encounter of {5} at [{0}] ({1}) {2} on {3} by {4}".format(
-            self.tae.get_area_type_display(),
-            self.tae.code,
-            self.tae.name,
-            self.tae.encountered_on,
-            self.tae.encountered_by,
-            self.tae.taxon)
-        self.assertEqual(label, self.tae.__str__())
+    def test_map_loads(self):
+        """Test map page."""
+        response = self.client.get(reverse("map"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'pages/home.html')
 
     def test_tae_absolute_admin_url_loads(self):
         """Test absolute admin url."""
@@ -318,10 +369,6 @@ class TaxonAreaEncounterTests(TestCase):
 
     # ------------------------------------------------------------------------#
     # TAE AssociatedSpeciesObservation
-    def test_asssp_creation(self):
-        """Test creating a AssociatedSpeciesObservation."""
-        self.assertTrue(isinstance(self.asssp1, occ_models.AssociatedSpeciesObservation))
-
     def test_asssp_absolute_admin_url_loads(self):
         """Test AssociatedSpeciesObservation absolute_admin_url."""
         url = self.asssp1.absolute_admin_url
@@ -340,10 +387,6 @@ class TaxonAreaEncounterTests(TestCase):
 
     # ------------------------------------------------------------------------#
     # TAE FireHistoryObservation
-    def test_fh_creation(self):
-        """Test creating a FireHistoryObservation."""
-        self.assertTrue(isinstance(self.fh1, occ_models.FireHistoryObservation))
-
     def test_fh_absolute_admin_url_loads(self):
         """Test FireHistoryObservation absolute_admin_url."""
         response = self.client.get(self.fh1.absolute_admin_url)
@@ -361,10 +404,6 @@ class TaxonAreaEncounterTests(TestCase):
 
     # ------------------------------------------------------------------------#
     # TAE FileAttachmentObservation
-    def test_fatt_creation(self):
-        """Test creating a FileAttachmentObservation."""
-        self.assertTrue(isinstance(self.fatt, occ_models.FileAttachmentObservation))
-
     def test_fatt_absolute_admin_url_loads(self):
         """Test FileAttachmentObservation absolute_admin_url."""
         response = self.client.get(self.fatt.absolute_admin_url)
@@ -378,4 +417,39 @@ class TaxonAreaEncounterTests(TestCase):
     def test_fatt_update_url_loads(self):
         """Test FileAttachmentObservation update_url."""
         response = self.client.get(self.fatt.update_url)
+        self.assertEqual(response.status_code, 200)
+
+    # ------------------------------------------------------------------------#
+    # TAE AreaAssessmentObservation
+    def test_aa_absolute_admin_url_loads(self):
+        """Test AreaAssessmentObservation absolute_admin_url."""
+        response = self.client.get(self.aa0.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa1.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa2.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_aa_detail_url_loads(self):
+        """Test AreaAssessmentObservation get_absolute_url."""
+        response = self.client.get(self.aa0.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa1.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa2.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_aa_update_url_loads(self):
+        """Test AreaAssessmentObservation update_url."""
+        response = self.client.get(self.aa0.update_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa1.update_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.aa2.update_url)
         self.assertEqual(response.status_code, 200)
