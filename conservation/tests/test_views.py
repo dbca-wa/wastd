@@ -15,14 +15,7 @@ from django.urls import reverse  # noqa
 from model_mommy import mommy  # noqa
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
 from taxonomy.models import Taxon, Community
-from conservation.models import (  # noqa
-    ConservationList,
-    TaxonGazettal,
-    ConservationActionCategory,
-    ConservationAction,
-    ConservationActivity,
-    Document
-)
+from conservation import models as cons_models
 
 
 class ConservationListViewTests(TestCase):
@@ -30,10 +23,10 @@ class ConservationListViewTests(TestCase):
 
     def setUp(self):
         """Setup: create a new list."""
-        self.cl = ConservationList.objects.create(
+        self.cl = cons_models.ConservationList.objects.create(
             code='test',
             label='test list',
-            approval_level=ConservationList.APPROVAL_IMMEDIATE)
+            approval_level=cons_models.ConservationList.APPROVAL_IMMEDIATE)
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
             email="super@gmail.com",
@@ -52,9 +45,9 @@ class ConservationActionCategoryViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.object = ConservationActionCategory.objects.create(
+        self.object = cons_models.ConservationActionCategory.objects.create(
             code="burn", label="Burn", description="Burn everything")
-        self.consaction = ConservationAction.objects.create(
+        self.consaction = cons_models.ConservationAction.objects.create(
             category=self.object,
             instructions="burn some stuff"
         )
@@ -76,7 +69,7 @@ class ConservationActionViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.consactioncat = ConservationActionCategory.objects.create(
+        self.consactioncat = cons_models.ConservationActionCategory.objects.create(
             code="burn", label="Burn", description="Burn everything")
         self.taxon0 = mommy.make(
             Taxon,
@@ -90,7 +83,7 @@ class ConservationActionViewTests(TestCase):
             name="name0",
             _fill_optional=['eoo'])
         self.com0.save()
-        self.object = ConservationAction.objects.create(
+        self.object = cons_models.ConservationAction.objects.create(
             category=self.consactioncat,
             instructions="burn some stuff"
         )
@@ -134,13 +127,13 @@ class ConservationActivityViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.consactioncat = ConservationActionCategory.objects.create(
+        self.consactioncat = cons_models.ConservationActionCategory.objects.create(
             code="burn", label="Burn", description="Burn everything")
-        self.consaction = ConservationAction.objects.create(
+        self.consaction = cons_models.ConservationAction.objects.create(
             category=self.consactioncat,
             instructions="burn some stuff"
         )
-        self.object = ConservationActivity.objects.create(
+        self.object = cons_models.ConservationActivity.objects.create(
             conservation_action=self.consaction,
         )
         self.user = get_user_model().objects.create_superuser(
@@ -155,25 +148,25 @@ class ConservationActivityViewTests(TestCase):
         response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
-    # def test_get_absolute_url(self):
-    #     """Test ConservationAction get absolute url."""
-    #     response = self.client.get(self.object.get_absolute_url())
-    #     self.assertEqual(response.status_code, 200)
+    def test_get_absolute_url(self):
+        """Test ConservationAction get absolute url."""
+        response = self.client.get(self.object.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
 
-    # def test_list_url_loads(self):
-    #     """Test conservationaction-list."""
-    #     response = self.client.get(self.object.list_url())
-    #     self.assertEqual(response.status_code, 200)
+    def test_list_url_loads(self):
+        """Test conservationactivity-list."""
+        response = self.client.get(self.object.list_url())
+        self.assertEqual(response.status_code, 200)
 
-    # def test_create_url_loads(self):
-    #     """Test conservationaction-create."""
-    #     response = self.client.get(self.object.create_url())
-    #     self.assertEqual(response.status_code, 200)
+    def test_create_url_loads(self):
+        """Test conservationactivity-create."""
+        response = self.client.get(self.object.create_url(self.consaction))
+        self.assertEqual(response.status_code, 200)
 
-    # def test_update_url_loads(self):
-    #     """Test conservationaction-update."""
-    #     response = self.client.get(self.object.update_url)
-    #     self.assertEqual(response.status_code, 200)
+    def test_update_url_loads(self):
+        """Test conservationactivity-update."""
+        response = self.client.get(self.object.update_url)
+        self.assertEqual(response.status_code, 200)
 
     def test_conservation_activity_str(self):
         """Test ConservationActivity str."""
@@ -190,9 +183,9 @@ class DocumentViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.object = Document.objects.create(
+        self.object = cons_models.Document.objects.create(
             title="test doc",
-            document_type=Document.TYPE_RECOVERY_PLAN
+            document_type=cons_models.Document.TYPE_RECOVERY_PLAN
         )
         self.user = get_user_model().objects.create_superuser(
             username="superuser",

@@ -175,7 +175,7 @@ class ConservationActivityCreateView(
         """Initial form values."""
         initial = super(ConservationActivityCreateView, self).get_initial()
         if "pk" in self.kwargs:
-            initial["conservation_action_id"] = self.kwargs["pk"]
+            initial["conservation_action"] = cons_models.ConservationAction.objects.get(pk=self.kwargs["pk"])
         return initial
 
     def get_breadcrumbs(self, request, obj=None, add=False):

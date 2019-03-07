@@ -321,7 +321,7 @@ def update_status_cache(sender, instance, *args, **kwargs):
 
 
 @python_2_unicode_compatible
-class ConservationActivity(models.Model):
+class ConservationActivity(UrlsMixin, models.Model):
     """An implementation of a conservation management measure."""
 
     conservation_action = models.ForeignKey(
@@ -378,6 +378,12 @@ class ConservationActivity(models.Model):
     def get_absolute_url(self):
         """Detail url."""
         return self.conservation_action.get_absolute_url()
+
+    @classmethod
+    def create_url(cls, conservation_action):
+        """Create url. Required args: a conservation action instance."""
+        return reverse('conservation:conservationactivity-create',
+                       kwargs={'pk': conservation_action.pk})
 
 
 @receiver(post_save, sender=ConservationActivity)

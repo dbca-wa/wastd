@@ -20,6 +20,7 @@ from occurrence.models import (  # noqa
     AssociatedSpeciesObservation,
     FireHistoryObservation
 )
+from conservation import models as cons_models
 from taxonomy.models import Community, Taxon  # noqa
 # from django.contrib.contenttypes.models import ContentType
 
@@ -118,6 +119,10 @@ class TaxonViewTests(TestCase):
             email="super@gmail.com",
             password="test")
         self.user.save()
+
+        self.doc = mommy.make(cons_models.Document)
+        self.doc.taxa.add(self.taxon0)
+        self.doc.save()
 
         self.client.force_login(self.user)
 

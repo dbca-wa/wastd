@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.6.1-browsers
+      - image: circleci/python:3.7.0-browsers
         environment:
           # Not using pipenv, but virtualenvwrapper / virtualenv
           - PIPENV_VENV_IN_PROJECT: true
@@ -58,6 +58,13 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r requirements/dev.txt
+
+      - run:
+          name: Install Pandoc
+          command: |
+            wget https://github.com/jgm/pandoc/releases/download/2.7/pandoc-2.7-1-amd64.deb
+            dpkg -i pandoc-2.7-1-amd64.deb
+            rm pandoc-2.7-1-amd64.deb
 
       - save_cache:
           paths:

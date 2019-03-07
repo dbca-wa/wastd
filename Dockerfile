@@ -9,9 +9,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     python-dev libsasl2-dev libldap2-dev python-enchant \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
-  && wget https://github.com/jgm/pandoc/releases/download/2.3/pandoc-2.3-1-amd64.deb \
-  && dpkg -i pandoc-2.3-1-amd64.deb \
-  && rm pandoc-2.3-1-amd64.deb
+  && wget https://github.com/jgm/pandoc/releases/download/2.7/pandoc-2.7-1-amd64.deb \
+  && dpkg -i pandoc-2.7-1-amd64.deb \
+  && rm pandoc-2.7-1-amd64.deb
 
 WORKDIR /usr/src/app
 COPY requirements/ ./requirements/
