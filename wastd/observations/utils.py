@@ -17,14 +17,14 @@ from dateutil import parser
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import LineString, Point
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
 from requests.auth import HTTPDigestAuth
 from shared.utils import sanitize_tag_label
 
 from wastd.observations.models import *
-from wastd.users.models import User
+# from wastd.users.models import User
 
 # from django.utils.timezone import get_fixed_timezone, utc
 
