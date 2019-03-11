@@ -1783,11 +1783,11 @@ def import_one_encounter_wamtram(r, m, u):
     """
 
     if src_id in m["overwrite"]:
-        logger.debug("Updating unchanged existing record {0}...".format(src_id))
+        logger.info("Updating unchanged existing record {0}...".format(src_id))
         AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
         e = AnimalEncounter.objects.get(source_id=src_id)
     else:
-        logger.debug("Creating new record {0}...".format(src_id))
+        logger.info("Creating new record {0}...".format(src_id))
         try:
             e = AnimalEncounter.objects.create(**new_data)
         except:
