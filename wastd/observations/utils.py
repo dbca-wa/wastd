@@ -2629,11 +2629,13 @@ def import_odk(datafile,
                  for user in wamtram_users if user["name"] != ""}
 
         logger.info("Selecting new data to insert...")
-        mapping["update"] = [x["source_id"]
-                             for x in Encounter.objects.filter(
-            source="wamtram",
-            status=Encounter.STATUS_NEW
-        ).values(source_id)]
+        mapping["update"] = [
+            x["source_id"]
+            for x in Encounter.objects.filter(
+                source="wamtram",
+                status=Encounter.STATUS_NEW
+            ).values("source_id")
+        ]
 
         logger.info("Importing data...")
         [import_one_encounter_wamtram(e, mapping, users) for e in enc
