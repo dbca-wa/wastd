@@ -268,6 +268,9 @@ def guess_user(un, default_username="FlorianM"):
         try:
             usr = usermodel.objects.get(name=name)
             msg = "[guess_user][OK] Exact match for name {name} is {user}."
+        except MultipleObjectsReturned:
+            usr = usermodel.objects.filter(name=name).first()
+            msg = "[guess_user][PROBLEM] Duplicate match for name {name}, picking {user}."
         except ObjectDoesNotExist:
 
             usrs = usermodel.objects.filter(username__trigram_similar=username,
