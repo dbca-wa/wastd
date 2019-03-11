@@ -1791,7 +1791,7 @@ def import_one_encounter_wamtram(r, m, u):
         try:
             e = AnimalEncounter.objects.create(**new_data)
         except:
-            logger.warn("[import_one_encounter_wamtram] failed with data {0}".format(**new_data))
+            logger.warn("[import_one_encounter_wamtram] failed with data {0}".format(str(new_data)))
             return None
 
     e.save()
@@ -2629,15 +2629,15 @@ def import_odk(datafile,
                  for user in wamtram_users if user["name"] != ""}
 
         logger.info("Selecting new data to insert...")
-        # mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
-        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="wamtram")]
-        mapping["overwrite"] = [t.source_id for t in Encounter.objects.filter(
-            source="wamtram", status=Encounter.STATUS_NEW)]
+        mapping["update"] = [x["source_id"]
+                             for x in Encounter.objects.filter(
+            source="wamtram",
+            status=Encounter.STATUS_NEW
+        ).values(source_id)]
 
         logger.info("Importing data...")
         [import_one_encounter_wamtram(e, mapping, users) for e in enc
-         if e["OBSERVATION_ID"] not in mapping["keep"]]
+         if e["OBSERVATION_ID"] in mapping["update"]]
         logger.info("Done!")
 
         # if extradata:
