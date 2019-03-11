@@ -1758,13 +1758,56 @@ def import_one_encounter_wamtram(r, m, u):
     # meas_observer_id = u[r["MEASURER_PERSON_ID"]] if r["MEASURER_PERSON_ID"] in u else 1
     # meas_reporter_id = u[r["MEASURER_REPORTER_PERSON_ID"]] if r["MEASURER_REPORTER_PERSON_ID"] in u else 1
 
-    new_data = dict(
+    # new_data = dict(
+    #     source="wamtram",
+    #     source_id=src_id,
+    #     where=Point(float(r["LONGITUDE"]), float(r["LATITUDE"])),
+    #     when=parse_datetime("{0}+00".format(r["observation_datetime_utc"])),
+    #     location_accuracy="10",
+    #     observer_id=observer_id,  # lookup_w2_user(r["REPORTER_PERSON_ID"]),
+    #     reporter_id=reporter_id,
+    #     taxon="Cheloniidae",
+    #     species=m["species"][r["SPECIES_CODE"]],
+    #     activity=m["activity"][r['activity_code']],
+    #     sex="female",
+    #     maturity="adult",
+    #     health=m["health"][r['CONDITION_CODE']],
+    #     habitat=m["habitat"][r["BEACH_POSITION_CODE"]],
+    #     nesting_event=m["nesting"][r["CLUTCH_COMPLETED"]],
+    # )
+
+    """
+    TODO create mapping for:
+    behaviour="", # all comments go here
+    """
+
+    # if src_id in m["update"]:
+    #     logger.info("Updating unchanged existing record {0}...".format(src_id))
+    #     AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
+    #     e = AnimalEncounter.objects.get(source_id=src_id)
+    # else:
+    #     logger.info("Creating new record {0}...".format(src_id))
+    #     try:
+    #         e = AnimalEncounter.objects.create(**new_data)
+    #     except:
+    #         logger.warning("[import_one_encounter_wamtram] failed with data {0}".format(str(new_data)))
+    #         import ipdb
+    #         ipdb.stack_trace()
+    #         return None
+
+    # e.save()
+    # logger.debug(" Saved {0}\n".format(e))
+    # return e
+
+    unique_data = dict(
         source="wamtram",
-        source_id=src_id,
+        source_id=src_id
+    )
+    extra_data = dict(
         where=Point(float(r["LONGITUDE"]), float(r["LATITUDE"])),
         when=parse_datetime("{0}+00".format(r["observation_datetime_utc"])),
         location_accuracy="10",
-        observer_id=observer_id,  # lookup_w2_user(r["REPORTER_PERSON_ID"]),
+        observer_id=observer_id,
         reporter_id=reporter_id,
         taxon="Cheloniidae",
         species=m["species"][r["SPECIES_CODE"]],
@@ -1776,27 +1819,35 @@ def import_one_encounter_wamtram(r, m, u):
         nesting_event=m["nesting"][r["CLUTCH_COMPLETED"]],
     )
 
-    """
-    TODO create mapping for:
-    behaviour="", # all comments go here
-    r["NESTING"] Y/N/U = nesting success
-    """
+    enc, action = create_update_skip(
+        unique_data,
+        extra_data,
+        cls=AnimalEncounter,
+        base_cls=Encounter)
 
-    if src_id in m["update"]:
-        logger.info("Updating unchanged existing record {0}...".format(src_id))
-        AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
-        e = AnimalEncounter.objects.get(source_id=src_id)
-    else:
-        logger.info("Creating new record {0}...".format(src_id))
-        try:
-            e = AnimalEncounter.objects.create(**new_data)
-        except:
-            logger.warning("[import_one_encounter_wamtram] failed with data {0}".format(str(new_data)))
-            return None
+    # if action in ["update", "create"]:
 
-    e.save()
-    logger.debug(" Saved {0}\n".format(e))
-    return e
+    #     enc.taxon = data["details"].get("taxon", "Cheloniidae")
+    #     enc.species = species_dict[data["details"]["species"]]
+    #     enc.maturity = maturity_dict[data["details"]["maturity"]]
+    #     enc.sex = data["details"]["sex"]
+    #     enc.health = health_dict[data["status"]["health"]]
+    #     enc.activity = activity_dict[data["status"]["activity"]]
+    #     enc.behaviour = "Behaviour: {0}\nLocation: {1}".format(
+    #         data["status"]["behaviour"] or "",
+    #         data["incident"]["location_comment"] or "")
+    #     enc.habitat = habitat_dict[data["incident"]["habitat"]]
+    #     enc.nesting_event = "absent"
+    #     enc.checked_for_injuries = data["checks"]["checked_for_injuries"]
+    #     enc.scanned_for_pit_tags = data["checks"]["scanned_for_pit_tags"]
+    #     enc.checked_for_flipper_tags = data["checks"]["checked_for_flipper_tags"]
+    #     enc.cause_of_death = data["death"]["cause_of_death"] or 'na'
+    #     enc.cause_of_death_confidence = data["death"]["cause_of_death_confidence"] or 'na'
+
+    #     #  "checks": {
+    #     #   "samples_taken": "present",
+
+    #     enc.save()
 
 
 def sanitize_tag_name(name):
@@ -2646,8 +2697,8 @@ def import_odk(datafile,
         ]
 
         logger.info("Importing data...")
-        imported = [import_one_encounter_wamtram(e, mapping, users) for e in enc
-                    if e["OBSERVATION_ID"] not in mapping["keep"]]
+        imported = [import_one_encounter_wamtram(e, mapping, users) for e in enc]
+        # if make_wamtram_source_id(e["OBSERVATION_ID"]) not in mapping["keep"]]
         logger.info("Done, imported {0} records.".format(len(imported)))
 
         # if extradata:
@@ -3256,8 +3307,8 @@ def create_update_skip(
         e.save()
         msg = "[create_update_skip] Created new record {0}".format(e.__str__())
 
-    logger.debug(msg)
-    logger.debug("[create_update_skip] Done, returning record.")
+    logger.info(msg)
+    logger.info("[create_update_skip] Done, returning record.")
     return (e, action)
 
 
