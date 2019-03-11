@@ -1761,7 +1761,9 @@ class Encounter(PolymorphicModel, geo_models.Model):
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
         return "{0} {1} {2}".format(
-            self.when.year or '', self.get_encounter_type_display(), self.name or '')
+            '' if not self.when else self.when.year,
+            self.get_encounter_type_display(),
+            self.name or '')
 
     @property
     def leaflet_icon(self):

@@ -2287,9 +2287,8 @@ def update_wastd_user(u):
 
     The updated or created WAStD User ID
     """
-    usr, created = User.objects.get_or_create(
-        username=u["name"].lower().replace(" ", "_"))
-    logger.debug("User {0}: {1}".format("created" if created else "found", usr))
+    usrdict = guess_user(u["name"])
+    usr = usrdict["user"]
 
     # Update name
     if (usr.name is None or usr.name == "") and u["name"] != "NA" and u["name"] != "":
@@ -2513,8 +2512,8 @@ def import_odk(datafile,
         from wastd.observations.utils import *
         # import_odk('data/Track_or_Treat_0_34_results.json', flavour="odk-tt034")
         import_odk('data/cetaceans.csv', flavour="cet")
-        import_odk('data/wamtram_encounters.csv', flavour="wamtram", usercsv="data/wamtram_users.csv")
-        import_odk('data/wamtram_tagobservations.csv', flavour="whambam")
+        import_odk('media/wamtram_encounters.csv', flavour="wamtram", usercsv="media/wamtram_users.csv")
+        import_odk('media/wamtram_tagobservations.csv', flavour="whambam")
         # import_odk('data/Site_Visit_0_1_results.json', flavour="sitevisit")
 
         import_odk("data/latest/tt05.json", flavour="odk-tally05")
