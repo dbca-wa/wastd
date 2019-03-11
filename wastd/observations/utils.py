@@ -1788,7 +1788,11 @@ def import_one_encounter_wamtram(r, m, u):
         e = AnimalEncounter.objects.get(source_id=src_id)
     else:
         logger.debug("Creating new record {0}...".format(src_id))
-        e = AnimalEncounter.objects.create(**new_data)
+        try:
+            e = AnimalEncounter.objects.create(**new_data)
+        except:
+            logger.warn("[import_one_encounter_wamtram] failed with data {0}".format(**new_data))
+            return None
 
     e.save()
     logger.debug(" Saved {0}\n".format(e))
