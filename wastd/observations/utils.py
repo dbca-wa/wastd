@@ -1757,6 +1757,8 @@ def import_one_encounter_wamtram(r, m, u):
     reporter_id = u[r["REPORTER_PERSON_ID"]] if r["REPORTER_PERSON_ID"] in u else 1
     # meas_observer_id = u[r["MEASURER_PERSON_ID"]] if r["MEASURER_PERSON_ID"] in u else 1
     # meas_reporter_id = u[r["MEASURER_REPORTER_PERSON_ID"]] if r["MEASURER_REPORTER_PERSON_ID"] in u else 1
+    enc_date = parse_datetime("{0}+00".format(r["observation_datetime_utc"]))
+    logger.info("Encounter date: {0} parsed into {1}".format(r["observation_datetime_utc"], enc_date))
 
     # new_data = dict(
     #     source="wamtram",
@@ -1805,7 +1807,7 @@ def import_one_encounter_wamtram(r, m, u):
     )
     extra_data = dict(
         where=Point(float(r["LONGITUDE"]), float(r["LATITUDE"])),
-        when=parse_datetime("{0}+00".format(r["observation_datetime_utc"])),
+        when=enc_date,
         location_accuracy="10",
         observer_id=observer_id,
         reporter_id=reporter_id,
@@ -2679,22 +2681,22 @@ def import_odk(datafile,
         users = {user["PERSON_ID"]: update_wastd_user(user)
                  for user in wamtram_users if user["name"] != ""}
 
-        logger.info("Selecting new data to insert...")
-        mapping["update"] = [
-            x["source_id"]
-            for x in Encounter.objects.filter(
-                source="wamtram",
-                status=Encounter.STATUS_NEW
-            ).values("source_id")
-        ]
-        mapping["keep"] = [
-            x["source_id"]
-            for x in Encounter.objects.filter(
-                source="wamtram"
-            ).exclude(
-                status=Encounter.STATUS_NEW
-            ).values("source_id")
-        ]
+        # logger.info("Selecting new data to insert...")
+        # mapping["update"] = [
+        #     x["source_id"]
+        #     for x in Encounter.objects.filter(
+        #         source="wamtram",
+        #         status=Encounter.STATUS_NEW
+        #     ).values("source_id")
+        # ]
+        # mapping["keep"] = [
+        #     x["source_id"]
+        #     for x in Encounter.objects.filter(
+        #         source="wamtram"
+        #     ).exclude(
+        #         status=Encounter.STATUS_NEW
+        #     ).values("source_id")
+        # ]
 
         logger.info("Importing data...")
         imported = [import_one_encounter_wamtram(e, mapping, users) for e in enc]
