@@ -9,6 +9,7 @@ coverage
 django-coverage-plugin
 django-test-plus
 factory_boy
+pytest
 pytest-django
 pytest-sugar
 model_mommy
