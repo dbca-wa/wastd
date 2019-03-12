@@ -71,14 +71,14 @@
 
       <p>
       {% for xref in original.supercedes.all %}
-      <a href="{% url 'taxon-detail' name_id=xref.predecessor.name_id %}"
+      <a href="{% url 'taxonomy:taxon-detail' name_id=xref.predecessor.name_id %}"
         class="badge badge-secondary" title="View predecessor">
         {{ xref.predecessor }}
       </a> superceded as {{ xref.get_reason_display }}<br />
       {% endfor %}
 
       {% for xref in original.precedes.all %}
-      <a href="{% url 'taxon-detail' name_id=xref.successor.name_id %}"
+      <a href="{% url 'taxonomy:taxon-detail' name_id=xref.successor.name_id %}"
           class="badge badge-secondary" title="View successor">
         {{ xref.successor }}
       </a> supercedes as {{ xref.get_reason_display }}<br />
