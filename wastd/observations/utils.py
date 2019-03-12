@@ -1845,7 +1845,25 @@ def import_one_tag(t, m):
     'tag_location': 'whole',
     'comments': '',
     }
+
+    Skip if tag status in:
+     # not tagged, no tags seen, no number recorded:
+        # "A2": '',  # TODO no tag applied
+        "PX": 'resighted',  # TODO tag present, not read
+        # "0": '',  # TODO false ID as lost
+        "#": 'applied-new',  # tag was applied, but tag number unknown
+        "Q": 'applied-new',  # tag number incompletely recorded
+        # M tag scar seen
+        # M1 missing
+        # N not recorded
+        # 0L falsely assumed to be tag scar, not a tag scar
+
+
     """
+    if t["tag_state"] in ["A2", "PX", "0", "#", "Q", "M", "M1", "N", "0L"]:
+        logger.info("Skipping tag obs with status {0}".format(t["tag_state"]))
+        return None
+
     tag_name = sanitize_tag_label(t["tag_name"])
     enc = AnimalEncounter.objects.get(
         source_id=make_wamtram_source_id(t["observation_id"]))
@@ -1858,21 +1876,22 @@ def import_one_tag(t, m):
         name=tag_name,
         tag_location=make_tag_side(t["attached_on_side"], t["tag_position"]),
         status=m["tag_status"][t["tag_state"]],
-        comments='{0}\n{1}'.format(t["comments"], t["tag_label"]),
+        comments='{0}\nLTag label: {1}\nOriginal status: {2}'.format(
+            t["comments"], t["tag_label"], t["tag_state"]),
     )
 
     if TagObservation.objects.filter(encounter_id=enc.id, name=tag_name).exists():
-        logger.debug("Updating existing tag obs {0}...".format(tag_name))
+        logger.info("Updating existing tag obs {0}...".format(tag_name))
         e = TagObservation.objects.filter(
             encounter_id=enc.id, name=tag_name).update(**new_data)
         e = TagObservation.objects.get(encounter_id=enc.id, name=tag_name)
 
     else:
-        logger.debug("Creating new tag obs {0}...".format(tag_name))
+        logger.info("Creating new tag obs {0}...".format(tag_name))
         e = TagObservation.objects.create(**new_data)
 
     e.save()
-    logger.debug(" Saved {0}\n".format(e))
+    logger.info(" Saved {0}\n".format(e))
     return e
 
 
