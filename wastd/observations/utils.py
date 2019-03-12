@@ -263,20 +263,22 @@ def guess_user(un, default_username="FlorianM"):
     try:
         usr = usermodel.objects.get(username=username)
         msg = "[guess_user][OK] Exact match for username {username} is {user}."
+
     except ObjectDoesNotExist:
 
         try:
             usr = usermodel.objects.get(name=name)
             msg = "[guess_user][OK] Exact match for name {name} is {user}."
+
         except MultipleObjectsReturned:
             usr = usermodel.objects.filter(name=name).first()
             msg = "[guess_user][PROBLEM] Duplicate match for name {name}, picking {user}."
-        except ObjectDoesNotExist:
 
+        except ObjectDoesNotExist:
             usrs = usermodel.objects.filter(username__trigram_similar=username,
                                             name__trigram_similar=name,
                                             nickname__trigram_similar=name,
-                                            aliases__trigram_similat=name)
+                                            aliases__trigram_similar=name)
             if usrs.count() == 0:
                 usr = usermodel.objects.create(username=username, name=name)
                 msg = "[guess_user][CREATED] username {username} and name {name} not found. Created {user}."
@@ -1656,8 +1658,9 @@ def import_one_encounter_wamtram(r, m, u):
     'activity_is_nesting': 'Y',
     'activity_label': 'Returning To Water',
     'display_this_observation': '1',
-    'observation_datetime_gmt08': '2010-12-12 00:55:00',
-    'observation_datetime_utc': '2010-12-11 16:55:00'}
+    'observation_datetime_gmt08': '2010-12-12T00:55:00Z',
+    'observation_datetime_utc': '2010-12-12T00:55:00Z'
+    }
 
     m The ODK_MAPPING
 
@@ -1750,73 +1753,23 @@ def import_one_encounter_wamtram(r, m, u):
     'ENTERED_BY_PERSON_ID': '3537',
     'ENTRY_BATCH_ID': '301',
     """
-    src_id = make_wamtram_source_id(r["OBSERVATION_ID"])
-
-    # Personnel: Get WAStD User from u if PERSON_ID present, default to 1
-    observer_id = u[r["TAGGER_PERSON_ID"]] if r["TAGGER_PERSON_ID"] in u else 1
-    reporter_id = u[r["REPORTER_PERSON_ID"]] if r["REPORTER_PERSON_ID"] in u else 1
-    # meas_observer_id = u[r["MEASURER_PERSON_ID"]] if r["MEASURER_PERSON_ID"] in u else 1
-    # meas_reporter_id = u[r["MEASURER_REPORTER_PERSON_ID"]] if r["MEASURER_REPORTER_PERSON_ID"] in u else 1
-    enc_date = parse_datetime("{0}+00".format(r["observation_datetime_utc"]))
-    logger.info("Encounter date: {0} parsed into {1}".format(r["observation_datetime_utc"], enc_date))
-
-    # new_data = dict(
-    #     source="wamtram",
-    #     source_id=src_id,
-    #     where=Point(float(r["LONGITUDE"]), float(r["LATITUDE"])),
-    #     when=parse_datetime("{0}+00".format(r["observation_datetime_utc"])),
-    #     location_accuracy="10",
-    #     observer_id=observer_id,  # lookup_w2_user(r["REPORTER_PERSON_ID"]),
-    #     reporter_id=reporter_id,
-    #     taxon="Cheloniidae",
-    #     species=m["species"][r["SPECIES_CODE"]],
-    #     activity=m["activity"][r['activity_code']],
-    #     sex="female",
-    #     maturity="adult",
-    #     health=m["health"][r['CONDITION_CODE']],
-    #     habitat=m["habitat"][r["BEACH_POSITION_CODE"]],
-    #     nesting_event=m["nesting"][r["CLUTCH_COMPLETED"]],
-    # )
-
-    """
-    TODO create mapping for:
-    behaviour="", # all comments go here
-    """
-
-    # if src_id in m["update"]:
-    #     logger.info("Updating unchanged existing record {0}...".format(src_id))
-    #     AnimalEncounter.objects.filter(source_id=src_id).update(**new_data)
-    #     e = AnimalEncounter.objects.get(source_id=src_id)
-    # else:
-    #     logger.info("Creating new record {0}...".format(src_id))
-    #     try:
-    #         e = AnimalEncounter.objects.create(**new_data)
-    #     except:
-    #         logger.warning("[import_one_encounter_wamtram] failed with data {0}".format(str(new_data)))
-    #         import ipdb
-    #         ipdb.stack_trace()
-    #         return None
-
-    # e.save()
-    # logger.debug(" Saved {0}\n".format(e))
-    # return e
-
     unique_data = dict(
         source="wamtram",
-        source_id=src_id
+        source_id=make_wamtram_source_id(r["OBSERVATION_ID"])
     )
+
     extra_data = dict(
         where=Point(float(r["LONGITUDE"]), float(r["LATITUDE"])),
-        when=enc_date,
+        when=parse_datetime(r["observation_datetime_utc"]),
         location_accuracy="10",
-        observer_id=observer_id,
-        reporter_id=reporter_id,
+        observer_id=u[r["TAGGER_PERSON_ID"]] if r["TAGGER_PERSON_ID"] in u else 1,
+        reporter_id=u[r["REPORTER_PERSON_ID"]] if r["REPORTER_PERSON_ID"] in u else 1,
         taxon="Cheloniidae",
         species=m["species"][r["SPECIES_CODE"]],
-        activity=m["activity"][r['activity_code']],
+        activity=m["activity"][r["activity_code"]],
         sex="female",
         maturity="adult",
-        health=m["health"][r['CONDITION_CODE']],
+        health=m["health"][r["CONDITION_CODE"]],
         habitat=m["habitat"][r["BEACH_POSITION_CODE"]],
         nesting_event=m["nesting"][r["CLUTCH_COMPLETED"]],
     )
@@ -1827,34 +1780,12 @@ def import_one_encounter_wamtram(r, m, u):
         cls=AnimalEncounter,
         base_cls=Encounter)
 
-    # if action in ["update", "create"]:
-
-    #     enc.taxon = data["details"].get("taxon", "Cheloniidae")
-    #     enc.species = species_dict[data["details"]["species"]]
-    #     enc.maturity = maturity_dict[data["details"]["maturity"]]
-    #     enc.sex = data["details"]["sex"]
-    #     enc.health = health_dict[data["status"]["health"]]
-    #     enc.activity = activity_dict[data["status"]["activity"]]
-    #     enc.behaviour = "Behaviour: {0}\nLocation: {1}".format(
-    #         data["status"]["behaviour"] or "",
-    #         data["incident"]["location_comment"] or "")
-    #     enc.habitat = habitat_dict[data["incident"]["habitat"]]
-    #     enc.nesting_event = "absent"
-    #     enc.checked_for_injuries = data["checks"]["checked_for_injuries"]
-    #     enc.scanned_for_pit_tags = data["checks"]["scanned_for_pit_tags"]
-    #     enc.checked_for_flipper_tags = data["checks"]["checked_for_flipper_tags"]
-    #     enc.cause_of_death = data["death"]["cause_of_death"] or 'na'
-    #     enc.cause_of_death_confidence = data["death"]["cause_of_death_confidence"] or 'na'
-
-    #     #  "checks": {
-    #     #   "samples_taken": "present",
-
-    #     enc.save()
+    enc.save()
 
 
 def sanitize_tag_name(name):
     """Return a string capitalised and stripped of all whitespace."""
-    return name.upper().replace(" ", "")
+    return sanitize_tag_label(name)
 
 
 def make_tag_side(side, position):
@@ -1915,7 +1846,7 @@ def import_one_tag(t, m):
     'comments': '',
     }
     """
-    tag_name = sanitize_tag_name(t["tag_name"])
+    tag_name = sanitize_tag_label(t["tag_name"])
     enc = AnimalEncounter.objects.get(
         source_id=make_wamtram_source_id(t["observation_id"]))
 
@@ -1930,11 +1861,11 @@ def import_one_tag(t, m):
         comments='{0}\n{1}'.format(t["comments"], t["tag_label"]),
     )
 
-    if TagObservation.objects.filter(encounter=enc, name=tag_name).exists():
+    if TagObservation.objects.filter(encounter_id=enc.id, name=tag_name).exists():
         logger.debug("Updating existing tag obs {0}...".format(tag_name))
         e = TagObservation.objects.filter(
-            encounter=enc, name=tag_name).update(**new_data)
-        e = TagObservation.objects.get(encounter=enc, name=tag_name)
+            encounter_id=enc.id, name=tag_name).update(**new_data)
+        e = TagObservation.objects.get(encounter_id=enc.id, name=tag_name)
 
     else:
         logger.debug("Creating new tag obs {0}...".format(tag_name))
@@ -2500,10 +2431,10 @@ def make_mapping():
 
         # not tagged, no tags seen, no number recorded:
         # "A2": '',  # TODO no tag applied
-        # "PX": '',  # TODO tag present, not read
+        "PX": 'resighted',  # TODO tag present, not read
         # "0": '',  # TODO false ID as lost
-        # "#": '',  # tag was applied, bit tag number unknown
-        # "Q": '',  # tag number incompletely recorded
+        "#": 'applied-new',  # tag was applied, but tag number unknown
+        "Q": 'applied-new',  # tag number incompletely recorded
         # M tag scar seen
         # M1 missing
         # N not recorded
@@ -2681,42 +2612,25 @@ def import_odk(datafile,
         users = {user["PERSON_ID"]: update_wastd_user(user)
                  for user in wamtram_users if user["name"] != ""}
 
-        # logger.info("Selecting new data to insert...")
-        # mapping["update"] = [
-        #     x["source_id"]
-        #     for x in Encounter.objects.filter(
-        #         source="wamtram",
-        #         status=Encounter.STATUS_NEW
-        #     ).values("source_id")
-        # ]
-        # mapping["keep"] = [
-        #     x["source_id"]
-        #     for x in Encounter.objects.filter(
-        #         source="wamtram"
-        #     ).exclude(
-        #         status=Encounter.STATUS_NEW
-        #     ).values("source_id")
-        # ]
-
         logger.info("Importing data...")
         imported = [import_one_encounter_wamtram(e, mapping, users) for e in enc]
-        # if make_wamtram_source_id(e["OBSERVATION_ID"]) not in mapping["keep"]]
         logger.info("Done, imported {0} records.".format(len(imported)))
-
-        # if extradata:
-        #   tags = csv.DictReader(open(extradata))
-        # [import_one_tag_wamtram(t, ODK_MAPPING) for t in tags]
 
     elif flavour == "whambam":
         logger.info("thank you ma'am")
         tags = csv.DictReader(open(datafile))
 
-        logger.info("  Caching tagging encounters...")
-        enc = [x["source_id"] for x in
-               AnimalEncounter.objects.filter(source="wamtram").values("source_id")]
+        logger.info("Caching tagging encounters...")
+        enc = [
+            x["source_id"]
+            for x
+            in AnimalEncounter.objects.filter(source="wamtram").values("source_id")
+        ]
 
-        [import_one_tag(x, mapping) for x in tags
-         if make_wamtram_source_id(x["observation_id"]) in enc]
+        logger.info("Loading tagging observations...")
+        tags = [import_one_tag(x, mapping) for x in tags
+                if make_wamtram_source_id(x["observation_id"]) in enc]
+        logger.info("Done loading {0} tagging observations.".format(len(tags)))
 
     elif flavour == "sitevisit":
         logger.info("Loading Site Visits...")
