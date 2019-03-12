@@ -21,7 +21,7 @@ from occurrence.models import (  # noqa
     FireHistoryObservation
 )
 from conservation import models as cons_models
-from taxonomy.models import Community, Taxon  # noqa
+from taxonomy.models import Community, Taxon, Crossreference
 # from django.contrib.contenttypes.models import ContentType
 
 MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
@@ -114,6 +114,32 @@ class TaxonViewTests(TestCase):
             _fill_optional=['rank', 'eoo'])
         self.taxon0.save()
 
+        self.taxon1 = mommy.make(
+            Taxon,
+            name_id=1001,
+            name="name1",
+            _fill_optional=['rank', 'eoo'])
+        self.taxon1.save()
+
+        self.taxon2 = mommy.make(
+            Taxon,
+            name_id=1002,
+            name="name2",
+            _fill_optional=['rank', 'eoo'])
+        self.taxon2.save()
+
+        self.xref01 = Crossreference.objects.create(
+            predecessor=self.taxon1,
+            successor=self.taxon0,
+            reason=Crossreference.REASON_TSY
+        )
+
+        self.xref12 = Crossreference.objects.create(
+            predecessor=self.taxon0,
+            successor=self.taxon2,
+            reason=Crossreference.REASON_TSY
+        )
+
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
             email="super@gmail.com",
@@ -144,6 +170,7 @@ class TaxonViewTests(TestCase):
         """Test Taxon detail_url."""
         response = self.client.get(self.taxon0.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+        # TODO test crossreference urls
 
     # def test_taxon_update_url_loads(self):
     #     """Test Taxon update_url."""
