@@ -1860,7 +1860,7 @@ def import_one_tag(t, m):
 
 
     """
-    if t["tag_state"] in ["A2", "PX", "0", "#", "Q", "M", "M1", "N", "0L"]:
+    if t["tag_state"] in ["A2", "PX", "0", "#", "Q", "M", "M1", "N", "0L", "NA"]:
         logger.info("Skipping tag obs with status {0}".format(t["tag_state"]))
         return None
 
