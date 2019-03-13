@@ -58,8 +58,8 @@ class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmi
     """Admin for Area."""
 
     # Change list
-    list_display = ["area_type", "code", "name", "source", "source_id", ]
-    list_filter = ["area_type", "source", ]
+    list_display = ["area_type", "code", "name", "source", "source_id", "status", ]
+    list_filter = ["area_type", "source", "status", ]
     search_fields = ("code", "name", )
     date_hierarchy = 'encountered_on'
 
