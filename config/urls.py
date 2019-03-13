@@ -2,8 +2,6 @@
 """WAStD URLs."""
 from __future__ import unicode_literals
 
-from adminactions import actions
-from ajax_select import urls as ajax_select_urls
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -14,27 +12,23 @@ from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
+from ajax_select import urls as ajax_select_urls
+from adminactions import actions
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
 
 from occurrence.models import CommunityAreaEncounter
 from wastd.api import router as wastd_router
-from wastd.observations.models import AnimalEncounter, Area, Encounter
-from wastd.observations.views import (
-    AnimalEncounterTableView,
-    EncounterTableView,
-    HomeView,
-    import_odka_view,
-    schema_view
-)
+from wastd.observations import models as wastd_models
+from wastd.observations import views as wastd_views
 
 # register all adminactions
 actions.add_to_site(site)
 
 urlpatterns = [
     re_path(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
-    re_path(r'^map/$', HomeView.as_view(), name='map'),
+    re_path(r'^map/$', wastd_views.HomeView.as_view(), name='map'),
 
     path('', include(('taxonomy.urls'), namespace='taxonomy')),
     path('conservation/', include(('conservation.urls'), namespace='conservation')),
@@ -48,11 +42,11 @@ urlpatterns = [
     re_path(r'^select2/', include('django_select2.urls')),
 
     # wastd Encounters
-    path('encounters/', EncounterTableView.as_view(), name="encounter_list"),
-    path('animal-encounters/', AnimalEncounterTableView.as_view(), name="animalencounter_list"),
+    path('encounters/', wastd_views.EncounterTableView.as_view(), name="encounter_list"),
+    path('animal-encounters/', wastd_views.AnimalEncounterTableView.as_view(), name="animalencounter_list"),
 
     # API
-    re_path(r'^api/1/swagger/$', schema_view, name="api-docs"),
+    re_path(r'^api/1/swagger/$', wastd_views.schema_view, name="api-docs"),
     re_path(r'^api/1/docs/', include_docs_urls(title='API')),
     re_path(r'^api/1/', include((wastd_router.urls, 'api'), namespace="api")),
     re_path(r'^api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
@@ -66,19 +60,19 @@ urlpatterns = [
 
     # Djgeojson
     re_path(r'^observations.geojson$',
-            GeoJSONLayerView.as_view(model=Encounter,
+            GeoJSONLayerView.as_view(model=wastd_models.Encounter,
                                      properties=('as_html', ),
                                      geometry_field="where"),
             name='observation-geojson'),
 
     re_path(r'^areas.geojson$',
-            GeoJSONLayerView.as_view(model=Area, properties=('leaflet_title', 'as_html')),
+            GeoJSONLayerView.as_view(model=wastd_models.Area, properties=('leaflet_title', 'as_html')),
             name='areas-geojson'),
 
     # Encounter as tiled GeoJSON
     re_path(r'^data/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
             TiledGeoJSONLayerView.as_view(
-                model=AnimalEncounter,
+                model=wastd_models.AnimalEncounter,
                 properties=('as_html', 'leaflet_title', 'leaflet_icon', 'leaflet_colour'),
                 geometry_field="where"),
             name='encounter-tiled-geojson'),
@@ -99,7 +93,7 @@ urlpatterns = [
     #     name='area-tiled-geojson'),
 
     re_path(r'^tasks/import-odka/$',
-            import_odka_view,
+            wastd_views.import_odka_view,
             name="import-odka"),
 
     re_path(r'^400/$',

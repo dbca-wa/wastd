@@ -529,7 +529,72 @@ LEAFLET_CONFIG = {
           'format': 'jpg',
           'time': '',
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
+    ],
+    'OVERLAYS': [
+        # ('State Map Base 250K', 'https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {'attribution': '&copy; IGN', 'layers': 'cddp:state_map_base',  # noqa
+        #     'format': 'image/png',
+        #     'transparent': 'true', }),
     ]
+
+# var overlayMaps = {
+#         'State Map Base 250K': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:state_map_base',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'WA Townsites': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:townsite_poly',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'P&W Estate': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:dpaw_tenure',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'Unallocated Crown Land': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:unallocated_crown_land',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'Local Government Authority Boundaries': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:local_gov_authority',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'DPaW District Boundaries': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:dpaw_districts',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'DPaW Region Boundaries': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:dpaw_regions',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'Interim Biogeographic Regionalisation for WA': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {  # noqa
+#             layers: 'cddp:ibra_wa_subregions',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'Remnant Vegetation': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:remnant_vegetation',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'Scientific Study Sites': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:scientific_study_sites',
+#             format: 'image/png',
+#             transparent: true,
+#         }),
+#         'Road Centrelines': L.tileLayer.wms('https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {
+#             layers: 'cddp:road_centrelines',
+#             format: 'image/png',
+#             transparent: true,
+#         })
+#     };
+
+
 }
 
 

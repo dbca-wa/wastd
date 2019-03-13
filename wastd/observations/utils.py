@@ -4367,40 +4367,53 @@ def import_odka_tt044(r):
                             "body_weight_g": "15"
                         }
                     ],
+                    # TON 0.54+
                     "fan_angles": {
-                        "leftmost_track_auto": null,
-                        "rightmost_track_auto": null,
-                        "bearing_to_water_auto": null,
-                        "device_compass_present": "no",
-                        "no_tracks_main_group": "20",
-                        "outlier_tracks_present": "yes",
-                        "light_sources_present": "yes",
-                        "hatchling_emergence_time_known": "yes"
-                    },
-                    "hatchling_emergence_time_group": {
-                        "hatchling_emergence_time": "2017-11-10T07:21:00.000Z"
-                    },
-                    "fan_angles_manual": {
-                        "leftmost_track_manual": "230",
-                        "rightmost_track_manual": "356",
-                        "bearing_to_water_manual": "270"
-                    },
-                    "outlier_track": [
+                        "photo_hatchling_tracks_seawards": "1546836969404.jpg",
+                        "photo_hatchling_tracks_relief": null,
+                        "bearing_to_water_manual": "98.0000000000",
+                        "leftmost_track_manual": "58.0000000000",
+                        "rightmost_track_manual": "122.0000000000",
+                        "no_tracks_main_group": "7",
+                        "no_tracks_main_group_min": "7",
+                        "no_tracks_main_group_max": "7",
+                        "outlier_tracks_present": "present",
+                        "hatchling_path_to_sea": "clear",
+                        "path_to_sea_comments": null,
+                        "hatchling_emergence_time_known": "yes",
+                        "cloud_cover_at_emergence_known": "yes",
+                        "light_sources_present": "present"
+                      },
+                      "outlier_track": {
+                        "outlier_track_photo": "1546837474680.jpg",
+                        "outlier_track_bearing_manual": "180.0000000000",
+                        "outlier_group_size": "1",
+                        "outlier_track_comment": null
+                      },
+                      "hatchling_emergence_time_group": {
+                        "hatchling_emergence_time": "2019-01-06T23:07:00.000Z",
+                        "hatchling_emergence_time_source": "plusminus-2h"
+                      },
+                      "emergence_climate": {
+                        "cloud_cover_at_emergence": "3"
+                      },
+                      "light_source": [
                         {
-                            "track_bearing_auto": null,
-                            "track_bearing_manual": "53"
+                          "light_source_photo": null,
+                          "light_bearing_manual": "50.0000000000",
+                          "light_source_type": "artificial",
+                          "light_source_description": "Oil rig#5"
                         },
                         {
-                            "track_bearing_auto": null,
-                            "track_bearing_manual": "52"
+                          "light_source_photo": null,
+                          "light_bearing_manual": "190.0000000000",
+                          "light_source_type": "natural",
+                          "light_source_description": "Moon"
                         }
-                    ],
-                    "light_source": {
-                        "light_bearing_auto": null,
-                        "bearing_manual": "23",
-                        "light_source_type": "artificial",
-                        "light_source_description": "That's no moon!"
-                    },
+                      ],
+                      "other_light_sources": {
+                        "other_light_sources_present": "na"
+                      },
                     "observation_end_time": "2017-11-10T07:21:50.211Z"
                 }
             },
