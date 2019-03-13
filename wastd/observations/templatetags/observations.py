@@ -85,4 +85,4 @@ def filename(value):
 @stringfilter
 def tex(string_value):
     """Convert a text or HTML string to tex."""
-    return pypandoc.convert(string_value, 'tex', format='html')
+    return pypandoc.convert_text(string_value, 'tex', format='html')

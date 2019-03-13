@@ -595,7 +595,7 @@ def handle_turtlenestdistobs31(d, e):
         dd.disturbance_severity = d["disturbance_severity"]
     dd.save()
     action = "created" if created else "updated"
-    logger.debug("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
+    logger.info("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
     handle_media_attachment(
         e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause))
@@ -657,7 +657,7 @@ def handle_turtlenestobs(d, e, m):
     )
     dd.save()
     action = "created" if created else "updated"
-    logger.debug("  TurtleNestObservation {0}: {1}".format(action, dd))
+    logger.info("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     for idx, ep in enumerate(d["egg_photos"]):
         handle_media_attachment(e, ep, title="Egg photo {0}".format(idx + 1))
@@ -718,7 +718,7 @@ def handle_turtlenestobs31(d, e):
     )
     dd.save()
     action = "created" if created else "updated"
-    logger.debug("  TurtleNestObservation {0}: {1}".format(action, dd))
+    logger.info("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     if "egg_photos" in d:
         [handle_media_attachment(
@@ -764,7 +764,7 @@ def handle_turtlenesttagobs(d, e, m=None):
         dd.save()
         logger.debug("[handle_turtlenesttagobs] saved NTO")
         action = "created" if created else "updated"
-        logger.debug("  NestTagObservation {0}: {1}".format(action, dd))
+        logger.info("  NestTagObservation {0}: {1}".format(action, dd))
 
     logger.debug("[handle_turtlenesttagobs] handle photo")
     handle_media_attachment(e, d["photo_tag"], title="Nest tag photo")
@@ -798,7 +798,7 @@ def handle_hatchlingmorphometricobs(d, e):
     )
     dd.save()
     action = "created" if created else "updated"
-    logger.debug("  Hatchling Obs {0}: {1}".format(action, dd))
+    logger.info("  Hatchling Obs {0}: {1}".format(action, dd))
 
 
 def handle_loggerenc(d, e):
@@ -856,7 +856,7 @@ def handle_loggerenc(d, e):
         )
         nto.save()
         action = "created" if created else "updated"
-        logger.debug("  NestTag Observation {0} for {1}".format(action, nto))
+        logger.info("  NestTag Observation {0} for {1}".format(action, nto))
 
 
 def handle_turtlenestdisttallyobs(d, e, m=None):
@@ -885,7 +885,7 @@ def handle_turtlenestdisttallyobs(d, e, m=None):
     )
     dd.save()
     action = "created" if created else "updated"
-    logger.debug("  Disturbance observation {0}: {1}".format(action, dd))
+    logger.info("  Disturbance observation {0}: {1}".format(action, dd))
     e.save()  # cache distobs in HTML
 
 
@@ -967,7 +967,7 @@ def import_one_record_tt034(r, m):
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
-    logger.debug(" Saved {0}\n".format(e))
+    logger.info(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1054,7 +1054,7 @@ def import_one_record_tt036(r, m):
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
-    logger.debug(" Saved {0}\n".format(e))
+    logger.info(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1101,7 +1101,7 @@ def import_one_record_fs03(r, m):
 
     handle_turtlenestdistobs31(r, e)
 
-    logger.debug(" Saved {0}\n".format(e))
+    logger.info(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1335,7 +1335,7 @@ def import_one_record_mwi01(r, m):
     handle_media_attachment(e, r["photo_head_side"], title="Head side")
     handle_media_attachment(e, r["photo_head_front"], title="Head front")
 
-    logger.debug(" Saved {0}\n".format(e))
+    logger.info(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1408,7 +1408,7 @@ def import_one_record_sv01(r, m):
     handle_media_attachment(e, r["photo_start"], title="Site conditions at start of suvey")
     handle_media_attachment(e, r["photo_finish"], title="Site conditions at end of suvey")
 
-    logger.debug(" Saved {0}\n".format(e))
+    logger.info(" Saved {0}\n".format(e))
     e.save()
     return e
 
@@ -1422,7 +1422,7 @@ def make_tallyobs(encounter, species, nest_age, nest_type, tally_number):
         nest_type=nest_type,
         tally=tally_number
     )
-    logger.debug('  Tally (created: {0}) {1}'.format(created, t))
+    logger.info('  Tally (created: {0}) {1}'.format(created, t))
 
 
 def import_one_record_tt05(r, m):
@@ -1579,7 +1579,7 @@ def import_one_record_tt05(r, m):
     [make_tallyobs(e, x[0], x[1], x[2], x[3]) for x in tally_mapping]
 
     e.save()
-    logger.debug(" Saved {0}\n".format(e))
+    logger.info(" Saved {0}\n".format(e))
     return e
 
 
@@ -3458,7 +3458,7 @@ def handle_odka_tagsobs(enc, media, data):
                     enc, media, obs["photo_tag"], title="Photo {0}".format(e.__str__()))
 
     else:
-        logger.debug("  [handle_odka_tagsobs] found no TagObservation")
+        logger.info("  [handle_odka_tagsobs] found no TagObservation")
 
     return None
 
@@ -3501,7 +3501,7 @@ def handle_odka_turtlenestobservation(enc, media, data):
         None
     """
     if "egg_count" not in data:
-        logger.debug("  [handle_odka_turtlenestobservation] found no TurtleNestObservation")
+        logger.info("  [handle_odka_turtlenestobservation] found no TurtleNestObservation")
         return None
 
     if data["nest"]["eggs_counted"] == "yes":
@@ -3551,7 +3551,7 @@ def handle_odka_managementaction(enc, media, data):
             e = ManagementAction.objects.create(**new_data)
             msg = "  [handle_odka_managementaction] Created new {0}".format(e)
 
-    logger.debug(msg)
+    logger.info(msg)
     return None
 
 
@@ -3653,7 +3653,7 @@ def handle_odka_turtlemorph(enc, media, data):
             e = TurtleMorphometricObservation.objects.create(**new_data)
             msg = "  [handle_odka_turtlemorph] Created new {0}".format(e)
 
-    logger.debug(msg)
+    logger.info(msg)
     return None
 
 
@@ -3735,7 +3735,7 @@ def handle_odka_turtledamageobs(enc, media, data):
                     enc, media, obs["photo_damage"], title="Photo {0}".format(e.__str__()))
 
     else:
-        logger.debug("  [handle_odka_turtledamageobs] found no TurtleDamageObservation")
+        logger.info("  [handle_odka_turtledamageobs] found no TurtleDamageObservation")
 
     return None
 
@@ -4367,53 +4367,53 @@ def import_odka_tt044(r):
                             "body_weight_g": "15"
                         }
                     ],
-                    # TON 0.54+
-                    "fan_angles": {
-                        "photo_hatchling_tracks_seawards": "1546836969404.jpg",
-                        "photo_hatchling_tracks_relief": null,
-                        "bearing_to_water_manual": "98.0000000000",
-                        "leftmost_track_manual": "58.0000000000",
-                        "rightmost_track_manual": "122.0000000000",
-                        "no_tracks_main_group": "7",
-                        "no_tracks_main_group_min": "7",
-                        "no_tracks_main_group_max": "7",
-                        "outlier_tracks_present": "present",
-                        "hatchling_path_to_sea": "clear",
-                        "path_to_sea_comments": null,
-                        "hatchling_emergence_time_known": "yes",
-                        "cloud_cover_at_emergence_known": "yes",
-                        "light_sources_present": "present"
-                      },
-                      "outlier_track": {
-                        "outlier_track_photo": "1546837474680.jpg",
-                        "outlier_track_bearing_manual": "180.0000000000",
-                        "outlier_group_size": "1",
-                        "outlier_track_comment": null
-                      },
-                      "hatchling_emergence_time_group": {
-                        "hatchling_emergence_time": "2019-01-06T23:07:00.000Z",
-                        "hatchling_emergence_time_source": "plusminus-2h"
-                      },
-                      "emergence_climate": {
-                        "cloud_cover_at_emergence": "3"
-                      },
-                      "light_source": [
-                        {
-                          "light_source_photo": null,
-                          "light_bearing_manual": "50.0000000000",
-                          "light_source_type": "artificial",
-                          "light_source_description": "Oil rig#5"
-                        },
-                        {
-                          "light_source_photo": null,
-                          "light_bearing_manual": "190.0000000000",
-                          "light_source_type": "natural",
-                          "light_source_description": "Moon"
-                        }
-                      ],
-                      "other_light_sources": {
-                        "other_light_sources_present": "na"
-                      },
+        # TON 0.54+
+        "fan_angles": {
+            "photo_hatchling_tracks_seawards": "1546836969404.jpg",
+            "photo_hatchling_tracks_relief": null,
+            "bearing_to_water_manual": "98.0000000000",
+            "leftmost_track_manual": "58.0000000000",
+            "rightmost_track_manual": "122.0000000000",
+            "no_tracks_main_group": "7",
+            "no_tracks_main_group_min": "7",
+            "no_tracks_main_group_max": "7",
+            "outlier_tracks_present": "present",
+            "hatchling_path_to_sea": "clear",
+            "path_to_sea_comments": null,
+            "hatchling_emergence_time_known": "yes",
+            "cloud_cover_at_emergence_known": "yes",
+            "light_sources_present": "present"
+          },
+          "outlier_track": {
+            "outlier_track_photo": "1546837474680.jpg",
+            "outlier_track_bearing_manual": "180.0000000000",
+            "outlier_group_size": "1",
+            "outlier_track_comment": null
+          },
+          "hatchling_emergence_time_group": {
+            "hatchling_emergence_time": "2019-01-06T23:07:00.000Z",
+            "hatchling_emergence_time_source": "plusminus-2h"
+          },
+          "emergence_climate": {
+            "cloud_cover_at_emergence": "3"
+          },
+          "light_source": [
+            {
+              "light_source_photo": null,
+              "light_bearing_manual": "50.0000000000",
+              "light_source_type": "artificial",
+              "light_source_description": "Oil rig#5"
+            },
+            {
+              "light_source_photo": null,
+              "light_bearing_manual": "190.0000000000",
+              "light_source_type": "natural",
+              "light_source_description": "Moon"
+            }
+          ],
+          "other_light_sources": {
+            "other_light_sources_present": "na"
+          },
                     "observation_end_time": "2017-11-10T07:21:50.211Z"
                 }
             },
@@ -5070,6 +5070,11 @@ def import_all_odka(path="."):
     """
     logger.info("[import_all_odka] Starting import of all downloaded ODKA data...")
     results = dict(
+        mwi01=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-1_1502342347", path)],
+        mwi04=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-4_1509605702", path)],
+        mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
+        mwi06=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-6_1535597111", path)],
+
         tsi01=[import_odka_tsi01(x) for x in downloaded_data("build_Turtle-Sighting-0-1_1535090015", path)],
         tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
         fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
@@ -5088,11 +5093,6 @@ def import_all_odka(path="."):
         tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)],
         tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)],
         tt55=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-55_1548318718", path)],
-
-        mwi01=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-1_1502342347", path)],
-        mwi04=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-4_1509605702", path)],
-        mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
-        mwi06=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-6_1535597111", path)],
 
         sve01=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-1_1490756971", path)],
         sve02=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-2_1510716716", path)],
