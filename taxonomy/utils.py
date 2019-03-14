@@ -204,6 +204,16 @@ def make_variety(x, current_dict, publication_dict):
 def make_form(x, current_dict, publication_dict):
     """Create or update a Taxon of rank Form.
 
+    Some forms have no known names between species and form.
+    These keep the form name in the ``infra_name`` field.
+    e.g.
+    Caulerpa    brachypus   forma   parvifolia
+
+    Others have a known subspecies/variety/subvariety name in the
+    ``infra_name`` field, and keep the form name in ``infra_name2``:
+    e.g.
+    Caulerpa    cupressoides    var.    lycopodium  forma   elegans
+
     Arguments
 
     x An instance of HbvSpecies, rank_name "Variety"
@@ -214,7 +224,7 @@ def make_form(x, current_dict, publication_dict):
     Return The created or updated instance of Taxon.
     """
     dd = dict(
-        name=force_text(x.infra_name2) or force_text(x.infra_name),
+        name=force_text(x.infra_name) if force_text(x.infra_rank) == Taxon.RANK_FORMA else force_text(x.infra_name2),
         rank=Taxon.RANK_FORMA,
         current=current_dict[x.is_current],
         parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
