@@ -241,7 +241,7 @@ def make_vernacular(hbv_vern_obj, lang_dict):
         ogc_fid=hbv_vern_obj.ogc_fid,
         taxon=t,
         name=hbv_vern_obj.vernacular,
-        language=lang_dict[hbv_vern_obj.language],
+        language=lang_dict[hbv_vern_obj.language] if hbv_vern_obj.language else None,
         preferred=True if (hbv_vern_obj.lang_pref and hbv_vern_obj.lang_pref == "Y") else False
     )
     obj, created = tax_models.Vernacular.objects.update_or_create(ogc_fid=hbv_vern_obj.ogc_fid, defaults=dd)
@@ -384,7 +384,7 @@ def update_taxon():
     # Update the M2M end "taxon_set" of each paraphyletic group (HbvSupra) with many Taxon pks:
     [s.taxon_set.set(
         [tt[x["name_id"]]
-         for x in tax_models.HbvGroup.objects.filter(class_id=s.supra_code).values('name_id')
+         for x in tax_models.HbvGroup.objects.filter(class_id=s.supra_code).values('name_id', 'name')
          if x["name"] in tt]
     ) for s in tax_models.HbvSupra.objects.all()]
 

@@ -1873,7 +1873,7 @@ class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
     @property
     def build_vernacular_names(self):
         """Return a comma-separated list of all vernacular names."""
-        return ", ".join([x.name for x in self.vernacular_set.all()])
+        return ", ".join([x.name for x in self.vernacular_set.all() if x.name])
 
     @property
     def gazettals(self):
