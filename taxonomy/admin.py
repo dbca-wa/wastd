@@ -235,7 +235,7 @@ class CommunityAreaEncounterInline(admin.StackedInline):
 class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
     """Admin for Taxon."""
 
-    search_fields = ('taxonomic_name', 'vernacular_names', )
+    search_fields = ('taxonomic_name', 'vernacular_names', 'field_code')
     list_filter = (
         'rank',
         'publication_status',

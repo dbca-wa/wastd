@@ -57,6 +57,7 @@ class TaxonFilter(django_filters.FilterSet):
             "current",
             "publication_status",
             "name_id",
+            "field_code"
         ]
         filter_overrides = FILTER_OVERRIDES
 

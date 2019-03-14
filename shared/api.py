@@ -120,7 +120,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         elif type(request.data) == list and self.uid_fields[0] in request.data[0]:
             logger.info('[API][create] found batch of {0} records,'
                         ' creating/updating...'.format(len(request.data)))
-            res = [self.create_one(data).__dict__ for data in request.data]
+            res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
             return RestResponse(res, status=status.HTTP_200_OK)
         else:
             msg = ("[API][BatchUpsertViewSet] unknown data format:"

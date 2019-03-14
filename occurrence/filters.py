@@ -57,6 +57,7 @@ class TaxonAreaEncounterFilter(django_filters.FilterSet):
             search_fields=[
                 "taxonomic_name__icontains",
                 "vernacular_names__icontains",
+                "field_code__icontains"
             ]
         )
     )

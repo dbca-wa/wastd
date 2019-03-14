@@ -9,18 +9,7 @@ import logging
 from django.db import transaction
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_text
-from taxonomy.models import (
-    Crossreference,
-    HbvFamily,
-    HbvGenus,
-    HbvName,
-    HbvParent,
-    HbvSpecies,
-    HbvVernacular,
-    HbvXref,
-    Taxon,
-    Vernacular
-)
+from taxonomy import models as tax_models
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +30,9 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
         dd = dict(
             name_id=fam.division_nid,
             name=force_text(fam.division_name),
-            rank=Taxon.RANK_DIVISION,
+            rank=tax_models.Taxon.RANK_DIVISION,
             parent=lowest_parent)
-        division, created = Taxon.objects.update_or_create(name_id=fam.division_nid, defaults=dd)
+        division, created = tax_models.Taxon.objects.update_or_create(name_id=fam.division_nid, defaults=dd)
         lowest_parent = division
         action = "Created" if created else "Updated"
         logger.info("[make_family] {0} {1}.".format(action, division))
@@ -52,9 +41,9 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
         dd = dict(
             name_id=fam.class_nid,
             name=force_text(fam.class_name),
-            rank=Taxon.RANK_CLASS,
+            rank=tax_models.Taxon.RANK_CLASS,
             parent=lowest_parent)
-        clazz, created = Taxon.objects.update_or_create(name_id=fam.class_nid, defaults=dd)
+        clazz, created = tax_models.Taxon.objects.update_or_create(name_id=fam.class_nid, defaults=dd)
         lowest_parent = clazz
         action = "Created" if created else "Updated"
         logger.info("[make_family] {0} {1}.".format(action, clazz))
@@ -62,22 +51,22 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
     if fam.order_nid:
         dd = dict(
             name=(fam.order_name),
-            rank=Taxon.RANK_ORDER,
+            rank=tax_models.Taxon.RANK_ORDER,
             parent=lowest_parent)
-        order, created = Taxon.objects.update_or_create(name_id=fam.order_nid, defaults=dd)
+        order, created = tax_models.Taxon.objects.update_or_create(name_id=fam.order_nid, defaults=dd)
         lowest_parent = order
         action = "Created" if created else "Updated"
         logger.info("[make_family] {0} {1}.".format(action, order))
 
     dd = dict(name=force_text(fam.family_name),
-              rank=Taxon.RANK_FAMILY,
+              rank=tax_models.Taxon.RANK_FAMILY,
               current=current_dict[fam.is_current],
               parent=lowest_parent,
               author=fam.author)
     if fam.informal is not None:
         dd['publication_status'] = publication_dict[fam.informal]
         print(dd['publication_status'])
-    family, created = Taxon.objects.update_or_create(name_id=fam.name_id, defaults=dd)
+    family, created = tax_models.Taxon.objects.update_or_create(name_id=fam.name_id, defaults=dd)
     action = "Created" if created else "Updated"
     logger.info("[make_family] {0} {1}.".format(action, family))
 
@@ -98,15 +87,15 @@ def make_genus(x, current_dict, publication_dict):
     """
     dd = dict(
         name=force_text(x.genus),
-        rank=Taxon.RANK_GENUS,
+        rank=tax_models.Taxon.RANK_GENUS,
         current=current_dict[x.is_current],
-        parent=Taxon.objects.get(name_id=x.family_nid),
+        parent=tax_models.Taxon.objects.get(name_id=x.family_nid),
         author=x.author
     )
     if x.informal is not None:
         dd['publication_status'] = publication_dict[x.informal]
 
-    obj, created = Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
+    obj, created = tax_models.Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
     obj.parent__id = x.family_nid
     obj.save()
     action = "Created" if created else "Updated"
@@ -129,15 +118,16 @@ def make_species(x, current_dict, publication_dict):
     """
     dd = dict(
         name=force_text(x.species),
-        rank=Taxon.RANK_SPECIES,
+        rank=tax_models.Taxon.RANK_SPECIES,
         current=current_dict[x.is_current],
-        parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
-        author=x.author
+        parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
+        author=x.author,
+        field_code=x.species_code
     )
     if x.informal is not None:
         dd['publication_status'] = publication_dict[x.informal]
 
-    obj, created = Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
+    obj, created = tax_models.Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
     action = "Created" if created else "Updated"
 
     logger.info("[make_species] {0} {1}.".format(action, obj))
@@ -157,15 +147,16 @@ def make_subspecies(x, current_dict, publication_dict):
     """
     dd = dict(
         name=force_text(x.infra_name),
-        rank=Taxon.RANK_SUBSPECIES,
+        rank=tax_models.Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
-        parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
-        author=x.author
+        parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
+        author=x.author,
+        field_code=x.species_code
     )
     if x.informal is not None:
         dd['publication_status'] = publication_dict[x.informal]
 
-    obj, created = Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
+    obj, created = tax_models.Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
     action = "Created" if created else "Updated"
 
     logger.info("[make_subspecies] {0} {1}.".format(action, obj))
@@ -186,15 +177,16 @@ def make_variety(x, current_dict, publication_dict):
     """
     dd = dict(
         name=force_text(x.infra_name),
-        rank=Taxon.RANK_VARIETY,
+        rank=tax_models.Taxon.RANK_VARIETY,
         current=current_dict[x.is_current],
-        parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
-        author=x.author
+        parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
+        author=x.author,
+        field_code=x.species_code
     )
     if x.informal is not None:
         dd['publication_status'] = publication_dict[x.informal]
 
-    obj, created = Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
+    obj, created = tax_models.Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
     action = "Created" if created else "Updated"
 
     logger.info("[make_variety] {0} {1}.".format(action, obj))
@@ -224,16 +216,18 @@ def make_form(x, current_dict, publication_dict):
     Return The created or updated instance of Taxon.
     """
     dd = dict(
-        name=force_text(x.infra_name) if force_text(x.infra_rank) == Taxon.RANK_FORMA else force_text(x.infra_name2),
-        rank=Taxon.RANK_FORMA,
+        name=force_text(x.infra_name) if force_text(
+            x.infra_rank) == tax_models.Taxon.RANK_FORMA else force_text(x.infra_name2),
+        rank=tax_models.Taxon.RANK_FORMA,
         current=current_dict[x.is_current],
-        parent=Taxon.objects.get(name_id=HbvParent.objects.get(name_id=x.name_id).parent_nid),
-        author=x.author
+        parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
+        author=x.author,
+        field_code=x.species_code
     )
     if x.informal is not None:
         dd['publication_status'] = publication_dict[x.informal]
 
-    obj, created = Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
+    obj, created = tax_models.Taxon.objects.update_or_create(name_id=x.name_id, defaults=dd)
     action = "Created" if created else "Updated"
 
     logger.info("[make_form] {0} {1}.".format(action, obj))
@@ -242,7 +236,7 @@ def make_form(x, current_dict, publication_dict):
 
 def make_vernacular(hbv_vern_obj, lang_dict):
     """Create or update Vernacular."""
-    t = Taxon.objects.get(name_id=hbv_vern_obj.name_id)
+    t = tax_models.Taxon.objects.get(name_id=hbv_vern_obj.name_id)
     dd = dict(
         ogc_fid=hbv_vern_obj.ogc_fid,
         taxon=t,
@@ -250,7 +244,7 @@ def make_vernacular(hbv_vern_obj, lang_dict):
         language=lang_dict[hbv_vern_obj.language],
         preferred=True if (hbv_vern_obj.lang_pref and hbv_vern_obj.lang_pref == "Y") else False
     )
-    obj, created = Vernacular.objects.update_or_create(ogc_fid=hbv_vern_obj.ogc_fid, defaults=dd)
+    obj, created = tax_models.Vernacular.objects.update_or_create(ogc_fid=hbv_vern_obj.ogc_fid, defaults=dd)
     action = "Created" if created else "Updated"
     t.save()
     logger.info("[make_vernacular] {0} {1}.".format(action, obj))
@@ -261,12 +255,12 @@ def make_crossreference(hbv_xref_obj, reason_dict):
     """Create or update Crossreference."""
     try:
         if hbv_xref_obj.old_name_id:
-            pre = Taxon.objects.get(name_id=hbv_xref_obj.old_name_id)
+            pre = tax_models.Taxon.objects.get(name_id=hbv_xref_obj.old_name_id)
         else:
             pre = None
 
         if hbv_xref_obj.new_name_id:
-            suc = Taxon.objects.get(name_id=hbv_xref_obj.new_name_id)
+            suc = tax_models.Taxon.objects.get(name_id=hbv_xref_obj.new_name_id)
         else:
             suc = None
 
@@ -285,7 +279,7 @@ def make_crossreference(hbv_xref_obj, reason_dict):
             authorised_on=auth_on,
             comments=hbv_xref_obj.comments
         )
-        obj, created = Crossreference.objects.update_or_create(xref_id=hbv_xref_obj.xref_id, defaults=dd)
+        obj, created = tax_models.Crossreference.objects.update_or_create(xref_id=hbv_xref_obj.xref_id, defaults=dd)
         action = "Created" if created else "Updated"
         # pre.save()
         # suc.save()
@@ -295,6 +289,11 @@ def make_crossreference(hbv_xref_obj, reason_dict):
         logger.warn("[make_crossreference] Failed to create Crossreference "
                     "for xref_id {0}, skipping.".format(hbv_xref_obj.xref_id))
         return None
+
+
+# def make_paraphyletic_group_m2m(x):
+#     """Create a paraphylectic group membership from a dict."""
+#     return
 
 
 def update_taxon():
@@ -311,74 +310,94 @@ def update_taxon():
 
     # Domain
     logger.info("[update_taxon] Creating/updating domains...")
-    domain, created = Taxon.objects.update_or_create(
-        name_id=0, defaults=dict(name="Eukarya", rank=Taxon.RANK_DOMAIN, current=True, parent=None))
+    domain, created = tax_models.Taxon.objects.update_or_create(
+        name_id=0, defaults=dict(name="Eukarya", rank=tax_models.Taxon.RANK_DOMAIN, current=True, parent=None))
     # comms, created = Taxon.objects.update_or_create(
     #     name_id=1000000, defaults=dict(name="Communities", rank=Taxon.RANK_DOMAIN, current=True, parent=thing))
 
     # Kingdoms
     logger.info("[update_taxon] Creating/updating kingdoms...")
-    kingdoms = [Taxon.objects.update_or_create(
-        name_id=x.name_id, defaults=dict(name=x.name, rank=Taxon.RANK_KINGDOM, current=True, parent=domain))
-        for x in HbvName.objects.filter(rank_name='Kingdom')]
+    kingdoms = [tax_models.Taxon.objects.update_or_create(
+        name_id=x.name_id, defaults=dict(name=x.name, rank=tax_models.Taxon.RANK_KINGDOM, current=True, parent=domain))
+        for x in tax_models.HbvName.objects.filter(rank_name='Kingdom')]
 
     # Divisions, Classes, Orders, Families
     logger.info("[update_taxon] Creating/updating divisions, classes, orders, families...")
     # ORM kung-fu to get Kingdom ID:Taxon lookup dict
     KINGDOM_ID_NAME = {x['kingdom_id']: x['kingdom_name']
-                       for x in HbvFamily.objects.values('kingdom_id', 'kingdom_name')}
-    KINGDOM_ID_TAXA = {x[0]: Taxon.objects.get(name=x[1]) for x in KINGDOM_ID_NAME.items()}
+                       for x in tax_models.HbvFamily.objects.values('kingdom_id', 'kingdom_name')}
+    KINGDOM_ID_TAXA = {x[0]: tax_models.Taxon.objects.get(name=x[1]) for x in KINGDOM_ID_NAME.items()}
     CUR = {'N': False, 'Y': True}
     PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            families = [make_family(x, KINGDOM_ID_TAXA, CUR, PUB) for x in HbvFamily.objects.all()]
+        with tax_models.Taxon.objects.delay_mptt_updates():
+            families = [make_family(x, KINGDOM_ID_TAXA, CUR, PUB) for x in tax_models.HbvFamily.objects.all()]
 
     # Genera
     logger.info("[update_taxon] Creating/updating genera...")
     with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            genera = [make_genus(x, CUR, PUB) for x in HbvGenus.objects.all()]
+        with tax_models.Taxon.objects.delay_mptt_updates():
+            genera = [make_genus(x, CUR, PUB) for x in tax_models.HbvGenus.objects.all()]
 
     # Species
     logger.info("[update_taxon] Creating/updating species...")
     with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            species = [make_species(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Species")]
+        with tax_models.Taxon.objects.delay_mptt_updates():
+            species = [make_species(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Species")]
 
     # Subspecies
     logger.info("[update_taxon] Creating/updating subspecies...")
     with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            subspecies = [make_subspecies(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Subspecies")]
+        with tax_models.Taxon.objects.delay_mptt_updates():
+            subspecies = [make_subspecies(x, CUR, PUB)
+                          for x in tax_models.HbvSpecies.objects.filter(rank_name="Subspecies")]
 
     # Varieties
     logger.info("[update_taxon] Creating/updating varieties...")
     with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            varieties = [make_variety(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Variety")]
+        with tax_models.Taxon.objects.delay_mptt_updates():
+            varieties = [make_variety(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Variety")]
 
     # Forms
     logger.info("[update_taxon] Creating/updating forms...")
     with transaction.atomic():
-        with Taxon.objects.delay_mptt_updates():
-            forms = [make_form(x, CUR, PUB) for x in HbvSpecies.objects.filter(rank_name="Form")]
+        with tax_models.Taxon.objects.delay_mptt_updates():
+            forms = [make_form(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Form")]
 
     # Vernaculars
     logger.info("[update_taxon] Updating Vernacular Names...")
     LANG = {"ENGLISH": 0, "INDIGENOUS": 1}
-    vernaculars = [make_vernacular(x, LANG) for x in HbvVernacular.objects.all()]
-    logger.info("[update_taxon] Updated {0} Vernacular Names.".format(Vernacular.objects.count()))
+    vernaculars = [make_vernacular(x, LANG) for x in tax_models.HbvVernacular.objects.all()]
+    logger.info("[update_taxon] Updated {0} Vernacular Names.".format(tax_models.Vernacular.objects.count()))
 
     # Crossreferences
     logger.info("[update_taxon] Updating Crossreferences...")
     REASONS = {"MIS": 0, "TSY": 1, "NSY": 2, "EXC": 3, "CON": 4, "FOR": 5, "OGV": 6, "ERR": 7, "ISY": 8}
-    crossreferences = [make_crossreference(x, REASONS) for x in HbvXref.objects.filter(active="Y")]
-    logger.info("[update_taxon] Updated {0} Crossreferences.".format(Crossreference.objects.count()))
+    crossreferences = [make_crossreference(x, REASONS) for x in tax_models.HbvXref.objects.filter(active="Y")]
+    logger.info("[update_taxon] Updated {0} Crossreferences.".format(tax_models.Crossreference.objects.count()))
+
+    # Paraphyletic Groups
+    logger.info("[update_taxon] Updating Paraphyletic Groups...")
+    # A dict name_id:pk of Taxon. No need to fetch the actual objects.
+    tt = {x["name_id"]: x["pk"] for x in tax_models.Taxon.objects.all().values('pk', 'name_id')}
+
+    # Update the M2M end "taxon_set" of each paraphyletic group (HbvSupra) with many Taxon pks:
+    [s.taxon_set.set(
+        [tt[x["name_id"]]
+         for x in tax_models.HbvGroup.objects.filter(class_id=s.supra_code).values('name_id')
+         if x["name"] in tt]
+    ) for s in tax_models.HbvSupra.objects.all()]
+
+    logger.info(
+        "[update_taxon] Updated {0} Taxon memberships of {1} Paraphyletic Groups.".format(
+            tax_models.HbvGroup.objects.count(),
+            tax_models.HbvSupra.objects.count()
+        )
+    )
 
     # Rebuild MPTT tree
     logger.info("[update_taxon] Rebuilding taxonomic tree - this could take a while.")
-    Taxon.objects.rebuild()
+    tax_models.Taxon.objects.rebuild()
     logger.info("[update_taxon] Taxonomic tree rebuilt.")
 
     # Say bye

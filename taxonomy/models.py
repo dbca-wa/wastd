@@ -96,8 +96,8 @@ class HbvSupra(models.Model):
         """Class options."""
 
         ordering = ["supra_code", ]
-        verbose_name = "HBV Suprafamily Group"
-        verbose_name_plural = "HBV Suprafamily Groups"
+        verbose_name = "Paraphyletic Group"
+        verbose_name_plural = "Paraphyletic Groups"
         # get_latest_by = "added_on"
 
     def __str__(self):
@@ -1698,6 +1698,13 @@ class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
         help_text=_("The lowest known parent taxon."),
     )
 
+    paraphyletic_groups = models.ManyToManyField(
+        HbvSupra,
+        blank=True,
+        verbose_name=_("Paraphyletic Groups"),
+        help_text=_("All paraphyletic groups this taxon belongs to."),
+    )
+
     rank = models.PositiveSmallIntegerField(
         choices=RANKS,
         db_index=True,
@@ -1736,6 +1743,14 @@ class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
         blank=True, null=True,
         verbose_name=_("Preferred English Vernacular Name"),
         help_text=_("The preferred english vernacular name.")
+    )
+
+    field_code = models.CharField(
+        max_length=2000,
+        db_index=True,
+        blank=True, null=True,
+        verbose_name=_("Field collection code"),
+        help_text=_("The agreed acronym, often used on paper datasheets.")
     )
 
     vernacular_names = models.TextField(
@@ -1788,6 +1803,14 @@ class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
         verbose_name = "Taxon"
         verbose_name_plural = "Taxa"
         # ordering = ['-rank', 'current']
+
+    def __str__(self):
+        """The full name: [NameID] (RANK) TAXONOMIC NAME."""
+        return "[{0}][{1}] ({2}) {3}".format(
+            self.name_id,
+            self.field_code if self.field_code else "",
+            self.get_rank_display(),
+            self.name if not self.taxonomic_name else self.taxonomic_name)
 
     # -------------------------------------------------------------------------
     # URLs
@@ -1851,13 +1874,6 @@ class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
     def build_vernacular_names(self):
         """Return a comma-separated list of all vernacular names."""
         return ", ".join([x.name for x in self.vernacular_set.all()])
-
-    def __str__(self):
-        """The full name: [NameID] (RANK) TAXONOMIC NAME."""
-        return "[{0}] ({1}) {2}".format(
-            self.name_id,
-            self.get_rank_display(),
-            self.name if not self.taxonomic_name else self.taxonomic_name)
 
     @property
     def gazettals(self):
