@@ -114,13 +114,18 @@ def make_species(x, current_dict, publication_dict):
     publication_dict A lookup dict for publication_status
     taxon_dict A lookup dict of parent Genus name to Taxon instance
 
-    Return The created or updated instance of Taxon.
+    Return The created or updated instance of Taxon or None if parent id is missing.
     """
+    parent_nid = tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid
+    if not tax_models.Taxon.objects.filter(name_id=parent_nid).exists():
+        logger.warn("[make_species] missing parent taxon with name_id {0}, re-run to fix.".format(parent_nid))
+        return None
+
     dd = dict(
         name=force_text(x.species),
         rank=tax_models.Taxon.RANK_SPECIES,
         current=current_dict[x.is_current],
-        parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
+        parent_id=tax_models.Taxon.objects.get(name_id=parent_nid).pk,
         author=x.author,
         field_code=x.species_code
     )
@@ -217,7 +222,7 @@ def make_form(x, current_dict, publication_dict):
     """
     dd = dict(
         name=force_text(x.infra_name) if force_text(
-            x.infra_rank) == tax_models.Taxon.RANK_FORMA else force_text(x.infra_name2),
+            x.infra_rank) == 'forma' else force_text(x.infra_name2),
         rank=tax_models.Taxon.RANK_FORMA,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
