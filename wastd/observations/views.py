@@ -21,7 +21,7 @@ from sentry_sdk import capture_message
 from wastd.observations.filters import AnimalEncounterFilter, EncounterFilter
 from wastd.observations.forms import AnimalEncounterListFormHelper, EncounterListFormHelper
 from wastd.observations.models import AnimalEncounter, Encounter
-from wastd.observations.tasks import import_odka
+from wastd.observations.tasks import import_odka, update_names
 
 
 @csrf_exempt
@@ -29,6 +29,16 @@ def import_odka_view(request):
     """Import all available ODK-Aggregate forms."""
     capture_message("[wastd.observations.views.import_odka_view] Starting ODKA import.", level="error")
     msg = import_odka.now()
+    messages.success(request, msg)
+    capture_message(msg, level="error")
+    return HttpResponseRedirect("/")
+
+
+@csrf_exempt
+def update_names_view(request):
+    """Import all available ODK-Aggregate forms."""
+    capture_message("[wastd.observations.views.update_names] Rebuilding names.", level="error")
+    msg = update_names.now()
     messages.success(request, msg)
     capture_message(msg, level="error")
     return HttpResponseRedirect("/")

@@ -96,6 +96,10 @@ urlpatterns = [
             wastd_views.import_odka_view,
             name="import-odka"),
 
+    re_path(r'^tasks/update-names/$',
+            wastd_views.update_names_view,
+            name="update-names"),
+
     re_path(r'^400/$',
             default_views.bad_request,
             kwargs={'exception': Exception('Bad Request!')}),
