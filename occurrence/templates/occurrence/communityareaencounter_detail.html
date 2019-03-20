@@ -155,6 +155,8 @@ function map_init(map, options) {
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:scientific_study_sites')), 'Scientific Study Sites' );
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:road_centrelines')), 'Road Centrelines');
 
+    map.addControl(new L.Control.Fullscreen());
+
     /* Point style */
     var pointstyle = {
         "clickable": true

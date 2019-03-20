@@ -146,6 +146,7 @@ class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
             initial["taxon"] = Taxon.objects.get(name_id=self.kwargs["name_id"])
         if "area_code" in self.kwargs:
             initial["code"] = self.kwargs["area_code"]
+        initial["encountered_by"] = self.request.user
         return initial
 
 
@@ -154,7 +155,7 @@ class TaxonAreaEncounterUpdateView(AreaEncounterUpdateView):
 
     model = occ_models.TaxonAreaEncounter
     form_class = occ_forms.TaxonAreaEncounterForm
-    template_name = "occurrence/taxonareaencounter_form.html"
+    template_name = "occurrence/areaencounter_form.html"
 
 
 class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
@@ -170,6 +171,7 @@ class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
             initial["community"] = Community.objects.get(pk=self.kwargs["pk"])
         if "area_code" in self.kwargs:
             initial["code"] = self.kwargs["area_code"]
+        initial["encountered_by"] = self.request.user
         return initial
 
 
@@ -178,7 +180,7 @@ class CommunityAreaEncounterUpdateView(AreaEncounterUpdateView):
 
     model = occ_models.CommunityAreaEncounter
     form_class = occ_forms.CommunityAreaEncounterForm
-    template_name = "occurrence/communityareaencounter_form.html"
+    template_name = "occurrence/areaencounter_form.html"
 
 
 # ---------------------------------------------------------------------------#

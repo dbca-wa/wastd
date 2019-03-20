@@ -109,7 +109,8 @@ class ObservationAuditMixin(models.Model):
     encountered_on = models.DateTimeField(
         verbose_name=_("Encountered on"),
         blank=True, null=True,
-        help_text=_("The datetime of the original encounter."))
+        help_text=_("The datetime of the original encounter, "
+                    "entered in the local time zone GMT+08 (Perth/Australia)."))
 
     encountered_by = models.ForeignKey(
         User,

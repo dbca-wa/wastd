@@ -7,6 +7,7 @@ from django.contrib.gis.db import models as geo_models
 from django_fsm_log.admin import StateLogInline
 from leaflet.forms.widgets import LeafletWidget
 
+
 # Fix collapsing widget width
 # https://github.com/applegrew/django-select2/issues/252
 S2ATTRS = {'data-width': '50em'}

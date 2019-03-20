@@ -61,6 +61,7 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
                 search_fields=[
                     "taxonomic_name__icontains",
                     "vernacular_names__icontains",
+                    "field_code__icontains",
                 ]
             ),
             "geom": LeafletWidget(attrs=LEAFLET_SETTINGS),
@@ -213,6 +214,7 @@ class AssociatedSpeciesObservationForm(forms.ModelForm):
                 search_fields=[
                     "taxonomic_name__icontains",
                     "vernacular_names__icontains",
+                    "field_code__icontains",
                 ],
                 attrs={"size": 80}
             ),

@@ -12,6 +12,8 @@ from taxonomy.models import Community, Taxon
 from conservation import models as cons_models
 from shared.admin import LEAFLET_SETTINGS
 from shared.forms import DateInput  # DateTimeInput
+from shared.filters import (  # noqa
+    FILTER_OVERRIDES, TaxonWidget, TaxonMultipleWidget, UserWidget, CommunityWidget)
 # from wastd.users.models import User
 
 
@@ -66,14 +68,7 @@ class ConservationActionForm(forms.ModelForm):
             # "attachments"
         )
         widgets = {
-            'taxa': ModelSelect2MultipleWidget(
-                model=Taxon,
-                search_fields=[
-                    "name_id__icontains",
-                    "taxonomic_name__icontains",
-                    "vernacular_names__icontains",
-                ]
-            ),
+            'taxa': TaxonMultipleWidget(),
             'communities': ModelSelect2MultipleWidget(
                 model=Community,
                 search_fields=[

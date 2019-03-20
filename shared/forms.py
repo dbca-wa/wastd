@@ -12,4 +12,4 @@ class DateInput(forms.DateInput):
 class DateTimeInput(forms.DateInput):
     """Bog standard datetime input."""
 
-    input_type = 'datetime'
+    input_type = 'datetime-local'

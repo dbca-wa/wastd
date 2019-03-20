@@ -60,6 +60,11 @@ body{
   position: relative;
 }
 
+.leaflet-container {
+ min-height: 500px!important;
+}
+
+
 
 /* Leaflet popup fixed width */
 .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {width: 540px;}

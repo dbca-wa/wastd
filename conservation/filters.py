@@ -1,34 +1,12 @@
 # -*- coding: utf-8 -*-
 """Conservation filters."""
-import django_filters
-from conservation.models import ConservationAction
 from django.contrib.gis.db import models as geo_models
-from django.db import models
-from django_filters.filters import BooleanFilter, ModelMultipleChoiceFilter
-from django_filters.widgets import BooleanWidget
-from leaflet.forms.widgets import LeafletWidget
 
+import django_filters
 
-FILTER_OVERRIDES = {
-    models.CharField: {
-        'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'icontains', },
-    },
-    models.TextField: {
-        'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'icontains', },
-    },
-    geo_models.PolygonField: {
-        'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'intersects',
-                            'widget': LeafletWidget()},
-    },
-    geo_models.MultiPolygonField: {
-        'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'intersects',
-                            'widget': LeafletWidget()},
-    }
-}
+from conservation.models import ConservationAction
+from shared.filters import (  # noqa
+    FILTER_OVERRIDES, TaxonWidget, UserWidget, CommunityWidget)
 
 
 class ConservationActionFilter(django_filters.FilterSet):
@@ -41,5 +19,4 @@ class ConservationActionFilter(django_filters.FilterSet):
 
         model = ConservationAction
         fields = ['target_area', 'category', 'status', ]
-        # widgets = {'eoo': LeafletWidget()}
         filter_overrides = FILTER_OVERRIDES

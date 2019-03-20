@@ -11,9 +11,11 @@
 {% endblock %}
 
 {% block extrastyle %}
+{% leaflet_css plugins="ALL" %}
 {{ form.media.css }}
 {% endblock %}
 
 {% block extrajs %}
+{% leaflet_js plugins="ALL" %}
 {{ form.media.js }}
 {% endblock extrajs %}
