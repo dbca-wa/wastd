@@ -6,17 +6,19 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-    {% crispy form form.helper %}
+      {% crispy form form.helper %}
     </div><!-- .col -->
   </div><!-- .row -->
 </div><!-- .container -->
-</div><!-- #wrap -->
 {% endblock %}
 
 {% block extrastyle %}
+{% leaflet_css plugins="ALL" %}
 {{ form.media.css }}
 {% endblock %}
 
 {% block extrajs %}
+{% leaflet_js plugins="ALL" %}
 {{ form.media.js }}
+{% include 'shared/leaflet_widget_overlays_fullscreen.js' %}
 {% endblock extrajs %}

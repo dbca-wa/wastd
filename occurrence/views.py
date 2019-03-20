@@ -155,7 +155,7 @@ class TaxonAreaEncounterUpdateView(AreaEncounterUpdateView):
 
     model = occ_models.TaxonAreaEncounter
     form_class = occ_forms.TaxonAreaEncounterForm
-    template_name = "occurrence/areaencounter_form.html"
+    template_name = "shared/default_form.html"
 
 
 class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
@@ -180,7 +180,7 @@ class CommunityAreaEncounterUpdateView(AreaEncounterUpdateView):
 
     model = occ_models.CommunityAreaEncounter
     form_class = occ_forms.CommunityAreaEncounterForm
-    template_name = "occurrence/areaencounter_form.html"
+    template_name = "shared/default_form.html"
 
 
 # ---------------------------------------------------------------------------#
@@ -228,7 +228,7 @@ class CommunityAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
 class ObservationGroupCreateView(CreateViewBreadcrumbMixin, CreateView):
     """Base CreateView for ObservationGroup."""
 
-    template_name = "occurrence/obsgroup_form.html"
+    template_name = "shared/default_form.html"
     model = occ_models.ObservationGroup
 
     def get_initial(self):
@@ -271,7 +271,7 @@ class ObservationGroupCreateView(CreateViewBreadcrumbMixin, CreateView):
 class ObservationGroupUpdateView(UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for ObservationGroup."""
 
-    template_name = "occurrence/obsgroup_form.html"
+    template_name = "shared/default_form.html"
     model = occ_models.ObservationGroup
 
     def get_object(self, queryset=None):
