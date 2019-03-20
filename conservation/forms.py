@@ -28,6 +28,7 @@ class ConservationActionForm(forms.ModelForm):
                 'taxa',
                 'communities',
                 'document',
+                'target_area',
                 'occurrence_area_code',
             ),
             Fieldset(
@@ -88,7 +89,7 @@ class ConservationActionForm(forms.ModelForm):
                     "comments__icontains",
                 ]
             ),
-            'geom': LeafletWidget(attrs=LEAFLET_SETTINGS),
+            'target_area': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'category': ModelSelect2Widget(
                 model=cons_models.ConservationActionCategory,
                 search_fields=[

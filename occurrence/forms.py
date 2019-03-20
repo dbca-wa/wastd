@@ -11,7 +11,7 @@ from leaflet.forms.widgets import LeafletWidget
 
 from taxonomy.models import Community, Taxon
 from occurrence import models as occ_models
-from shared.admin import S2ATTRS, LEAFLET_SETTINGS  # noqa
+from shared.admin import S2ATTRS, LEAFLET_SETTINGS, FORMFIELD_OVERRIDES  # noqa
 from shared.forms import DateInput, DateTimeInput
 # from wastd.users.models import User
 

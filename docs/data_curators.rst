@@ -27,6 +27,20 @@ supported data sources into WAStD/TSC.
 .. * for each format, map the fields of the paper form to the online form.
 
 
+Conservation Actions
+====================
+This section will explain business processes around Conservation Actions (CA).
+CA counteract threats.
+CA are suggested, may be liked to species, communities, documents, certain areas,
+individual occurrences (survey sites, plant populations, community boundaries),
+or any combination thereof.
+
+.. Cons assets: thr and prio species and communities
+.. Robyn Luu has cons actions
+
+
+
+
 .. _itp-species-fauna:
 Threatened Fauna Occurrence
 ===========================

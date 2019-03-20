@@ -13,7 +13,7 @@ S2ATTRS = {'data-width': '50em'}
 
 LEAFLET_SETTINGS = {
     'widget': LeafletWidget(attrs={
-        'map_height': '400px',
+        'map_height': '500px',
         'map_width': '100%',
         'display_raw': 'true',
         'map_srid': 4326,
