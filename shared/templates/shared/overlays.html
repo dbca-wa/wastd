@@ -1,0 +1,19 @@
+    /* Transparent overlay layers */
+    var lc = map.layerscontrol;
+    var kmi_wms = 'https://kmi.dbca.wa.gov.au/geoserver/cddp/wms';
+    var wmsoptions = function(lyr){return {layers: lyr, format: 'image/png', transparent: true}}
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:townsite_poly')), 'WA Townsites');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dpaw_tenure')), 'DBCA Estate');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:unallocated_crown_land')), 'Unallocated Crown Land');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dpaw_regions')), 'DBCA Region Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dpaw_districts')), 'DBCA District Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:local_gov_authority')), 'Local Govt Authority Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:ibra_wa_subregions')), 'IBRA Regions');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dpaw_fire_history')), 'Fire History');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:road_centrelines')), 'Road Centrelines');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:cadastre')), 'Cadastre');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:remnant_vegetation')), 'Remnant Vegetation');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_fauna')), 'Threatened Fauna');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_flora')), 'Threatened Flora');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:tec_sites_buffered')), 'Threatened Communities');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:scientific_study_sites')), 'Scientific Study Sites');

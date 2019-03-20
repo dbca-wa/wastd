@@ -922,12 +922,18 @@ class Area(geo_models.Model):
     @property
     def all_encounters_url(self):
         """All Encounters within this Area."""
-        return '/admin/observations/encounter/?site__id__exact={0}'.format(self.pk)
+        return '/admin/observations/encounter/?{0}__id__exact={1}'.format(
+            "site" if self.area_type == Area.AREATYPE_SITE else "area",
+            self.pk,
+        )
 
     @property
     def animal_encounters_url(self):
         """The admin URL for AnimalEncounters within this Area."""
-        return '/admin/observations/animalencounter/?site__id__exact={0}'.format(self.pk)
+        return '/admin/observations/animalencounter/?{0}__id__exact={1}'.format(
+            "site" if self.area_type == Area.AREATYPE_SITE else "area",
+            self.pk,
+        )
 
     def make_rest_listurl(self, format='json'):
         """Return the API list URL in given format (default: JSON).

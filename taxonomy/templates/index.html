@@ -36,11 +36,18 @@
             title="Browse, filter and search Species">
           Browse species »
         </a>
-         </p>
+      </p>
+      <p>
+        <a class="btn btn-secondary"
+        href="{% url 'occurrence:taxonareaencounter-create' %}"
+        title="Submit species occurrences">
+        Report species occurrence »</a>
+      </p>
       <p>
         <a class="btn btn-secondary"
         href="{% url 'admin:conservation_taxongazettal_add' %}"
-        title="">Lodge nomination »</a>
+        title="Nominate a species for a conservation status">
+        Lodge nomination »</a>
       </p>
     </div>
 
@@ -51,18 +58,26 @@
         width="140" height="140">
       <h2>Communities</h2>
       <p>
-        Browse and search WA ecological communities, view conservation status and suggest conservation status changes.
+        Browse and search WA ecological communities,
+        view conservation status and suggest conservation status changes.
       </p>
       <p>
         <a class="btn btn-primary" href="{% url 'taxonomy:community-list' %}"
             title="Browse, filter and search Communities">
           Browse communities »
         </a>
-         </p>
+      </p>
+      <p>
+        <a class="btn btn-secondary"
+        href="{% url 'occurrence:communityareaencounter-create' %}"
+        title="Submit community occurrences">
+        Report community occurrence »</a>
+      </p>
       <p>
         <a class="btn btn-secondary"
         href="{% url 'admin:conservation_communitygazettal_add' %}"
-        title="">Lodge nomination »</a>
+        title="Nominate a community for a conservation status">
+      Lodge nomination »</a>
       </p>
     </div>
 
@@ -80,18 +95,6 @@
             title="Map Threatened Species and Communities">
           View Map »
         </a>
-      </p>
-      <p>
-        <a class="btn btn-secondary"
-        href="{% url 'occurrence:taxonareaencounter-create' %}"
-        title="Submit species occurrences">
-        Submit species occurrence »</a>
-      </p>
-      <p>
-        <a class="btn btn-secondary"
-        href="{% url 'occurrence:communityareaencounter-create' %}"
-        title="Submit community occurrences">
-        Submit community occurrence »</a>
       </p>
     </div>
 
