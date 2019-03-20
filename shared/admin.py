@@ -12,13 +12,13 @@ from leaflet.forms.widgets import LeafletWidget
 # https://github.com/applegrew/django-select2/issues/252
 S2ATTRS = {'data-width': '50em'}
 
-LEAFLET_SETTINGS = {
-    'widget': LeafletWidget(attrs={
-        'map_height': '500px',
-        'map_width': '100%',
-        'display_raw': 'true',
-        'map_srid': 4326,
-    })}
+LEAFLET_WIDGET_ATTRS = {
+    'map_height': '500px',
+    'map_width': '100%',
+    'display_raw': 'true',
+    'map_srid': 4326,
+}
+LEAFLET_SETTINGS = {'widget': LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS)}
 
 FORMFIELD_OVERRIDES = {
     geo_models.PointField: LEAFLET_SETTINGS,

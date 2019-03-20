@@ -18,4 +18,9 @@
 {% block extrajs %}
 {% leaflet_js plugins="ALL" %}
 {{ form.media.js }}
+<script type="text/javascript">
+map.on('map:loadfield', function (e) {
+    e.addControl(new L.Control.Fullscreen());
+});
+</script>
 {% endblock extrajs %}

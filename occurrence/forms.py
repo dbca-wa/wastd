@@ -11,8 +11,9 @@ from leaflet.forms.widgets import LeafletWidget
 
 from taxonomy.models import Community, Taxon
 from occurrence import models as occ_models
-from shared.admin import S2ATTRS, LEAFLET_SETTINGS, FORMFIELD_OVERRIDES  # noqa
+from shared.admin import S2ATTRS, LEAFLET_WIDGET_ATTRS, LEAFLET_SETTINGS, FORMFIELD_OVERRIDES  # noqa
 from shared.forms import DateInput, DateTimeInput
+from shared import filters as shared_filters
 # from wastd.users.models import User
 
 
@@ -23,6 +24,7 @@ class AreaEncounterForm(forms.ModelForm):
         """Class options."""
 
         model = occ_models.AreaEncounter
+        formfield_overrides = FORMFIELD_OVERRIDES
         fields = (
             "area_type",
             "code",
@@ -33,7 +35,7 @@ class AreaEncounterForm(forms.ModelForm):
             "encountered_on",
             "encountered_by"
         )
-        widgets = {"geom": LeafletWidget(attrs=LEAFLET_SETTINGS)}
+        # widgets = {"geom": LeafletWidget(attrs=LEAFLET_SETTINGS)}
 
 
 class TaxonAreaEncounterForm(AreaEncounterForm):
@@ -43,6 +45,7 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
         """Class options."""
 
         model = occ_models.TaxonAreaEncounter
+        formfield_overrides = FORMFIELD_OVERRIDES
         fields = (
             "taxon",
             "area_type",
@@ -56,25 +59,11 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             "encountered_by"
         )
         widgets = {
-            "taxon": ModelSelect2Widget(
-                model=Taxon,
-                search_fields=[
-                    "taxonomic_name__icontains",
-                    "vernacular_names__icontains",
-                    "field_code__icontains",
-                ]
-            ),
-            "geom": LeafletWidget(attrs=LEAFLET_SETTINGS),
-            "point": LeafletWidget(attrs=LEAFLET_SETTINGS),
+            "taxon": shared_filters.TaxonWidget(),
+            "geom": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
+            "point": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
             "encountered_on": DateTimeInput(),
-            "encountered_by": ModelSelect2Widget(
-                model=get_user_model(),
-                search_fields=[
-                    "name__icontains",
-                    "username__icontains",
-                    "role__icontains",
-                    "email__icontains"]
-            ),
+            "encountered_by": shared_filters.UserWidget(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -139,18 +128,10 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
                     "code__icontains",
                 ]
             ),
-            "geom": LeafletWidget(attrs=LEAFLET_SETTINGS),
-            "point": LeafletWidget(attrs=LEAFLET_SETTINGS),
+            "geom": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
+            "point": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
             "encountered_on": DateTimeInput(),
-            "encountered_by": ModelSelect2Widget(
-                model=get_user_model(),
-                search_fields=[
-                    "name__icontains",
-                    "username__icontains",
-                    "role__icontains",
-                    "email__icontains"
-                ]
-            ),
+            "encountered_by": shared_filters.UserWidget(),
         }
 
     def __init__(self, *args, **kwargs):

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """Conservation forms."""
 
+from django import forms
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
-from django import forms
-# from django.contrib.auth import get_user_model
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from leaflet.forms.widgets import LeafletWidget
-from taxonomy.models import Community, Taxon
 
+
+from taxonomy import models as tax_models
 from conservation import models as cons_models
 from shared.admin import LEAFLET_SETTINGS
 from shared.forms import DateInput  # DateTimeInput
@@ -70,7 +71,7 @@ class ConservationActionForm(forms.ModelForm):
         widgets = {
             'taxa': TaxonMultipleWidget(),
             'communities': ModelSelect2MultipleWidget(
-                model=Community,
+                model=tax_models.Community,
                 search_fields=[
                     "code__icontains",
                     "name__icontains",
