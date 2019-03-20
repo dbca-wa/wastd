@@ -9,8 +9,7 @@ from django_filters.widgets import BooleanWidget
 
 # from django import forms
 from .models import Community, Taxon
-from shared.filters import (  # noqa
-    FILTER_OVERRIDES, TaxonWidget, UserWidget, CommunityWidget)
+from shared.filters import FILTER_OVERRIDES
 
 
 class TaxonFilter(django_filters.FilterSet):

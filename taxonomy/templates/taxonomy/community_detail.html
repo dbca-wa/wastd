@@ -152,22 +152,22 @@ function map_init(map, options) {
     /* Data loading */
     var eoo = L.geoJson(
         {{ original|geojsonfeature:"code,name:eoo"|safe }},
-        {style: style, onEachFeature: oef_eoo}
+        {style: polystyle, onEachFeature: oef_eoo}
     );
     eoo.addTo(map);
     map.fitBounds(eoo.getBounds());
 
     /* CAE poly */
     L.geoJson(
-        {{ original.community_occurrences.all|slice:":1000"|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
-        {style: polystyle, onEachFeature: oef}
+        {{ original.community_occurrences.all|slice:":10000"|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
+        {style: polystyle_red, onEachFeature: oef}
     ).addTo(map);
 
     /* CAE point */
     var markers = L.markerClusterGroup();
     var gj_markers = L.geoJson(
-        {{ original.community_occurrences.all|slice:":1000"|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
-        {style: style, pointToLayer: ptl, onEachFeature: oef});
+        {{ original.community_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+        {style: pointstyle, pointToLayer: ptl, onEachFeature: oef});
     markers.addLayer(gj_markers);
     map.addLayer(markers);
 

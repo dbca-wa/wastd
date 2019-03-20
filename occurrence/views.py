@@ -17,15 +17,13 @@ from occurrence import resources as occ_resources
 from occurrence import filters as occ_filters
 from taxonomy.models import Community, Taxon
 from shared.utils import Breadcrumb
-from shared.views import (  # noqa
+from shared.views import (
     SuccessUrlMixin,
     ListViewBreadcrumbMixin,
     DetailViewBreadcrumbMixin,
     UpdateViewBreadcrumbMixin,
     CreateViewBreadcrumbMixin
 )
-# select2 forms
-# from .admin import (AreaForm, TaxonAreaForm, CommunityAreaForm)
 
 
 # ---------------------------------------------------------------------------#
@@ -109,7 +107,7 @@ class AreaEncounterCreateView(CreateViewBreadcrumbMixin, CreateView):
 
     model = occ_models.AreaEncounter
     form_class = occ_forms.AreaEncounterForm
-    template_name = "occurrence/areaencounter_form.html"
+    template_name = "shared/default_form.html"
 
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
@@ -126,7 +124,7 @@ class AreaEncounterUpdateView(
 
     model = occ_models.AreaEncounter
     form_class = occ_forms.AreaEncounterForm
-    template_name = "occurrence/areaencounter_form.html"
+    template_name = "shared/default_form.html"
 
     # def get_object(self, queryset=None):
     #     """Accommodate custom object pk from url conf."""

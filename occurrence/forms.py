@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 """Occurrence forms."""
-
 from django import forms
-from django.contrib.auth import get_user_model
-from django_select2.forms import ModelSelect2Widget
 
 from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
 from crispy_forms.helper import FormHelper
 from leaflet.forms.widgets import LeafletWidget
 
-from taxonomy.models import Community, Taxon
+from wastd.users import widgets as usr_widgets
+from taxonomy import widgets as tax_widgets
 from occurrence import models as occ_models
+from occurrence import widgets as occ_widgets
 from shared.admin import S2ATTRS, LEAFLET_WIDGET_ATTRS, LEAFLET_SETTINGS, FORMFIELD_OVERRIDES  # noqa
-from shared.forms import DateInput, DateTimeInput
-from shared import filters as shared_filters
-# from wastd.users.models import User
+from shared import forms as shared_forms
 
 
 class AreaEncounterForm(forms.ModelForm):
@@ -59,11 +56,11 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             "encountered_by"
         )
         widgets = {
-            "taxon": shared_filters.TaxonWidget(),
+            "taxon": tax_widgets.TaxonWidget(),
             "geom": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
             "point": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
-            "encountered_on": DateTimeInput(),
-            "encountered_by": shared_filters.UserWidget(),
+            "encountered_on": shared_forms.DateTimeInput(),
+            "encountered_by": usr_widgets.UserWidget(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -121,17 +118,11 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
             "encountered_by"
         )
         widgets = {
-            "community": ModelSelect2Widget(
-                model=Community,
-                search_fields=[
-                    "name__icontains",
-                    "code__icontains",
-                ]
-            ),
+            "community": tax_widgets.CommunityWidget(),
             "geom": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
             "point": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
-            "encountered_on": DateTimeInput(),
-            "encountered_by": shared_filters.UserWidget(),
+            "encountered_on": shared_forms.DateTimeInput(),
+            "encountered_by": usr_widgets.UserWidget(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -181,24 +172,8 @@ class AssociatedSpeciesObservationForm(forms.ModelForm):
         model = occ_models.AssociatedSpeciesObservation
         fields = ("encounter", "taxon",)
         widgets = {
-            "encounter": ModelSelect2Widget(
-                model=occ_models.AreaEncounter,
-                search_fields=[
-                    "code",
-                    "name",
-                    "area_type",
-                ],
-                attrs={"size": 80}
-            ),
-            "taxon": ModelSelect2Widget(
-                model=Taxon,
-                search_fields=[
-                    "taxonomic_name__icontains",
-                    "vernacular_names__icontains",
-                    "field_code__icontains",
-                ],
-                attrs={"size": 80}
-            ),
+            "encounter": occ_widgets.AreaEncounterWidget(),
+            "taxon": tax_widgets.TaxonWidget(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -235,16 +210,8 @@ class FireHistoryObservationForm(forms.ModelForm):
             "fire_intensity"
         )
         widgets = {
-            "encounter": ModelSelect2Widget(
-                model=occ_models.AreaEncounter,
-                search_fields=[
-                    "code",
-                    "name",
-                    "area_type",
-                ],
-                attrs={"size": 80}
-            ),
-            "last_fire_date": DateInput(),
+            "encounter": occ_widgets.AreaEncounterWidget(),
+            "last_fire_date": shared_forms.DateInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -284,24 +251,8 @@ class FileAttachmentObservationForm(forms.ModelForm):
             "confidential"
         )
         widgets = {
-            "encounter": ModelSelect2Widget(
-                model=occ_models.AreaEncounter,
-                search_fields=[
-                    "code",
-                    "name",
-                    "area_type",
-                ],
-                attrs={"size": 80}
-            ),
-            "author": ModelSelect2Widget(
-                model=get_user_model(),
-                search_fields=[
-                    "name__icontains",
-                    "username__icontains",
-                    "role__icontains",
-                    "email__icontains"
-                ]
-            ),
+            "encounter": occ_widgets.AreaEncounterWidget(),
+            "author": usr_widgets.UserWidget(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -342,15 +293,7 @@ class AreaAssessmentObservationForm(forms.ModelForm):
             "survey_duration_min",
         )
         widgets = {
-            "encounter": ModelSelect2Widget(
-                model=occ_models.AreaEncounter,
-                search_fields=[
-                    "code",
-                    "name",
-                    "area_type",
-                ],
-                attrs={"size": 80}
-            ),
+            "encounter": occ_widgets.AreaEncounterWidget(),
         }
 
     def __init__(self, *args, **kwargs):

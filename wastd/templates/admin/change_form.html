@@ -3,7 +3,7 @@
 
 {% block stylesheets %}
 {{ block.super }}
-{% leaflet_css plugins="draw,forms" %}
+{% leaflet_css plugins="ALL" %}
 <!-- Fix missing favicon -->
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 <style>
@@ -18,43 +18,13 @@
    above leaflet tiles (z-index 400)*/
 .leaflet-top{z-index:999;}
 
-/* https://github.com/makinacorpus/django-leaflet/issues/247 */
-textarea.required {width:100%}
+/* https://github.com/makinacorpus/django-leaflet/issues/247
+textarea.required {width:100%}*/
 </style>
 {% endblock %}
 
 {% block javascripts %}
 {{ block.super }}
-{% leaflet_js plugins="draw,forms" %}
-<script type="text/javascript">
-
-(function(){
-    /*
-     * Fix broken Leaflet image path
-     * https://github.com/Leaflet/Leaflet/issues/4968
-     */
-    delete L.Icon.Default.prototype._getIconUrl
-
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
-      iconUrl: "/static/leaflet/images/marker-icon.png",
-      shadowUrl: "/static/leaflet/images/marker-shadow.png"
-    })
-
-    /*
-     * Workaround for 1px lines appearing in some browsers due to
-     * fractional transforms and resulting anti-aliasing.
-     * https://github.com/Leaflet/Leaflet/issues/3575
-     */
-    var originalInitTile = L.GridLayer.prototype._initTile
-    L.GridLayer.include({
-        _initTile: function (tile) {
-            originalInitTile.call(this, tile);
-            var tileSize = this.getTileSize();
-            tile.style.width = tileSize.x + 1 + 'px';
-            tile.style.height = tileSize.y + 1 + 'px';
-        }
-    });
-})()
-</script>
+{% leaflet_js plugins="ALL" %}
+{% include 'shared/leaflet_widget_overlays_fullscreen.js' %}
 {% endblock %}

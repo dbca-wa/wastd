@@ -202,14 +202,14 @@ function map_init(map, options) {
     /* Data loading */
     var eoo = L.geoJson(
         {{ original|geojsonfeature:"canonical_name,taxonomic_name:eoo"|safe }},
-        {style: pointstyle, onEachFeature: oef}
+        {style: pointstyle, onEachFeature: oef_eoo}
     );
     eoo.addTo(map);
     map.fitBounds(eoo.getBounds());
 
     L.geoJson(
         {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
-        {style: polystyle, onEachFeature: oef_rel}
+        {style: polystyle_red, onEachFeature: oef_rel}
     ).addTo(map);
 
     var taxon_points = L.geoJson(

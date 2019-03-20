@@ -10,6 +10,12 @@
         "opacity": 0.65
     };
 
+    var polystyle_red = {
+        "color": "#ff2200",
+        "weight": 1,
+        "opacity": 0.65
+    };
+
     /* Map a feature to an icon class */
     function getIcon(feature){
         if (feature.properties.leaflet_icon){
@@ -54,6 +60,12 @@
         layer.bindTooltip(feature.properties.leaflet_title);
         layer.bindPopup(feature.properties.as_html);
         // layer.on({mouseover: highlightFeature, click: resetHighlight});
+    }
+
+    /* Actions taken on each feature: title, popup, info preview */
+    function oef_eoo (feature, layer) {
+        layer.bindTooltip("Extent of Occurrence");
+        // layer.bindPopup("Extent of Occurrence");
     }
 
     /* Actions taken on each feature: title, popup, info preview */

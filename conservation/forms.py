@@ -5,17 +5,14 @@ from django import forms
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
-from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
+from django_select2.forms import ModelSelect2Widget  # ModelSelect2MultipleWidget
 from leaflet.forms.widgets import LeafletWidget
 
-
-from taxonomy import models as tax_models
 from conservation import models as cons_models
+from conservation import widgets as cons_widgets
+from taxonomy import widgets as tax_widgets
 from shared.admin import LEAFLET_SETTINGS
 from shared.forms import DateInput  # DateTimeInput
-from shared.filters import (  # noqa
-    FILTER_OVERRIDES, TaxonWidget, TaxonMultipleWidget, UserWidget, CommunityWidget)
-# from wastd.users.models import User
 
 
 class ConservationActionForm(forms.ModelForm):
@@ -69,31 +66,11 @@ class ConservationActionForm(forms.ModelForm):
             # "attachments"
         )
         widgets = {
-            'taxa': TaxonMultipleWidget(),
-            'communities': ModelSelect2MultipleWidget(
-                model=tax_models.Community,
-                search_fields=[
-                    "code__icontains",
-                    "name__icontains",
-                    "description__icontains",
-                ]
-            ),
-            'document': ModelSelect2Widget(
-                model=cons_models.Document,
-                search_fields=[
-                    "title__icontains",
-                    "comments__icontains",
-                ]
-            ),
+            'taxa': tax_widgets.TaxonMultipleWidget(),
+            'communities': tax_widgets.CommunityMultipleWidget(),
+            'document': cons_widgets.DocumentWidget(),
             'target_area': LeafletWidget(attrs=LEAFLET_SETTINGS),
-            'category': ModelSelect2Widget(
-                model=cons_models.ConservationActionCategory,
-                search_fields=[
-                    "code__icontains",
-                    "label__icontains",
-                    "description__icontains",
-                ]
-            ),
+            'category': cons_widgets.ConservationActionCategoryWidget(),
             'completion_date': DateInput(),
         }
 
@@ -134,12 +111,6 @@ class ConservationActivityForm(forms.ModelForm):
             # "attachments"
         )
         widgets = {
-            'conservation_action': ModelSelect2Widget(
-                model=cons_models.ConservationAction,
-                search_fields=[
-                    "category__icontains",
-                    "instructions__icontains",
-                ]
-            ),
+            'conservation_action': cons_widgets.ConservationActionWidget(),
             'completion_date': DateInput(),
         }

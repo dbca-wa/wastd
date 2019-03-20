@@ -5,8 +5,7 @@ from django.contrib.gis.db import models as geo_models
 import django_filters
 
 from conservation.models import ConservationAction
-from shared.filters import (  # noqa
-    FILTER_OVERRIDES, TaxonWidget, UserWidget, CommunityWidget)
+from shared.filters import FILTER_OVERRIDES
 
 
 class ConservationActionFilter(django_filters.FilterSet):

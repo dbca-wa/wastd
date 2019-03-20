@@ -7,7 +7,9 @@ import django_filters
 
 from occurrence import models as occ_models
 from taxonomy import models as tax_models
-from shared import filters as shared_filters
+from taxonomy import widgets as tax_widgets
+from wastd.users import widgets as usr_widgets
+from shared.filters import FILTER_OVERRIDES
 
 
 class TaxonAreaEncounterFilter(django_filters.FilterSet):
@@ -15,11 +17,11 @@ class TaxonAreaEncounterFilter(django_filters.FilterSet):
 
     taxon = django_filters.ModelChoiceFilter(
         queryset=tax_models.Taxon.objects.all(),
-        widget=shared_filters.TaxonWidget()
+        widget=tax_widgets.TaxonWidget()
     )
     encountered_by = django_filters.ModelChoiceFilter(
         queryset=get_user_model().objects.all(),
-        widget=shared_filters.UserWidget()
+        widget=usr_widgets.UserWidget()
     )
 
     class Meta:
@@ -40,7 +42,7 @@ class TaxonAreaEncounterFilter(django_filters.FilterSet):
             "encountered_on",
             "encountered_by",
         ]
-        filter_overrides = shared_filters.FILTER_OVERRIDES
+        filter_overrides = FILTER_OVERRIDES
 
 
 class CommunityAreaEncounterFilter(django_filters.FilterSet):
@@ -50,11 +52,11 @@ class CommunityAreaEncounterFilter(django_filters.FilterSet):
     point = geo_models.PointField()
     community = django_filters.ModelChoiceFilter(
         queryset=tax_models.Community.objects.all(),
-        widget=shared_filters.CommunityWidget()
+        widget=tax_widgets.CommunityWidget()
     )
     encountered_by = django_filters.ModelChoiceFilter(
         queryset=get_user_model().objects.all(),
-        widget=shared_filters.UserWidget()
+        widget=usr_widgets.UserWidget()
     )
 
     class Meta:
@@ -75,4 +77,4 @@ class CommunityAreaEncounterFilter(django_filters.FilterSet):
             "encountered_on",
             "encountered_by",
         ]
-        filter_overrides = shared_filters.FILTER_OVERRIDES
+        filter_overrides = FILTER_OVERRIDES

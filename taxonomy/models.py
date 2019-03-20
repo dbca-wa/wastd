@@ -2,7 +2,7 @@
 """Taxonomic models.
 
 The models in this module maintain a plain copy of WACensus data as published by KMI Geoserver.
-The data is to be inserted and updated via the BioSysTT API.
+The data is to be inserted and updated via the TSC API.
 """
 from __future__ import absolute_import, unicode_literals
 
