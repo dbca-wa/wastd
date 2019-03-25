@@ -1,8 +1,48 @@
 # -*- coding: utf-8 -*-
-"""Occurrence test suite.
+"""Occurrence unit test suite.
 
-https://model-mommy.readthedocs.io/en/latest/
-https://github.com/sigma-geosistemas/mommy_spatial_generators
+Test creation of occurrence data:
+
+* TaxonAreaEncounters (TAE)
+* CommunityAreaEncouters (CAE)
+* ObservationGroups (Obs) and sub-models
+* [REQ 6] AOO and EOO threshold alerts for reviewing status:
+  Using updated occurrence data, flag a review of species or
+  community conservation status when metrics such as
+  AOO or EOO change by more than a given threshold, and alert an officer.
+* Occurrences not handled by TSC can be stored in BioSys
+* Show Biosys occurrences on map for reference
+* When analysing TSC data, also query BioSys for data (wastdr?)
+
+On Faunafile:
+
+"This is a desktop Microsoft Access-based system that maintains much of the Department’s fauna
+monitoring records for DBCA’s South West, Wheatbelt and South Coast Regions. Data from the most
+recent version can be merged and warehoused in Oracle, and there is a program from upgrading
+data from old formats to facilitate this process." Paul 6.3
+
+"While FaunaFile has a long historical connection with SCD, and there are overlapping
+processes and data, custodianship for its maintenance and development lies with FEMD.
+While improvements to FaunaFile per se are out scope for this initial phase of
+development, there are collaborative opportunities for alignment and integration in
+subsequent phases." Paul 7
+
+On Fauna Distribution Information System (FDIS):
+
+"FDIS predicts the effects on fauna following forest operations and is used in the establishment of
+fauna habitat zones. FDIS is currently the subject of a major redevelopment." Paul 6.4
+
+On fire response data:
+"Fire response data is not part of SCB management responsibility. The Threatened and
+Priority Flora Database (TPFL) contains a recently added module for fire response data at
+occurrence level, and TEC/PEC fire history data is recorded in the TEC database, but
+summary-level information is not being maintained, and custodianship is unclear. The
+extent to which current or additional system support is required, if any, will need to be
+clarified during feature prioritisation." Paul 7
+
+"Any business process or system not explicitly mentioned above as part of threatened
+flora, fauna and ecological community management is deemed out of scope." Paul 7
+
 """
 from __future__ import unicode_literals
 

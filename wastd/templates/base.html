@@ -97,21 +97,21 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
               <a class="dropdown-item"
-                href="http://wastd.readthedocs.io/data_consumers.html"
-                title="Manual" target="_">
+                href="https://dbca-wa.github.io/wastd/index.html#document-data_consumers"
+                title="Manual" target="_blank">
                 <span class="oi oi-book" aria-hidden="true"></span>
                 <span class="align-middle">Data Analysts' Manual</span>
               </a>
-              <a class="dropdown-item" href="/api/1/" title="API" target="_">
+              <a class="dropdown-item" href="/api/1/" title="API" target="_blank">
                <span class="oi oi-terminal" aria-hidden="true"></span>
                <span class="align-middle">API</span>
              </a>
              <a class="dropdown-item" href="{% url 'api-docs' %}"
-                title="API docs (Swagger)" target="_">
+                title="API docs (Swagger)" target="_blank">
                <span class="oi oi-book align-middle" aria-hidden="true"></span>
                <span class="align-middle">API Docs (Swagger)</span>
              </a>
-             <a class="dropdown-item" href="/api/1/docs" title="API docs (DRF)" target="_">
+             <a class="dropdown-item" href="/api/1/docs" title="API docs (DRF)" target="_blank">
                <span class="oi oi-book align-middle" aria-hidden="true"></span>
                <span class="align-middle">API Docs (DRF)</span>
              </a>
@@ -124,7 +124,7 @@
               </a>
               {% endif %}
               <!--
-                <a class="dropdown-menu" href="{% url 'encounter_list' %}" target="_">
+                <a class="dropdown-menu" href="{% url 'encounter_list' %}" target="_blank">
                     <i class="fa fa-table"></i>&nbsp;Encounters
                 </a>
 
@@ -151,26 +151,26 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-curators">
               <a class="dropdown-item"
-                href="http://wastd.readthedocs.io/data_curators.html"
-                title="Manual" target="_">
+                href="https://dbca-wa.github.io/wastd/index.html#document-data_curators"
+                title="Manual" target="_blank">
                 <span class="oi oi-book" aria-hidden="true"></span>
                 Data Curators' Manual
               </a>
               <a class="dropdown-item"
                 href="{% url 'admin:index' %}"
-                target="_"
+                target="_blank"
                 title="Data entry and curation area">
                 <span class="oi oi-beaker" aria-hidden="true"></span>
                 Data Curation Portal
               </a>
 
               {% if request.user.is_superuser %}
-              <a class="dropdown-item"
-                href="/performance/" target="_"
+              <!--  <a class="dropdown-item"
+                href="/performance/" target="_blank"
                 title="Measure performance">
                <span class="oi oi-pulse" aria-hidden="true"></span>
                Site performance
-              </a>
+              </a> -->
               <a class="dropdown-item"
                 href="{% url 'import-odka' %}"
                 title="Import all ODKA forms">
@@ -191,7 +191,7 @@
               </a>
              <!--  <a class="dropdown-item"
                 href="/api/1/animal-encounters/?format=latex"
-                target="_"
+                target="_blank"
                 title="Export all Animal Encounters as PDF">
                 <span class="oi oi-document" aria-hidden="true"></span>
                 Export All AnimalEncounters
@@ -202,7 +202,9 @@
           {% endif %}
 
           <li class="nav-item">
-           <a class="nav-link" href="http://wastd.readthedocs.io/" title="Manual" target="_">
+           <a class="nav-link"
+            href="https://dbca-wa.github.io/wastd/index.html"
+            title="Manual" target="_blank">
              <span class="oi oi-book" aria-hidden="true"></span>
              Manual
            </a>

@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Taxonomy test suite.
-
-https://model-mommy.readthedocs.io/en/latest/
-https://github.com/sigma-geosistemas/mommy_spatial_generators
-"""
+"""Taxonomy view test suite testing URLs, templates, and views."""
 from __future__ import unicode_literals
 
 from django.utils import timezone  # noqa

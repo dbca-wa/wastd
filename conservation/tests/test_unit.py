@@ -37,7 +37,7 @@ class ConservationListModelTests(TestCase):
             approval_level=ConservationList.APPROVAL_IMMEDIATE)
 
     def test__str__(self):
-        """Test that the string method ."""
+        """Test the string method."""
         self.assertEqual(
             self.cl.__str__(),
             'test')
@@ -62,7 +62,7 @@ class TaxonGazettalModelTests(TestCase):
         # add cat and crit to gaz
 
     def test__str__(self):
-        """Test str."""
+        """Test the string method."""
         x = "{0} {1} {2} {3}".format(
             self.gaz.get_scope_display(),
             self.gaz.taxon,
@@ -142,3 +142,14 @@ class ConservationActivityModelTests(TestCase):
             self.consact.completion_date.strftime("%d/%m/%Y") if self.consact.completion_date else "in progress",
             self.consact.implementation_notes)
         self.assertEqual(label, self.consact.__str__())
+
+
+class DocumentModelTests(TestCase):
+    """Document unit tests.
+
+    * Recovery plan must have ID (number), date approved, plan type.
+    * Document (such as rec plan) can be linked to onr or many species
+      and/or one or many communities.
+    """
+
+    pass

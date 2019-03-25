@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Conservation view test suite.
+"""Conservation view test suite testing URLs, templates, and views.
 
+See also:
 https://model-mommy.readthedocs.io/en/latest/
 https://github.com/sigma-geosistemas/mommy_spatial_generators
 """

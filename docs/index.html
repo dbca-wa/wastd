@@ -16290,9 +16290,152 @@ and batch-export.</p>
 <div class="section" id="business-logic">
 <h3>Business logic<a class="headerlink" href="#business-logic" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="conservation-tests-module">
-<h4><a class="reference internal" href="#module-conservation.tests" title="conservation.tests"><code class="xref py py-mod docutils literal notranslate"><span class="pre">conservation.tests</span></code></a> Module<a class="headerlink" href="#conservation-tests-module" title="Permalink to this headline">¶</a></h4>
-<p>Conservation status listing and related business logic is described in the conservation test module.</p>
-<span class="target" id="module-conservation.tests"></span></div>
+<h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">conservation.tests</span></code> Module<a class="headerlink" href="#conservation-tests-module" title="Permalink to this headline">¶</a></h4>
+<p>Business processes:</p>
+<ul class="simple">
+<li>Conservation listing: life cycle, permissions, query, list, export</li>
+<li>Conservation activity: create, list, filter, export, task list for different roles</li>
+<li>Document: approval, approval permissions, publication</li>
+</ul>
+<span class="target" id="module-conservation.tests.test_functional"></span><p>Conservation functional test suite.</p>
+<p>This test suite is a walk-through of the following conservation business processes:</p>
+<ul class="simple">
+<li>Conservation listing: life cycle, permissions, query, list, export</li>
+<li>Conservation activity: create, list, filter, export, task list for different roles</li>
+<li>Document: approval, approval permissions, publication</li>
+</ul>
+<dl class="class">
+<dt id="conservation.tests.test_functional.ConservationListingTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_functional.</code><code class="descname">ConservationListingTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Functional tests for ConservationListing (Gazettal).</p>
+<dl class="method">
+<dt id="conservation.tests.test_functional.ConservationListingTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_functional.ConservationListingTests.test_only_admin_can_create_gazettal">
+<code class="descname">test_only_admin_can_create_gazettal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingTests.test_only_admin_can_create_gazettal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conservation Listings can only be created by admins.</p>
+<p>Only data curators with admin access can create new conservation listings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-conservation.tests.test_unit"></span><p>Unit tests for Conservation module.</p>
+<span class="target" id="module-conservation.tests.test_views"></span><p>Conservation view test suite.</p>
+<p><a class="reference external" href="https://model-mommy.readthedocs.io/en/latest/">https://model-mommy.readthedocs.io/en/latest/</a>
+<a class="reference external" href="https://github.com/sigma-geosistemas/mommy_spatial_generators">https://github.com/sigma-geosistemas/mommy_spatial_generators</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationActionModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Unit tests for ConservationAction.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_created_is_status_new">
+<code class="descname">test_consaction_created_is_status_new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_created_is_status_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a new conservation action shows status NEW.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_future_completion_date_is_status_completed">
+<code class="descname">test_consaction_with_future_completion_date_is_status_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_future_completion_date_is_status_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a conservation action with a future completion date shows status NEW or INPROGRESS.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_past_completion_date_is_status_completed">
+<code class="descname">test_consaction_with_past_completion_date_is_status_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_past_completion_date_is_status_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a conservation action with a past completion date shows status COMPLETED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_create_consactivity">
+<code class="descname">test_create_consactivity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_create_consactivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a cons activity.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_unit.ConservationActivityModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationActivityModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Unit tests for ConservationActivity.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActivityModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActivityModelTests.test_conservation_activity_str">
+<code class="descname">test_conservation_activity_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests.test_conservation_activity_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationActivity str.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_unit.ConservationListModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationListModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>ConservationList unit tests.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationListModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup: create a new list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationListModelTests.test__str__">
+<code class="descname">test__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests.test__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the string method.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_unit.TaxonGazettalModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">TaxonGazettalModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Unit tests for TaxonGazettal.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.TaxonGazettalModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.TaxonGazettalModelTests.test__str__">
+<code class="descname">test__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests.test__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the string method.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="the-rest">
 <h3>The rest<a class="headerlink" href="#the-rest" title="Permalink to this headline">¶</a></h3>
