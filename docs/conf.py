@@ -19,7 +19,7 @@ import sys
 
 import confy
 import django
-from confy import database, env
+from confy import database
 
 # -- Django configuration -------------------------------------------------
 # 1. Add Django ROOT_DIR to sys.path, so conf.py can discover django settings
@@ -44,7 +44,7 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 try:
     django.setup()
 except:
-    pass
+    raise
 # print("Now the Django settings are loaded, e.g. installed apps are:"
 #       "{0}".format(", ".join([app for app in settings.INSTALLED_APPS])))
 
@@ -66,7 +66,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    # 'sphinx.ext.githubpages',
+    'sphinx.ext.githubpages',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
