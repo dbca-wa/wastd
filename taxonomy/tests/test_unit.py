@@ -45,3 +45,5 @@ class CommunityTestMommy(TestCase):
         """Test creating a Community."""
         self.assertTrue(isinstance(self.object, Community))
         # self.assertEqual(object.__unicode__(), object.name)
+
+# Test import WACensus: create a few HbV instances, run make_taxon_names, test resulting names.

@@ -22,7 +22,9 @@ LEAFLET_SETTINGS = {'widget': LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS)}
 
 FORMFIELD_OVERRIDES = {
     geo_models.PointField: LEAFLET_SETTINGS,
+    geo_models.MultiPointField: LEAFLET_SETTINGS,
     geo_models.LineStringField: LEAFLET_SETTINGS,
+    geo_models.MultiLineStringField: LEAFLET_SETTINGS,
     geo_models.PolygonField: LEAFLET_SETTINGS,
     geo_models.MultiPolygonField: LEAFLET_SETTINGS,
 }

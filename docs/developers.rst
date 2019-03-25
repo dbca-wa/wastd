@@ -7,7 +7,7 @@ the underlying data model.
 
 In this chapter, we will discuss:
 
-* the data model - what data can WAStD handle?
+* the data model - what data can TSC/ WAStD handle?
 * the admin - manual data entry, validation, widgets
 * the API - programmatic data retrieval and query
 * the custom User app
@@ -93,6 +93,16 @@ samples etc.).
  :members:
  :undoc-members:
  :show-inheritance:
+
+
+:mod:`occurrence.models` Module
+---------------------------------------
+
+.. automodule:: occurrence.models
+ :members:
+ :undoc-members:
+ :show-inheritance:
+
 
 Admin
 =====

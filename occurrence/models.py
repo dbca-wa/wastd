@@ -648,7 +648,12 @@ class FileAttachmentObservation(ObservationGroup):
 
 
 class AreaAssessmentObservation(ObservationGroup):
-    """A description of survey effort at a flora or TEC site."""
+    """A description of survey effort at a flora or TEC site.
+
+    TODO add
+    # survey method
+    # EncounterType
+    """
 
     SURVEY_TYPE_DEFAULT = 'partial'
     SURVEY_TYPE_CHOICES = (
@@ -708,24 +713,93 @@ class AreaAssessmentObservation(ObservationGroup):
         else:
             return None
 
+# add to areaenc: location source (diff gps, gps, mudmap, verbal report, diff gps), location description
+
 # PlantCountObservation
+#
+# population count accuracy (actual, extrpol, estimate)
+# count method (enum)
+# what counted (plants, clumps, clonal stems)
+# population structure: mature/juveniles/seedlings(prop totals) x alive/dead
+# estimated area of population m2
+# quadrats present bool
+# number of quadrats surveyed
+# size of quadrats
+# detailed data attached
+# total area of quadrats m2
+# total alive: mature/juv/seedl(prop total)
+# reproductive state (m2m: clonal, gegetative, flowerbud, flower, imature fuit, fruit, dehisced fruit)
+# percentage in flower
+# condition of plants(enum healthy, moderate, poor, senescent)
+
 # ThreatObservation
+#
+# FK threat_type(code label description)
+# threat_cause
+# area_affected_pc
+# current_impact(NLME)
+# potential_impact(LMHE)
+# potential_threat_onset(SML)
+
 # HabitatCompositionObservation
+#
+# landform(enum+other)
+# rock type(enum+other)
+# loose rock (range pc)
+# soil type(enum+other)
+# soil colour(enum+other)
+# drainage(enum+other)
+# specific landform element
+
 # HabitatConditionObservation
+#
+# soil condition(enum+other)
+# occ cond obs: pc habitat in condition x
+# land manager present
+
+
 # VegetationClassificationObservation
+#
+# NVIS classification categories with autocomplete 1-4
+
 # PhysicalSpecimenObservation
-# PermitObservation
+#
+# specimen ID
+# collector ID
+# destination (which herbarium)
+# permit type (AE, DRF)
+# permit ID
+# specimen type (animal and plant)
+
+
 # Fire response?
 
 # TEC
-# OccurrenceConditionObservation
-# Uses: AreaAss, Thr, OccCond, Hab, VegClass, FireHist, AssSp, FileAtt
+# OccurrenceConditionObservation: estimated area in percent of total area following bush forever scale
+#
+# pristine_pc, excellent_pc, very_good_pc, good_pc, degraded_pc, completely_degraded_pc
+
+# Uses: AreaAss, Thr, OccCond, HabComp, HabCond, VegClass, FireHist, AssSp, FileAtt
 
 # TFA
 # AnimalObservation
+#
+#
+# species id confidence
+# species identified by (user/name and affiliation)
+# primary observed animal: dist feature description
+#
+# reproductive state
+#
+# demographics of all observed animals: number of x adults/juv/pouch youg x m/f/unk
+# observation details description
+#
+# secondary signs (multiple): heard, scats, etc
+
 # PhysicalSampleObservation
 # PhysicalSpecimenObservation
 # SurveyMethodObservation > roll into AreaAssessment
-# EncounterTypeObservation
-# WildlifeIncidentObservation
+
+# WildlifeIncidentObservation: health, cause of death, injuries description, actions taken, actions required
+
 # Uses: SpecimenObs, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen

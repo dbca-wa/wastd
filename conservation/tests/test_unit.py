@@ -21,6 +21,10 @@ from conservation.models import (  # noqa
 # response = client.get('http://localhost:8220')
 # assert response.status_code == 200
 
+# Test fileattachment creation, str
+# Test cons crit, cons cat
+# Test gazettal
+
 
 class ConservationListModelTests(TestCase):
     """ConservationList unit tests."""
@@ -59,7 +63,13 @@ class TaxonGazettalModelTests(TestCase):
 
     def test__str__(self):
         """Test str."""
-        pass
+        x = "{0} {1} {2} {3}".format(
+            self.gaz.get_scope_display(),
+            self.gaz.taxon,
+            self.gaz.category_cache,
+            self.gaz.criteria_cache
+        ).strip()
+        self.assertEqual(self.gaz.__str__(), x)
 
 
 class ConservationActionModelTests(TestCase):
