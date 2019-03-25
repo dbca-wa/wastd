@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>django.contrib.gis.db.models.proxy &mdash; WAStD 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../../index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../data_collection/data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../data_collection/data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../data_collection/data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../developers.html">Developer documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>django.contrib.gis.db.models.proxy</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for django.contrib.gis.db.models.proxy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The SpatialProxy object allows for lazy-geometries and lazy-rasters. The proxy</span>
+<span class="sd">uses Python descriptors for instantiating and setting Geometry or Raster</span>
+<span class="sd">objects corresponding to geographic model fields.</span>
+
+<span class="sd">Thanks to Robert Coup for providing this functionality (see #4322).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.db.models.query_utils</span> <span class="k">import</span> <span class="n">DeferredAttribute</span>
+
+
+<span class="k">class</span> <span class="nc">SpatialProxy</span><span class="p">(</span><span class="n">DeferredAttribute</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">klass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">load_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize on the given Geometry or Raster class (not an instance)</span>
+<span class="sd">        and the corresponding field.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="n">field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_klass</span> <span class="o">=</span> <span class="n">klass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_func</span> <span class="o">=</span> <span class="n">load_func</span> <span class="ow">or</span> <span class="n">klass</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the geometry or raster, initializing it using the</span>
+<span class="sd">        corresponding class specified during initialization and the value of</span>
+<span class="sd">        the field. Currently, GEOS or OGR geometries as well as GDALRasters are</span>
+<span class="sd">        supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Accessed on a class, not an instance</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="c1"># Getting the value of the field.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">geo_value</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="o">.</span><span class="n">attname</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">geo_value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geo_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_klass</span><span class="p">):</span>
+            <span class="n">geo_obj</span> <span class="o">=</span> <span class="n">geo_value</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">geo_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">geo_value</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+            <span class="n">geo_obj</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Otherwise, a geometry or raster object is built using the field&#39;s</span>
+            <span class="c1"># contents, and the model&#39;s corresponding attribute is set.</span>
+            <span class="n">geo_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_func</span><span class="p">(</span><span class="n">geo_value</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="o">.</span><span class="n">attname</span><span class="p">,</span> <span class="n">geo_obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">geo_obj</span>
+
+    <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the proxied geometry or raster with the corresponding class</span>
+<span class="sd">        specified during initialization.</span>
+
+<span class="sd">        To set geometries, use values of None, HEXEWKB, or WKT.</span>
+<span class="sd">        To set rasters, use JSON or dict values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The geographic type of the field.</span>
+        <span class="n">gtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="o">.</span><span class="n">geom_type</span>
+
+        <span class="k">if</span> <span class="n">gtype</span> <span class="o">==</span> <span class="s1">&#39;RASTER&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_klass</span><span class="p">))):</span>
+            <span class="c1"># For raster fields, assure input is None or a string, dict, or</span>
+            <span class="c1"># raster instance.</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_klass</span><span class="p">):</span>
+            <span class="c1"># The geometry type must match that of the field -- unless the</span>
+            <span class="c1"># general GeometryField is used.</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">srid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Assigning the field SRID if the geometry has no SRID.</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">srid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="o">.</span><span class="n">srid</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">)):</span>
+            <span class="c1"># Set geometries with None, WKT, HEX, or WKB</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Cannot set </span><span class="si">%s</span><span class="s1"> SpatialProxy (</span><span class="si">%s</span><span class="s1">) with value of type: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">gtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+
+        <span class="c1"># Setting the objects dictionary with the value, and returning.</span>
+        <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="o">.</span><span class="n">attname</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Florian Mayer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

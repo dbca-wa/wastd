@@ -1,0 +1,615 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Application maintainers &mdash; WAStD 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer documentation" href="developers.html" />
+    <link rel="prev" title="Business Analysts" href="business_analysts.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Application maintainers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#deployment">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#virtualenv">Virtualenv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#database">Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#permissions">Permissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#useful-commands">Useful commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#production-server-1-supervisord">Production server 1: Supervisord</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#production-server-2-uwsgi">Production server 2: uwsgi</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#deploying-upgrades-to-production">Deploying upgrades to production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#developing-with-docker">Developing with Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up">Setting up</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-and-running-your-app-on-ec2">Building and running your app on EC2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#security-advisory">Security advisory</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Application maintainers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/maintainers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="application-maintainers">
+<h1>Application maintainers<a class="headerlink" href="#application-maintainers" title="Permalink to this headline">¶</a></h1>
+<p>This chapter addresses the maintainers of WAStD, who are in charge of the DevOps
+side - development and operations.</p>
+<div class="section" id="deployment">
+<h2>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h2>
+<p>This section describes deployment in development (local) and production
+environments (UAT, PROD).</p>
+<div class="section" id="virtualenv">
+<h3>Virtualenv<a class="headerlink" href="#virtualenv" title="Permalink to this headline">¶</a></h3>
+<p>Install virtualenv:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">virtualenvwrapper</span>
+</pre></div>
+</div>
+<p>Set virtualenv paths by adding these lines to your ~/.bashrc:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">WORKON_HOME</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">virtualenvs</span>     <span class="c1"># e.g. /home/USERNAME/.venvs</span>
+<span class="n">export</span> <span class="n">PROJECT_HOME</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">projects</span>       <span class="c1"># e.g. /var/www/</span>
+<span class="n">source</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">virtualenvwrapper</span><span class="o">.</span><span class="n">sh</span>
+<span class="n">export</span> <span class="n">PIP_VIRTUALENV_BASE</span><span class="o">=</span><span class="n">WORKON_HOME</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Activate the virtualenv::</dt>
+<dd>mkproject wastd</dd>
+</dl>
+</div>
+<div class="section" id="database">
+<h3>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h3>
+<p>Create a PostgreSQL database with PostGIS, psql into an existing database
+on an existing cluster:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">some_db</span><span class="o">=</span><span class="c1"># create database wastd_8220 owner DBUSER;</span>
+<span class="n">some_db</span><span class="o">=</span><span class="c1"># \c wastd_8220 ;</span>
+<span class="n">wastd_8220</span><span class="o">=</span><span class="c1"># create extension postgis;</span>
+<span class="n">wastd_8220</span><span class="o">=</span><span class="c1"># \q</span>
+</pre></div>
+</div>
+<p>The database connection string will be in the format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DATABASE_URL</span><span class="o">=</span><span class="s2">&quot;postgis://DBUSER:DBPASS@DBHOST:DBPORT/DBNAME&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="code">
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h3>
+<p>Install dependencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">workon</span> <span class="n">wastd</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">florianm</span><span class="o">/</span><span class="n">wastd</span><span class="o">.</span><span class="n">git</span> <span class="o">.</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">Fabric</span>
+<span class="n">fab</span> <span class="n">pip</span>
+<span class="n">cp</span> <span class="n">env</span><span class="o">.</span><span class="n">example</span> <span class="o">.</span><span class="n">env</span>
+</pre></div>
+</div>
+<p>Edit <code class="docutils literal notranslate"><span class="pre">.env</span></code> and enter your settings, particularly the database URL</p>
+</div>
+<div class="section" id="permissions">
+<h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Your local user shall be part of group www-data.</li>
+<li>Code and virtualenv shall be chowned by www-data:www-data with permissions
+775 (folders) and 664 (files).</li>
+<li>The production web server shall run under the www-data account.</li>
+</ul>
+<p>Create folders, set permissions (files 0644, folders 0755):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">staticfiles</span>
+<span class="n">sudo</span> <span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">www</span><span class="o">-</span><span class="n">data</span><span class="p">:</span><span class="n">www</span><span class="o">-</span><span class="n">data</span> <span class="o">.</span>
+<span class="n">find</span> <span class="o">.</span> <span class="o">-</span><span class="nb">type</span> <span class="n">f</span> <span class="o">-</span><span class="n">exec</span> <span class="n">sudo</span> <span class="n">chmod</span> <span class="mi">0664</span> <span class="p">{}</span> \<span class="p">;</span>
+<span class="n">find</span> <span class="o">.</span> <span class="o">-</span><span class="nb">type</span> <span class="n">d</span> <span class="o">-</span><span class="n">exec</span> <span class="n">sudo</span> <span class="n">chmod</span> <span class="mi">0755</span> <span class="p">{}</span> \<span class="p">;</span>
+<span class="n">sudo</span> <span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Same for virtualenv (paths depend on your virtualenv in .bashrc):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sudo chown -R YOUR_USER:www-data $WORKON_HOME/wastd/
+find $WORKON_HOME/wastd/ -type f -exec sudo chmod 0664 {} \;
+find $WORKON_HOME/wastd/ -type d -exec sudo chmod 0775 {} \;
+sudo chmod -R +x $WORKON_HOME/wastd/bin/*
+</pre></div>
+</div>
+<p>Setup the database:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span>
+</pre></div>
+</div>
+<p>Sync data and files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(wastd)me@UAT:~/projects/wastd$ rsync -Pavvr wastd/media/ me@PROD:/mnt/projects/wastd/wastd/media/
+(wastd)me@UAT:~/projects/wastd$ ./manage.py dumpdata --natural-primary --natural-foreign --indent 4 &gt; data.json
+(wastd)me@UAT:~/projects/wastd$ rsync -Pavvr data.json me@PROD:/mnt/projects/wastd/
+(wastd)me@PROD:/mnt/projects/wastd$ ./manage.py loaddata data.json
+</pre></div>
+</div>
+<p>Run <code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">static</span></code> and <code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">go</span></code> to see WAStD running in dev.</p>
+<p>Getting data from PROD via gateway server to DEV:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(wastd)florianm@aws-eco-001:/mnt/projects/wastd$ ./manage.py dumpdata --natural-primary --natural-foreign --indent 4 &gt; data.json
+(wastd)florianm@aws-eco-001:/mnt/projects/wastd$ pg_dump -h localhost -p 5443 -U sdis -Fc wastd_8220 &gt; wastd_8220.dump
+(wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr data.json florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm
+(wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr wastd_8220.dump florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm
+(wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr wastd/media/ florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd/wastd/media/
+
+
+(wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/data.json data
+(wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd_8220.dump data
+(wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd/wastd/media/ wastd/media/
+(wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ ./manage.py loaddata data/data.json
+# or:
+(wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ pg_restore -h localhost -p 5443 -U sdis -d wastd_8220 &lt; data/wastd_8220.dump
+</pre></div>
+</div>
+</div>
+<div class="section" id="useful-commands">
+<h3>Useful commands<a class="headerlink" href="#useful-commands" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">go</span></code>: run development server with local settings on .env’s PORT</li>
+<li><code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">pro</span></code>: run development server with production settings on .env’s PORT</li>
+<li><code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">shell</span></code>: run shell_plus</li>
+<li><code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">static</span></code>: delete, then collect (link) staticfiles</li>
+<li><code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">-l</span></code>: see all available commands</li>
+</ul>
+</div>
+<div class="section" id="production-server-1-supervisord">
+<h3>Production server 1: Supervisord<a class="headerlink" href="#production-server-1-supervisord" title="Permalink to this headline">¶</a></h3>
+<p>Install supervisor with <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">supervisor</span></code>.
+Create <cite>/etc/supervisor/conf.d/wastd.conf</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">program</span><span class="p">:</span><span class="n">wastd</span><span class="p">]</span>
+<span class="n">user</span><span class="o">=</span><span class="n">APPUSER</span>
+<span class="n">stopasgroup</span><span class="o">=</span><span class="n">true</span>
+<span class="n">autostart</span><span class="o">=</span><span class="n">true</span>
+<span class="n">autorestart</span><span class="o">=</span><span class="n">true</span>
+<span class="n">directory</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">code</span><span class="o">/</span><span class="n">wastd</span>
+<span class="n">command</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/.</span><span class="n">virtualenvs</span><span class="o">/</span><span class="n">wastd</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">honcho</span> <span class="n">run</span> <span class="n">gunicorn</span> <span class="n">config</span><span class="o">.</span><span class="n">wsgi</span>
+<span class="n">environment</span><span class="o">=</span><span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;/path/to/.virtualenvs/wastd/bin/:</span><span class="si">%(ENV_PATH)s</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">PYTHONUNBUFFERED</span><span class="o">=</span><span class="s2">&quot;true&quot;</span>
+</pre></div>
+</div>
+<p>Run the app:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">collectstatic</span> <span class="o">--</span><span class="n">noinput</span>
+<span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">restart</span> <span class="n">wastd</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="production-server-2-uwsgi">
+<h3>Production server 2: uwsgi<a class="headerlink" href="#production-server-2-uwsgi" title="Permalink to this headline">¶</a></h3>
+<p>Install uwsgi system-wide:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">uwsgi</span>
+</pre></div>
+</div>
+<p>Create folders and set ownership:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/spool/uwsgi/spooler
+(wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/spool/uwsgi/sockets
+(wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /var/log/uwsgi/
+(wastd)me@PROD:/mnt/projects/wastd$ sudo touch /var/log/uwsgi/emperor.log
+(wastd)me@PROD:/mnt/projects/wastd$ sudo chown -R www-data:www-data /var/spool/uwsgi/
+(wastd)me@PROD:/mnt/projects/wastd$ sudo chown -R www-data:www-data /var/log/uwsgi/
+(wastd)me@PROD:/mnt/projects/wastd$ sudo mkdir -p /etc/uwsgi/vassals/
+(wastd)me@PROD:/mnt/projects/wastd$ cp config/wastd_uwsgi.ini.template config/wastd_uwsgi.ini
+(wastd)me@PROD:/mnt/projects/wastd$ vim config/wastd_uwsgi.ini # set your paths
+(wastd)me@PROD:/mnt/projects/wastd$ ln -s config/wastd_uwsgi.ini /etc/uwsgi/vassals/wastd_uwsgi.ini
+</pre></div>
+</div>
+<p>Create a file /etc/init/uwsgi.conf with these contents:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Emperor uWSGI script</span>
+
+<span class="n">description</span> <span class="s2">&quot;uWSGI Emperor&quot;</span>
+<span class="n">start</span> <span class="n">on</span> <span class="n">runlevel</span> <span class="p">[</span><span class="mi">2345</span><span class="p">]</span>
+<span class="n">stop</span> <span class="n">on</span> <span class="n">runlevel</span> <span class="p">[</span><span class="mi">06</span><span class="p">]</span>
+
+<span class="n">respawn</span>
+
+<span class="n">exec</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">uwsgi</span> <span class="o">--</span><span class="n">vassals</span><span class="o">-</span><span class="n">include</span><span class="o">-</span><span class="n">before</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">uwsgi</span><span class="o">/</span><span class="n">defaults</span><span class="o">.</span><span class="n">ini</span> <span class="o">--</span><span class="n">emperor</span> <span class="s2">&quot;/etc/uwsgi/vassals/*.ini&quot;</span> <span class="o">--</span><span class="n">emperor</span><span class="o">-</span><span class="n">stats</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">spool</span><span class="o">/</span><span class="n">uwsgi</span><span class="o">/</span><span class="n">sockets</span><span class="o">/</span><span class="n">stats_emperor</span><span class="o">.</span><span class="n">sock</span> <span class="o">--</span><span class="n">logto</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">uwsgi</span><span class="o">/</span><span class="n">emperor</span><span class="o">.</span><span class="n">log</span> <span class="o">--</span><span class="n">spooler</span> <span class="s2">&quot;/var/spool/uwsgi/spooler&quot;</span> <span class="o">--</span><span class="n">uid</span> <span class="n">www</span><span class="o">-</span><span class="n">data</span> <span class="o">--</span><span class="n">gid</span> <span class="n">www</span><span class="o">-</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>Create a file <code class="docutils literal notranslate"><span class="pre">/etc/uwsgi/defaults.ini</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">uwsgi</span><span class="p">]</span>
+<span class="c1"># sensible defaults for an uWSGI application, can be overridden in the local config file</span>
+<span class="n">processes</span>       <span class="o">=</span> <span class="mi">4</span>
+<span class="n">gevent</span>          <span class="o">=</span> <span class="mi">100</span>
+<span class="n">gevent</span><span class="o">-</span><span class="n">early</span><span class="o">-</span><span class="n">monkey</span><span class="o">-</span><span class="n">patch</span> <span class="o">=</span> <span class="n">true</span>
+<span class="nb">max</span><span class="o">-</span><span class="n">requests</span>    <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">buffer</span><span class="o">-</span><span class="n">size</span>     <span class="o">=</span> <span class="mi">32768</span>
+<span class="n">cache2</span>          <span class="o">=</span> <span class="n">name</span><span class="o">=</span><span class="n">default</span><span class="p">,</span><span class="n">bitmap</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">items</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span><span class="n">blocksize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">blocks</span><span class="o">=</span><span class="mi">200000</span>
+<span class="n">vacuum</span>          <span class="o">=</span> <span class="n">true</span>
+<span class="n">memory</span><span class="o">-</span><span class="n">report</span>   <span class="o">=</span> <span class="n">true</span>
+<span class="n">auto</span><span class="o">-</span><span class="n">procname</span>   <span class="o">=</span> <span class="n">true</span>
+<span class="n">logdate</span>         <span class="o">=</span> <span class="o">%%</span><span class="n">Y</span><span class="o">/%%</span><span class="n">m</span><span class="o">/%%</span><span class="n">d</span> <span class="o">%%</span><span class="n">H</span><span class="p">:</span><span class="o">%%</span><span class="n">M</span><span class="p">:</span><span class="o">%%</span><span class="n">S</span>
+</pre></div>
+</div>
+<p>Then start the uwsgi service with <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">service</span> <span class="pre">uwsgi</span> <span class="pre">start</span></code>.</p>
+</div>
+</div>
+<div class="section" id="deploying-upgrades-to-production">
+<h2>Deploying upgrades to production<a class="headerlink" href="#deploying-upgrades-to-production" title="Permalink to this headline">¶</a></h2>
+<p>To roll out upgrades to a production server, these steps should work in most
+cases:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="n">production</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">name</span>
+<span class="n">workon</span> <span class="n">wastd</span>
+<span class="n">git</span> <span class="n">pull</span>
+<span class="n">fab</span> <span class="n">deploy</span>
+
+<span class="c1"># if running with supervisord:</span>
+<span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">restart</span> <span class="n">wastd</span>
+
+<span class="c1"># if running with uwsgi:</span>
+<span class="n">sudo</span> <span class="n">service</span> <span class="n">uwsgi</span> <span class="n">restart</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="developing-with-docker">
+<h2>Developing with Docker<a class="headerlink" href="#developing-with-docker" title="Permalink to this headline">¶</a></h2>
+<p>You can develop your application in a <a class="reference external" href="https://www.docker.com/">Docker</a> container for simpler
+deployment onto bare Linux machines later. This instruction assumes an
+<a class="reference external" href="http://aws.amazon.com/">Amazon Web Services</a> EC2 instance, but it should work on any machine with
+Docker &gt; 1.3 and <a class="reference external" href="https://docs.docker.com/compose/">Docker compose</a> installed.</p>
+<div class="section" id="setting-up">
+<h3>Setting up<a class="headerlink" href="#setting-up" title="Permalink to this headline">¶</a></h3>
+<p>Docker encourages running one container for each process. This might mean one
+container for your web server, one for Django application and a third for your
+database. Once you’re happy composing containers in this way you can easily
+add more, such as a <a class="reference external" href="http://redis.io/">Redis</a> cache.</p>
+<p>The Docker compose tool (previously known as <a class="reference external" href="http://www.fig.sh/">fig</a>) makes linking these
+containers easy. An example set up for your Cookiecutter Django project might
+look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">webapp</span><span class="o">/</span> <span class="c1"># Your cookiecutter project would be in here</span>
+    <span class="n">Dockerfile</span>
+    <span class="o">...</span>
+<span class="n">database</span><span class="o">/</span>
+    <span class="n">Dockerfile</span>
+    <span class="o">...</span>
+<span class="n">webserver</span><span class="o">/</span>
+    <span class="n">Dockerfile</span>
+    <span class="o">...</span>
+<span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>Each component of your application would get its own <a class="reference external" href="https://docs.docker.com/reference/builder/">Dockerfile</a>.
+The rest of this example assumes you are using the <a class="reference external" href="https://registry.hub.docker.com/_/postgres/">base postgres image</a> for
+your database. Your database settings in <cite>config/common.py</cite> might then look
+something like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s1">&#39;django.db.backends.postgresql_psycopg2&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;NAME&#39;</span><span class="p">:</span> <span class="s1">&#39;postgres&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;USER&#39;</span><span class="p">:</span> <span class="s1">&#39;postgres&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;HOST&#39;</span><span class="p">:</span> <span class="s1">&#39;database&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;PORT&#39;</span><span class="p">:</span> <span class="mi">5432</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="https://docs.docker.com/compose/#compose-documentation">Docker compose documentation</a> explains in detail what you can accomplish
+in the <cite>docker-compose.yml</cite> file, but an example configuration might look like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">database</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">database</span>
+<span class="l l-Scalar l-Scalar-Plain">webapp</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">webapp</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/usr/bin/python3.4 manage.py runserver 0.0.0.0:8000</span> <span class="c1"># dev setting</span>
+    <span class="c1"># command: gunicorn -b 0.0.0.0:8000 wsgi:application # production setting</span>
+    <span class="l l-Scalar l-Scalar-Plain">volumes</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">webapp/your_project_name:/path/to/container/workdir/</span>
+    <span class="l l-Scalar l-Scalar-Plain">links</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">database</span>
+<span class="l l-Scalar l-Scalar-Plain">webserver</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">webserver</span>
+    <span class="l l-Scalar l-Scalar-Plain">ports</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="s">&quot;80:80&quot;</span>
+        <span class="p p-Indicator">-</span> <span class="s">&quot;443:443&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">links</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">webapp</span>
+</pre></div>
+</div>
+<p>We’ll ignore the webserver for now (you’ll want to comment that part out while we do).
+A working Dockerfile to run your cookiecutter application might look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">14.04</span>
+<span class="n">ENV</span> <span class="n">REFRESHED_AT</span> <span class="mi">2015</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">13</span>
+
+<span class="c1"># update packages and prepare to build software</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;apt-get&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">]</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;apt-get&quot;</span><span class="p">,</span> <span class="s2">&quot;-y&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;build-essential&quot;</span><span class="p">,</span> <span class="s2">&quot;vim&quot;</span><span class="p">,</span> <span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;curl&quot;</span><span class="p">]</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;locale-gen&quot;</span><span class="p">,</span> <span class="s2">&quot;en_GB.UTF-8&quot;</span><span class="p">]</span>
+
+<span class="c1"># install latest python</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;apt-get&quot;</span><span class="p">,</span> <span class="s2">&quot;-y&quot;</span><span class="p">,</span> <span class="s2">&quot;build-dep&quot;</span><span class="p">,</span> <span class="s2">&quot;python3-dev&quot;</span><span class="p">,</span> <span class="s2">&quot;python3-imaging&quot;</span><span class="p">]</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;apt-get&quot;</span><span class="p">,</span> <span class="s2">&quot;-y&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;python3-dev&quot;</span><span class="p">,</span> <span class="s2">&quot;python3-imaging&quot;</span><span class="p">,</span> <span class="s2">&quot;python3-pip&quot;</span><span class="p">]</span>
+
+<span class="c1"># prepare postgreSQL support</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;apt-get&quot;</span><span class="p">,</span> <span class="s2">&quot;-y&quot;</span><span class="p">,</span> <span class="s2">&quot;build-dep&quot;</span><span class="p">,</span> <span class="s2">&quot;python3-psycopg2&quot;</span><span class="p">]</span>
+
+<span class="c1"># move into our working directory</span>
+<span class="c1"># ADD must be after chown see http://stackoverflow.com/a/26145444/1281947</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;groupadd&quot;</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">]</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;useradd&quot;</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;-G&quot;</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">]</span>
+<span class="n">ENV</span> <span class="n">HOME</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">python</span>
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">python</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;chown&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="s2">&quot;python:python&quot;</span><span class="p">,</span> <span class="s2">&quot;/home/python&quot;</span><span class="p">]</span>
+<span class="n">ADD</span> <span class="o">./</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">python</span>
+
+<span class="c1"># manage requirements</span>
+<span class="n">ENV</span> <span class="n">REQUIREMENTS_REFRESHED_AT</span> <span class="mi">2015</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">25</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;pip3&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;-r&quot;</span><span class="p">,</span> <span class="s2">&quot;requirements.txt&quot;</span><span class="p">]</span>
+
+<span class="c1"># uncomment the line below to use container as a non-root user</span>
+<span class="n">USER</span> <span class="n">python</span><span class="p">:</span><span class="n">python</span>
+</pre></div>
+</div>
+<p>Running <cite>sudo docker-compose build</cite> will follow the instructions in your
+<cite>docker-compose.yml</cite> file and build the database container, then your webapp,
+before mounting your cookiecutter project files as a volume in the webapp
+container and linking to the database. Our example yaml file runs in development
+mode but changing it to production mode is as simple as commenting out the line
+using <cite>runserver</cite> and uncommenting the line using <cite>gunicorn</cite>.</p>
+<p>Both are set to run on port <cite>0.0.0.0:8000</cite>, which is where the Docker daemon
+will discover it. You can now run <cite>sudo docker-compose up</cite> and browse to
+<cite>localhost:8000</cite> to see your application running.</p>
+</div>
+<div class="section" id="id1">
+<h3>Deployment<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>You’ll need a webserver container for deployment. An example setup for <a class="reference external" href="http://wiki.nginx.org/Main">Nginx</a></p>
+<p>might look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">14.04</span>
+<span class="n">ENV</span> <span class="n">REFRESHED_AT</span> <span class="mi">2015</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">11</span>
+
+<span class="c1"># get the nginx package and set it up</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;apt-get&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">]</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;apt-get&quot;</span><span class="p">,</span> <span class="s2">&quot;-y&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;nginx&quot;</span><span class="p">]</span>
+
+<span class="c1"># forward request and error logs to docker log collector</span>
+<span class="n">RUN</span> <span class="n">ln</span> <span class="o">-</span><span class="n">sf</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">stdout</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">access</span><span class="o">.</span><span class="n">log</span>
+<span class="n">RUN</span> <span class="n">ln</span> <span class="o">-</span><span class="n">sf</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">stderr</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">error</span><span class="o">.</span><span class="n">log</span>
+<span class="n">VOLUME</span> <span class="p">[</span><span class="s2">&quot;/var/cache/nginx&quot;</span><span class="p">]</span>
+<span class="n">EXPOSE</span> <span class="mi">80</span> <span class="mi">443</span>
+
+<span class="c1"># load nginx conf</span>
+<span class="n">ADD</span> <span class="o">./</span><span class="n">site</span><span class="o">.</span><span class="n">conf</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">available</span><span class="o">/</span><span class="n">your_cookiecutter_project</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;ln&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;/etc/nginx/sites-available/your_cookiecutter_project&quot;</span><span class="p">,</span> <span class="s2">&quot;/etc/nginx/sites-enabled/your_cookiecutter_project&quot;</span><span class="p">]</span>
+<span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;rm&quot;</span><span class="p">,</span> <span class="s2">&quot;-rf&quot;</span><span class="p">,</span> <span class="s2">&quot;/etc/nginx/sites-available/default&quot;</span><span class="p">]</span>
+
+<span class="c1">#start the server</span>
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;nginx&quot;</span><span class="p">,</span> <span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="s2">&quot;daemon off;&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>That Dockerfile assumes you have an Nginx conf file named <cite>site.conf</cite> in the same
+directory as the webserver Dockerfile. A very basic example, which forwards
+traffic onto the development server or gunicorn for processing, would look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># see http://serverfault.com/questions/577370/how-can-i-use-environment-variables-in-nginx-conf#comment730384_577370</span>
+<span class="n">upstream</span> <span class="n">localhost</span> <span class="p">{</span>
+    <span class="n">server</span> <span class="n">webapp_1</span><span class="p">:</span><span class="mi">8000</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">server</span> <span class="p">{</span>
+    <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+        <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Running <cite>sudo docker-compose build webserver</cite> will build your server container.
+Running <cite>sudo docker-compose up</cite> will now expose your application directly on
+<cite>localhost</cite> (no need to specify the port number).</p>
+</div>
+<div class="section" id="building-and-running-your-app-on-ec2">
+<h3>Building and running your app on EC2<a class="headerlink" href="#building-and-running-your-app-on-ec2" title="Permalink to this headline">¶</a></h3>
+<p>All you now need to do to run your app in production is:</p>
+<ul class="simple">
+<li>Create an empty EC2 Linux instance (any Linux machine should do).</li>
+<li>Install your preferred source control solution, Docker and Docker compose on
+the news instance.</li>
+<li>Pull in your code from source control. The root directory should be the one
+with your <cite>docker-compose.yml</cite> file in it.</li>
+<li>Run <cite>sudo docker-compose build</cite> and <cite>sudo docker-compose up</cite>.</li>
+<li>Assign an <a class="reference external" href="https://aws.amazon.com/articles/1346">Elastic IP address</a> to your new machine.</li>
+</ul>
+<ul class="simple">
+<li>Point your domain name to the elastic IP.</li>
+</ul>
+<p><strong>Be careful with Elastic IPs</strong> because, on the AWS free tier, if you assign
+one and then stop the machine you will incur charges while the machine is down
+(presumably because you’re preventing them allocating the IP to someone else).</p>
+</div>
+<div class="section" id="security-advisory">
+<h3>Security advisory<a class="headerlink" href="#security-advisory" title="Permalink to this headline">¶</a></h3>
+<p>The setup described in this instruction will get you up-and-running but it
+hasn’t been audited for security. If you are running your own setup like this
+it is always advisable to, at a minimum, examine your application with a tool
+like <a class="reference external" href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">OWASP ZAP</a> to see what security holes you might be leaving open.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="developers.html" class="btn btn-neutral float-right" title="Developer documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="business_analysts.html" class="btn btn-neutral float-left" title="Business Analysts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Florian Mayer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,794 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>django_fsm &mdash; WAStD 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../data_collection/data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_collection/data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_collection/data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>django_fsm</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for django_fsm</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">State tracking functionality for django models</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="k">import</span> <span class="n">class_prepared</span>
+<span class="kn">from</span> <span class="nn">django.utils.functional</span> <span class="k">import</span> <span class="n">curry</span>
+<span class="kn">from</span> <span class="nn">django_fsm.signals</span> <span class="k">import</span> <span class="n">pre_transition</span><span class="p">,</span> <span class="n">post_transition</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">django.apps</span> <span class="k">import</span> <span class="n">apps</span> <span class="k">as</span> <span class="n">django_apps</span>
+
+    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">app_label</span><span class="p">,</span> <span class="n">model_name</span><span class="p">):</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">django_apps</span><span class="o">.</span><span class="n">get_app_config</span><span class="p">(</span><span class="n">app_label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">django.db.models.loading</span> <span class="k">import</span> <span class="n">get_model</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;TransitionNotAllowed&#39;</span><span class="p">,</span> <span class="s1">&#39;ConcurrentTransition&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;FSMFieldMixin&#39;</span><span class="p">,</span> <span class="s1">&#39;FSMField&#39;</span><span class="p">,</span> <span class="s1">&#39;FSMIntegerField&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;FSMKeyField&#39;</span><span class="p">,</span> <span class="s1">&#39;ConcurrentTransitionMixin&#39;</span><span class="p">,</span> <span class="s1">&#39;transition&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;can_proceed&#39;</span><span class="p">,</span> <span class="s1">&#39;has_transition_perm&#39;</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+    <span class="c1"># Backport of Python 2.7 inspect.getmembers,</span>
+    <span class="c1"># since Python 2.6 ships buggy implementation</span>
+    <span class="k">def</span> <span class="nf">__getmembers</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return all members of an object as (name, value) pairs sorted by name.</span>
+<span class="sd">        Optionally, only return members that satisfy a given predicate.&quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">predicate</span> <span class="ow">or</span> <span class="n">predicate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">results</span>
+    <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span> <span class="o">=</span> <span class="n">__getmembers</span>
+
+<span class="c1"># South support; see http://south.aeracode.org/docs/tutorial/part4.html#simple-inheritance</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">south.modelsinspector</span> <span class="k">import</span> <span class="n">add_introspection_rules</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">add_introspection_rules</span><span class="p">([],</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^django_fsm\.FSMField&quot;</span><span class="p">])</span>
+    <span class="n">add_introspection_rules</span><span class="p">([],</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^django_fsm\.FSMIntegerField&quot;</span><span class="p">])</span>
+    <span class="n">add_introspection_rules</span><span class="p">([],</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^django_fsm\.FSMKeyField&quot;</span><span class="p">])</span>
+
+
+<span class="k">class</span> <span class="nc">TransitionNotAllowed</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when a transition is not allowed&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TransitionNotAllowed</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">InvalidResultState</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when we got invalid result state&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">ConcurrentTransition</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the transition cannot be executed because the</span>
+<span class="sd">    object has become stale (state has been changed since it</span>
+<span class="sd">    was fetched from the database).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Transition</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">on_error</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">custom</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_error</span> <span class="o">=</span> <span class="n">on_error</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span> <span class="o">=</span> <span class="n">conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">permission</span> <span class="o">=</span> <span class="n">permission</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom</span> <span class="o">=</span> <span class="n">custom</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="k">def</span> <span class="nf">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">user</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">get_available_FIELD_transitions</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List of transitions available in current model state</span>
+<span class="sd">    with all conditions met</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">curr_state</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+    <span class="n">transitions</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transition</span> <span class="ow">in</span> <span class="n">transitions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">transition</span><span class="o">.</span><span class="n">_django_fsm</span>
+        <span class="k">if</span> <span class="n">meta</span><span class="o">.</span><span class="n">has_transition</span><span class="p">(</span><span class="n">curr_state</span><span class="p">)</span> <span class="ow">and</span> <span class="n">meta</span><span class="o">.</span><span class="n">conditions_met</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">curr_state</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">meta</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="n">curr_state</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_all_FIELD_transitions</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List of all transitions available in current model state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">field</span><span class="o">.</span><span class="n">get_all_transitions</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_available_user_FIELD_transitions</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List of transitions available in current model state</span>
+<span class="sd">    with all conditions met and user have rights on it</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">transition</span> <span class="ow">in</span> <span class="n">get_available_FIELD_transitions</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">transition</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">transition</span>
+
+
+<span class="k">class</span> <span class="nc">FSMMeta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Models methods transitions meta information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="n">field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># source -&gt; Transition</span>
+
+    <span class="k">def</span> <span class="nf">get_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="n">transition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">transition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">transition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">transition</span>
+
+    <span class="k">def</span> <span class="nf">add_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conditions</span><span class="o">=</span><span class="p">[],</span> <span class="n">permission</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Duplicate transition for </span><span class="si">{0}</span><span class="s1"> state&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">Transition</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+            <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+            <span class="n">conditions</span><span class="o">=</span><span class="n">conditions</span><span class="p">,</span>
+            <span class="n">permission</span><span class="o">=</span><span class="n">permission</span><span class="p">,</span>
+            <span class="n">custom</span><span class="o">=</span><span class="n">custom</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">has_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lookup if any transition exists from current model state using current method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;*&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;+&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="s1">&#39;+&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">target</span> <span class="o">!=</span> <span class="n">state</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">conditions_met</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if all conditions have been met</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">transition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">transition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">transition</span><span class="o">.</span><span class="n">conditions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">condition</span><span class="p">:</span> <span class="n">condition</span><span class="p">(</span><span class="n">instance</span><span class="p">),</span> <span class="n">transition</span><span class="o">.</span><span class="n">conditions</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">has_transition_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="n">transition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">transition</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">transition</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">next_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">):</span>
+        <span class="n">transition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">transition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TransitionNotAllowed</span><span class="p">(</span><span class="s1">&#39;No transition from </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_state</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">transition</span><span class="o">.</span><span class="n">target</span>
+
+    <span class="k">def</span> <span class="nf">exception_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">):</span>
+        <span class="n">transition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">transition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TransitionNotAllowed</span><span class="p">(</span><span class="s1">&#39;No transition from </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_state</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">transition</span><span class="o">.</span><span class="n">on_error</span>
+
+
+<span class="k">class</span> <span class="nc">FSMFieldDescriptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="n">field</span>
+
+    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">protected</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Direct </span><span class="si">{0}</span><span class="s1"> modification is not allowed&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="c1"># Update state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">set_proxy</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FSMFieldMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">descriptor_class</span> <span class="o">=</span> <span class="n">FSMFieldDescriptor</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protected</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;protected&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># cls -&gt; (transitions name -&gt; method)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_proxy</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># state -&gt; ProxyClsRef</span>
+
+        <span class="n">state_choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;state_choices&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;choices&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state_choices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">choices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Use one of choices or state_choices value&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">state_choices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">choices</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">proxy_cls_ref</span> <span class="ow">in</span> <span class="n">state_choices</span><span class="p">:</span>
+                <span class="n">choices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">state</span><span class="p">,</span> <span class="n">title</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state_proxy</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="n">proxy_cls_ref</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">choices</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">FSMFieldMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">deconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">FSMFieldMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">deconstruct</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protected</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;protected&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protected</span>
+        <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+
+    <span class="k">def</span> <span class="nf">set_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_proxy</span><span class="p">:</span>
+            <span class="n">state_proxy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_proxy</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">app_label</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">=</span> <span class="n">state_proxy</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="c1"># If we can&#39;t split, assume a model in current app</span>
+                <span class="n">app_label</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span>
+                <span class="n">model_name</span> <span class="o">=</span> <span class="n">state_proxy</span>
+
+            <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">app_label</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No model found </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state_proxy</span><span class="p">))</span>
+
+            <span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">_django_fsm</span>
+        <span class="n">method_name</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">current_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">meta</span><span class="o">.</span><span class="n">has_transition</span><span class="p">(</span><span class="n">current_state</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">TransitionNotAllowed</span><span class="p">(</span>
+                <span class="s2">&quot;Can&#39;t switch from state &#39;</span><span class="si">{0}</span><span class="s2">&#39; using method &#39;</span><span class="si">{1}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">method_name</span><span class="p">),</span>
+                <span class="nb">object</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">meta</span><span class="o">.</span><span class="n">conditions_met</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">current_state</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">TransitionNotAllowed</span><span class="p">(</span>
+                <span class="s2">&quot;Transition conditions have not been met for method &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method_name</span><span class="p">),</span>
+                <span class="nb">object</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+
+        <span class="n">next_state</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">next_state</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+
+        <span class="n">signal_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;sender&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+            <span class="s1">&#39;instance&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">method_name</span><span class="p">,</span>
+            <span class="s1">&#39;field&#39;</span><span class="p">:</span> <span class="n">meta</span><span class="o">.</span><span class="n">field</span><span class="p">,</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="n">current_state</span><span class="p">,</span>
+            <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="n">next_state</span><span class="p">,</span>
+            <span class="s1">&#39;method_args&#39;</span> <span class="p">:</span> <span class="n">args</span><span class="p">,</span>
+            <span class="s1">&#39;method_kwargs&#39;</span> <span class="p">:</span> <span class="n">kwargs</span>
+        <span class="p">}</span>
+
+        <span class="n">pre_transition</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">**</span><span class="n">signal_kwargs</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">next_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="s1">&#39;get_state&#39;</span><span class="p">):</span>
+                    <span class="n">next_state</span> <span class="o">=</span> <span class="n">next_state</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span>
+                        <span class="n">instance</span><span class="p">,</span> <span class="n">transition</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="n">signal_kwargs</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_state</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_proxy</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">next_state</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">next_state</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">exception_state</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">exception_state</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">exception_state</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_proxy</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">exception_state</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">exception_state</span><span class="p">)</span>
+                <span class="n">signal_kwargs</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exception_state</span>
+                <span class="n">signal_kwargs</span><span class="p">[</span><span class="s1">&#39;exception&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exc</span>
+                <span class="n">post_transition</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">**</span><span class="n">signal_kwargs</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">post_transition</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">**</span><span class="n">signal_kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">get_all_transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns [(source, target, name, method)] for all field transitions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">transitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">instance_cls</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transition</span> <span class="ow">in</span> <span class="n">transitions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">meta</span> <span class="o">=</span> <span class="n">transition</span><span class="o">.</span><span class="n">_django_fsm</span>
+
+            <span class="k">for</span> <span class="n">transition</span> <span class="ow">in</span> <span class="n">meta</span><span class="o">.</span><span class="n">transitions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="n">transition</span>
+
+    <span class="k">def</span> <span class="nf">contribute_to_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_cls</span> <span class="o">=</span> <span class="bp">cls</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">FSMFieldMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">contribute_to_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">descriptor_class</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;get_all_</span><span class="si">{0}</span><span class="s1">_transitions&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="n">curry</span><span class="p">(</span><span class="n">get_all_FIELD_transitions</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;get_available_</span><span class="si">{0}</span><span class="s1">_transitions&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="n">curry</span><span class="p">(</span><span class="n">get_available_FIELD_transitions</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;get_available_user_</span><span class="si">{0}</span><span class="s1">_transitions&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="n">curry</span><span class="p">(</span><span class="n">get_available_user_FIELD_transitions</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="n">class_prepared</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_collect_transitions</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_collect_transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">sender</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sender&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cls</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">def</span> <span class="nf">is_field_transition_method</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="ow">or</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span> \
+                <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="s1">&#39;_django_fsm&#39;</span><span class="p">)</span> \
+                <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">_django_fsm</span><span class="o">.</span><span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="n">sender_transitions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">transitions</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">is_field_transition_method</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">transitions</span><span class="p">:</span>
+            <span class="n">method</span><span class="o">.</span><span class="n">_django_fsm</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="n">sender_transitions</span><span class="p">[</span><span class="n">method_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">method</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">sender_transitions</span>
+
+
+<span class="k">class</span> <span class="nc">FSMField</span><span class="p">(</span><span class="n">FSMFieldMixin</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    State Machine support for Django model as CharField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FSMField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FSMIntegerField</span><span class="p">(</span><span class="n">FSMFieldMixin</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Same as FSMField, but stores the state value in an IntegerField.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">FSMKeyField</span><span class="p">(</span><span class="n">FSMFieldMixin</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    State Machine support for Django model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">attname</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">attname</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_python</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ConcurrentTransitionMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Protects a Model from undesirable effects caused by concurrently executed transitions,</span>
+<span class="sd">    e.g. running the same transition multiple times at the same time, or running different</span>
+<span class="sd">    transitions with the same SOURCE state at the same time.</span>
+
+<span class="sd">    This behavior is achieved using an idea based on optimistic locking. No additional</span>
+<span class="sd">    version field is required though; only the state field(s) is/are used for the tracking.</span>
+<span class="sd">    This scheme is not that strict as true *optimistic locking* mechanism, it is however</span>
+<span class="sd">    more lightweight - leveraging the specifics of FSM models.</span>
+
+<span class="sd">    Instance of a model based on this Mixin will be prevented from saving into DB if any</span>
+<span class="sd">    of its state fields (instances of FSMFieldMixin) has been changed since the object</span>
+<span class="sd">    was fetched from the database. *ConcurrentTransition* exception will be raised in such</span>
+<span class="sd">    cases.</span>
+
+<span class="sd">    For guaranteed protection against such race conditions, make sure:</span>
+<span class="sd">    * Your transitions do not have any side effects except for changes in the database,</span>
+<span class="sd">    * You always run the save() method on the object within django.db.transaction.atomic()</span>
+<span class="sd">    block.</span>
+
+<span class="sd">    Following these recommendations, you can rely on ConcurrentTransitionMixin to cause</span>
+<span class="sd">    a rollback of all the changes that have been executed in an inconsistent (out of sync)</span>
+<span class="sd">    state, thus practically negating their effect.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ConcurrentTransitionMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_initial_state</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">state_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">field</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">FSMFieldMixin</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_qs</span><span class="p">,</span> <span class="n">using</span><span class="p">,</span> <span class="n">pk_val</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">update_fields</span><span class="p">,</span> <span class="n">forced_update</span><span class="p">):</span>
+        <span class="c1"># _do_update is called once for each model class in the inheritance hierarchy.</span>
+        <span class="c1"># We can only filter the base_qs on state fields (can be more than one!) present in this particular model.</span>
+
+        <span class="c1"># Select state fields to filter on</span>
+        <span class="n">filter_on</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">field</span><span class="p">:</span> <span class="n">field</span><span class="o">.</span><span class="n">model</span> <span class="o">==</span> <span class="n">base_qs</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_fields</span><span class="p">)</span>
+
+        <span class="c1"># state filter will be used to narrow down the standard filter checking only PK</span>
+        <span class="n">state_filter</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__initial_states</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">])</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">filter_on</span><span class="p">)</span>
+
+        <span class="n">updated</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ConcurrentTransitionMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_do_update</span><span class="p">(</span>
+            <span class="n">base_qs</span><span class="o">=</span><span class="n">base_qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">state_filter</span><span class="p">),</span>
+            <span class="n">using</span><span class="o">=</span><span class="n">using</span><span class="p">,</span>
+            <span class="n">pk_val</span><span class="o">=</span><span class="n">pk_val</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">update_fields</span><span class="o">=</span><span class="n">update_fields</span><span class="p">,</span>
+            <span class="n">forced_update</span><span class="o">=</span><span class="n">forced_update</span>
+        <span class="p">)</span>
+
+        <span class="c1"># It may happen that nothing was updated in the original _do_update method not because of unmatching state,</span>
+        <span class="c1"># but because of missing PK. This codepath is possible when saving a new model instance with *preset PK*.</span>
+        <span class="c1"># In this case Django does not know it has to do INSERT operation, so it tries UPDATE first and falls back to</span>
+        <span class="c1"># INSERT if UPDATE fails.</span>
+        <span class="c1"># Thus, we need to make sure we only catch the case when the object *is* in the DB, but with changed state; and</span>
+        <span class="c1"># mimic standard _do_update behavior otherwise. Django will pick it up and execute _do_insert.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span> <span class="ow">and</span> <span class="n">base_qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk_val</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">ConcurrentTransition</span><span class="p">(</span><span class="s2">&quot;Cannot save object! The state has been changed since fetched from the database!&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">updated</span>
+
+    <span class="k">def</span> <span class="nf">_update_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__initial_states</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">value_from_object</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_fields</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ConcurrentTransitionMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_initial_state</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">transition</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conditions</span><span class="o">=</span><span class="p">[],</span> <span class="n">permission</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method decorator for mark allowed transitions</span>
+
+<span class="sd">    Set target to None if current state needs to be validated and</span>
+<span class="sd">    has not changed after the function call</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">inner_transition</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="n">wrapper_installed</span><span class="p">,</span> <span class="n">fsm_meta</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s1">&#39;_django_fsm&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fsm_meta</span><span class="p">:</span>
+            <span class="n">wrapper_installed</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">fsm_meta</span> <span class="o">=</span> <span class="n">FSMMeta</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="n">field</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">func</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s1">&#39;_django_fsm&#39;</span><span class="p">,</span> <span class="n">fsm_meta</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+                <span class="n">func</span><span class="o">.</span><span class="n">_django_fsm</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">on_error</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">custom</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">func</span><span class="o">.</span><span class="n">_django_fsm</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">on_error</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">custom</span><span class="p">)</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_change_state</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">fsm_meta</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wrapper_installed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_change_state</span>
+
+        <span class="k">return</span> <span class="n">func</span>
+
+    <span class="k">return</span> <span class="n">inner_transition</span>
+
+
+<span class="k">def</span> <span class="nf">can_proceed</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="n">check_conditions</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns True if model in state allows to call bound_method</span>
+
+<span class="sd">    Set ``check_conditions`` argument to ``False`` to skip checking</span>
+<span class="sd">    conditions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;_django_fsm&#39;</span><span class="p">):</span>
+        <span class="n">im_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;im_func&#39;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;__func__&#39;</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> method is not transition&#39;</span> <span class="o">%</span> <span class="n">im_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">bound_method</span><span class="o">.</span><span class="n">_django_fsm</span>
+    <span class="n">im_self</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;im_self&#39;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;__self__&#39;</span><span class="p">))</span>
+    <span class="n">current_state</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">im_self</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">meta</span><span class="o">.</span><span class="n">has_transition</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">check_conditions</span> <span class="ow">or</span> <span class="n">meta</span><span class="o">.</span><span class="n">conditions_met</span><span class="p">(</span><span class="n">im_self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">has_transition_perm</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns True if model in state allows to call bound_method and user have rights on it</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;_django_fsm&#39;</span><span class="p">):</span>
+        <span class="n">im_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;im_func&#39;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;__func__&#39;</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> method is not transition&#39;</span> <span class="o">%</span> <span class="n">im_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">bound_method</span><span class="o">.</span><span class="n">_django_fsm</span>
+    <span class="n">im_self</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;im_self&#39;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bound_method</span><span class="p">,</span> <span class="s1">&#39;__self__&#39;</span><span class="p">))</span>
+    <span class="n">current_state</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">im_self</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">has_transition</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">meta</span><span class="o">.</span><span class="n">conditions_met</span><span class="p">(</span><span class="n">im_self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">meta</span><span class="o">.</span><span class="n">has_transition_perm</span><span class="p">(</span><span class="n">im_self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">user</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">State</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">transition</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="k">class</span> <span class="nc">RETURN_VALUE</span><span class="p">(</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">allowed_states</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allowed_states</span> <span class="o">=</span> <span class="n">allowed_states</span> <span class="k">if</span> <span class="n">allowed_states</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">transition</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_states</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_states</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResultState</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not in list of allowed states</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">result</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_states</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">class</span> <span class="nc">GET_STATE</span><span class="p">(</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allowed_states</span> <span class="o">=</span> <span class="n">states</span>
+
+    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">transition</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="n">result_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_states</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_states</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResultState</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not in list of allowed states</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">result</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_states</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result_state</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Florian Mayer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

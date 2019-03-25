@@ -1,0 +1,1008 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>occurrence.models &mdash; WAStD 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../data_collection/data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_collection/data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_collection/data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers.html">Developer documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>occurrence.models</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for occurrence.models</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Occurrence models.</span>
+
+<span class="sd">These models support opportunistic encounters with threatened and priority</span>
+<span class="sd">Fauna, Flora and Comunities (defined in taxonomy).</span>
+
+<span class="sd">Observer name / address / phone / email is captured through the observer being</span>
+<span class="sd">a system user.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
+<span class="c1"># import itertools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="k">import</span> <span class="n">get_user_model</span>
+<span class="kn">from</span> <span class="nn">django.contrib.gis.db</span> <span class="k">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">geo_models</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="k">import</span> <span class="n">post_save</span><span class="p">,</span> <span class="n">pre_delete</span><span class="p">,</span> <span class="n">pre_save</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">django.dispatch</span> <span class="k">import</span> <span class="n">receiver</span>
+<span class="c1"># from rest_framework.reverse import reverse as rest_reverse</span>
+
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="k">import</span> <span class="n">loader</span>
+<span class="c1"># from django.contrib.gis.db.models.query import GeoQuerySet</span>
+<span class="c1"># from django.urls import reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="k">import</span> <span class="n">python_2_unicode_compatible</span>
+<span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="k">import</span> <span class="n">mark_safe</span>
+<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="k">import</span> <span class="n">slugify</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+<span class="c1"># from durationfield.db.models.fields.duration import DurationField</span>
+<span class="c1"># from django.db.models.fields import DurationField</span>
+<span class="c1"># from django_fsm import FSMField, transition</span>
+<span class="c1"># from django_fsm_log.decorators import fsm_log_by</span>
+<span class="c1"># from django_fsm_log.models import StateLog</span>
+<span class="kn">from</span> <span class="nn">polymorphic.models</span> <span class="k">import</span> <span class="n">PolymorphicModel</span>
+<span class="c1"># from wastd.users.models import User</span>
+<span class="kn">from</span> <span class="nn">shared.models</span> <span class="k">import</span> <span class="n">LegacySourceMixin</span><span class="p">,</span> <span class="n">ObservationAuditMixin</span><span class="p">,</span> <span class="n">QualityControlMixin</span><span class="p">,</span> <span class="n">UrlsMixin</span>
+<span class="kn">from</span> <span class="nn">taxonomy.models</span> <span class="k">import</span> <span class="n">Community</span><span class="p">,</span> <span class="n">Taxon</span>
+
+<span class="c1"># import os</span>
+<span class="c1"># import urllib</span>
+<span class="c1"># import slugify</span>
+<span class="c1"># from datetime import timedelta</span>
+<span class="c1"># from dateutil import tz</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">User</span> <span class="o">=</span> <span class="n">get_user_model</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="AreaEncounter"><a class="viewcode-back" href="../../developers.html#occurrence.models.AreaEncounter">[docs]</a><span class="k">class</span> <span class="nc">AreaEncounter</span><span class="p">(</span><span class="n">PolymorphicModel</span><span class="p">,</span>
+                    <span class="n">UrlsMixin</span><span class="p">,</span>
+                    <span class="n">LegacySourceMixin</span><span class="p">,</span>
+                    <span class="n">ObservationAuditMixin</span><span class="p">,</span>
+                    <span class="n">QualityControlMixin</span><span class="p">,</span>
+                    <span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An Encounter with an Area.</span>
+
+<span class="sd">    The Area is represented spatially throuh a polygonal extent</span>
+<span class="sd">    and an additional point.</span>
+
+<span class="sd">    This model accommodates anything with a spatial extent, providing:</span>
+
+<span class="sd">    * Area type (to classify different kinds of areas)</span>
+<span class="sd">    * Area code to identify multiple measurements of the same Area</span>
+<span class="sd">    * Polygonal or Point representation of the area</span>
+<span class="sd">    * Mixins: data QA levels, legacy source tracking</span>
+
+<span class="sd">    Some additional fields are populated behind the scenes at each save and</span>
+<span class="sd">    serve to cache low churn, high use content:</span>
+
+<span class="sd">    * label: the cached __str__ representation</span>
+<span class="sd">    * point: set from geom centroid id empty</span>
+<span class="sd">    * northern extent: useful to sort Areas by latitude</span>
+<span class="sd">    * as html: a pre-compiled HTML map popup</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">AREA_TYPE_EPHEMERAL_SITE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">AREA_TYPE_PERMANENT_SITE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">AREA_TYPE_CRITICAL_HABITAT</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">AREA_TYPE_PARTIAL_SURVEY</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">AREA_TYPE_TEC_BOUNDARY</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">AREA_TYPE_TEC_BUFFER</span> <span class="o">=</span> <span class="mi">11</span>
+    <span class="n">AREA_TYPE_TEC_SITE</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">AREA_TYPE_FLORA_POPULATION</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">AREA_TYPE_FLORA_SUBPOPULATION</span> <span class="o">=</span> <span class="mi">21</span>
+    <span class="n">AREA_TYPE_FAUNA_SITE</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">AREA_TYPE_MPA</span> <span class="o">=</span> <span class="mi">40</span>
+    <span class="n">AREA_TYPE_LOCALITY</span> <span class="o">=</span> <span class="mi">41</span>
+
+    <span class="n">AREA_TYPES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_EPHEMERAL_SITE</span><span class="p">,</span> <span class="s2">&quot;Ephemeral Site&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_PERMANENT_SITE</span><span class="p">,</span> <span class="s2">&quot;Permanent Site&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_PARTIAL_SURVEY</span><span class="p">,</span> <span class="s2">&quot;Partial survey&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_CRITICAL_HABITAT</span><span class="p">,</span> <span class="s2">&quot;Critical Habitat&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_TEC_BOUNDARY</span><span class="p">,</span> <span class="s2">&quot;TEC Boundary&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_TEC_BUFFER</span><span class="p">,</span> <span class="s2">&quot;TEC Buffer&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_TEC_SITE</span><span class="p">,</span> <span class="s2">&quot;TEC Site&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_FLORA_POPULATION</span><span class="p">,</span> <span class="s2">&quot;Flora Population&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_FLORA_SUBPOPULATION</span><span class="p">,</span> <span class="s2">&quot;Flora Subpopulation&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_FAUNA_SITE</span><span class="p">,</span> <span class="s2">&quot;Fauna Site&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_MPA</span><span class="p">,</span> <span class="s2">&quot;Marine Protected Area&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_LOCALITY</span><span class="p">,</span> <span class="s2">&quot;Locality&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">COMMUNITY_AREA_TYPES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_PARTIAL_SURVEY</span><span class="p">,</span> <span class="s2">&quot;Partial survey&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_TEC_BOUNDARY</span><span class="p">,</span> <span class="s2">&quot;TEC Boundary&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_TEC_BUFFER</span><span class="p">,</span> <span class="s2">&quot;TEC Buffer&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_TEC_SITE</span><span class="p">,</span> <span class="s2">&quot;TEC Site&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">TAXON_AREA_TYPES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_EPHEMERAL_SITE</span><span class="p">,</span> <span class="s2">&quot;Ephemeral Site&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_PERMANENT_SITE</span><span class="p">,</span> <span class="s2">&quot;Permanent Site&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_PARTIAL_SURVEY</span><span class="p">,</span> <span class="s2">&quot;Partial survey&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_FLORA_POPULATION</span><span class="p">,</span> <span class="s2">&quot;Flora Population&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">AREA_TYPE_FLORA_SUBPOPULATION</span><span class="p">,</span> <span class="s2">&quot;Flora Subpopulation&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Naming -----------------------------------------------------------------#</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">SlugField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Area code&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;A URL-safe, short code for the area. &quot;</span>
+                    <span class="s2">&quot;Multiple records of the same Area &quot;</span>
+                    <span class="s2">&quot;will be recognised by the same area type and code.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">label</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Label&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;A short but comprehensive label for the encounter, &quot;</span>
+                    <span class="s2">&quot;populated from the model&#39;s string representation.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Area name&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;A human-readable name for the observed area.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;A comprehensive description.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Time: ObservationAuditMixin provides date and observer -----------------#</span>
+    <span class="c1">#</span>
+    <span class="c1"># Geolocation ------------------------------------------------------------#</span>
+    <span class="n">area_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Area type&quot;</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">AREA_TYPE_EPHEMERAL_SITE</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">AREA_TYPES</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;What type describes the area occupied by the encounter &quot;</span>
+            <span class="s2">&quot;most accurately? The area can be an opportunistic, once-off &quot;</span>
+            <span class="s2">&quot;chance encounter (point), a fixed survey site (polygon), a &quot;</span>
+            <span class="s2">&quot;partial or a complete survey of an area occupied by the &quot;</span>
+            <span class="s2">&quot;encountered subject (polygon).&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Accuracy [m]&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The measured or estimated accuracy &quot;</span>
+                    <span class="s2">&quot;of the location in meters.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">point</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">PointField</span><span class="p">(</span>
+        <span class="n">srid</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Representative Point&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;A point representing the area occupied by the encountered &quot;</span>
+            <span class="s2">&quot;subject. If empty, the point will be calculated as the centroid &quot;</span>
+            <span class="s2">&quot;of the polygon extent.&quot;</span><span class="p">))</span>
+
+    <span class="n">northern_extent</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Northernmost latitude&quot;</span><span class="p">),</span>
+        <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The northernmost latitude is derived from location &quot;</span>
+                    <span class="s2">&quot;polygon or point and serves to sort areas.&quot;</span><span class="p">),)</span>
+
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">PolygonField</span><span class="p">(</span>
+        <span class="n">srid</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Location&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The exact extent of the area occupied by the encountered &quot;</span>
+                    <span class="s2">&quot;subject as polygon in WGS84, if available.&quot;</span><span class="p">))</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Cached fields</span>
+    <span class="n">as_html</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;HTML representation&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The cached HTML representation for display purposes.&quot;</span><span class="p">),)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
+
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-northern_extent&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Area Encounter&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Area Encounters&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Encounter at [</span><span class="si">{0}</span><span class="s2">] (</span><span class="si">{1}</span><span class="s2">) </span><span class="si">{2}</span><span class="s2"> on </span><span class="si">{3}</span><span class="s2"> by </span><span class="si">{4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_area_type_display</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encountered_on</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encountered_by</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># URLs</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Derived properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">latitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The latitude of the point.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">longitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The longitude of the point.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">derived_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The point, derived from the polygon.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">centroid</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">derived_northern_extent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The northernmost extent of the polygon, or the latitude of the point.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">derived_html</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate HTML popup content.&quot;&quot;&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;occurrence/popup/</span><span class="si">{0}</span><span class="s2">.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">({</span><span class="s2">&quot;original&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;[occurrence.models.</span><span class="si">{0}</span><span class="s2">] Template missing: </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="n">template</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the subject of the encounter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Functions</span>
+<div class="viewcode-block" id="AreaEncounter.get_nearby_encounters"><a class="viewcode-back" href="../../developers.html#occurrence.models.AreaEncounter.get_nearby_encounters">[docs]</a>    <span class="k">def</span> <span class="nf">get_nearby_encounters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_dd</span><span class="o">=</span><span class="mf">0.005</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get encounters within dist_dd (default 0.005 degrees, ca 500m).</span>
+
+<span class="sd">        Arguments:</span>
+
+<span class="sd">        dist_dd &lt;float&gt; The search radius in decimal degrees. Default: 0.005 (ca 500 m).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        A queryset of nearby AreaEncounters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">AreaEncounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">point__distance_lte</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">,</span> <span class="n">dist_dd</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="TaxonAreaEncounter"><a class="viewcode-back" href="../../developers.html#occurrence.models.TaxonAreaEncounter">[docs]</a><span class="nd">@python_2_unicode_compatible</span>
+<span class="k">class</span> <span class="nc">TaxonAreaEncounter</span><span class="p">(</span><span class="n">AreaEncounter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An Encounter in time and space with a Taxon.&quot;&quot;&quot;</span>
+
+    <span class="n">taxon</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Taxon</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;taxon_occurrences&quot;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
+
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Taxon Encounter&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Taxon Encounters&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Encounter of </span><span class="si">{5}</span><span class="s2"> at [</span><span class="si">{0}</span><span class="s2">] (</span><span class="si">{1}</span><span class="s2">) </span><span class="si">{2}</span><span class="s2"> on </span><span class="si">{3}</span><span class="s2"> by </span><span class="si">{4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_area_type_display</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encountered_on</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encountered_by</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">taxon</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Derived properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the subject of the encounter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon</span>
+
+<div class="viewcode-block" id="TaxonAreaEncounter.get_subject"><a class="viewcode-back" href="../../developers.html#occurrence.models.TaxonAreaEncounter.get_subject">[docs]</a>    <span class="k">def</span> <span class="nf">get_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the subject of the encounter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon</span></div>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Functions</span>
+<div class="viewcode-block" id="TaxonAreaEncounter.nearby_same"><a class="viewcode-back" href="../../developers.html#occurrence.models.TaxonAreaEncounter.nearby_same">[docs]</a>    <span class="k">def</span> <span class="nf">nearby_same</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_dd</span><span class="o">=</span><span class="mf">0.005</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return encounters with same taxon within search radius (dist_dd).</span>
+
+<span class="sd">        Arguments:</span>
+
+<span class="sd">        dist_dd &lt;float&gt; The search radius in decimal degrees. Default: 0.005 (ca 500 m).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        A queryset of nearby TaxonAreaEncounters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">TaxonAreaEncounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">taxon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">taxon</span><span class="p">,</span>
+            <span class="n">point__distance_lte</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">,</span> <span class="n">dist_dd</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CommunityAreaEncounter"><a class="viewcode-back" href="../../developers.html#occurrence.models.CommunityAreaEncounter">[docs]</a><span class="nd">@python_2_unicode_compatible</span>
+<span class="k">class</span> <span class="nc">CommunityAreaEncounter</span><span class="p">(</span><span class="n">AreaEncounter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An Encounter in time and space with a community.&quot;&quot;&quot;</span>
+
+    <span class="n">community</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Community</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;community_occurrences&quot;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
+
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Community Encounter&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Community Encounters&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Encounter of </span><span class="si">{5}</span><span class="s2"> at [</span><span class="si">{0}</span><span class="s2">] (</span><span class="si">{1}</span><span class="s2">) </span><span class="si">{2}</span><span class="s2"> on </span><span class="si">{3}</span><span class="s2"> by </span><span class="si">{4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_area_type_display</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encountered_on</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encountered_by</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">community</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Derived properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the subject of the encounter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">community</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Functions</span>
+<div class="viewcode-block" id="CommunityAreaEncounter.nearby_same"><a class="viewcode-back" href="../../developers.html#occurrence.models.CommunityAreaEncounter.nearby_same">[docs]</a>    <span class="k">def</span> <span class="nf">nearby_same</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_dd</span><span class="o">=</span><span class="mf">0.005</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return encounters with same community within search radius (dist_dd).</span>
+
+<span class="sd">        Arguments:</span>
+
+<span class="sd">        dist_dd &lt;float&gt; The search radius in decimal degrees. Default: 0.005 (ca 500 m).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        A queryset of nearby CommunityAreaEncounters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">CommunityAreaEncounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">community</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">community</span><span class="p">,</span>
+            <span class="n">point__distance_lte</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">,</span> <span class="n">dist_dd</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="area_caches"><a class="viewcode-back" href="../../developers.html#occurrence.models.area_caches">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">TaxonAreaEncounter</span><span class="p">)</span>
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">CommunityAreaEncounter</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">area_caches</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;AreaEncounter: Cache expensive lookups.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[areaencounter_caches] Updating cache fields.&quot;</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1000</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">point</span><span class="p">:</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">point</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">derived_point</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">northern_extent</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">derived_northern_extent</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">as_html</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">derived_html</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[area_caches] New Area, re-save to populate caches.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">code</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">slugify</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">code</span><span class="p">)</span></div>
+
+
+<span class="c1"># Observation models ---------------------------------------------------------#</span>
+<div class="viewcode-block" id="ObservationGroup"><a class="viewcode-back" href="../../developers.html#occurrence.models.ObservationGroup">[docs]</a><span class="nd">@python_2_unicode_compatible</span>
+<span class="k">class</span> <span class="nc">ObservationGroup</span><span class="p">(</span>
+        <span class="n">QualityControlMixin</span><span class="p">,</span>
+        <span class="n">UrlsMixin</span><span class="p">,</span>
+        <span class="n">PolymorphicModel</span><span class="p">,</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The Observation base class for area encounter observations.</span>
+
+<span class="sd">    Everything happens somewhere, at a time, to someone, and someone records it.</span>
+<span class="sd">    Therefore, an ObservationGroup must happen during an Encounter.</span>
+
+<span class="sd">    The ObservationGroup shares with Encounter:</span>
+
+<span class="sd">    * location,</span>
+<span class="sd">    * datetime,</span>
+<span class="sd">    * reporter,</span>
+<span class="sd">    * subject (species or community).</span>
+
+<span class="sd">    The ObservationGroup has its own:</span>
+
+<span class="sd">    * QA trust levels.</span>
+
+<span class="sd">    Having separate QA trust levels allows to synthesize the &quot;best available information&quot;</span>
+<span class="sd">    about a Species / Community occurrence, hand-selected by custodians from different</span>
+<span class="sd">    TAE/CAE.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">encounter</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">AreaEncounter</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Occurrence&quot;</span><span class="p">),</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;The Occurrence report containing the observation group.&quot;</span><span class="p">),)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
+
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Observation Group&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s2">&quot;Obs </span><span class="si">{0}</span><span class="s2"> for </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># URLs</span>
+<div class="viewcode-block" id="ObservationGroup.get_absolute_url"><a class="viewcode-back" href="../../developers.html#occurrence.models.ObservationGroup.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Detail url.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ObservationGroup.list_url"><a class="viewcode-back" href="../../developers.html#occurrence.models.ObservationGroup.list_url">[docs]</a>    <span class="k">def</span> <span class="nf">list_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;ObsGroup list is not defined.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;TODO: implement ObservationGroup list view.&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Custom update url contains occ pk and obsgroup pk.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">:</span><span class="si">{1}</span><span class="s1">-update&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">),</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;occ_pk&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s1">&#39;obs_pk&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Derived properties</span>
+    <span class="c1"># Location and date</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the encounter point location.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">point</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">latitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The encounter&#39;s latitude.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">longitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The encounter&#39;s longitude.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+
+<div class="viewcode-block" id="ObservationGroup.datetime"><a class="viewcode-back" href="../../developers.html#occurrence.models.ObservationGroup.datetime">[docs]</a>    <span class="k">def</span> <span class="nf">datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The encounter&#39;s timestamp.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">observed_on</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span></div>
+
+    <span class="c1"># Display and cached properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">observation_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The concrete model name.</span>
+
+<span class="sd">        This method will inherit down the polymorphic chain, and always return</span>
+<span class="sd">        the actual child model&#39;s name.</span>
+
+<span class="sd">        `observation_name` can be included as field e.g. in API serializers,</span>
+<span class="sd">        so e.g. a writeable serializer would know which child model to `create`</span>
+<span class="sd">        or `update`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">polymorphic_ctype</span><span class="o">.</span><span class="n">model</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model_name_verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the model&#39;s verbose name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_html</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return as rendered HTML popup.&quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;occurrence/popup/</span><span class="si">{0}</span><span class="s2">.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_name</span><span class="p">))</span>
+        <span class="c1"># c = Context({&quot;original&quot;: self})</span>
+        <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">({</span><span class="s2">&quot;original&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_card</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return as rendered HTML card.&quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;occurrence/cards/</span><span class="si">{0}</span><span class="s2">.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">({</span><span class="s2">&quot;original&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_latex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return as raw Latex fragment.&quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;occurrence/latex/</span><span class="si">{0}</span><span class="s2">.tex&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_name</span><span class="p">))</span>
+        <span class="c1"># c = Context({&quot;original&quot;: self})</span>
+        <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">({</span><span class="s2">&quot;original&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}))</span></div>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Functions</span>
+    <span class="c1"># none yet</span>
+
+
+<div class="viewcode-block" id="AssociatedSpeciesObservation"><a class="viewcode-back" href="../../developers.html#occurrence.models.AssociatedSpeciesObservation">[docs]</a><span class="k">class</span> <span class="nc">AssociatedSpeciesObservation</span><span class="p">(</span><span class="n">ObservationGroup</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Observation of an associated species.&quot;&quot;&quot;</span>
+
+    <span class="n">taxon</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Taxon</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;associated_species&quot;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
+
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Associated Species&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Associated Species&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s2">&quot;Encounter </span><span class="si">{0}</span><span class="s2"> Obs </span><span class="si">{1}</span><span class="s2">: Associated species </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FireHistoryObservation"><a class="viewcode-back" href="../../developers.html#occurrence.models.FireHistoryObservation">[docs]</a><span class="k">class</span> <span class="nc">FireHistoryObservation</span><span class="p">(</span><span class="n">ObservationGroup</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Evidence of past fire date and intensity.&quot;&quot;&quot;</span>
+
+    <span class="n">HMLN_DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;NA&quot;</span>
+    <span class="n">HMLN_LOW</span> <span class="o">=</span> <span class="s2">&quot;low&quot;</span>
+    <span class="n">HMLN_MEDIUM</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span>
+    <span class="n">HMLN_HIGH</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span>
+    <span class="n">HMLN_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">HMLN_DEFAULT</span><span class="p">,</span> <span class="s2">&quot;NA&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">HMLN_LOW</span><span class="p">,</span> <span class="s2">&quot;Low&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">HMLN_MEDIUM</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">HMLN_HIGH</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">last_fire_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Date of last fire&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The estimated date of the last fire, if evident.&quot;</span><span class="p">))</span>
+
+    <span class="n">fire_intensity</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Fire intensity&quot;</span><span class="p">),</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HMLN_DEFAULT</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">HMLN_CHOICES</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;Estimated intensity of last fire on a scale from High to Low, &quot;</span>
+            <span class="s2">&quot;or NA if no evidence of past fires.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
+
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Fire History&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Fire Histories&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s2">&quot;Encounter </span><span class="si">{0}</span><span class="s2"> Obs </span><span class="si">{1}</span><span class="s2">: Fire on </span><span class="si">{2}</span><span class="s2">, intensity </span><span class="si">{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_fire_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_fire_intensity_display</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="fileattachmentobservation_media"><a class="viewcode-back" href="../../developers.html#occurrence.models.fileattachmentobservation_media">[docs]</a><span class="k">def</span> <span class="nf">fileattachmentobservation_media</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an upload path for FileAttachmentObservation media.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s1">&#39;files/</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">/</span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+        <span class="n">filename</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FileAttachmentObservation"><a class="viewcode-back" href="../../developers.html#occurrence.models.FileAttachmentObservation">[docs]</a><span class="k">class</span> <span class="nc">FileAttachmentObservation</span><span class="p">(</span><span class="n">ObservationGroup</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A file attachment to an ObservationGroup.</span>
+
+<span class="sd">    The file attachment can be a photo, a paper datasheet scanned to PDF,</span>
+<span class="sd">    a video or audio clip, a communication record or any other digital resource</span>
+<span class="sd">    up to the maximum upload size.</span>
+
+<span class="sd">    Copyright is handled at application level, i.e. by submitting a file</span>
+<span class="sd">    as attachment, the author permits use by the application and downstream</span>
+<span class="sd">    systems under the application&#39;s agreed license, e.g. cc-by-sa.</span>
+
+<span class="sd">    Each attachment can be marked as confidential to be excluded from publication.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">attachment</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FileField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="n">fileattachmentobservation_media</span><span class="p">)</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Title&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;A self-explanatory title for the file attachment.&quot;</span><span class="p">))</span>
+
+    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">User</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Author&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The person who authored and endorsed this file.&quot;</span><span class="p">))</span>
+
+    <span class="n">confidential</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Is confidential&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Whether this file is confidential or &quot;</span>
+                    <span class="s2">&quot;can be released to the public.&quot;</span><span class="p">),)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
+
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;File Attachment&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;File Attachments&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The full name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> (</span><span class="si">{1}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">fullname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AreaAssessmentObservation"><a class="viewcode-back" href="../../developers.html#occurrence.models.AreaAssessmentObservation">[docs]</a><span class="k">class</span> <span class="nc">AreaAssessmentObservation</span><span class="p">(</span><span class="n">ObservationGroup</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A description of survey effort at a flora or TEC site.</span>
+
+<span class="sd">    TODO add</span>
+<span class="sd">    # survey method</span>
+<span class="sd">    # EncounterType</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">SURVEY_TYPE_DEFAULT</span> <span class="o">=</span> <span class="s1">&#39;partial&#39;</span>
+    <span class="n">SURVEY_TYPE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">SURVEY_TYPE_DEFAULT</span><span class="p">,</span> <span class="s2">&quot;Partial survey&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="s2">&quot;Edge Survey&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;full&quot;</span><span class="p">,</span> <span class="s2">&quot;Full Survey&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;opportunistic&quot;</span><span class="p">,</span> <span class="s2">&quot;Opportunistic Encounter&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;monitoring&quot;</span><span class="p">,</span> <span class="s2">&quot;Monitoring&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;translocation&quot;</span><span class="p">,</span> <span class="s2">&quot;Fauna Translocation Event&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;historical&quot;</span><span class="p">,</span> <span class="s2">&quot;Historical Report&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">survey_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Survey Type&quot;</span><span class="p">),</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">SURVEY_TYPE_DEFAULT</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">SURVEY_TYPE_CHOICES</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;How much of the occurrence has been surveyed?&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">area_surveyed_m2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Surveyed Area [m2]&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;An estimate of surveyed area in square meters.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">survey_duration_min</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Survey Duration [min]&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;An estimate of survey duration minutes.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
+
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Area Assessment&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Area Assessments&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The full name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> of </span><span class="si">{1}</span><span class="s2"> m2 in </span><span class="si">{2}</span><span class="s2"> mins&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_survey_type_display</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">area_surveyed_m2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">survey_duration_min</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">survey_effort_minutes_per_100sqm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Give an estimate of survey intensity as time spent per area.</span>
+
+<span class="sd">        Calculated from area surveyed and survey duration, or None.</span>
+<span class="sd">        Unit is minutes / 100 m2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">area_surveyed_m2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">survey_duration_min</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">survey_duration_min</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">area_surveyed_m2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<span class="c1"># add to areaenc: location source (diff gps, gps, mudmap, verbal report, diff gps), location description</span>
+
+<span class="c1"># PlantCountObservation</span>
+<span class="c1">#</span>
+<span class="c1"># population count accuracy (actual, extrpol, estimate)</span>
+<span class="c1"># count method (enum)</span>
+<span class="c1"># what counted (plants, clumps, clonal stems)</span>
+<span class="c1"># population structure: mature/juveniles/seedlings(prop totals) x alive/dead</span>
+<span class="c1"># estimated area of population m2</span>
+<span class="c1"># quadrats present bool</span>
+<span class="c1"># number of quadrats surveyed</span>
+<span class="c1"># size of quadrats</span>
+<span class="c1"># detailed data attached</span>
+<span class="c1"># total area of quadrats m2</span>
+<span class="c1"># total alive: mature/juv/seedl(prop total)</span>
+<span class="c1"># reproductive state (m2m: clonal, gegetative, flowerbud, flower, imature fuit, fruit, dehisced fruit)</span>
+<span class="c1"># percentage in flower</span>
+<span class="c1"># condition of plants(enum healthy, moderate, poor, senescent)</span>
+
+<span class="c1"># ThreatObservation</span>
+<span class="c1">#</span>
+<span class="c1"># FK threat_type(code label description)</span>
+<span class="c1"># threat_cause</span>
+<span class="c1"># area_affected_pc</span>
+<span class="c1"># current_impact(NLME)</span>
+<span class="c1"># potential_impact(LMHE)</span>
+<span class="c1"># potential_threat_onset(SML)</span>
+
+<span class="c1"># HabitatCompositionObservation</span>
+<span class="c1">#</span>
+<span class="c1"># landform(enum+other)</span>
+<span class="c1"># rock type(enum+other)</span>
+<span class="c1"># loose rock (range pc)</span>
+<span class="c1"># soil type(enum+other)</span>
+<span class="c1"># soil colour(enum+other)</span>
+<span class="c1"># drainage(enum+other)</span>
+<span class="c1"># specific landform element</span>
+
+<span class="c1"># HabitatConditionObservation</span>
+<span class="c1">#</span>
+<span class="c1"># soil condition(enum+other)</span>
+<span class="c1"># occ cond obs: pc habitat in condition x</span>
+<span class="c1"># land manager present</span>
+
+
+<span class="c1"># VegetationClassificationObservation</span>
+<span class="c1">#</span>
+<span class="c1"># NVIS classification categories with autocomplete 1-4</span>
+
+<span class="c1"># PhysicalSpecimenObservation</span>
+<span class="c1">#</span>
+<span class="c1"># specimen ID</span>
+<span class="c1"># collector ID</span>
+<span class="c1"># destination (which herbarium)</span>
+<span class="c1"># permit type (AE, DRF)</span>
+<span class="c1"># permit ID</span>
+<span class="c1"># specimen type (animal and plant)</span>
+
+
+<span class="c1"># Fire response?</span>
+
+<span class="c1"># TEC</span>
+<span class="c1"># OccurrenceConditionObservation: estimated area in percent of total area following bush forever scale</span>
+<span class="c1">#</span>
+<span class="c1"># pristine_pc, excellent_pc, very_good_pc, good_pc, degraded_pc, completely_degraded_pc</span>
+
+<span class="c1"># Uses: AreaAss, Thr, OccCond, HabComp, HabCond, VegClass, FireHist, AssSp, FileAtt</span>
+
+<span class="c1"># TFA</span>
+<span class="c1"># AnimalObservation</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># species id confidence</span>
+<span class="c1"># species identified by (user/name and affiliation)</span>
+<span class="c1"># primary observed animal: dist feature description</span>
+<span class="c1">#</span>
+<span class="c1"># reproductive state</span>
+<span class="c1">#</span>
+<span class="c1"># demographics of all observed animals: number of x adults/juv/pouch youg x m/f/unk</span>
+<span class="c1"># observation details description</span>
+<span class="c1">#</span>
+<span class="c1"># secondary signs (multiple): heard, scats, etc</span>
+
+<span class="c1"># PhysicalSampleObservation</span>
+<span class="c1"># PhysicalSpecimenObservation</span>
+<span class="c1"># SurveyMethodObservation &gt; roll into AreaAssessment</span>
+
+<span class="c1"># WildlifeIncidentObservation: health, cause of death, injuries description, actions taken, actions required</span>
+
+<span class="c1"># Uses: SpecimenObs, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Florian Mayer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
