@@ -93,4 +93,4 @@ def test():
 
 def doc():
     """Compile docs, draw data models and transitions."""
-    local("mkdir -p docs_source && cd docs_source && make html && cd ..")
+    local("mkdir -p docs_source && cd docs_source && make clean && make singlehtml && cd ..")
