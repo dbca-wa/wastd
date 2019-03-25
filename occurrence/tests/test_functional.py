@@ -20,7 +20,6 @@ This test suite is a walk-through of the following occurrence business processes
   as spreadsheet and in spatial formats.
   Support the creation of various types of reports in various formats -
   Word, PDF and Excel (and/or shapefile), including:
-
   * species by various location types
   * species file numbers by category and species group
   * report on any species (not just threatened)

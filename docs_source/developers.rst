@@ -136,86 +136,6 @@ and batch-export.
 ..     :show-inheritance:
 
 
-TSC Business logic
-==================
-This section should read to TSC business owners as a walk-through of their business processes.
-Ideally, all requirements from the detailed requirements analysis find their counterpart in the following section.
-
-Tests are structured into:
-
-* Unit tests:
-
-    * data structure (model X must have field Y),
-    * model functions (string representation of model X must include field Y)
-
-* View tests:
-    * Do all pages load?
-    * Do named URLs work?
-    * Are all required page HTML templates in place?
-    * Do all view functions work?
-
-* Functional tests:
-
-    * Business logic: following real-world scenarios
-    * Permissions: which role can see / do what when?
-    * Conditions: what needs to be done and present before a step can be executed?
-    * Consequences: what will happen if I hit this button?
-
-:mod:`taxonomy.tests` Module
--------------------------------------------------
-
-.. automodule:: taxonomy.tests.test_functional
- :members:
- :undoc-members:
- :show-inheritance:
-
- .. automodule:: taxonomy.tests.test_unit
- :members:
- :undoc-members:
- :show-inheritance:
-
- .. automodule:: taxonomy.tests.test_views
- :members:
- :undoc-members:
- :show-inheritance:
-
-
-:mod:`conservation.tests` Module
--------------------------------------------------
-
-.. automodule:: conservation.tests.test_functional
- :members:
- :undoc-members:
- :show-inheritance:
-
- .. automodule:: conservation.tests.test_unit
- :members:
- :undoc-members:
- :show-inheritance:
-
- .. automodule:: conservation.tests.test_views
- :members:
- :undoc-members:
- :show-inheritance:
-
-
-:mod:`occurrence.tests` Module
--------------------------------------------------
-
-.. automodule:: occurrence.tests.test_functional
- :members:
- :undoc-members:
- :show-inheritance:
-
- .. automodule:: occurrence.tests.test_unit
- :members:
- :undoc-members:
- :show-inheritance:
-
- .. automodule:: occurrence.tests.test_views
- :members:
- :undoc-members:
- :show-inheritance:
 
 The rest
 ========
@@ -271,3 +191,100 @@ Remaining modules of the observations package are documented here.
     :members:
     :undoc-members:
     :show-inheritance:
+
+===================================
+Project delivery: ticking the boxes
+===================================
+This chapter closes the development circle by pairing functional requirements with
+corresponding functional, unit and view tests.
+The tests are documented inline with the requirements they cover; the documentation
+is extracted in the build process and shown below.
+
+This chapter should read to business owners as a walk-through of their business processes.
+Ideally, all requirements from the detailed requirements analysis find their counterpart in the following section.
+
+Tests are structured into:
+
+* Unit tests: the basics
+    * data structure (model X must have field Y),
+    * model functions (string representation of model X must include field Y)
+
+* View tests: the boring bits
+    * Do all pages load?
+    * Do named URLs work?
+    * Are all required page HTML templates in place?
+    * Do all view functions work?
+
+* Functional tests: the meat and potatoes
+    * Business logic: following real-world scenarios
+    * Permissions: which role can see / do what when?
+    * Conditions: what needs to be done and present before a step can be executed?
+    * Consequences: what will happen if I hit this button?
+
+Threatened Species and Communities
+==================================
+
+:mod:`taxonomy.tests` Module
+-------------------------------------------------
+
+.. automodule:: taxonomy.tests.test_functional
+:members:
+:undoc-members:
+:show-inheritance:
+
+.. automodule:: taxonomy.tests.test_unit
+:members:
+:undoc-members:
+:show-inheritance:
+
+.. automodule:: taxonomy.tests.test_views
+:members:
+:undoc-members:
+:show-inheritance:
+
+
+:mod:`conservation.tests` Module
+-------------------------------------------------
+
+.. automodule:: conservation.tests.test_functional
+:members:
+:undoc-members:
+:show-inheritance:
+
+.. automodule:: conservation.tests.test_unit
+:members:
+:undoc-members:
+:show-inheritance:
+
+.. automodule:: conservation.tests.test_views
+:members:
+:undoc-members:
+:show-inheritance:
+
+
+:mod:`occurrence.tests` Module
+-------------------------------------------------
+
+.. automodule:: occurrence.tests.test_functional
+:members:
+:undoc-members:
+:show-inheritance:
+
+.. automodule:: occurrence.tests.test_unit
+:members:
+:undoc-members:
+:show-inheritance:
+
+.. automodule:: occurrence.tests.test_views
+:members:
+:undoc-members:
+:show-inheritance:
+
+WA Strandings and WA Sea Turtles
+================================
+TODO more test coverage to come.
+
+.. automodule:: occurrence.tests.test_views
+:members:
+:undoc-members:
+:show-inheritance:
