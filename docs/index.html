@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>WAStD 0.18.5 documentation</title>
+  <title>TSC 0.18.5 documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="index.html#document-index" class="icon icon-home"> WAStD
+            <a href="index.html#document-index" class="icon icon-home"> TSC
           
 
           
@@ -195,7 +195,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html#document-index">WAStD</a>
+          <a href="index.html#document-index">TSC</a>
         
       </nav>
 
@@ -226,7 +226,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>WAStD 0.18.5 documentation</li>
+      <li>TSC 0.18.5 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -250,15 +250,99 @@
 <a class="reference external image-reference" href="https://coveralls.io/github/dbca-wa/wastd?branch=master"><img alt="Test coverage" src="https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master" /></a>
 <a class="reference external image-reference" href="http://wastd.readthedocs.io/"><img alt="Documentation Status" src="https://readthedocs.org/projects/wastd/badge/?version=latest" /></a>
 <a class="reference external image-reference" href="https://waffle.io/dbca-wa/wastd"><img alt="Open Issues" src="https://badge.waffle.io/dbca-wa/wastd.svg?label=ready&amp;title=Ready" /></a>
+</div>
+<div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>WAStD / TSC is a data warehouse for:</p>
+<ul class="simple">
+<li>Turtle strandings in WA, as reported to the
+Department of Biodiversity, Conservation and Attractions, WA.</li>
+<li>Dugong and sea snake strandings in WA.</li>
+<li>Turtle track observations, taken at sunrise after nesting (can involve nests,
+predation, nest tags, temperature loggers, egg excavation and hatchling measurements).</li>
+<li>Temperature logger asset management.</li>
+<li>Threatened Species and Communities of WA: occurrences, conservation status, management plans.</li>
+</ul>
+<p>WAStD is built scalable enough to accommodate other, related, data:</p>
+<ul class="simple">
+<li>Turtle tagging observations, taken of nesting turtles.</li>
+<li>Cetacean (whales and dolphins) and pinniped (seals and sea lions) strandings.</li>
+</ul>
+<p>WAStD offers as main functionalities:</p>
+<ul class="simple">
+<li>A “backstage” area, through which trained and trusted data curators can enter
+data from paper data sheets, and other curators can proofread and QA the data.</li>
+<li>A landing page with an interactive map displaying the data (coming up: filters
+to restrict the data shown, export tools).</li>
+<li>Restricted access to the “backstage” area for trusted data consumers, where
+they can search, filter and export the raw data, but not change or delete them.</li>
+<li>A RESTful API that allows authenticated users to create, update, and download
+the data.</li>
+</ul>
+<p>WAStD’s purpose is:</p>
+<ul class="simple">
+<li>To fill an existing gap in departmental infrastructure (strandings, tracks).</li>
+<li>To develop requirements for an integrated turtle data management ecosystem
+through using real data and real processes.</li>
+</ul>
+<p>WAStD will integrate in the Departmental information landscape as follows:</p>
+<ul class="simple">
+<li>Legacy data (starting with Turtle strandings) is manually entered from paper forms.</li>
+<li>Legacy data living in legacy systems can be batch-uploaded to WAStD, initially as a read-only copy.</li>
+<li>Data collected digitally can be streamed (or imported semi-automatically) into WAStD.</li>
+<li>WAStD can batch-upload its data to corporate data warehouses, once they exist (e.g. BioSys).</li>
+<li>Analytical applications anwering defined management questions (informing
+monitoring reports, ministerial inquries, conservation planning decisions) can be
+built right now consuming the WAStD API, and later refactored to consume data from
+departmental data warehouses, once these become the point of truth for the data.</li>
+</ul>
+<p>Departmental business related to turtle strandings:</p>
+<p>Documented at <a class="reference external" href="https://confluence.dpaw.wa.gov.au/display/MSIM/Legacy+systems">https://confluence.dpaw.wa.gov.au/display/MSIM/Legacy+systems</a></p>
+<p>If any of the legacy systems were to experience an acute business risk – e.g.
+data being siloed in outdated software,
+insufficient database curation functionality (missing sanity checks)
+corrupting core departmental data,
+data custodians retiring or not being salaried,
+outdated datasheets collecting incomplete, inconsistent, incorrect data –,
+then a solution much like WAStD or BioSys would be required to mitigate that risk,
+and sufficient care had to be taken to hand over the not always fully documented,
+often living business knowledge from current custodians to permanent departmental staff.</p>
+<p>The roll-out of the improvements in handling turtle strandings will cross over
+with existing workflows of the above mentioned, out of scope business processes.</p>
+<p>WAStD’s design philosophy follows
+<a class="reference external" href="http://www.catb.org/esr/writings/taoup/html/ch01s06.html#id2877537">The Basics of Unix Philosophy</a></p>
+<p>The journey so far:</p>
+<ul class="simple">
+<li>April 2016: Requirements Analysis</li>
+<li>July 2016: Implementation</li>
+<li>August - Sept 2016: Agile iterations, weekly stakeholder workshops to refine
+requirements and update business processes understanding and requirements</li>
+<li>Oct 2016: Production deployment, start of turtle stranding data entry,
+“dog fooding” the data entry manual, usability improvements, working on datasheets.</li>
+<li>Nov 2016: Development of digital data capture for turtle tracks. Form revised 10 times.</li>
+<li>Nov/Dec 2016: 2300+ tracks recorded digitally, replacing paper forms.</li>
+<li>Dec 2016: Track app deployed to two more field teams (Karratha, Broome).</li>
+<li>Jan 2017: Automated pipeline from digital capture to WAStD.</li>
+<li>Jan 2017: Digital form for tracks revised 15 more times to include nest tags,
+egg, hatchling and logger measurements.</li>
+<li>Feb 2017: Revised tracks form used in field.</li>
+<li>Season 2017/2018: Six regions join digital data collection of turtle track census.</li>
+<li>2018: Threatened species and communities.</li>
+<li>Season 2018/19: Bar two programs, all WA regions join digital data collection of
+turtle track census. One program is relatively small and remote, the other lacks basic literacy among available data collectors, favouring pictogram-based and established solutions like CyberTracker.</li>
+</ul>
+<p>WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange
+standards and analytical knowledge pipelines.</p>
 <div class="toctree-wrapper compound">
 <span id="document-data_collection/data_collection_overview"></span><div class="section" id="data-collection">
 <h2>Data collection<a class="headerlink" href="#data-collection" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides an entrypoint to all documentation on the data collection process.</p>
 <p>Are you a volunteer or staff data collector?
-All you need to know is written at <a href="#id1"><span class="problematic" id="id2">:ref:`data-collection-training`_</span></a>, but feel free to read more of this documentation.</p>
+All you need to know is written at <a class="reference internal" href="index.html#data-collection-training"><span class="std std-ref">Data collection training</span></a>,
+but feel free to read more of this documentation.</p>
 <p>Are you a data collection admin in charge of maintaining collection devices
 (tablets), training data collectors, and uploading the data?
-Read <a href="#id3"><span class="problematic" id="id4">:ref:`data_collection_admin`_</span></a>.</p>
+Read <a class="reference internal" href="index.html#data-collection-admin"><span class="std std-ref">Data collection administrators</span></a>.</p>
 <p>Are you a solution architect, developer or business analyst? Then read on.</p>
 <div class="section" id="solution-architecture-and-infrastructure">
 <h3>Solution architecture and infrastructure<a class="headerlink" href="#solution-architecture-and-infrastructure" title="Permalink to this headline">¶</a></h3>
@@ -562,7 +646,7 @@ used to identify a resighted, untagged animal?</li>
 </div>
 </div>
 <span id="document-data_collection/data_collection_admin"></span><div class="section" id="data-collection-administrators">
-<span id="data-collection-admini"></span><h2>Data collection administrators<a class="headerlink" href="#data-collection-administrators" title="Permalink to this headline">¶</a></h2>
+<span id="data-collection-admin"></span><h2>Data collection administrators<a class="headerlink" href="#data-collection-administrators" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides all required knowledge for data collection admins.
 The admins form a bridge between the ODK data maintainer (Florian Mayer)
 and the data collectors (staff and volunteers).</p>
@@ -877,8 +961,8 @@ Some older forms may be available for download - this is to allow import to WASt
 </div>
 </div>
 </div>
-<span id="document-data_collection/data_collection_training"></span><div class="section" id="id1">
-<h2>Data collection training<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span id="document-data_collection/data_collection_training"></span><div class="section" id="data-collection-training">
+<span id="id1"></span><h2>Data collection training<a class="headerlink" href="#data-collection-training" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides the training resources for prospective data collectors.</p>
 <ul class="simple">
 <li>Hardware: Android devices (tablets, phablets, phones), current default: Lenovo Tab3 7”</li>
@@ -16543,18 +16627,12 @@ The following sections document the remaining modules for completeness’ sake.<
 </dd></dl>
 
 </div>
-<div class="section" id="module-wastd.users.tests">
-<span id="wastd-users-tests-module"></span><h4><a class="reference internal" href="#module-wastd.users.tests" title="wastd.users.tests"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.users.tests</span></code></a> Module<a class="headerlink" href="#module-wastd.users.tests" title="Permalink to this headline">¶</a></h4>
-</div>
 <div class="section" id="wastd-observations-app">
 <h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations</span></code> app<a class="headerlink" href="#wastd-observations-app" title="Permalink to this headline">¶</a></h4>
 <p>Remaining modules of the observations package are documented here.</p>
 </div>
 <div class="section" id="wastd-observations-views-module">
 <h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code> Module<a class="headerlink" href="#wastd-observations-views-module" title="Permalink to this headline">¶</a></h4>
-</div>
-<div class="section" id="module-wastd.observations.tests">
-<span id="wastd-observations-tests-module"></span><h4><a class="reference internal" href="#module-wastd.observations.tests" title="wastd.observations.tests"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.tests</span></code></a> Module<a class="headerlink" href="#module-wastd.observations.tests" title="Permalink to this headline">¶</a></h4>
 </div>
 </div>
 </div>
@@ -16622,19 +16700,6 @@ Ideally, all requirements from the detailed requirements analysis find their cou
 <li>Filter the data shown on the dashboard pages by clicking a location on a map,
 on species file number or species group</li>
 </ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
 <span class="target" id="module-taxonomy.tests.test_unit"></span><p>Taxonomy unit test suite.</p>
 <p>This test suite covers:</p>
 <ul class="simple">
@@ -16649,33 +16714,119 @@ Test API endpoints for all WACensus tables with real WACensus data.</li>
 and maintain critical habitat. Adding a mapping capability to threatened flora and fauna occurrence
 databases will inform the mapping of critical habitat, facilitate mapping population boundaries and
 provide increased alignment with protocols for managing ecological communities.” Paul 5.1</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="class">
+<dt id="taxonomy.tests.test_unit.CommunityUnitTests">
+<em class="property">class </em><code class="descclassname">taxonomy.tests.test_unit.</code><code class="descname">CommunityUnitTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.CommunityUnitTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Community tests.</p>
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.CommunityUnitTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.CommunityUnitTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.CommunityUnitTests.test_community_creation">
+<code class="descname">test_community_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.CommunityUnitTests.test_community_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a Community.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests">
+<em class="property">class </em><code class="descclassname">taxonomy.tests.test_unit.</code><code class="descname">TaxonUnitTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Taxon tests.</p>
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_taxon_creation">
+<code class="descname">test_taxon_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_taxon_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a Taxon.</p>
+</dd></dl>
+
+</dd></dl>
+
 <span class="target" id="module-taxonomy.tests.test_views"></span><p>Taxonomy view test suite testing URLs, templates, and views.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="class">
+<dt id="taxonomy.tests.test_views.CommunityViewTests">
+<em class="property">class </em><code class="descclassname">taxonomy.tests.test_views.</code><code class="descname">CommunityViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Community tests.</p>
+<dl class="method">
+<dt id="taxonomy.tests.test_views.CommunityViewTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.CommunityViewTests.test_com_absolute_admin_url_loads">
+<code class="descname">test_com_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests.test_com_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Community absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.CommunityViewTests.test_com_creation">
+<code class="descname">test_com_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests.test_com_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a Community.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.CommunityViewTests.test_com_detail_url_loads">
+<code class="descname">test_com_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests.test_com_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Community detail_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.CommunityViewTests.test_com_list_url_loads">
+<code class="descname">test_com_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests.test_com_list_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test community-list.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="taxonomy.tests.test_views.TaxonViewTests">
+<em class="property">class </em><code class="descclassname">taxonomy.tests.test_views.</code><code class="descname">TaxonViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Taxon view tests.</p>
+<dl class="method">
+<dt id="taxonomy.tests.test_views.TaxonViewTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.TaxonViewTests.test_taxon_absolute_admin_url_loads">
+<code class="descname">test_taxon_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests.test_taxon_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Taxon absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.TaxonViewTests.test_taxon_creation">
+<code class="descname">test_taxon_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests.test_taxon_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a Taxon.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.TaxonViewTests.test_taxon_detail_url_loads">
+<code class="descname">test_taxon_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests.test_taxon_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Taxon detail_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.TaxonViewTests.test_taxon_list_url_loads">
+<code class="descname">test_taxon_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests.test_taxon_list_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test taxon-list.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-conservation.tests.test_functional">
 <span id="conservation-tests-module"></span><h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">conservation.tests</span></code> Module<a class="headerlink" href="#module-conservation.tests.test_functional" title="Permalink to this headline">¶</a></h4>
@@ -16744,50 +16895,330 @@ coordinates flora and fauna translocations, and oversees the approvals processes
 flora and fauna translocation proposals.
 System support is required for the translocation proposal life cycle, including proposal submission,
 assessment, approval, amendment and review.” Paul 5.4</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="class">
+<dt id="conservation.tests.test_functional.ConservationListingLifeCycleTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_functional.</code><code class="descname">ConservationListingLifeCycleTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingLifeCycleTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Functional tests for the ConservationListing (Gazettal) life cycle.</p>
+<p>This test suite tests:</p>
+<ul class="simple">
+<li>Create a conservation listing</li>
+<li>Approval steps through instances (committee, branch manager,
+director, director general, minister) - who is allowed to approve what when
+(permissions, conditions, consequences)</li>
+<li>Gazettal, date and time, publication, where is it shown (DBCA website?)</li>
+<li>Review at set dates - reminders, todo lists, who is responsible</li>
+<li>Retiring a CL: through creting a new gazettal, through ministerial decision,</li>
+</ul>
+<p>through notice (national) or API  (international)</p>
+<dl class="method">
+<dt id="conservation.tests.test_functional.ConservationListingLifeCycleTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingLifeCycleTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_functional.ConservationListingLifeCycleTests.test_only_admin_can_create_gazettal">
+<code class="descname">test_only_admin_can_create_gazettal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingLifeCycleTests.test_only_admin_can_create_gazettal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conservation Listings can only be created by admins.</p>
+<p>Only data curators with admin access can create new conservation listings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_functional.ConservationListingReportingTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_functional.</code><code class="descname">ConservationListingReportingTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingReportingTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Functional tests for ConservationListing (Gazettal) reporting.</p>
+<p>This test suite tests:</p>
+<ul class="simple">
+<li>Query and export conservation listing history (several CL of one taxon or community)</li>
+<li>Query and export conservation listing approval history (within one CL)</li>
+<li>Query and export conservation lists (all taxa listed as conservation category X)</li>
+</ul>
+<dl class="method">
+<dt id="conservation.tests.test_functional.ConservationListingReportingTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingReportingTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_functional.DocumentLifeCycleTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_functional.</code><code class="descname">DocumentLifeCycleTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.DocumentLifeCycleTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Functional tests for Document life cycles.</p>
+<p>This test suite tests:</p>
+<ul class="simple">
+<li>Document creation: who can create which document type?</li>
+<li>Document approval - for each type</li>
+<li>Document review - notification, todo lists, who is responsible</li>
+<li></li>
+</ul>
+</dd></dl>
+
 <span class="target" id="module-conservation.tests.test_unit"></span><p>Unit tests for Conservation module.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="class">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationActionModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Unit tests for ConservationAction.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_created_is_status_new">
+<code class="descname">test_consaction_created_is_status_new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_created_is_status_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a new conservation action shows status NEW.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_future_completion_date_is_status_completed">
+<code class="descname">test_consaction_with_future_completion_date_is_status_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_future_completion_date_is_status_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a conservation action with a future completion date shows status NEW or INPROGRESS.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_past_completion_date_is_status_completed">
+<code class="descname">test_consaction_with_past_completion_date_is_status_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_past_completion_date_is_status_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a conservation action with a past completion date shows status COMPLETED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_create_consactivity">
+<code class="descname">test_create_consactivity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_create_consactivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a cons activity.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_unit.ConservationActivityModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationActivityModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Unit tests for ConservationActivity.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActivityModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationActivityModelTests.test_conservation_activity_str">
+<code class="descname">test_conservation_activity_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests.test_conservation_activity_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationActivity str.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_unit.ConservationListModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationListModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>ConservationList unit tests.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationListModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup: create a new list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationListModelTests.test__str__">
+<code class="descname">test__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests.test__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the string method.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_unit.DocumentModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">DocumentModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.DocumentModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Document unit tests.</p>
+<ul class="simple">
+<li>Recovery plan must have ID (number), date approved, plan type.</li>
+<li>Document (such as rec plan) can be linked to onr or many species
+and/or one or many communities.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_unit.TaxonGazettalModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">TaxonGazettalModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Unit tests for TaxonGazettal.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.TaxonGazettalModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.TaxonGazettalModelTests.test__str__">
+<code class="descname">test__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests.test__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the string method.</p>
+</dd></dl>
+
+</dd></dl>
+
 <span class="target" id="module-conservation.tests.test_views"></span><p>Conservation view test suite testing URLs, templates, and views.</p>
 <p>See also:
 <a class="reference external" href="https://model-mommy.readthedocs.io/en/latest/">https://model-mommy.readthedocs.io/en/latest/</a>
 <a class="reference external" href="https://github.com/sigma-geosistemas/mommy_spatial_generators">https://github.com/sigma-geosistemas/mommy_spatial_generators</a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="class">
+<dt id="conservation.tests.test_views.ConservationActionCategoryViewTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_views.</code><code class="descname">ConservationActionCategoryViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionCategoryViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>View tests for ConservationActionCategory.</p>
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActionCategoryViewTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionCategoryViewTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActionCategoryViewTests.test_conservation_action_category_absolute_admin_url">
+<code class="descname">test_conservation_action_category_absolute_admin_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionCategoryViewTests.test_conservation_action_category_absolute_admin_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationActionCategory absolute admin url.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_views.ConservationActionViewTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_views.</code><code class="descname">ConservationActionViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>View tests for ConservationAction.</p>
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActionViewTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionViewTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActionViewTests.test_conservation_action_absolute_admin_url">
+<code class="descname">test_conservation_action_absolute_admin_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionViewTests.test_conservation_action_absolute_admin_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationAction absolute admin url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActionViewTests.test_create_url_loads">
+<code class="descname">test_create_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionViewTests.test_create_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationaction-create loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActionViewTests.test_get_absolute_url">
+<code class="descname">test_get_absolute_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionViewTests.test_get_absolute_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationAction get absolute url loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActionViewTests.test_list_url_loads">
+<code class="descname">test_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionViewTests.test_list_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationaction-list loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActionViewTests.test_update_url_loads">
+<code class="descname">test_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActionViewTests.test_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationaction-update url loads.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_views.ConservationActivityViewTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_views.</code><code class="descname">ConservationActivityViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActivityViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>View tests for ConservationActivity.</p>
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActivityViewTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActivityViewTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActivityViewTests.test_conservation_activity_absolute_admin_url">
+<code class="descname">test_conservation_activity_absolute_admin_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActivityViewTests.test_conservation_activity_absolute_admin_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationActivity absolute admin url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActivityViewTests.test_conservation_activity_str">
+<code class="descname">test_conservation_activity_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActivityViewTests.test_conservation_activity_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationActivity str.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActivityViewTests.test_create_url_loads">
+<code class="descname">test_create_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActivityViewTests.test_create_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationactivity-create.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActivityViewTests.test_get_absolute_url">
+<code class="descname">test_get_absolute_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActivityViewTests.test_get_absolute_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationAction get absolute url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActivityViewTests.test_list_url_loads">
+<code class="descname">test_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActivityViewTests.test_list_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationactivity-list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationActivityViewTests.test_update_url_loads">
+<code class="descname">test_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationActivityViewTests.test_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationactivity-update.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_views.ConservationListViewTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_views.</code><code class="descname">ConservationListViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationListViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>ConservationList view tests.</p>
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationListViewTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationListViewTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup: create a new list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationListViewTests.test_conservation_list_absolute_admin_url">
+<code class="descname">test_conservation_list_absolute_admin_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationListViewTests.test_conservation_list_absolute_admin_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationList absolute admin url.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.tests.test_views.DocumentViewTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_views.</code><code class="descname">DocumentViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.DocumentViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>View tests for Document.</p>
+<dl class="method">
+<dt id="conservation.tests.test_views.DocumentViewTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.DocumentViewTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.DocumentViewTests.test_absolute_admin_url">
+<code class="descname">test_absolute_admin_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.DocumentViewTests.test_absolute_admin_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Document absolute admin url.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-occurrence.tests.test_functional">
 <span id="occurrence-tests-module"></span><h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">occurrence.tests</span></code> Module<a class="headerlink" href="#module-occurrence.tests.test_functional" title="Permalink to this headline">¶</a></h4>
@@ -16818,19 +17249,6 @@ Only upon approval, the draft report is to be accepted as approved occurrence re
 Assessing the submitted occurrence reports includes the
 QA and possibly adjustment of the submitted spatial data.</li>
 </ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
 <span class="target" id="module-occurrence.tests.test_unit"></span><p>Occurrence unit test suite.</p>
 <p>Test creation of occurrence data:</p>
 <ul class="simple">
@@ -16867,146 +17285,372 @@ extent to which current or additional system support is required, if any, will n
 clarified during feature prioritisation.” Paul 7</p>
 <p>“Any business process or system not explicitly mentioned above as part of threatened
 flora, fauna and ecological community management is deemed out of scope.” Paul 7</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="class">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests">
+<em class="property">class </em><code class="descclassname">occurrence.tests.test_unit.</code><code class="descname">CommunityAreaEncounterTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>CommunityAreaEncounter and related ObservationGroup tests.</p>
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+<p>Bugs with TestMommy vs django-polymorphic:
+<a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/280">https://github.com/django-polymorphic/django-polymorphic/issues/280</a>
+<a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/109">https://github.com/django-polymorphic/django-polymorphic/issues/109</a></p>
+<blockquote>
+<div>polymorphic/models.py”, line 112, in get_real_instance_class
+and not issubclass(model, self.__class__._meta.proxy_for_model):
+TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_aa_creation">
+<code class="descname">test_aa_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_aa_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating an AreaAssessmentObservation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_aa_str">
+<code class="descname">test_aa_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_aa_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AreaAssessmentObservation.__str__().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_aa_survey_effort_minutes_per_100sqm">
+<code class="descname">test_aa_survey_effort_minutes_per_100sqm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_aa_survey_effort_minutes_per_100sqm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AreaAssessmentObservation.survey_effort_minutes_per_100sqm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_asssp_creation">
+<code class="descname">test_asssp_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_asssp_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a AssociatedSpeciesObservation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_creation">
+<code class="descname">test_cae_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a CommunityAreaEncounter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_str">
+<code class="descname">test_cae_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test CAE str.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_fh_creation">
+<code class="descname">test_fh_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_fh_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a FireHistoryObservation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests">
+<em class="property">class </em><code class="descclassname">occurrence.tests.test_unit.</code><code class="descname">TaxonAreaEncounterTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>TaxonAreaEncounter and related ObservationGroup tests.</p>
+<dl class="method">
+<dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+<p>Bugs with TestMommy vs django-polymorphic:
+<a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/280">https://github.com/django-polymorphic/django-polymorphic/issues/280</a>
+<a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/109">https://github.com/django-polymorphic/django-polymorphic/issues/109</a></p>
+<blockquote>
+<div>polymorphic/models.py”, line 112, in get_real_instance_class
+and not issubclass(model, self.__class__._meta.proxy_for_model):
+TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_asssp_creation">
+<code class="descname">test_asssp_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_asssp_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a AssociatedSpeciesObservation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_fatt_creation">
+<code class="descname">test_fatt_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_fatt_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a FileAttachmentObservation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_fh_creation">
+<code class="descname">test_fh_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_fh_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a FireHistoryObservation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_tae_creation">
+<code class="descname">test_tae_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_tae_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test creating a TaxonAreaEncounter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_tae_str">
+<code class="descname">test_tae_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_tae_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test TAE str.</p>
+</dd></dl>
+
+</dd></dl>
+
 <span class="target" id="module-occurrence.tests.test_views"></span><p>Occurrence view test suite testing URLs, templates, and views.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="class">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests">
+<em class="property">class </em><code class="descclassname">occurrence.tests.test_views.</code><code class="descname">CommunityAreaEncounterTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>CommunityAreaEncounter and related ObservationGroup tests.</p>
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+<p>Bugs with TestMommy vs django-polymorphic:
+<a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/280">https://github.com/django-polymorphic/django-polymorphic/issues/280</a>
+<a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/109">https://github.com/django-polymorphic/django-polymorphic/issues/109</a></p>
+<blockquote>
+<div>polymorphic/models.py”, line 112, in get_real_instance_class
+and not issubclass(model, self.__class__._meta.proxy_for_model):
+TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_aa_absolute_admin_url_loads">
+<code class="descname">test_aa_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_aa_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AreaAssessmentObservation absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_aa_detail_url_loads">
+<code class="descname">test_aa_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_aa_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AreaAssessmentObservation get_absolute_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_aa_update_url_loads">
+<code class="descname">test_aa_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_aa_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AreaAssessmentObservation update_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_asssp_absolute_admin_url_loads">
+<code class="descname">test_asssp_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_asssp_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AssociatedSpeciesObservation absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_asssp_detail_url_loads">
+<code class="descname">test_asssp_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_asssp_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AssociatedSpeciesObservation get_absolute_url().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_asssp_update_url_loads">
+<code class="descname">test_asssp_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_asssp_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AssociatedSpeciesObservation update_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_absolute_admin_url_loads">
+<code class="descname">test_cae_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test CommunityAreaEncounter absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_create_url_loads">
+<code class="descname">test_cae_create_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_create_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test CommunityAreaEncounter create_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_detail_url_loads">
+<code class="descname">test_cae_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test CommunityAreaEncounter detail_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_list_url_loads">
+<code class="descname">test_cae_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_list_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that CommunityAreaEncounter list_url is com detail url and loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_update_url_loads">
+<code class="descname">test_cae_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test CommunityAreaEncounter update_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_fh_absolute_admin_url_loads">
+<code class="descname">test_fh_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_fh_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FireHistoryObservation absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_fh_detail_url_loads">
+<code class="descname">test_fh_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_fh_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FireHistoryObservation get_absolute_url().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_fh_update_url_loads">
+<code class="descname">test_fh_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_fh_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FireHistoryObservation update_url.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests">
+<em class="property">class </em><code class="descclassname">occurrence.tests.test_views.</code><code class="descname">TaxonAreaEncounterTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>TaxonAreaEncounter and related ObservationGroup tests.</p>
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+<p>Bugs with TestMommy vs django-polymorphic:
+<a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/280">https://github.com/django-polymorphic/django-polymorphic/issues/280</a>
+<a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/109">https://github.com/django-polymorphic/django-polymorphic/issues/109</a></p>
+<blockquote>
+<div>polymorphic/models.py”, line 112, in get_real_instance_class
+and not issubclass(model, self.__class__._meta.proxy_for_model):
+TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_aa_absolute_admin_url_loads">
+<code class="descname">test_aa_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_aa_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AreaAssessmentObservation absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_aa_detail_url_loads">
+<code class="descname">test_aa_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_aa_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AreaAssessmentObservation get_absolute_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_aa_update_url_loads">
+<code class="descname">test_aa_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_aa_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AreaAssessmentObservation update_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_asssp_absolute_admin_url_loads">
+<code class="descname">test_asssp_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_asssp_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AssociatedSpeciesObservation absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_asssp_detail_url_loads">
+<code class="descname">test_asssp_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_asssp_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AssociatedSpeciesObservation get_absolute_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_asssp_update_url_loads">
+<code class="descname">test_asssp_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_asssp_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test AssociatedSpeciesObservation update_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_fatt_absolute_admin_url_loads">
+<code class="descname">test_fatt_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_fatt_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FileAttachmentObservation absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_fatt_detail_url_loads">
+<code class="descname">test_fatt_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_fatt_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FileAttachmentObservation get_absolute_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_fatt_update_url_loads">
+<code class="descname">test_fatt_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_fatt_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FileAttachmentObservation update_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_fh_absolute_admin_url_loads">
+<code class="descname">test_fh_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_fh_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FireHistoryObservation absolute_admin_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_fh_detail_url_loads">
+<code class="descname">test_fh_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_fh_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FireHistoryObservation get_absolute_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_fh_update_url_loads">
+<code class="descname">test_fh_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_fh_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test FireHistoryObservation update_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_home_loads">
+<code class="descname">test_home_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_home_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test index page.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_map_loads">
+<code class="descname">test_map_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_map_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test map page.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_absolute_admin_url_loads">
+<code class="descname">test_tae_absolute_admin_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_absolute_admin_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test absolute admin url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_detail_url_loads">
+<code class="descname">test_tae_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test taxon detail url works and loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_list_url_loads">
+<code class="descname">test_tae_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_list_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that TaxonAreaEncounter list_url is taxon detail url and loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_update_url_loads">
+<code class="descname">test_tae_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test taxon update url works and loads.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="wa-strandings-and-wa-sea-turtles">
 <h3>WA Strandings and WA Sea Turtles<a class="headerlink" href="#wa-strandings-and-wa-sea-turtles" title="Permalink to this headline">¶</a></h3>
-<p>TODO more test coverage to come.</p>
-<span class="target" id="module-occurrence.tests.test_views"></span><p>Occurrence view test suite testing URLs, templates, and views.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<div class="section" id="module-wastd.observations.tests">
+<span id="wastd-observations-tests-module"></span><h4><a class="reference internal" href="#module-wastd.observations.tests" title="wastd.observations.tests"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.tests</span></code></a> Module<a class="headerlink" href="#module-wastd.observations.tests" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="module-wastd.users.tests">
+<span id="wastd-users-tests-module"></span><h4><a class="reference internal" href="#module-wastd.users.tests" title="wastd.users.tests"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.users.tests</span></code></a> Module<a class="headerlink" href="#module-wastd.users.tests" title="Permalink to this headline">¶</a></h4>
 </div>
 </div>
 </div>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>WAStD / TSC is a data warehouse for:</p>
-<ul class="simple">
-<li>Turtle strandings in WA, as reported to the
-Department of Biodiversity, Conservation and Attractions, WA.</li>
-<li>Dugong and sea snake strandings in WA.</li>
-<li>Turtle track observations, taken at sunrise after nesting (can involve nests,
-predation, nest tags, temperature loggers, egg excavation and hatchling measurements).</li>
-<li>Temperature logger asset management.</li>
-<li>Threatened Species and Communities of WA: occurrences, conservation status, management plans.</li>
-</ul>
-<p>WAStD is built scalable enough to accommodate other, related, data:</p>
-<ul class="simple">
-<li>Turtle tagging observations, taken of nesting turtles.</li>
-<li>Cetacean (whales and dolphins) and pinniped (seals and sea lions) strandings.</li>
-</ul>
-<p>WAStD offers as main functionalities:</p>
-<ul class="simple">
-<li>A “backstage” area, through which trained and trusted data curators can enter
-data from paper data sheets, and other curators can proofread and QA the data.</li>
-<li>A landing page with an interactive map displaying the data (coming up: filters
-to restrict the data shown, export tools).</li>
-<li>Restricted access to the “backstage” area for trusted data consumers, where
-they can search, filter and export the raw data, but not change or delete them.</li>
-<li>A RESTful API that allows authenticated users to create, update, and download
-the data.</li>
-</ul>
-<p>WAStD’s purpose is:</p>
-<ul class="simple">
-<li>To fill an existing gap in departmental infrastructure (strandings, tracks).</li>
-<li>To develop requirements for an integrated turtle data management ecosystem
-through using real data and real processes.</li>
-</ul>
-<p>WAStD will integrate in the Departmental information landscape as follows:</p>
-<ul class="simple">
-<li>Legacy data (starting with Turtle strandings) is manually entered from paper forms.</li>
-<li>Legacy data living in legacy systems can be batch-uploaded to WAStD, initially as a read-only copy.</li>
-<li>Data collected digitally can be streamed (or imported semi-automatically) into WAStD.</li>
-<li>WAStD can batch-upload its data to corporate data warehouses, once they exist (e.g. BioSys).</li>
-<li>Analytical applications anwering defined management questions (informing
-monitoring reports, ministerial inquries, conservation planning decisions) can be
-built right now consuming the WAStD API, and later refactored to consume data from
-departmental data warehouses, once these become the point of truth for the data.</li>
-</ul>
-<p>Departmental business related to turtle strandings:</p>
-<p>Documented at <a class="reference external" href="https://confluence.dpaw.wa.gov.au/display/MSIM/Legacy+systems">https://confluence.dpaw.wa.gov.au/display/MSIM/Legacy+systems</a></p>
-<p>If any of the legacy systems were to experience an acute business risk – e.g.
-data being siloed in outdated software,
-insufficient database curation functionality (missing sanity checks)
-corrupting core departmental data,
-data custodians retiring or not being salaried,
-outdated datasheets collecting incomplete, inconsistent, incorrect data –,
-then a solution much like WAStD or BioSys would be required to mitigate that risk,
-and sufficient care had to be taken to hand over the not always fully documented,
-often living business knowledge from current custodians to permanent departmental staff.</p>
-<p>The roll-out of the improvements in handling turtle strandings will cross over
-with existing workflows of the above mentioned, out of scope business processes.</p>
-<p>WAStD’s design philosophy follows
-<a class="reference external" href="http://www.catb.org/esr/writings/taoup/html/ch01s06.html#id2877537">The Basics of Unix Philosophy</a></p>
-<p>The journey so far:</p>
-<ul class="simple">
-<li>April 2016: Requirements Analysis</li>
-<li>July 2016: Implementation</li>
-<li>August - Sept 2016: Agile iterations, weekly stakeholder workshops to refine
-requirements and update business processes understanding and requirements</li>
-<li>Oct 2016: Production deployment, start of turtle stranding data entry,
-“dog fooding” the data entry manual, usability improvements, working on datasheets.</li>
-<li>Nov 2016: Development of digital data capture for turtle tracks. Form revised 10 times.</li>
-<li>Nov/Dec 2016: 2300+ tracks recorded digitally, replacing paper forms.</li>
-<li>Dec 2016: Track app deployed to two more field teams (Karratha, Broome).</li>
-<li>Jan 2017: Automated pipeline from digital capture to WAStD.</li>
-<li>Jan 2017: Digital form for tracks revised 15 more times to include nest tags,
-egg, hatchling and logger measurements.</li>
-<li>Feb 2017: Revised tracks form used in field.</li>
-<li>Season 2017/2018: Six regions join digital data collection of turtle track census.</li>
-<li>2018: Threatened species and communities.</li>
-<li>Season 2018/19: Bar two programs, all WA regions join digital data collection of
-turtle track census. One program is relatively small and remote, the other lacks basic literacy among available data collectors, favouring pictogram-based and established solutions like CyberTracker.</li>
-</ul>
-<p>WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange
-standards and analytical knowledge pipelines.</p>
+</div>
 </div>
 <div class="section" id="technical-documentation">
-<h2>Technical documentation<a class="headerlink" href="#technical-documentation" title="Permalink to this headline">¶</a></h2>
+<h1>Technical documentation<a class="headerlink" href="#technical-documentation" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
 <li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
-</div>
 </div>
 
 
@@ -17020,7 +17664,7 @@ standards and analytical knowledge pipelines.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Florian Mayer
+        &copy; Copyright 2016-2019 DBCA
 
     </p>
   </div>

@@ -71,18 +71,18 @@ samples etc.).
 ---------------------------------------
 
 .. automodule:: wastd.observations.models
- :members:
- :undoc-members:
- :show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 
 :mod:`taxonomy.models` Module
 ---------------------------------------
 
 .. automodule:: taxonomy.models
- :members:
- :undoc-members:
- :show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 
 
@@ -90,18 +90,18 @@ samples etc.).
 ---------------------------------------
 
 .. automodule:: conservation.models
- :members:
- :undoc-members:
- :show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 
 :mod:`occurrence.models` Module
 ---------------------------------------
 
 .. automodule:: occurrence.models
- :members:
- :undoc-members:
- :show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 
 Admin
@@ -116,9 +116,9 @@ Also, data analysts can search, filter, and export data from here.
 ---------------------------------------
 
 .. automodule:: wastd.observations.admin
-    :members:
-    :undoc-members:
-    :show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 
 API
@@ -150,26 +150,17 @@ WAStD's custom user package, courtesy of pydanny's django project template.
 ---------------------------------------
 
 .. automodule:: wastd.users.admin
-    :members:
-    :undoc-members:
-    :show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 :mod:`wastd.users.views` Module
 ---------------------------------------
 
 .. automodule:: wastd.users.views
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-:mod:`wastd.users.tests` Module
----------------------------------------
-
-.. automodule:: wastd.users.tests
-    :members:
-    :undoc-members:
-    :show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 
 :mod:`wastd.observations` app
@@ -180,17 +171,10 @@ Remaining modules of the observations package are documented here.
 ---------------------------------------
 
 .. automodule:: wastd.observations.views
-    :members:
-    :undoc-members:
-    :show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
-:mod:`wastd.observations.tests` Module
----------------------------------------
-
-.. automodule:: wastd.observations.tests
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 ===================================
 Project delivery: ticking the boxes
@@ -228,63 +212,73 @@ Threatened Species and Communities
 -------------------------------------------------
 
 .. automodule:: taxonomy.tests.test_functional
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 .. automodule:: taxonomy.tests.test_unit
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 .. automodule:: taxonomy.tests.test_views
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 
 :mod:`conservation.tests` Module
 -------------------------------------------------
 
 .. automodule:: conservation.tests.test_functional
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 .. automodule:: conservation.tests.test_unit
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 .. automodule:: conservation.tests.test_views
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 
 :mod:`occurrence.tests` Module
 -------------------------------------------------
 
 .. automodule:: occurrence.tests.test_functional
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 .. automodule:: occurrence.tests.test_unit
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 .. automodule:: occurrence.tests.test_views
-:members:
-:undoc-members:
-:show-inheritance:
+  :members:
+  :undoc-members:
+  :show-inheritance:
 
 WA Strandings and WA Sea Turtles
 ================================
-TODO more test coverage to come.
 
-.. automodule:: occurrence.tests.test_views
-:members:
-:undoc-members:
-:show-inheritance:
+:mod:`wastd.observations.tests` Module
+---------------------------------------
+
+.. automodule:: wastd.observations.tests
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+:mod:`wastd.users.tests` Module
+---------------------------------------
+
+.. automodule:: wastd.users.tests
+  :members:
+  :undoc-members:
+  :show-inheritance:

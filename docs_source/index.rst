@@ -22,18 +22,7 @@ WAStD - WA Sea Turtle Data / TSC - Threatened Species and Communities
 
 .. "Strandings are red, tagged ones are blue, nests are green and tracks are there, too"
 
-.. toctree::
-   :maxdepth: 2
-
-   data_collection/data_collection_overview
-   data_collection/data_collection_admin
-   data_collection/data_collection_training
-   data_curators
-   data_consumers
-   business_analysts
-   maintainers
-   developers
-
+========
 Overview
 ========
 
@@ -125,6 +114,19 @@ WAStD is part of the BioSys ecosystem of data warehousing, data curation, data e
 standards and analytical knowledge pipelines.
 
 
+.. toctree::
+   :maxdepth: 2
+
+   data_collection/data_collection_overview
+   data_collection/data_collection_admin
+   data_collection/data_collection_training
+   data_curators
+   data_consumers
+   business_analysts
+   maintainers
+   developers
+
+=======================
 Technical documentation
 =======================
 

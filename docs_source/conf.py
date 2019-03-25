@@ -86,8 +86,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'WAStD'
-copyright = u'2016, Florian Mayer'
+project = u'TSC'
+copyright = u'2016-2019 DBCA'
 author = u'Florian Mayer'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -271,7 +271,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'WAStDdoc'
+htmlhelp_basename = 'TSC'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -297,7 +297,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'WAStD.tex', u'WAStD Documentation', u'Florian Mayer',
+    (master_doc, 'WAStD.tex', u'TSC / WAStD Documentation', u'Florian Mayer',
      'manual'), ]
 
 # The name of an image file (relative to this directory) to place at the top of

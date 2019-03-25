@@ -1,4 +1,4 @@
-.. _data-collection-admini:
+.. _data-collection-admin:
 
 ==============================
 Data collection administrators
