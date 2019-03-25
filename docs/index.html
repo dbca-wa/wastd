@@ -173,7 +173,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#data-model">Data model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#admin">Admin</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#api">API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#business-logic">Business logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#tsc-business-logic">TSC Business logic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#the-rest">The rest</a></li>
 </ul>
 </li>
@@ -16287,46 +16287,188 @@ curators add and update data.</p>
 <p>The API is intended for programmatic access to data, mainly to batch-import
 and batch-export.</p>
 </div>
-<div class="section" id="business-logic">
-<h3>Business logic<a class="headerlink" href="#business-logic" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="conservation-tests-module">
-<h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">conservation.tests</span></code> Module<a class="headerlink" href="#conservation-tests-module" title="Permalink to this headline">¶</a></h4>
-<p>Business processes:</p>
-<ul class="simple">
-<li>Conservation listing: life cycle, permissions, query, list, export</li>
-<li>Conservation activity: create, list, filter, export, task list for different roles</li>
-<li>Document: approval, approval permissions, publication</li>
+<div class="section" id="tsc-business-logic">
+<h3>TSC Business logic<a class="headerlink" href="#tsc-business-logic" title="Permalink to this headline">¶</a></h3>
+<p>This section should read to TSC business owners as a walk-through of their business processes.
+Ideally, all requirements from the detailed requirements analysis find their counterpart in the following section.</p>
+<p>Tests are structured into:</p>
+<ul>
+<li><p class="first">Unit tests:</p>
+<blockquote>
+<div><ul class="simple">
+<li>data structure (model X must have field Y),</li>
+<li>model functions (string representation of model X must include field Y)</li>
 </ul>
-<span class="target" id="module-conservation.tests.test_functional"></span><p>Conservation functional test suite.</p>
+</div></blockquote>
+</li>
+<li><dl class="first docutils">
+<dt>View tests:</dt>
+<dd><ul class="first last simple">
+<li>Do all pages load?</li>
+<li>Do named URLs work?</li>
+<li>Are all required page HTML templates in place?</li>
+<li>Do all view functions work?</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Functional tests:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Business logic: following real-world scenarios</li>
+<li>Permissions: which role can see / do what when?</li>
+<li>Conditions: what needs to be done and present before a step can be executed?</li>
+<li>Consequences: what will happen if I hit this button?</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="section" id="module-taxonomy.tests.test_functional">
+<span id="taxonomy-tests-module"></span><h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">taxonomy.tests</span></code> Module<a class="headerlink" href="#module-taxonomy.tests.test_functional" title="Permalink to this headline">¶</a></h4>
+<p>Taxonomy functional test suite.</p>
+<p>This test suite is a walk-through of the following taxonomy business processes:</p>
+<ul class="simple">
+<li>List, filter, export selection of species or communities</li>
+<li>Traverse phylogeny of a taxon</li>
+<li>Traverse name history of a taxon (older / newer names)</li>
+<li>[WACensus] Create new taxon</li>
+<li>[WACensus] Create xref</li>
+<li>[WACensus] Change xref</li>
+<li>[WACensus] View xref change history</li>
+<li>What if a taxon’s phylogenic or name history sibling is conservation listed?</li>
+<li>[REQ 5] Include the following dashboard pages:</li>
+<li>Dashboard of all species included in the system</li>
+<li>Dashboard of all lists of threatened or priority species</li>
+<li>Dashboard of all occurrence reports (draft or approved) per species</li>
+<li>Filter the data shown on the dashboard pages by clicking a location on a map,
+on species file number or species group</li>
+</ul>
+<span class="target" id="module-taxonomy.tests.test_unit"></span><p>Taxonomy unit test suite.</p>
+<p>This test suite covers:</p>
+<ul class="simple">
+<li>[REQ 4] Bulk-load a list of species into the system:
+Test API endpoints for all WACensus tables with real WACensus data.</li>
+<li>Taxonomy is reconstructed from WACensus data
+(imported into staging models Hbv* via the API)</li>
+<li>Critical habitat of a species or community</li>
+</ul>
+<p>On critical habitat:
+“With the proclamation of the Biodiversity Conservation Act 2016, there will be a requirement to map
+and maintain critical habitat. Adding a mapping capability to threatened flora and fauna occurrence
+databases will inform the mapping of critical habitat, facilitate mapping population boundaries and
+provide increased alignment with protocols for managing ecological communities.” Paul 5.1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-taxonomy.tests.test_views"></span><p>Taxonomy view test suite testing URLs, templates, and views.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-conservation.tests.test_functional">
+<span id="conservation-tests-module"></span><h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">conservation.tests</span></code> Module<a class="headerlink" href="#module-conservation.tests.test_functional" title="Permalink to this headline">¶</a></h4>
+<p>Conservation functional test suite.</p>
 <p>This test suite is a walk-through of the following conservation business processes:</p>
 <ul class="simple">
 <li>Conservation listing: life cycle, permissions, query, list, export</li>
 <li>Conservation activity: create, list, filter, export, task list for different roles</li>
 <li>Document: approval, approval permissions, publication</li>
+<li>Animal Ethics (AE): Document type “SOP”. Standard operating procedures (SOPs) exist
+for all the aspects of animal handling i.e. “best practice”.
+The system needs to track SOP approval life cycle. e.g. approvals, reviews, minor changes.</li>
+<li>[OOS] Declared Rare Flora (DRF) permits are handled by Wildlife Licensing System (WLS)</li>
 </ul>
-<dl class="class">
-<dt id="conservation.tests.test_functional.ConservationListingTests">
-<em class="property">class </em><code class="descclassname">conservation.tests.test_functional.</code><code class="descname">ConservationListingTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingTests" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
-<p>Functional tests for ConservationListing (Gazettal).</p>
-<dl class="method">
-<dt id="conservation.tests.test_functional.ConservationListingTests.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingTests.setUp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="conservation.tests.test_functional.ConservationListingTests.test_only_admin_can_create_gazettal">
-<code class="descname">test_only_admin_can_create_gazettal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingTests.test_only_admin_can_create_gazettal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Conservation Listings can only be created by admins.</p>
-<p>Only data curators with admin access can create new conservation listings.</p>
-</dd></dl>
-
-</dd></dl>
-
+<p>[REQ 1] Allow for recording of conservation status details of a species:</p>
+<ul class="simple">
+<li>It must be possible to include a recorded species in one or more threatened species lists.</li>
+<li>The system must allow for a species to be included in a threatened or priority species list,
+and a Single Operational List for nationally threatened species.</li>
+<li>The system must keep track of the history of species included in any list.</li>
+</ul>
+<p>[REQ 2] Allow for the creation of multiple lists for threatened species.
+Each species can be listed on zero or more lists.
+New type of lists can be added by business at any time.</p>
+<p>[REQ 3] Allow for the creation of additional species data fields on a per species type basis.
+Comment: Common set of attributes in TSC. Extra data goes on a per-dataset level to BioSys
+but is accessible at analysis time.</p>
+<p>[REQ 8] Publish any document attached to any entity in the system,
+or any communication recorded in the context of such entity, in the Department’s
+record keeping system. Covered by being in a corporate system (TSC) under OIM’s SLA for data retention
+and backups.</p>
+<p>On conservation status:
+“The Wildlife Conservation Act 1950 and Biodiversity Conservation Act 2016 provide for the listing of
+threatened native species and (in the future) ecological communities that need special protection.
+Where insufficient information is available to undertake a conservation assessment, the Department
+may assign a “priority” status.</p>
+<p>Species and ecological community listing or priority assignment affect operational
+management approach and data visibility.</p>
+<p>Changes may be made at either State or Commonwealth level via submissions made to the
+relevant committees (Threatened Species Scientific Committee = TSSC, Threatened
+Ecological Communities Scientific Committee = TECSC). A historical record of these
+assignments, and critical decision-making steps, is required to be captured and maintained.</p>
+<p>This information is consumed in many departmental systems, firstly by WACensus, and then
+by downstream sites such as FloraBase, NatureMap, BioSys and the departmental website,
+as well as sent on to relevant stakeholders. Conservation status flows through to external
+systems such as the Atlas of Living Australia, providing broader data visibility. The timely
+maintenance and distribution of conservation status is therefore crucial to retaining the
+integrity of threatened species populations and communities.</p>
+<p>Static reports are also generated for the DBCA web site.” Paul 5.2</p>
+<p>On management actions:</p>
+<p>“Given that other DBCA work areas implement management actions, any system support
+implemented for SCB should be considered and managed as part of a coordinated response
+to departmental requirements.” Paul 1</p>
+<p>On managment plans:</p>
+<p>“Management plans (e.g. recovery plans, interim recovery plans and species management plans) may
+be written for specific species, communities (or logical groups of both, based on area or ecological or
+other relationships) to assist in their protection and maintenance. Formal approvals processes exist
+to govern the proposal, assessment, endorsement, publication, implementation and review of plans.
+System support is required for the entire management plan life cycle, including audit trails and,
+ideally, version control.” Paul 5.3</p>
+<p>On Fauna Translocations:
+“From Corporate Guideline 36, the Department undertakes the recovery of threatened species
+through translocation and captive breeding or propagation, where the primary objective is a
+conservation benefit. (Recovery plans may include translocations as a recovery action.) SCB
+coordinates flora and fauna translocations, and oversees the approvals processes for threatened
+flora and fauna translocation proposals.
+System support is required for the translocation proposal life cycle, including proposal submission,
+assessment, approval, amendment and review.” Paul 5.4</p>
 <span class="target" id="module-conservation.tests.test_unit"></span><p>Unit tests for Conservation module.</p>
-<span class="target" id="module-conservation.tests.test_views"></span><p>Conservation view test suite.</p>
-<p><a class="reference external" href="https://model-mommy.readthedocs.io/en/latest/">https://model-mommy.readthedocs.io/en/latest/</a>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-conservation.tests.test_views"></span><p>Conservation view test suite testing URLs, templates, and views.</p>
+<p>See also:
+<a class="reference external" href="https://model-mommy.readthedocs.io/en/latest/">https://model-mommy.readthedocs.io/en/latest/</a>
 <a class="reference external" href="https://github.com/sigma-geosistemas/mommy_spatial_generators">https://github.com/sigma-geosistemas/mommy_spatial_generators</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -16342,99 +16484,164 @@ and batch-export.</p>
 </tbody>
 </table>
 <dl class="class">
-<dt id="conservation.tests.test_unit.ConservationActionModelTests">
-<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationActionModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests" title="Permalink to this definition">¶</a></dt>
+<dt id="conservation.tests.test_functional.ConservationListingLifeCycleTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_functional.</code><code class="descname">ConservationListingLifeCycleTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingLifeCycleTests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
-<p>Unit tests for ConservationAction.</p>
+<p>Functional tests for the ConservationListing (Gazettal) life cycle.</p>
+<p>This test suite tests:</p>
+<ul class="simple">
+<li>Create a conservation listing</li>
+<li>Approval steps through instances (committee, branch manager,
+director, director general, minister) - who is allowed to approve what when
+(permissions, conditions, consequences)</li>
+<li>Gazettal, date and time, publication, where is it shown (DBCA website?)</li>
+<li>Review at set dates - reminders, todo lists, who is responsible</li>
+<li>Retiring a CL: through creting a new gazettal, through ministerial decision,</li>
+</ul>
+<p>through notice (national) or API  (international)</p>
 <dl class="method">
-<dt id="conservation.tests.test_unit.ConservationActionModelTests.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dt id="conservation.tests.test_functional.ConservationListingLifeCycleTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingLifeCycleTests.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_created_is_status_new">
-<code class="descname">test_consaction_created_is_status_new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_created_is_status_new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test that a new conservation action shows status NEW.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_future_completion_date_is_status_completed">
-<code class="descname">test_consaction_with_future_completion_date_is_status_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_future_completion_date_is_status_completed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test that a conservation action with a future completion date shows status NEW or INPROGRESS.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_past_completion_date_is_status_completed">
-<code class="descname">test_consaction_with_past_completion_date_is_status_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_with_past_completion_date_is_status_completed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test that a conservation action with a past completion date shows status COMPLETED.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="conservation.tests.test_unit.ConservationActionModelTests.test_create_consactivity">
-<code class="descname">test_create_consactivity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_create_consactivity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test creating a cons activity.</p>
+<dt id="conservation.tests.test_functional.ConservationListingLifeCycleTests.test_only_admin_can_create_gazettal">
+<code class="descname">test_only_admin_can_create_gazettal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingLifeCycleTests.test_only_admin_can_create_gazettal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conservation Listings can only be created by admins.</p>
+<p>Only data curators with admin access can create new conservation listings.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="conservation.tests.test_unit.ConservationActivityModelTests">
-<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationActivityModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests" title="Permalink to this definition">¶</a></dt>
+<dt id="conservation.tests.test_functional.ConservationListingReportingTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_functional.</code><code class="descname">ConservationListingReportingTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingReportingTests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
-<p>Unit tests for ConservationActivity.</p>
+<p>Functional tests for ConservationListing (Gazettal) reporting.</p>
+<p>This test suite tests:</p>
+<ul class="simple">
+<li>Query and export conservation listing history (several CL of one taxon or community)</li>
+<li>Query and export conservation listing approval history (within one CL)</li>
+<li>Query and export conservation lists (all taxa listed as conservation category X)</li>
+</ul>
 <dl class="method">
-<dt id="conservation.tests.test_unit.ConservationActivityModelTests.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dt id="conservation.tests.test_functional.ConservationListingReportingTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.ConservationListingReportingTests.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="conservation.tests.test_unit.ConservationActivityModelTests.test_conservation_activity_str">
-<code class="descname">test_conservation_activity_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests.test_conservation_activity_str" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test ConservationActivity str.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="conservation.tests.test_unit.ConservationListModelTests">
-<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationListModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests" title="Permalink to this definition">¶</a></dt>
+<dt id="conservation.tests.test_functional.DocumentLifeCycleTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_functional.</code><code class="descname">DocumentLifeCycleTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_functional.DocumentLifeCycleTests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
-<p>ConservationList unit tests.</p>
-<dl class="method">
-<dt id="conservation.tests.test_unit.ConservationListModelTests.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests.setUp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Setup: create a new list.</p>
+<p>Functional tests for Document life cycles.</p>
+<p>This test suite tests:</p>
+<ul class="simple">
+<li>Document creation: who can create which document type?</li>
+<li>Document approval - for each type</li>
+<li>Document review - notification, todo lists, who is responsible</li>
+<li></li>
+</ul>
 </dd></dl>
 
-<dl class="method">
-<dt id="conservation.tests.test_unit.ConservationListModelTests.test__str__">
-<code class="descname">test__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationListModelTests.test__str__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test the string method.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="conservation.tests.test_unit.TaxonGazettalModelTests">
-<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">TaxonGazettalModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
-<p>Unit tests for TaxonGazettal.</p>
-<dl class="method">
-<dt id="conservation.tests.test_unit.TaxonGazettalModelTests.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests.setUp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="conservation.tests.test_unit.TaxonGazettalModelTests.test__str__">
-<code class="descname">test__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.TaxonGazettalModelTests.test__str__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test the string method.</p>
-</dd></dl>
-
-</dd></dl>
-
+</div>
+<div class="section" id="module-occurrence.tests.test_functional">
+<span id="occurrence-tests-module"></span><h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">occurrence.tests</span></code> Module<a class="headerlink" href="#module-occurrence.tests.test_functional" title="Permalink to this headline">¶</a></h4>
+<p>Occurrence functional test suite.</p>
+<p>This test suite is a walk-through of the following occurrence business processes:</p>
+<ul class="simple">
+<li>[REQ 9] Report a new occurrence: Allow for the recording of occurrence data for each
+species recorded in the system, including textual
+attributes relating to locality, habitat, associated species,
+population, biology, and management context (e.g.
+threats, tenure). Data must be able to be visualised
+spatially, as well as textually, so that outliers can be detected.</li>
+<li>[REQ 10] Allow for Department and non-Department users to submit an occurrence
+report including contextual details described in REQ 9.
+Include spatial data in occurrence reports. Allow for the upload of
+occurrence data recorded in a spreadsheet.</li>
+<li>Spatial mapping of occurrences</li>
+<li>Critical habitat of a species or community: see Taxonomy</li>
+<li>[REQ 7] List, filter, export selection of species or communities occurrences
+as spreadsheet and in spatial formats.
+Support the creation of various types of reports in various formats -
+Word, PDF and Excel (and/or shapefile), including:<ul>
+<li>species by various location types</li>
+<li>species file numbers by category and species group</li>
+<li>report on any species (not just threatened)</li>
+</ul>
+</li>
+<li>[REQ 11] Allow for the assessment of a submitted occurrence report.
+Only upon approval, the draft report is to be accepted as approved occurrence report.
+Assessing the submitted occurrence reports includes the
+QA and possibly adjustment of the submitted spatial data.</li>
+</ul>
+<span class="target" id="module-occurrence.tests.test_unit"></span><p>Occurrence unit test suite.</p>
+<p>Test creation of occurrence data:</p>
+<ul class="simple">
+<li>TaxonAreaEncounters (TAE)</li>
+<li>CommunityAreaEncouters (CAE)</li>
+<li>ObservationGroups (Obs) and sub-models</li>
+<li>[REQ 6] AOO and EOO threshold alerts for reviewing status:
+Using updated occurrence data, flag a review of species or
+community conservation status when metrics such as
+AOO or EOO change by more than a given threshold, and alert an officer.</li>
+<li>Occurrences not handled by TSC can be stored in BioSys</li>
+<li>Show Biosys occurrences on map for reference</li>
+<li>When analysing TSC data, also query BioSys for data (wastdr?)</li>
+</ul>
+<p>On Faunafile:</p>
+<p>“This is a desktop Microsoft Access-based system that maintains much of the Department’s fauna
+monitoring records for DBCA’s South West, Wheatbelt and South Coast Regions. Data from the most
+recent version can be merged and warehoused in Oracle, and there is a program from upgrading
+data from old formats to facilitate this process.” Paul 6.3</p>
+<p>“While FaunaFile has a long historical connection with SCD, and there are overlapping
+processes and data, custodianship for its maintenance and development lies with FEMD.
+While improvements to FaunaFile per se are out scope for this initial phase of
+development, there are collaborative opportunities for alignment and integration in
+subsequent phases.” Paul 7</p>
+<p>On Fauna Distribution Information System (FDIS):</p>
+<p>“FDIS predicts the effects on fauna following forest operations and is used in the establishment of
+fauna habitat zones. FDIS is currently the subject of a major redevelopment.” Paul 6.4</p>
+<p>On fire response data:
+“Fire response data is not part of SCB management responsibility. The Threatened and
+Priority Flora Database (TPFL) contains a recently added module for fire response data at
+occurrence level, and TEC/PEC fire history data is recorded in the TEC database, but
+summary-level information is not being maintained, and custodianship is unclear. The
+extent to which current or additional system support is required, if any, will need to be
+clarified during feature prioritisation.” Paul 7</p>
+<p>“Any business process or system not explicitly mentioned above as part of threatened
+flora, fauna and ecological community management is deemed out of scope.” Paul 7</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-occurrence.tests.test_views"></span><p>Occurrence view test suite testing URLs, templates, and views.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">undoc-members:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">show-inheritance:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section" id="the-rest">
