@@ -43,6 +43,33 @@ clarified during feature prioritisation." Paul 7
 "Any business process or system not explicitly mentioned above as part of threatened
 flora, fauna and ecological community management is deemed out of scope." Paul 7
 
+[REQ 13] Data able to be exported to external systems such as the
+Corporate Data Delivery Program (CDDP), environmental
+impact assessment and ad hoc data requests.
+Test: all data available through API. Taxonomy, occurrence, conservation.
+
+[REQ 15] Admin user able to make global changes to fields (e.g. species names).
+Test permissions, precisely which models. Species names come from WACensus.
+
+[REQ 16] Allow user to choose a locality from a map (i.e. auto-complete coordinates).
+Map widget in forms: geocoder.
+
+[REQ 18] Allow for different security roles to be granted to the
+users, including at a minimum read-only, officer, and system administrator.
+TODO: what are the roles, what are the permissions, test each one.
+
+[REQ 20] Admin users able to edit lookups (i.e. drop-down lists) used for data validation/entry.
+
+[REQ 21] User able to extraction drop down field lists to external text and spreadsheet formats.
+
+[REQ 22] Records for the same observation to be stored in more than one database. I
+Implement a method that identifies record provenance.
+Test for existence of source, source ID.
+
+[REQ 23] Enable mapping of population boundaries and critical habitats (i.e. polygons, not just centroids).
+Test TAE and CAE geom. Create, validate, view, export.
+
+
 """
 from __future__ import unicode_literals
 

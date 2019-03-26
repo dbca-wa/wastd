@@ -13,7 +13,6 @@ This test suite is a walk-through of the following conservation business process
 * [OOS] Declared Rare Flora (DRF) permits are handled by Wildlife Licensing System (WLS)
 
 [REQ 1] Allow for recording of conservation status details of a species:
-
 * It must be possible to include a recorded species in one or more threatened species lists.
 * The system must allow for a species to be included in a threatened or priority species list,
   and a Single Operational List for nationally threatened species.
@@ -29,8 +28,8 @@ but is accessible at analysis time.
 
 [REQ 8] Publish any document attached to any entity in the system,
 or any communication recorded in the context of such entity, in the Department’s
-record keeping system. Covered by being in a corporate system (TSC) under OIM's SLA for data retention
-and backups.
+record keeping system. This requirement is covered by being in a corporate system (TSC) under
+OIM's SLA for data retention and backups.
 
 On conservation status:
 "The Wildlife Conservation Act 1950 and Biodiversity Conservation Act 2016 provide for the listing of

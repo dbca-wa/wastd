@@ -248,8 +248,6 @@
 <a class="reference external image-reference" href="https://github.com/pydanny/cookiecutter-django/"><img alt="Built with Cookiecutter Django" src="https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg" /></a>
 <a class="reference external image-reference" href="https://circleci.com/gh/dbca-wa/wastd"><img alt="Test status" src="https://circleci.com/gh/dbca-wa/wastd.svg?style=svg" /></a>
 <a class="reference external image-reference" href="https://coveralls.io/github/dbca-wa/wastd?branch=master"><img alt="Test coverage" src="https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master" /></a>
-<a class="reference external image-reference" href="http://wastd.readthedocs.io/"><img alt="Documentation Status" src="https://readthedocs.org/projects/wastd/badge/?version=latest" /></a>
-<a class="reference external image-reference" href="https://waffle.io/dbca-wa/wastd"><img alt="Open Issues" src="https://badge.waffle.io/dbca-wa/wastd.svg?label=ready&amp;title=Ready" /></a>
 </div>
 <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
@@ -16699,6 +16697,11 @@ Ideally, all requirements from the detailed requirements analysis find their cou
 <li>Dashboard of all occurrence reports (draft or approved) per species</li>
 <li>Filter the data shown on the dashboard pages by clicking a location on a map,
 on species file number or species group</li>
+<li>[REQ 19] Enable the user to choose authoritative names from WACensus. (= select from dropdowns).
+Allow for temporarily entering species names not yet been included in the
+species master list (WACensus) in use by the Department (i.e. informal or phrase names).
+This is to facilitate batch upload of data from sources that may not have authoritative names.
+Align entered species with the species master list once the species has been added to the master list.</li>
 </ul>
 <span class="target" id="module-taxonomy.tests.test_unit"></span><p>Taxonomy unit test suite.</p>
 <p>This test suite covers:</p>
@@ -16841,11 +16844,12 @@ for all the aspects of animal handling i.e. “best practice”.
 The system needs to track SOP approval life cycle. e.g. approvals, reviews, minor changes.</li>
 <li>[OOS] Declared Rare Flora (DRF) permits are handled by Wildlife Licensing System (WLS)</li>
 </ul>
-<p>[REQ 1] Allow for recording of conservation status details of a species:</p>
+<p>[REQ 1] Allow for recording of conservation status details of a species:
+* It must be possible to include a recorded species in one or more threatened species lists.
+* The system must allow for a species to be included in a threatened or priority species list,</p>
+<blockquote>
+<div>and a Single Operational List for nationally threatened species.</div></blockquote>
 <ul class="simple">
-<li>It must be possible to include a recorded species in one or more threatened species lists.</li>
-<li>The system must allow for a species to be included in a threatened or priority species list,
-and a Single Operational List for nationally threatened species.</li>
 <li>The system must keep track of the history of species included in any list.</li>
 </ul>
 <p>[REQ 2] Allow for the creation of multiple lists for threatened species.
@@ -16856,8 +16860,8 @@ Comment: Common set of attributes in TSC. Extra data goes on a per-dataset level
 but is accessible at analysis time.</p>
 <p>[REQ 8] Publish any document attached to any entity in the system,
 or any communication recorded in the context of such entity, in the Department’s
-record keeping system. Covered by being in a corporate system (TSC) under OIM’s SLA for data retention
-and backups.</p>
+record keeping system. This requirement is covered by being in a corporate system (TSC) under
+OIM’s SLA for data retention and backups.</p>
 <p>On conservation status:
 “The Wildlife Conservation Act 1950 and Biodiversity Conservation Act 2016 provide for the listing of
 threatened native species and (in the future) ecological communities that need special protection.
@@ -16974,7 +16978,7 @@ director, director general, minister) - who is allowed to approve what when
 <dl class="method">
 <dt id="conservation.tests.test_unit.ConservationActionModelTests.test_consaction_created_is_status_new">
 <code class="descname">test_consaction_created_is_status_new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_consaction_created_is_status_new" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test that a new conservation action shows status NEW.</p>
+<dd><p>Test that a newly created conservation action shows status NEW.</p>
 </dd></dl>
 
 <dl class="method">
@@ -16992,7 +16996,7 @@ director, director general, minister) - who is allowed to approve what when
 <dl class="method">
 <dt id="conservation.tests.test_unit.ConservationActionModelTests.test_create_consactivity">
 <code class="descname">test_create_consactivity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActionModelTests.test_create_consactivity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test creating a cons activity.</p>
+<dd><p>Test that creating a conservation activity sets the conservation action status to INPROGRESS.</p>
 </dd></dl>
 
 </dd></dl>
@@ -17012,6 +17016,8 @@ director, director general, minister) - who is allowed to approve what when
 <dt id="conservation.tests.test_unit.ConservationActivityModelTests.test_conservation_activity_str">
 <code class="descname">test_conservation_activity_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationActivityModelTests.test_conservation_activity_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test ConservationActivity str.</p>
+<p>ConservationActivity string contains cons action category, completion date,
+completion status and implementation notes.</p>
 </dd></dl>
 
 </dd></dl>
@@ -17044,6 +17050,8 @@ director, director general, minister) - who is allowed to approve what when
 <li>Recovery plan must have ID (number), date approved, plan type.</li>
 <li>Document (such as rec plan) can be linked to onr or many species
 and/or one or many communities.</li>
+<li>[REQ 25] Store original and final version of nomination form as Word + PDF documents,
+plus additional attributes to facilitate reporting.</li>
 </ul>
 </dd></dl>
 
@@ -17224,30 +17232,50 @@ and/or one or many communities.</li>
 <span id="occurrence-tests-module"></span><h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">occurrence.tests</span></code> Module<a class="headerlink" href="#module-occurrence.tests.test_functional" title="Permalink to this headline">¶</a></h4>
 <p>Occurrence functional test suite.</p>
 <p>This test suite is a walk-through of the following occurrence business processes:</p>
-<ul class="simple">
-<li>[REQ 9] Report a new occurrence: Allow for the recording of occurrence data for each
+<ul>
+<li><p class="first">[REQ 9] Report a new occurrence: Allow for the recording of occurrence data for each
 species recorded in the system, including textual
 attributes relating to locality, habitat, associated species,
 population, biology, and management context (e.g.
 threats, tenure). Data must be able to be visualised
-spatially, as well as textually, so that outliers can be detected.</li>
-<li>[REQ 10] Allow for Department and non-Department users to submit an occurrence
+spatially, as well as textually, so that outliers can be detected.</p>
+</li>
+<li><p class="first">[REQ 10] Allow for Department and non-Department users to submit an occurrence
 report including contextual details described in REQ 9.
 Include spatial data in occurrence reports. Allow for the upload of
-occurrence data recorded in a spreadsheet.</li>
-<li>Spatial mapping of occurrences</li>
-<li>Critical habitat of a species or community: see Taxonomy</li>
-<li>[REQ 7] List, filter, export selection of species or communities occurrences
-as spreadsheet and in spatial formats.
+occurrence data recorded in a spreadsheet.</p>
+</li>
+<li><p class="first">Spatial mapping of occurrences</p>
+</li>
+<li><p class="first">Critical habitat of a species or community: see Taxonomy</p>
+</li>
+<li><p class="first">[REQ 7][REQ 17] List, filter, export selection of species or communities, and
+species or community occurrences as spreadsheet and in spatial formats.
 Support the creation of various types of reports in various formats -
 Word, PDF and Excel (and/or shapefile), including:
 * species by various location types
 * species file numbers by category and species group
-* report on any species (not just threatened)</li>
-<li>[REQ 11] Allow for the assessment of a submitted occurrence report.
+* report on any species (not just threatened)
+* report on occurrences/populations/communities using a variety of search criteria</p>
+<blockquote>
+<div><p>(e.g. species name, conservation status, Vesting, Region etc.).</p>
+</div></blockquote>
+</li>
+<li><p class="first">[REQ 11] Allow for the assessment of a submitted occurrence report.
 Only upon approval, the draft report is to be accepted as approved occurrence report.
 Assessing the submitted occurrence reports includes the
-QA and possibly adjustment of the submitted spatial data.</li>
+QA and possibly adjustment of the submitted spatial data.</p>
+</li>
+<li><p class="first">[REQ 12] Primary storage for species occurrence data is BioSys - won’t have. TSC is primary.</p>
+</li>
+<li><p class="first">[REQ 14] Admin user able to add/incorporate additional attributes that may be relevant
+to only specific species (e.g. Malleefowl) - won’t have. TSC is for common attributes only.
+Malleefowls and friends go to BioSys.</p>
+</li>
+<li><p class="first">[REQ 24] Upload shapefiles population boundaries or occurrences or critical habitat
+from regions or external consultants.
+Run through API example, see OCC ETL workbooks.</p>
+</li>
 </ul>
 <span class="target" id="module-occurrence.tests.test_unit"></span><p>Occurrence unit test suite.</p>
 <p>Test creation of occurrence data:</p>
@@ -17285,6 +17313,24 @@ extent to which current or additional system support is required, if any, will n
 clarified during feature prioritisation.” Paul 7</p>
 <p>“Any business process or system not explicitly mentioned above as part of threatened
 flora, fauna and ecological community management is deemed out of scope.” Paul 7</p>
+<p>[REQ 13] Data able to be exported to external systems such as the
+Corporate Data Delivery Program (CDDP), environmental
+impact assessment and ad hoc data requests.
+Test: all data available through API. Taxonomy, occurrence, conservation.</p>
+<p>[REQ 15] Admin user able to make global changes to fields (e.g. species names).
+Test permissions, precisely which models. Species names come from WACensus.</p>
+<p>[REQ 16] Allow user to choose a locality from a map (i.e. auto-complete coordinates).
+Map widget in forms: geocoder.</p>
+<p>[REQ 18] Allow for different security roles to be granted to the
+users, including at a minimum read-only, officer, and system administrator.
+TODO: what are the roles, what are the permissions, test each one.</p>
+<p>[REQ 20] Admin users able to edit lookups (i.e. drop-down lists) used for data validation/entry.</p>
+<p>[REQ 21] User able to extraction drop down field lists to external text and spreadsheet formats.</p>
+<p>[REQ 22] Records for the same observation to be stored in more than one database. I
+Implement a method that identifies record provenance.
+Test for existence of source, source ID.</p>
+<p>[REQ 23] Enable mapping of population boundaries and critical habitats (i.e. polygons, not just centroids).
+Test TAE and CAE geom. Create, validate, view, export.</p>
 <dl class="class">
 <dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests">
 <em class="property">class </em><code class="descclassname">occurrence.tests.test_unit.</code><code class="descname">CommunityAreaEncounterTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests" title="Permalink to this definition">¶</a></dt>

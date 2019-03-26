@@ -11,12 +11,6 @@ WAStD - WA Sea Turtle Data / TSC - Threatened Species and Communities
 .. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
-.. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
-     :target: http://wastd.readthedocs.io/
-     :alt: Documentation Status
-.. image:: https://badge.waffle.io/dbca-wa/wastd.svg?label=ready&title=Ready
-     :target: https://waffle.io/dbca-wa/wastd
-     :alt: Open Issues
 
 .. "WA STD - now you've got it, too"
 

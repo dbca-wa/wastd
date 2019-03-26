@@ -85,7 +85,7 @@ class ConservationActionModelTests(TestCase):
         )
 
     def test_consaction_created_is_status_new(self):
-        """Test that a new conservation action shows status NEW."""
+        """Test that a newly created conservation action shows status NEW."""
         self.assertEqual(self.consaction.status, ConservationAction.STATUS_NEW)
 
     def test_consaction_with_past_completion_date_is_status_completed(self):
@@ -110,7 +110,7 @@ class ConservationActionModelTests(TestCase):
         self.assertEqual(self.consaction.status, ConservationAction.STATUS_INPROGRESS)
 
     def test_create_consactivity(self):
-        """Test creating a cons activity."""
+        """Test that creating a conservation activity sets the conservation action status to INPROGRESS."""
         ca = ConservationActivity.objects.create(
             conservation_action=self.consaction
         )
@@ -136,7 +136,11 @@ class ConservationActivityModelTests(TestCase):
         )
 
     def test_conservation_activity_str(self):
-        """Test ConservationActivity str."""
+        """Test ConservationActivity str.
+
+        ConservationActivity string contains cons action category, completion date,
+        completion status and implementation notes.
+        """
         label = "[{0}][{1}] {2}".format(
             self.consact.conservation_action.category,
             self.consact.completion_date.strftime("%d/%m/%Y") if self.consact.completion_date else "in progress",
@@ -150,6 +154,8 @@ class DocumentModelTests(TestCase):
     * Recovery plan must have ID (number), date approved, plan type.
     * Document (such as rec plan) can be linked to onr or many species
       and/or one or many communities.
+    * [REQ 25] Store original and final version of nomination form as Word + PDF documents,
+      plus additional attributes to facilitate reporting.
     """
 
     pass

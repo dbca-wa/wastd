@@ -15,12 +15,6 @@ WAStD / TSC is a co-branded project to house:
 .. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
-.. image:: https://readthedocs.org/projects/wastd/badge/?version=latest
-     :target: http://wastd.readthedocs.io/
-     :alt: Documentation Status
-.. image:: https://badge.waffle.io/dbca-wa/wastd.svg?label=ready&title=Ready
-     :target: https://waffle.io/dbca-wa/wastd
-     :alt: Open Issues
 
 LICENSE: MIT
 

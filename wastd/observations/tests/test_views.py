@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""wastd.observations view test suite."""
+"""wastd.observations view test suite testing URLs, templates, and views."""
 from __future__ import unicode_literals
 
 from django.utils import timezone  # noqa
