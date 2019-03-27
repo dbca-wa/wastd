@@ -1940,7 +1940,7 @@ class HbvParentSerializer(serializers.ModelSerializer):
 class TaxonSerializer(serializers.ModelSerializer):
     """Serializer for Taxon."""
 
-    taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True)
+    # taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True)
 
     class Meta:
         """Opts."""
@@ -1958,7 +1958,7 @@ class TaxonSerializer(serializers.ModelSerializer):
             'vernacular_names',
             'canonical_name',
             'taxonomic_name',
-            'taxon_occurrences',
+            # 'taxon_occurrences',
             'eoo'
         )
 
@@ -2020,7 +2020,7 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
 class CommunitySerializer(serializers.ModelSerializer):
     """Serializer for Community."""
 
-    community_occurrences = OccurrenceCommunityAreaEncounterPolyInlineSerializer(many=True)
+    # community_occurrences = OccurrenceCommunityAreaEncounterPolyInlineSerializer(many=True)
 
     class Meta:
         """Opts."""
@@ -2030,7 +2030,7 @@ class CommunitySerializer(serializers.ModelSerializer):
             'code',
             'name',
             'description',
-            'community_occurrences',
+            # 'community_occurrences',
             'eoo'
         )
 
