@@ -46,6 +46,20 @@ class CommunityViewTests(TestCase):
             _fill_optional=['rank', 'eoo'])
         self.taxon0.save()
 
+        self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
+            code="weeds", label="Weeds", description="invasive weeds")
+        self.consthreat = cons_models.ConservationThreat.objects.create(
+            category=self.consthreatcat, cause="burn some stuff")
+        self.consthreat.taxa.add(self.taxon0)
+        self.consthreat.communities.add(self.com0)
+
+        self.consactioncat = cons_models.ConservationActionCategory.objects.create(
+            code="burn", label="Burn", description="Burn everything")
+        self.consaction = cons_models.ConservationAction.objects.create(
+            category=self.consactioncat, instructions="burn some stuff")
+        self.consaction.taxa.add(self.taxon0)
+        self.consaction.communities.add(self.com0)
+
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
             email="super@gmail.com",
@@ -129,6 +143,20 @@ class TaxonViewTests(TestCase):
             successor=self.taxon2,
             reason=Crossreference.REASON_TSY
         )
+
+        self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
+            code="weeds", label="Weeds", description="invasive weeds")
+        self.consthreat = cons_models.ConservationThreat.objects.create(
+            category=self.consthreatcat, cause="burn some stuff")
+        self.consthreat.taxa.add(self.taxon0)
+        self.consthreat.communities.add(self.com0)
+
+        self.consactioncat = cons_models.ConservationActionCategory.objects.create(
+            code="burn", label="Burn", description="Burn everything")
+        self.consaction = cons_models.ConservationAction.objects.create(
+            category=self.consactioncat, instructions="burn some stuff")
+        self.consaction.taxa.add(self.taxon0)
+        self.consaction.communities.add(self.com0)
 
         self.user = get_user_model().objects.create_superuser(
             username="superuser",

@@ -190,6 +190,19 @@ class CommunityAreaEncounterTests(TestCase):
             self.cae.community)
         self.assertEqual(label, self.cae.__str__())
 
+    def test_cae_latitude(self):
+        """Test the latitude from the point."""
+        self.assertEqual(self.cae.latitude, -32)
+
+    def test_cae_longitude(self):
+        """Test the longitude from the point."""
+        self.assertEqual(self.cae.longitude, 115)
+
+    def test_derived_point(self):
+        """Test that the derived point is either the centroid of geom or None."""
+        self.assertIsNone(self.cae.geom)
+        self.assertIsNone(self.cae.derived_point)
+
     # ------------------------------------------------------------------------#
     # CAE AssociatedSpeciesObservation
     def test_asssp_creation(self):

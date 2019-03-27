@@ -79,9 +79,6 @@ class ConservationThreatViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
-            code="weeds", label="Weeds", description="invasive weeds")
-
         self.taxon0 = mommy.make(
             Taxon,
             name_id=1000,
@@ -94,10 +91,10 @@ class ConservationThreatViewTests(TestCase):
             name="name0",
             _fill_optional=['eoo'])
         self.com0.save()
+        self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
+            code="weeds", label="Weeds", description="invasive weeds")
         self.object = cons_models.ConservationThreat.objects.create(
-            category=self.consthreatcat,
-            cause="burn some stuff"
-        )
+            category=self.consthreatcat, cause="burn some stuff")
         self.object.taxa.add(self.taxon0)
         self.object.communities.add(self.com0)
         self.user = get_user_model().objects.create_superuser(
