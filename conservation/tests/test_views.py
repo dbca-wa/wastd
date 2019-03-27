@@ -74,6 +74,65 @@ class ConservationActionCategoryViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class ConservationThreatViewTests(TestCase):
+    """View tests for ConservationThreat."""
+
+    def setUp(self):
+        """Set up."""
+        self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
+            code="weeds", label="Weeds", description="invasive weeds")
+
+        self.taxon0 = mommy.make(
+            Taxon,
+            name_id=1000,
+            name="name0",
+            _fill_optional=['rank', 'eoo'])
+        self.taxon0.save()
+        self.com0 = mommy.make(
+            Community,
+            code="code0",
+            name="name0",
+            _fill_optional=['eoo'])
+        self.com0.save()
+        self.object = cons_models.ConservationThreat.objects.create(
+            category=self.consthreatcat,
+            cause="burn some stuff"
+        )
+        self.object.taxa.add(self.taxon0)
+        self.object.communities.add(self.com0)
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+    def test_conservation_threat_absolute_admin_url(self):
+        """Test ConservationThreat absolute admin url."""
+        response = self.client.get(self.object.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_absolute_url(self):
+        """Test ConservationAction get absolute url loads."""
+        response = self.client.get(self.object.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_url_loads(self):
+        """Test conservationaction-list loads."""
+        response = self.client.get(self.object.list_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_url_loads(self):
+        """Test conservationaction-create loads."""
+        response = self.client.get(self.object.create_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_url_loads(self):
+        """Test conservationaction-update url loads."""
+        response = self.client.get(self.object.update_url)
+        self.assertEqual(response.status_code, 200)
+
+
 class ConservationActionViewTests(TestCase):
     """View tests for ConservationAction."""
 

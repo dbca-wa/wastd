@@ -138,6 +138,7 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
         context = super(TaxonDetailView, self).get_context_data(**kwargs)
         obj = self.object
         occ = obj.taxon_occurrences.prefetch_related("encountered_by")
+        mt = obj.conservationthreat_set.all()
         ma = obj.conservationaction_set.all()
         max_cards = 100
         context["occurrence_table"] = TaxonAreaEncounterTable(occ.all()[:max_cards])
@@ -147,6 +148,8 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
             context["occurrence_total"] = occ.count()
         else:
             context["occurrence_total"] = 0
+        context["conservationthreats_general"] = mt.filter(document=None, occurrence_area_code=None)
+        context["conservationthreats_area"] = mt.exclude(occurrence_area_code=None)
         context["conservationactions_general"] = ma.filter(document=None, occurrence_area_code=None)
         context["conservationactions_area"] = ma.exclude(occurrence_area_code=None)
         return context
@@ -187,6 +190,7 @@ class CommunityDetailView(DetailViewBreadcrumbMixin, DetailView):
         context = super(CommunityDetailView, self).get_context_data(**kwargs)
         obj = self.get_object()
         occ = obj.community_occurrences
+        mt = obj.conservationthreat_set.all()
         ma = obj.conservationaction_set.all()
         max_cards = 100
         context["max_cards"] = max_cards
@@ -196,6 +200,8 @@ class CommunityDetailView(DetailViewBreadcrumbMixin, DetailView):
             context["occurrence_total"] = 0
         context["occurrence_table"] = CommunityAreaEncounterTable(occ.all()[:max_cards])
         context["occurrences"] = occ.all()
+        context["conservationthreats_general"] = mt.filter(document=None, occurrence_area_code=None)
+        context["conservationthreats_area"] = mt.exclude(occurrence_area_code=None)
         context["conservationactions_general"] = ma.filter(document=None, occurrence_area_code=None)
         context["conservationactions_area"] = ma.exclude(occurrence_area_code=None)
         return context

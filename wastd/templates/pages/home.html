@@ -24,12 +24,16 @@
 
 {% block javascript%}
 {{ block.super }}
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
 {% compress js %}
 <script type="text/javascript">
 function map_init(map, options) {
 
     {% include 'shared/overlays.html' %}
     {% include 'shared/styles.html' %}
+
+    map.addControl(new L.Control.Geocoder());
 
     /* Data loading */
     var markers = L.markerClusterGroup();

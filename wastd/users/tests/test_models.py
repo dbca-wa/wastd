@@ -15,3 +15,7 @@ class TestUser(TestCase):
         self.assertEqual(
             self.user.get_absolute_url(),
             '/users/testuser/')
+
+    def test_apitoken(self):
+        t = self.user.apitoken
+        self.assertIsNotNone(t)

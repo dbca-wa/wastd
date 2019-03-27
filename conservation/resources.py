@@ -18,7 +18,7 @@ class ConservationThreatResource(resources.ModelResource):
             "document__title",
             "occurrence_area_code",
             "category__label",
-            "encountered_by",
+            "encountered_by__name",
             "encountered_on",
         ]
 

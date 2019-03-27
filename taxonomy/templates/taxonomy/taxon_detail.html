@@ -94,6 +94,14 @@
       <p>{% taxongazettal_rows request.user %}</p>
 
       <hr class="my-4">
+      <h3>Conservation Threats
+        <small class="float-right">
+          {% conservationthreat_add request.user "taxa" %}
+        </small>
+      </h3>
+      <p>{% include 'conservation/includes/conservationthreat_rows.html' with threats=conservationthreats_general %}</p>
+
+      <hr class="my-4">
       <h3>Conservation Actions
         <small class="float-right">
           {% conservationaction_add request.user "taxa" %}
@@ -113,6 +121,7 @@
       <p class="lead">
           {% admin_absoluteadminurl_link original "taxon" label=True %}
           {% taxongazettal_add request.user label=True %}
+          {% conservationthreat_add request.user "taxa" label=True %}
           {% conservationaction_add request.user "taxa" label=True %}
           {% document_add request.user "taxa" label=True %}
           {% taxonareaencounter_add_link original.name_id label=True %}
@@ -162,6 +171,7 @@
             <h5 class="card-header">
               {{ site.name }} <p class="small text-muted">{{ site.grouper|title }}</small>
               <small class="float-right">
+                {% conservationthreat_add request.user "taxa" area=site.grouper %}
                 {% conservationaction_add request.user "taxa" area=site.grouper %}
               </small>
               <small class="float-right">
@@ -170,6 +180,7 @@
             </h5>
             <div class="card-body">
               <!-- Conservation actions for area {{ site.grouper }} -->
+              {% conservationthreat_cards request.user  conservationthreats_area area=site.grouper %}
               {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
 
               <!-- Occurrences for area {{ site.grouper }} -->

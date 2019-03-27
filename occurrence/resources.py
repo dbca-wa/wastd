@@ -26,7 +26,7 @@ class TaxonAreaEncounterResource(resources.ModelResource):
             "source",
             "source_id",
             "encountered_on",
-            "encountered_by",
+            "encountered_by__name",
         ]
 
 
@@ -50,5 +50,5 @@ class CommunityAreaEncounterResource(resources.ModelResource):
             "source",
             "source_id",
             "encountered_on",
-            "encountered_by",
+            "encountered_by__name",
         ]
