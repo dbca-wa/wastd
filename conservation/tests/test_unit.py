@@ -156,6 +156,7 @@ class DocumentModelTests(TestCase):
       and/or one or many communities.
     * [REQ 25] Store original and final version of nomination form as Word + PDF documents,
       plus additional attributes to facilitate reporting.
+    * [REQ 41] Plans automatically numbered from a single number pool. Test that documents have PK.
     """
 
     pass

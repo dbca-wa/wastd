@@ -62,35 +62,35 @@ urlpatterns = [
     # ------------------------------------------------------------------------#
     # Occurrence ObsGroups
     re_path(r'^(?P<occ_pk>\d+)/associated-species/report$',
-            views.AssociatedSpeciesObservationCreateView.as_view(),
-            name='associatedspeciesobservation-create'),
+            views.AssociatedSpeciesCreateView.as_view(),
+            name='associatedspecies-create'),
 
     re_path(r'^(?P<occ_pk>\d+)/associated-species/(?P<obs_pk>\d+)/$',
-            views.AssociatedSpeciesObservationUpdateView.as_view(),
-            name='associatedspeciesobservation-update'),
+            views.AssociatedSpeciesUpdateView.as_view(),
+            name='associatedspecies-update'),
 
     re_path(r'^(?P<occ_pk>\d+)/fire-history/report$',
-            views.FireHistoryObservationCreateView.as_view(),
-            name='firehistoryobservation-create'),
+            views.FireHistoryCreateView.as_view(),
+            name='firehistory-create'),
 
     re_path(r'^(?P<occ_pk>\d+)/fire-history/(?P<obs_pk>\d+)/$',
-            views.FireHistoryObservationUpdateView.as_view(),
-            name='firehistoryobservation-update'),
+            views.FireHistoryUpdateView.as_view(),
+            name='firehistory-update'),
 
     re_path(r'^(?P<occ_pk>\d+)/file-attachment/report$',
-            views.FileAttachmentObservationCreateView.as_view(),
-            name='fileattachmentobservation-create'),
+            views.FileAttachmentCreateView.as_view(),
+            name='fileattachment-create'),
 
     re_path(r'^(?P<occ_pk>\d+)/file-attachment/(?P<obs_pk>\d+)/$',
-            views.FileAttachmentObservationUpdateView.as_view(),
-            name='fileattachmentobservation-update'),
+            views.FileAttachmentUpdateView.as_view(),
+            name='fileattachment-update'),
 
     re_path(r'^(?P<occ_pk>\d+)/area-assessment/report$',
-            views.AreaAssessmentObservationCreateView.as_view(),
-            name='areaassessmentobservation-create'),
+            views.AreaAssessmentCreateView.as_view(),
+            name='areaassessment-create'),
 
     re_path(r'^(?P<occ_pk>\d+)/area-assessment/(?P<obs_pk>\d+)/$',
-            views.AreaAssessmentObservationUpdateView.as_view(),
-            name='areaassessmentobservation-update'),
+            views.AreaAssessmentUpdateView.as_view(),
+            name='areaassessment-update'),
 
 ]

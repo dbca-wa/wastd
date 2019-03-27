@@ -11,25 +11,73 @@ This test suite is a walk-through of the following conservation business process
   for all the aspects of animal handling i.e. "best practice".
   The system needs to track SOP approval life cycle. e.g. approvals, reviews, minor changes.
 * [OOS] Declared Rare Flora (DRF) permits are handled by Wildlife Licensing System (WLS)
-
-[REQ 1] Allow for recording of conservation status details of a species:
-* It must be possible to include a recorded species in one or more threatened species lists.
-* The system must allow for a species to be included in a threatened or priority species list,
-  and a Single Operational List for nationally threatened species.
-* The system must keep track of the history of species included in any list.
-
-[REQ 2] Allow for the creation of multiple lists for threatened species.
-Each species can be listed on zero or more lists.
-New type of lists can be added by business at any time.
-
-[REQ 3] Allow for the creation of additional species data fields on a per species type basis.
-Comment: Common set of attributes in TSC. Extra data goes on a per-dataset level to BioSys
-but is accessible at analysis time.
-
-[REQ 8] Publish any document attached to any entity in the system,
-or any communication recorded in the context of such entity, in the Department’s
-record keeping system. This requirement is covered by being in a corporate system (TSC) under
-OIM's SLA for data retention and backups.
+* [REQ 1] Allow for recording of conservation status details of a species:
+  * It must be possible to include a recorded species in one or more threatened species lists.
+  * The system must allow for a species to be included in a threatened or priority species list,
+    and a Single Operational List for nationally threatened species.
+  * The system must keep track of the history of species included in any list.
+* [REQ 2] Allow for the creation of multiple lists for threatened species.
+  Each species can be listed on zero or more lists.
+  New type of lists can be added by business at any time.
+* [REQ 3] Allow for the creation of additional species data fields on a per species type basis.
+  Comment: Common set of attributes in TSC. Extra data goes on a per-dataset level to BioSys
+  but is accessible at analysis time.
+* [REQ 8] Publish any document attached to any entity in the system,
+  or any communication recorded in the context of such entity, in the Department’s
+  record keeping system. This requirement is covered by being in a corporate system (TSC) under
+  OIM's SLA for data retention and backups.
+* [REQ 26][OAG 2a] Provide for the storage and management of conservation status information for
+  flora, fauna and communities. Provide support for local, national and international listings,
+  and provide a full history of changes.
+* [REQ 29] Provide information regarding Threatened Fauna conservation status for
+  BioSys and NatureMap websites automatically. Test: provide this data via API.
+* [REQ 30] Produce various conservation status list reports in various formats
+  (PDF, Microsoft word, Microsoft Excel) created using a variety of search criteria.
+  Test: list, filter, export taxon/community list including conservation status.
+* [REQ 31][OAG 2a] Allow for periodical of species or community listing,
+  and alert an officer by the review date.
+* [REQ 32] Capture the following attributes from species/communities nomination workflow:
+  * Date of TSSC/TECSC assessment
+  * Date of ministerial approval
+  * Date of gazettal
+  * Date referred to Commonwealth
+  * Date listed under EPBC Act
+* [REQ 33][REQ 39] Allow for the recording, per species or community, of
+  * One or more management plans (could apply to any species or community)
+  * One or more recovery plans (threatened species and communities)
+  * One or more interim recovery plans (as per recovery plan but less detailed)
+  Allow a plan to be linked to a threatened species or community included in a specific list;
+  system must allow for different plans for one species or community included in different lists
+* [REQ 34] Allow for the recording of one or more recovery or management actions for each plan.
+  Allow for the recording of one or more success criteria to facilitate capturing management effectiveness.
+* [REQ 35] Capture the following attributes from management/recovery plan workflow:
+  * document type: Whether full, interim or national recovery plan,
+  * any additional attributes
+  * Date of approval by Director + DG + Minister + gazettal date
+* [REQ 36] Allow the recovery team to record the annual report;
+  the system is to remind the recovery team that the annual report is due;
+  system is to alert officer if annual report is not submitted by due date.
+  The annual report to at least cover the success criteria listed in the plan. (Impossible to test)
+* [REQ 37] Allow for renewal of an existing plan at expiry date;
+  approval workflow for renewal plan is same as workflow for new plan, including ministerial/CEO approval
+  Test that at expiry date, plan approval status transitions to "EXPIRED", send notifications to owner,
+  show up in todo lists
+* [REQ 38] Alert officer that renewal for existing plan is coming up to start review process;
+  review process results in either of:
+  * Closure of plan
+  * Renewal of plan
+  * Writing of new plan
+* [REQ 46] Allow for the storing of generated reports, so that user can retrieve the report
+  that was generated at a date in the past. Note: This will swamp the /media folder.
+* [REQ 47] Conservation Action / cons activity linked to documents.
+  Allow Departmental recovery team members to record outcomes against any recovery action linked to the plan.
+  Reporting against recovery actions is not mandatory.
+* [REQ 48] Allow for the linking, as an action in the plan, between a management plan or
+  (interim) recovery plan and a translocation plan recorded in the translocation module.
+* [REQ 49] Allow for recording any communication related to any entity recorded in the system; recording a phone call,
+  email exchange, etc. The details must include, the parties involved, type of communication (phone call, email, etc.),
+  free text to record content, attachment of any relevant document.
+  Test: attach text file as document type "Communication record" to a taxon or community.
 
 On conservation status:
 "The Wildlife Conservation Act 1950 and Biodiversity Conservation Act 2016 provide for the listing of

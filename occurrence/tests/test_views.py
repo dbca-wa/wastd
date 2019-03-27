@@ -68,34 +68,42 @@ class CommunityAreaEncounterTests(TestCase):
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
 
-        self.asssp1 = occ_models.AssociatedSpeciesObservation.objects.create(
+        self.fatt = occ_models.FileAttachment.objects.create(
+            encounter=self.cae,
+            attachment=SimpleUploadedFile('testfile.txt', b'These are the file contents.'),
+            title="test",
+            author=self.user
+        )
+        self.fatt.save()
+
+        self.asssp1 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.cae,
             taxon=self.taxon0
         )
         self.asssp1.save()
 
-        self.fh1 = occ_models.FireHistoryObservation.objects.create(
+        self.fh1 = occ_models.FireHistory.objects.create(
             encounter=self.cae,
             last_fire_date=timezone.now().date(),
-            fire_intensity=occ_models.FireHistoryObservation.HMLN_HIGH
+            fire_intensity=occ_models.FireHistory.HMLN_HIGH
         )
         self.fh1.save()
 
-        self.aa0 = occ_models.AreaAssessmentObservation.objects.create(
+        self.aa0 = occ_models.AreaAssessment.objects.create(
             encounter=self.cae,
             area_surveyed_m2=None,
             survey_duration_min=None
         )
         self.aa0.save()
 
-        self.aa1 = occ_models.AreaAssessmentObservation.objects.create(
+        self.aa1 = occ_models.AreaAssessment.objects.create(
             encounter=self.cae,
             area_surveyed_m2=200,
             survey_duration_min=None
         )
         self.aa1.save()
 
-        self.aa2 = occ_models.AreaAssessmentObservation.objects.create(
+        self.aa2 = occ_models.AreaAssessment.objects.create(
             encounter=self.cae,
             area_surveyed_m2=532,
             survey_duration_min=47
@@ -125,6 +133,9 @@ class CommunityAreaEncounterTests(TestCase):
 
         response = self.client.get(self.cae.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'occurrence/cards/firehistory.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
 
     def test_cae_update_url_loads(self):
         """Test CommunityAreaEncounter update_url."""
@@ -263,48 +274,49 @@ class TaxonAreaEncounterTests(TestCase):
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
 
-        self.asssp1 = occ_models.AssociatedSpeciesObservation.objects.create(
+        self.asssp1 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.tae,
             taxon=self.taxon1
         )
         self.asssp1.save()
 
-        self.asssp2 = occ_models.AssociatedSpeciesObservation.objects.create(
+        self.asssp2 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.tae,
             taxon=self.taxon2
         )
         self.asssp2.save()
 
-        self.fh1 = occ_models.FireHistoryObservation.objects.create(
+        self.fh1 = occ_models.FireHistory.objects.create(
             encounter=self.tae,
             last_fire_date=timezone.now(),
-            fire_intensity=occ_models.FireHistoryObservation.HMLN_HIGH
+            fire_intensity=occ_models.FireHistory.HMLN_HIGH
         )
         self.fh1.save()
 
-        self.fatt = occ_models.FileAttachmentObservation.objects.create(
+        self.fatt = occ_models.FileAttachment.objects.create(
             encounter=self.tae,
-            attachment=SimpleUploadedFile('testfile.txt', b'These are the file contents.'),
+            attachment=SimpleUploadedFile(
+                'testfile.txt', b'These are the file contents.'),
             title="test",
             author=self.user
         )
         self.fatt.save()
 
-        self.aa0 = occ_models.AreaAssessmentObservation.objects.create(
+        self.aa0 = occ_models.AreaAssessment.objects.create(
             encounter=self.tae,
             area_surveyed_m2=None,
             survey_duration_min=None
         )
         self.aa0.save()
 
-        self.aa1 = occ_models.AreaAssessmentObservation.objects.create(
+        self.aa1 = occ_models.AreaAssessment.objects.create(
             encounter=self.tae,
             area_surveyed_m2=200,
             survey_duration_min=None
         )
         self.aa1.save()
 
-        self.aa2 = occ_models.AreaAssessmentObservation.objects.create(
+        self.aa2 = occ_models.AreaAssessment.objects.create(
             encounter=self.tae,
             area_surveyed_m2=532,
             survey_duration_min=47
@@ -352,7 +364,9 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertContains(response, self.fatt.title)
         self.assertContains(response, self.fatt.author)
         self.assertTemplateUsed(response, 'occurrence/taxonareaencounter_detail.html')
-        self.assertTemplateUsed(response, 'occurrence/cards/firehistoryobservation.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/firehistory.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
 
     def test_tae_update_url_loads(self):
         """Test taxon update url works and loads."""

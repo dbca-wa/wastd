@@ -163,13 +163,13 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
 # ----------------------------------------------------------------------------#
 # ObservationGroup forms
 #
-class AssociatedSpeciesObservationForm(forms.ModelForm):
-    """Associated Species Observation Form."""
+class AssociatedSpeciesForm(forms.ModelForm):
+    """Associated Species Form."""
 
     class Meta:
         """Class options."""
 
-        model = occ_models.AssociatedSpeciesObservation
+        model = occ_models.AssociatedSpecies
         fields = ("encounter", "taxon",)
         widgets = {
             "encounter": occ_widgets.AreaEncounterWidget(),
@@ -178,7 +178,7 @@ class AssociatedSpeciesObservationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
-        super(AssociatedSpeciesObservationForm, self).__init__(*args, **kwargs)
+        super(AssociatedSpeciesForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
@@ -197,13 +197,13 @@ class AssociatedSpeciesObservationForm(forms.ModelForm):
         )
 
 
-class FireHistoryObservationForm(forms.ModelForm):
-    """Fire History Observation Form."""
+class FireHistoryForm(forms.ModelForm):
+    """Fire History Form."""
 
     class Meta:
         """Class options."""
 
-        model = occ_models.FireHistoryObservation
+        model = occ_models.FireHistory
         fields = (
             "encounter",
             "last_fire_date",
@@ -216,7 +216,7 @@ class FireHistoryObservationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
-        super(FireHistoryObservationForm, self).__init__(*args, **kwargs)
+        super(FireHistoryForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
@@ -236,13 +236,13 @@ class FireHistoryObservationForm(forms.ModelForm):
         )
 
 
-class FileAttachmentObservationForm(forms.ModelForm):
-    """FileAttachmentObservation Form."""
+class FileAttachmentForm(forms.ModelForm):
+    """FileAttachment Form."""
 
     class Meta:
         """Class options."""
 
-        model = occ_models.FileAttachmentObservation
+        model = occ_models.FileAttachment
         fields = (
             "encounter",
             "attachment",
@@ -257,7 +257,7 @@ class FileAttachmentObservationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
-        super(FileAttachmentObservationForm, self).__init__(*args, **kwargs)
+        super(FileAttachmentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
@@ -279,13 +279,13 @@ class FileAttachmentObservationForm(forms.ModelForm):
         )
 
 
-class AreaAssessmentObservationForm(forms.ModelForm):
-    """AreaAssessmentObservation Form."""
+class AreaAssessmentForm(forms.ModelForm):
+    """AreaAssessment Form."""
 
     class Meta:
         """Class options."""
 
-        model = occ_models.AreaAssessmentObservation
+        model = occ_models.AreaAssessment
         fields = (
             "encounter",
             "survey_type",
@@ -298,7 +298,7 @@ class AreaAssessmentObservationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
-        super(AreaAssessmentObservationForm, self).__init__(*args, **kwargs)
+        super(AreaAssessmentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(

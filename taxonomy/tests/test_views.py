@@ -10,12 +10,6 @@ from django.test import TestCase  # noqa
 from django.urls import reverse  # noqa
 from model_mommy import mommy  # noqa
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
-from occurrence.models import (  # noqa
-    CommunityAreaEncounter,
-    TaxonAreaEncounter,
-    AssociatedSpeciesObservation,
-    FireHistoryObservation
-)
 from conservation import models as cons_models
 from taxonomy.models import Community, Taxon, Crossreference
 # from django.contrib.contenttypes.models import ContentType

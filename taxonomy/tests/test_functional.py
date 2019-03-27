@@ -23,4 +23,8 @@ This test suite is a walk-through of the following taxonomy business processes:
   species master list (WACensus) in use by the Department (i.e. informal or phrase names).
   This is to facilitate batch upload of data from sources that may not have authoritative names.
   Align entered species with the species master list once the species has been added to the master list.
+* [REQ 27] Integrate with the WACensus system to fetch an authoritative list of species.
+  Test: WACensus ETL
+* [REQ 28] Integrate with the WAHerb Specimen Database and BioSys to cross-reference locational information regarding
+  rare flora occurrences (eg via sheet number). Pending WAHerb upgrade.
 """

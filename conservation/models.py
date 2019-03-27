@@ -65,6 +65,7 @@ class FileAttachment(models.Model):
         User,
         on_delete=models.PROTECT,
         verbose_name=_("Author"),
+        related_name="conservation_fileattachments",
         blank=True, null=True,
         help_text=_("The person who authored and endorsed this file."))
 

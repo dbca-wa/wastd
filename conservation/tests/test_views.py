@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 """Conservation view test suite testing URLs, templates, and views.
 
+* [REQ 40] Include the following dashboard pages:
+  * Dashboard of all plans: document list view and templates
+  * Dashboard of all annual reports for all plans: document list view, filter plan type
+  From within a dashboard, the user to open an entity and view the details.
+  Test that document card contains detail link.
+  Dashboard to show when details were last edited.
+  Test that document card contains date last modified.
+
+
 See also:
 https://model-mommy.readthedocs.io/en/latest/
 https://github.com/sigma-geosistemas/mommy_spatial_generators

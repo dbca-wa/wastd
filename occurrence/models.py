@@ -118,6 +118,14 @@ class AreaEncounter(PolymorphicModel,
         (AREA_TYPE_FLORA_SUBPOPULATION, "Flora Subpopulation"),
     )
 
+    GEOLOCATION_CAPTURE_METHOD_DEFAULT = 'drawn-online-map-widget'
+    GEOLOCATION_CAPTURE_METHOD_CHOICES = (
+        (GEOLOCATION_CAPTURE_METHOD_DEFAULT, _("Hand-drawn on online map widget")),
+        ("gps-perimeter-walk", _("GPS perimeter walk")),
+        ("gps-point", _("GPS point with text description of location extent")),
+        ("dgps", _("Differential GPS capture of entire location extent")),
+    )
+
     # Naming -----------------------------------------------------------------#
     code = models.SlugField(
         max_length=1000,
@@ -147,11 +155,17 @@ class AreaEncounter(PolymorphicModel,
     description = models.TextField(
         blank=True, null=True,
         verbose_name=_("Description"),
-        help_text=_("A comprehensive description."),
+        help_text=_(
+            "A comprehensive description of the location "
+            "(nearby features and places, identifiable boundaries, extent) "
+            "and the encounter where forms and attached photos lack detail."
+        ),
     )
 
     # Time: ObservationAuditMixin provides date and observer -----------------#
     #
+    # Encounter type: what brought the observer to the encounter? opportunistic, research, monitoring
+
     # Geolocation ------------------------------------------------------------#
     area_type = models.PositiveIntegerField(
         verbose_name=_("Area type"),
@@ -170,6 +184,17 @@ class AreaEncounter(PolymorphicModel,
         verbose_name=_("Accuracy [m]"),
         help_text=_("The measured or estimated accuracy "
                     "of the location in meters."),
+    )
+
+    geolocation_capture_method = models.CharField(
+        verbose_name=_("Geolocation capture method"),
+        max_length=100,
+        default=GEOLOCATION_CAPTURE_METHOD_DEFAULT,
+        choices=GEOLOCATION_CAPTURE_METHOD_CHOICES,
+        help_text=_(
+            "How were the coordinates of the geolocation captured? "
+            ""
+        ),
     )
 
     point = geo_models.PointField(
@@ -526,73 +551,8 @@ class ObservationGroup(
     # none yet
 
 
-class AssociatedSpeciesObservation(ObservationGroup):
-    """Observation of an associated species."""
-
-    taxon = models.ForeignKey(
-        Taxon,
-        on_delete=models.CASCADE,
-        related_name="associated_species")
-
-    class Meta:
-        """Class options."""
-
-        verbose_name = "Associated Species"
-        verbose_name_plural = "Associated Species"
-
-    def __str__(self):
-        """The unicode representation."""
-        return u"Encounter {0} Obs {1}: Associated species {2}".format(
-            self.encounter.pk, self.pk, self.taxon)
-
-
-class FireHistoryObservation(ObservationGroup):
-    """Evidence of past fire date and intensity."""
-
-    HMLN_DEFAULT = "NA"
-    HMLN_LOW = "low"
-    HMLN_MEDIUM = "medium"
-    HMLN_HIGH = "high"
-    HMLN_CHOICES = (
-        (HMLN_DEFAULT, "NA"),
-        (HMLN_LOW, "Low"),
-        (HMLN_MEDIUM, "Medium"),
-        (HMLN_HIGH, "High"),
-    )
-
-    last_fire_date = models.DateField(
-        verbose_name=_("Date of last fire"),
-        blank=True, null=True,
-        help_text=_("The estimated date of the last fire, if evident."))
-
-    fire_intensity = models.CharField(
-        verbose_name=_("Fire intensity"),
-        max_length=100,
-        default=HMLN_DEFAULT,
-        choices=HMLN_CHOICES,
-        help_text=_(
-            "Estimated intensity of last fire on a scale from High to Low, "
-            "or NA if no evidence of past fires."
-        ),
-    )
-
-    class Meta:
-        """Class options."""
-
-        verbose_name = "Fire History"
-        verbose_name_plural = "Fire Histories"
-
-    def __str__(self):
-        """The unicode representation."""
-        return u"Encounter {0} Obs {1}: Fire on {2}, intensity {3}".format(
-            self.encounter.pk,
-            self.pk,
-            self.last_fire_date.strftime("%d/%m/%Y"),
-            self.get_fire_intensity_display())
-
-
 def fileattachmentobservation_media(instance, filename):
-    """Return an upload path for FileAttachmentObservation media."""
+    """Return an upload path for FileAttachment media."""
     return 'files/{0}/{1}/{2}'.format(
         instance.encounter.pk,
         instance.pk,
@@ -600,7 +560,7 @@ def fileattachmentobservation_media(instance, filename):
     )
 
 
-class FileAttachmentObservation(ObservationGroup):
+class FileAttachment(ObservationGroup):
     """A file attachment to an ObservationGroup.
 
     The file attachment can be a photo, a paper datasheet scanned to PDF,
@@ -626,6 +586,7 @@ class FileAttachmentObservation(ObservationGroup):
         User,
         on_delete=models.CASCADE,
         verbose_name=_("Author"),
+        related_name="occurrence_fileattachments",
         blank=True, null=True,
         help_text=_("The person who authored and endorsed this file."))
 
@@ -647,7 +608,46 @@ class FileAttachmentObservation(ObservationGroup):
         return "{0} ({1})".format(self.title, self.author.fullname)
 
 
-class AreaAssessmentObservation(ObservationGroup):
+# -----------------------------------------------------------------------------
+# Site level observations
+#
+class HabitatComposition(ObservationGroup):
+    """Habitat composition."""
+
+    # landform(enum+other)
+    # rock type(enum+other)
+    # loose rock (range pc)
+    # soil type(enum+other)
+    # soil colour(enum+other)
+    # drainage(enum+other)
+    # specific landform element
+    pass
+
+
+class ConservationThreat(ObservationGroup):
+    """Threat to encounter subject or site.
+
+    Conservation threats are mitigated by one or many conservation actions.
+    Conservation threat categories are mitigated by one or many
+    conservation action categories.
+    """
+
+    # FK threat_type(code label description)
+    # threat_cause
+    # area_affected_pc
+    # current_impact(NLME)
+    # potential_impact(LMHE)
+    # potential_threat_onset(SML)
+    pass
+
+# Fire response is OOS
+
+# -----------------------------------------------------------------------------
+# Survey level observations
+#
+
+
+class AreaAssessment(ObservationGroup):
     """A description of survey effort at a flora or TEC site.
 
     TODO add
@@ -713,93 +713,195 @@ class AreaAssessmentObservation(ObservationGroup):
         else:
             return None
 
-# add to areaenc: location source (diff gps, gps, mudmap, verbal report, diff gps), location description
 
-# PlantCountObservation
+class OccurrenceCondition(ObservationGroup):
+    """Community occurrence condition on date of encounter."""
+
+    # estimated area in percent of total area following bush forever scale
+    # pristine_pc, excellent_pc, very_good_pc, good_pc, degraded_pc, completely_degraded_pc
+    pass
+
+
+class HabitatCondition(ObservationGroup):
+    """Habitat condition on date of encounter."""
+
+    # soil condition(enum+other)
+    # occ cond obs: pc habitat in condition x
+    # land manager present
+    pass
+
+
+class FireHistory(ObservationGroup):
+    """Evidence of past fire date and intensity."""
+
+    HMLN_DEFAULT = "NA"
+    HMLN_LOW = "low"
+    HMLN_MEDIUM = "medium"
+    HMLN_HIGH = "high"
+    HMLN_CHOICES = (
+        (HMLN_DEFAULT, "NA"),
+        (HMLN_LOW, "Low"),
+        (HMLN_MEDIUM, "Medium"),
+        (HMLN_HIGH, "High"),
+    )
+
+    last_fire_date = models.DateField(
+        verbose_name=_("Date of last fire"),
+        blank=True, null=True,
+        help_text=_("The estimated date of the last fire, if evident."))
+
+    fire_intensity = models.CharField(
+        verbose_name=_("Fire intensity"),
+        max_length=100,
+        default=HMLN_DEFAULT,
+        choices=HMLN_CHOICES,
+        help_text=_(
+            "Estimated intensity of last fire on a scale from High to Low, "
+            "or NA if no evidence of past fires."
+        ),
+    )
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Fire History"
+        verbose_name_plural = "Fire Histories"
+
+    def __str__(self):
+        """The unicode representation."""
+        return u"Encounter {0} Obs {1}: Fire on {2}, intensity {3}".format(
+            self.encounter.pk,
+            self.pk,
+            self.last_fire_date.strftime("%d/%m/%Y"),
+            self.get_fire_intensity_display())
+
+
+# -----------------------------------------------------------------------------
+# Population level observations
 #
-# population count accuracy (actual, extrpol, estimate)
-# count method (enum)
-# what counted (plants, clumps, clonal stems)
-# population structure: mature/juveniles/seedlings(prop totals) x alive/dead
-# estimated area of population m2
-# quadrats present bool
-# number of quadrats surveyed
-# size of quadrats
-# detailed data attached
-# total area of quadrats m2
-# total alive: mature/juv/seedl(prop total)
-# reproductive state (m2m: clonal, gegetative, flowerbud, flower, imature fuit, fruit, dehisced fruit)
-# percentage in flower
-# condition of plants(enum healthy, moderate, poor, senescent)
+class PlantCount(ObservationGroup):
+    """Population plant count."""
 
-# ThreatObservation
+    # population count accuracy (actual, extrpol, estimate)
+    # count method (enum)
+    # what counted (plants, clumps, clonal stems)
+    # population structure: mature/juveniles/seedlings(prop totals) x alive/dead
+    # estimated area of population m2
+    # quadrats present bool
+    # number of quadrats surveyed
+    # size of quadrats
+    # detailed data attached
+    # total area of quadrats m2
+    # total alive: mature/juv/seedl(prop total)
+    # reproductive state (m2m: clonal, gegetative, flowerbud, flower, imature fuit, fruit, dehisced fruit)
+    # percentage in flower
+    # condition of plants(enum healthy, moderate, poor, senescent)
+    pass
+
+
+class AssociatedSpecies(ObservationGroup):
+    """Observation of an associated species."""
+
+    taxon = models.ForeignKey(
+        Taxon,
+        on_delete=models.CASCADE,
+        related_name="associated_species")
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Associated Species"
+        verbose_name_plural = "Associated Species"
+
+    def __str__(self):
+        """The unicode representation."""
+        return u"Encounter {0} Obs {1}: Associated species {2}".format(
+            self.encounter.pk, self.pk, self.taxon)
+
+
+# -----------------------------------------------------------------------------
+# Individual level observations
 #
-# FK threat_type(code label description)
-# threat_cause
-# area_affected_pc
-# current_impact(NLME)
-# potential_impact(LMHE)
-# potential_threat_onset(SML)
 
-# HabitatCompositionObservation
-#
-# landform(enum+other)
-# rock type(enum+other)
-# loose rock (range pc)
-# soil type(enum+other)
-# soil colour(enum+other)
-# drainage(enum+other)
-# specific landform element
+class VegetationClassification(ObservationGroup):
+    """NVIS classification categories."""
 
-# HabitatConditionObservation
-#
-# soil condition(enum+other)
-# occ cond obs: pc habitat in condition x
-# land manager present
+    # four fields withj autocomplete, NVIS FK
+    pass
 
 
-# VegetationClassificationObservation
-#
-# NVIS classification categories with autocomplete 1-4
+class AnimalObservation(ObservationGroup):
+    """Observation of an Animal.
 
-# PhysicalSpecimenObservation
-#
-# specimen ID
-# collector ID
-# destination (which herbarium)
-# permit type (AE, DRF)
-# permit ID
-# specimen type (animal and plant)
+    The observation may include several other animals
+    apart from the primarily observed animal.
+
+    * detection method
+    * Taxonomic identification and confidence
+    * sex
+    * reproductive state
+    * dist features, comments
+    * demographics of all other observed animals
+    * secondary signs
+    """
+
+    # detection method: sighting, trapped, spotlighting, remote camera,
+    # remote sensing, oral report, written report, acoustic recorder,
+    # fossil, subfossil, capture, release
+
+    # species id confidence: guess, certain, expert
+    # species identified by (user/name and affiliation)
+    # primary observed animal: dist feature description
+
+    # reproductive state: adult, subadult, juvenile, dependent young
+
+    # no_adult_male
+    # no_adult_female
+    # no_adult_unknown
+    # no_juvenile_male
+    # no_juvenile_female
+    # no_juvenile_unknown
+    # no_dependent_young_male
+    # no_dependent_young_female
+    # no_dependent_young_unknown
+
+    # sum_adult
+    # sum_juvenile
+    # sum_pouch_young
+    # sum_observed
+
+    # observation details description
+
+    # secondary signs (select multiple): heard, scats, tracks, diggings, nest/mound,
+    # natural hollow, artificial hollow, burrow, feathers/fur/hair/skin,
+    # bones, egg/eggshell, shell, feeding residue, fauna run, other see comments
+    pass
 
 
-# Fire response?
+class PhysicalSample(ObservationGroup):
+    """Physical sample or specimen taken off an organism."""
 
-# TEC
-# OccurrenceConditionObservation: estimated area in percent of total area following bush forever scale
-#
-# pristine_pc, excellent_pc, very_good_pc, good_pc, degraded_pc, completely_degraded_pc
+    # sample type
+    # sample label
+    # destination
+    # collector ID
+    # permit type (AE, DRF)
+    # permit ID
+    pass
 
-# Uses: AreaAss, Thr, OccCond, HabComp, HabCond, VegClass, FireHist, AssSp, FileAtt
 
-# TFA
-# AnimalObservation
-#
-#
-# species id confidence
-# species identified by (user/name and affiliation)
-# primary observed animal: dist feature description
-#
-# reproductive state
-#
-# demographics of all observed animals: number of x adults/juv/pouch youg x m/f/unk
-# observation details description
-#
-# secondary signs (multiple): heard, scats, etc
+class WildlifeIncident(ObservationGroup):
+    """A Wildlife incident: injury or death."""
 
-# PhysicalSampleObservation
-# PhysicalSpecimenObservation
-# SurveyMethodObservation > roll into AreaAssessment
+    # health
+    # cause of death
+    # injuries description
+    # actions taken
+    # actions required
+    pass
 
-# WildlifeIncidentObservation: health, cause of death, injuries description, actions taken, actions required
 
-# Uses: SpecimenObs, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen
+# -----------------------------------------------------------------------------
+# TEC Uses: AreaAss, Thr, OccCond, HabComp, HabCond, VegClass, FireHist, AssSp, FileAtt
+# TFA Uses: AreaAss, SpecimenObs, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen, Sample
+# TFL Uses: AreaAss, Thr, HabComp, HabCond, AssSp, FireHist, FileAtt, Specimen

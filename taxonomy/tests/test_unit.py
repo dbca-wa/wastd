@@ -9,6 +9,16 @@ This test suite covers:
   (imported into staging models Hbv* via the API)
 * Critical habitat of a species or community
 
+General requirements:
+* [REQ 43] Make use of the Department’s central customer database
+  for storing and retrieving details of any individual or organisation
+  outside the Department that have access to the system
+* [REQ 44] Support single sign on security access for Department users accessing the system
+* [REQ 45] A snapshot of current databases to be taken, and legacy data migrated into the new system.
+  See Data ETL workbooks. Test API endpoints with example data. Add examples to wastdr vignettes.
+
+
+
 On critical habitat:
 "With the proclamation of the Biodiversity Conservation Act 2016, there will be a requirement to map
 and maintain critical habitat. Adding a mapping capability to threatened flora and fauna occurrence
