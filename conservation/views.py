@@ -29,6 +29,43 @@ from shared.views import (
 # ---------------------------------------------------------------------------#
 # List Views
 #
+class ConservationThreatListView(
+        ListViewBreadcrumbMixin,
+        ResourceDownloadMixin,
+        ListView):
+    """A ListView for ConservationAction."""
+
+    model = cons_models.ConservationThreat
+    template_name = "conservation/conservationthreat_list.html"
+    resource_class = cons_resources.ConservationThreatResource
+    resource_formats = ['csv', 'tsv', 'xls', 'json']
+    filter_class = cons_filters.ConservationThreatFilter
+    paginate_by = 20
+
+    def get_context_data(self, **kwargs):
+        """Context with list filter and current time."""
+        context = super(ConservationThreatListView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        context['list_filter'] = cons_filters.ConservationThreatFilter(
+            self.request.GET,
+            queryset=self.get_queryset()
+        )
+        return context
+
+    def get_queryset(self):
+        """Queryset with custom filter."""
+        queryset = cons_models.ConservationThreat.objects.all().prefetch_related(
+            "taxa",
+            "communities",
+            "document",
+            "category"
+        )
+        return cons_filters.ConservationThreatFilter(
+            self.request.GET,
+            queryset=queryset
+        ).qs
+
+
 class ConservationActionListView(
         ListViewBreadcrumbMixin,
         ResourceDownloadMixin,
@@ -70,6 +107,26 @@ class ConservationActionListView(
 # ---------------------------------------------------------------------------#
 # Detail Views
 #
+class ConservationThreatDetailView(DetailViewBreadcrumbMixin, DetailView):
+    """ConservationThreat DetailView."""
+
+    model = cons_models.ConservationThreat
+    template_name = "conservation/conservationthreat_detail.html"
+
+    def get_object(self):
+        """Get object, handle 404, refetch for performance."""
+        obj = self.model.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            "communities",
+            "taxa",
+            "document"
+        ).first()
+        if not obj:
+            raise Http404
+        return obj
+
+
 class ConservationActionDetailView(DetailViewBreadcrumbMixin, DetailView):
     """Conservation Action DetailView."""
 
@@ -93,6 +150,28 @@ class ConservationActionDetailView(DetailViewBreadcrumbMixin, DetailView):
 # ---------------------------------------------------------------------------#
 # Update Views
 #
+class ConservationThreatUpdateView(
+        SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
+    """Update view for ConservationThreat."""
+
+    template_name = "shared/default_form.html"
+    form_class = cons_forms.ConservationThreatForm
+    model = cons_models.ConservationThreat
+
+    def get_object(self, queryset=None):
+        """Get object, handle 404, refetch for performance."""
+        obj = self.model.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            "communities",
+            "taxa",
+            "document"
+        ).first()
+        if not obj:
+            raise Http404
+        return obj
+
+
 class ConservationActionUpdateView(
         SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for ConservationAction."""
@@ -138,6 +217,28 @@ class ConservationActivityUpdateView(
 # ---------------------------------------------------------------------------#
 # Create Views
 #
+class ConservationThreatCreateView(
+        CreateViewBreadcrumbMixin, SuccessUrlMixin, CreateView):
+    """Create view for ConservationThreat."""
+
+    template_name = "shared/default_form.html"
+    form_class = cons_forms.ConservationThreatForm
+    model = cons_models.ConservationThreat
+
+    def get_initial(self):
+        """Initial form values."""
+        initial = super(ConservationThreatCreateView, self).get_initial()
+        if "taxa" in self.request.GET:
+            initial["taxa"] = self.request.GET["taxa"]
+        if "communities" in self.request.GET:
+            initial["communities"] = self.request.GET["communities"]
+        if "document" in self.request.GET:
+            initial["document_id"] = self.request.GET["document_id"]
+        if "occurrence_area_code" in self.request.GET:
+            initial["occurrence_area_code"] = self.request.GET["occurrence_area_code"]
+        return initial
+
+
 class ConservationActionCreateView(
         CreateViewBreadcrumbMixin, SuccessUrlMixin, CreateView):
     """Create view for ConservationAction."""

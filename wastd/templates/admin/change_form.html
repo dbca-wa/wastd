@@ -4,6 +4,7 @@
 {% block stylesheets %}
 {{ block.super }}
 {% leaflet_css plugins="ALL" %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 <!-- Fix missing favicon -->
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 <style>

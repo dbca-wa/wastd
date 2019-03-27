@@ -1,0 +1,86 @@
+<!-- conservation/include/conservationthreat_card.html -->
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
+  <h6 class="card-header">
+    <div class="row">
+      <span class="badge badge-secondary" title="Conservation Threat">
+        <span class="oi oi-list" aria-hidden="true"></span>
+        {{ object.category }}
+      </span>
+
+    </div>
+  {{ object.cause }}
+  </h6>
+
+  <div class="card-body">
+    <h6 class="card-subtitle mb-2 text-muted">
+      <!-- taxa -->
+      {% for taxon in object.taxa.all %}
+      <p class="card-text">
+        <a href="{{ taxon.get_absolute_url }}">
+          <span class="oi oi-eye"
+            title="Species" aria-hidden="true"></span>
+          {{ taxon }}
+        </a>
+      </p>
+      {% endfor %}
+
+      <!-- communities -->
+      {% for com in object.communities.all %}
+      <p class="card-text">
+        <a href="{{ com.get_absolute_url }}">
+          <span class="oi oi-eye"
+            title="Communities" aria-hidden="true"></span>
+          {{ com }}
+          </a>
+      </p>
+      {% endfor %}
+      <!-- documents -->
+
+      {% if object.document %}
+      <p class="card-text">
+        <span class="oi oi-document"
+          title="Document" aria-hidden="true"></span>
+        {{ object.document }}
+      </p>
+      {% endif %}
+      <!-- area code -->
+
+    </h6>
+    <p class="card-text">
+      <span class="oi oi-calendar"
+        title="Encountered on" aria-hidden="true"></span>
+      {{ object.encountered_on|date:"D d M Y" }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-person"
+        title="Encountered by" aria-hidden="true"></span>
+      {{ object.encountered_by }}
+    </p>
+
+  </div><!-- /.card-body -->
+
+  <div class="card-footer">
+    <!-- Conservation threat view -->
+    <a href="{{ object.get_absolute_url }}"
+        title="View conservation threat"
+        role="button"
+        class="btn btn-primary btn-sm btn-block">
+      <span class="oi oi-eye" aria-hidden="true"></span>
+      <span class="oi oi-task" aria-hidden="true"></span>
+      View details
+    </a>
+    <!-- /Conservation threat view -->
+
+    <!-- Conservation threat update -->
+    <a href="{{ object.update_url }}"
+        title="Edit conservation threat."
+        role="button"
+        class="btn btn-primary btn-sm btn-block">
+      <span class="oi oi-pencil" aria-hidden="true"></span>
+      <span class="oi oi-task" aria-hidden="true"></span>
+      Edit details
+    </a>
+    <!-- /Conservation threat update -->
+  </div><!-- /.card-footer -->
+</div><!-- /.card -->
+<!-- conservation/includes/conservationthreat_card.html -->

@@ -31,7 +31,7 @@ from django_fsm_log.decorators import fsm_log_by
 from taxonomy.models import Community, Taxon
 
 from wastd.users.models import User
-from shared.models import UrlsMixin
+from shared.models import UrlsMixin, CodeLabelDescriptionMixin, ObservationAuditMixin
 
 # from django.utils.safestring import mark_safe
 
@@ -86,52 +86,121 @@ class FileAttachment(models.Model):
         """The full name."""
         return "{0} {1}".format(self.title, self.author)
 
+
 # -----------------------------------------------------------------------------
-# Conservation (Management) Actions
+# Conservation (Management) Threats and Actions
+@python_2_unicode_compatible
+class ConservationThreatCategory(CodeLabelDescriptionMixin, models.Model):
+    """A conservation management threat category."""
+
+    class Meta:
+        """Class opts."""
+
+        verbose_name = "Conservation Threat Category"
+        verbose_name_plural = "Conservation Threat Categories"
 
 
 @python_2_unicode_compatible
-class ConservationActionCategory(models.Model):
+class ConservationThreat(UrlsMixin, ObservationAuditMixin, models.Model):
+    """A conservation threat is a potentially damaging event against a taxon or community.
+
+    The conservation threat can pertain to:
+
+    * an entire species,
+    * an entire community,
+    * any combination of species and communities
+      (as per multi-species management plans),
+    * a management / recovery / interim recovery plan,
+    * an individual occurrence (fauna site, flora population
+      or subpopulation, TEC pr PEC boundary), or
+    * a subset of occurrences as indicated by a multipolygon.
+
+    The conservation threat is specified by:
+
+    * a threat category, and
+    * threat causes.
+    """
+
+    # Pertains to
+    taxa = models.ManyToManyField(
+        Taxon,
+        blank=True,
+        verbose_name=_("Taxa"),
+        help_text=_("All taxa this conservation threat pertains to."),
+    )
+
+    communities = models.ManyToManyField(
+        Community,
+        blank=True,
+        verbose_name=_("Communities"),
+        help_text=_("All communities this conservation threat pertains to."),
+    )
+
+    document = models.ForeignKey(
+        "Document",
+        blank=True, null=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Plan document"),
+        help_text=_("The document in which this conservation threat is specified."),
+    )
+
+    target_area = geo_models.MultiPolygonField(
+        srid=4326,
+        blank=True, null=True,
+        verbose_name=_("Target Area"),
+        help_text=_("If this action pertains to only some but not all occurrences, "
+                    "indicate the target area(s) here. This management action will "
+                    "be automatically affiliated with all intersecting occurrence areas."),
+    )
+
+    occurrence_area_code = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Occurence area code"),
+        help_text=_("The known code for the occurrence area this "
+                    "conservation threat pertains to, e.g. a Fauna site, "
+                    "a Flora (sub)population ID, or a TEC/PEC boundary name."),
+    )
+
+    # Threat
+    category = models.ForeignKey(
+        ConservationThreatCategory,
+        blank=True, null=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Threat category"),
+        help_text=_("Choose the overarching category."),
+    )
+
+    cause = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Threat cause"),
+        help_text=_("Describe the threat cause or agent."),
+    )
+
+    class Meta:
+        """Class opts."""
+
+        verbose_name = "Conservation Threat"
+        verbose_name_plural = "Conservation Threats"
+        ordering = ["category", "cause", ]
+        index_together = [
+            ["document", "occurrence_area_code"],
+        ]
+
+    def __str__(self):
+        """The full name."""
+        return "[{0}] {1}".format(self.category, self.cause)
+
+
+@python_2_unicode_compatible
+class ConservationActionCategory(CodeLabelDescriptionMixin, models.Model):
     """A conservation management action category."""
-
-    code = models.SlugField(
-        max_length=500,
-        unique=True,
-        verbose_name=_("Code"),
-        help_text=_("A unique, url-safe code."),
-    )
-
-    label = models.CharField(
-        blank=True, null=True,
-        max_length=500,
-        verbose_name=_("Label"),
-        help_text=_("A human-readable, self-explanatory label."),
-    )
-
-    description = models.TextField(
-        blank=True, null=True,
-        verbose_name=_("Description"),
-        help_text=_("A comprehensive description."),
-    )
 
     class Meta:
         """Class opts."""
 
         verbose_name = "Conservation Action Category"
         verbose_name_plural = "Conservation Action Categories"
-        ordering = ["code", ]
-
-    def __str__(self):
-        """The full name."""
-        return self.label
-
-    # -------------------------------------------------------------------------
-    # URLs
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
 @python_2_unicode_compatible
@@ -188,14 +257,14 @@ class ConservationAction(UrlsMixin, models.Model):
         Taxon,
         blank=True,
         verbose_name=_("Taxa"),
-        help_text=_("All taxa this management action pertains to."),
+        help_text=_("All taxa this conservation action pertains to."),
     )
 
     communities = models.ManyToManyField(
         Community,
         blank=True,
         verbose_name=_("Communities"),
-        help_text=_("All communities this management action pertains to."),
+        help_text=_("All communities this conservation action pertains to."),
     )
 
     document = models.ForeignKey(
@@ -203,7 +272,7 @@ class ConservationAction(UrlsMixin, models.Model):
         blank=True, null=True,
         on_delete=models.SET_NULL,
         verbose_name=_("Plan document"),
-        help_text=_("The document in which this management action is specified."),
+        help_text=_("The document in which this conservation action is specified."),
     )
 
     target_area = geo_models.MultiPolygonField(
@@ -211,7 +280,7 @@ class ConservationAction(UrlsMixin, models.Model):
         blank=True, null=True,
         verbose_name=_("Target Area"),
         help_text=_("If this action pertains to only some but not all occurrences, "
-                    "indicate the target area(s) here. This management action will "
+                    "indicate the target area(s) here. This conservation action will "
                     "be automatically affiliated with all intersecting occurrence areas."),
     )
 
@@ -220,7 +289,7 @@ class ConservationAction(UrlsMixin, models.Model):
         blank=True, null=True,
         verbose_name=_("Occurence area code"),
         help_text=_("The known code for the occurrence area this "
-                    "management action pertains to, either a Fauna site, "
+                    "conservation action pertains to, either a Fauna site, "
                     "a Flora (sub)population ID, or a TEC/PEC boundary name."),
     )
 

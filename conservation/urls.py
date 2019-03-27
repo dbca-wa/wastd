@@ -7,6 +7,19 @@ from . import views
 app_name = 'conservation'
 
 urlpatterns = [
+    re_path(r'^threats/$',
+            views.ConservationThreatListView.as_view(),
+            name="conservationthreat-list"),
+    re_path(r'^threats/(?P<pk>\d+)/$',
+            views.ConservationThreatDetailView.as_view(),
+            name="conservationthreat-detail"),
+    re_path(r'^threats/(?P<pk>\d+)/update/$',
+            views.ConservationThreatUpdateView.as_view(),
+            name="conservationthreat-update"),
+    re_path(r'^threats/create/$',
+            views.ConservationThreatCreateView.as_view(),
+            name="conservationthreat-create"),
+
     re_path(r'^actions/$',
             views.ConservationActionListView.as_view(),
             name="conservationaction-list"),

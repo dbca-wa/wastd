@@ -5,6 +5,24 @@ from import_export import resources
 from conservation import models as cons_models
 
 
+class ConservationThreatResource(resources.ModelResource):
+    """ConservationThreat resource class for CSV download."""
+
+    class Meta:
+        """Class opts."""
+
+        model = cons_models.ConservationThreat
+        fields = [
+            "taxon_list",
+            "com_list",
+            "document__title",
+            "occurrence_area_code",
+            "category__label",
+            "encountered_by",
+            "encountered_on",
+        ]
+
+
 class ConservationActionResource(resources.ModelResource):
     """ConservationAction resource class for CSV download."""
 

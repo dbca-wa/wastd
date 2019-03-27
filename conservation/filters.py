@@ -4,8 +4,21 @@ from django.contrib.gis.db import models as geo_models
 
 import django_filters
 
-from conservation.models import ConservationAction
+from conservation.models import ConservationThreat, ConservationAction
 from shared.filters import FILTER_OVERRIDES
+
+
+class ConservationThreatFilter(django_filters.FilterSet):
+    """Filter for ConservationThreat."""
+
+    target_area = geo_models.PolygonField()
+
+    class Meta:
+        """Class opts."""
+
+        model = ConservationThreat
+        fields = ['target_area', 'category', ]
+        filter_overrides = FILTER_OVERRIDES
 
 
 class ConservationActionFilter(django_filters.FilterSet):

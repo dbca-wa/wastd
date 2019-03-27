@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
+
+{% block content %}
+{% include 'shared/breadcrumbs.html' %}
+{% include 'conservation/includes/conservationthreat_card.html' %}
+{% endblock %}
+
+{% block css%}
+{{ block.super }}
+{% leaflet_css %}
+{% endblock %}
+
+{% block javascript%}
+{{ block.super }}
+{% leaflet_js %}
+{% endblock %}

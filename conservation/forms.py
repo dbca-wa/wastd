@@ -5,14 +5,69 @@ from django import forms
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
-from django_select2.forms import ModelSelect2Widget  # ModelSelect2MultipleWidget
 from leaflet.forms.widgets import LeafletWidget
 
+from wastd.users import widgets as usr_widgets
 from conservation import models as cons_models
 from conservation import widgets as cons_widgets
 from taxonomy import widgets as tax_widgets
 from shared.admin import LEAFLET_SETTINGS
 from shared.forms import DateInput  # DateTimeInput
+from shared import forms as shared_forms
+
+
+class ConservationThreatForm(forms.ModelForm):
+    """Common form for ConservationThreat."""
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(ConservationThreatForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Relations',
+                'taxa',
+                'communities',
+                'document',
+                'target_area',
+                'occurrence_area_code',
+            ),
+            Fieldset(
+                'Threat',
+                'encountered_on',
+                'encountered_by',
+                'category',
+                'cause',
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+
+    class Meta:
+        """Class options."""
+
+        model = cons_models.ConservationThreat
+        fields = (
+            "taxa",
+            "communities",
+            "document",
+            "occurrence_area_code",
+            "target_area",
+            "category",
+            "cause",
+            "encountered_by",
+            "encountered_on",
+        )
+        widgets = {
+            'taxa': tax_widgets.TaxonMultipleWidget(),
+            'communities': tax_widgets.CommunityMultipleWidget(),
+            'document': cons_widgets.DocumentWidget(),
+            'target_area': LeafletWidget(attrs=LEAFLET_SETTINGS),
+            'category': cons_widgets.ConservationActionCategoryWidget(),
+            "encountered_on": shared_forms.DateTimeInput(),
+            "encountered_by": usr_widgets.UserWidget(),
+        }
 
 
 class ConservationActionForm(forms.ModelForm):

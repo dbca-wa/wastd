@@ -33,6 +33,48 @@ logger = logging.getLogger(__name__)
 
 
 # Abstract models ------------------------------------------------------------#
+class CodeLabelDescriptionMixin(models.Model):
+    """A Mixin providing code, label and description."""
+
+    code = models.SlugField(
+        max_length=500,
+        unique=True,
+        verbose_name=_("Code"),
+        help_text=_("A unique, url-safe code."),
+    )
+
+    label = models.CharField(
+        blank=True, null=True,
+        max_length=500,
+        verbose_name=_("Label"),
+        help_text=_("A human-readable, self-explanatory label."),
+    )
+
+    description = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Description"),
+        help_text=_("A comprehensive description."),
+    )
+
+    class Meta:
+        """Class opts."""
+
+        abstract = True
+        ordering = ["code", ]
+
+    def __str__(self):
+        """The full name."""
+        return self.label
+
+    # -------------------------------------------------------------------------
+    # URLs
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL."""
+        return reverse('admin:{0}_{1}_change'.format(
+            self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+
 class UrlsMixin(models.Model):
     """Mixin class to add absolute admin, list, update and detail urls.
 

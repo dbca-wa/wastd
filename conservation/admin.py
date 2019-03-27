@@ -25,6 +25,77 @@ class FileAttachmentInline(GenericTabularInline):
     classes = ("grp-collapse grp-closed wide extrapretty",)
 
 
+@admin.register(cons_models.ConservationThreatCategory)
+class ConservationThreatCategoryAdmin(VersionAdmin):
+    """Admin for Conservation Management Threats."""
+
+    model = cons_models.ConservationThreatCategory
+    form = s2form(cons_models.ConservationThreatCategory, attrs=S2ATTRS)
+    prepopulated_fields = {"code": ("label",)}
+    list_display = ("code", "label", "description", )
+    search_fields = ("code", "label", "description")
+    save_on_top = True
+
+
+@admin.register(cons_models.ConservationThreat)
+class ConservationThreatAdmin(ImportExportModelAdmin, VersionAdmin):
+    """Admin for Conservation Management Threats."""
+
+    model = cons_models.ConservationThreat
+    form = s2form(cons_models.ConservationThreat, attrs=S2ATTRS)
+    resource_class = cons_resources.ConservationThreatResource
+    autocomplete_fields = ['taxa', 'communities', "category", ]
+
+    list_display = (
+        "pk",
+        "taxon_list",
+        "com_list",
+        "document",
+        "occurrence_area_code",
+        "category",
+        "cause",
+        "encountered_on",
+        "encountered_by",
+    )
+    list_filter = (
+        "category",
+        "document",
+        ("encountered_on", admin.DateFieldListFilter),
+    )
+    search_fields = (
+        "occurrence_area_code",
+        "cause",
+    )
+
+    save_on_top = True
+    # filter_horizontal = ("communities", )
+    formfield_overrides = FORMFIELD_OVERRIDES
+    fieldsets = (
+        ("Affiliation", {
+            "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
+            "fields": ("taxa", "communities", "document",
+                       "target_area", "occurrence_area_code")
+        }),
+        ("Threat", {
+            "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
+            "fields": ("encountered_by", "encountered_on", "category", "cause",)
+        }),
+    )
+    inlines = [
+        FileAttachmentInline,
+    ]
+
+    def taxon_list(self, obj):
+        """Make M2M taxa readable."""
+        return ", ".join([taxon.__str__() for taxon in obj.taxa.all()])
+    taxon_list.short_description = 'Species'
+
+    def com_list(self, obj):
+        """Make M2M taxa readable."""
+        return ", ".join([com.__str__() for com in obj.communities.all()])
+    com_list.short_description = 'Communities'
+
+
 @admin.register(cons_models.ConservationActionCategory)
 class ConservationActionCategoryAdmin(VersionAdmin):
     """Admin for Conservation Management Actions."""
