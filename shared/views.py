@@ -13,7 +13,7 @@ class SuccessUrlMixin(View):
     """View mixin providing get_success_url as get_absolute_url."""
 
     def get_success_url(self):
-        """Success: ConservationAction detail view."""
+        """Success URL is get_absolute_url."""
         return self.object.get_absolute_url()
 
 

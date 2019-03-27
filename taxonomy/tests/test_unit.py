@@ -29,10 +29,14 @@ from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.template import Context, Template  # noqa
+from django.template.loader import get_template
+
 from model_mommy import mommy
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
-from taxonomy.models import Community, Taxon
 
+from taxonomy.models import Community, Taxon
+from conservation import models as cons_models
 MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
 
 
@@ -68,3 +72,34 @@ class CommunityUnitTests(TestCase):
         # self.assertEqual(object.__unicode__(), object.name)
 
 # Test import WACensus: create a few HbV instances, run make_taxon_names, test resulting names.
+
+
+class TemplateTagTests(TestCase):
+    """Template tag tests."""
+
+    def setUp(self):
+        """Shared objects."""
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser", email="super@gmail.com", password="test")
+        self.client.force_login(self.user)
+
+        self.taxon, created = Taxon.objects.update_or_create(
+            name_id=0,
+            defaults=dict(name="Eukarya",
+                          rank=Taxon.RANK_DOMAIN,
+                          current=True,
+                          parent=None))
+
+        self.gaz = cons_models.TaxonGazettal.objects.create(
+            taxon=self.taxon,
+            scope=cons_models.TaxonGazettal.SCOPE_WESTERN_AUSTRALIA,
+            # TODO cons category, cons criteria
+        )
+
+    def test_gazettal_labels(self):
+        """Test gazettal labels."""
+        c = {'original': self.taxon, 'user': self.user}
+        t = get_template('include/gazettal.html')
+        r = t.render(c)
+        pass
+        # self.assertInHTML(r, self.gaz.label_cache)

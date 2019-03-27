@@ -218,7 +218,7 @@ class ConservationActivityUpdateView(
 # Create Views
 #
 class ConservationThreatCreateView(
-        CreateViewBreadcrumbMixin, SuccessUrlMixin, CreateView):
+        SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
     """Create view for ConservationThreat."""
 
     template_name = "shared/default_form.html"
@@ -240,7 +240,7 @@ class ConservationThreatCreateView(
 
 
 class ConservationActionCreateView(
-        CreateViewBreadcrumbMixin, SuccessUrlMixin, CreateView):
+        SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
     """Create view for ConservationAction."""
 
     template_name = "shared/default_form.html"
@@ -265,7 +265,7 @@ class ConservationActionCreateView(
 
 
 class ConservationActivityCreateView(
-        CreateViewBreadcrumbMixin, SuccessUrlMixin, CreateView):
+        SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
     """Create view for ConservationActivity."""
 
     template_name = "shared/default_form.html"

@@ -121,6 +121,31 @@ class ConservationThreat(UrlsMixin, ObservationAuditMixin, models.Model):
     * threat causes.
     """
 
+    EHMLNN_DEFAULT = "NA"
+    EHMLNN_NIL = "nil"
+    EHMLNN_LOW = "low"
+    EHMLNN_MEDIUM = "medium"
+    EHMLNN_HIGH = "high"
+    EHMLNN_EXTREME = "extreme"
+    EHMLNN_CHOICES = (
+        (EHMLNN_DEFAULT, _("NA")),
+        (EHMLNN_NIL, _("Nil")),
+        (EHMLNN_LOW, _("Low")),
+        (EHMLNN_MEDIUM, _("Medium")),
+        (EHMLNN_HIGH, _("High")),
+        (EHMLNN_EXTREME, _("Extreme")),
+    )
+
+    LMSN_DEFAULT = "NA"
+    LSMN_SHORT = "short-term"
+    LSMN_MEDIUM = "medium-term"
+    LSMN_LONG = "long-term"
+    LMSN_CHOICES = (
+        (LMSN_DEFAULT, _("NA")),
+        (LSMN_SHORT, _("(S)hort term: Within 12 months")),
+        (LSMN_MEDIUM, _("(M)edium term: Within 1 to 5 years")),
+        (LSMN_LONG, _("(L)ong term: after 5 years")),
+    )
     # Pertains to
     taxa = models.ManyToManyField(
         Taxon,
@@ -175,6 +200,38 @@ class ConservationThreat(UrlsMixin, ObservationAuditMixin, models.Model):
         blank=True, null=True,
         verbose_name=_("Threat cause"),
         help_text=_("Describe the threat cause or agent."),
+    )
+
+    area_affected_percent = models.DecimalField(
+        max_digits=3,
+        decimal_places=0,
+        blank=True, null=True,
+        verbose_name=_("Area affected [%]"),
+        help_text=_("The estimated percentage (0-100) of the "
+                    "specified occurrence area affected by this threat."),
+    )
+
+    current_impact = models.CharField(
+        verbose_name=_("Current Impact"),
+        max_length=100,
+        default=EHMLNN_DEFAULT,
+        choices=EHMLNN_CHOICES,
+        help_text=_("Current impact of threat on specified subjects."),
+    )
+
+    potential_impact = models.CharField(
+        verbose_name=_("Potential Impact"),
+        max_length=100,
+        default=EHMLNN_DEFAULT,
+        choices=EHMLNN_CHOICES,
+        help_text=_("Potential impact of threat on specified subjects."),
+    )
+    potential_onset = models.CharField(
+        verbose_name=_("Potential Onset"),
+        max_length=100,
+        default=LMSN_DEFAULT,
+        choices=LMSN_CHOICES,
+        help_text=_("Potential onset of threat on specified subjects."),
     )
 
     class Meta:

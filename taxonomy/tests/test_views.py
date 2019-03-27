@@ -3,13 +3,14 @@
 from __future__ import unicode_literals
 
 from django.utils import timezone  # noqa
-
+# from django.http import Http404
 from django.contrib.auth import get_user_model  # noqa
 from django.contrib.gis.geos import GEOSGeometry  # Point, Polygon  # noqa
 from django.test import TestCase  # noqa
 from django.urls import reverse  # noqa
 from model_mommy import mommy  # noqa
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
+
 from conservation import models as cons_models
 from taxonomy.models import Community, Taxon, Crossreference
 # from django.contrib.contenttypes.models import ContentType
@@ -115,6 +116,7 @@ class TaxonViewTests(TestCase):
             Taxon,
             name_id=1000,
             name="name0",
+            publication_status=0,
             _fill_optional=['rank', 'eoo'])
         self.taxon0.save()
 
@@ -122,6 +124,10 @@ class TaxonViewTests(TestCase):
             Taxon,
             name_id=1001,
             name="name1",
+            current=True,
+            publication_status=1,
+            parent=self.taxon0,
+            author="ze author",
             _fill_optional=['rank', 'eoo'])
         self.taxon1.save()
 
@@ -129,6 +135,7 @@ class TaxonViewTests(TestCase):
             Taxon,
             name_id=1002,
             name="name2",
+            publication_status=2,
             _fill_optional=['rank', 'eoo'])
         self.taxon2.save()
 
@@ -184,11 +191,28 @@ class TaxonViewTests(TestCase):
         response = self.client.get(self.taxon0.list_url())
         self.assertEqual(response.status_code, 200)
 
+    def test_taxon_list_url_with_nameid(self):
+        """Test taxon-list with name_id.
+
+        * taxon-list with valid name_id should load.
+        * taxon-list with invalid name_id should still load but show warning.
+        """
+        response = self.client.get("{0}?name_id={1}".format(self.taxon0.list_url(), self.taxon0.name_id))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("{0}?name_id=0".format(self.taxon0.list_url()))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This Name ID does not exist.")
+
     def test_taxon_detail_url_loads(self):
         """Test Taxon detail_url."""
         response = self.client.get(self.taxon0.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
         # TODO test crossreference urls
+
+        response = self.client.get(reverse('taxonomy:taxon-detail', kwargs={'name_id': 5000000}))
+        self.assertEqual(response.status_code, 404)
 
     # def test_taxon_update_url_loads(self):
     #     """Test Taxon update_url."""

@@ -53,7 +53,6 @@ class TaxonGazettalModelTests(TestCase):
             taxon=self.taxon,
             scope=cons_models.TaxonGazettal.SCOPE_WESTERN_AUSTRALIA,
         )
-        # add cat and crit to gaz
 
     def test__str__(self):
         """Test the string method."""

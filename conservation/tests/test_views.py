@@ -135,8 +135,6 @@ class ConservationActionViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.consactioncat = cons_models.ConservationActionCategory.objects.create(
-            code="burn", label="Burn", description="Burn everything")
         self.taxon0 = mommy.make(
             Taxon,
             name_id=1000,
@@ -149,10 +147,10 @@ class ConservationActionViewTests(TestCase):
             name="name0",
             _fill_optional=['eoo'])
         self.com0.save()
+        self.consactioncat = cons_models.ConservationActionCategory.objects.create(
+            code="burn", label="Burn", description="Burn everything")
         self.object = cons_models.ConservationAction.objects.create(
-            category=self.consactioncat,
-            instructions="burn some stuff"
-        )
+            category=self.consactioncat, instructions="burn some stuff")
         self.object.taxa.add(self.taxon0)
         self.object.communities.add(self.com0)
         self.user = get_user_model().objects.create_superuser(

@@ -96,6 +96,8 @@ class CommunityAreaEncounterTests(TestCase):
     def setUp(self):
         """Shared objects.
 
+        Objects are not created with TestMommy.
+
         Bugs with TestMommy vs django-polymorphic:
         https://github.com/django-polymorphic/django-polymorphic/issues/280
         https://github.com/django-polymorphic/django-polymorphic/issues/109
@@ -134,10 +136,12 @@ class CommunityAreaEncounterTests(TestCase):
 
         self.cae = occ_models.CommunityAreaEncounter.objects.create(
             community=self.com0,
+            code="testcode",
             encountered_on=timezone.now(),
             encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
+        self.cae.save()
 
         self.asssp1 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.cae,
@@ -203,6 +207,11 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertIsNone(self.cae.geom)
         self.assertIsNone(self.cae.derived_point)
 
+    def test_popup(self):
+        """Test HTML popup."""
+        self.assertIn(self.cae.code, self.cae.as_html)
+        self.assertIn(self.cae.code, self.cae.derived_html)
+
     # ------------------------------------------------------------------------#
     # CAE AssociatedSpeciesObservation
     def test_asssp_creation(self):
@@ -255,6 +264,8 @@ class TaxonAreaEncounterTests(TestCase):
     def setUp(self):
         """Shared objects.
 
+        Save TAE/CAE twice to populate caches.
+
         Bugs with TestMommy vs django-polymorphic:
         https://github.com/django-polymorphic/django-polymorphic/issues/280
         https://github.com/django-polymorphic/django-polymorphic/issues/109
@@ -293,10 +304,12 @@ class TaxonAreaEncounterTests(TestCase):
 
         self.tae = occ_models.TaxonAreaEncounter.objects.create(
             taxon=self.taxon0,
+            code="testcode",
             encountered_on=timezone.now(),
             encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
+        self.tae.save()
 
         self.asssp1 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.tae,
@@ -342,6 +355,11 @@ class TaxonAreaEncounterTests(TestCase):
             self.tae.encountered_by,
             self.tae.taxon)
         self.assertEqual(label, self.tae.__str__())
+
+    def test_popup(self):
+        """Test HTML popup."""
+        self.assertIn(self.tae.code, self.tae.as_html)
+        self.assertIn(self.tae.code, self.tae.derived_html)
 
     # ------------------------------------------------------------------------#
     # TAE AssociatedSpeciesObservation

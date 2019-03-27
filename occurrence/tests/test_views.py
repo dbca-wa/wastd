@@ -137,6 +137,11 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
 
+    def test_community_detail_url_loads(self):
+        """Test Community detail_url."""
+        response = self.client.get(self.cae.community.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
     def test_cae_update_url_loads(self):
         """Test CommunityAreaEncounter update_url."""
         url = reverse('occurrence:communityareaencounter-update',
@@ -340,6 +345,11 @@ class TaxonAreaEncounterTests(TestCase):
     def test_tae_absolute_admin_url_loads(self):
         """Test absolute admin url."""
         response = self.client.get(self.tae.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_taxon_detail_url_loads(self):
+        """Test Taxon detail_url."""
+        response = self.client.get(self.tae.taxon.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_tae_list_url_loads(self):

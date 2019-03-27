@@ -66,6 +66,7 @@
       <span class="oi oi-project" aria-hidden="true"></span>
       Explore taxonomy
     </a>
+    {% admin_taxon_change_link request.user block=True label=True %}
     {% taxongazettal_add request.user block=True label=True %}
     {% conservationaction_add request.user "taxa" block=True label=True %}
     {% document_add request.user "taxa" block=True label=True %}
