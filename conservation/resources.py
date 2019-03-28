@@ -21,7 +21,7 @@ class ConservationThreatResource(resources.ModelResource):
             "encountered_by__name",
             "encountered_on",
             "area_affected_percent",
-            "current_impact,"
+            "current_impact",
             "potential_impact",
             "potential_onset",
         ]
