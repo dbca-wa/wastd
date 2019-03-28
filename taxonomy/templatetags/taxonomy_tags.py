@@ -119,13 +119,13 @@ def document_add(context, user, subject, block=False, label=False):
 # -----------------------------------------------------------------------------
 # Conservation threats
 #
-@register.inclusion_tag('include/conservationthreat_rows.html', takes_context=False)
-def conservationthreat_rows(user, threats, area=None):
-    """Render a conservation threat in a row."""
-    return {
-        "is_staff": user.is_staff,
-        "threats": threats.filter(occurrence_area_code=area) if area else threats
-    }
+# @register.inclusion_tag('include/conservationthreat_rows.html', takes_context=False)
+# def conservationthreat_rows(user, threats, area=None):
+#     """Render a conservation threat in a row."""
+#     return {
+#         "is_staff": user.is_staff,
+#         "threats": threats.filter(occurrence_area_code=area) if area else threats
+#     }
 
 
 @register.inclusion_tag('include/conservationthreat_cards.html', takes_context=False)
@@ -156,13 +156,13 @@ def conservationthreat_add(context, user, subject,
 # -----------------------------------------------------------------------------
 # Conservation actions
 #
-@register.inclusion_tag('include/conservationaction_rows.html', takes_context=False)
-def conservationaction_rows(user, actions, area=None):
-    """Render a conservation Action in a row."""
-    return {
-        "is_staff": user.is_staff,
-        "actions": actions.filter(occurrence_area_code=area) if area else actions
-    }
+# @register.inclusion_tag('include/conservationaction_rows.html', takes_context=False)
+# def conservationaction_rows(user, actions, area=None):
+#     """Render a conservation Action in a row."""
+#     return {
+#         "is_staff": user.is_staff,
+#         "actions": actions.filter(occurrence_area_code=area) if area else actions
+#     }
 
 
 @register.inclusion_tag('include/conservationaction_cards.html', takes_context=False)

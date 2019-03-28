@@ -25,7 +25,7 @@ class ConservationThreatForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                'Relations',
+                'Threat affiliations',
                 'taxa',
                 'communities',
                 'document',
@@ -38,6 +38,10 @@ class ConservationThreatForm(forms.ModelForm):
                 'encountered_by',
                 'category',
                 'cause',
+                "area_affected_percent",
+                "current_impact",
+                "potential_impact",
+                "potential_onset",
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')
@@ -58,6 +62,10 @@ class ConservationThreatForm(forms.ModelForm):
             "cause",
             "encountered_by",
             "encountered_on",
+            "area_affected_percent",
+            "current_impact",
+            "potential_impact",
+            "potential_onset",
         )
         widgets = {
             'taxa': tax_widgets.TaxonMultipleWidget(),
@@ -79,7 +87,7 @@ class ConservationActionForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                'Relations',
+                'Action affiliations',
                 'taxa',
                 'communities',
                 'document',

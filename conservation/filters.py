@@ -17,7 +17,13 @@ class ConservationThreatFilter(django_filters.FilterSet):
         """Class opts."""
 
         model = ConservationThreat
-        fields = ['target_area', 'category', ]
+        fields = [
+            'target_area',
+            'category',
+            'current_impact',
+            'potential_onset',
+            'potential_impact'
+        ]
         filter_overrides = FILTER_OVERRIDES
 
 
