@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.18.5 documentation</title>
+  <title>TSC 0.19.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.18
+                0.19
               </div>
             
           
@@ -226,7 +226,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.18.5 documentation</li>
+      <li>TSC 0.19.0 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -9153,6 +9153,22 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="attribute">
+<dt id="taxonomy.models.Community.conservationthreat_set">
+<code class="descname">conservationthreat_set</code><a class="headerlink" href="#taxonomy.models.Community.conservationthreat_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="taxonomy.models.Community.description">
 <code class="descname">description</code><a class="headerlink" href="#taxonomy.models.Community.description" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -11327,6 +11343,22 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="attribute">
+<dt id="taxonomy.models.Taxon.conservationthreat_set">
+<code class="descname">conservationthreat_set</code><a class="headerlink" href="#taxonomy.models.Taxon.conservationthreat_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="taxonomy.models.Taxon.current">
 <code class="descname">current</code><a class="headerlink" href="#taxonomy.models.Taxon.current" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -12111,7 +12143,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="class">
 <dt id="conservation.models.ConservationActionCategory">
 <em class="property">class </em><code class="descclassname">conservation.models.</code><code class="descname">ConservationActionCategory</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationActionCategory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.CodeLabelDescriptionMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>A conservation management action category.</p>
 <dl class="exception">
 <dt id="conservation.models.ConservationActionCategory.DoesNotExist">
@@ -12123,19 +12155,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dt id="conservation.models.ConservationActionCategory.MultipleObjectsReturned">
 <em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#conservation.models.ConservationActionCategory.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="conservation.models.ConservationActionCategory.absolute_admin_url">
-<code class="descname">absolute_admin_url</code><a class="headerlink" href="#conservation.models.ConservationActionCategory.absolute_admin_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the absolute admin change URL.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="conservation.models.ConservationActionCategory.code">
-<code class="descname">code</code><a class="headerlink" href="#conservation.models.ConservationActionCategory.code" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -12154,22 +12173,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="attribute">
-<dt id="conservation.models.ConservationActionCategory.description">
-<code class="descname">description</code><a class="headerlink" href="#conservation.models.ConservationActionCategory.description" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="conservation.models.ConservationActionCategory.id">
 <code class="descname">id</code><a class="headerlink" href="#conservation.models.ConservationActionCategory.id" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="conservation.models.ConservationActionCategory.label">
-<code class="descname">label</code><a class="headerlink" href="#conservation.models.ConservationActionCategory.label" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -12706,6 +12711,306 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="conservation.models.ConservationThreat">
+<em class="property">class </em><code class="descclassname">conservation.models.</code><code class="descname">ConservationThreat</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationThreat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.UrlsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.ObservationAuditMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>A conservation threat is a potentially damaging event against a taxon or community.</p>
+<p>The conservation threat can pertain to:</p>
+<ul class="simple">
+<li>an entire species,</li>
+<li>an entire community,</li>
+<li>any combination of species and communities
+(as per multi-species management plans),</li>
+<li>a management / recovery / interim recovery plan,</li>
+<li>an individual occurrence (fauna site, flora population
+or subpopulation, TEC pr PEC boundary), or</li>
+<li>a subset of occurrences as indicated by a multipolygon.</li>
+</ul>
+<p>The conservation threat is specified by:</p>
+<ul class="simple">
+<li>a threat category, and</li>
+<li>threat causes.</li>
+</ul>
+<dl class="exception">
+<dt id="conservation.models.ConservationThreat.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#conservation.models.ConservationThreat.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.EHMLNN_CHOICES">
+<code class="descname">EHMLNN_CHOICES</code><em class="property"> = (('NA', 'NA'), ('nil', 'Nil'), ('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('extreme', 'Extreme'))</em><a class="headerlink" href="#conservation.models.ConservationThreat.EHMLNN_CHOICES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.EHMLNN_DEFAULT">
+<code class="descname">EHMLNN_DEFAULT</code><em class="property"> = 'NA'</em><a class="headerlink" href="#conservation.models.ConservationThreat.EHMLNN_DEFAULT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.EHMLNN_EXTREME">
+<code class="descname">EHMLNN_EXTREME</code><em class="property"> = 'extreme'</em><a class="headerlink" href="#conservation.models.ConservationThreat.EHMLNN_EXTREME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.EHMLNN_HIGH">
+<code class="descname">EHMLNN_HIGH</code><em class="property"> = 'high'</em><a class="headerlink" href="#conservation.models.ConservationThreat.EHMLNN_HIGH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.EHMLNN_LOW">
+<code class="descname">EHMLNN_LOW</code><em class="property"> = 'low'</em><a class="headerlink" href="#conservation.models.ConservationThreat.EHMLNN_LOW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.EHMLNN_MEDIUM">
+<code class="descname">EHMLNN_MEDIUM</code><em class="property"> = 'medium'</em><a class="headerlink" href="#conservation.models.ConservationThreat.EHMLNN_MEDIUM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.EHMLNN_NIL">
+<code class="descname">EHMLNN_NIL</code><em class="property"> = 'nil'</em><a class="headerlink" href="#conservation.models.ConservationThreat.EHMLNN_NIL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.LMSN_CHOICES">
+<code class="descname">LMSN_CHOICES</code><em class="property"> = (('NA', 'NA'), ('short-term', '(S)hort term: Within 12 months'), ('medium-term', '(M)edium term: Within 1 to 5 years'), ('long-term', '(L)ong term: after 5 years'))</em><a class="headerlink" href="#conservation.models.ConservationThreat.LMSN_CHOICES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.LMSN_DEFAULT">
+<code class="descname">LMSN_DEFAULT</code><em class="property"> = 'NA'</em><a class="headerlink" href="#conservation.models.ConservationThreat.LMSN_DEFAULT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.LSMN_LONG">
+<code class="descname">LSMN_LONG</code><em class="property"> = 'long-term'</em><a class="headerlink" href="#conservation.models.ConservationThreat.LSMN_LONG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.LSMN_MEDIUM">
+<code class="descname">LSMN_MEDIUM</code><em class="property"> = 'medium-term'</em><a class="headerlink" href="#conservation.models.ConservationThreat.LSMN_MEDIUM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.LSMN_SHORT">
+<code class="descname">LSMN_SHORT</code><em class="property"> = 'short-term'</em><a class="headerlink" href="#conservation.models.ConservationThreat.LSMN_SHORT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="conservation.models.ConservationThreat.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#conservation.models.ConservationThreat.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.area_affected_percent">
+<code class="descname">area_affected_percent</code><a class="headerlink" href="#conservation.models.ConservationThreat.area_affected_percent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.category">
+<code class="descname">category</code><a class="headerlink" href="#conservation.models.ConservationThreat.category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.category_id">
+<code class="descname">category_id</code><a class="headerlink" href="#conservation.models.ConservationThreat.category_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.cause">
+<code class="descname">cause</code><a class="headerlink" href="#conservation.models.ConservationThreat.cause" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.communities">
+<code class="descname">communities</code><a class="headerlink" href="#conservation.models.ConservationThreat.communities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.current_impact">
+<code class="descname">current_impact</code><a class="headerlink" href="#conservation.models.ConservationThreat.current_impact" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.document">
+<code class="descname">document</code><a class="headerlink" href="#conservation.models.ConservationThreat.document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.document_id">
+<code class="descname">document_id</code><a class="headerlink" href="#conservation.models.ConservationThreat.document_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.encountered_by">
+<code class="descname">encountered_by</code><a class="headerlink" href="#conservation.models.ConservationThreat.encountered_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.models.ConservationThreat.get_current_impact_display">
+<code class="descname">get_current_impact_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: current_impact&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationThreat.get_current_impact_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="conservation.models.ConservationThreat.get_potential_impact_display">
+<code class="descname">get_potential_impact_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: potential_impact&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationThreat.get_potential_impact_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="conservation.models.ConservationThreat.get_potential_onset_display">
+<code class="descname">get_potential_onset_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: potential_onset&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationThreat.get_potential_onset_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.id">
+<code class="descname">id</code><a class="headerlink" href="#conservation.models.ConservationThreat.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.objects">
+<code class="descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#conservation.models.ConservationThreat.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.occurrence_area_code">
+<code class="descname">occurrence_area_code</code><a class="headerlink" href="#conservation.models.ConservationThreat.occurrence_area_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.potential_impact">
+<code class="descname">potential_impact</code><a class="headerlink" href="#conservation.models.ConservationThreat.potential_impact" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.potential_onset">
+<code class="descname">potential_onset</code><a class="headerlink" href="#conservation.models.ConservationThreat.potential_onset" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.target_area">
+<code class="descname">target_area</code><a class="headerlink" href="#conservation.models.ConservationThreat.target_area" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreat.taxa">
+<code class="descname">taxa</code><a class="headerlink" href="#conservation.models.ConservationThreat.taxa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="conservation.models.ConservationThreatCategory">
+<em class="property">class </em><code class="descclassname">conservation.models.</code><code class="descname">ConservationThreatCategory</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationThreatCategory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.CodeLabelDescriptionMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>A conservation management threat category.</p>
+<dl class="exception">
+<dt id="conservation.models.ConservationThreatCategory.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#conservation.models.ConservationThreatCategory.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="conservation.models.ConservationThreatCategory.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#conservation.models.ConservationThreatCategory.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreatCategory.conservationthreat_set">
+<code class="descname">conservationthreat_set</code><a class="headerlink" href="#conservation.models.ConservationThreatCategory.conservationthreat_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreatCategory.id">
+<code class="descname">id</code><a class="headerlink" href="#conservation.models.ConservationThreatCategory.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationThreatCategory.objects">
+<code class="descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#conservation.models.ConservationThreatCategory.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="conservation.models.Document">
 <em class="property">class </em><code class="descclassname">conservation.models.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.Document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
@@ -12963,6 +13268,21 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="attribute">
 <dt id="conservation.models.Document.conservationaction_set">
 <code class="descname">conservationaction_set</code><a class="headerlink" href="#conservation.models.Document.conservationaction_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.Document.conservationthreat_set">
+<code class="descname">conservationthreat_set</code><a class="headerlink" href="#conservation.models.Document.conservationthreat_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -14061,50 +14381,36 @@ Fauna, Flora and Comunities (defined in taxonomy).</p>
 <p>Observer name / address / phone / email is captured through the observer being
 a system user.</p>
 <dl class="class">
-<dt id="occurrence.models.AreaAssessmentObservation">
-<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">AreaAssessmentObservation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AnimalObservation">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">AnimalObservation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AnimalObservation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
-<p>A description of survey effort at a flora or TEC site.</p>
-<p>TODO add
-# survey method
-# EncounterType</p>
+<p>Observation of an Animal.</p>
+<p>The observation may include several other animals
+apart from the primarily observed animal.</p>
+<ul class="simple">
+<li>detection method</li>
+<li>Taxonomic identification and confidence</li>
+<li>sex</li>
+<li>reproductive state</li>
+<li>dist features, comments</li>
+<li>demographics of all other observed animals</li>
+<li>secondary signs</li>
+</ul>
 <dl class="exception">
-<dt id="occurrence.models.AreaAssessmentObservation.DoesNotExist">
-<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AnimalObservation.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.AnimalObservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="exception">
-<dt id="occurrence.models.AreaAssessmentObservation.MultipleObjectsReturned">
-<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AnimalObservation.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.AnimalObservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.SURVEY_TYPE_CHOICES">
-<code class="descname">SURVEY_TYPE_CHOICES</code><em class="property"> = (('partial', 'Partial survey'), ('edge', 'Edge Survey'), ('full', 'Full Survey'), ('opportunistic', 'Opportunistic Encounter'), ('monitoring', 'Monitoring'), ('translocation', 'Fauna Translocation Event'), ('historical', 'Historical Report'))</em><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.SURVEY_TYPE_CHOICES" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.SURVEY_TYPE_DEFAULT">
-<code class="descname">SURVEY_TYPE_DEFAULT</code><em class="property"> = 'partial'</em><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.SURVEY_TYPE_DEFAULT" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.area_surveyed_m2">
-<code class="descname">area_surveyed_m2</code><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.area_surveyed_m2" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="occurrence.models.AreaAssessmentObservation.get_survey_type_display">
-<code class="descname">get_survey_type_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: survey_type&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.get_survey_type_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.observationgroup_ptr">
-<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AnimalObservation.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.AnimalObservation.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
 <p>In the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -14115,40 +14421,113 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.observationgroup_ptr_id">
-<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AnimalObservation.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.AnimalObservation.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.polymorphic_primary_key_name">
-<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AnimalObservation.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.AnimalObservation.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.polymorphic_super_sub_accessors_replaced">
-<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AnimalObservation.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.AnimalObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.models.AreaAssessment">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">AreaAssessment</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaAssessment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>A description of survey effort at a flora or TEC site.</p>
+<p>TODO add
+# survey method
+# EncounterType</p>
+<dl class="exception">
+<dt id="occurrence.models.AreaAssessment.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.AreaAssessment.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.AreaAssessment.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.AreaAssessment.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.AreaAssessment.SURVEY_TYPE_CHOICES">
+<code class="descname">SURVEY_TYPE_CHOICES</code><em class="property"> = (('partial', 'Partial survey'), ('edge', 'Edge Survey'), ('full', 'Full Survey'), ('opportunistic', 'Opportunistic Encounter'), ('monitoring', 'Monitoring'), ('translocation', 'Fauna Translocation Event'), ('historical', 'Historical Report'))</em><a class="headerlink" href="#occurrence.models.AreaAssessment.SURVEY_TYPE_CHOICES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.survey_duration_min">
-<code class="descname">survey_duration_min</code><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.survey_duration_min" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AreaAssessment.SURVEY_TYPE_DEFAULT">
+<code class="descname">SURVEY_TYPE_DEFAULT</code><em class="property"> = 'partial'</em><a class="headerlink" href="#occurrence.models.AreaAssessment.SURVEY_TYPE_DEFAULT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.AreaAssessment.area_surveyed_m2">
+<code class="descname">area_surveyed_m2</code><a class="headerlink" href="#occurrence.models.AreaAssessment.area_surveyed_m2" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.models.AreaAssessment.get_survey_type_display">
+<code class="descname">get_survey_type_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: survey_type&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaAssessment.get_survey_type_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.AreaAssessment.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.AreaAssessment.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.AreaAssessment.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.AreaAssessment.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.survey_effort_minutes_per_100sqm">
-<code class="descname">survey_effort_minutes_per_100sqm</code><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.survey_effort_minutes_per_100sqm" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AreaAssessment.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.AreaAssessment.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.AreaAssessment.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.AreaAssessment.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.AreaAssessment.survey_duration_min">
+<code class="descname">survey_duration_min</code><a class="headerlink" href="#occurrence.models.AreaAssessment.survey_duration_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.AreaAssessment.survey_effort_minutes_per_100sqm">
+<code class="descname">survey_effort_minutes_per_100sqm</code><a class="headerlink" href="#occurrence.models.AreaAssessment.survey_effort_minutes_per_100sqm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Give an estimate of survey intensity as time spent per area.</p>
 <p>Calculated from area surveyed and survey duration, or None.
 Unit is minutes / 100 m2.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AreaAssessmentObservation.survey_type">
-<code class="descname">survey_type</code><a class="headerlink" href="#occurrence.models.AreaAssessmentObservation.survey_type" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AreaAssessment.survey_type">
+<code class="descname">survey_type</code><a class="headerlink" href="#occurrence.models.AreaAssessment.survey_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -14253,6 +14632,16 @@ serve to cache low churn, high use content:</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="occurrence.models.AreaEncounter.GEOLOCATION_CAPTURE_METHOD_CHOICES">
+<code class="descname">GEOLOCATION_CAPTURE_METHOD_CHOICES</code><em class="property"> = (('drawn-online-map-widget', 'Hand-drawn on online map widget'), ('gps-perimeter-walk', 'GPS perimeter walk'), ('gps-point', 'GPS point with text description of location extent'), ('dgps', 'Differential GPS capture of entire location extent'))</em><a class="headerlink" href="#occurrence.models.AreaEncounter.GEOLOCATION_CAPTURE_METHOD_CHOICES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.AreaEncounter.GEOLOCATION_CAPTURE_METHOD_DEFAULT">
+<code class="descname">GEOLOCATION_CAPTURE_METHOD_DEFAULT</code><em class="property"> = 'drawn-online-map-widget'</em><a class="headerlink" href="#occurrence.models.AreaEncounter.GEOLOCATION_CAPTURE_METHOD_DEFAULT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="exception">
 <dt id="occurrence.models.AreaEncounter.MultipleObjectsReturned">
 <em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.AreaEncounter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
@@ -14344,6 +14733,13 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="occurrence.models.AreaEncounter.geolocation_capture_method">
+<code class="descname">geolocation_capture_method</code><a class="headerlink" href="#occurrence.models.AreaEncounter.geolocation_capture_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="occurrence.models.AreaEncounter.geom">
 <code class="descname">geom</code><a class="headerlink" href="#occurrence.models.AreaEncounter.geom" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -14366,6 +14762,11 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dl class="method">
 <dt id="occurrence.models.AreaEncounter.get_available_user_status_transitions">
 <code class="descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="occurrence.models.AreaEncounter.get_geolocation_capture_method_display">
+<code class="descname">get_geolocation_capture_method_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: geolocation_capture_method&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_geolocation_capture_method_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -14498,25 +14899,25 @@ relation.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="occurrence.models.AssociatedSpeciesObservation">
-<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">AssociatedSpeciesObservation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">AssociatedSpecies</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AssociatedSpecies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
 <p>Observation of an associated species.</p>
 <dl class="exception">
-<dt id="occurrence.models.AssociatedSpeciesObservation.DoesNotExist">
-<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.AssociatedSpecies.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="exception">
-<dt id="occurrence.models.AssociatedSpeciesObservation.MultipleObjectsReturned">
-<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.AssociatedSpecies.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AssociatedSpeciesObservation.observationgroup_ptr">
-<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.AssociatedSpecies.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
 <p>In the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -14527,25 +14928,25 @@ relation.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AssociatedSpeciesObservation.observationgroup_ptr_id">
-<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.AssociatedSpecies.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AssociatedSpeciesObservation.polymorphic_primary_key_name">
-<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.AssociatedSpecies.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AssociatedSpeciesObservation.polymorphic_super_sub_accessors_replaced">
-<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.AssociatedSpecies.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AssociatedSpeciesObservation.taxon">
-<code class="descname">taxon</code><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation.taxon" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies.taxon">
+<code class="descname">taxon</code><a class="headerlink" href="#occurrence.models.AssociatedSpecies.taxon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -14557,8 +14958,8 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.AssociatedSpeciesObservation.taxon_id">
-<code class="descname">taxon_id</code><a class="headerlink" href="#occurrence.models.AssociatedSpeciesObservation.taxon_id" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.AssociatedSpecies.taxon_id">
+<code class="descname">taxon_id</code><a class="headerlink" href="#occurrence.models.AssociatedSpecies.taxon_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -14650,8 +15051,59 @@ A queryset of nearby CommunityAreaEncounters.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="occurrence.models.FileAttachmentObservation">
-<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">FileAttachmentObservation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.FileAttachmentObservation" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.ConservationThreat">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">ConservationThreat</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ConservationThreat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>Threat to encounter subject or site.</p>
+<p>Conservation threats are mitigated by one or many conservation actions.
+Conservation threat categories are mitigated by one or many
+conservation action categories.</p>
+<dl class="exception">
+<dt id="occurrence.models.ConservationThreat.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.ConservationThreat.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.ConservationThreat.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.ConservationThreat.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ConservationThreat.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.ConservationThreat.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ConservationThreat.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.ConservationThreat.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ConservationThreat.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.ConservationThreat.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ConservationThreat.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.ConservationThreat.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.models.FileAttachment">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">FileAttachment</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.FileAttachment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
 <p>A file attachment to an ObservationGroup.</p>
 <p>The file attachment can be a photo, a paper datasheet scanned to PDF,
@@ -14662,20 +15114,20 @@ as attachment, the author permits use by the application and downstream
 systems under the application’s agreed license, e.g. cc-by-sa.</p>
 <p>Each attachment can be marked as confidential to be excluded from publication.</p>
 <dl class="exception">
-<dt id="occurrence.models.FileAttachmentObservation.DoesNotExist">
-<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.FileAttachment.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="exception">
-<dt id="occurrence.models.FileAttachmentObservation.MultipleObjectsReturned">
-<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.FileAttachment.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.attachment">
-<code class="descname">attachment</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.attachment" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.attachment">
+<code class="descname">attachment</code><a class="headerlink" href="#occurrence.models.FileAttachment.attachment" title="Permalink to this definition">¶</a></dt>
 <dd><p>The descriptor for the file attribute on the model instance. Return a
 FieldFile when accessed so you can write code like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">myapp.models</span> <span class="k">import</span> <span class="n">MyModel</span>
@@ -14691,8 +15143,8 @@ FieldFile when accessed so you can write code like:</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.author">
-<code class="descname">author</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.author" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.author">
+<code class="descname">author</code><a class="headerlink" href="#occurrence.models.FileAttachment.author" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -14704,22 +15156,22 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.author_id">
-<code class="descname">author_id</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.author_id" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.author_id">
+<code class="descname">author_id</code><a class="headerlink" href="#occurrence.models.FileAttachment.author_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.confidential">
-<code class="descname">confidential</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.confidential" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.confidential">
+<code class="descname">confidential</code><a class="headerlink" href="#occurrence.models.FileAttachment.confidential" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.observationgroup_ptr">
-<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.FileAttachment.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
 <p>In the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -14730,25 +15182,25 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.observationgroup_ptr_id">
-<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.FileAttachment.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.polymorphic_primary_key_name">
-<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.FileAttachment.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.polymorphic_super_sub_accessors_replaced">
-<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.FileAttachment.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FileAttachmentObservation.title">
-<code class="descname">title</code><a class="headerlink" href="#occurrence.models.FileAttachmentObservation.title" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FileAttachment.title">
+<code class="descname">title</code><a class="headerlink" href="#occurrence.models.FileAttachment.title" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -14756,69 +15208,69 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="occurrence.models.FireHistoryObservation">
-<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">FireHistoryObservation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.FireHistoryObservation" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">FireHistory</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.FireHistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
 <p>Evidence of past fire date and intensity.</p>
 <dl class="exception">
-<dt id="occurrence.models.FireHistoryObservation.DoesNotExist">
-<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.FireHistoryObservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.FireHistory.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.HMLN_CHOICES">
-<code class="descname">HMLN_CHOICES</code><em class="property"> = (('NA', 'NA'), ('low', 'Low'), ('medium', 'Medium'), ('high', 'High'))</em><a class="headerlink" href="#occurrence.models.FireHistoryObservation.HMLN_CHOICES" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.HMLN_CHOICES">
+<code class="descname">HMLN_CHOICES</code><em class="property"> = (('NA', 'NA'), ('low', 'Low'), ('medium', 'Medium'), ('high', 'High'))</em><a class="headerlink" href="#occurrence.models.FireHistory.HMLN_CHOICES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.HMLN_DEFAULT">
-<code class="descname">HMLN_DEFAULT</code><em class="property"> = 'NA'</em><a class="headerlink" href="#occurrence.models.FireHistoryObservation.HMLN_DEFAULT" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.HMLN_DEFAULT">
+<code class="descname">HMLN_DEFAULT</code><em class="property"> = 'NA'</em><a class="headerlink" href="#occurrence.models.FireHistory.HMLN_DEFAULT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.HMLN_HIGH">
-<code class="descname">HMLN_HIGH</code><em class="property"> = 'high'</em><a class="headerlink" href="#occurrence.models.FireHistoryObservation.HMLN_HIGH" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.HMLN_HIGH">
+<code class="descname">HMLN_HIGH</code><em class="property"> = 'high'</em><a class="headerlink" href="#occurrence.models.FireHistory.HMLN_HIGH" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.HMLN_LOW">
-<code class="descname">HMLN_LOW</code><em class="property"> = 'low'</em><a class="headerlink" href="#occurrence.models.FireHistoryObservation.HMLN_LOW" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.HMLN_LOW">
+<code class="descname">HMLN_LOW</code><em class="property"> = 'low'</em><a class="headerlink" href="#occurrence.models.FireHistory.HMLN_LOW" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.HMLN_MEDIUM">
-<code class="descname">HMLN_MEDIUM</code><em class="property"> = 'medium'</em><a class="headerlink" href="#occurrence.models.FireHistoryObservation.HMLN_MEDIUM" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.HMLN_MEDIUM">
+<code class="descname">HMLN_MEDIUM</code><em class="property"> = 'medium'</em><a class="headerlink" href="#occurrence.models.FireHistory.HMLN_MEDIUM" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="exception">
-<dt id="occurrence.models.FireHistoryObservation.MultipleObjectsReturned">
-<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.FireHistoryObservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.FireHistory.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.fire_intensity">
-<code class="descname">fire_intensity</code><a class="headerlink" href="#occurrence.models.FireHistoryObservation.fire_intensity" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.fire_intensity">
+<code class="descname">fire_intensity</code><a class="headerlink" href="#occurrence.models.FireHistory.fire_intensity" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="occurrence.models.FireHistoryObservation.get_fire_intensity_display">
-<code class="descname">get_fire_intensity_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: fire_intensity&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.FireHistoryObservation.get_fire_intensity_display" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.get_fire_intensity_display">
+<code class="descname">get_fire_intensity_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: fire_intensity&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.FireHistory.get_fire_intensity_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.last_fire_date">
-<code class="descname">last_fire_date</code><a class="headerlink" href="#occurrence.models.FireHistoryObservation.last_fire_date" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.last_fire_date">
+<code class="descname">last_fire_date</code><a class="headerlink" href="#occurrence.models.FireHistory.last_fire_date" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.observationgroup_ptr">
-<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.FireHistoryObservation.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.FireHistory.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
 <p>In the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -14829,20 +15281,116 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.observationgroup_ptr_id">
-<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.FireHistoryObservation.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.FireHistory.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.polymorphic_primary_key_name">
-<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.FireHistoryObservation.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.FireHistory.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.FireHistoryObservation.polymorphic_super_sub_accessors_replaced">
-<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.FireHistoryObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.FireHistory.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.FireHistory.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.models.HabitatComposition">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">HabitatComposition</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.HabitatComposition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>Habitat composition.</p>
+<dl class="exception">
+<dt id="occurrence.models.HabitatComposition.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.HabitatComposition.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.HabitatComposition.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.HabitatComposition.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.HabitatComposition.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.HabitatComposition.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.HabitatComposition.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.HabitatComposition.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.HabitatComposition.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.HabitatComposition.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.HabitatComposition.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.HabitatComposition.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.models.HabitatCondition">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">HabitatCondition</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.HabitatCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>Habitat condition on date of encounter.</p>
+<dl class="exception">
+<dt id="occurrence.models.HabitatCondition.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.HabitatCondition.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.HabitatCondition.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.HabitatCondition.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.HabitatCondition.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.HabitatCondition.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.HabitatCondition.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.HabitatCondition.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.HabitatCondition.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.HabitatCondition.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.HabitatCondition.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.HabitatCondition.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -14881,8 +15429,21 @@ TAE/CAE.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.ObservationGroup.areaassessmentobservation">
-<code class="descname">areaassessmentobservation</code><a class="headerlink" href="#occurrence.models.ObservationGroup.areaassessmentobservation" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.ObservationGroup.animalobservation">
+<code class="descname">animalobservation</code><a class="headerlink" href="#occurrence.models.ObservationGroup.animalobservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.areaassessment">
+<code class="descname">areaassessment</code><a class="headerlink" href="#occurrence.models.ObservationGroup.areaassessment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the reverse side of a one-to-one
 relation.</p>
 <p>In the example:</p>
@@ -14912,8 +15473,21 @@ relation.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.ObservationGroup.associatedspeciesobservation">
-<code class="descname">associatedspeciesobservation</code><a class="headerlink" href="#occurrence.models.ObservationGroup.associatedspeciesobservation" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.ObservationGroup.associatedspecies">
+<code class="descname">associatedspecies</code><a class="headerlink" href="#occurrence.models.ObservationGroup.associatedspecies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.conservationthreat">
+<code class="descname">conservationthreat</code><a class="headerlink" href="#occurrence.models.ObservationGroup.conservationthreat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the reverse side of a one-to-one
 relation.</p>
 <p>In the example:</p>
@@ -14951,8 +15525,8 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.ObservationGroup.fileattachmentobservation">
-<code class="descname">fileattachmentobservation</code><a class="headerlink" href="#occurrence.models.ObservationGroup.fileattachmentobservation" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.ObservationGroup.fileattachment">
+<code class="descname">fileattachment</code><a class="headerlink" href="#occurrence.models.ObservationGroup.fileattachment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the reverse side of a one-to-one
 relation.</p>
 <p>In the example:</p>
@@ -14964,8 +15538,8 @@ relation.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="occurrence.models.ObservationGroup.firehistoryobservation">
-<code class="descname">firehistoryobservation</code><a class="headerlink" href="#occurrence.models.ObservationGroup.firehistoryobservation" title="Permalink to this definition">¶</a></dt>
+<dt id="occurrence.models.ObservationGroup.firehistory">
+<code class="descname">firehistory</code><a class="headerlink" href="#occurrence.models.ObservationGroup.firehistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the reverse side of a one-to-one
 relation.</p>
 <p>In the example:</p>
@@ -15001,6 +15575,32 @@ relation.</p>
 <dt id="occurrence.models.ObservationGroup.get_status_display">
 <code class="descname">get_status_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ObservationGroup.get_status_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.habitatcomposition">
+<code class="descname">habitatcomposition</code><a class="headerlink" href="#occurrence.models.ObservationGroup.habitatcomposition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.habitatcondition">
+<code class="descname">habitatcondition</code><a class="headerlink" href="#occurrence.models.ObservationGroup.habitatcondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="occurrence.models.ObservationGroup.id">
@@ -15045,6 +15645,45 @@ or <cite>update</cite>.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.occurrencecondition">
+<code class="descname">occurrencecondition</code><a class="headerlink" href="#occurrence.models.ObservationGroup.occurrencecondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.physicalsample">
+<code class="descname">physicalsample</code><a class="headerlink" href="#occurrence.models.ObservationGroup.physicalsample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.plantcount">
+<code class="descname">plantcount</code><a class="headerlink" href="#occurrence.models.ObservationGroup.plantcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="occurrence.models.ObservationGroup.point">
 <code class="descname">point</code><a class="headerlink" href="#occurrence.models.ObservationGroup.point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the encounter point location.</p>
@@ -15083,6 +15722,176 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <code class="descname">update_url</code><a class="headerlink" href="#occurrence.models.ObservationGroup.update_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Custom update url contains occ pk and obsgroup pk.</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.vegetationclassification">
+<code class="descname">vegetationclassification</code><a class="headerlink" href="#occurrence.models.ObservationGroup.vegetationclassification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.ObservationGroup.wildlifeincident">
+<code class="descname">wildlifeincident</code><a class="headerlink" href="#occurrence.models.ObservationGroup.wildlifeincident" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.models.OccurrenceCondition">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">OccurrenceCondition</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.OccurrenceCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>Community occurrence condition on date of encounter.</p>
+<dl class="exception">
+<dt id="occurrence.models.OccurrenceCondition.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.OccurrenceCondition.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.OccurrenceCondition.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.OccurrenceCondition.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.OccurrenceCondition.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.OccurrenceCondition.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.OccurrenceCondition.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.OccurrenceCondition.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.OccurrenceCondition.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.OccurrenceCondition.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.OccurrenceCondition.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.OccurrenceCondition.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.models.PhysicalSample">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">PhysicalSample</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.PhysicalSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>Physical sample or specimen taken off an organism.</p>
+<dl class="exception">
+<dt id="occurrence.models.PhysicalSample.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.PhysicalSample.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.PhysicalSample.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.PhysicalSample.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.PhysicalSample.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.PhysicalSample.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.PhysicalSample.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.PhysicalSample.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.PhysicalSample.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.PhysicalSample.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.PhysicalSample.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.PhysicalSample.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.models.PlantCount">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">PlantCount</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.PlantCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>Population plant count.</p>
+<dl class="exception">
+<dt id="occurrence.models.PlantCount.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.PlantCount.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.PlantCount.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.PlantCount.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.PlantCount.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.PlantCount.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.PlantCount.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.PlantCount.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.PlantCount.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.PlantCount.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.PlantCount.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.PlantCount.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -15176,6 +15985,102 @@ object the first time, the query is executed.</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="occurrence.models.VegetationClassification">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">VegetationClassification</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.VegetationClassification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>NVIS classification categories.</p>
+<dl class="exception">
+<dt id="occurrence.models.VegetationClassification.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.VegetationClassification.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.VegetationClassification.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.VegetationClassification.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.VegetationClassification.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.VegetationClassification.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.VegetationClassification.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.VegetationClassification.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.VegetationClassification.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.VegetationClassification.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.VegetationClassification.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.VegetationClassification.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.models.WildlifeIncident">
+<em class="property">class </em><code class="descclassname">occurrence.models.</code><code class="descname">WildlifeIncident</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.WildlifeIncident" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#occurrence.models.ObservationGroup" title="occurrence.models.ObservationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.ObservationGroup</span></code></a></p>
+<p>A Wildlife incident: injury or death.</p>
+<dl class="exception">
+<dt id="occurrence.models.WildlifeIncident.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#occurrence.models.WildlifeIncident.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="occurrence.models.WildlifeIncident.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#occurrence.models.WildlifeIncident.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">occurrence.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.WildlifeIncident.observationgroup_ptr">
+<code class="descname">observationgroup_ptr</code><a class="headerlink" href="#occurrence.models.WildlifeIncident.observationgroup_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.WildlifeIncident.observationgroup_ptr_id">
+<code class="descname">observationgroup_ptr_id</code><a class="headerlink" href="#occurrence.models.WildlifeIncident.observationgroup_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.WildlifeIncident.polymorphic_primary_key_name">
+<code class="descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#occurrence.models.WildlifeIncident.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="occurrence.models.WildlifeIncident.polymorphic_super_sub_accessors_replaced">
+<code class="descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#occurrence.models.WildlifeIncident.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="occurrence.models.area_caches">
 <code class="descclassname">occurrence.models.</code><code class="descname">area_caches</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.area_caches" title="Permalink to this definition">¶</a></dt>
@@ -15185,7 +16090,7 @@ object the first time, the query is executed.</p>
 <dl class="function">
 <dt id="occurrence.models.fileattachmentobservation_media">
 <code class="descclassname">occurrence.models.</code><code class="descname">fileattachmentobservation_media</code><span class="sig-paren">(</span><em>instance</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.fileattachmentobservation_media" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an upload path for FileAttachmentObservation media.</p>
+<dd><p>Return an upload path for FileAttachment media.</p>
 </dd></dl>
 
 </div>
@@ -16702,6 +17607,10 @@ Allow for temporarily entering species names not yet been included in the
 species master list (WACensus) in use by the Department (i.e. informal or phrase names).
 This is to facilitate batch upload of data from sources that may not have authoritative names.
 Align entered species with the species master list once the species has been added to the master list.</li>
+<li>[REQ 27] Integrate with the WACensus system to fetch an authoritative list of species.
+Test: WACensus ETL</li>
+<li>[REQ 28] Integrate with the WAHerb Specimen Database and BioSys to cross-reference locational information regarding
+rare flora occurrences (eg via sheet number). Pending WAHerb upgrade.</li>
 </ul>
 <span class="target" id="module-taxonomy.tests.test_unit"></span><p>Taxonomy unit test suite.</p>
 <p>This test suite covers:</p>
@@ -16711,6 +17620,16 @@ Test API endpoints for all WACensus tables with real WACensus data.</li>
 <li>Taxonomy is reconstructed from WACensus data
 (imported into staging models Hbv* via the API)</li>
 <li>Critical habitat of a species or community</li>
+</ul>
+<p>General requirements:
+* [REQ 43] Make use of the Department’s central customer database</p>
+<blockquote>
+<div>for storing and retrieving details of any individual or organisation
+outside the Department that have access to the system</div></blockquote>
+<ul class="simple">
+<li>[REQ 44] Support single sign on security access for Department users accessing the system</li>
+<li>[REQ 45] A snapshot of current databases to be taken, and legacy data migrated into the new system.
+See Data ETL workbooks. Test API endpoints with example data. Add examples to wastdr vignettes.</li>
 </ul>
 <p>On critical habitat:
 “With the proclamation of the Biodiversity Conservation Act 2016, there will be a requirement to map
@@ -16751,6 +17670,25 @@ provide increased alignment with protocols for managing ecological communities.�
 <dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_taxon_creation">
 <code class="descname">test_taxon_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_taxon_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test creating a Taxon.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="taxonomy.tests.test_unit.TemplateTagTests">
+<em class="property">class </em><code class="descclassname">taxonomy.tests.test_unit.</code><code class="descname">TemplateTagTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TemplateTagTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Template tag tests.</p>
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TemplateTagTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TemplateTagTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TemplateTagTests.test_rangify">
+<code class="descname">test_rangify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TemplateTagTests.test_rangify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the rangify filter.</p>
 </dd></dl>
 
 </dd></dl>
@@ -16828,6 +17766,16 @@ provide increased alignment with protocols for managing ecological communities.�
 <dd><p>Test taxon-list.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="taxonomy.tests.test_views.TaxonViewTests.test_taxon_list_url_with_nameid">
+<code class="descname">test_taxon_list_url_with_nameid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests.test_taxon_list_url_with_nameid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test taxon-list with name_id.</p>
+<ul class="simple">
+<li>taxon-list with valid name_id should load.</li>
+<li>taxon-list with invalid name_id should still load but show warning.</li>
+</ul>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -16835,33 +17783,110 @@ provide increased alignment with protocols for managing ecological communities.�
 <span id="conservation-tests-module"></span><h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">conservation.tests</span></code> Module<a class="headerlink" href="#module-conservation.tests.test_functional" title="Permalink to this headline">¶</a></h4>
 <p>Conservation functional test suite.</p>
 <p>This test suite is a walk-through of the following conservation business processes:</p>
-<ul class="simple">
-<li>Conservation listing: life cycle, permissions, query, list, export</li>
-<li>Conservation activity: create, list, filter, export, task list for different roles</li>
-<li>Document: approval, approval permissions, publication</li>
-<li>Animal Ethics (AE): Document type “SOP”. Standard operating procedures (SOPs) exist
+<ul>
+<li><p class="first">Conservation listing: life cycle, permissions, query, list, export</p>
+</li>
+<li><p class="first">Conservation activity: create, list, filter, export, task list for different roles</p>
+</li>
+<li><p class="first">Document: approval, approval permissions, publication</p>
+</li>
+<li><p class="first">Animal Ethics (AE): Document type “SOP”. Standard operating procedures (SOPs) exist
 for all the aspects of animal handling i.e. “best practice”.
-The system needs to track SOP approval life cycle. e.g. approvals, reviews, minor changes.</li>
-<li>[OOS] Declared Rare Flora (DRF) permits are handled by Wildlife Licensing System (WLS)</li>
-</ul>
-<p>[REQ 1] Allow for recording of conservation status details of a species:
+The system needs to track SOP approval life cycle. e.g. approvals, reviews, minor changes.</p>
+</li>
+<li><p class="first">[OOS] Declared Rare Flora (DRF) permits are handled by Wildlife Licensing System (WLS)</p>
+</li>
+<li><p class="first">[REQ 1] Allow for recording of conservation status details of a species:
 * It must be possible to include a recorded species in one or more threatened species lists.
 * The system must allow for a species to be included in a threatened or priority species list,</p>
 <blockquote>
-<div>and a Single Operational List for nationally threatened species.</div></blockquote>
+<div><p>and a Single Operational List for nationally threatened species.</p>
+</div></blockquote>
 <ul class="simple">
 <li>The system must keep track of the history of species included in any list.</li>
 </ul>
-<p>[REQ 2] Allow for the creation of multiple lists for threatened species.
+</li>
+<li><p class="first">[REQ 2] Allow for the creation of multiple lists for threatened species.
 Each species can be listed on zero or more lists.
 New type of lists can be added by business at any time.</p>
-<p>[REQ 3] Allow for the creation of additional species data fields on a per species type basis.
+</li>
+<li><p class="first">[REQ 3] Allow for the creation of additional species data fields on a per species type basis.
 Comment: Common set of attributes in TSC. Extra data goes on a per-dataset level to BioSys
 but is accessible at analysis time.</p>
-<p>[REQ 8] Publish any document attached to any entity in the system,
+</li>
+<li><p class="first">[REQ 8] Publish any document attached to any entity in the system,
 or any communication recorded in the context of such entity, in the Department’s
 record keeping system. This requirement is covered by being in a corporate system (TSC) under
 OIM’s SLA for data retention and backups.</p>
+</li>
+<li><p class="first">[REQ 26][OAG 2a] Provide for the storage and management of conservation status information for
+flora, fauna and communities. Provide support for local, national and international listings,
+and provide a full history of changes.</p>
+</li>
+<li><p class="first">[REQ 29] Provide information regarding Threatened Fauna conservation status for
+BioSys and NatureMap websites automatically. Test: provide this data via API.</p>
+</li>
+<li><p class="first">[REQ 30] Produce various conservation status list reports in various formats
+(PDF, Microsoft word, Microsoft Excel) created using a variety of search criteria.
+Test: list, filter, export taxon/community list including conservation status.</p>
+</li>
+<li><p class="first">[REQ 31][OAG 2a] Allow for periodical of species or community listing,
+and alert an officer by the review date.</p>
+</li>
+<li><p class="first">[REQ 32] Capture the following attributes from species/communities nomination workflow:
+* Date of TSSC/TECSC assessment
+* Date of ministerial approval
+* Date of gazettal
+* Date referred to Commonwealth
+* Date listed under EPBC Act</p>
+</li>
+<li><p class="first">[REQ 33][REQ 39] Allow for the recording, per species or community, of
+* One or more management plans (could apply to any species or community)
+* One or more recovery plans (threatened species and communities)
+* One or more interim recovery plans (as per recovery plan but less detailed)
+Allow a plan to be linked to a threatened species or community included in a specific list;
+system must allow for different plans for one species or community included in different lists</p>
+</li>
+<li><p class="first">[REQ 34] Allow for the recording of one or more recovery or management actions for each plan.
+Allow for the recording of one or more success criteria to facilitate capturing management effectiveness.</p>
+</li>
+<li><p class="first">[REQ 35] Capture the following attributes from management/recovery plan workflow:
+* document type: Whether full, interim or national recovery plan,
+* any additional attributes
+* Date of approval by Director + DG + Minister + gazettal date</p>
+</li>
+<li><p class="first">[REQ 36] Allow the recovery team to record the annual report;
+the system is to remind the recovery team that the annual report is due;
+system is to alert officer if annual report is not submitted by due date.
+The annual report to at least cover the success criteria listed in the plan. (Impossible to test)</p>
+</li>
+<li><p class="first">[REQ 37] Allow for renewal of an existing plan at expiry date;
+approval workflow for renewal plan is same as workflow for new plan, including ministerial/CEO approval
+Test that at expiry date, plan approval status transitions to “EXPIRED”, send notifications to owner,
+show up in todo lists</p>
+</li>
+<li><p class="first">[REQ 38] Alert officer that renewal for existing plan is coming up to start review process;
+review process results in either of:
+* Closure of plan
+* Renewal of plan
+* Writing of new plan</p>
+</li>
+<li><p class="first">[REQ 46] Allow for the storing of generated reports, so that user can retrieve the report
+that was generated at a date in the past. Note: This will swamp the /media folder.</p>
+</li>
+<li><p class="first">[REQ 47] Conservation Action / cons activity linked to documents.
+Allow Departmental recovery team members to record outcomes against any recovery action linked to the plan.
+Reporting against recovery actions is not mandatory.</p>
+</li>
+<li><p class="first">[REQ 48] Allow for the linking, as an action in the plan, between a management plan or
+(interim) recovery plan and a translocation plan recorded in the translocation module.</p>
+</li>
+<li><p class="first">[REQ 49] Allow for recording any communication related to any entity recorded in the system; recording a phone call,
+email exchange, etc. The details must include, the parties involved, type of communication (phone call, email, etc.),
+free text to record content, attachment of any relevant document.
+Test: attach text file as document type “Communication record” to a taxon or community.</p>
+</li>
+</ul>
 <p>On conservation status:
 “The Wildlife Conservation Act 1950 and Biodiversity Conservation Act 2016 provide for the listing of
 threatened native species and (in the future) ecological communities that need special protection.
@@ -17042,6 +18067,25 @@ completion status and implementation notes.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="conservation.tests.test_unit.ConservationThreatModelTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">ConservationThreatModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationThreatModelTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Unit tests for ConservationThreat.</p>
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationThreatModelTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationThreatModelTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_unit.ConservationThreatModelTests.test_consthreat_str">
+<code class="descname">test_consthreat_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.ConservationThreatModelTests.test_consthreat_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test cons threat string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="conservation.tests.test_unit.DocumentModelTests">
 <em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">DocumentModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.DocumentModelTests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
@@ -17052,6 +18096,7 @@ completion status and implementation notes.</p>
 and/or one or many communities.</li>
 <li>[REQ 25] Store original and final version of nomination form as Word + PDF documents,
 plus additional attributes to facilitate reporting.</li>
+<li>[REQ 41] Plans automatically numbered from a single number pool. Test that documents have PK.</li>
 </ul>
 </dd></dl>
 
@@ -17075,6 +18120,15 @@ plus additional attributes to facilitate reporting.</li>
 </dd></dl>
 
 <span class="target" id="module-conservation.tests.test_views"></span><p>Conservation view test suite testing URLs, templates, and views.</p>
+<ul class="simple">
+<li>[REQ 40] Include the following dashboard pages:
+* Dashboard of all plans: document list view and templates
+* Dashboard of all annual reports for all plans: document list view, filter plan type
+From within a dashboard, the user to open an entity and view the details.
+Test that document card contains detail link.
+Dashboard to show when details were last edited.
+Test that document card contains date last modified.</li>
+</ul>
 <p>See also:
 <a class="reference external" href="https://model-mommy.readthedocs.io/en/latest/">https://model-mommy.readthedocs.io/en/latest/</a>
 <a class="reference external" href="https://github.com/sigma-geosistemas/mommy_spatial_generators">https://github.com/sigma-geosistemas/mommy_spatial_generators</a></p>
@@ -17209,6 +18263,49 @@ plus additional attributes to facilitate reporting.</li>
 </dd></dl>
 
 <dl class="class">
+<dt id="conservation.tests.test_views.ConservationThreatViewTests">
+<em class="property">class </em><code class="descclassname">conservation.tests.test_views.</code><code class="descname">ConservationThreatViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationThreatViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>View tests for ConservationThreat.</p>
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationThreatViewTests.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationThreatViewTests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationThreatViewTests.test_conservation_threat_absolute_admin_url">
+<code class="descname">test_conservation_threat_absolute_admin_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationThreatViewTests.test_conservation_threat_absolute_admin_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationThreat absolute admin url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationThreatViewTests.test_create_url_loads">
+<code class="descname">test_create_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationThreatViewTests.test_create_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationaction-create loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationThreatViewTests.test_get_absolute_url">
+<code class="descname">test_get_absolute_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationThreatViewTests.test_get_absolute_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test ConservationAction get absolute url loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationThreatViewTests.test_list_url_loads">
+<code class="descname">test_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationThreatViewTests.test_list_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationaction-list loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.ConservationThreatViewTests.test_update_url_loads">
+<code class="descname">test_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.ConservationThreatViewTests.test_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationaction-update url loads.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="conservation.tests.test_views.DocumentViewTests">
 <em class="property">class </em><code class="descclassname">conservation.tests.test_views.</code><code class="descname">DocumentViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.DocumentViewTests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
@@ -17331,6 +18428,7 @@ Implement a method that identifies record provenance.
 Test for existence of source, source ID.</p>
 <p>[REQ 23] Enable mapping of population boundaries and critical habitats (i.e. polygons, not just centroids).
 Test TAE and CAE geom. Create, validate, view, export.</p>
+<p>[REQ 42] Record all actions (e.g. changes to data) in an audit trail. Tax, Cons, Occ.</p>
 <dl class="class">
 <dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests">
 <em class="property">class </em><code class="descclassname">occurrence.tests.test_unit.</code><code class="descname">CommunityAreaEncounterTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests" title="Permalink to this definition">¶</a></dt>
@@ -17340,6 +18438,7 @@ Test TAE and CAE geom. Create, validate, view, export.</p>
 <dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.setUp">
 <code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shared objects.</p>
+<p>Objects are not created with TestMommy.</p>
 <p>Bugs with TestMommy vs django-polymorphic:
 <a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/280">https://github.com/django-polymorphic/django-polymorphic/issues/280</a>
 <a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/109">https://github.com/django-polymorphic/django-polymorphic/issues/109</a></p>
@@ -17380,15 +18479,39 @@ TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockqu
 </dd></dl>
 
 <dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_latitude">
+<code class="descname">test_cae_latitude</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_latitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the latitude from the point.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_longitude">
+<code class="descname">test_cae_longitude</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_longitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the longitude from the point.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_str">
 <code class="descname">test_cae_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_cae_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test CAE str.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_derived_point">
+<code class="descname">test_derived_point</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_derived_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the derived point is either the centroid of geom or None.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_fh_creation">
 <code class="descname">test_fh_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_fh_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test creating a FireHistoryObservation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.CommunityAreaEncounterTests.test_popup">
+<code class="descname">test_popup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.CommunityAreaEncounterTests.test_popup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test HTML popup.</p>
 </dd></dl>
 
 </dd></dl>
@@ -17402,6 +18525,7 @@ TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockqu
 <dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.setUp">
 <code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shared objects.</p>
+<p>Save TAE/CAE twice to populate caches.</p>
 <p>Bugs with TestMommy vs django-polymorphic:
 <a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/280">https://github.com/django-polymorphic/django-polymorphic/issues/280</a>
 <a class="reference external" href="https://github.com/django-polymorphic/django-polymorphic/issues/109">https://github.com/django-polymorphic/django-polymorphic/issues/109</a></p>
@@ -17414,19 +18538,25 @@ TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockqu
 <dl class="method">
 <dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_asssp_creation">
 <code class="descname">test_asssp_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_asssp_creation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test creating a AssociatedSpeciesObservation.</p>
+<dd><p>Test creating a AssociatedSpecies.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_fatt_creation">
 <code class="descname">test_fatt_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_fatt_creation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test creating a FileAttachmentObservation.</p>
+<dd><p>Test creating a FileAttachment.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_fh_creation">
 <code class="descname">test_fh_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_fh_creation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test creating a FireHistoryObservation.</p>
+<dd><p>Test creating a FireHistory.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_unit.TaxonAreaEncounterTests.test_popup">
+<code class="descname">test_popup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_unit.TaxonAreaEncounterTests.test_popup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test HTML popup.</p>
 </dd></dl>
 
 <dl class="method">
@@ -17526,6 +18656,12 @@ TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockqu
 <dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_update_url_loads">
 <code class="descname">test_cae_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_cae_update_url_loads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test CommunityAreaEncounter update_url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.CommunityAreaEncounterTests.test_community_detail_url_loads">
+<code class="descname">test_community_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests.test_community_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Community detail_url.</p>
 </dd></dl>
 
 <dl class="method">
@@ -17672,6 +18808,12 @@ TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockqu
 <dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_update_url_loads">
 <code class="descname">test_tae_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_tae_update_url_loads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test taxon update url works and loads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.TaxonAreaEncounterTests.test_taxon_detail_url_loads">
+<code class="descname">test_taxon_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.TaxonAreaEncounterTests.test_taxon_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Taxon detail_url.</p>
 </dd></dl>
 
 </dd></dl>
