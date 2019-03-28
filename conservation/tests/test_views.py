@@ -28,52 +28,6 @@ from taxonomy.models import Taxon, Community
 from conservation import models as cons_models
 
 
-class ConservationListViewTests(TestCase):
-    """ConservationList view tests."""
-
-    def setUp(self):
-        """Setup: create a new list."""
-        self.cl = cons_models.ConservationList.objects.create(
-            code='test',
-            label='test list',
-            approval_level=cons_models.ConservationList.APPROVAL_IMMEDIATE)
-        self.user = get_user_model().objects.create_superuser(
-            username="superuser",
-            email="super@gmail.com",
-            password="test")
-        self.user.save()
-        self.client.force_login(self.user)
-
-    def test_conservation_list_absolute_admin_url(self):
-        """Test ConservationList absolute admin url."""
-        response = self.client.get(self.cl.absolute_admin_url)
-        self.assertEqual(response.status_code, 200)
-
-
-class ConservationActionCategoryViewTests(TestCase):
-    """View tests for ConservationActionCategory."""
-
-    def setUp(self):
-        """Set up."""
-        self.object = cons_models.ConservationActionCategory.objects.create(
-            code="burn", label="Burn", description="Burn everything")
-        self.consaction = cons_models.ConservationAction.objects.create(
-            category=self.object,
-            instructions="burn some stuff"
-        )
-        self.user = get_user_model().objects.create_superuser(
-            username="superuser",
-            email="super@gmail.com",
-            password="test")
-        self.user.save()
-        self.client.force_login(self.user)
-
-    def test_conservation_action_category_absolute_admin_url(self):
-        """Test ConservationActionCategory absolute admin url."""
-        response = self.client.get(self.object.absolute_admin_url)
-        self.assertEqual(response.status_code, 200)
-
-
 class ConservationThreatViewTests(TestCase):
     """View tests for ConservationThreat."""
 
@@ -127,6 +81,30 @@ class ConservationThreatViewTests(TestCase):
     def test_update_url_loads(self):
         """Test conservationaction-update url loads."""
         response = self.client.get(self.object.update_url)
+        self.assertEqual(response.status_code, 200)
+
+
+class ConservationActionCategoryViewTests(TestCase):
+    """View tests for ConservationActionCategory."""
+
+    def setUp(self):
+        """Set up."""
+        self.object = cons_models.ConservationActionCategory.objects.create(
+            code="burn", label="Burn", description="Burn everything")
+        self.consaction = cons_models.ConservationAction.objects.create(
+            category=self.object,
+            instructions="burn some stuff"
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+    def test_conservation_action_category_absolute_admin_url(self):
+        """Test ConservationActionCategory absolute admin url."""
+        response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
 
@@ -240,6 +218,129 @@ class ConservationActivityViewTests(TestCase):
             if self.object.completion_date else "in progress",
             self.object.implementation_notes)
         self.assertEqual(label, self.object.__str__())
+
+
+class ConservationListViewTests(TestCase):
+    """ConservationList view tests."""
+
+    def setUp(self):
+        """Setup: create a new list."""
+        self.cl = cons_models.ConservationList.objects.create(
+            code='test',
+            label='test list',
+            approval_level=cons_models.ConservationList.APPROVAL_IMMEDIATE)
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+    def test_conservationlist_absolute_admin_url(self):
+        """Test ConservationList absolute admin url."""
+        response = self.client.get(self.cl.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_conservationlist_string(self):
+        """Test string."""
+        pass
+
+
+class ConservationCategoryViewTests(TestCase):
+    """ConservationCategory unit tests."""
+
+    def setUp(self):
+        """Set up."""
+        pass
+
+    def test_absolute_admin_url(self):
+        """Test absolute_admin_url loads."""
+        pass
+
+
+class ConservationCriterionViewTests(TestCase):
+    """ConservationCriterion unit tests."""
+
+    def setUp(self):
+        """Set up."""
+        pass
+
+    def test_absolute_admin_url(self):
+        """Test absolute_admin_url loads."""
+        pass
+
+
+class TaxonGazettalViewTests(TestCase):
+    """TaxonGazettal view tests."""
+
+    def setUp(self):
+        """Set up."""
+        self.taxon, created = Taxon.objects.update_or_create(
+            name_id=0,
+            defaults=dict(name="Eukarya",
+                          rank=Taxon.RANK_DOMAIN,
+                          current=True,
+                          parent=None))
+
+        self.gaz = cons_models.TaxonGazettal.objects.create(
+            taxon=self.taxon,
+            scope=cons_models.TaxonGazettal.SCOPE_WESTERN_AUSTRALIA,
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+    def test_absolute_admin_url(self):
+        """Test absolute_admin_url loads."""
+        response = self.client.get(self.gaz.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_absolute_admin_add_url(self):
+        """Test absolute_admin_add_url loads."""
+        response = self.client.get(self.gaz.absolute_admin_add_url)
+        self.assertEqual(response.status_code, 200)
+
+
+class CommunityGazettalViewTests(TestCase):
+    """TaxonGazettal view tests."""
+
+    def setUp(self):
+        """Set up."""
+        self.taxon, created = Taxon.objects.update_or_create(
+            name_id=0,
+            defaults=dict(name="Eukarya",
+                          rank=Taxon.RANK_DOMAIN,
+                          current=True,
+                          parent=None))
+        self.com0 = mommy.make(
+            Community,
+            code="code0",
+            name="name0",
+            _fill_optional=['eoo'])
+        self.com0.save()
+        self.gaz = cons_models.CommunityGazettal.objects.create(
+            community=self.com0,
+            scope=cons_models.CommunityGazettal.SCOPE_WESTERN_AUSTRALIA,
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+    def test_absolute_admin_url(self):
+        """Test absolute_admin_url loads."""
+        response = self.client.get(self.gaz.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_absolute_admin_add_url(self):
+        """Test absolute_admin_add_url loads."""
+        response = self.client.get(self.gaz.absolute_admin_add_url)
+        self.assertEqual(response.status_code, 200)
 
 
 class DocumentViewTests(TestCase):

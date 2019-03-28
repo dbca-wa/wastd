@@ -144,10 +144,10 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
         context["occurrence_table"] = TaxonAreaEncounterTable(occ.all()[:max_cards])
         context["occurrences"] = occ.all()
         context["max_cards"] = max_cards
-        if occ:
-            context["occurrence_total"] = occ.count()
-        else:
-            context["occurrence_total"] = 0
+        # if occ:
+        context["occurrence_total"] = occ.count() if occ else 0
+        # else:
+        # context["occurrence_total"] = 0
         context["conservationthreats_general"] = mt.filter(document=None, occurrence_area_code=None)
         context["conservationthreats_area"] = mt.exclude(occurrence_area_code=None)
         context["conservationactions_general"] = ma.filter(document=None, occurrence_area_code=None)
@@ -182,7 +182,7 @@ class CommunityDetailView(DetailViewBreadcrumbMixin, DetailView):
             "conservationaction_set"
         ).first()
         if not com:
-            raise Http404
+            raise Http404  # pragma: no cover
         return com
 
     def get_context_data(self, **kwargs):
@@ -194,10 +194,10 @@ class CommunityDetailView(DetailViewBreadcrumbMixin, DetailView):
         ma = obj.conservationaction_set.all()
         max_cards = 100
         context["max_cards"] = max_cards
-        if occ:
-            context["occurrence_total"] = occ.count()
-        else:
-            context["occurrence_total"] = 0
+        # if occ:
+        context["occurrence_total"] = occ.count() if occ else 0
+        # else:
+        # context["occurrence_total"] = 0
         context["occurrence_table"] = CommunityAreaEncounterTable(occ.all()[:max_cards])
         context["occurrences"] = occ.all()
         context["conservationthreats_general"] = mt.filter(document=None, occurrence_area_code=None)

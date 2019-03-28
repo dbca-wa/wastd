@@ -65,6 +65,17 @@ class CommunityAreaEncounterTests(TestCase):
             community=self.com0,
             encountered_on=timezone.now(),
             encountered_by=self.user,
+            point=GEOSGeometry('POINT (115 -32)', srid=4326),
+            geom=GEOSGeometry(
+                '{ "type": "Polygon", "coordinates": [ [  [ 116.586914, -32.916485 ], '
+                '[ 116.586914, -30.977609 ], [ 120.27832, -30.977609 ], '
+                '[ 120.27832, -32.916485 ], [ 116.586914, -32.916485 ] ] ]  }')
+        )
+
+        self.cae1 = occ_models.CommunityAreaEncounter.objects.create(
+            community=self.com0,
+            encountered_on=timezone.now(),
+            encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
 
@@ -75,6 +86,15 @@ class CommunityAreaEncounterTests(TestCase):
             author=self.user
         )
         self.fatt.save()
+
+        self.fatt1 = occ_models.FileAttachment.objects.create(
+            encounter=self.cae,
+            attachment=SimpleUploadedFile('testfile.txt', b'These are the file contents.'),
+            title="test",
+            author=self.user,
+            confidential=True,
+        )
+        self.fatt1.save()
 
         self.asssp1 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.cae,
@@ -126,7 +146,7 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertTemplateUsed(response, 'occurrence/areaencounter_list.html')
 
     def test_cae_detail_url_loads(self):
-        """Test CommunityAreaEncounter detail_url."""
+        """Test CommunityAreaEncounter get_absolute_url."""
         url = reverse('occurrence:communityareaencounter-detail',
                       kwargs={'pk': self.cae.pk})
         self.assertEqual(url, self.cae.get_absolute_url())
@@ -136,6 +156,10 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertTemplateUsed(response, 'occurrence/cards/firehistory.html')
         self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
+
+        response = self.client.get(self.cae1.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
 
     def test_community_detail_url_loads(self):
         """Test Community detail_url."""
@@ -276,6 +300,17 @@ class TaxonAreaEncounterTests(TestCase):
             taxon=self.taxon0,
             encountered_on=timezone.now(),
             encountered_by=self.user,
+            point=GEOSGeometry('POINT (115 -32)', srid=4326),
+            geom=GEOSGeometry(
+                '{ "type": "Polygon", "coordinates": [ [  [ 116.586914, -32.916485 ], '
+                '[ 116.586914, -30.977609 ], [ 120.27832, -30.977609 ], '
+                '[ 120.27832, -32.916485 ], [ 116.586914, -32.916485 ] ] ]  }')
+        )
+
+        self.tae1 = occ_models.TaxonAreaEncounter.objects.create(
+            taxon=self.taxon0,
+            encountered_on=timezone.now(),
+            encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
 
@@ -307,6 +342,16 @@ class TaxonAreaEncounterTests(TestCase):
         )
         self.fatt.save()
 
+        self.fatt1 = occ_models.FileAttachment.objects.create(
+            encounter=self.tae,
+            attachment=SimpleUploadedFile(
+                'testfile.txt', b'These are the file contents.'),
+            title="test",
+            author=self.user,
+            confidential=True
+        )
+        self.fatt1.save()
+
         self.aa0 = occ_models.AreaAssessment.objects.create(
             encounter=self.tae,
             area_surveyed_m2=None,
@@ -328,6 +373,8 @@ class TaxonAreaEncounterTests(TestCase):
         )
         self.aa2.save()
 
+        # TODO add cons threat
+
         self.client.force_login(self.user)
 
     def test_home_loads(self):
@@ -348,8 +395,11 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_detail_url_loads(self):
-        """Test Taxon detail_url."""
+        """Test Taxon detail_url. Maps fits geom or point."""
         response = self.client.get(self.tae.taxon.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.tae1.taxon.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_tae_list_url_loads(self):
@@ -377,6 +427,7 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertTemplateUsed(response, 'occurrence/cards/firehistory.html')
         self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
 
     def test_tae_update_url_loads(self):
         """Test taxon update url works and loads."""

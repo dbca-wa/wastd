@@ -3,7 +3,7 @@
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
-{% compress css %}
+{% compress css %} {# pragma: no cover #}
 <style>
 .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
   width: 350px; /* narrower popup */
@@ -107,7 +107,7 @@
 
 {% block javascript%}
 {{ block.super }}
-{% compress js %}
+{% compress js %} {# pragma: no cover #}
 <script type="text/javascript">
 function map_init(map, options) {
 

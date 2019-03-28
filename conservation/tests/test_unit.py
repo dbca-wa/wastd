@@ -4,10 +4,13 @@ from __future__ import unicode_literals
 
 from datetime import timedelta
 
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.test import TestCase
 
-from taxonomy.models import Taxon
+from model_mommy import mommy  # noqa
+
+from taxonomy.models import Taxon, Community
 from conservation import models as cons_models
 
 # from requests import RequestsClient
@@ -18,51 +21,6 @@ from conservation import models as cons_models
 # Test fileattachment creation, str
 # Test cons crit, cons cat
 # Test gazettal
-
-
-class ConservationListModelTests(TestCase):
-    """ConservationList unit tests."""
-
-    def setUp(self):
-        """Setup: create a new list."""
-        self.cl = cons_models.ConservationList(
-            code='test',
-            label='test list',
-            approval_level=cons_models.ConservationList.APPROVAL_IMMEDIATE)
-
-    def test__str__(self):
-        """Test the string method."""
-        self.assertEqual(
-            self.cl.__str__(),
-            'test')
-
-
-class TaxonGazettalModelTests(TestCase):
-    """Unit tests for TaxonGazettal."""
-
-    def setUp(self):
-        """Set up."""
-        self.taxon, created = Taxon.objects.update_or_create(
-            name_id=0,
-            defaults=dict(name="Eukarya",
-                          rank=Taxon.RANK_DOMAIN,
-                          current=True,
-                          parent=None))
-
-        self.gaz = cons_models.TaxonGazettal.objects.create(
-            taxon=self.taxon,
-            scope=cons_models.TaxonGazettal.SCOPE_WESTERN_AUSTRALIA,
-        )
-
-    def test__str__(self):
-        """Test the string method."""
-        x = "{0} {1} {2} {3}".format(
-            self.gaz.get_scope_display(),
-            self.gaz.taxon,
-            self.gaz.category_cache,
-            self.gaz.criteria_cache
-        ).strip()
-        self.assertEqual(self.gaz.__str__(), x)
 
 
 class ConservationThreatModelTests(TestCase):
@@ -161,6 +119,108 @@ class ConservationActivityModelTests(TestCase):
         self.assertEqual(label, self.consact.__str__())
 
 
+class ConservationListModelTests(TestCase):
+    """ConservationList unit tests."""
+
+    def setUp(self):
+        """Setup: create a new list."""
+        self.cl = cons_models.ConservationList(
+            code='test',
+            label='test list',
+            approval_level=cons_models.ConservationList.APPROVAL_IMMEDIATE)
+
+    def test__str__(self):
+        """Test the string method."""
+        self.assertEqual(
+            self.cl.__str__(),
+            'test')
+
+
+class ConservationCategoryModelTests(TestCase):
+    """ConservationCategory unit tests."""
+
+    def setUp(self):
+        """Set up."""
+        pass
+
+    def test_str(self):
+        """Test string."""
+        pass
+
+
+class ConservationCriterionModelTests(TestCase):
+    """ConservationCriterion unit tests."""
+
+    def setUp(self):
+        """Set up."""
+        pass
+
+    def test_str(self):
+        """Test string."""
+        pass
+
+
+class TaxonGazettalModelTests(TestCase):
+    """Unit tests for TaxonGazettal."""
+
+    def setUp(self):
+        """Set up."""
+        self.taxon, created = Taxon.objects.update_or_create(
+            name_id=0,
+            defaults=dict(name="Eukarya",
+                          rank=Taxon.RANK_DOMAIN,
+                          current=True,
+                          parent=None))
+
+        self.gaz = cons_models.TaxonGazettal.objects.create(
+            taxon=self.taxon,
+            scope=cons_models.TaxonGazettal.SCOPE_WESTERN_AUSTRALIA,
+        )
+
+    def test__str__(self):
+        """Test the string method."""
+        x = "{0} {1} {2} {3}".format(
+            self.gaz.get_scope_display(),
+            self.gaz.taxon,
+            self.gaz.category_cache,
+            self.gaz.criteria_cache
+        ).strip()
+        self.assertEqual(self.gaz.__str__(), x)
+
+
+class CommunityGazettalModelTests(TestCase):
+    """Unit tests for CommunityGazettal."""
+
+    def setUp(self):
+        """Set up."""
+        self.taxon, created = Taxon.objects.update_or_create(
+            name_id=0,
+            defaults=dict(name="Eukarya",
+                          rank=Taxon.RANK_DOMAIN,
+                          current=True,
+                          parent=None))
+        self.com0 = mommy.make(
+            Community,
+            code="code0",
+            name="name0",
+            _fill_optional=['eoo'])
+        self.com0.save()
+        self.gaz = cons_models.CommunityGazettal.objects.create(
+            community=self.com0,
+            scope=cons_models.CommunityGazettal.SCOPE_WESTERN_AUSTRALIA,
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+        self.client.force_login(self.user)
+
+    def test_str(self):
+        """Test string."""
+        pass
+
+
 class DocumentModelTests(TestCase):
     """Document unit tests.
 
@@ -173,3 +233,18 @@ class DocumentModelTests(TestCase):
     """
 
     pass
+
+
+class FileAttachmentModelTests(TestCase):
+    """FileAttachment model tests."""
+
+    def setUp(self):
+        """Set up."""
+        pass
+
+    def test_str(self):
+        """Test FileAttachment string."""
+
+    def test_fileupload(self):
+        """Test file upload path."""
+        pass

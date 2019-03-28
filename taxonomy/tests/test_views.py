@@ -151,12 +151,17 @@ class TaxonViewTests(TestCase):
             reason=Crossreference.REASON_TSY
         )
 
+        # add vernaculars
+
         self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
             code="weeds", label="Weeds", description="invasive weeds")
         self.consthreat = cons_models.ConservationThreat.objects.create(
-            category=self.consthreatcat, cause="burn some stuff")
+            category=self.consthreatcat, cause="weeds are invading")
         self.consthreat.taxa.add(self.taxon0)
+        self.consthreat.taxa.add(self.taxon1)
+        self.consthreat.taxa.add(self.taxon2)
         self.consthreat.communities.add(self.com0)
+        self.consthreat.communities.add(self.com1)
 
         self.consactioncat = cons_models.ConservationActionCategory.objects.create(
             code="burn", label="Burn", description="Burn everything")
@@ -207,6 +212,9 @@ class TaxonViewTests(TestCase):
     def test_taxon_detail_url_loads(self):
         """Test Taxon detail_url."""
         response = self.client.get(self.taxon0.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.taxon1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
         # TODO test crossreference urls
