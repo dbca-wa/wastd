@@ -56,11 +56,17 @@ class ConservationThreatAdmin(ImportExportModelAdmin, VersionAdmin):
         "cause",
         "encountered_on",
         "encountered_by",
+        "current_impact",
+        "potential_impact",
+        "potential_onset",
     )
     list_filter = (
         "category",
         "document",
         ("encountered_on", admin.DateFieldListFilter),
+        "current_impact",
+        "potential_impact",
+        "potential_onset",
     )
     search_fields = (
         "occurrence_area_code",
@@ -68,7 +74,6 @@ class ConservationThreatAdmin(ImportExportModelAdmin, VersionAdmin):
     )
 
     save_on_top = True
-    # filter_horizontal = ("communities", )
     formfield_overrides = FORMFIELD_OVERRIDES
     fieldsets = (
         ("Affiliation", {
@@ -78,7 +83,9 @@ class ConservationThreatAdmin(ImportExportModelAdmin, VersionAdmin):
         }),
         ("Threat", {
             "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
-            "fields": ("encountered_by", "encountered_on", "category", "cause",)
+            "fields": ("encountered_by", "encountered_on", "category", "cause",
+                       "area_affected_percent", "current_impact",
+                       "potential_impact", "potential_onset")
         }),
     )
     inlines = [

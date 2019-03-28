@@ -226,6 +226,7 @@ class ConservationThreat(UrlsMixin, ObservationAuditMixin, models.Model):
         choices=EHMLNN_CHOICES,
         help_text=_("Potential impact of threat on specified subjects."),
     )
+
     potential_onset = models.CharField(
         verbose_name=_("Potential Onset"),
         max_length=100,

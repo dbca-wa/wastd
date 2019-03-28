@@ -1,4 +1,4 @@
-<!-- conservation/include/conservationthreat_card.html -->
+conservation/include/conservationthreat_card.html -->
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
   <h6 class="card-header">
     <div class="row">
@@ -47,14 +47,15 @@
 
     </h6>
     <p class="card-text">
-      <span class="oi oi-calendar"
+      <span class="oi oi-flash"
         title="Encountered on" aria-hidden="true"></span>
-      {{ object.encountered_on|date:"D d M Y" }}
+      {{ object.get_current_impact_display }} impact to {{ object.area_affected_percent }} % of area
+      reported on {{ object.encountered_on|date:"D d M Y" }} by {{ object.encountered_by }}.
     </p>
     <p class="card-text">
-      <span class="oi oi-person"
-        title="Encountered by" aria-hidden="true"></span>
-      {{ object.encountered_by }}
+      <span class="oi oi-calendar"
+        title="Area affected" aria-hidden="true"></span>
+      {{ object.get_potential_impact_display }} likely {{ object.get_potential_onset_display }}.
     </p>
 
   </div><!-- /.card-body -->
@@ -83,4 +84,4 @@
     <!-- /Conservation threat update -->
   </div><!-- /.card-footer -->
 </div><!-- /.card -->
-<!-- conservation/includes/conservationthreat_card.html -->
+<!-- conservation/includes/conservationthreat_card.html

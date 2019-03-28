@@ -12,22 +12,13 @@ from django import template
 register = template.Library()
 
 
-# @register.filter
-# def rangify(value):
-#     """Return an xrange around a given number."""
-#     span = 5
-#     min_val = max(value - span, 1)
-#     max_val = max(value + span, span * 2)
-#     return xrange(min_val, max_val)
-
-
-@register.inclusion_tag('include/gazettal.html', takes_context=True)
-def gazettal_labels(context, user):
-    """Render a Gazettal as label."""
-    return {
-        "original": context["original"],
-        "is_staff": user.is_staff
-    }
+@register.filter
+def rangify(value):
+    """Return a range around a given number."""
+    span = 5
+    min_val = max(value - span, 1)
+    max_val = max(value + span, span * 2)
+    return range(min_val, max_val)
 
 
 @register.inclusion_tag('include/taxon_change.html', takes_context=True)

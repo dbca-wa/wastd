@@ -30,12 +30,13 @@ from __future__ import unicode_literals
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.template import Context, Template  # noqa
-from django.template.loader import get_template
+from django.template.loader import get_template  # noqa
 
 from model_mommy import mommy
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
 
 from taxonomy.models import Community, Taxon
+from taxonomy.templatetags import taxonomy_tags as tt
 from conservation import models as cons_models
 MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
 
@@ -81,7 +82,6 @@ class TemplateTagTests(TestCase):
         """Shared objects."""
         self.user = get_user_model().objects.create_superuser(
             username="superuser", email="super@gmail.com", password="test")
-        self.client.force_login(self.user)
 
         self.taxon, created = Taxon.objects.update_or_create(
             name_id=0,
@@ -96,10 +96,13 @@ class TemplateTagTests(TestCase):
             # TODO cons category, cons criteria
         )
 
-    def test_gazettal_labels(self):
-        """Test gazettal labels."""
-        c = {'original': self.taxon, 'user': self.user}
-        t = get_template('include/gazettal.html')
-        r = t.render(c)
-        pass
-        # self.assertInHTML(r, self.gaz.label_cache)
+    # def test_gazettal_labels(self):
+    #     """Template tag test example."""
+    #     c = {'original': self.taxon, 'user': self.user}
+    #     t = get_template('include/gazettal.html')
+    #     r = t.render(c)
+    #     self.assertInHTML(r, '<h6 class="card-subtitle mb-2">')
+
+    def test_rangify(self):
+        """Test the rangify filter."""
+        self.assertEqual(tt.rangify(10), range(5, 15))
