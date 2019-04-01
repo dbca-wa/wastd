@@ -3,29 +3,16 @@
 
 {% block stylesheets %}
 {{ block.super }}
-{% leaflet_css plugins="ALL" %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+{% load leaflet_tags %}
+{% leaflet_css %}
+{% include 'shared/map.css' %}
+
 <!-- Fix missing favicon -->
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-<style>
-/* Resolved https://github.com/sehmaschine/django-grappelli/issues/884 */
-/*.grp-tools.grp-related-widget-tools {position: relative; right: 0px;} */
-
-/* Fixed through shared.admin.S2ATTRS data-width
-   https://github.com/applegrew/django-select2/issues/252 */
-/*.select2-selection, .select2-search {min-width: 200px;}*/
-
-/* Force leaflet controls underneath header (z-index 1000) and
-   above leaflet tiles (z-index 400)*/
-.leaflet-top{z-index:999;}
-
-/* https://github.com/makinacorpus/django-leaflet/issues/247
-textarea.required {width:100%}*/
-</style>
 {% endblock %}
 
-{% block javascripts %}
+{% block extrahead %}
 {{ block.super }}
-{% leaflet_js plugins="ALL" %}
-{% include 'shared/leaflet_widget_overlays_fullscreen.js' %}
+{% leaflet_js %}
+{% include 'shared/map.js' %}
 {% endblock %}

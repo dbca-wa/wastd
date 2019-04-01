@@ -25,7 +25,7 @@ from occurrence import resources as occ_resources
 class FileAttachmentInline(admin.TabularInline):
     """FileAttachment Inline."""
 
-    extra = 0
+    extra = 1
     # max_num = 1  # limit max number
     model = occ_models.FileAttachment
     form = occ_forms.FileAttachmentForm
@@ -35,17 +35,17 @@ class FileAttachmentInline(admin.TabularInline):
 class AssociatedSpeciesInline(admin.TabularInline):
     """Associated Species  Inline."""
 
-    extra = 0
+    extra = 1
     # max_num = 1  # limit max number
     model = occ_models.AssociatedSpecies
     form = occ_forms.AssociatedSpeciesForm
-    classes = ('grp-collapse grp-open',)
+    classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
 
 
 class FireHistoryInline(admin.TabularInline):
     """FireHistoryObservation Inline."""
 
-    extra = 0
+    extra = 1
     # max_num = 1  # limit max number
     model = occ_models.FireHistory
     form = occ_forms.FireHistoryForm
@@ -55,7 +55,7 @@ class FireHistoryInline(admin.TabularInline):
 class AreaAssessmentInline(admin.TabularInline):
     """AreaAssessmentObservation Inline."""
 
-    extra = 0
+    extra = 1
     # max_num = 1  # limit max number
     model = occ_models.AreaAssessment
     form = occ_forms.AreaAssessmentForm
@@ -99,18 +99,23 @@ class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmi
 class TaxonAreaAdmin(AreaEncounterAdmin):
     """Admin for TaxonArea."""
 
-    # # Change list
+    # Change list
     list_display = AreaEncounterAdmin.list_display + ["taxon"]
     list_filter = AreaEncounterAdmin.list_filter + ["taxon"]
     list_select_related = ["taxon", ]
     show_full_result_count = False
     resource_class = occ_resources.TaxonAreaEncounterResource
 
-    # # Change view
-    # form = TaxonAreaEncounterForm
+    # Change view
     form = s2form(occ_models.TaxonAreaEncounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = AreaEncounterAdmin.autocomplete_fields + ["taxon"]
+    fieldsets = (
+        (_('Taxon'), {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': ("taxon",)}
+         ),
+    ) + AreaEncounterAdmin.fieldsets
     inlines = [
         CustomStateLogInline,
         FileAttachmentInline,
@@ -134,6 +139,7 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
     # Change view
     form = s2form(occ_models.CommunityAreaEncounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
+    autocomplete_fields = AreaEncounterAdmin.autocomplete_fields + ["community"]
     fieldsets = ((_('Community'), {
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
         'fields': ("community", )}

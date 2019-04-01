@@ -9,6 +9,8 @@
 
 {% block extrastyle %}
 {% compress css %}
+{% leaflet_css %}
+{% include 'shared/map.css' %}
 <style>
 .leaflet-popup, .leaflet-popup-content-wrapper {
   width: 540px !important;
@@ -24,7 +26,9 @@
 
 {% block javascript%}
 {{ block.super }}
-<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+{% leaflet_js %}
+<script src="//use.fontawesome.com/f8f5501a45.js"></script>
+{% include 'shared/map.js' %}
 
 {% compress js %}
 <script type="text/javascript">
@@ -33,14 +37,12 @@ function map_init(map, options) {
     {% include 'shared/overlays.html' %}
     {% include 'shared/styles.html' %}
 
-    map.addControl(new L.Control.Geocoder());
-
     /* Data loading */
     var markers = L.markerClusterGroup();
     var gj_markers = L.geoJson(
         {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
         // {clipTiles: true, unique: getUnique},
-        {style: style, pointToLayer: ptl, onEachFeature: oef}
+        {style: pointstyle, pointToLayer: ptl, onEachFeature: oef}
         );
     markers.addLayer(gj_markers);
     map.addLayer(markers);

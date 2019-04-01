@@ -466,14 +466,14 @@ LEAFLET_CONFIG = {
         'markers': {
             'css': [
                 '/static/css/leaflet.awesome-markers.css',
-                '/static/css/leaflet.markercluster.default.css',
-                '/static/css/leaflet.markercluster.css',
+                # '/static/css/leaflet.markercluster.default.css',
+                # '/static/css/leaflet.markercluster.css',
                 '/static/css/leaflet.label.css',
             ],
             'js': [
                 '/static/js/leaflet.awesome-markers.min.js',
-                '/static/js/leaflet.markercluster.js',
-                '/static/js/TileLayer.GeoJSON.min.js'
+                # '/static/js/leaflet.markercluster.js',
+                # '/static/js/TileLayer.GeoJSON.min.js'
             ],
             'auto-include': True
         },
