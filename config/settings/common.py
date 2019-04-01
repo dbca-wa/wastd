@@ -464,51 +464,32 @@ LEAFLET_CONFIG = {
     'PLUGINS': {
         'forms': {'auto-include': True},
         'markers': {
-            'css': [
-                '/static/css/leaflet.awesome-markers.css',
-                '/static/css/leaflet.label.css',
-            ],
-            'js': [
-                '/static/js/leaflet.awesome-markers.min.js',
-                '/static/js/leaflet.label.js',
-            ],
+            'css': 'css/leaflet.awesome-markers.css',
+            'js': 'js/leaflet.awesome-markers.min.js',
+            'auto-include': True
+        },
+        'label': {
+            'css': 'css/leaflet.label.css',
+            'js': 'js/leaflet.label.js',
             'auto-include': True
         },
         'geocoder': {
-            'css': [
-                '/static/css/Control.Geocoder.css',
-            ],
-            'js': [
-                '/static/js/Control.Geocoder.min.js',
-                '/static/js/Control.Geocoder.min.js.map',
-            ],
+            'css': 'css/Control.Geocoder.css',
+            'js': 'js/Control.Geocoder.min.js',
             'auto-include': True
         },
         'fullscreen': {
-            'css': [
-                '/static/css/Control.FullScreen.css',
-            ],
-            'js': [
-                '/static/js/Control.FullScreen.min.js',
-                '/static/js/Control.FullScreen.min.js.map',
-            ],
+            'css': 'css/Control.FullScreen.css',
+            'js': 'js/Control.FullScreen.min.js',
             'auto-include': True
         },
         'markercluster': {
-            'css': [
-                '/static/css/Control.FullScreen.css',
-            ],
-            'js': [
-                '/static/js/leaflet.markercluster.js',
-                '/static/js/leaflet.markercluster.js.map',
-            ],
+            'css': ['css/MarkerCluster.css', 'css/MarkerCluster.Default.css'],
+            'js': 'js/leaflet.markercluster.js',
             'auto-include': True
         },
         'tilelayer': {
-            'js': [
-                '/static/js/TileLayer.GeoJSON.min.js',
-                '/static/js/TileLayer.GeoJSON.min.js.map',
-            ],
+            'js': 'js/TileLayer.GeoJSON.min.js',
             'auto-include': True
         },
     },

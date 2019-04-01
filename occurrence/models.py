@@ -623,23 +623,6 @@ class HabitatComposition(ObservationGroup):
     # specific landform element
     pass
 
-
-class ConservationThreat(ObservationGroup):
-    """Threat to encounter subject or site.
-
-    Conservation threats are mitigated by one or many conservation actions.
-    Conservation threat categories are mitigated by one or many
-    conservation action categories.
-    """
-
-    # FK threat_type(code label description)
-    # threat_cause
-    # area_affected_pc
-    # current_impact(NLME)
-    # potential_impact(LMHE)
-    # potential_threat_onset(SML)
-    pass
-
 # Fire response is OOS
 
 # -----------------------------------------------------------------------------

@@ -210,6 +210,7 @@
 {% compress js %} {# # pragma: no cover #}
 <script type="text/javascript">
 function map_init(map, options) {
+    {% include 'shared/styles.js' %}
     /* Data loading */
     var eoo = L.geoJson(
         {{ original|geojsonfeature:"canonical_name,taxonomic_name:eoo"|safe }},

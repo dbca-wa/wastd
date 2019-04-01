@@ -13,12 +13,12 @@
 {% endblock %}
 
 {% block extrastyle %}
-{% leaflet_css plugins="ALL" %}
+{% leaflet_css %}
 {{ form.media.css }}
 {% endblock %}
 
 {% block extrajs %}
-{% leaflet_js plugins="ALL" %}
+{% leaflet_js %}
 {{ form.media.js }}
 {% include 'shared/map.js' %}
 {% endblock extrajs %}

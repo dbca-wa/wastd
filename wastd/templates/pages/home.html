@@ -26,17 +26,13 @@
 
 {% block javascript%}
 {{ block.super }}
-{% leaflet_js %}
 <script src="//use.fontawesome.com/f8f5501a45.js"></script>
+{% leaflet_js %}
 {% include 'shared/map.js' %}
-
 {% compress js %}
 <script type="text/javascript">
 function map_init(map, options) {
-
-    {% include 'shared/overlays.html' %}
-    {% include 'shared/styles.html' %}
-
+    {% include 'shared/styles.js' %}
     /* Data loading */
     var markers = L.markerClusterGroup();
     var gj_markers = L.geoJson(

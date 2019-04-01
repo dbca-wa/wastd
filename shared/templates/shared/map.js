@@ -1,14 +1,13 @@
 <script type="text/javascript">
 /* Project specific Javascript goes here. */
 /*
- * Workaround for 1px lines appearing in some browsers due to fractional transforms
- * and resulting anti-aliasing.
+ * Workaround for 1px lines appearing in some browsers due to
+ * fractional transforms and resulting anti-aliasing.
  * https://github.com/Leaflet/Leaflet/issues/3575
  */
 (function(){
     // L.Icon.Default.imagePath = '/static/leaflet/images/';
     delete L.Icon.Default.prototype._getIconUrl
-
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
       iconUrl: "/static/leaflet/images/marker-icon.png",
@@ -29,8 +28,8 @@
   window.addEventListener("map:init", function (event) {
     var map = event.detail.map;
     {% include 'shared/overlays.html' %}
-     {% include 'shared/styles.html' %}
-    map.addControl(new L.Control.Fullscreen());
+    {% include 'shared/styles.js' %}
+    map.addControl(new L.control.fullscreen());
     map.addControl(new L.Control.Geocoder());
 });
 </script>

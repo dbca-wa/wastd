@@ -160,9 +160,8 @@
 <script type="text/javascript">
 function map_init(map, options) {
 
-    {% include 'shared/overlays.html' %}
-    {% include 'shared/styles.html' %}
-    map.addControl(new L.Control.Fullscreen());
+
+    {% include 'shared/styles.js' %}
 
     /* Data loading */
     var eoo = L.geoJson(
