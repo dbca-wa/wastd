@@ -33,10 +33,11 @@
 {% block css%}
 {{ block.super }}
 {% leaflet_css %}
+{% include 'shared/map.css' %}
 {% endblock %}
 
 {% block javascript%}
 {{ block.super }}
 {% leaflet_js %}
-{% include 'shared/leaflet_widget_overlays_fullscreen.js' %}
+{% include 'shared/map.js' %}
 {% endblock %}

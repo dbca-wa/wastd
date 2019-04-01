@@ -466,20 +466,49 @@ LEAFLET_CONFIG = {
         'markers': {
             'css': [
                 '/static/css/leaflet.awesome-markers.css',
-                # '/static/css/leaflet.markercluster.default.css',
-                # '/static/css/leaflet.markercluster.css',
                 '/static/css/leaflet.label.css',
             ],
             'js': [
                 '/static/js/leaflet.awesome-markers.min.js',
-                # '/static/js/leaflet.markercluster.js',
-                # '/static/js/TileLayer.GeoJSON.min.js'
+                '/static/js/leaflet.label.js',
+            ],
+            'auto-include': True
+        },
+        'geocoder': {
+            'css': [
+                '/static/css/Control.Geocoder.css',
+            ],
+            'js': [
+                '/static/js/Control.Geocoder.min.js',
+                '/static/js/Control.Geocoder.min.js.map',
             ],
             'auto-include': True
         },
         'fullscreen': {
-            'css': ['/static/css/leaflet.fullscreen.css', ],
-            'js': ['/static/js/Leaflet.fullscreen.min.js', ],
+            'css': [
+                '/static/css/Control.FullScreen.css',
+            ],
+            'js': [
+                '/static/js/Control.FullScreen.min.js',
+                '/static/js/Control.FullScreen.min.js.map',
+            ],
+            'auto-include': True
+        },
+        'markercluster': {
+            'css': [
+                '/static/css/Control.FullScreen.css',
+            ],
+            'js': [
+                '/static/js/leaflet.markercluster.js',
+                '/static/js/leaflet.markercluster.js.map',
+            ],
+            'auto-include': True
+        },
+        'tilelayer': {
+            'js': [
+                '/static/js/TileLayer.GeoJSON.min.js',
+                '/static/js/TileLayer.GeoJSON.min.js.map',
+            ],
             'auto-include': True
         },
     },

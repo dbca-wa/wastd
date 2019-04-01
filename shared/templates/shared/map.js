@@ -1,14 +1,35 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.min.js"
-  integrity="sha256-wAPWjo+rSGf0uCc0Bx0INODQ6En5mOPxSDGwKBLkfhg=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"
-  integrity="sha256-WL6HHfYfbFEkZOFdsJQeY7lJG/E5airjvqbznghUzRw=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.4.5/Control.FullScreen.min.js"
-  integrity="sha256-ymsQ8vmYkMvP0tBKzewWBBnPnYm308ZoRQpeStgVR2Y=" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script type="text/javascript">
+/* Project specific Javascript goes here. */
+/*
+ * Workaround for 1px lines appearing in some browsers due to fractional transforms
+ * and resulting anti-aliasing.
+ * https://github.com/Leaflet/Leaflet/issues/3575
+ */
+(function(){
+    // L.Icon.Default.imagePath = '/static/leaflet/images/';
+    delete L.Icon.Default.prototype._getIconUrl
+
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
+      iconUrl: "/static/leaflet/images/marker-icon.png",
+      shadowUrl: "/static/leaflet/images/marker-shadow.png"
+    })
+
+    var originalInitTile = L.GridLayer.prototype._initTile
+    L.GridLayer.include({
+        _initTile: function (tile) {
+            originalInitTile.call(this, tile);
+            var tileSize = this.getTileSize();
+            tile.style.width = tileSize.x + 1 + 'px';
+            tile.style.height = tileSize.y + 1 + 'px';
+        }
+    });
+})()
+
   window.addEventListener("map:init", function (event) {
     var map = event.detail.map;
     {% include 'shared/overlays.html' %}
+     {% include 'shared/styles.html' %}
     map.addControl(new L.Control.Fullscreen());
     map.addControl(new L.Control.Geocoder());
 });

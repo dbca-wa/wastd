@@ -3,6 +3,8 @@
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
+{% leaflet_css %}
+{% include 'shared/map.css' %}
 {% compress css %} {# pragma: no cover #}
 <style>
 .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
@@ -107,14 +109,11 @@
 
 {% block javascript%}
 {{ block.super }}
+{% leaflet_js %}
+{% include 'shared/map.js' %}
 {% compress js %} {# pragma: no cover #}
 <script type="text/javascript">
 function map_init(map, options) {
-
-    {% include 'shared/overlays.html' %}
-    {% include 'shared/styles.html' %}
-    map.addControl(new L.Control.Fullscreen());
-
     /* Data loading */
     var occ_point = L.geoJson(
       {{ original|geojsonfeature:"label,as_html,encountered_on:point"|safe }},

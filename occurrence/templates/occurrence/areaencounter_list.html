@@ -31,12 +31,13 @@
 {% block css%}
 {{ block.super }}
 {% leaflet_css %}
+{% include 'shared/map.css' %}
 {{ list_filter.form.media.css }}
 {% endblock %}
 
 {% block javascript %}
 {{ block.super }}
 {% leaflet_js %}
+{% include 'shared/map.js' %}
 {{ list_filter.form.media.js }}
-{% include 'shared/leaflet_widget_overlays_fullscreen.js' %}
 {% endblock %}

@@ -1,0 +1,215 @@
+{% load staticfiles i18n bootstrap4 %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-darkblue">
+      <a class="navbar-brand" href="/">
+        <h2>{{ settings.SITE_TITLE }}</h2>
+      </a>
+        <button class="navbar-toggler" type="button"
+          data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'taxonomy:taxon-list' %}"
+              title="Browse, filter and search threatened species">
+            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            Species
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'taxonomy:community-list' %}"
+              title="Browse, filter and search threatened communities">
+            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            Communities
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'conservation:conservationthreat-list' %}"
+              title="Browse, filter and search conservation threats">
+            <span class="oi oi-flash" aria-hidden="true"></span>
+            Threats
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'conservation:conservationaction-list' %}"
+              title="Browse, filter and search conservation actions">
+            <span class="oi oi-task" aria-hidden="true"></span>
+            Actions
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'map' %}"
+              title="Map {{ settings.SITE_NAME }}">
+            <span class="oi oi-globe" aria-hidden="true"></span>
+            Map
+            </a>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a  class="nav-link dropdown-toggle" href="/"
+              id="nav-li-analysts"
+              title="Analysts"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false">
+            <span class="oi oi-graph" aria-hidden="true"></span>
+            Analysts
+            </a>
+            <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
+              <a class="dropdown-item"
+                href="https://dbca-wa.github.io/wastd/index.html#document-data_consumers"
+                title="Manual" target="_blank">
+                <span class="oi oi-book" aria-hidden="true"></span>
+                <span class="align-middle">Data Analysts' Manual</span>
+              </a>
+              <a class="dropdown-item" href="/api/1/" title="API" target="_blank">
+               <span class="oi oi-terminal" aria-hidden="true"></span>
+               <span class="align-middle">API</span>
+             </a>
+             <a class="dropdown-item" href="{% url 'api-docs' %}"
+                title="API docs (Swagger)" target="_blank">
+               <span class="oi oi-book align-middle" aria-hidden="true"></span>
+               <span class="align-middle">API Docs (Swagger)</span>
+             </a>
+             <a class="dropdown-item" href="/api/1/docs" title="API docs (DRF)" target="_blank">
+               <span class="oi oi-book align-middle" aria-hidden="true"></span>
+               <span class="align-middle">API Docs (DRF)</span>
+             </a>
+             {% if request.user.is_authenticated %}
+             <a class="dropdown-item"
+                title="My API Authentication"
+                href="{% url 'users:detail' request.user.username  %}">
+              <span class="oi oi-person align-middle" aria-hidden="true"></span>
+              <span class="align-middle">My API Authentication</span>
+              </a>
+              {% endif %}
+              <!--
+                <a class="dropdown-menu" href="{% url 'encounter_list' %}" target="_blank">
+                    <i class="fa fa-table"></i>&nbsp;Encounters
+                </a>
+
+                <a class="dropdown-menu"
+                    href="{% url 'animalencounter_list' %}"
+                    title="Browse, filter and search animal encounters">
+                    <i class="fa fa-table"></i>&nbsp;Animal Encounters
+                </a>
+              -->
+            </div>
+          </li>
+
+          {% if request.user.is_staff %}
+          <li class="nav-item dropdown">
+            <a  class="nav-link dropdown-toggle"
+              href="/"
+              id="nav-li-curators"
+              title="Curators"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false">
+              <span class="oi oi-shield" aria-hidden="true"></span>
+              Curators
+            </a>
+            <div class="dropdown-menu" aria-labelledby="nav-li-curators">
+              <a class="dropdown-item"
+                href="https://dbca-wa.github.io/wastd/index.html#document-data_curators"
+                title="Manual" target="_blank">
+                <span class="oi oi-book" aria-hidden="true"></span>
+                Data Curators' Manual
+              </a>
+              <a class="dropdown-item"
+                href="{% url 'admin:index' %}"
+                target="_blank"
+                title="Data entry and curation area">
+                <span class="oi oi-beaker" aria-hidden="true"></span>
+                Data Curation Portal
+              </a>
+
+              {% if request.user.is_superuser %}
+              <!--  <a class="dropdown-item"
+                href="/performance/" target="_blank"
+                title="Measure performance">
+               <span class="oi oi-pulse" aria-hidden="true"></span>
+               Site performance
+              </a> -->
+              <a class="dropdown-item"
+                href="{% url 'import-odka' %}"
+                title="Import all ODKA forms">
+               <span class="oi oi-loop-circular" aria-hidden="true"></span>
+               Import ODKA
+              </a>
+              <a class="dropdown-item"
+                href="{% url 'update-names' %}"
+                title="Rebuild names for surveys, tagged animals, and loggers.">
+               <span class="oi oi-loop-circular" aria-hidden="true"></span>
+               Rebuild Animal Names
+              </a>
+              <a class="dropdown-item"
+                href="{% url 'taxonomy:task-update-taxon' %}"
+                title="Update taxon names">
+               <span class="oi oi-loop-circular" aria-hidden="true"></span>
+               Update Taxon Names
+              </a>
+             <!--  <a class="dropdown-item"
+                href="/api/1/animal-encounters/?format=latex"
+                target="_blank"
+                title="Export all Animal Encounters as PDF">
+                <span class="oi oi-document" aria-hidden="true"></span>
+                Export All AnimalEncounters
+              </a> -->
+              {% endif %}
+            </div>
+          </li>
+          {% endif %}
+
+          <li class="nav-item">
+           <a class="nav-link"
+            href="https://dbca-wa.github.io/wastd/index.html"
+            title="Manual" target="_blank">
+             <span class="oi oi-book" aria-hidden="true"></span>
+             Manual
+           </a>
+          </li>
+
+          <li class="nav-item">
+            {% block extranav %}{% endblock extranav %}
+          </li>
+       </ul>
+      <ul class="nav navbar-nav pull-xs-right">
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">
+            <span class="oi oi-person" title="Profile" aria-hidden="true"></span>
+            {% trans "My Profile" %}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'account_logout' %}">
+            <span class="oi oi-account-logout" title="Log out" aria-hidden="true"></span>
+            {% trans "Sign out" %}
+          </a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">
+            <span class="oi oi-star" title="Sign up" aria-hidden="true"></span>
+            {% trans "Sign Up" %}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">
+            <span class="oi oi-account-login" title="Manual" aria-hidden="true"></span>
+            {% trans "Sign In" %}
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
