@@ -33,8 +33,8 @@ jobs:
       - run:
           name: Fix file ownership and create log and staticfiles folders
           command: |
-            sudo chown -R circleci:circleci /usr/local/bin
-            sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
+            # sudo chown -R circleci:circleci /usr/local/bin
+            # sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
             mkdir -p logs staticfiles
             touch logs/wastd.log
 
