@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "pages/base.html" %}
 {% load staticfiles compress leaflet_tags geojson_tags mptt_tags taxonomy_tags occurrence_tags observations crispy_forms_tags bootstrap4 %}
 {% load render_table from django_tables2 %}
 
@@ -169,7 +169,8 @@
 
       {% if occ_list %}
       {% for site in occ_list %}
-          <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
+          <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12"
+            id="occ-{{ site.grouper }}">
             <h5 class="card-header">
               {{ site.name }} <p class="small text-muted">{{ site.grouper|title }}</small>
               <small class="float-right">
@@ -267,57 +268,18 @@ function map_init(map, options) {
     // ).addTo(map);
 
     /*
-     * BioSys Occurrences
+     * BioSys Occurrences. Helpers see styles.js
      */
     // using Fetch API
-
-    /* Override default Marker, set colour, symbol; add mouse hover title */
-    function ptlBioSys(feature, latlng) {
-        /* https://github.com/lvoogdt/Leaflet.awesome-markers */
-        var icon = new L.AwesomeMarkers.icon({icon: 'database', markerColor: 'green'});
-        return L.marker(latlng, {icon: icon});
-    }
-
-    function oefBioSys(feature, layer) {
-      layer.bindPopup(
-        '<div class="row"><div class="mr-auto p-2"><h5>'+ feature.properties.species_name + '</h5></div></div>' +
-        '<p><i class="oi oi-calendar" aria-hidden="true"></i> ' + feature.properties.datetime + '</p>' +
-        '<p><a class="btn btn-secondary btn-sm" target="_" ' +
-        'href="https://biosys-uat.dbca.wa.gov.au/#/data/projects/61/datasets/' +
-        feature.properties.dataset + '/record/' + feature.id + '">' +
-        '<i class="oi oi-pencil"></i> Edit this record in BioSys</a></p>'
-      );
-      layer.bindTooltip(
-        'BioSys <br/><span class="oi oi-calendar" aria-hidden="true">' +
-        feature.properties.datetime
-      );
-    }
-
-    /* Turn a BioSys API record into a GeoJSON Feature. */
-    function geoJSONify(json_record) {
-      return {
-        type: 'Feature',
-        id: json_record.id,
-        geometry: {type: 'Point', coordinates: json_record.geometry.coordinates},
-        properties: json_record
-      };
-    }
-
-    function geoJSONfc(gj_feature_array) {
-      return {"type": "FeatureCollection", "features": gj_feature_array.map(geoJSONify)}
-    }
-
-    /* Authentication headers for BioSys API. */
-    var hdr = new Headers();
-    hdr.append("Authorization", 'Basic ' + btoa('{{ settings.BIOSYS_UN }}:{{ settings.BIOSYS_PW }}'));
-
     fetch(
-      "{{ settings.BIOSYS_TSC_URL|safe }}{{ original.name_id }}", {credentials: "include", headers: hdr}
+      "{{ settings.BIOSYS_TSC_URL|safe }}{{ original.name_id }}",
+      {credentials: "include", headers: hdr}
     ).then(
       function (response) {return response.json();}
     ).then(
       function(json) {
-        var point_markers = L.geoJson(geoJSONfc(json), {pointToLayer: ptlBioSys, onEachFeature: oefBioSys});
+        var point_markers = L.geoJson(geoJSONfc(json),
+          {pointToLayer: ptlBioSys, onEachFeature: oefBioSys});
         // console.log(geoJSONfc(json));
         // var cluster_markers = L.markerClusterGroup();
         taxon_cluster_markers.addLayer(point_markers);

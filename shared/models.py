@@ -7,6 +7,7 @@ import logging
 import uuid
 
 from django.db import models
+from django.db.models import options
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 # from durationfield.db.models.fields.duration import DurationField
@@ -33,6 +34,9 @@ logger = logging.getLogger(__name__)
 
 
 # Abstract models ------------------------------------------------------------#
+options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('card_template', )
+
+
 class CodeLabelDescriptionMixin(models.Model):
     """A Mixin providing code, label and description."""
 
@@ -89,12 +93,20 @@ class UrlsMixin(models.Model):
     * list_url (classmethod)
     * create_url (classmethod)
     * update_url
+
+    This mixin also provides the model options self._meta as property self.opts.
+    This allows to include e.g. the path to a template, such as ``card_template``.
     """
 
     class Meta:
         """Class opts."""
 
         abstract = True
+
+    @property
+    def opts(self):
+        """Return model options."""
+        return self._meta
 
     # -------------------------------------------------------------------------
     # URLs

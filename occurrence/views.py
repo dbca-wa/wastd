@@ -36,7 +36,7 @@ class TaxonAreaEncounterListView(
     """A ListView for TaxonAreaEncounter."""
 
     model = occ_models.TaxonAreaEncounter
-    template_name = "occurrence/areaencounter_list.html"
+    template_name = "pages/default_list.html"
     resource_class = occ_resources.TaxonAreaEncounterResource
     resource_formats = ['csv', 'tsv', 'xls', 'json']
     filter_class = occ_filters.TaxonAreaEncounterFilter
@@ -71,7 +71,7 @@ class CommunityAreaEncounterListView(
     """A ListView for CommunityAreaEncounter."""
 
     model = occ_models.CommunityAreaEncounter
-    template_name = "occurrence/areaencounter_list.html"
+    template_name = "pages/default_list.html"
     resource_class = occ_resources.CommunityAreaEncounterResource
     resource_formats = ['csv', 'tsv', 'xls', 'json']
     filter_class = occ_filters.CommunityAreaEncounterFilter
@@ -107,7 +107,7 @@ class AreaEncounterCreateView(CreateViewBreadcrumbMixin, CreateView):
 
     model = occ_models.AreaEncounter
     form_class = occ_forms.AreaEncounterForm
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
 
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
@@ -124,7 +124,7 @@ class AreaEncounterUpdateView(
 
     model = occ_models.AreaEncounter
     form_class = occ_forms.AreaEncounterForm
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
 
     # def get_object(self, queryset=None):
     #     """Accommodate custom object pk from url conf."""
@@ -153,7 +153,7 @@ class TaxonAreaEncounterUpdateView(AreaEncounterUpdateView):
 
     model = occ_models.TaxonAreaEncounter
     form_class = occ_forms.TaxonAreaEncounterForm
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
 
 
 class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
@@ -178,7 +178,7 @@ class CommunityAreaEncounterUpdateView(AreaEncounterUpdateView):
 
     model = occ_models.CommunityAreaEncounter
     form_class = occ_forms.CommunityAreaEncounterForm
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
 
 
 # ---------------------------------------------------------------------------#
@@ -226,7 +226,7 @@ class CommunityAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
 class ObservationGroupCreateView(CreateViewBreadcrumbMixin, CreateView):
     """Base CreateView for ObservationGroup."""
 
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
     model = occ_models.ObservationGroup
 
     def get_initial(self):
@@ -269,7 +269,7 @@ class ObservationGroupCreateView(CreateViewBreadcrumbMixin, CreateView):
 class ObservationGroupUpdateView(UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for ObservationGroup."""
 
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
     model = occ_models.ObservationGroup
 
     def get_object(self, queryset=None):

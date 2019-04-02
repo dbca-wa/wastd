@@ -30,6 +30,6 @@
     {% include 'shared/overlays.html' %}
     {% include 'shared/styles.js' %}
     map.addControl(new L.control.fullscreen());
-    map.addControl(new L.Control.Geocoder());
+    map.addControl(new L.Control.Geocoder({placeholder: '⇧+⏎ to search'}));
 });
 </script>

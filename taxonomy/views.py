@@ -43,13 +43,14 @@ class TaxonListView(ListViewBreadcrumbMixin, ListView):
 
     model = Taxon
     template_name = "taxonomy/taxon_list.html"
+    # template_name = "pages/default_list.html" # TODO add Resource
     paginate_by = 12
 
     def get_context_data(self, **kwargs):
         """Add extra items to context."""
         context = super(TaxonListView, self).get_context_data(**kwargs)
         context["now"] = timezone.now()
-        context["taxon_filter"] = TaxonFilter(self.request.GET, queryset=self.get_queryset())
+        context["list_filter"] = TaxonFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
     def get_queryset(self):
@@ -90,6 +91,7 @@ class CommunityListView(ListViewBreadcrumbMixin, ListView):
 
     model = Community
     template_name = "taxonomy/community_list.html"
+    # template_name = "pages/default_list.html" # TODO add respource
     paginate_by = 12
 
     def get_context_data(self, **kwargs):

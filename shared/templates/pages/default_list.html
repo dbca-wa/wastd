@@ -1,18 +1,26 @@
-{% extends "base.html" %}
-{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 export_download %}
+<!-- Generic list template: Breadcrumbs, pagination, resource download, cards, filters. -->
+{% extends "pages/base.html" %}
+{% load staticfiles leaflet_tags geojson_tags crispy_forms_tags bootstrap4 export_download %}
+
 {% block content %}
 <span class="float-right">{% resource_download_menu %}</span>
 {% include 'shared/breadcrumbs.html' %}
 {% include 'shared/pagination_row.html' %}
 <div class="row" id="data-row">
-  <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
+  <!-- Data -->
+  <div id="cards-row" class="col-lg-9 col-md-8 col-sm-6 col-12">
     <div class="row">
       {% for original in object_list %}
-      <!-- {{ object }} -->
-        {% include 'occurrence/include/areaencounter_card.html' %}
+        {% if original.opts.card_template %}
+        {% include original.opts.card_template %}
+        {% else %}
+          <div>WARNING: {{ original.opts.model_name }}.opts.card_template is missing!</div>
+        {% endif %}
       {% endfor %}
       </div><!-- /.row -->
-  </div><!-- /#dash-data -->
+  </div><!-- /#cards-row -->
+
+  <!-- Search -->
   <div id="filters-row" class="col-lg-3 col-md-4 col-sm-6 col-12">
     <form method="get">
       <div class="row-fluid">

@@ -4,20 +4,20 @@
     <div class="row">
       <span class="badge badge-secondary" title="Conservation Action">
         <span class="oi oi-list" aria-hidden="true"></span>
-        {{ object.category }}
+        {{ original.category }}
       </span>
       <span class="badge badge-success" title="Completion Status">
         <span class="oi oi-task" aria-hidden="true"></span>
-        Progress: {{ object.get_status_display }}
+        Progress: {{ original.get_status_display }}
       </span>
     </div>
-  {{ object.instructions }}
+  {{ original.instructions }}
   </h6>
 
   <div class="card-body">
     <h6 class="card-subtitle mb-2 text-muted">
       <!-- taxa -->
-      {% for taxon in object.taxa.all %}
+      {% for taxon in original.taxa.all %}
       <p class="card-text">
         <a href="{{ taxon.get_absolute_url }}">
           <span class="oi oi-eye"
@@ -28,7 +28,7 @@
       {% endfor %}
 
       <!-- communities -->
-      {% for com in object.communities.all %}
+      {% for com in original.communities.all %}
       <p class="card-text">
         <a href="{{ com.get_absolute_url }}">
           <span class="oi oi-eye"
@@ -39,11 +39,11 @@
       {% endfor %}
       <!-- documents -->
 
-      {% if object.document %}
+      {% if original.document %}
       <p class="card-text">
         <span class="oi oi-document"
           title="Document" aria-hidden="true"></span>
-        {{ object.document }}
+        {{ original.document }}
       </p>
       {% endif %}
       <!-- area code -->
@@ -52,27 +52,27 @@
     <p class="card-text">
       <span class="oi oi-calendar"
         title="Completion date" aria-hidden="true"></span>
-      {% if object.completion_date%}
-      {{ object.completion_date|date:"D d M Y" }}
+      {% if original.completion_date%}
+      {{ original.completion_date|date:"D d M Y" }}
       {% else %}
       ongoing
       {% endif %}
       <span class="float-right">
         <span class="oi oi-dollar"
         title="Total Expenditure" aria-hidden="true"></span>
-      {{ object.expenditure }}
+      {{ original.expenditure }}
       </span>
     </p>
     <p class="card-text">
       <span class="oi oi-comment-square"
         title="Notes" aria-hidden="true"></span>
-      {% if object.implementation_notes %}
-      {{ object.implementation_notes }}
+      {% if original.implementation_notes %}
+      {{ original.implementation_notes }}
       {% endif %}
     </p>
 
     <!-- activities -->
-    {% for act in object.conservationactivity_set.all %}
+    {% for act in original.conservationactivity_set.all %}
         <div class="card card-md col-12">
           <div class="card-header">
             <p class="card-text">
@@ -116,7 +116,7 @@
 
   <div class="card-footer">
     <!-- Conservation activity view -->
-    <a href="{{ object.get_absolute_url }}"
+    <a href="{{ original.get_absolute_url }}"
         title="View conservation action"
         role="button"
         class="btn btn-primary btn-sm btn-block">
@@ -126,7 +126,7 @@
     </a>
     <!-- /Conservation activity view -->
     <!-- Conservation activity add -->
-    <a href="{% url 'conservation:conservationactivity-create' pk=object.pk %}"
+    <a href="{% url 'conservation:conservationactivity-create' pk=original.pk %}"
         title="Report a new conservation activity."
         role="button"
         class="btn btn-primary btn-sm btn-block">
@@ -136,7 +136,7 @@
     </a>
     <!-- /Conservation activity add -->
     <!-- Conservation action update -->
-    <a href="{{ object.update_url }}"
+    <a href="{{ original.update_url }}"
         title="Report completion of the entire conservation action."
         role="button"
         class="btn btn-primary btn-sm btn-block">

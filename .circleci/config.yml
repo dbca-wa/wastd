@@ -7,7 +7,8 @@ jobs:
   build:
     docker:
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.7.0-browsers
+      #- image: circleci/python:3.7.0-browsers
+      - image: dbcawa/wastd:latest
         environment:
           # Not using pipenv, but virtualenvwrapper / virtualenv
           - PIPENV_VENV_IN_PROJECT: true
@@ -27,7 +28,7 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - checkout
+      # - checkout
 
       - run:
           name: Fix file ownership and create log and staticfiles folders
@@ -37,39 +38,39 @@ jobs:
             mkdir -p logs staticfiles
             touch logs/wastd.log
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v2-dependencies-{{ checksum "requirements/dev.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - v2-dependencies-
+      # # Download and cache dependencies
+      # - restore_cache:
+      #     keys:
+      #     - v2-dependencies-{{ checksum "requirements/dev.txt" }}
+      #     # fallback to using the latest cache if no exact match is found
+      #     - v2-dependencies-
 
-      - run:
-          name: Install system packages for GDAL
-          command: |
-            sudo apt-get update
-            sudo apt-get install -qq binutils libproj-dev gdal-bin redis-server
+      # - run:
+      #     name: Install system packages for GDAL
+      #     command: |
+      #       sudo apt-get update
+      #       sudo apt-get install -qq binutils libproj-dev gdal-bin redis-server
 
-      - run:
-          name: Install Python module dependencies
-          command: |
-            sudo pip install virtualenv
-            virtualenv venv
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements/dev.txt
+      # - run:
+      #     name: Install Python module dependencies
+      #     command: |
+      #       sudo pip install virtualenv
+      #       virtualenv venv
+      #       . venv/bin/activate
+      #       pip install --upgrade pip
+      #       pip install -r requirements/dev.txt
 
-      - run:
-          name: Install Pandoc
-          command: |
-            wget https://github.com/jgm/pandoc/releases/download/2.7/pandoc-2.7-1-amd64.deb
-            sudo dpkg -i pandoc-2.7-1-amd64.deb
-            rm pandoc-2.7-1-amd64.deb
+      # - run:
+      #     name: Install Pandoc
+      #     command: |
+      #       wget https://github.com/jgm/pandoc/releases/download/2.7/pandoc-2.7-1-amd64.deb
+      #       sudo dpkg -i pandoc-2.7-1-amd64.deb
+      #       rm pandoc-2.7-1-amd64.deb
 
-      - save_cache:
-          paths:
-            - ./venv
-          key: v2-dependencies-{{ checksum "requirements/dev.txt" }}
+      # - save_cache:
+      #     paths:
+      #       - ./venv
+      #     key: v2-dependencies-{{ checksum "requirements/dev.txt" }}
 
       - run:
           name: Run tests

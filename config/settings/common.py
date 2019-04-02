@@ -28,7 +28,7 @@ APPS_DIR = ROOT_DIR.path('wastd')
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env('DJANGO_DEBUG', default=False)
-
+PROFILING = env('DJANGO_PROFILING', default=False)
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -95,16 +95,16 @@ LOCAL_APPS = (
     'conservation.apps.ConservationConfig',
 )
 
-DEBUG_APPS = (
-    # 'silk',                         # Performance profiling
-    'debug_toolbar',                # Debug toolbar
-)
+DEBUG_APPS = ('debug_toolbar',)
+PROFILING_APPS = ('silk', )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 if DEBUG:
     INSTALLED_APPS += DEBUG_APPS
+if PROFILING:
+    INSTALLED_APPS += PROFILING_APPS
 
 
 # SECRET CONFIGURATION

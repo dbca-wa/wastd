@@ -1,24 +1,22 @@
+<!-- Generic list template: Breadcrumbs, pagination, resource download, cards, filters. -->
 {% extends "base.html" %}
-{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4 %}
-
+{% load staticfiles leaflet_tags geojson_tags crispy_forms_tags bootstrap4 export_download %}
 {% block content %}
+
 {% include 'shared/breadcrumbs.html' %}
 {% include 'shared/pagination_row.html' %}
-<div class="row">
-  <!-- Data -->
+<div class="row" id="data-row">
   <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
     <div class="row">
       {% for original in object_list %}
-      {% include "cards/taxon.html" with original=original %}
+        {% include original.opts.card_template %}
       {% endfor %}
-    </div>
+      </div><!-- /.row -->
   </div><!-- /#dash-data -->
-
-  <!-- Search -->
-  <div id="dash-filters" class="col-lg-3 col-md-4 col-sm-6 col-12">
+  <div id="filters-row" class="col-lg-3 col-md-4 col-sm-6 col-12">
     <form method="get">
       <div class="row-fluid">
-        {% bootstrap_form taxon_filter.form %}
+        {% bootstrap_form list_filter.form %}
       </div>
       <button
         class="btn btn-primary my-2 my-sm-0"
@@ -26,18 +24,20 @@
         Go
       </button>
     </form>
-  </div><!-- /#dash-filters -->
-</div><!-- .row -->
+  </div><!-- /#filters-row -->
+</div><!-- /#data-row-->
 {% endblock %}
 
 {% block css%}
 {{ block.super }}
 {% leaflet_css %}
 {% include 'shared/map.css' %}
+{{ list_filter.form.media.css }}
 {% endblock %}
 
-{% block javascript%}
+{% block javascript %}
 {{ block.super }}
 {% leaflet_js %}
 {% include 'shared/map.js' %}
+{{ list_filter.form.media.js }}
 {% endblock %}

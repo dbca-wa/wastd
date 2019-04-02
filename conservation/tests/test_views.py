@@ -63,6 +63,12 @@ class ConservationThreatViewTests(TestCase):
         response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
+    def test_conservation_threat_admin_changelist(self):
+        """Test ConservationThreat absolute admin url."""
+        url = reverse("admin:conservation_conservationthreat_changelist")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
     def test_get_absolute_url(self):
         """Test ConservationAction get absolute url loads."""
         response = self.client.get(self.object.get_absolute_url())

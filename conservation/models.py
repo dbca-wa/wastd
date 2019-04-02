@@ -244,6 +244,7 @@ class ConservationThreat(UrlsMixin, ObservationAuditMixin, models.Model):
         index_together = [
             ["document", "occurrence_area_code"],
         ]
+        card_template = 'conservation/includes/conservationthreat_card.html'
 
     def __str__(self):
         """The full name."""
@@ -408,6 +409,7 @@ class ConservationAction(UrlsMixin, models.Model):
             ["status", "completion_date", "category", ],
             ["document", "occurrence_area_code"],
         ]
+        card_template = 'conservation/includes/conservationaction_card.html'
 
     def __str__(self):
         """The full name."""

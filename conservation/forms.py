@@ -12,7 +12,6 @@ from conservation import models as cons_models
 from conservation import widgets as cons_widgets
 from taxonomy import widgets as tax_widgets
 from shared.admin import LEAFLET_SETTINGS
-from shared.forms import DateInput  # DateTimeInput
 from shared import forms as shared_forms
 
 
@@ -134,7 +133,7 @@ class ConservationActionForm(forms.ModelForm):
             'document': cons_widgets.DocumentWidget(),
             'target_area': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'category': cons_widgets.ConservationActionCategoryWidget(),
-            'completion_date': DateInput(),
+            'completion_date': shared_forms.DateInput(),
         }
 
 
@@ -175,5 +174,5 @@ class ConservationActivityForm(forms.ModelForm):
         )
         widgets = {
             'conservation_action': cons_widgets.ConservationActionWidget(),
-            'completion_date': DateInput(),
+            'completion_date': shared_forms.DateInput(),
         }

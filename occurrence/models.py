@@ -233,6 +233,7 @@ class AreaEncounter(PolymorphicModel,
         ordering = ["-northern_extent", "name"]
         verbose_name = "Area Encounter"
         verbose_name_plural = "Area Encounters"
+        card_template = "occurrence/include/areaencounter_card.html"
 
     def __str__(self):
         """The unicode representation."""
@@ -320,6 +321,7 @@ class TaxonAreaEncounter(AreaEncounter):
 
         verbose_name = "Taxon Encounter"
         verbose_name_plural = "Taxon Encounters"
+        card_template = "occurrence/include/areaencounter_card.html"
 
     def __str__(self):
         """The unicode representation."""
@@ -371,6 +373,7 @@ class CommunityAreaEncounter(AreaEncounter):
 
         verbose_name = "Community Encounter"
         verbose_name_plural = "Community Encounters"
+        card_template = "occurrence/include/areaencounter_card.html"
 
     def __str__(self):
         """The unicode representation."""

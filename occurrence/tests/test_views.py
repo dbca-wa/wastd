@@ -138,12 +138,13 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_cae_list_url_loads(self):
-        """Test that CommunityAreaEncounter list_url is com detail url and loads."""
-        self.assertEqual(self.cae.list_url(), reverse('occurrence:communityareaencounter-list'))
+        """Test that CommunityAreaEncounter list_url loads."""
+        self.assertEqual(self.cae.list_url(),
+                         reverse('occurrence:communityareaencounter-list'))
 
         response = self.client.get(self.cae.list_url())
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'occurrence/areaencounter_list.html')
+        self.assertTemplateUsed(response, 'pages/default_list.html')
 
     def test_cae_detail_url_loads(self):
         """Test CommunityAreaEncounter get_absolute_url."""
@@ -381,13 +382,13 @@ class TaxonAreaEncounterTests(TestCase):
         """Test index page."""
         response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'index.html')
+        self.assertTemplateUsed(response, 'pages/index.html')
 
     def test_map_loads(self):
         """Test map page."""
         response = self.client.get(reverse("map"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'pages/home.html')
+        self.assertTemplateUsed(response, 'pages/map.html')
 
     def test_tae_absolute_admin_url_loads(self):
         """Test absolute admin url."""
@@ -403,13 +404,11 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_tae_list_url_loads(self):
-        """Test that TaxonAreaEncounter list_url is taxon detail url and loads."""
+        """Test that TaxonAreaEncounter list_url loads."""
         self.assertEqual(self.tae.list_url(), reverse('occurrence:taxonareaencounter-list'))
-
         response = self.client.get(self.tae.list_url())
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'occurrence/areaencounter_list.html')
-
+        self.assertTemplateUsed(response, 'pages/default_list.html')
         self.assertContains(response, self.taxon0.name)
 
     def test_tae_detail_url_loads(self):

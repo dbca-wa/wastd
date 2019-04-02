@@ -36,7 +36,7 @@ class ConservationThreatListView(
     """A ListView for ConservationAction."""
 
     model = cons_models.ConservationThreat
-    template_name = "conservation/conservationthreat_list.html"
+    template_name = "pages/default_list.html"
     resource_class = cons_resources.ConservationThreatResource
     resource_formats = ['csv', 'tsv', 'xls', 'json']
     filter_class = cons_filters.ConservationThreatFilter
@@ -73,7 +73,7 @@ class ConservationActionListView(
     """A ListView for ConservationAction."""
 
     model = cons_models.ConservationAction
-    template_name = "conservation/conservationaction_list.html"
+    template_name = "pages/default_list.html"
     resource_class = cons_resources.ConservationActionResource
     resource_formats = ['csv', 'tsv', 'xls', 'json']
     filter_class = cons_filters.ConservationActionFilter
@@ -111,7 +111,7 @@ class ConservationThreatDetailView(DetailViewBreadcrumbMixin, DetailView):
     """ConservationThreat DetailView."""
 
     model = cons_models.ConservationThreat
-    template_name = "conservation/conservationthreat_detail.html"
+    template_name = "pages/default_detail.html"
 
     def get_object(self):
         """Get object, handle 404, refetch for performance."""
@@ -131,7 +131,7 @@ class ConservationActionDetailView(DetailViewBreadcrumbMixin, DetailView):
     """Conservation Action DetailView."""
 
     model = cons_models.ConservationAction
-    template_name = "conservation/conservationaction_detail.html"
+    template_name = "pages/default_detail.html"
 
     def get_object(self):
         """Get object, handle 404, refetch for performance."""
@@ -154,7 +154,7 @@ class ConservationThreatUpdateView(
         SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for ConservationThreat."""
 
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
     form_class = cons_forms.ConservationThreatForm
     model = cons_models.ConservationThreat
 
@@ -176,7 +176,7 @@ class ConservationActionUpdateView(
         SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for ConservationAction."""
 
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
     form_class = cons_forms.ConservationActionForm
     model = cons_models.ConservationAction
 
@@ -198,7 +198,7 @@ class ConservationActivityUpdateView(
         SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
     """Update view for ConservationActivity."""
 
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
     form_class = cons_forms.ConservationActivityForm
     model = cons_models.ConservationActivity
 
@@ -221,13 +221,16 @@ class ConservationThreatCreateView(
         SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
     """Create view for ConservationThreat."""
 
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
     form_class = cons_forms.ConservationThreatForm
     model = cons_models.ConservationThreat
 
     def get_initial(self):
         """Initial form values."""
         initial = super(ConservationThreatCreateView, self).get_initial()
+        initial["encountered_on"] = timezone.now()
+        if self.request.user:
+            initial["encountered_by"] = self.request.user
         if "taxa" in self.request.GET:
             initial["taxa"] = self.request.GET["taxa"]
         if "communities" in self.request.GET:
@@ -243,7 +246,7 @@ class ConservationActionCreateView(
         SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
     """Create view for ConservationAction."""
 
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
     form_class = cons_forms.ConservationActionForm
     model = cons_models.ConservationAction
 
@@ -253,6 +256,9 @@ class ConservationActionCreateView(
         TODO create different urls.
         """
         initial = super(ConservationActionCreateView, self).get_initial()
+        initial["encountered_on"] = timezone.now()
+        if self.request.user:
+            initial["encountered_by"] = self.request.user
         if "taxa" in self.request.GET:
             initial["taxa"] = self.request.GET["taxa"]
         if "communities" in self.request.GET:
@@ -268,7 +274,7 @@ class ConservationActivityCreateView(
         SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
     """Create view for ConservationActivity."""
 
-    template_name = "shared/default_form.html"
+    template_name = "pages/default_form.html"
     form_class = cons_forms.ConservationActivityForm
     model = cons_models.ConservationActivity
 

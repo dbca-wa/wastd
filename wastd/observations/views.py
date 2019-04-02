@@ -48,7 +48,7 @@ class HomeView(ListView):
     """HomeView."""
 
     model = AnimalEncounter
-    template_name = "pages/home.html"
+    template_name = "pages/map.html"
 
     def get_context_data(self, **kwargs):
         """Context data."""
@@ -58,7 +58,7 @@ class HomeView(ListView):
 
     def get_queryset(self, **kwargs):
         """Queryset."""
-        return AnimalEncounter.objects.filter(taxon="Cheloniidae", encounter_type="stranding")
+        return AnimalEncounter.objects.filter(encounter_type="stranding")
 
 
 # Encounters -----------------------------------------------------------------#
