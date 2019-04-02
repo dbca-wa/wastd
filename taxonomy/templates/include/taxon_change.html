@@ -1,5 +1,5 @@
 {% if is_staff %}
-<a href="{% url 'admin:taxonomy_taxon_change' original.pk %}"
+<a href="{% url 'admin:taxonomy_taxon_change' object.pk %}"
   {% if btn %}class="btn btn-success btn-sm{% if block %} btn-block{% endif%}"{% endif%}
   role="button"
   target="_"

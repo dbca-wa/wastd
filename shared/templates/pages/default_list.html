@@ -10,11 +10,11 @@
   <!-- Data -->
   <div id="cards-row" class="col-lg-9 col-md-8 col-sm-6 col-12">
     <div class="row">
-      {% for original in object_list %}
-        {% if original.opts.card_template %}
-        {% include original.opts.card_template %}
+      {% for object in object_list %}
+        {% if object.opts.card_template %}
+        {% include object.opts.card_template %}
         {% else %}
-          <div>WARNING: {{ original.opts.model_name }}.opts.card_template is missing!</div>
+          <div>WARNING: {{ object.opts.model_name }}.opts.card_template is missing!</div>
         {% endif %}
       {% endfor %}
       </div><!-- /.row -->

@@ -1,5 +1,5 @@
 <!-- Generic list template: Breadcrumbs, pagination, resource download, cards, filters. -->
-{% extends "base.html" %}
+{% extends "pages/base.html" %}
 {% load staticfiles leaflet_tags geojson_tags crispy_forms_tags bootstrap4 export_download %}
 {% block content %}
 
@@ -8,8 +8,8 @@
 <div class="row" id="data-row">
   <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
     <div class="row">
-      {% for original in object_list %}
-        {% include original.opts.card_template %}
+      {% for object in object_list %}
+        {% include object.opts.card_template %}
       {% endfor %}
       </div><!-- /.row -->
   </div><!-- /#dash-data -->

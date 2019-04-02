@@ -28,44 +28,44 @@
           <h3>Species occurrence</h3>
         </div>
         <div>
-           <a href="{{ original.absolute_admin_url }}"
-              class="btn btn-{{ original.status|tb_status_icon }} btn-sm"
+           <a href="{{ object.absolute_admin_url }}"
+              class="btn btn-{{ object.status|tb_status_icon }} btn-sm"
               target="_" title="Edit record in new tab">
               <i class="oi oi-pencil"></i>
-              QA: {{ original.get_status_display }}
+              QA: {{ object.get_status_display }}
           </a>
-          {% areaencounter_update_link original block=False label=False %}
+          {% areaencounter_update_link object block=False label=False %}
         </div>
       </div>
 
       <div class="row">
         <div class="col col-12">
-          <h6>{{ original.taxon }}</h6>
+          <h6>{{ object.taxon }}</h6>
         </div>
       </div>
 
       <div class="row">
         <div class="col col-12">
         <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
-        {{ original.encountered_on|date:"r" }}
+        {{ object.encountered_on|date:"r" }}
         </div>
       </div>
 
       <div class="row">
         <div class="col col-12">
         <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
-        {{ original.get_area_type_display }} [{{ original.code }}] {% if original.name %}{{ original.name }}{% endif %}
+        {{ object.get_area_type_display }} [{{ object.code }}] {% if object.name %}{{ object.name }}{% endif %}
         </div>
       </div>
 
       <div class="row">
         <div class="col col-12">
         <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
-        <a href="mailto:{{ original.encountered_by.email }}"
+        <a href="mailto:{{ object.encountered_by.email }}"
            target="_"
-           title="Send email to {{ original.encountered_by.fullname }}"
-           subject="Question about TSC Encounter {{ original }}">
-          {{ original.encountered_by.name }}
+           title="Send email to {{ object.encountered_by.fullname }}"
+           subject="Question about TSC Encounter {{ object }}">
+          {{ object.encountered_by.name }}
         </a>
       </div>
       </div><!-- /.row -->
@@ -73,7 +73,7 @@
       <div class="row">
         <div class="col col-12">
           <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
-          {{ original.description|safe }}
+          {{ object.description|safe }}
         </div>
       </div><!-- /.row -->
 
@@ -116,14 +116,14 @@
 function map_init(map, options) {
     /* Data loading */
     var occ_point = L.geoJson(
-      {{ original|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+      {{ object|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
       {style: pointstyle, onEachFeature: oef_rel, pointToLayer: ptl}
     );
     occ_point.addTo(map);
 
-    {% if original.geom %}
+    {% if object.geom %}
     occ_poly = L.geoJson(
-      {{ original|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
+      {{ object|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
       {style: polystyle_red, onEachFeature: oef_rel}
     );
     occ_poly.addTo(map);

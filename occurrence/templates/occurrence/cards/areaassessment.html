@@ -5,22 +5,22 @@
 
     <p class="card-text">
       <span class="oi oi-map" aria-hidden="true"></span>
-      {{ original.get_survey_type_display }}
+      {{ object.get_survey_type_display }}
     </p>
 
     <p class="card-text">
       <span class="oi oi-globe" aria-hidden="true"></span>
-      Area {{ original.area_surveyed_m2 }} m2
+      Area {{ object.area_surveyed_m2 }} m2
     </p>
 
     <p class="card-text">
       <span class="oi oi-clock" aria-hidden="true"></span>
-      Duration {{ original.survey_duration_min }} min
+      Duration {{ object.survey_duration_min }} min
     </p>
 
     <p class="card-text">
       <span class="oi oi-droplet" aria-hidden="true"></span>
-      Spent {{ original.survey_effort_minutes_per_100sqm }} min per 100 m2
+      Spent {{ object.survey_effort_minutes_per_100sqm }} min per 100 m2
     </p>
 
   </div><!-- /.card-body -->

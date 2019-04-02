@@ -93,7 +93,7 @@ def communityareaencounter_add_link(pk, area_code=None, block=False, label=False
 def areaencounter_card(occurrence, subject, user, block=False, label=False):
     """Render a card for a taxon or comunity area encounter."""
     return {
-        "original": occurrence,
+        "object": occurrence,
         "subject": subject,
         "is_staff": user.is_staff,
         "block": block,

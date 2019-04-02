@@ -24,26 +24,26 @@
     <div class="jumbotron">
       <p>
         <!-- Name ID -->
-          <span class="badge badge-primary" title="WACensus Name ID: {{original.name_id}}">
-            {{original.name_id}}
+          <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
+            {{object.name_id}}
           </span>
 
           <!-- Rank -->
-          <span class="badge badge-primary" title="Taxonomic rank: {{ original.get_rank_display }}">
-            {{ original.get_rank_display }}
+          <span class="badge badge-primary" title="Taxonomic rank: {{ object.get_rank_display }}">
+            {{ object.get_rank_display }}
           </span>
 
           {% taxonomic_status %}
 
           <!-- Publication status -->
-          {% if original.publication_status < 2 %}
+          {% if object.publication_status < 2 %}
           <span class="badge badge-secondary">
-            {{ original.get_publication_status_display }}
+            {{ object.get_publication_status_display }}
           </span>
           {% endif %}
 
           <!-- Leaf nodes are terminal taxa -->
-          {% if original.is_leaf_node %}
+          {% if object.is_leaf_node %}
           <span class="badge badge-success">
             <span class="oi oi-media-stop" title="Terminal Taxon" aria-hidden="true"></span>
           </span>
@@ -51,19 +51,19 @@
       </p>
 
       <h1 class="display-4">
-        {{ original.canonical_name }}
+        {{ object.canonical_name }}
         <small class="float-right">
           {% if request.user.is_staff %}
-            {% admin_absoluteadminurl_link original "taxon" %}
+            {% admin_absoluteadminurl_link object "taxon" %}
           {% endif %}
         </small>
       </h1>
 
       <!-- Author -->
-      {% if original.author %}
+      {% if object.author %}
         <p class="lead">
         <span class="oi oi-person" title="Author" aria-hidden="true"></span>
-        {{ original.author }}
+        {{ object.author }}
         </p>
       {% endif %}
 
@@ -72,14 +72,14 @@
       </p>
 
       <p>
-      {% for xref in original.supercedes.all %}
+      {% for xref in object.supercedes.all %}
       <a href="{% url 'taxonomy:taxon-detail' name_id=xref.predecessor.name_id %}"
         class="badge badge-secondary" title="View predecessor">
         {{ xref.predecessor }}
       </a> superceded as {{ xref.get_reason_display }}<br />
       {% endfor %}
 
-      {% for xref in original.precedes.all %}
+      {% for xref in object.precedes.all %}
       <a href="{% url 'taxonomy:taxon-detail' name_id=xref.successor.name_id %}"
           class="badge badge-secondary" title="View successor">
         {{ xref.successor }}
@@ -121,12 +121,12 @@
 
       <hr class="my-4">
       <p class="lead">
-          {% admin_absoluteadminurl_link original "taxon" label=True %}
+          {% admin_absoluteadminurl_link object "taxon" label=True %}
           {% taxongazettal_add request.user label=True %}
           {% conservationthreat_add request.user "taxa" label=True %}
           {% conservationaction_add request.user "taxa" label=True %}
           {% document_add request.user "taxa" label=True %}
-          {% taxonareaencounter_add_link original.name_id label=True %}
+          {% taxonareaencounter_add_link object.name_id label=True %}
       </p>
 
     </div><!-- /.jumbotron -->
@@ -152,14 +152,14 @@
         </small>
         {% endif %}
         <small class="float-right">
-          {% taxonareaencounter_add_link original.name_id %}
+          {% taxonareaencounter_add_link object.name_id %}
         </small>
         {% if request.user.is_staff %}
         <small class="float-right">
-          {% admin_areaencounter_create_link original.pk "taxon" %}
+          {% admin_areaencounter_create_link object.pk "taxon" %}
         </small>
         <small class="float-right">
-          {% admin_areaencounter_list_link original.pk "taxon" %}
+          {% admin_areaencounter_list_link object.pk "taxon" %}
         </small>
         {% endif %}
       </h3>
@@ -178,7 +178,7 @@
                 {% conservationaction_add request.user "taxa" area=site.grouper %}
               </small>
               <small class="float-right">
-                {% taxonareaencounter_add_link original.name_id area_code=site.grouper %}
+                {% taxonareaencounter_add_link object.name_id area_code=site.grouper %}
               </small>
             </h5>
             <div class="card-body">
@@ -214,19 +214,19 @@ function map_init(map, options) {
     {% include 'shared/styles.js' %}
     /* Data loading */
     var eoo = L.geoJson(
-        {{ original|geojsonfeature:"canonical_name,taxonomic_name:eoo"|safe }},
+        {{ object|geojsonfeature:"canonical_name,taxonomic_name:eoo"|safe }},
         {style: pointstyle, onEachFeature: oef_eoo}
     );
     eoo.addTo(map);
     map.fitBounds(eoo.getBounds());
 
     L.geoJson(
-        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
+        {{ object.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
         {style: polystyle_red, onEachFeature: oef_rel}
     ).addTo(map);
 
     var taxon_points = L.geoJson(
-        {{ original.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+        {{ object.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
         {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_rel}
     );
 
@@ -272,7 +272,7 @@ function map_init(map, options) {
      */
     // using Fetch API
     fetch(
-      "{{ settings.BIOSYS_TSC_URL|safe }}{{ original.name_id }}",
+      "{{ settings.BIOSYS_TSC_URL|safe }}{{ object.name_id }}",
       {credentials: "include", headers: hdr}
     ).then(
       function (response) {return response.json();}

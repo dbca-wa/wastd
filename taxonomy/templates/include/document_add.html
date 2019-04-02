@@ -1,5 +1,5 @@
 {% if is_staff %}
-<a href="{% url 'admin:conservation_document_add' %}?{{ subject }}={{ original.pk }}"
+<a href="{% url 'admin:conservation_document_add' %}?{{ subject }}={{ object.pk }}"
     title="Because you have DBCA Curator privileges, you may attach a new document."
     role="button"
     class="btn btn-success btn-sm{% if block %} btn-block{% endif%}"

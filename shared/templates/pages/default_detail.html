@@ -4,7 +4,13 @@
 
 {% block content %}
 {% include 'shared/breadcrumbs.html' %}
+{% if object.opts.card_template %}
 {% include object.opts.card_template %}
+{% else %}
+  <div>WARNING: {{ object.opts.model_name }}.opts.card_template is missing!</div> object: {{object}} object: {{object}}
+{% endif %}
+
+
 {% endblock %}
 
 {% block css%}{{ block.super }}{% leaflet_css %}{% endblock %}

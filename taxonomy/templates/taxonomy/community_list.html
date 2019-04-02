@@ -10,8 +10,8 @@
   <!-- Data -->
   <div id="dash-data" class="col-lg-9 col-md-8 col-sm-6 col-12">
     <div class="row">
-      {% for original in object_list %}
-      {% include "cards/community.html" with original=original %}
+      {% for object in object_list %}
+      {% include "cards/community.html" with object=object %}
       {% endfor %}
     </div>
   </div><!-- /#dash-data -->

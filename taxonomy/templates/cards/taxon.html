@@ -7,41 +7,41 @@
     <h6 class="card-subtitle mb-2 text-muted">
 
     <!-- Name ID -->
-    <span class="badge badge-primary" title="WACensus Name ID: {{original.name_id}}">
-      {{ original.name_id }}
+    <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
+      {{ object.name_id }}
     </span>
 
     <!-- Rank -->
-    <span class="badge badge-primary" title="Taxonomic rank: {{ original.get_rank_display }}">
-      {{ original.get_rank_display }}
+    <span class="badge badge-primary" title="Taxonomic rank: {{ object.get_rank_display }}">
+      {{ object.get_rank_display }}
     </span>
 
     {% taxonomic_status %}
 
     <!-- Publication status -->
-    {% if original.publication_status < 2 %}
+    {% if object.publication_status < 2 %}
     <span class="badge badge-secondary">
-      {{ original.get_publication_status_display }}
+      {{ object.get_publication_status_display }}
     </span>
     {% endif %}
 
     <!-- Leaf nodes are terminal taxa -->
-    {% if original.is_leaf_node %}
+    {% if object.is_leaf_node %}
     <span class="badge badge-success">
       <span class="oi oi-media-stop" title="Terminal Taxon" aria-hidden="true"></span>
     </span>
     {% endif %}
     </h6>
 
-    <h5 class="card-title {% if original.current == False %}text-muted{% endif %}">
-      {{ original.canonical_name }}
+    <h5 class="card-title {% if object.current == False %}text-muted{% endif %}">
+      {{ object.canonical_name }}
     </h5>
 
     <!-- Author -->
-    {% if original.author %}
+    {% if object.author %}
     <h6 class="card-subtitle mb-2 text-muted">
       <span class="oi oi-person" title="Author" aria-hidden="true"></span>
-      {{ original.author }}
+      {{ object.author }}
     </h6>
     {% endif %}
 
@@ -60,9 +60,9 @@
 
     {% taxon_detail block=True label=True %}
 
-    <a href="?name_id={{ original.name_id }}"
+    <a href="?name_id={{ object.name_id }}"
       class="btn btn-secondary btn-sm btn-block"
-      title="Restrict results to {{ original.taxonomic_name }} with its parents and immediate children and reset all filters.">
+      title="Restrict results to {{ object.taxonomic_name }} with its parents and immediate children and reset all filters.">
       <span class="oi oi-project" aria-hidden="true"></span>
       Explore taxonomy
     </a>
@@ -70,7 +70,7 @@
     {% taxongazettal_add request.user block=True label=True %}
     {% conservationaction_add request.user "taxa" block=True label=True %}
     {% document_add request.user "taxa" block=True label=True %}
-    {% taxonareaencounter_add_link original.name_id block=True label=True %}
+    {% taxonareaencounter_add_link object.name_id block=True label=True %}
     </div>
   </div>
 </div>

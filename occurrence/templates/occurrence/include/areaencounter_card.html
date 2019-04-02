@@ -3,12 +3,12 @@
 
   <h6 class="card-header">
 
-    <span class="badge badge-{{ original.status|tb_status_icon }}" title="QA status">
-      QA: {{ original.get_status_display }}
+    <span class="badge badge-{{ object.status|tb_status_icon }}" title="QA status">
+      QA: {{ object.get_status_display }}
     </span>
 
     <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span>
-    {{ original.encountered_on }}
+    {{ object.encountered_on }}
 
   </h6><!-- /.card-header -->
 
@@ -18,28 +18,28 @@
       <p class="card-text">
         <a href="{{ subject.get_absolute_url }}">
           <span class="oi oi-eye" title="Subject" aria-hidden="true"></span>
-          {{ original.subject }}
+          {{ object.subject }}
         </a>
     </p>
     {% endif %}
 
     <h6 class="card-text">
       <span class="oi oi-person" title="Encountered by" aria-hidden="true"></span>
-      {{ original.encountered_by }}
+      {{ object.encountered_by }}
     </h6>
 
     <p class="card-text">
       <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
-      {{ original.description }}
+      {{ object.description }}
     </p>
 
   </div><!-- /.card-body -->
 
   <div class="card-footer">
-      {% areaencounter_detail_link original block=True label=True %}
-      {% areaencounter_update_link original block=True label=True %}
+      {% areaencounter_detail_link object block=True label=True %}
+      {% areaencounter_update_link object block=True label=True %}
       {% if request.user.is_staff %}
-      {% admin_absoluteadminurl_link original "occurrence" block=True label=True %}
+      {% admin_absoluteadminurl_link object "occurrence" block=True label=True %}
       {% endif %}
   </div><!-- /.card-footer -->
 

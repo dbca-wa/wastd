@@ -5,11 +5,11 @@
   <div class="card-body">
 
     <h5 class="card-title">
-      {{ original.code }}
+      {{ object.code }}
     </h5>
 
     <h6 class="card-subtitle mb-2 text-muted">
-      {{ original.name }}
+      {{ object.name }}
     </h6>
 
     {% include 'conservation/includes/gazettal_labels.html' %}
@@ -21,16 +21,16 @@
   </ul>
 
   <div class="card-footer">
-    <a href="{% url 'taxonomy:community-detail' original.pk %}"
+    <a href="{% url 'taxonomy:community-detail' object.pk %}"
       class="btn btn-primary btn-sm btn-block"
-      title="View details for community {{ original }}.">
+      title="View details for community {{ object }}.">
       <span class="oi oi-eye" aria-hidden="true"></span>
       View Details
     </a>
     {% communitygazettal_add request.user block=True label=True %}
     {% conservationaction_add request.user "communities" block=True label=True %}
     {% document_add request.user "communities" block=True label=True %}
-    {% admin_areaencounter_create_link original.pk "community" block=True label=True %}
-    {% communityareaencounter_add_link original.pk block=True label=True %}
+    {% admin_areaencounter_create_link object.pk "community" block=True label=True %}
+    {% communityareaencounter_add_link object.pk block=True label=True %}
   </div>
 </div>

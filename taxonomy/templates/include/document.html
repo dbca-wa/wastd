@@ -1,4 +1,4 @@
-{% for document in original.document_set.all %}
+{% for document in object.document_set.all %}
 <li class="list-group-item">
   {% for attachment in document.attachments.all %}
   <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">

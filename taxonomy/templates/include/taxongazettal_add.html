@@ -1,5 +1,5 @@
 {% if is_staff %}
-<a href="{% url 'admin:conservation_taxongazettal_add' %}?taxon={{ original.pk }}"
+<a href="{% url 'admin:conservation_taxongazettal_add' %}?taxon={{ object.pk }}"
   class="btn btn-success btn-sm{% if block %} btn-block{% endif%}"
   title="Because you have DBCA Curator privileges, you may propose a new conservation listing."
   target="_">

@@ -4,17 +4,17 @@
     <div class="row">
       <span class="badge badge-secondary" title="Conservation Threat">
         <span class="oi oi-list" aria-hidden="true"></span>
-        {{ original.category }}
+        {{ object.category }}
       </span>
 
     </div>
-  {{ original.cause }}
+  {{ object.cause }}
   </h6>
 
   <div class="card-body">
     <h6 class="card-subtitle mb-2 text-muted">
       <!-- taxa -->
-      {% for taxon in original.taxa.all %}
+      {% for taxon in object.taxa.all %}
       <p class="card-text">
         <a href="{{ taxon.get_absolute_url }}">
           <span class="oi oi-eye"
@@ -25,7 +25,7 @@
       {% endfor %}
 
       <!-- communities -->
-      {% for com in original.communities.all %}
+      {% for com in object.communities.all %}
       <p class="card-text">
         <a href="{{ com.get_absolute_url }}">
           <span class="oi oi-eye"
@@ -36,11 +36,11 @@
       {% endfor %}
 
       <!-- documents -->
-      {% if original.document %}
+      {% if object.document %}
       <p class="card-text">
         <span class="oi oi-document"
           title="Document" aria-hidden="true"></span>
-        {{ original.document }}
+        {{ object.document }}
       </p>
       {% endif %}
 
@@ -50,20 +50,20 @@
     <p class="card-text">
       <span class="oi oi-flash"
         title="Encountered on" aria-hidden="true"></span>
-      {{ original.get_current_impact_display }} impact to {{ original.area_affected_percent }} % of area
-      reported on {{ original.encountered_on|date:"D d M Y" }} by {{ original.encountered_by }}.
+      {{ object.get_current_impact_display }} impact to {{ object.area_affected_percent }} % of area
+      reported on {{ object.encountered_on|date:"D d M Y" }} by {{ object.encountered_by }}.
     </p>
     <p class="card-text">
       <span class="oi oi-calendar"
         title="Area affected" aria-hidden="true"></span>
-      {{ original.get_potential_onset_display }} potentially {{ original.get_potential_impact_display|lower }} impact.
+      {{ object.get_potential_onset_display }} potentially {{ object.get_potential_impact_display|lower }} impact.
     </p>
 
   </div><!-- /.card-body -->
 
   <div class="card-footer">
     <!-- Conservation threat view -->
-    <a href="{{ original.get_absolute_url }}"
+    <a href="{{ object.get_absolute_url }}"
         title="View conservation threat"
         role="button"
         class="btn btn-primary btn-sm btn-block">
@@ -74,7 +74,7 @@
     <!-- /Conservation threat view -->
 
     <!-- Conservation threat update -->
-    <a href="{{ original.update_url }}"
+    <a href="{{ object.update_url }}"
         title="Edit conservation threat."
         role="button"
         class="btn btn-primary btn-sm btn-block">

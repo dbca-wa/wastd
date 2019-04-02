@@ -188,7 +188,6 @@ class TaxonAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
     """DetailView for TaxonAreaEncounter."""
 
     model = occ_models.TaxonAreaEncounter
-    context_object_name = "original"
     template_name = "occurrence/taxonareaencounter_detail.html"
 
     def get_breadcrumbs(self, request, obj=None, add=False):
@@ -206,7 +205,6 @@ class CommunityAreaEncounterDetailView(DetailViewBreadcrumbMixin, DetailView):
     """DetailView for CommunityAreaEncounter."""
 
     model = occ_models.CommunityAreaEncounter
-    context_object_name = "original"
     template_name = "occurrence/communityareaencounter_detail.html"
 
     def get_breadcrumbs(self, request, obj=None, add=False):
