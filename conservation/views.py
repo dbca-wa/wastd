@@ -40,7 +40,7 @@ class ConservationThreatListView(
     resource_class = cons_resources.ConservationThreatResource
     resource_formats = ['csv', 'tsv', 'xls', 'json']
     filter_class = cons_filters.ConservationThreatFilter
-    paginate_by = 20
+    paginate_by = 12
 
     def get_context_data(self, **kwargs):
         """Context with list filter and current time."""
@@ -77,7 +77,7 @@ class ConservationActionListView(
     resource_class = cons_resources.ConservationActionResource
     resource_formats = ['csv', 'tsv', 'xls', 'json']
     filter_class = cons_filters.ConservationActionFilter
-    paginate_by = 20
+    paginate_by = 12
 
     def get_context_data(self, **kwargs):
         """Context with list filter and current time."""
@@ -104,9 +104,47 @@ class ConservationActionListView(
         ).qs
 
 
+class DocumentListView(
+        ListViewBreadcrumbMixin,
+        ResourceDownloadMixin,
+        ListView):
+    """A ListView for Documents."""
+
+    model = cons_models.Document
+    template_name = "pages/default_list.html"
+    resource_class = cons_resources.DocumentResource
+    resource_formats = ['csv', 'tsv', 'xls', 'json']
+    filter_class = cons_filters.DocumentFilter
+    paginate_by = 12
+
+    def get_context_data(self, **kwargs):
+        """Context with list filter and current time."""
+        context = super(DocumentListView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        context['list_filter'] = cons_filters.DocumentFilter(
+            self.request.GET,
+            queryset=self.get_queryset()
+        )
+        return context
+
+    def get_queryset(self):
+        """Queryset with custom filter."""
+        queryset = cons_models.Document.objects.all().prefetch_related(
+            "taxa",
+            "communities",
+            "conservationaction_set",
+            "conservationthreat_set",
+        )
+        return cons_filters.DocumentFilter(
+            self.request.GET,
+            queryset=queryset
+        ).qs
+
 # ---------------------------------------------------------------------------#
 # Detail Views
 #
+
+
 class ConservationThreatDetailView(DetailViewBreadcrumbMixin, DetailView):
     """ConservationThreat DetailView."""
 
@@ -141,6 +179,26 @@ class ConservationActionDetailView(DetailViewBreadcrumbMixin, DetailView):
             "communities",
             "taxa",
             "document"
+        ).first()
+        if not obj:
+            raise Http404
+        return obj
+
+
+class DocumentDetailView(DetailViewBreadcrumbMixin, DetailView):
+    """Document DetailView."""
+
+    model = cons_models.Document
+    template_name = "pages/default_detail.html"
+
+    def get_object(self):
+        """Get object, handle 404, refetch for performance."""
+        obj = self.model.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            "communities",
+            "taxa",
+
         ).first()
         if not obj:
             raise Http404

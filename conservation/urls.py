@@ -39,4 +39,11 @@ urlpatterns = [
     re_path(r'^actions/activities/(?P<pk>\d+)/update/$',
             views.ConservationActivityUpdateView.as_view(),
             name="conservationactivity-update"),
+
+    re_path(r'^documents/$',
+            views.DocumentListView.as_view(),
+            name="document-list"),
+    re_path(r'^documents/(?P<pk>\d+)/$',
+            views.DocumentDetailView.as_view(),
+            name="document-detail"),
 ]

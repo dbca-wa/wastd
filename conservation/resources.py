@@ -46,3 +46,27 @@ class ConservationActionResource(resources.ModelResource):
             "expenditure",
             "status"
         ]
+
+
+class DocumentResource(resources.ModelResource):
+    """Document resource class for CSV download."""
+
+    class Meta:
+        """Class opts."""
+
+        model = cons_models.Document
+        fields = [
+            "document_type",
+            "title",
+            "taxa",
+            "communities",
+            "team",
+            "effective_from",
+            "effective_to",
+            "effective_from_commonwealth",
+            "effective_to_commonwealth",
+            "last_reviewed_on",
+            "review_due",
+            "comments",
+            "status"
+        ]

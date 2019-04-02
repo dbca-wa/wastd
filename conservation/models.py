@@ -244,7 +244,7 @@ class ConservationThreat(UrlsMixin, ObservationAuditMixin, models.Model):
         index_together = [
             ["document", "occurrence_area_code"],
         ]
-        card_template = 'conservation/includes/conservationthreat_card.html'
+        card_template = 'conservation/cards/conservationthreat.html'
 
     def __str__(self):
         """The full name."""
@@ -409,7 +409,7 @@ class ConservationAction(UrlsMixin, models.Model):
             ["status", "completion_date", "category", ],
             ["document", "occurrence_area_code"],
         ]
-        card_template = 'conservation/includes/conservationaction_card.html'
+        card_template = 'conservation/cards/conservationaction.html'
 
     def __str__(self):
         """The full name."""
@@ -1462,7 +1462,7 @@ def gazettal_caches(sender, instance, *args, **kwargs):
 # -----------------------------------------------------------------------------
 # Documents
 @python_2_unicode_compatible
-class Document(models.Model):
+class Document(UrlsMixin, models.Model):
     """A Document with attachments and approval workflow."""
 
     TYPE_RECOVERY_PLAN = 0
@@ -1627,6 +1627,7 @@ class Document(models.Model):
         ordering = ["document_type", "title"]
         verbose_name = "Document"
         verbose_name_plural = "Documents"
+        card_template = 'conservation/cards/document.html'
 
     def __str__(self):
         """The full name."""

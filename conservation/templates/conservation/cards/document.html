@@ -1,0 +1,94 @@
+{% load taxonomy_tags %}
+<!-- conservation/cards/document.html -->
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
+  <h6 class="card-header">
+    <div class="row">
+      <span class="badge badge-warning" title="Document type">
+        {{ object.get_document_type_display }}
+      </span>
+      <span class="badge badge-success" title="Approval status">
+        {{ object.get_status_display }}
+      </span>
+    </div>
+    <div class="row">
+      {{ object.title }}
+    </div>
+  </h6>
+  <div class="card-body">
+    <p class="card-text">
+      <div>
+      <span class="badge badge-primary" title="Effective dates">
+        <span class="oi oi-calendar" aria-hidden="true"></span>
+        Effective from
+        {% if object.effective_from %}
+        {{ object.effective_from|date:'d/m/Y' }}
+        {% else %}
+        -
+        {% endif %}
+      </span>
+      </div>
+      <div>
+      <span class="badge badge-primary" title="Effective dates">
+        <span class="oi oi-calendar" aria-hidden="true"></span>
+        Effective to
+        {% if object.effective_to %}
+        {{ object.effective_to|date:'d/m/Y' }}
+        {% else %}
+        -
+        {% endif %}
+      </span>
+      </div>
+      <div>
+      <span class="badge badge-primary" title="Reviewed last">
+        <span class="oi oi-check" aria-hidden="true"></span>
+        Last reviewed on
+          {% if object.last_reviewed_on %}
+          {{ object.last_reviewed_on|date:'d/m/Y' }}
+          {% else %}
+          -
+          {% endif %}
+      </span>
+      </div>
+      <div>
+      <span class="badge badge-primary" title="Review due">
+        <span class="oi oi-bell" aria-hidden="true"></span>
+        Next review due on
+        {% if object.review_due %}
+        {{ object.review_due|date:'d/m/Y' }}
+        {% else %}
+        -
+        {% endif %}
+      </span>
+      </div>
+    </p>
+
+    {% include 'conservation/includes/conservationaction_rows.html' with actions=object.conservationaction_set.all %}
+    {% include 'conservation/includes/conservationthreat_rows.html' with threats=object.conservationthreat_set.all %}
+
+    {% for attachment in object.attachments.all %}
+    <p class="card-text">
+      <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
+      <span class="badge badge-{% if attachment.confidential == True%}danger{% else %}success{% endif %}">
+        <span class="oi oi-document" aria-hidden="true"></span>
+      </span>
+      </a>
+      {{ attachment.title }} by {{ attachment.author }}
+      <span class="oi oi-{% if attachment.current %}check{% else%}x{% endif %}" title="Is current?"></span>
+    </p>
+    {% endfor %}
+
+  </div><!-- /.card-body -->
+
+  <div class="card-footer">
+    <a href="{{ object.get_absolute_url }}"
+        title="View document"
+        role="button"
+        class="btn btn-primary btn-sm btn-block">
+      <span class="oi oi-eye" aria-hidden="true"></span>
+      <span class="oi oi-document" aria-hidden="true"></span>
+      View details
+    </a>
+    {% conservationaction_add user "taxa" document_id=object.pk block=True label=True %}
+
+  </div><!-- /.card-footer -->
+</div><!-- /.card -->

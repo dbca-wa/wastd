@@ -4,7 +4,7 @@ from django.contrib.gis.db import models as geo_models
 
 import django_filters
 
-from conservation.models import ConservationThreat, ConservationAction
+from conservation import models as cons_models
 from shared.filters import FILTER_OVERRIDES
 
 
@@ -16,7 +16,8 @@ class ConservationThreatFilter(django_filters.FilterSet):
     class Meta:
         """Class opts."""
 
-        model = ConservationThreat
+        model = cons_models.ConservationThreat
+        filter_overrides = FILTER_OVERRIDES
         fields = [
             'target_area',
             'category',
@@ -24,7 +25,6 @@ class ConservationThreatFilter(django_filters.FilterSet):
             'potential_onset',
             'potential_impact'
         ]
-        filter_overrides = FILTER_OVERRIDES
 
 
 class ConservationActionFilter(django_filters.FilterSet):
@@ -35,6 +35,28 @@ class ConservationActionFilter(django_filters.FilterSet):
     class Meta:
         """Class opts."""
 
-        model = ConservationAction
-        fields = ['target_area', 'category', 'status', ]
+        model = cons_models.ConservationAction
         filter_overrides = FILTER_OVERRIDES
+        fields = ['target_area', 'category', 'status', ]
+
+
+class DocumentFilter(django_filters.FilterSet):
+    """Filter for Document."""
+
+    class Meta:
+        """Class opts."""
+
+        model = cons_models.Document
+        filter_overrides = FILTER_OVERRIDES
+        fields = [
+            "document_type",
+            "taxa",
+            "communities",
+            "effective_from",
+            "effective_to",
+            "effective_from_commonwealth",
+            "effective_to_commonwealth",
+            "last_reviewed_on",
+            "review_due",
+            "status"
+        ]

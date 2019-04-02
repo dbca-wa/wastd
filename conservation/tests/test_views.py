@@ -370,15 +370,15 @@ class DocumentViewTests(TestCase):
         response = self.client.get(self.object.absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
-    # def test_get_absolute_url(self):
-    #     """Test ConservationAction get absolute url."""
-    #     response = self.client.get(self.object.get_absolute_url())
-    #     self.assertEqual(response.status_code, 200)
+    def test_get_absolute_url(self):
+        """Test ConservationAction get absolute url."""
+        response = self.client.get(self.object.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
 
-    # def test_list_url_loads(self):
-    #     """Test conservationaction-list."""
-    #     response = self.client.get(self.object.list_url())
-    #     self.assertEqual(response.status_code, 200)
+    def test_list_url_loads(self):
+        """Test conservationaction-list."""
+        response = self.client.get(self.object.list_url())
+        self.assertEqual(response.status_code, 200)
 
     # def test_create_url_loads(self):
     #     """Test conservationaction-create."""
