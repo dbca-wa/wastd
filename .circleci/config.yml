@@ -75,9 +75,9 @@ jobs:
       - run:
           name: Run tests
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
+            cd /usr/src/app
             fab test
-          # python manage.py test --settings=config.settings.test --keepdb -v 2
 
       - store_artifacts:
           path: logs
