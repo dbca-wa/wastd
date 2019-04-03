@@ -197,3 +197,16 @@ class DocumentLifeCycleTests(TestCase):
     """
 
     pass
+
+
+class DocumentReportingTests(TestCase):
+    """Functional tests for Document reporting.
+
+    This test suite tests:
+
+    * List, filter, and export Documents matching filter criteria
+    * Document review: find docs coming up for review
+
+    """
+
+    pass

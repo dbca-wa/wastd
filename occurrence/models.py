@@ -34,7 +34,13 @@ from django.utils.translation import ugettext_lazy as _
 # from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
 # from wastd.users.models import User
-from shared.models import LegacySourceMixin, ObservationAuditMixin, QualityControlMixin, UrlsMixin
+from shared.models import (
+    RenderMixin,
+    LegacySourceMixin,
+    ObservationAuditMixin,
+    QualityControlMixin,
+    UrlsMixin
+)
 from taxonomy.models import Community, Taxon
 
 # import os
@@ -49,6 +55,7 @@ User = get_user_model()
 
 
 class AreaEncounter(PolymorphicModel,
+                    RenderMixin,
                     UrlsMixin,
                     LegacySourceMixin,
                     ObservationAuditMixin,
@@ -233,7 +240,6 @@ class AreaEncounter(PolymorphicModel,
         ordering = ["-northern_extent", "name"]
         verbose_name = "Area Encounter"
         verbose_name_plural = "Area Encounters"
-        card_template = "occurrence/include/areaencounter_card.html"
 
     def __str__(self):
         """The unicode representation."""
@@ -344,6 +350,11 @@ class TaxonAreaEncounter(AreaEncounter):
         """Return the subject of the encounter."""
         return self.taxon
 
+    @property
+    def as_card(self, path="occurrence/cards/areaencounter.html"):
+        """Return as rendered HTML card."""
+        return self.do_render(template_type="cards", path=path)
+
     # -------------------------------------------------------------------------
     # Functions
     def nearby_same(self, dist_dd=0.005):
@@ -431,6 +442,7 @@ def area_caches(sender, instance, *args, **kwargs):
 @python_2_unicode_compatible
 class ObservationGroup(
         QualityControlMixin,
+        RenderMixin,
         UrlsMixin,
         PolymorphicModel,
         models.Model):
@@ -529,23 +541,23 @@ class ObservationGroup(
         """Return the model's verbose name."""
         return self._meta.verbose_name
 
-    @property
-    def as_html(self):
-        """Return as rendered HTML popup."""
-        t = loader.get_template("occurrence/popup/{0}.html".format(self.observation_name))
-        return mark_safe(t.render({"object": self}))
+    # @property
+    # def as_html(self):
+    #     """Return as rendered HTML popup."""
+    #     t = loader.get_template("occurrence/popup/{0}.html".format(self.observation_name))
+    #     return mark_safe(t.render({"object": self}))
 
-    @property
-    def as_card(self):
-        """Return as rendered HTML card."""
-        t = loader.get_template("occurrence/cards/{0}.html".format(self.observation_name))
-        return mark_safe(t.render({"object": self}))
+    # @property
+    # def as_card(self):
+    #     """Return as rendered HTML card."""
+    #     t = loader.get_template("occurrence/cards/{0}.html".format(self.observation_name))
+    #     return mark_safe(t.render({"object": self}))
 
-    @property
-    def as_latex(self):
-        """Return as raw Latex fragment."""
-        t = loader.get_template("occurrence/latex/{0}.tex".format(self.observation_name))
-        return mark_safe(t.render({"object": self}))
+    # @property
+    # def as_latex(self):
+    #     """Return as raw Latex fragment."""
+    #     t = loader.get_template("occurrence/latex/{0}.tex".format(self.observation_name))
+    #     return mark_safe(t.render({"object": self}))
 
     # -------------------------------------------------------------------------
     # Functions

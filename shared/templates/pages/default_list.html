@@ -11,11 +11,7 @@
   <div id="cards-row" class="col-lg-9 col-md-8 col-sm-6 col-12">
     <div class="row">
       {% for object in object_list %}
-        {% if object.opts.card_template %}
-        {% include object.opts.card_template %}
-        {% else %}
-          <div>WARNING: {{ object.opts.model_name }}.opts.card_template is missing!</div>
-        {% endif %}
+        {{ object.as_card|safe }}
       {% endfor %}
       </div><!-- /.row -->
   </div><!-- /#cards-row -->

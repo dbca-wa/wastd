@@ -8,7 +8,9 @@ import uuid
 
 from django.db import models
 from django.db.models import options
+from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 # from durationfield.db.models.fields.duration import DurationField
 # from django.db.models.fields import DurationField
@@ -34,9 +36,6 @@ logger = logging.getLogger(__name__)
 
 
 # Abstract models ------------------------------------------------------------#
-options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('card_template', )
-
-
 class CodeLabelDescriptionMixin(models.Model):
     """A Mixin providing code, label and description."""
 
@@ -79,6 +78,57 @@ class CodeLabelDescriptionMixin(models.Model):
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
+# For RenderMixin: add Meta fields
+options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('card_template', 'latex_template')
+
+
+class RenderMixin(models.Model):
+    """A mixin providing a rendered representation as card, as popup and as latex.
+
+    Model options are made accessible as property self.opts.
+    This allows to include e.g. the path to a template, such as ``card_template``.
+
+    Helper functions ``as_card``, ``as_latex`` render the model
+    through the respective templates and return the HTML or Latex source code as safe string.
+
+    The template are expected at ``<app_label>/{card, latex}/model_name.{html,tex}``.
+    """
+
+    class Meta:
+        """Class opts."""
+
+        abstract = True
+
+    @property
+    def opts(self):
+        """Return model options."""
+        return self._meta
+
+    def do_render(self, template_type="card", path=None):
+        """Render a template to a safe string."""
+        if path is None:
+            path = "{0}/{1}/{2}.html".format(
+                self._meta.app_label,
+                template_type,
+                self._meta.model_name)
+        try:
+            template = loader.get_template(path)
+        except TemplateDoesNotExist:
+            msg = "Missing template {0} for {1}".format(path, self.__str__())
+            return mark_safe(msg)
+        return mark_safe(template.render({"object": self}))
+
+    @property
+    def as_card(self, path=None):
+        """Return as rendered HTML card."""
+        return self.do_render(template_type="cards", path=path)
+
+    @property
+    def as_latex(self, path=None):
+        """Return as Latex source."""
+        return self.do_render(template_type="latex", path=path)
+
+
 class UrlsMixin(models.Model):
     """Mixin class to add absolute admin, list, update and detail urls.
 
@@ -93,20 +143,12 @@ class UrlsMixin(models.Model):
     * list_url (classmethod)
     * create_url (classmethod)
     * update_url
-
-    This mixin also provides the model options self._meta as property self.opts.
-    This allows to include e.g. the path to a template, such as ``card_template``.
     """
 
     class Meta:
         """Class opts."""
 
         abstract = True
-
-    @property
-    def opts(self):
-        """Return model options."""
-        return self._meta
 
     # -------------------------------------------------------------------------
     # URLs

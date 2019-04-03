@@ -29,7 +29,7 @@
     </a>
     {% communitygazettal_add request.user block=True label=True %}
     {% conservationaction_add request.user "communities" block=True label=True %}
-    {% document_add request.user "communities" block=True label=True %}
+    {% document_add "communities" block=True label=True %}
     {% admin_areaencounter_create_link object.pk "community" block=True label=True %}
     {% communityareaencounter_add_link object.pk block=True label=True %}
   </div>

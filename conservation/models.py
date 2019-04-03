@@ -31,7 +31,12 @@ from django_fsm_log.decorators import fsm_log_by
 from taxonomy.models import Community, Taxon
 
 from wastd.users.models import User
-from shared.models import UrlsMixin, CodeLabelDescriptionMixin, ObservationAuditMixin
+from shared.models import (
+    RenderMixin,
+    UrlsMixin,
+    CodeLabelDescriptionMixin,
+    ObservationAuditMixin
+)
 
 # from django.utils.safestring import mark_safe
 
@@ -101,7 +106,7 @@ class ConservationThreatCategory(CodeLabelDescriptionMixin, models.Model):
 
 
 @python_2_unicode_compatible
-class ConservationThreat(UrlsMixin, ObservationAuditMixin, models.Model):
+class ConservationThreat(RenderMixin, UrlsMixin, ObservationAuditMixin, models.Model):
     """A conservation threat is a potentially damaging event against a taxon or community.
 
     The conservation threat can pertain to:
@@ -244,7 +249,6 @@ class ConservationThreat(UrlsMixin, ObservationAuditMixin, models.Model):
         index_together = [
             ["document", "occurrence_area_code"],
         ]
-        card_template = 'conservation/cards/conservationthreat.html'
 
     def __str__(self):
         """The full name."""
@@ -263,7 +267,7 @@ class ConservationActionCategory(CodeLabelDescriptionMixin, models.Model):
 
 
 @python_2_unicode_compatible
-class ConservationAction(UrlsMixin, models.Model):
+class ConservationAction(RenderMixin, UrlsMixin, models.Model):
     """A conservation action is an intended conservation management measure.
 
     The conservation action can pertain to:
@@ -409,7 +413,6 @@ class ConservationAction(UrlsMixin, models.Model):
             ["status", "completion_date", "category", ],
             ["document", "occurrence_area_code"],
         ]
-        card_template = 'conservation/cards/conservationaction.html'
 
     def __str__(self):
         """The full name."""
@@ -1462,7 +1465,7 @@ def gazettal_caches(sender, instance, *args, **kwargs):
 # -----------------------------------------------------------------------------
 # Documents
 @python_2_unicode_compatible
-class Document(UrlsMixin, models.Model):
+class Document(RenderMixin, UrlsMixin, models.Model):
     """A Document with attachments and approval workflow."""
 
     TYPE_RECOVERY_PLAN = 0
@@ -1627,7 +1630,6 @@ class Document(UrlsMixin, models.Model):
         ordering = ["document_type", "title"]
         verbose_name = "Document"
         verbose_name_plural = "Documents"
-        card_template = 'conservation/cards/document.html'
 
     def __str__(self):
         """The full name."""

@@ -89,7 +89,7 @@ def communityareaencounter_add_link(pk, area_code=None, block=False, label=False
     }
 
 
-@register.inclusion_tag('occurrence/include/areaencounter_card.html', takes_context=False)
+@register.inclusion_tag('occurrence/cards/areaencounter.html', takes_context=False)
 def areaencounter_card(occurrence, subject, user, block=False, label=False):
     """Render a card for a taxon or comunity area encounter."""
     return {

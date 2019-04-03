@@ -1,6 +1,6 @@
 {% if actions %}
 {% for object in actions %}
-{% include 'conservation/includes/conservationaction_card.html' %}
+{{ object.as_card }}
 {% endfor %}
 <hr class="my-4">
 {% endif %}

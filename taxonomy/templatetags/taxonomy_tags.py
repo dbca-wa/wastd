@@ -105,11 +105,11 @@ def document_row(context, user):
 
 
 @register.inclusion_tag('include/document_add.html', takes_context=True)
-def document_add(context, user, subject, block=False, label=False):
+def document_add(context, subject, block=False, label=False):
     """Render an "add document" link for staff."""
     return {
         "object": context["object"],
-        "is_staff": user.is_staff,
+        "is_staff": True,
         "subject": subject,
         "block": block,
         "label": label
@@ -175,13 +175,13 @@ def conservationaction_cards(user, actions, area=None):
 
 
 @register.inclusion_tag('include/conservationaction_add.html', takes_context=True)
-def conservationaction_add(context, user, subject,
+def conservationaction_add(context, subject,
                            document_id=None, area=None,
                            block=False, label=False):
     """Render an "add conservation action" link for staff."""
     return {
         "object": context["object"],
-        "is_staff": user.is_staff,
+        "is_staff": True,
         "subject": subject,
         "document_id": document_id,
         "area": area,

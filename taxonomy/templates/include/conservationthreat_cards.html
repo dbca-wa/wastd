@@ -1,6 +1,6 @@
 {% if threats %}
 {% for object in threats %}
-{% include 'conservation/includes/conservationthreat_card.html' %}
+{{ object.as_card }}
 {% endfor %}
 <hr class="my-4">
 {% endif %}

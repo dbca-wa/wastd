@@ -152,7 +152,7 @@ redis==3.1.0
 # ------------------------------------------------
 django-geojson==2.12.0
 #django-leaflet==0.24.0
-git+git://github.com/dbca-wa/django-leaflet@247-raw-textarea-size
+git+git://github.com/makinacorpus/django-leaflet@master
 
 
 # Static and Media Storage
