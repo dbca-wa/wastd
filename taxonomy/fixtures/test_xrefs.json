@@ -1,0 +1,182 @@
+[
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 7,
+    "fields": {
+        "ogc_fid": 486,
+        "xref_id": 551,
+        "old_name_id": 9028,
+        "new_name_id": 4459,
+        "xref_type": "NSY",
+        "active": "Y",
+        "authorised_by": "S. Coffey",
+        "authorised_on": "20140708",
+        "comments": "See Paul G. Wilson in Fl.Australia 26:429 (2013)",
+        "added_on": "1990-12-03Z",
+        "updated_on": "2014-12-29Z",
+        "md5_rowhash": "8e410fb5c18f0003e69ad20d2aff33cd"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 8,
+    "fields": {
+        "ogc_fid": 487,
+        "xref_id": 2234,
+        "old_name_id": 9030,
+        "new_name_id": 4399,
+        "xref_type": "NSY",
+        "active": "Y",
+        "authorised_by": "S.C. Coffey",
+        "authorised_on": "20140701",
+        "comments": "See Paul G. Wilson in Fl.Australia 26:420 (2013)",
+        "added_on": "1991-10-22Z",
+        "updated_on": "2014-12-14Z",
+        "md5_rowhash": "8ddf971d7e205497a46f5e09d85bbdd1"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 10,
+    "fields": {
+        "ogc_fid": 489,
+        "xref_id": 2236,
+        "old_name_id": 9033,
+        "new_name_id": 4401,
+        "xref_type": "NSY",
+        "active": "Y",
+        "authorised_by": "S.C. Coffey",
+        "authorised_on": "20140701",
+        "comments": "See Paul G. Wilson in Fl.Australia 26:417 (2013)",
+        "added_on": "1991-10-22Z",
+        "updated_on": "2014-12-14Z",
+        "md5_rowhash": "c6b371e29d96d6be9fab16e3109c7abd"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 9,
+    "fields": {
+        "ogc_fid": 488,
+        "xref_id": 2235,
+        "old_name_id": 9031,
+        "new_name_id": 4400,
+        "xref_type": "NSY",
+        "active": "Y",
+        "authorised_by": "S.C. Coffey",
+        "authorised_on": "20140701",
+        "comments": "See Paul G. Wilson in Fl.Australia 26:418 (2013)",
+        "added_on": "1991-10-22Z",
+        "updated_on": "2014-12-14Z",
+        "md5_rowhash": "87ab088d8bff4a6d350b7ec6f034776b"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 2,
+    "fields": {
+        "ogc_fid": 481,
+        "xref_id": 2285,
+        "old_name_id": 8983,
+        "new_name_id": 3941,
+        "xref_type": "TSY",
+        "active": "Y",
+        "authorised_by": null,
+        "authorised_on": "        ",
+        "comments": "See F.J. Hermann in Techn.Bull.U.S.D.A. 1268:21 (1962)",
+        "added_on": "1991-10-29Z",
+        "updated_on": "2012-11-08Z",
+        "md5_rowhash": "9f60df01853a28debeae4037d2267eb6"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 5,
+    "fields": {
+        "ogc_fid": 484,
+        "xref_id": 2289,
+        "old_name_id": 9164,
+        "new_name_id": 6044,
+        "xref_type": "TSY",
+        "active": "Y",
+        "authorised_by": null,
+        "authorised_on": "        ",
+        "comments": "See B.M. Hyland in Austral.J.Bot., Suppl.Ser.9:84(1983)",
+        "added_on": "1991-10-29Z",
+        "updated_on": "2009-11-18Z",
+        "md5_rowhash": "0045902b4ccf8ded5ed9aedbd398675c"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 4,
+    "fields": {
+        "ogc_fid": 483,
+        "xref_id": 2288,
+        "old_name_id": 9161,
+        "new_name_id": 6044,
+        "xref_type": "TSY",
+        "active": "Y",
+        "authorised_by": null,
+        "authorised_on": "        ",
+        "comments": "See B. Hyland in Austral.J.Bot.,Suppl.Ser.9:84(1983)",
+        "added_on": "1991-10-29Z",
+        "updated_on": "2009-11-18Z",
+        "md5_rowhash": "5c2ad266e5f6e472a54110c4a1ea28c6"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 3,
+    "fields": {
+        "ogc_fid": 482,
+        "xref_id": 542,
+        "old_name_id": 9019,
+        "new_name_id": 4367,
+        "xref_type": "NSY",
+        "active": "Y",
+        "authorised_by": null,
+        "authorised_on": "        ",
+        "comments": null,
+        "added_on": "1990-12-03Z",
+        "updated_on": null,
+        "md5_rowhash": "7f2ea2ae1099a47b86fea061c15b739e"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 1,
+    "fields": {
+        "ogc_fid": 480,
+        "xref_id": 540,
+        "old_name_id": 9017,
+        "new_name_id": 4373,
+        "xref_type": "NSY",
+        "active": "Y",
+        "authorised_by": null,
+        "authorised_on": "        ",
+        "comments": null,
+        "added_on": "1990-12-03Z",
+        "updated_on": null,
+        "md5_rowhash": "ac94b08b599353f96867d43f4f89d880"
+    }
+},
+{
+    "model": "taxonomy.hbvxref",
+    "pk": 6,
+    "fields": {
+        "ogc_fid": 485,
+        "xref_id": 2291,
+        "old_name_id": 8820,
+        "new_name_id": 1757,
+        "xref_type": "NSY",
+        "active": "Y",
+        "authorised_by": null,
+        "authorised_on": "        ",
+        "comments": null,
+        "added_on": "1991-10-29Z",
+        "updated_on": null,
+        "md5_rowhash": "c006da853d653fd61d6d9d603842d1ae"
+    }
+}
+]

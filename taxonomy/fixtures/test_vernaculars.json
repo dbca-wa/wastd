@@ -1,0 +1,172 @@
+[
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 2,
+    "fields": {
+        "ogc_fid": 501,
+        "name_id": 2054,
+        "name": "Grevillea olivacea",
+        "vernacular": "Olive Grevillea",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "c5118734f4f87a4a0f584adc83ff9b92"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 1,
+    "fields": {
+        "ogc_fid": 500,
+        "name_id": 2026,
+        "name": "Grevillea juncifolia",
+        "vernacular": "Honey-suckle Grevillea",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "1f05085ab3b539d6b6423bc0082ef3c8"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 10,
+    "fields": {
+        "ogc_fid": 509,
+        "name_id": 2844,
+        "name": "Calandrinia balonensis",
+        "vernacular": "Broadleaf Parakeelya",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "ba4edf1c0717c2ea3ca44d4c1ad2e835"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 9,
+    "fields": {
+        "ogc_fid": 508,
+        "name_id": 2835,
+        "name": "Glinus lotoides",
+        "vernacular": "Hairy Carpet Weed",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "b4e65f5859f069a16a2e8695e29e7d9e"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 8,
+    "fields": {
+        "ogc_fid": 507,
+        "name_id": 2834,
+        "name": "Zaleya galericulata",
+        "vernacular": "Hogweed",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "4728d1f383c96241bf097c6ff8dc3ca0"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 7,
+    "fields": {
+        "ogc_fid": 506,
+        "name_id": 2832,
+        "name": "Trianthema triquetra",
+        "vernacular": "Red Spinach",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "8eedd03d61ce2a804eb30590707b34c8"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 3,
+    "fields": {
+        "ogc_fid": 502,
+        "name_id": 2057,
+        "name": "Grevillea paradoxa",
+        "vernacular": "Bottlebrush Grevillea",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "8c29b2c9a17a1b9e6217e4c23e40646f"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 5,
+    "fields": {
+        "ogc_fid": 504,
+        "name_id": 2827,
+        "name": "Trianthema oxycalyptra",
+        "vernacular": "Star Pigweed",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "075a1b5058c6005ef1f554aeb55153c9"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 4,
+    "fields": {
+        "ogc_fid": 503,
+        "name_id": 2060,
+        "name": "Grevillea pauciflora",
+        "vernacular": "Few-flowered Grevillea",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "751fcda5d126ded274eb61cf01f41a84"
+    }
+},
+{
+    "model": "taxonomy.hbvvernacular",
+    "pk": 6,
+    "fields": {
+        "ogc_fid": 505,
+        "name_id": 2830,
+        "name": "Trianthema portulacastrum",
+        "vernacular": "Giant Pigweed",
+        "language": "ENGLISH",
+        "lang_pref": null,
+        "preferred": "Y",
+        "source": "E.M. Bennett",
+        "updated_by": "HERBIE",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "2fca0e956ef56a6d2315a51b35a92ff9"
+    }
+}
+]
