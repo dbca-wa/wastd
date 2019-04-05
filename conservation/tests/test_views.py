@@ -380,12 +380,12 @@ class DocumentViewTests(TestCase):
         response = self.client.get(self.object.list_url())
         self.assertEqual(response.status_code, 200)
 
-    # def test_create_url_loads(self):
-    #     """Test conservationaction-create."""
-    #     response = self.client.get(self.object.create_url())
-    #     self.assertEqual(response.status_code, 200)
+    def test_create_url_loads(self):
+        """Test conservationaction-create."""
+        response = self.client.get(self.object.create_url())
+        self.assertEqual(response.status_code, 200)
 
-    # def test_update_url_loads(self):
-    #     """Test conservationaction-update."""
-    #     response = self.client.get(self.object.update_url)
-    #     self.assertEqual(response.status_code, 200)
+    def test_update_url_loads(self):
+        """Test conservationaction-update."""
+        response = self.client.get(self.object.update_url)
+        self.assertEqual(response.status_code, 200)

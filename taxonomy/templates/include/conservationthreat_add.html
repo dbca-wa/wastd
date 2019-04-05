@@ -4,7 +4,7 @@
     role="button"
     class="btn btn-success btn-sm{% if block %} btn-block{% endif%}">
   <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-flash" aria-hidden="true"></span>
-  {% if label %}Propose conservation threat{% endif %}
+  {% if label %}Register conservation threat{% endif %}
 </a>
 {% endif %}
 <a href="{% url 'conservation:conservationthreat-create' %}?{{ subject }}={{ object.pk }}{% if document_id %}&document_id={{ document.pk }}{% endif %}{% if area  %}&occurrence_area_code={{ area }}{% endif %}"
@@ -12,5 +12,5 @@
     role="button"
     class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}">
   <span class="oi oi-plus" aria-hidden="true"></span> <span class="oi oi-flash" aria-hidden="true"></span>
-  {% if label %}Propose conservation threat{% endif %}
+  {% if label %}Register conservation threat{% endif %}
 </a>

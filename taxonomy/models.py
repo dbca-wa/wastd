@@ -2134,7 +2134,6 @@ class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
         verbose_name = "Community"
         verbose_name_plural = "Communities"
         ordering = ["code", ]
-        card_template = "cards/community.html"
 
     def __str__(self):
         """The name."""

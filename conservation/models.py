@@ -1539,14 +1539,14 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         Taxon,
         blank=True,
         verbose_name=_("Taxa"),
-        help_text=_("All taxa this document applies to."),
+        help_text=_("A list of all taxa to which this document applies to."),
     )
 
     communities = models.ManyToManyField(
         Community,
         blank=True,
         verbose_name=_("Communities"),
-        help_text=_("All communities this document applies to."),
+        help_text=_("A list of all communities to which this document applies to."),
     )
 
     document_type = models.PositiveIntegerField(
@@ -1567,25 +1567,25 @@ class Document(RenderMixin, UrlsMixin, models.Model):
     effective_from = models.DateTimeField(
         blank=True, null=True,
         verbose_name=_("Effective from"),
-        help_text=_("The date from which this document is effective from."),
+        help_text=_("The date and time from which this document is effective from."),
     )
 
     effective_to = models.DateTimeField(
         blank=True, null=True,
         verbose_name=_("Effective to"),
-        help_text=_("The date to which this document is effective to."),
+        help_text=_("The date and time to which this document is effective to."),
     )
 
     effective_from_commonwealth = models.DateTimeField(
         blank=True, null=True,
         verbose_name=_("Adopted by Commonwealth on"),
-        help_text=_("The date from which this document was adopted by the Commonwealth."),
+        help_text=_("The date and time from which this document was adopted by the Commonwealth."),
     )
 
     effective_to_commonwealth = models.DateTimeField(
         blank=True, null=True,
         verbose_name=_("Retired by Commonwealth on"),
-        help_text=_("The date on which this document was retired by the Commonwealth."),
+        help_text=_("The date and time on which this document was retired by the Commonwealth."),
     )
 
     review_due = models.DateTimeField(

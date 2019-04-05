@@ -272,6 +272,26 @@ class ConservationActivityUpdateView(
         return obj
 
 
+class DocumentUpdateView(
+        SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
+    """Update view for Document."""
+
+    template_name = "pages/default_form.html"
+    form_class = cons_forms.DocumentForm
+    model = cons_models.Document
+
+    def get_object(self, queryset=None):
+        """Get object, handle 404, refetch for performance."""
+        obj = self.model.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            "taxa", "communities",
+        ).first()
+        if not obj:
+            raise Http404
+        return obj
+
+
 # ---------------------------------------------------------------------------#
 # Create Views
 #
@@ -351,3 +371,19 @@ class ConservationActivityCreateView(
             Breadcrumb(ca, ca.get_absolute_url()),
             Breadcrumb("Create a new {0}".format(self.model._meta.verbose_name), None)
         )
+
+
+class DocumentCreateView(
+        SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
+    """Create view for Document."""
+
+    template_name = "pages/default_form.html"
+    form_class = cons_forms.DocumentForm
+    model = cons_models.Document
+
+    def get_initial(self):
+        """Initial form values."""
+        initial = super(DocumentCreateView, self).get_initial()
+        # if "pk" in self.kwargs:
+        #     initial["conservation_action"] = cons_models.ConservationAction.objects.get(pk=self.kwargs["pk"])
+        return initial

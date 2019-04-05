@@ -43,7 +43,14 @@ urlpatterns = [
     re_path(r'^documents/$',
             views.DocumentListView.as_view(),
             name="document-list"),
+    re_path(r'^documents/create/$',
+            views.DocumentCreateView.as_view(),
+            name="document-create"),
     re_path(r'^documents/(?P<pk>\d+)/$',
             views.DocumentDetailView.as_view(),
             name="document-detail"),
+    re_path(r'^documents/(?P<pk>\d+)/update/$',
+            views.DocumentUpdateView.as_view(),
+            name="document-update"),
+
 ]

@@ -176,3 +176,68 @@ class ConservationActivityForm(forms.ModelForm):
             'conservation_action': cons_widgets.ConservationActionWidget(),
             'completion_date': shared_forms.DateInput(),
         }
+
+
+class DocumentForm(forms.ModelForm):
+    """Form for Documents."""
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(DocumentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Relations',
+                "taxa",
+                "communities",
+                "team",
+            ),
+            Fieldset(
+                'Dates',
+                "effective_from",
+                "effective_to",
+                "effective_from_commonwealth",
+                "effective_to_commonwealth",
+                "last_reviewed_on",
+                "review_due",
+            ),
+            Fieldset(
+                'Document',
+                "document_type",
+                "title",
+                "comments"
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+
+    class Meta:
+        """Class options."""
+
+        model = cons_models.Document
+        fields = (
+            "document_type",
+            "title",
+            "taxa",
+            "communities",
+            "team",
+            "effective_from",
+            "effective_to",
+            "effective_from_commonwealth",
+            "effective_to_commonwealth",
+            "last_reviewed_on",
+            "review_due",
+            "comments"
+        )
+        widgets = {
+            'taxa': tax_widgets.TaxonMultipleWidget(),
+            'communities': tax_widgets.CommunityMultipleWidget(),
+            'team': usr_widgets.UserMultipleWidget(),
+            'effective_from': shared_forms.DateTimeInput(),
+            'effective_to': shared_forms.DateTimeInput(),
+            'effective_from_commonwealth': shared_forms.DateTimeInput(),
+            'effective_to_commonwealth': shared_forms.DateTimeInput(),
+            'last_reviewed_on': shared_forms.DateTimeInput(),
+            'review_due': shared_forms.DateTimeInput(),
+        }

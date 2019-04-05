@@ -27,11 +27,21 @@ def create_test_fixtures():
     * One taxon that is a non-current name
 
     taxonomy/fixtures/test_crossreference.json
+
     * One crossreference of each type, including all involved taxa and their pylogeny.
       Thanks, django-fixture-magic!
 
     taxonomy/fixtures/test_community.json
+
     * The first 10 communities with related objects.
+
+    taxonomy/fixtures/test_names.json
+    taxonomy/fixtures/test_vernaculars.json
+    taxonomy/fixtures/test_xrefs.json
+    taxonomy/fixtures/test_parents.json
+
+    * The first ten instances of each staging table.
+    * TODO: Use name_ids from crossreference's involved taxa to select a contiguous set of Hbv objects.
     """
     c0 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_MIS).last()
     c1 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_TSY).last()
@@ -54,6 +64,11 @@ def create_test_fixtures():
           "> taxonomy/fixtures/test_taxon.json".format(taxon_pks))
     print("./manage.py dump_object taxonomy.Community {0} -k "
           "> taxonomy/fixtures/test_community.json".format(com_pks))
+
+    print("./manage.py dump_object taxonomy.HbvName 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_names.json")
+    print("./manage.py dump_object taxonomy.HbvVernacular 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_vernaculars.json")
+    print("./manage.py dump_object taxonomy.HbvXref 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_xrefs.json")
+    print("./manage.py dump_object taxonomy.HbvParent 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_parents.json")
 
     # This throws an error on related objects
     # with open("taxonomy/fixtures/test_crossreference.json", 'w+') as f:

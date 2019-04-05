@@ -28,6 +28,7 @@
       View Details
     </a>
     {% communitygazettal_add request.user block=True label=True %}
+    {% conservationthreat_add request.user "communities" block=True label=True %}
     {% conservationaction_add request.user "communities" block=True label=True %}
     {% document_add "communities" block=True label=True %}
     {% admin_areaencounter_create_link object.pk "community" block=True label=True %}
