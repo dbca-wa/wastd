@@ -107,10 +107,13 @@ class RenderMixin(models.Model):
     def do_render(self, template_type="card", path=None):
         """Render a template to a safe string."""
         if path is None:
-            path = "{0}/{1}/{2}.html".format(
-                self._meta.app_label,
-                template_type,
-                self._meta.model_name)
+            if getattr(self._meta, "card_template", None):
+                path = self._meta.card_template
+            else:
+                path = "{0}/{1}/{2}.html".format(
+                    self._meta.app_label,
+                    template_type,
+                    self._meta.model_name)
         try:
             template = loader.get_template(path)
         except TemplateDoesNotExist:

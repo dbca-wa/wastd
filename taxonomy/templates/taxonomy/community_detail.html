@@ -49,7 +49,7 @@
           {% conservationthreat_add request.user "communities" block=False label=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/includes/conservationthreat_rows.html' with actions=conservationthreats_general %}</p>
+      <p>{% include 'conservation/includes/conservationthreat_rows.html' with threats=conservationthreats_general %}</p>
 
       <hr class="my-4">
       <h3>Conservation Actions
