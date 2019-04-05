@@ -9274,7 +9274,7 @@ The data is to be inserted and updated via the TSC API.</p>
 <dl class="class">
 <dt id="taxonomy.models.Community">
 <em class="property">class </em><code class="descclassname">taxonomy.models.</code><code class="descname">Community</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.models.Community" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.UrlsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.LegacySourceMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.RenderMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.UrlsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.LegacySourceMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Ecological Community.</p>
 <dl class="exception">
 <dt id="taxonomy.models.Community.DoesNotExist">
@@ -9537,6 +9537,12 @@ object the first time, the query is executed.</p>
 <code class="descname">id</code><a class="headerlink" href="#taxonomy.models.Crossreference.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="taxonomy.models.Crossreference.involved_taxon_ids">
+<code class="descname">involved_taxon_ids</code><a class="headerlink" href="#taxonomy.models.Crossreference.involved_taxon_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all involved taxa.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -10126,7 +10132,7 @@ object the first time, the query is executed.</p>
 {</p>
 <blockquote>
 <div><p>“type”: “Feature”,
-“id”: “<a href="#id8"><span class="problematic" id="id9">herbie_hbvnames.fid-3032fae6_1619d7978c8_</span></a>-6031”,
+“id”: “<a href="#id4"><span class="problematic" id="id5">herbie_hbvnames.fid-3032fae6_1619d7978c8_</span></a>-6031”,
 “geometry”: null,
 “properties”: {</p>
 <blockquote>
@@ -11251,7 +11257,7 @@ object the first time, the query is executed.</p>
 <dl class="class">
 <dt id="taxonomy.models.Taxon">
 <em class="property">class </em><code class="descclassname">taxonomy.models.</code><code class="descname">Taxon</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.models.Taxon" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.UrlsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">mptt.models.MPTTModel</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.RenderMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">shared.models.UrlsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">mptt.models.MPTTModel</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>A taxonomic name at any taxonomic rank.</p>
 <p>A taxonomy is a directed graph with exactly one root node (Domain) and
 child nodes at every known rank. Each node has exactly one parent node,
@@ -11630,6 +11636,7 @@ object the first time, the query is executed.</p>
 <dt id="taxonomy.models.Taxon.is_listed">
 <code class="descname">is_listed</code><a class="headerlink" href="#taxonomy.models.Taxon.is_listed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether this Taxon has a conservation listing.</p>
+<p>TODO only count currently active gazettals.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -17794,7 +17801,13 @@ TSC creates Hbv* instances as exact copy of WACensus Hbv* views.</p>
 <dl class="method">
 <dt id="taxonomy.tests.test_api.HbvAPITests.setUp">
 <code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_api.HbvAPITests.setUp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read JSON from fixture.</p>
+<dd><p>Provide test data.</p>
+<p>In real-world scenarios, the data used to feed the WACensus staging
+tables (Hbv*) of the Taxonomy API comes from KMI’s GeoServer.
+For the purpose of testing, we’ll save a representative subset as JSON
+fixtures.</p>
+<p>Data from the KMI GeoServer’s views of WACensus data views is saved
+as a local JSON fixture for the purpose of testing.</p>
 </dd></dl>
 
 <dl class="method">
@@ -17859,7 +17872,8 @@ With the sunsetting of TFL, conservation status must be available to WACensus th
 </dd></dl>
 
 </div>
-<span class="target" id="module-taxonomy.tests.test_functional"></span><div class="section" id="functional-tests">
+<span class="target" id="module-taxonomy.tests.test_functional"></span><p>.</p>
+<div class="section" id="functional-tests">
 <h5>Functional tests<a class="headerlink" href="#functional-tests" title="Permalink to this headline">¶</a></h5>
 <p>Functional tests are walk-throughs of all implemented real-world use cases.
 Expected scenarios are the “happy path”. Unexpected scenarios should be tested
@@ -17906,6 +17920,11 @@ rare flora occurrences (eg via sheet number). Pending WAHerb upgrade.</li>
 <li>Filter by area</li>
 <li>Filter by cons listing (all threatened, all prio, both), cons list scope (WA, CWTH, INTL)</li>
 </ul>
+<dl class="attribute">
+<dt id="taxonomy.tests.test_functional.TaxonListFilterTests.fixtures">
+<code class="descname">fixtures</code><em class="property"> = ['taxonomy/fixtures/test_crossreference.json', 'taxonomy/fixtures/test_taxon.json', 'taxonomy/fixtures/test_community.json']</em><a class="headerlink" href="#taxonomy.tests.test_functional.TaxonListFilterTests.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -17924,9 +17943,8 @@ Test API endpoints for all WACensus tables with real WACensus data.</li>
 </ul>
 <p>General requirements:</p>
 <ul class="simple">
-<li>[REQ 43] Make use of the Department’s central customer database
-for storing and retrieving details of any individual or organisation
-outside the Department that have access to the system</li>
+<li>[REQ 43] Make use of the Department’s central customer database for storing and retrieving
+details of any individual or organisation outside the Department that have access to the system</li>
 <li>[REQ 44] Support single sign on security access for Department users accessing the system</li>
 <li>[REQ 45] A snapshot of current databases to be taken, and legacy data migrated into the new system.
 See Data ETL workbooks. Test API endpoints with example data. Add examples to wastdr vignettes.</li>
@@ -17958,22 +17976,64 @@ provide increased alignment with protocols for managing ecological communities.�
 <dl class="class">
 <dt id="taxonomy.tests.test_unit.TaxonUnitTests">
 <em class="property">class </em><code class="descclassname">taxonomy.tests.test_unit.</code><code class="descname">TaxonUnitTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests" title="Permalink to this definition">¶</a></dt>
-<dd><p>Taxon tests.</p>
+<dd><p>Taxon unit tests.</p>
+<dl class="attribute">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.fixtures">
+<code class="descname">fixtures</code><em class="property"> = ['taxonomy/fixtures/test_crossreference.json', 'taxonomy/fixtures/test_taxon.json', 'taxonomy/fixtures/test_community.json']</em><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
-<dt id="taxonomy.tests.test_unit.TaxonUnitTests.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.setUp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shared objects.</p>
-<p>TODO</p>
-<p>Get taxa from import wacensus unit test:
-- Create some Hbv* models - dump some into fixtures?
-- Run make_taxon_names</p>
-<p>Provides: taxa with phylogeny, xrefs, supragroups, vernaculars etc.</p>
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_build_canonical_name">
+<code class="descname">test_build_canonical_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_build_canonical_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the canonical name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_build_taxonomic_name">
+<code class="descname">test_build_taxonomic_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_build_taxonomic_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the taxonomic name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_build_vernacular_name">
+<code class="descname">test_build_vernacular_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_build_vernacular_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the vernacular name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_build_vernacular_names">
+<code class="descname">test_build_vernacular_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_build_vernacular_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the vernacular names.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_documents">
+<code class="descname">test_documents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_documents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test documents.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_gazettals">
+<code class="descname">test_gazettals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_gazettals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test gazettals.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_is_listed">
+<code class="descname">test_is_listed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_is_listed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that is_listed tells the conservation listing status.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_taxon_creation">
 <code class="descname">test_taxon_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_taxon_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test creating a Taxon.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUnitTests.test_taxon_str">
+<code class="descname">test_taxon_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUnitTests.test_taxon_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Taxon string representation.</p>
 </dd></dl>
 
 </dd></dl>
@@ -18011,6 +18071,11 @@ provide increased alignment with protocols for managing ecological communities.�
 <dt id="taxonomy.tests.test_views.CommunityViewTests">
 <em class="property">class </em><code class="descclassname">taxonomy.tests.test_views.</code><code class="descname">CommunityViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Community tests.</p>
+<dl class="attribute">
+<dt id="taxonomy.tests.test_views.CommunityViewTests.fixtures">
+<code class="descname">fixtures</code><em class="property"> = ['taxonomy/fixtures/test_crossreference.json', 'taxonomy/fixtures/test_taxon.json', 'taxonomy/fixtures/test_community.json']</em><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="taxonomy.tests.test_views.CommunityViewTests.setUp">
 <code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests.setUp" title="Permalink to this definition">¶</a></dt>
@@ -18047,6 +18112,11 @@ provide increased alignment with protocols for managing ecological communities.�
 <dt id="taxonomy.tests.test_views.TaxonViewTests">
 <em class="property">class </em><code class="descclassname">taxonomy.tests.test_views.</code><code class="descname">TaxonViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Taxon view tests.</p>
+<dl class="attribute">
+<dt id="taxonomy.tests.test_views.TaxonViewTests.fixtures">
+<code class="descname">fixtures</code><em class="property"> = ['taxonomy/fixtures/test_crossreference.json', 'taxonomy/fixtures/test_taxon.json', 'taxonomy/fixtures/test_community.json']</em><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="taxonomy.tests.test_views.TaxonViewTests.setUp">
 <code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonViewTests.setUp" title="Permalink to this definition">¶</a></dt>
@@ -18094,11 +18164,9 @@ provide increased alignment with protocols for managing ecological communities.�
 <div class="section" id="conservation">
 <h4>Conservation<a class="headerlink" href="#conservation" title="Permalink to this headline">¶</a></h4>
 <p><code class="xref py py-mod docutils literal notranslate"><span class="pre">conservation.tests</span></code> Module</p>
-<div class="section" id="id4">
-<h5>Functional tests<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h5>
 <span class="target" id="module-conservation.tests.test_functional"></span><p>.</p>
 <div class="section" id="conservation-functional-tests">
-<h6>Conservation functional tests<a class="headerlink" href="#conservation-functional-tests" title="Permalink to this headline">¶</a></h6>
+<h5>Conservation functional tests<a class="headerlink" href="#conservation-functional-tests" title="Permalink to this headline">¶</a></h5>
 <p>This test suite is a walk-through of the following conservation business processes:</p>
 <ul>
 <li><p class="first">Conservation listing: life cycle, permissions, query, list, export</p>
@@ -18336,10 +18404,7 @@ director, director general, minister) - who is allowed to approve what when
 </dd></dl>
 
 </div>
-</div>
-<div class="section" id="module-conservation.tests.test_unit">
-<span id="unit-tests"></span><h5>Unit tests<a class="headerlink" href="#module-conservation.tests.test_unit" title="Permalink to this headline">¶</a></h5>
-<p>Unit tests for Conservation module.</p>
+<span class="target" id="module-conservation.tests.test_unit"></span><p>Unit tests for Conservation module.</p>
 <dl class="class">
 <dt id="conservation.tests.test_unit.CommunityGazettalModelTests">
 <em class="property">class </em><code class="descclassname">conservation.tests.test_unit.</code><code class="descname">CommunityGazettalModelTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_unit.CommunityGazettalModelTests" title="Permalink to this definition">¶</a></dt>
@@ -18542,10 +18607,7 @@ plus additional attributes to facilitate reporting.</li>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-conservation.tests.test_views">
-<span id="view-tests"></span><h5>View tests<a class="headerlink" href="#module-conservation.tests.test_views" title="Permalink to this headline">¶</a></h5>
-<p>Conservation view test suite testing URLs, templates, and views.</p>
+<span class="target" id="module-conservation.tests.test_views"></span><p>Conservation view test suite testing URLs, templates, and views.</p>
 <ul class="simple">
 <li>[REQ 40] Include the following dashboard pages:
 * Dashboard of all plans: document list view and templates
@@ -18853,13 +18915,12 @@ Test that document card contains date last modified.</li>
 </dd></dl>
 
 </div>
-</div>
 <div class="section" id="occurrences">
 <h4>Occurrences<a class="headerlink" href="#occurrences" title="Permalink to this headline">¶</a></h4>
 <p><code class="xref py py-mod docutils literal notranslate"><span class="pre">occurrence.tests</span></code> Module</p>
-<div class="section" id="id5">
-<h5>Functional tests<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h5>
-<span class="target" id="module-occurrence.tests.test_functional"></span><p>Occurrence functional test suite.</p>
+<span class="target" id="module-occurrence.tests.test_functional"></span><p>.</p>
+<div class="section" id="occurrence-functional-tests">
+<h5>Occurrence functional tests<a class="headerlink" href="#occurrence-functional-tests" title="Permalink to this headline">¶</a></h5>
 <p>This test suite is a walk-through of the following occurrence business processes:</p>
 <ul>
 <li><p class="first">[REQ 9] Report a new occurrence: Allow for the recording of occurrence data for each
@@ -18907,9 +18968,9 @@ Run through API example, see OCC ETL workbooks.</p>
 </li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h5>Unit tests<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h5>
-<span class="target" id="module-occurrence.tests.test_unit"></span><p>Occurrence unit test suite.</p>
+<span class="target" id="module-occurrence.tests.test_unit"></span><p>.</p>
+<div class="section" id="occurrence-unit-tests">
+<h5>Occurrence unit tests<a class="headerlink" href="#occurrence-unit-tests" title="Permalink to this headline">¶</a></h5>
 <p>Test creation of occurrence data:</p>
 <ul class="simple">
 <li>TaxonAreaEncounters (TAE)</li>
@@ -19107,11 +19168,9 @@ TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockqu
 </dd></dl>
 
 </div>
-<div class="section" id="id7">
-<h5>View tests<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h5>
 <span class="target" id="module-occurrence.tests.test_views"></span><p>.</p>
 <div class="section" id="occurrence-view-tests">
-<h6>Occurrence view tests<a class="headerlink" href="#occurrence-view-tests" title="Permalink to this headline">¶</a></h6>
+<h5>Occurrence view tests<a class="headerlink" href="#occurrence-view-tests" title="Permalink to this headline">¶</a></h5>
 <dl class="class">
 <dt id="occurrence.tests.test_views.CommunityAreaEncounterTests">
 <em class="property">class </em><code class="descclassname">occurrence.tests.test_views.</code><code class="descname">CommunityAreaEncounterTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests" title="Permalink to this definition">¶</a></dt>
@@ -19354,7 +19413,6 @@ TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockqu
 
 </dd></dl>
 
-</div>
 </div>
 </div>
 </div>
