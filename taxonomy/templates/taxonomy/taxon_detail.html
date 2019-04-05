@@ -33,7 +33,7 @@
             {{ object.get_rank_display }}
           </span>
 
-          {% taxonomic_status %}
+          {% include "include/taxonomic_status.html" %}
 
           <!-- Publication status -->
           {% if object.publication_status < 2 %}
@@ -68,7 +68,7 @@
       {% endif %}
 
       <p class="lead">
-        {% vernacular_names %}
+        {% include "include/vernaculars.html" %}
       </p>
 
       <p>

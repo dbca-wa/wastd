@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Conservation functional test suite.
+""".
+
+Conservation functional tests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This test suite is a walk-through of the following conservation business processes:
 
@@ -168,6 +170,29 @@ class ConservationListingLifeCycleTests(TestCase):
         pass
 
 
+class HerbariumConsListingSuggestions(TestCase):
+    """Notification form Herbarium about new names requiring cons listing."""
+
+    pass
+
+
+class TaxonomicNameChanges(TestCase):
+    """Taxonomic name changes (xrefs) require cons listing et al to be moved to new name.
+
+    * new Taxa, new xrefs
+    * For Taxa with cons listings: review and assign new cons listings to new names
+    * Custodian reviews/assigns cons listings
+    * Notify WAHerb and WACensus of new cons listings (only new ones)
+
+    * A is WAPS P1
+    * species A -> species B as SYN
+    * species B should become WAPS P1
+
+    """
+
+    pass
+
+
 class ConservationListingReportingTests(TestCase):
     """Functional tests for ConservationListing (Gazettal) reporting.
 
@@ -176,6 +201,7 @@ class ConservationListingReportingTests(TestCase):
     * Query and export conservation listing history (several CL of one taxon or community)
     * Query and export conservation listing approval history (within one CL)
     * Query and export conservation lists (all taxa listed as conservation category X)
+    * Export all taxa listed as Threatened or Priority, include District/Region
     """
 
     def setUp(self):

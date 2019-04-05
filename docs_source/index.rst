@@ -109,7 +109,7 @@ standards and analytical knowledge pipelines.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    data_collection/data_collection_overview
    data_collection/data_collection_admin

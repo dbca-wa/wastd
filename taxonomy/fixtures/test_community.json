@@ -1,0 +1,110 @@
+[
+{
+    "model": "taxonomy.community",
+    "pk": 11,
+    "fields": {
+        "source": 12,
+        "source_id": "12",
+        "code": "Augusta-microbial",
+        "name": "Rimstone Pools and Cave Structures Formed by Microbial Activity on Marine Shorelines",
+        "description": "Original area: 0.36\nArea accuracy: 0.23\nFormer range: Very narrow endemic community, total range <50 square km or <20 km linear\nRange decline: Occupies most or all of former geographic range\nOccurrence decline: Most or all former occurrences remain",
+        "eoo": "SRID=4326;POLYGON ((115.134678 -34.366391, 115.134635 -34.366362, 115.134825 -34.364208, 115.134941 -34.364162, 115.135029 -34.364138, 115.136143 -34.363883, 115.136432 -34.363831, 115.136478 -34.363888, 115.136549 -34.364024, 115.136578 -34.36408, 115.136765 -34.365857, 115.136741 -34.365893, 115.134678 -34.366391))"
+    }
+},
+{
+    "model": "taxonomy.community",
+    "pk": 337,
+    "fields": {
+        "source": 12,
+        "source_id": "397",
+        "code": "Astartea scoparia Swamp Thicket",
+        "name": "Astartea scoparia Swamp Thicket",
+        "description": "Original area: NA\nArea accuracy: NA\nFormer range: NA\nRange decline: NA\nOccurrence decline: Number of occurrences reduced by 70-90% since European settlement",
+        "eoo": "SRID=4326;POLYGON ((117.6466 -35.05697, 117.582007 -35.04941, 117.581875 -35.049338, 117.581824 -35.049231, 117.581776 -35.049127, 117.581783 -35.049057, 117.582042 -35.04888, 117.628262 -35.022699, 117.628343 -35.022665, 117.927971 -34.988044, 117.994958 -34.983952, 117.995079 -34.98403, 117.995176 -34.984196, 117.995143 -34.984393, 117.980723 -35.004149, 117.98047 -35.004335, 117.980262 -35.004396, 117.6466 -35.05697))"
+    }
+},
+{
+    "model": "taxonomy.community",
+    "pk": 425,
+    "fields": {
+        "source": 12,
+        "source_id": "486",
+        "code": "Argyle Land System",
+        "name": "Argyle Land System of the Kimberley region",
+        "description": "Original area: NA\nArea accuracy: NA\nFormer range: Not endemic to Western Australia\nRange decline: Unknown but thought to be large\nOccurrence decline: Unknown but thought to be large",
+        "eoo": "SRID=4326;POLYGON ((128.454632 -16.803695, 128.501433 -16.531245, 128.504073 -16.52756, 128.505512 -16.525949, 128.702235 -16.36467, 128.879343 -16.230015, 128.881363 -16.228797, 128.882625 -16.228066, 128.884644 -16.228677, 128.885401 -16.229043, 128.886914 -16.230994, 128.998981 -16.464167, 128.998955 -16.524668, 128.939454 -16.653896, 128.915303 -16.683285, 128.879467 -16.709831, 128.844353 -16.727534, 128.454632 -16.803695))"
+    }
+},
+{
+    "model": "taxonomy.community",
+    "pk": 386,
+    "fields": {
+        "source": 12,
+        "source_id": "447",
+        "code": "Analysis",
+        "name": "testing carolyn",
+        "description": "Original area: NA\nArea accuracy: NA\nFormer range: NA\nRange decline: NA\nOccurrence decline: NA",
+        "eoo": null
+    }
+},
+{
+    "model": "taxonomy.community",
+    "pk": 117,
+    "fields": {
+        "source": 12,
+        "source_id": "120",
+        "code": "Alluvial soils of the upper Blackwood River",
+        "name": "Blackwood Alluvial Flats",
+        "description": "Original area: NA\nArea accuracy: NA\nFormer range: NA\nRange decline: Unknown\nOccurrence decline: Unknown",
+        "eoo": "SRID=4326;POLYGON ((116.491424 -33.807536, 116.489069 -33.807357, 116.488666 -33.807187, 116.488332 -33.806661, 116.488564 -33.805463, 116.48993 -33.80206, 116.737401 -33.664528, 116.74098 -33.666321, 116.741882 -33.667232, 116.741915 -33.668412, 116.740706 -33.673133, 116.739393 -33.676127, 116.737939 -33.67788, 116.732527 -33.683379, 116.731728 -33.684013, 116.493645 -33.80747, 116.491424 -33.807536))"
+    }
+},
+{
+    "model": "taxonomy.community",
+    "pk": 354,
+    "fields": {
+        "source": 12,
+        "source_id": "415",
+        "code": "Allocasuarina globosa",
+        "name": "Allocasuarina globosa assemblages on greenstone rock",
+        "description": "Original area: NA\nArea accuracy: NA\nFormer range: NA\nRange decline: NA\nOccurrence decline: NA",
+        "eoo": "SRID=4326;POLYGON ((120.745511 -32.575393, 120.744861 -32.575081, 120.741421 -32.572919, 120.677092 -32.513218, 120.500835 -32.213905, 120.500497 -32.21302, 120.503465 -32.200334, 120.504086 -32.20007, 120.504591 -32.200049, 121.774598 -32.304717, 121.775398 -32.305741, 121.77882 -32.31051, 121.778121 -32.323261, 121.777248 -32.3246, 120.746274 -32.575235, 120.745511 -32.575393))"
+    }
+},
+{
+    "model": "taxonomy.community",
+    "pk": 205,
+    "fields": {
+        "source": 12,
+        "source_id": "245",
+        "code": "Albion Downs Calcrete",
+        "name": "Albion Downs calcrete groundwater assemblage type on Carey palaeodrainage on Albion Downs Station",
+        "description": "Original area: NA\nArea accuracy: NA\nFormer range: NA\nRange decline: NA\nOccurrence decline: NA",
+        "eoo": "SRID=4326;POLYGON ((120.325079 -27.405245, 120.32379 -27.405062, 120.298636 -27.401234, 120.295149 -27.398902, 120.294753 -27.398511, 120.248654 -27.303675, 120.248751 -27.297985, 120.251332 -27.29535, 120.257222 -27.294437, 120.259221 -27.294495, 120.259709 -27.294536, 120.260609 -27.294617, 120.27158 -27.296731, 120.272977 -27.297367, 120.274869 -27.298401, 120.304532 -27.31509, 120.340721 -27.381461, 120.343767 -27.392876, 120.343712 -27.395723, 120.342069 -27.39855, 120.333975 -27.403777, 120.332373 -27.404302, 120.330672 -27.404662, 120.32868 -27.404962, 120.326781 -27.40521, 120.325079 -27.405245))"
+    }
+},
+{
+    "model": "taxonomy.community",
+    "pk": 201,
+    "fields": {
+        "source": 12,
+        "source_id": "241",
+        "code": "Albany Blackbutt on lateritic ridges",
+        "name": "Mosaic of Albany Blackbutt (Eucalyptus staeri) mallee-heath found on lateritic ridges and Chittick (Lambertia inermis subsp. inermis) scrub-heath on seasonally-waterlogged laterite",
+        "description": "Original area: NA\nArea accuracy: NA\nFormer range: Endemic to Western Australia\nRange decline: Unknown but thought to be small\nOccurrence decline: Unknown",
+        "eoo": "SRID=4326;POLYGON ((118.32012 -34.582934, 118.319684 -34.582476, 118.319425 -34.581134, 118.320081 -34.5793, 118.320451 -34.579126, 118.320941 -34.578897, 118.539403 -34.532906, 118.599274 -34.553997, 118.602816 -34.557039, 118.605627 -34.560601, 118.605107 -34.561159, 118.32114 -34.582923, 118.32012 -34.582934))"
+    }
+},
+{
+    "model": "taxonomy.community",
+    "pk": 218,
+    "fields": {
+        "source": 12,
+        "source_id": "258",
+        "code": "Albany Blackbutt on deep sand",
+        "name": "Albany Blackbutt (Eucalyptus staeri) mallee heath on deep sand (all/or portion in EPBC listed Kwongkan community)",
+        "description": "Original area: NA\nArea accuracy: NA\nFormer range: NA\nRange decline: NA\nOccurrence decline: NA",
+        "eoo": "SRID=4326;POLYGON ((118.333369 -34.580126, 118.332104 -34.579911, 118.321044 -34.577175, 118.320565 -34.577036, 118.319969 -34.576076, 118.319362 -34.57497, 118.319354 -34.574468, 118.319807 -34.573877, 118.320628 -34.572805, 118.465776 -34.50775, 118.467382 -34.50742, 118.53188 -34.516725, 118.614236 -34.547422, 118.619799 -34.550686, 118.620669 -34.55123, 118.619459 -34.552223, 118.610281 -34.558335, 118.355569 -34.578517, 118.333369 -34.580126))"
+    }
+}
+]

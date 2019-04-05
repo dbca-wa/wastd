@@ -48,6 +48,7 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'django_extensions',            # shell_plus and others
+    'fixture_magic',                # custom test fixtures
     'crispy_forms',                 # Form layouts
     'bootstrap4',                   # bootstrap4
     'floppyforms',                  # Floppyforms: Admin GIS widgets

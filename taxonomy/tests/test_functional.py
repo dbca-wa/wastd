@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
-"""
-Taxonomy functional test suite.
+""".
+
+Functional tests
+^^^^^^^^^^^^^^^^
+Functional tests are walk-throughs of all implemented real-world use cases.
+Expected scenarios are the "happy path". Unexpected scenarios should be tested
+as they become apparent, either as "this should never happen" or as bugs.
+The documentation of functional test should read almost like a detailed user manual.
+
+The documentation of functional tests is:
+
+* the main resource for business to review correct implementation,
+* a UAT test script for business,
+* a structured and comprehensive way for the developers to match requirements.
 
 This test suite is a walk-through of the following taxonomy business processes:
 
@@ -28,3 +40,32 @@ This test suite is a walk-through of the following taxonomy business processes:
 * [REQ 28] Integrate with the WAHerb Specimen Database and BioSys to cross-reference locational information regarding
   rare flora occurrences (eg via sheet number). Pending WAHerb upgrade.
 """
+
+from __future__ import unicode_literals
+
+from django.utils import timezone  # noqa
+
+from django.contrib.auth import get_user_model  # noqa
+from django.contrib.gis.geos import GEOSGeometry  # Point, Polygon   # noqa
+from django.test import TestCase  # noqa
+from django.urls import reverse  # noqa
+from model_mommy import mommy  # noqa
+from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
+from taxonomy.models import Taxon, Community  # noqa
+from conservation import models as cons_models  # noqa
+
+
+class TaxonListFilterTests(TestCase):
+    """Test that the Taxon list is useable.
+
+    * During a phone call, filter taxon list to candidate taxa as per phone conversation.
+    * Filter by area
+    * Filter by cons listing (all threatened, all prio, both), cons list scope (WA, CWTH, INTL)
+
+    """
+
+    fixtures = [
+        'taxonomy/fixtures/test_crossreference.json',
+        'taxonomy/fixtures/test_taxon.json',
+        'taxonomy/fixtures/test_community.json',
+    ]

@@ -1,0 +1,122 @@
+[
+{
+    "model": "taxonomy.taxon",
+    "pk": 1,
+    "fields": {
+        "name_id": 0,
+        "parent": null,
+        "rank": 5,
+        "name": "Eukarya",
+        "canonical_name": "Eukarya",
+        "taxonomic_name": "Eukarya",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 1,
+        "rght": 64534,
+        "tree_id": 3,
+        "level": 0,
+        "paraphyletic_groups": []
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 7,
+    "fields": {
+        "name_id": 25911,
+        "parent": 1,
+        "rank": 10,
+        "name": "Chromista",
+        "canonical_name": "Chromista",
+        "taxonomic_name": "Chromista",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 63896,
+        "rght": 64533,
+        "tree_id": 3,
+        "level": 1,
+        "paraphyletic_groups": []
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 918,
+    "fields": {
+        "name_id": 48499,
+        "parent": 7,
+        "rank": 90,
+        "name": "Hapalospongidiaceae",
+        "canonical_name": "Hapalospongidiaceae",
+        "taxonomic_name": "Hapalospongidiaceae (Reyes-G\u00f3mez & Le\u00f3n-Alvarez)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Reyes-G\u00f3mez & Le\u00f3n-Alvarez",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 64527,
+        "rght": 64532,
+        "tree_id": 3,
+        "level": 2,
+        "paraphyletic_groups": []
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 4349,
+    "fields": {
+        "name_id": 26225,
+        "parent": 918,
+        "rank": 130,
+        "name": "Hapalospongidion",
+        "canonical_name": "Hapalospongidion",
+        "taxonomic_name": "Hapalospongidion (Saunders)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Saunders",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 64528,
+        "rght": 64531,
+        "tree_id": 3,
+        "level": 3,
+        "paraphyletic_groups": []
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 27518,
+    "fields": {
+        "name_id": 26909,
+        "parent": 4349,
+        "rank": 190,
+        "name": "capitatum",
+        "canonical_name": "Hapalospongidion capitatum",
+        "taxonomic_name": "Hapalospongidion capitatum (Womersley)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Womersley",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 64529,
+        "rght": 64530,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": []
+    }
+}
+]

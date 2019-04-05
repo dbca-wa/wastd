@@ -6,12 +6,67 @@ import logging
 
 # from django.utils.timezone import is_aware, make_aware
 # from pdb import set_trace
+# from django.core.management import call_command
 from django.db import transaction
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_text
 from taxonomy import models as tax_models
 
 logger = logging.getLogger(__name__)
+
+
+def create_test_fixtures():
+    """Create test fixtures for Taxonomy.
+
+    This utility creates the following fixtures:
+
+    taxonomy/fixtures/test_taxon.json
+
+    * Once taxon with a vernacular name
+    * One taxon that is a current name
+    * One taxon that is a non-current name
+
+    taxonomy/fixtures/test_crossreference.json
+    * One crossreference of each type, including all involved taxa and their pylogeny.
+      Thanks, django-fixture-magic!
+
+    taxonomy/fixtures/test_community.json
+    * The first 10 communities with related objects.
+    """
+    c0 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_MIS).last()
+    c1 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_TSY).last()
+    c2 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_NSY).last()
+    c3 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_EXC).last()
+    c4 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_CON).last()
+    c5 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_FOR).last()
+    c6 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_OGV).last()
+    c7 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_ERR).last()
+    c8 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_ISY).last()
+    tv = tax_models.Taxon.objects.exclude(vernacular_name__isnull=True).last()
+
+    xref_pks = " ".join([str(x.pk) for x in[c0, c1, c2, c3, c4, c5, c6, c7, c8]])
+    taxon_pks = " ".join([str(x) for x in [tv.pk, ]])
+    com_pks = " ".join([str(x.pk) for x in tax_models.Community.objects.all()[1:10]])
+
+    print("./manage.py dump_object taxonomy.Crossreference {0} -k "
+          "> taxonomy/fixtures/test_crossreference.json".format(xref_pks))
+    print("./manage.py dump_object taxonomy.Taxon {0} -k "
+          "> taxonomy/fixtures/test_taxon.json".format(taxon_pks))
+    print("./manage.py dump_object taxonomy.Community {0} -k "
+          "> taxonomy/fixtures/test_community.json".format(com_pks))
+
+    # This throws an error on related objects
+    # with open("taxonomy/fixtures/test_crossreference.json", 'w+') as f:
+    #     call_command('dump_object', 'taxonomy.Crossreference', xref_pks, stdout=f)
+    #     f.readlines()
+
+    # with open("taxonomy/fixtures/test_taxon.json", 'w+') as f:
+    #     call_command('dump_object', 'taxonomy.Taxon', taxon_pks, stdout=f)
+    #     f.readlines()
+
+    # with open("taxonomy/fixtures/test_community.json", 'w+') as f:
+    #     call_command('dump_object', 'taxonomy.Community', com_pks, stdout=f)
+    #     f.readlines()
 
 
 def make_family(fam, kingdom_dict, current_dict, publication_dict):

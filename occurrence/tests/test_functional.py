@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Occurrence functional test suite.
+""".
+
+Occurrence functional tests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This test suite is a walk-through of the following occurrence business processes:
 

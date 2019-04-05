@@ -208,77 +208,75 @@ Tests are structured into:
 Threatened Species and Communities
 ==================================
 
+Taxonomy
+--------
 :mod:`taxonomy.tests` Module
--------------------------------------------------
+
+.. automodule:: taxonomy.tests.test_api
+  :members:
+  :undoc-members:
 
 .. automodule:: taxonomy.tests.test_functional
   :members:
   :undoc-members:
-  :show-inheritance:
 
 .. automodule:: taxonomy.tests.test_unit
   :members:
   :undoc-members:
-  :show-inheritance:
 
 .. automodule:: taxonomy.tests.test_views
   :members:
   :undoc-members:
-  :show-inheritance:
 
 
+Conservation
+------------
 :mod:`conservation.tests` Module
--------------------------------------------------
 
 .. automodule:: conservation.tests.test_functional
   :members:
   :undoc-members:
-  :show-inheritance:
 
 .. automodule:: conservation.tests.test_unit
   :members:
   :undoc-members:
-  :show-inheritance:
 
 .. automodule:: conservation.tests.test_views
   :members:
   :undoc-members:
-  :show-inheritance:
 
 
+Occurrences
+-----------
 :mod:`occurrence.tests` Module
--------------------------------------------------
 
 .. automodule:: occurrence.tests.test_functional
   :members:
   :undoc-members:
-  :show-inheritance:
 
 .. automodule:: occurrence.tests.test_unit
   :members:
   :undoc-members:
-  :show-inheritance:
 
 .. automodule:: occurrence.tests.test_views
   :members:
   :undoc-members:
-  :show-inheritance:
 
 WA Strandings and WA Sea Turtles
 ================================
 
+Observations
+------------
 :mod:`wastd.observations.tests` Module
----------------------------------------
 
 .. automodule:: wastd.observations.tests
   :members:
   :undoc-members:
-  :show-inheritance:
 
+Users
+-----
 :mod:`wastd.users.tests` Module
----------------------------------------
 
 .. automodule:: wastd.users.tests
   :members:
   :undoc-members:
-  :show-inheritance:

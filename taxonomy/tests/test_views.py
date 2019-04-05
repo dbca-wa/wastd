@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
-"""Taxonomy view test suite testing URLs, templates, and views."""
+""".
+
+Taxonomy view tests
+^^^^^^^^^^^^^^^^^^^
+
+View tests call every page and verify that
+
+* each URL works,
+* each page loads,
+* each page uses the correct templates,
+* each page shows all expected data and features.
+
+"""
 from __future__ import unicode_literals
 
 from django.utils import timezone  # noqa
@@ -23,6 +35,12 @@ from taxonomy.models import Community, Taxon  # noqa
 
 class CommunityViewTests(TestCase):
     """Community tests."""
+
+    fixtures = [
+        'taxonomy/fixtures/test_crossreference.json',
+        'taxonomy/fixtures/test_taxon.json',
+        'taxonomy/fixtures/test_community.json',
+    ]
 
     def setUp(self):
         """Shared objects."""
@@ -95,6 +113,12 @@ class CommunityViewTests(TestCase):
 
 class TaxonViewTests(TestCase):
     """Taxon view tests."""
+
+    fixtures = [
+        'taxonomy/fixtures/test_crossreference.json',
+        'taxonomy/fixtures/test_taxon.json',
+        'taxonomy/fixtures/test_community.json',
+    ]
 
     def setUp(self):
         """Shared objects."""
@@ -184,16 +208,16 @@ class TaxonViewTests(TestCase):
 
     def test_taxon_creation(self):
         """Test creating a Taxon."""
-        self.assertTrue(isinstance(self.taxon0, Taxon))
+        self.assertTrue(isinstance(Taxon.objects.last(), Taxon))
 
     def test_taxon_absolute_admin_url_loads(self):
         """Test Taxon absolute_admin_url."""
-        response = self.client.get(self.taxon0.absolute_admin_url)
+        response = self.client.get(Taxon.objects.last().absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_list_url_loads(self):
         """Test taxon-list."""
-        response = self.client.get(self.taxon0.list_url())
+        response = self.client.get(Taxon.objects.last().list_url())
         self.assertEqual(response.status_code, 200)
 
     def test_taxon_list_url_with_nameid(self):
@@ -202,10 +226,13 @@ class TaxonViewTests(TestCase):
         * taxon-list with valid name_id should load.
         * taxon-list with invalid name_id should still load but show warning.
         """
-        response = self.client.get("{0}?name_id={1}".format(self.taxon0.list_url(), self.taxon0.name_id))
+        response = self.client.get("{0}?name_id={1}".format(
+            Taxon.objects.last().list_url(),
+            Taxon.objects.last().name_id)
+        )
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get("{0}?name_id=0".format(self.taxon0.list_url()))
+        response = self.client.get("{0}?name_id=-5000000".format(self.taxon0.list_url()))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "This Name ID does not exist.")
 
@@ -218,8 +245,8 @@ class TaxonViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # TODO test crossreference urls
-
-        response = self.client.get(reverse('taxonomy:taxon-detail', kwargs={'name_id': 5000000}))
+        url = reverse('taxonomy:taxon-detail', kwargs={'name_id': -50000000})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
     # def test_taxon_update_url_loads(self):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Conservation views."""
+"""Conservation resources."""
 from import_export import resources
 
 from occurrence import models as occ_models

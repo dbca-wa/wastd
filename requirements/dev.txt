@@ -4,6 +4,7 @@
 
 # Testing
 # ------------------------------------------------
+django-fixture-magic==0.1.3
 coveralls
 coverage
 django-coverage-plugin

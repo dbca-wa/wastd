@@ -16,6 +16,7 @@ class TaxonFilter(django_filters.FilterSet):
     """Filter for Taxon."""
 
     current = BooleanFilter(widget=BooleanWidget())
+    # is_leaf_node = BooleanFilter(widget=BooleanWidget())
     taxon_gazettal__category = ModelMultipleChoiceFilter(
         queryset=ConservationCategory.objects.filter(
             conservation_list__scope_species=True
@@ -38,6 +39,7 @@ class TaxonFilter(django_filters.FilterSet):
             "vernacular_names",
             "rank",
             "current",
+            # "is_leaf_node",
             "publication_status",
             "name_id",
             "field_code"

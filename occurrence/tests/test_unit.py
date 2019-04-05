@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Occurrence unit test suite.
+""".
+
+Occurrence unit tests
+^^^^^^^^^^^^^^^^^^^^^
 
 Test creation of occurrence data:
 

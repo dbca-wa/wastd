@@ -13,10 +13,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
+from export_download.views import ResourceDownloadMixin
+
 from taxonomy.filters import CommunityFilter, TaxonFilter
 from taxonomy.models import Community, Taxon
 from taxonomy.tables import CommunityAreaEncounterTable, TaxonAreaEncounterTable
 from taxonomy.utils import update_taxon as update_taxon_util
+from taxonomy import resources as tax_resources
 from shared.utils import Breadcrumb
 from shared.views import (
     # SuccessUrlMixin,
@@ -38,12 +41,13 @@ def update_taxon(request):
 # ---------------------------------------------------------------------------#
 # List Views
 #
-class TaxonListView(ListViewBreadcrumbMixin, ListView):
+class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     """A ListView for Taxon."""
 
     model = Taxon
-    template_name = "taxonomy/taxon_list.html"
-    # template_name = "pages/default_list.html" # TODO add Resource
+    template_name = "pages/default_list.html"
+    resource_class = tax_resources.TaxonResource
+    resource_formats = ['csv', 'tsv', 'xls', 'json']
     paginate_by = 12
 
     def get_context_data(self, **kwargs):
@@ -86,19 +90,20 @@ class TaxonListView(ListViewBreadcrumbMixin, ListView):
         return TaxonFilter(self.request.GET, queryset=queryset).qs
 
 
-class CommunityListView(ListViewBreadcrumbMixin, ListView):
+class CommunityListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     """A ListView for Community."""
 
     model = Community
-    template_name = "taxonomy/community_list.html"
-    # template_name = "pages/default_list.html" # TODO add respource
+    template_name = "pages/default_list.html"
+    resource_class = tax_resources.CommunityResource
+    resource_formats = ['csv', 'tsv', 'xls', 'json']
     paginate_by = 12
 
     def get_context_data(self, **kwargs):
         """Add extra items to context."""
         context = super(CommunityListView, self).get_context_data(**kwargs)
         context["now"] = timezone.now()
-        context["community_filter"] = CommunityFilter(
+        context["list_filter"] = CommunityFilter(
             self.request.GET,
             queryset=self.get_queryset()
         )

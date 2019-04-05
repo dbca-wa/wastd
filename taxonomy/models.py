@@ -27,7 +27,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 # from wastd.users.models import User
-from shared.models import LegacySourceMixin, UrlsMixin
+from shared.models import LegacySourceMixin, UrlsMixin, RenderMixin
 
 
 # from django.utils.safestring import mark_safe
@@ -1587,7 +1587,7 @@ class HbvParent(models.Model):
 
 # django-mptt tree models ----------------------------------------------------#
 @python_2_unicode_compatible
-class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
+class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     """A taxonomic name at any taxonomic rank.
 
     A taxonomy is a directed graph with exactly one root node (Domain) and
@@ -1802,8 +1802,6 @@ class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
 
         verbose_name = "Taxon"
         verbose_name_plural = "Taxa"
-        # ordering = ['-rank', 'current']
-        card_template = "cards/taxon.html"
 
     def __str__(self):
         """The full name: [NameID] (RANK) TAXONOMIC NAME."""
@@ -1910,7 +1908,10 @@ class Taxon(UrlsMixin, MPTTModel, geo_models.Model):
 
     @property
     def is_listed(self):
-        """Whether this Taxon has a conservation listing."""
+        """Whether this Taxon has a conservation listing.
+
+        TODO only count currently active gazettals.
+        """
         return self.taxon_gazettals.count() > 0
 
 
@@ -2086,9 +2087,16 @@ class Crossreference(models.Model):
             "x" if not self.successor else self.successor.name_id,
             self.get_reason_display())
 
+    @property
+    def involved_taxon_ids(self):
+        """Return a list of all involved taxa."""
+        pre = [x.pk for x in self.predecessor.get_ancestors()] if self.predecessor else []
+        suc = [x.pk for x in self.successor.get_ancestors()] if self.successor else []
+        return list(set(pre + suc))
+
 
 @python_2_unicode_compatible
-class Community(UrlsMixin, LegacySourceMixin, geo_models.Model):
+class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
     """Ecological Community."""
 
     code = models.CharField(
