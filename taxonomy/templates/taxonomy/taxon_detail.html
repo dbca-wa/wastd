@@ -98,23 +98,23 @@
       <hr class="my-4">
       <h3>Conservation Threats
         <small class="float-right">
-          {% conservationthreat_add request.user "taxa" %}
+          {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=False block=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/includes/conservationthreat_rows.html' with threats=conservationthreats_general %}</p>
+      <p>{% include 'conservation/include/conservationthreat_rows.html' with threats=conservationthreats_general %}</p>
 
       <hr class="my-4">
       <h3>Conservation Actions
         <small class="float-right">
-          {% conservationaction_add request.user "taxa" %}
+          {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=False block=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/includes/conservationaction_rows.html' with actions=conservationactions_general %}</p>
+      <p>{% include 'conservation/include/conservationaction_rows.html' with actions=conservationactions_general %}</p>
 
       <hr class="my-4">
       <h3>Documents
         <small class="float-right">
-          {% document_add request.user "taxa" %}
+          {% include 'conservation/include/document_add.html' with subject="taxa" label=False block=False %}
         </small>
       </h3>
       <p>{% document_row request.user %}</p>
@@ -123,10 +123,11 @@
       <p class="lead">
           {% admin_absoluteadminurl_link object "taxon" label=True %}
           {% taxongazettal_add request.user label=True %}
-          {% conservationthreat_add request.user "taxa" label=True %}
-          {% conservationaction_add request.user "taxa" label=True %}
-          {% document_add request.user "taxa" label=True %}
+          {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=False %}
+          {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=False %}
+          {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=False %}
           {% taxonareaencounter_add_link object.name_id label=True %}
+
       </p>
 
     </div><!-- /.jumbotron -->
@@ -172,25 +173,28 @@
           <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12"
             id="occ-{{ site.grouper }}">
             <h5 class="card-header">
-              {{ site.name }} <p class="small text-muted">{{ site.grouper|title }}</small>
-              <small class="float-right">
-                {% conservationthreat_add request.user "taxa" area=site.grouper %}
-                {% conservationaction_add request.user "taxa" area=site.grouper %}
-              </small>
-              <small class="float-right">
-                {% taxonareaencounter_add_link object.name_id area_code=site.grouper %}
-              </small>
+             {{ site.grouper|title }}
+              <div class="row">
+                <div class="col-12">
+                  <small>
+                    {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" area=site.grouper label=False block=False %}
+                    {% include 'conservation/include/conservationaction_add.html' with subject="taxa" area=site.grouper label=False block=False %}
+                    {% taxonareaencounter_add_link object.name_id area_code=site.grouper %}
+                  </small>
+                </div>
+              </div>
             </h5>
             <div class="card-body">
-              <!-- Conservation actions for area {{ site.grouper }} -->
+              <!-- Conservation threats for area {{ site.grouper }} -->
               {% conservationthreat_cards request.user  conservationthreats_area area=site.grouper %}
+
+              <!-- Conservation actions for area {{ site.grouper }} -->
               {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
 
               <!-- Occurrences for area {{ site.grouper }} -->
               {% for occ in site.list|dictsortreversed:"encountered_on" %}
-              {% areaencounter_card occ "taxon" request.user %}
+              {{ occ.as_card }}
               {% endfor %}
-
             </div>
           </div>
       {% endfor %}

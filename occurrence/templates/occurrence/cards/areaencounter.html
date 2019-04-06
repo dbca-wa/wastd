@@ -2,18 +2,15 @@
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12">
 
   <h6 class="card-header">
-
     <span class="badge badge-{{ object.status|tb_status_icon }}" title="QA status">
       QA: {{ object.get_status_display }}
     </span>
 
     <span class="oi oi-calendar" title="Encountered on" aria-hidden="true"></span>
     {{ object.encountered_on }}
-
   </h6><!-- /.card-header -->
 
   <div class="card-body">
-
     {% if show_subject %}
       <p class="card-text">
         <a href="{{ subject.get_absolute_url }}">
@@ -32,7 +29,6 @@
       <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
       {{ object.description }}
     </p>
-
   </div><!-- /.card-body -->
 
   <div class="card-footer">

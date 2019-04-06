@@ -12,7 +12,7 @@
       {{ object.name }}
     </h6>
 
-    {% include 'conservation/includes/gazettal_labels.html' %}
+    {% include 'conservation/include/gazettal_labels.html' %}
 
   </div>
 
@@ -28,9 +28,9 @@
       View Details
     </a>
     {% communitygazettal_add request.user block=True label=True %}
-    {% conservationthreat_add request.user "communities" block=True label=True %}
-    {% conservationaction_add request.user "communities" block=True label=True %}
-    {% document_add "communities" block=True label=True %}
+    {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=True %}
+    {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=True %}
+    {% include 'conservation/include/document_add.html' with subject="communities" label=True block=True %}
     {% admin_areaencounter_create_link object.pk "community" block=True label=True %}
     {% communityareaencounter_add_link object.pk block=True label=True %}
   </div>

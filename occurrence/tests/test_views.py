@@ -527,3 +527,18 @@ class TaxonAreaEncounterTests(TestCase):
 
         response = self.client.get(self.aa2.update_url)
         self.assertEqual(response.status_code, 200)
+
+
+class AreaEncounterBulkTests(TestCase):
+    """Test views with lots of Taxon Encounters."""
+
+    fixtures = [
+        # 'occurrence/fixtures/many_tae.json',
+        # 'occurrence/fixtures/many_cae.json'
+    ]
+
+    def test_taxon_detail_with_many_occurences(self):
+        """Test how the taxon detail page works with more than 100 occurrences."""
+        # one animal with more than 100 occurrences
+        # one plant with more than 100 occurrences
+        pass

@@ -62,8 +62,8 @@
       </div>
     </p>
 
-    {% include 'conservation/includes/conservationaction_rows.html' with actions=object.conservationaction_set.all %}
-    {% include 'conservation/includes/conservationthreat_rows.html' with threats=object.conservationthreat_set.all %}
+    {% include 'conservation/include/conservationaction_rows.html' with actions=object.conservationaction_set.all document=object %}
+    {% include 'conservation/include/conservationthreat_rows.html' with threats=object.conservationthreat_set.all document=object %}
 
     {% for attachment in object.attachments.all %}
     <p class="card-text">
@@ -88,7 +88,7 @@
       <span class="oi oi-document" aria-hidden="true"></span>
       View details
     </a>
-    {% conservationaction_add "taxa" document_id=object.pk block=True label=True %}
+    {% include 'conservation/include/document_add.html' with subject="taxa" document_id=object.pk label=True block=True %}
 
   </div><!-- /.card-footer -->
 </div><!-- /.card -->

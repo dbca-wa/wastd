@@ -47,7 +47,7 @@
 
     {% include "include/vernaculars.html" %}
 
-    {% include 'conservation/includes/gazettal_labels.html' %}
+    {% include 'conservation/include/gazettal_labels.html' %}
 
   </div>
 
@@ -58,7 +58,12 @@
   <div class="card-footer">
     <div class="row">
 
-    {% taxon_detail block=True label=True %}
+    <a href="{{ object.get_absolute_url }}"
+      class="btn btn-primary btn-sm{% if block %} btn-block{% endif%}"
+      title="View details.">
+      <span class="oi oi-eye" aria-hidden="true"></span>
+      {% if label %}View details{% endif %}
+    </a>
 
     <a href="?name_id={{ object.name_id }}"
       class="btn btn-secondary btn-sm btn-block"
@@ -68,9 +73,9 @@
     </a>
     {% admin_taxon_change_link request.user block=True label=True %}
     {% taxongazettal_add request.user block=True label=True %}
-    {% conservationthreat_add request.user "taxa" block=True label=True %}
-    {% conservationaction_add request.user "taxa" block=True label=True %}
-    {% document_add "taxa" block=True label=True %}
+    {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=True %}
+    {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=True %}
+    {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=True %}
     {% taxonareaencounter_add_link object.name_id block=True label=True %}
     </div>
   </div>

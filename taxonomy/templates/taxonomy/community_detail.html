@@ -46,23 +46,23 @@
       <hr class="my-4">
       <h3>Conservation Threats
         <small class="float-right">
-          {% conservationthreat_add request.user "communities" block=False label=False %}
+          {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=False block=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/includes/conservationthreat_rows.html' with threats=conservationthreats_general %}</p>
+      <p>{% include 'conservation/include/conservationthreat_rows.html' with threats=conservationthreats_general %}</p>
 
       <hr class="my-4">
       <h3>Conservation Actions
         <small class="float-right">
-          {% conservationaction_add request.user "communities" block=False label=False %}
+          {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=False block=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/includes/conservationaction_rows.html' with actions=conservationactions_general %}</p>
+      <p>{% include 'conservation/include/conservationaction_rows.html' with actions=conservationactions_general %}</p>
 
       <hr class="my-4">
       <h3>Documents
         <small class="float-right">
-          {% document_add request.user "communities" %}
+          {% include 'conservation/include/document_add.html' with subject="communities" label=False block=False %}
         </small>
       </h3>
       <p>{% document_row request.user %}</p>
@@ -71,16 +71,14 @@
       <p class="lead">
         {% if request.user.is_staff %}
           {% admin_absoluteadminurl_link object "community" label=True %}
-          {% communitygazettal_add request.user block=False label=True %}
-          {% conservationthreat_add request.user "communities" label=True %}
-          {% conservationaction_add request.user "communities" label=True %}
-          {% document_add request.user "communities" label=True %}
-          {% admin_areaencounter_create_link object.pk "community" label=True %}
         {% endif %}
-
+        {% communitygazettal_add request.user block=False label=True %}
+        {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=False %}
+        {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=False %}
+        {% include 'conservation/include/document_add.html' with subject="communities" label=True block=False %}
+        {% admin_areaencounter_create_link object.pk "community" label=True %}
         {% communityareaencounter_add_link object.pk label=True %}
       </p>
-
     </div><!-- /.jumbotron -->
   </div><!-- /.col#taxon-detail-main -->
 
@@ -89,9 +87,7 @@
       {% leaflet_map "detailmap" callback="window.map_init" %}
     </div>
   </div><!-- /.col#taxon-detail-map -->
-
 </div><!-- /.row -->
-
 
 <!-- Comunity occurrence records -->
 <div class="row" id="occ-row">
@@ -123,24 +119,28 @@
       {% for site in occ_list %}
           <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
             <h5 class="card-header">
-              {{ site.name }} <p class="small text-muted">{{ site.grouper|title }}</small>
-              <small class="float-right">
-                {% conservationthreat_add request.user "communities" area=site.grouper %}
-                {% conservationaction_add request.user "communities" area=site.grouper %}
-              </small>
-              <small class="float-right">
-                {% communityareaencounter_add_link object.pk area_code=site.grouper %}
-              </small>
+              {{ site.grouper|title }}
+              <div class="row">
+                <div class="col-12">
+                  <small>
+                    {% include 'conservation/include/conservationthreat_add.html' with subject="communities" area=site.grouper label=False block=False %}
+                    {% include 'conservation/include/conservationaction_add.html' with subject="communities" area=site.grouper label=False block=False %}
+                    {% communityareaencounter_add_link object.pk area_code=site.grouper %}
+                  </small>
+                </div>
+              </div>
             </h5>
             <div class="card-body">
-              <!-- conservation actions for area {{ site.grouper }} -->
+              <!-- conservation threats for area {{ site.grouper }} -->
               {% conservationthreat_cards request.user  conservationthreats_area area=site.grouper %}
+
+              <!-- conservation actions for area {{ site.grouper }} -->
               {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
+
               <!-- Occurrences for area {{ site.grouper }} -->
               {% for occ in site.list|dictsortreversed:"encountered_on" %}
-              {% areaencounter_card occ "community" request.user %}
+              {{ occ.as_card }}
               {% endfor %}
-
             </div>
           </div>
       {% endfor %}
@@ -159,8 +159,6 @@
 {% compress js %} {# # pragma: no cover #}
 <script type="text/javascript">
 function map_init(map, options) {
-
-
     {% include 'shared/styles.js' %}
 
     /* Data loading */
@@ -184,7 +182,6 @@ function map_init(map, options) {
         {style: pointstyle, pointToLayer: ptl, onEachFeature: oef});
     markers.addLayer(gj_markers);
     map.addLayer(markers);
-
 }
 </script>
 {% endcompress %}

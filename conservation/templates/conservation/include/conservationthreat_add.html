@@ -1,4 +1,4 @@
-{% if is_staff %}
+{% if request.user.is_staff %}
 <a href="{% url 'admin:conservation_conservationthreat_add' %}?{{ subject }}={{ object.pk }}{% if document %}&document={{ document.pk }}{% endif %}{% if area %}&occurrence_area_code={{ area }}{% endif %}"
     title="Because you have DBCA curator privileges, you may propose a new conservation threat."
     role="button"

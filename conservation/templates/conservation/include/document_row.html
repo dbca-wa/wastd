@@ -22,7 +22,8 @@
             {% endif %}
           </small>
           <small class="float-right">
-            {% conservationaction_add "taxa" document_id=document.pk %}
+            {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" document_id=document.pk label=False block=False %}
+            {% include 'conservation/include/conservationaction_add.html' with subject="taxa" document_id=document.pk label=False block=False %}
           </small>
         </h5>
 
@@ -68,7 +69,8 @@
         </p>
 
         <p class="card-text">
-          {% include 'conservation/includes/conservationaction_rows.html' with actions=document.conservationaction_set.all %}
+          {% include 'conservation/include/conservationthreat_rows.html' with threats=document.conservationthreat_set.all %}
+          {% include 'conservation/include/conservationaction_rows.html' with actions=document.conservationaction_set.all %}
         </p>
 
         {% for attachment in document.attachments.all %}

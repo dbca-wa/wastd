@@ -141,7 +141,7 @@ class TaxonViewTests(TestCase):
             name_id=1000,
             name="name0",
             publication_status=0,
-            _fill_optional=['rank', 'eoo'])
+            _fill_optional=['rank', 'eoo', 'vernacular_name', 'vernacular_names'])
         self.taxon0.save()
 
         self.taxon1 = mommy.make(
@@ -253,3 +253,19 @@ class TaxonViewTests(TestCase):
     #     """Test Taxon update_url."""
     #     response = self.client.get(self.taxon0.update_url)
     #     self.assertEqual(response.status_code, 200)
+
+
+class TaxonBulkViewTests(TestCase):
+    """Taxon view tests."""
+
+    fixtures = [
+        'taxonomy/fixtures/test_crossreference.json',
+        'taxonomy/fixtures/test_taxon.json',
+        'taxonomy/fixtures/test_community.json',
+    ]
+
+    def test_taxon_detail_url_loads(self):
+        """Test Taxon detail_url."""
+        t = Taxon.objects.last()
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
