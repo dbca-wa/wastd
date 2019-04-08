@@ -813,11 +813,16 @@ class Area(geo_models.Model):
     AREATYPE_MPA = 'MPA'
     AREATYPE_LOCALITY = 'Locality'
     AREATYPE_SITE = 'Site'
+    AREATYPE_DBCA_REGION = 'Region'
+    AREATYPE_DBCA_DISTRICT = 'District'
 
     AREATYPE_CHOICES = (
         (AREATYPE_MPA, "MPA"),
         (AREATYPE_LOCALITY, "Locality"),
-        (AREATYPE_SITE, "Site"), )
+        (AREATYPE_SITE, "Site"),
+        (AREATYPE_DBCA_REGION, "DBCA Region"),
+        (AREATYPE_DBCA_DISTRICT, "DBCA District"),
+    )
 
     area_type = models.CharField(
         max_length=300,
