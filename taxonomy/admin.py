@@ -241,6 +241,7 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
         "rank",
         "publication_status",
         "current",
+        "paraphyletic_groups",
         # ("parent", TreeRelatedFieldListFilter),  # performance bomb - DO NOT ENABLE
     )
 
