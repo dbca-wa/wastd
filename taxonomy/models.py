@@ -1705,6 +1705,13 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         help_text=_("All paraphyletic groups this taxon belongs to."),
     )
 
+    supra_group = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("HBV Suprafamily Group"),
+        help_text=_("A possibly paraphyletic supragroup for convenient subsetting."),
+    )
+
     rank = models.PositiveSmallIntegerField(
         choices=RANKS,
         db_index=True,

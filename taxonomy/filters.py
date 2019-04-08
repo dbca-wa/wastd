@@ -4,8 +4,8 @@
 import django_filters
 from conservation.models import ConservationCategory
 from django.contrib.gis.db import models as geo_models
-from django_filters.filters import BooleanFilter, ModelMultipleChoiceFilter
-from django_filters.widgets import BooleanWidget
+from django_filters.filters import BooleanFilter, ModelMultipleChoiceFilter  # noqa
+from django_filters.widgets import BooleanWidget  # noqa
 
 # from django import forms
 from .models import Community, Taxon
@@ -15,9 +15,10 @@ from shared.filters import FILTER_OVERRIDES
 class TaxonFilter(django_filters.FilterSet):
     """Filter for Taxon."""
 
-    current = BooleanFilter(widget=BooleanWidget())
+    # current = BooleanFilter(widget=BooleanWidget())
     # is_leaf_node = BooleanFilter(widget=BooleanWidget())
     taxon_gazettal__category = ModelMultipleChoiceFilter(
+        label="Conservation listed as",
         queryset=ConservationCategory.objects.filter(
             conservation_list__scope_species=True
         ).order_by(
@@ -33,12 +34,13 @@ class TaxonFilter(django_filters.FilterSet):
 
         model = Taxon
         fields = [
+            "paraphyletic_groups",
             "eoo",
             "taxon_gazettal__category",
             "taxonomic_name",
             "vernacular_names",
             "rank",
-            "current",
+            # "current",
             # "is_leaf_node",
             "publication_status",
             "name_id",

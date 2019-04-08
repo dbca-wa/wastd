@@ -66,7 +66,7 @@ def create_test_fixtures():
           "> taxonomy/fixtures/test_community.json".format(com_pks))
 
     print("./manage.py dump_object taxonomy.HbvName 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_names.json")
-    print("./manage.py dump_object taxonomy.HbvVernacular 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_vernaculars.json")
+    print("./manage.py dump_object taxonomy.HbvVernacular 1 2 3 4 5 6 7 > taxonomy/fixtures/test_vernaculars.json")
     print("./manage.py dump_object taxonomy.HbvXref 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_xrefs.json")
     print("./manage.py dump_object taxonomy.HbvParent 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_parents.json")
 
@@ -136,6 +136,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
     if fam.informal is not None:
         dd['publication_status'] = publication_dict[fam.informal]
         print(dd['publication_status'])
+    dd['supra_group'] = fam.supra_code
     family, created = tax_models.Taxon.objects.update_or_create(name_id=fam.name_id, defaults=dd)
     action = "Created" if created else "Updated"
     logger.info("[make_family] {0} {1}.".format(action, family))
