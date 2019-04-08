@@ -8,6 +8,7 @@ class TaxonWidget(ModelSelect2Widget):
     """A reusable Taxon ModelSelect2Widget."""
 
     model = tax_models.Taxon
+    queryset = tax_models.Taxon.objects.filter(current=True)
     search_fields = [
         "taxonomic_name__icontains",
         "vernacular_names__icontains",
@@ -19,6 +20,7 @@ class TaxonMultipleWidget(ModelSelect2MultipleWidget):
     """A reusable Taxon ModelSelect2MultipleWidget."""
 
     model = tax_models.Taxon
+    queryset = tax_models.Taxon.objects.filter(current=True)
     search_fields = [
         "taxonomic_name__icontains",
         "vernacular_names__icontains",
