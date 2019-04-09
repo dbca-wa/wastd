@@ -30,6 +30,9 @@ APPS_DIR = ROOT_DIR.path('wastd')
 DEBUG = env('DJANGO_DEBUG', default=False)
 PROFILING = env('DJANGO_PROFILING', default=False)
 
+ANIMALS_PK = env("ANIMALS_PK", default=20)
+PLANTS_PK = env("PLANTS_PK", default=21)
+
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
 DJANGO_APPS = (
@@ -716,5 +719,7 @@ SETTINGS_EXPORT = [
     'SITE_CODE',
     'BIOSYS_TSC_URL',
     'BIOSYS_UN',
-    'BIOSYS_PW'
+    'BIOSYS_PW',
+    'ANIMALS_PK',
+    'PLANTS_PK'
 ]

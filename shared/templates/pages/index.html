@@ -38,15 +38,17 @@
         </a>
       </p>
       <p>
-        <a class="btn btn-primary" href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups=20"
-            title="Browse, filter and search animals">
+        <a class="btn btn-primary"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}"
+           title="Browse, filter and search animals">
           Browse animals »
         </a>
       </p>
       <p>
-        <a class="btn btn-primary" href="{% url 'taxonomy:taxon-list' %}?/?paraphyletic_groups=21"
-            title="Browse, filter and search plants and fungi">
-          Browse plants &ampersand; fungi »
+        <a class="btn btn-primary"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}"
+           title="Browse, filter and search plants and fungi">
+          Browse plants &amp; fungi »
         </a>
       </p>
       <p>
