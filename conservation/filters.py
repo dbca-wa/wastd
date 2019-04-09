@@ -5,6 +5,7 @@ from django.contrib.gis.db import models as geo_models
 import django_filters
 
 from conservation import models as cons_models
+from conservation import widgets as cons_widgets
 from taxonomy import models as tax_models
 from taxonomy import widgets as tax_widgets
 from shared.filters import FILTER_OVERRIDES
@@ -22,6 +23,10 @@ class ConservationThreatFilter(django_filters.FilterSet):
         queryset=tax_models.Community.objects.all(),
         widget=tax_widgets.CommunityMultipleWidget()
     )
+    document = django_filters.ModelMultipleChoiceFilter(
+        queryset=cons_models.Document.objects.all(),
+        widget=cons_widgets.DocumentMultipleWidget()
+    )
 
     class Meta:
         """Class opts."""
@@ -32,6 +37,7 @@ class ConservationThreatFilter(django_filters.FilterSet):
             "taxa",
             "taxa__paraphyletic_groups",
             "communities",
+            "document",
             'target_area',
             'category',
             'current_impact',
@@ -52,6 +58,10 @@ class ConservationActionFilter(django_filters.FilterSet):
         queryset=tax_models.Community.objects.all(),
         widget=tax_widgets.CommunityMultipleWidget()
     )
+    document = django_filters.ModelMultipleChoiceFilter(
+        queryset=cons_models.Document.objects.all(),
+        widget=cons_widgets.DocumentMultipleWidget()
+    )
 
     class Meta:
         """Class opts."""
@@ -61,6 +71,7 @@ class ConservationActionFilter(django_filters.FilterSet):
         fields = ["taxa",
                   "taxa__paraphyletic_groups",
                   "communities",
+                  "document",
                   'target_area',
                   'category',
                   'status', ]

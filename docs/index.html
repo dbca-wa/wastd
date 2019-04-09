@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.19.1 documentation</title>
+  <title>TSC 0.20.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.19
+                0.20
               </div>
             
           
@@ -423,7 +423,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.19.1 documentation</li>
+      <li>TSC 0.20.0 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -4698,7 +4698,17 @@ serve to cache low churn, high use content:</p>
 </ul>
 <dl class="attribute">
 <dt id="wastd.observations.models.Area.AREATYPE_CHOICES">
-<code class="descname">AREATYPE_CHOICES</code><em class="property"> = (('MPA', 'MPA'), ('Locality', 'Locality'), ('Site', 'Site'))</em><a class="headerlink" href="#wastd.observations.models.Area.AREATYPE_CHOICES" title="Permalink to this definition">¶</a></dt>
+<code class="descname">AREATYPE_CHOICES</code><em class="property"> = (('MPA', 'MPA'), ('Locality', 'Locality'), ('Site', 'Site'), ('Region', 'DBCA Region'), ('District', 'DBCA District'))</em><a class="headerlink" href="#wastd.observations.models.Area.AREATYPE_CHOICES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.Area.AREATYPE_DBCA_DISTRICT">
+<code class="descname">AREATYPE_DBCA_DISTRICT</code><em class="property"> = 'District'</em><a class="headerlink" href="#wastd.observations.models.Area.AREATYPE_DBCA_DISTRICT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.Area.AREATYPE_DBCA_REGION">
+<code class="descname">AREATYPE_DBCA_REGION</code><em class="property"> = 'Region'</em><a class="headerlink" href="#wastd.observations.models.Area.AREATYPE_DBCA_REGION" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -11314,6 +11324,11 @@ current rate of gazettal (annual).</p>
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="taxonomy.models.Taxon.RANK_ABBREVIATIONS">
+<code class="descname">RANK_ABBREVIATIONS</code><em class="property"> = {200: 'subsp.', 210: 'var.', 220: 'subvar.', 230: 'forma', 240: 'subf.'}</em><a class="headerlink" href="#taxonomy.models.Taxon.RANK_ABBREVIATIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="taxonomy.models.Taxon.RANK_CLASS">
 <code class="descname">RANK_CLASS</code><em class="property"> = 50</em><a class="headerlink" href="#taxonomy.models.Taxon.RANK_CLASS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -11633,10 +11648,9 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="taxonomy.models.Taxon.is_listed">
-<code class="descname">is_listed</code><a class="headerlink" href="#taxonomy.models.Taxon.is_listed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Whether this Taxon has a conservation listing.</p>
-<p>TODO only count currently active gazettals.</p>
+<dt id="taxonomy.models.Taxon.is_currently_listed">
+<code class="descname">is_currently_listed</code><a class="headerlink" href="#taxonomy.models.Taxon.is_currently_listed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this Taxon has a current conservation listing.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -11752,6 +11766,13 @@ many-to-one relation.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
 <p>Most of the implementation is delegated to a dynamically defined manager
 class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="taxonomy.models.Taxon.supra_group">
+<code class="descname">supra_group</code><a class="headerlink" href="#taxonomy.models.Taxon.supra_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -18039,6 +18060,23 @@ provide increased alignment with protocols for managing ecological communities.�
 </dd></dl>
 
 <dl class="class">
+<dt id="taxonomy.tests.test_unit.TaxonUtilsTests">
+<em class="property">class </em><code class="descclassname">taxonomy.tests.test_unit.</code><code class="descname">TaxonUtilsTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUtilsTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unit tests for taxonomy utils.</p>
+<dl class="attribute">
+<dt id="taxonomy.tests.test_unit.TaxonUtilsTests.fixtures">
+<code class="descname">fixtures</code><em class="property"> = ['taxonomy/fixtures/test_family.json', 'taxonomy/fixtures/test_genus.json', 'taxonomy/fixtures/test_names.json', 'taxonomy/fixtures/test_parents.json', 'taxonomy/fixtures/test_species.json', 'taxonomy/fixtures/test_vernaculars.json', 'taxonomy/fixtures/test_xrefs.json']</em><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUtilsTests.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_unit.TaxonUtilsTests.test_update_taxon">
+<code class="descname">test_update_taxon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TaxonUtilsTests.test_update_taxon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test reconstructing Taxon, Crossreference and Vernacular from Hbv*.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="taxonomy.tests.test_unit.TemplateTagTests">
 <em class="property">class </em><code class="descclassname">taxonomy.tests.test_unit.</code><code class="descname">TemplateTagTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_unit.TemplateTagTests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Template tag tests.</p>
@@ -18104,6 +18142,23 @@ provide increased alignment with protocols for managing ecological communities.�
 <dt id="taxonomy.tests.test_views.CommunityViewTests.test_com_list_url_loads">
 <code class="descname">test_com_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.CommunityViewTests.test_com_list_url_loads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test community-list.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="taxonomy.tests.test_views.TaxonBulkViewTests">
+<em class="property">class </em><code class="descclassname">taxonomy.tests.test_views.</code><code class="descname">TaxonBulkViewTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonBulkViewTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Taxon view tests.</p>
+<dl class="attribute">
+<dt id="taxonomy.tests.test_views.TaxonBulkViewTests.fixtures">
+<code class="descname">fixtures</code><em class="property"> = ['taxonomy/fixtures/test_crossreference.json', 'taxonomy/fixtures/test_taxon.json', 'taxonomy/fixtures/test_community.json']</em><a class="headerlink" href="#taxonomy.tests.test_views.TaxonBulkViewTests.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_views.TaxonBulkViewTests.test_taxon_detail_url_loads">
+<code class="descname">test_taxon_detail_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_views.TaxonBulkViewTests.test_taxon_detail_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Taxon detail_url.</p>
 </dd></dl>
 
 </dd></dl>
@@ -18877,6 +18932,12 @@ Test that document card contains date last modified.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="conservation.tests.test_views.DocumentViewTests.test_create_url_loads">
+<code class="descname">test_create_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.DocumentViewTests.test_create_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationaction-create.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="conservation.tests.test_views.DocumentViewTests.test_get_absolute_url">
 <code class="descname">test_get_absolute_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.DocumentViewTests.test_get_absolute_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test ConservationAction get absolute url.</p>
@@ -18886,6 +18947,12 @@ Test that document card contains date last modified.</li>
 <dt id="conservation.tests.test_views.DocumentViewTests.test_list_url_loads">
 <code class="descname">test_list_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.DocumentViewTests.test_list_url_loads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test conservationaction-list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="conservation.tests.test_views.DocumentViewTests.test_update_url_loads">
+<code class="descname">test_update_url_loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#conservation.tests.test_views.DocumentViewTests.test_update_url_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test conservationaction-update.</p>
 </dd></dl>
 
 </dd></dl>
@@ -19171,6 +19238,23 @@ TypeError: issubclass() arg 2 must be a class or tuple of classes</div></blockqu
 <span class="target" id="module-occurrence.tests.test_views"></span><p>.</p>
 <div class="section" id="occurrence-view-tests">
 <h5>Occurrence view tests<a class="headerlink" href="#occurrence-view-tests" title="Permalink to this headline">¶</a></h5>
+<dl class="class">
+<dt id="occurrence.tests.test_views.AreaEncounterBulkTests">
+<em class="property">class </em><code class="descclassname">occurrence.tests.test_views.</code><code class="descname">AreaEncounterBulkTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.AreaEncounterBulkTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test views with lots of Taxon Encounters.</p>
+<dl class="attribute">
+<dt id="occurrence.tests.test_views.AreaEncounterBulkTests.fixtures">
+<code class="descname">fixtures</code><em class="property"> = []</em><a class="headerlink" href="#occurrence.tests.test_views.AreaEncounterBulkTests.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="occurrence.tests.test_views.AreaEncounterBulkTests.test_taxon_detail_with_many_occurences">
+<code class="descname">test_taxon_detail_with_many_occurences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.AreaEncounterBulkTests.test_taxon_detail_with_many_occurences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test how the taxon detail page works with more than 100 occurrences.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="occurrence.tests.test_views.CommunityAreaEncounterTests">
 <em class="property">class </em><code class="descclassname">occurrence.tests.test_views.</code><code class="descname">CommunityAreaEncounterTests</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_views.CommunityAreaEncounterTests" title="Permalink to this definition">¶</a></dt>
