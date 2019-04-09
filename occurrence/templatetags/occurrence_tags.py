@@ -20,7 +20,7 @@ def admin_areaencounter_create_link(pk, subject, block=False, label=False):
     return {
         "pk": pk,
         "subject": subject,
-        "admin_add_url": "{0}?{1}__pk={2}".format(
+        "admin_add_url": "{0}?{1}={2}".format(
             reverse('admin:occurrence_{0}areaencounter_add'.format(subject)),
             subject,
             pk
