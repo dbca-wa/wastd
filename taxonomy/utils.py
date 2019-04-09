@@ -453,7 +453,7 @@ def update_taxon():
     logger.info("[update_taxon] Updated {0} Crossreferences.".format(tax_models.Crossreference.objects.count()))
 
     # Paraphyletic Groups
-    logger.info("[update_taxon] Updating Paraphyletic Groups...")
+    logger.info("[update_taxon] Updating Paraphyletic Groups from WACensus...")
     # A dict name_id:pk of Taxon. No need to fetch the actual objects.
     tt = {x["name_id"]: x["pk"] for x in tax_models.Taxon.objects.all().values('pk', 'name_id')}
 
@@ -461,8 +461,28 @@ def update_taxon():
     [s.taxon_set.set(
         [tt[x["name_id"]]
          for x in tax_models.HbvGroup.objects.filter(class_id=s.supra_code).values('name_id', 'name')
-         if x["name"] in tt]
+         if x["name_id"] in tt]
     ) for s in tax_models.HbvSupra.objects.all()]
+
+    # Animals and plants sensu latu
+    # We're gonna make our own HbvSupra groups... with blackjack and hookers
+    # Well, with plants and fungi mostly
+    logger.info("[update_taxon] Updating Paraphyletic Groups Animals and Plants (sensu latu)...")
+
+    taxon_animalia = tax_models.Taxon.objects.get(
+        rank=tax_models.Taxon.RANK_KINGDOM, name="Animalia")
+    all_taxon_pks = set([x["pk"] for x in tax_models.Taxon.objects.all().values("pk")])
+    animal_taxon_pks = set([x.pk for x in taxon_animalia.get_descendants()])
+    plant_taxon_pks = all_taxon_pks - animal_taxon_pks
+
+    animals_supra, created = tax_models.HbvSupra.objects.get_or_create(
+        supra_code="ANIMALS", supra_name="Animals")
+    plants_supra, created = tax_models.HbvSupra.objects.get_or_create(
+        supra_code="PLANTS", supra_name="Plants and Fungi")
+
+    animals_supra.taxon_set.set(animal_taxon_pks)
+    plants_supra.taxon_set.set(plant_taxon_pks)
+    logger.info("[update_taxon] Done updating Paraphyletic Groups.")
 
     logger.info(
         "[update_taxon] Updated {0} Taxon memberships of {1} Paraphyletic Groups.".format(
