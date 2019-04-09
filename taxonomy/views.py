@@ -74,7 +74,10 @@ class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         ).order_by(
             "-rank",
         ).prefetch_related(
-            "taxon_gazettal", "conservationaction_set",  "document_set"
+            "taxon_gazettal",
+            "conservationaction_set",
+            "conservationthreat_set",
+            "document_set"
         )
 
         # name_id is mutually exclusive to other parameters
@@ -169,7 +172,7 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
             Breadcrumb(_('Home'), reverse('home')),
             Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
             Breadcrumb(
-                "Taxonomy of {0}".format(self.object.canonical_name),
+                "Phylogeny of {0}".format(self.object.canonical_name),
                 '{0}?name_id={1}'.format(reverse('taxonomy:taxon-list'), self.object.name_id)
             ),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url())

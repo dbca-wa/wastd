@@ -461,7 +461,7 @@ BIOSYS_PW = env("BIOSYS_PW", default="")
 LEAFLET_CONFIG = {
     'SPATIAL_EXTENT': (-180, -90, 180, 90),
     'DEFAULT_CENTER': (-25, 120),
-    'DEFAULT_ZOOM': 5,
+    'DEFAULT_ZOOM': 4,
     'SCALE': 'metric',
     'MINIMAP': False,
     # 'FORCE_IMAGE_PATH': True,

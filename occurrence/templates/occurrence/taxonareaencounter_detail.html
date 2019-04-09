@@ -77,34 +77,36 @@
         </div>
       </div><!-- /.row -->
 
+      <div class="row mb-2" id="row-occ-extra">
+        <div class="col col-12">
+          {% include 'occurrence/include/obsgroup_add.html' %}
+        </div>
+      </div><!-- /.row -->
+
+      <div class="row mb-2">
+        <div class="col col-12">
+          <button class="btn btn-danger" type="button" id="toggle-qa-new">
+            Hide unverified records
+          </button>
+        </div>
+      </div><!-- /.row -->
+
     </div><!-- /.jumbotron -->
   </div><!-- /.col#occ-detail-main -->
 
   <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
-      <div id="map">
+      <div>
         {% leaflet_map "detailmap" callback="window.map_init" %}
       </div>
   </div><!-- /.col#occ-map -->
 
 </div><!-- .row#row-occ-detail -->
 
-  <div class="row" id="row-occ-extra">
-    <div class="col col-12">
-      <div class="jumbotron">
-
-        <h3 id="obsgroup-add">
-          <small>
-           {% include 'occurrence/include/obsgroup_add.html' %}
-          </small>
-        </h3><!-- /#obsgroup-add -->
-
-        <div class="row">
-          {% include 'occurrence/include/obsgroup_cards.html' %}
-        </div>
-
-      </div>
-    </div>
-  </div><!-- .row#row-occ-extra -->
+<div class="row" id="row-occ-extra">
+  <div class="col col-12">
+    {% include 'occurrence/include/obsgroup_cards.html' %}
+  </div>
+</div><!-- .row#row-occ-extra -->
 {% endblock content %}
 
 {% block javascript%}
@@ -113,7 +115,13 @@
 {% include 'shared/map.js' %}
 {% compress js %}{# pragma: no cover #}
 <script type="text/javascript">
+$( "#toggle-qa-new" ).click(function() {
+    $( ".qa-new" ).toggle();
+    $( ".qa-proofread" ).toggle();
+});
+
 function map_init(map, options) {
+    {% include 'shared/styles.js' %}
     /* Data loading */
     var occ_point = L.geoJson(
       {{ object|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
@@ -131,7 +139,6 @@ function map_init(map, options) {
     {% else %}
     map.fitBounds(occ_point.getBounds());
     {% endif %}
-
 }
 </script>
 {% endcompress %}

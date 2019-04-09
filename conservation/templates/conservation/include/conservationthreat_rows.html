@@ -7,13 +7,13 @@
     {{ threat.cause }}
     <small class="float-right">
       {% if is_staff %}
-      <a href="{{ threat.absolute_admin_url }}" class="btn btn-sm btn-success"
+      <a href="{{ threat.absolute_admin_url }}" class="btn btn-sm btn-success text-left"
         title="Because you have DBCA Curator privileges, you may edit this conservation threat." target="_">
         <span class="oi oi-pencil" aria-hidden="true"></span>
         <span class="oi oi-task" aria-hidden="true"></span>
       </a>
       {% endif %}
-      <a href="{{ threat.update_url }}" class="btn btn-sm btn-primary"
+      <a href="{{ threat.update_url }}" class="btn btn-sm btn-primary text-left"
         title="Edit this conservation threat." target="_">
         <span class="oi oi-pencil" aria-hidden="true"></span>
         <span class="oi oi-task" aria-hidden="true"></span>

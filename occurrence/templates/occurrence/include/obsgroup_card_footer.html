@@ -1,15 +1,19 @@
 {% load observations bootstrap4 %}
 <div class="card-footer">
-   <a href="{{ object.update_url }}"
-      class="btn btn-primary btn-sm"
-      title="Edit {{ object }}.">
-      <span class="oi oi-pencil" aria-hidden="true"></span>
-      Edit
-    </a>
-    <a href="{{ object.absolute_admin_url }}"
-      class="btn btn-sm btn-{{ object.status|tb_status_icon }} float-right"
-      title="Edit and QA {{ object }} in data curation portal.">
-      <span class="oi oi-pencil" aria-hidden="true"></span>
-      QA: {{ object.get_status_display }}
-    </a>
+  <div class="row">
+    <div class="col col-12">
+     <a href="{{ object.update_url }}"
+        class="btn btn-primary btn-sm text-left mr-2 flex-fill"
+        title="Edit">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+        Edit
+      </a>
+      <a href="{{ object.absolute_admin_url }}"
+        class="btn btn-sm btn-{{ object.status|tb_status_icon }} float-right"
+        title="Edit and QA in data curation portal">
+        <span class="oi oi-pencil" aria-hidden="true"></span>
+        QA: {{ object.get_status_display }}
+      </a>
+    </div><!-- /.col -->
+  </div><!-- /.row -->
 </div><!-- /.card-footer -->

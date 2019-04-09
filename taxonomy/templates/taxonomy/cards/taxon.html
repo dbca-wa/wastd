@@ -60,22 +60,22 @@
   </ul>
 
   <div class="card-footer">
-    <div class="row">
-
+    <div class="row mb-2">
     <a href="{{ object.get_absolute_url }}"
-      class="btn btn-primary btn-sm btn-block"
+      class="btn btn-primary btn-sm mr-2 flex-fill"
       title="View details.">
       <span class="oi oi-eye" aria-hidden="true"></span>
-      View details
+      View
     </a>
-
     <a href="?name_id={{ object.name_id }}"
-      class="btn btn-secondary btn-sm btn-block"
+      class="btn btn-secondary btn-sm mr-2"
       title="Restrict results to {{ object.taxonomic_name }} with its parents and immediate children and reset all filters.">
       <span class="oi oi-project" aria-hidden="true"></span>
-      Explore taxonomy
+      Explore
     </a>
-    {% admin_taxon_change_link request.user block=True label=True %}
+    {% admin_taxon_change_link request.user block=False label=False %}
+    </div>
+    <div class="row">
     {% taxongazettal_add request.user block=True label=True %}
     {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=True %}
     {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=True %}

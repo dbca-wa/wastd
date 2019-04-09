@@ -30,6 +30,7 @@ class ConservationThreatFilter(django_filters.FilterSet):
         filter_overrides = FILTER_OVERRIDES
         fields = [
             "taxa",
+            "taxa__paraphyletic_groups",
             "communities",
             'target_area',
             'category',
@@ -58,6 +59,7 @@ class ConservationActionFilter(django_filters.FilterSet):
         model = cons_models.ConservationAction
         filter_overrides = FILTER_OVERRIDES
         fields = ["taxa",
+                  "taxa__paraphyletic_groups",
                   "communities",
                   'target_area',
                   'category',
@@ -84,6 +86,7 @@ class DocumentFilter(django_filters.FilterSet):
         fields = [
             "document_type",
             "taxa",
+            "taxa__paraphyletic_groups",
             "communities",
             "effective_from",
             "effective_to",

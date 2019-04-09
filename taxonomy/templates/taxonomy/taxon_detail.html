@@ -87,6 +87,18 @@
       {% endfor %}
       </p>
 
+      {% drilldown_tree_for_node object as taxon_phylogeny %}
+      {% drilldown_tree_for_node object as drilldown %}
+      {% for node,structure in drilldown|tree_info %}
+          {% if structure.new_level %}<ul><li>{% else %}</li><li>{% endif %}
+          {% if node == object %}
+                  <strong>{{ node.taxonomic_name }}</strong>
+          {% else %}
+                  <a href="{{ node.get_absolute_url }}">{{ node.taxonomic_name }}</a>
+          {% endif %}
+          {% for level in structure.closed_levels %}</li></ul>{% endfor %}
+      {% endfor %}
+
       <hr class="my-4">
       <h3>Conservation Listings
         <small class="float-right">
@@ -127,7 +139,6 @@
           {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=False %}
           {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=False %}
           {% taxonareaencounter_add_link object.name_id label=True %}
-
       </p>
 
     </div><!-- /.jumbotron -->

@@ -1,5 +1,5 @@
 {% load observations occurrence_tags %}
-<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg">
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg qa-{{ object.status }}">
 
   <h6 class="card-header">
     <span class="badge badge-{{ object.status|tb_status_icon }}" title="QA status">
@@ -32,11 +32,15 @@
   </div><!-- /.card-body -->
 
   <div class="card-footer">
-      {% areaencounter_detail_link object block=True label=True %}
-      {% areaencounter_update_link object block=True label=True %}
+    <div class="row">
+      <div class="col-12">
+      {% areaencounter_detail_link object block=False label=True %}
+      {% areaencounter_update_link object block=False label=True %}
       {% if request.user.is_staff %}
       {% admin_absoluteadminurl_link object "occurrence" block=True label=True %}
       {% endif %}
+      </div><!-- /.col -->
+    </div><!-- /.row -->
   </div><!-- /.card-footer -->
 
 </div><!-- /.card -->

@@ -61,7 +61,7 @@ body{
 }
 
 .leaflet-container {
- min-height: 500px!important;
+ min-height: 300px;
 }
 
 /* Leaflet popup link colour */
