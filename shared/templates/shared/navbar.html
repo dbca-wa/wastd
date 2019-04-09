@@ -26,13 +26,13 @@
             <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
 
               <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}"
+                 href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true"
                  title="Browse, filter and search threatened species">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-left">Browse all species</span>
               </a>
               <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}"
+                 href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true"
                  title="Browse, filter and search threatened species">
                 <span class="oi oi-list" aria-hidden="true"></span>
                 <span class="align-left">List all species</span>
@@ -47,7 +47,7 @@
               <div class="dropdown-divider"></div>
 
               <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}"
+                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true"
                  title="Browse, filter and search animals">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-left">Browse animals</span>
@@ -62,7 +62,7 @@
               <div class="dropdown-divider"></div>
 
               <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}"
+                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true"
                  title="Browse, filter and search plants (sensu latu)">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-left">Browse plants (sensu latu)</span>

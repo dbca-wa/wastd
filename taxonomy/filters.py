@@ -15,8 +15,15 @@ from shared.filters import FILTER_OVERRIDES
 class TaxonFilter(django_filters.FilterSet):
     """Filter for Taxon."""
 
-    # current = BooleanFilter(widget=BooleanWidget())
-    # is_leaf_node = BooleanFilter(widget=BooleanWidget())
+    is_terminal_taxon = BooleanFilter(
+        label="Terminal Taxon",
+        widget=BooleanWidget(),
+        method="filter_leaf_nodes"
+    )
+    current = BooleanFilter(
+        label="Taxonomic name is current",
+        widget=BooleanWidget()
+    )
     taxon_gazettal__category = ModelMultipleChoiceFilter(
         label="Conservation listed as",
         queryset=ConservationCategory.objects.filter(
@@ -40,13 +47,16 @@ class TaxonFilter(django_filters.FilterSet):
             "taxonomic_name",
             "vernacular_names",
             "rank",
-            # "current",
-            # "is_leaf_node",
+            "is_terminal_taxon",
+            "current",
             "publication_status",
             "name_id",
             "field_code"
         ]
         filter_overrides = FILTER_OVERRIDES
+
+    def filter_leaf_nodes(self, queryset, name, value):
+        return queryset.filter(children__isnull=value)
 
 
 class CommunityFilter(django_filters.FilterSet):

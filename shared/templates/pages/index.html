@@ -33,16 +33,16 @@
       </p>
       <p>
         <a class="btn btn-primary"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true"
            title="Browse, filter and search animals">
           Animals »
         </a>
         <a class="btn btn-primary"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true"
            title="Browse, filter and search plants (sensu latu)">
           Plants »
         </a>
-        <a class="btn btn-primary" href="{% url 'taxonomy:taxon-list' %}"
+        <a class="btn btn-primary" href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true"
             title="Browse, filter and search Species">
           All »
         </a>
