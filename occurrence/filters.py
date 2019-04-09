@@ -29,7 +29,8 @@ class TaxonAreaEncounterFilter(django_filters.FilterSet):
 
         model = occ_models.TaxonAreaEncounter
         fields = [
-            'taxon',
+            "taxon",
+            "taxon__paraphyletic_groups",
             "area_type",
             "code",
             "name",

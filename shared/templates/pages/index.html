@@ -32,39 +32,48 @@
         Browse and search WA species, view conservation status and suggest conservation status changes.
       </p>
       <p>
-        <a class="btn btn-primary" href="{% url 'taxonomy:taxon-list' %}"
-            title="Browse, filter and search Species">
-          Browse species »
-        </a>
-      </p>
-      <p>
         <a class="btn btn-primary"
            href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}"
            title="Browse, filter and search animals">
-          Browse animals »
+          Animals »
+        </a>
+        <a class="btn btn-primary"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}"
+           title="Browse, filter and search plants (sensu latu)">
+          Plants »
+        </a>
+        <a class="btn btn-primary" href="{% url 'taxonomy:taxon-list' %}"
+            title="Browse, filter and search Species">
+          All »
+        </a>
+      </p>
+      <h4>Occurrences</h4>
+      <p>
+        <a class="btn btn-primary"
+           href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.ANIMALS_PK }}"
+           title="Browse, filter and search threatened animal occurrences">
+          Animals »
+        </a>
+        <a class="btn btn-primary"
+           href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.PLANTS_PK }}"
+           title="Browse, filter and search threatened plant (sensu latu) occurrences">
+          Plants »
+        </a>
+        <a class="btn btn-primary"
+          href="{% url 'occurrence:taxonareaencounter-list' %}"
+          title="Browse species occurrences">
+          All »
         </a>
       </p>
       <p>
         <a class="btn btn-primary"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}"
-           title="Browse, filter and search plants and fungi">
-          Browse plants &amp; fungi »
-        </a>
-      </p>
-      <p>
-        <a class="btn btn-secondary"
-        href="{% url 'occurrence:taxonareaencounter-list' %}"
-        title="Browse species occurrences">
-        Browse species occurrences »</a>
-      </p>
-      <p>
-        <a class="btn btn-secondary"
         href="{% url 'occurrence:taxonareaencounter-create' %}"
         title="Submit species occurrences">
-        Report species occurrence »</a>
+        Report occurrence »</a>
       </p>
+      <h4>Conservation listing</h4>
       <p>
-        <a class="btn btn-secondary"
+        <a class="btn btn-success"
         href="{% url 'admin:conservation_taxongazettal_add' %}"
         title="Nominate a species for a conservation status">
         Lodge nomination »</a>
@@ -87,20 +96,22 @@
           Browse communities »
         </a>
       </p>
+      <h4>Occurrences</h4>
       <p>
-        <a class="btn btn-secondary"
+        <a class="btn btn-primary"
         href="{% url 'occurrence:communityareaencounter-list' %}"
         title="Browse community occurrences">
-        Browse community occurrences »</a>
+        Browse occurrences »</a>
       </p>
       <p>
-        <a class="btn btn-secondary"
+        <a class="btn btn-primary"
         href="{% url 'occurrence:communityareaencounter-create' %}"
         title="Submit community occurrences">
-        Report community occurrence »</a>
+        Report occurrence »</a>
       </p>
+      <h4>Conservation listing</h4>
       <p>
-        <a class="btn btn-secondary"
+        <a class="btn btn-success"
         href="{% url 'admin:conservation_communitygazettal_add' %}"
         title="Nominate a community for a conservation status">
       Lodge nomination »</a>

@@ -26,55 +26,77 @@
             <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
 
               <a class="dropdown-item"
-                href="{% url 'taxonomy:taxon-list' %}"
-              title="Browse, filter and search threatened species">
+                 href="{% url 'taxonomy:taxon-list' %}"
+                 title="Browse, filter and search threatened species">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-middle">Browse species</span>
+                <span class="align-left">Browse all species</span>
               </a>
               <a class="dropdown-item"
-                href="{% url 'taxonomy:taxon-list' %}"
-              title="Browse, filter and search threatened species">
+                 href="{% url 'taxonomy:taxon-list' %}"
+                 title="Browse, filter and search threatened species">
                 <span class="oi oi-list" aria-hidden="true"></span>
-                <span class="align-middle">List all species</span>
+                <span class="align-left">List all species</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'occurrence:taxonareaencounter-list' %}"
+                 title="Browse, filter and search threatened species occurrences">
+                <span class="oi oi-target" aria-hidden="true"></span>
+                <span class="align-left">Browse species occurrences</span>
               </a>
 
               <div class="dropdown-divider"></div>
+
               <a class="dropdown-item"
-                href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}"
-                title="Browse, filter and search animals">
+                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}"
+                 title="Browse, filter and search animals">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-middle">Animals</span>
+                <span class="align-left">Browse animals</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.ANIMALS_PK }}"
+                 title="Browse, filter and search threatened animal occurrences">
+                <span class="oi oi-target" aria-hidden="true"></span>
+                <span class="align-left">Browse animal occurrences</span>
               </a>
 
               <div class="dropdown-divider"></div>
+
               <a class="dropdown-item"
-                href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}"
-                title="Browse, filter and search plants and fungi">
+                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}"
+                 title="Browse, filter and search plants (sensu latu)">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-middle">Plants &amp; fungi</span>
+                <span class="align-left">Browse plants (sensu latu)</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.PLANTS_PK }}"
+                 title="Browse, filter and search threatened plant (sensu latu) occurrences">
+                <span class="oi oi-target" aria-hidden="true"></span>
+                <span class="align-left">Browse plant occurrences</span>
               </a>
             </div>
           </li>
 
           <li class="nav-item">
             <a class="nav-link" href="{% url 'taxonomy:community-list' %}"
-              title="Browse, filter and search threatened communities">
+               title="Browse, filter and search threatened communities">
             <span class="oi oi-grid-three-up" aria-hidden="true"></span>
             Communities
             </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'conservation:conservationthreat-list' %}"
-              title="Browse, filter and search conservation threats">
+            <a class="nav-link"
+               href="{% url 'conservation:conservationthreat-list' %}"
+               title="Browse, filter and search conservation threats">
             <span class="oi oi-flash" aria-hidden="true"></span>
             Threats
             </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'conservation:conservationaction-list' %}"
-              title="Browse, filter and search conservation actions">
+            <a class="nav-link"
+               href="{% url 'conservation:conservationaction-list' %}"
+               title="Browse, filter and search conservation actions">
             <span class="oi oi-task" aria-hidden="true"></span>
             Actions
             </a>
@@ -111,27 +133,27 @@
                 href="https://dbca-wa.github.io/wastd/index.html#document-data_consumers"
                 title="Manual" target="_blank">
                 <span class="oi oi-book" aria-hidden="true"></span>
-                <span class="align-middle">Data Analysts' Manual</span>
+                <span class="align-left">Data Analysts' Manual</span>
               </a>
               <a class="dropdown-item" href="/api/1/" title="API" target="_blank">
                <span class="oi oi-terminal" aria-hidden="true"></span>
-               <span class="align-middle">API</span>
+               <span class="align-left">API</span>
              </a>
              <a class="dropdown-item" href="{% url 'api-docs' %}"
                 title="API docs (Swagger)" target="_blank">
-               <span class="oi oi-book align-middle" aria-hidden="true"></span>
-               <span class="align-middle">API Docs (Swagger)</span>
+               <span class="oi oi-book align-left" aria-hidden="true"></span>
+               <span class="align-left">API Docs (Swagger)</span>
              </a>
              <a class="dropdown-item" href="/api/1/docs" title="API docs (DRF)" target="_blank">
-               <span class="oi oi-book align-middle" aria-hidden="true"></span>
-               <span class="align-middle">API Docs (DRF)</span>
+               <span class="oi oi-book align-left" aria-hidden="true"></span>
+               <span class="align-left">API Docs (DRF)</span>
              </a>
              {% if request.user.is_authenticated %}
              <a class="dropdown-item"
                 title="My API Authentication"
                 href="{% url 'users:detail' request.user.username  %}">
-              <span class="oi oi-person align-middle" aria-hidden="true"></span>
-              <span class="align-middle">My API Authentication</span>
+              <span class="oi oi-person align-left" aria-hidden="true"></span>
+              <span class="align-left">My API Authentication</span>
               </a>
               {% endif %}
               <!--
@@ -176,6 +198,7 @@
               </a>
 
               {% if request.user.is_superuser %}
+              <div class="dropdown-divider"></div>
               <!--  <a class="dropdown-item"
                 href="/performance/" target="_blank"
                 title="Measure performance">
@@ -215,7 +238,7 @@
           <li class="nav-item">
            <a class="nav-link"
             href="https://dbca-wa.github.io/wastd/index.html"
-            title="Manual" target="_blank">
+            title="Stuck? Here's all you want to know (and more)" target="_blank">
              <span class="oi oi-book" aria-hidden="true"></span>
              Manual
            </a>

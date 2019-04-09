@@ -117,7 +117,8 @@
       {% regroup occurrences|dictsort:"code" by code as occ_list %}
 
       {% for site in occ_list %}
-          <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12" id="occ-{{ site.grouper }}">
+          <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg"
+            id="occ-{{ site.grouper }}">
             <h5 class="card-header">
               {{ site.grouper|title }}
               <div class="row">

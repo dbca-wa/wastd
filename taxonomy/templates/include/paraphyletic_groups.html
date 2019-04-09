@@ -1,0 +1,8 @@
+{% if object.paraphyletic_groups.all %}
+  {% for x in object.paraphyletic_groups.all %}
+  <span class="badge badge-success">
+    <span class="oi oi-tags" title="Species group" aria-hidden="true"></span>
+    {{ x.supra_name }}
+  </span>
+  {% endfor %}
+{% endif %}

@@ -64,7 +64,8 @@ body{
  min-height: 500px!important;
 }
 
-
+/* Leaflet popup link colour */
+.leaflet-container a {color: #0a4077;}
 
 /* Leaflet popup fixed width */
 .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {width: 540px;}
@@ -77,8 +78,17 @@ body{
 .leaflet-tile {outline: 1px solid transparent; visibility: visible!important}
 
 
+
+/* Leaflet popup twitter-bootstrap image carousel: lower indicators 10px */
+/*#popup-image-indicators {bottom: -10px;}*/
+
+.leaflet-control-attribution {max-height: 12px; max-width: 200px;}
+
 /* popup image margins */
 /*.popupimage {margin-top: 15px; margin-bottom: 15px;}*/
+
+/* Custom styles for leaflet/widget.html */
+.leaflet-textarea {width: 100%;}
 
 .info {
     margin: 10px;
@@ -99,13 +109,7 @@ body{
   margin: auto;       /* center image */
 }
 
-/* Leaflet popup link colour */
-.leaflet-container a {color: #0a4077;}
 
-/* Leaflet popup twitter-bootstrap image carousel: lower indicators 10px */
-/*#popup-image-indicators {bottom: -10px;}*/
-
-.leaflet-control-attribution {max-height: 12px; max-width: 200px;}
 
 /* Table width */
 .table {width:100%;}
@@ -131,6 +135,3 @@ body{
     column-count: 8;
   }
 }*/
-
-/* Custom styles for leaflet/widget.html */
-.leaflet-textarea {width: 100%;}
