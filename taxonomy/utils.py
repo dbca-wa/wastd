@@ -469,8 +469,7 @@ def update_taxon():
     # Well, with plants and fungi mostly
     logger.info("[update_taxon] Updating Paraphyletic Groups Animals and Plants (sensu latu)...")
 
-    taxon_animalia = tax_models.Taxon.objects.get(
-        rank=tax_models.Taxon.RANK_KINGDOM, name="Animalia")
+    taxon_animalia = tax_models.Taxon.objects.get(rank=tax_models.Taxon.RANK_KINGDOM, name="Animalia")
     all_taxon_pks = set([x["pk"] for x in tax_models.Taxon.objects.all().values("pk")])
     animal_taxon_pks = set([x.pk for x in taxon_animalia.get_descendants()])
     plant_taxon_pks = all_taxon_pks - animal_taxon_pks
@@ -478,7 +477,7 @@ def update_taxon():
     animals_supra, created = tax_models.HbvSupra.objects.get_or_create(
         supra_code="ANIMALS", supra_name="Animals")
     plants_supra, created = tax_models.HbvSupra.objects.get_or_create(
-        supra_code="PLANTS", supra_name="Plants and Fungi")
+        supra_code="PLANTS", supra_name="Plants sensu latu")
 
     animals_supra.taxon_set.set(animal_taxon_pks)
     plants_supra.taxon_set.set(plant_taxon_pks)

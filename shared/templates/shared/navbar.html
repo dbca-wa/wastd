@@ -29,14 +29,24 @@
                 href="{% url 'taxonomy:taxon-list' %}"
               title="Browse, filter and search threatened species">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-middle">All species</span>
+                <span class="align-middle">Browse species</span>
               </a>
+              <a class="dropdown-item"
+                href="{% url 'taxonomy:taxon-list' %}"
+              title="Browse, filter and search threatened species">
+                <span class="oi oi-list" aria-hidden="true"></span>
+                <span class="align-middle">List all species</span>
+              </a>
+
+              <div class="dropdown-divider"></div>
               <a class="dropdown-item"
                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}"
                 title="Browse, filter and search animals">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-middle">Animals</span>
               </a>
+
+              <div class="dropdown-divider"></div>
               <a class="dropdown-item"
                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}"
                 title="Browse, filter and search plants and fungi">

@@ -1701,7 +1701,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     paraphyletic_groups = models.ManyToManyField(
         HbvSupra,
         blank=True,
-        verbose_name=_("Paraphyletic Groups"),
+        verbose_name=_("Groups"),
         help_text=_("All paraphyletic groups this taxon belongs to."),
     )
 
