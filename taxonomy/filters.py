@@ -56,6 +56,7 @@ class TaxonFilter(django_filters.FilterSet):
         filter_overrides = FILTER_OVERRIDES
 
     def filter_leaf_nodes(self, queryset, name, value):
+        """Return terminal taxa (leaf nodes) if value is true."""
         return queryset.filter(children__isnull=value)
 
 

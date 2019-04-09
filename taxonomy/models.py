@@ -1668,8 +1668,15 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         (RANK_SUBVARIETY, "Subvariety"),
         (RANK_FORMA, "Forma"),
         (RANK_SUBFORMA, "Subforma")
-
     )
+
+    RANK_ABBREVIATIONS = {
+        RANK_SUBSPECIES: "subsp.",
+        RANK_VARIETY: "var.",
+        RANK_SUBVARIETY: "subvar.",
+        RANK_FORMA: "forma",
+        RANK_SUBFORMA: "subf.",
+    }
 
     PUBLICATION_STATUS_PHRASE_NAME = 0
     PUBLICATION_STATUS_MANUSCRIPT_NAME = 1
@@ -1839,17 +1846,17 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         * Species: [NameID] RANK GENUS NAME
         * Subspecies and lower: [NameID] RANK GENUS SPECIES RANK NAME
         """
-        if self.rank == self.RANK_SPECIES:
+        if self.rank == Taxon.RANK_SPECIES:
             genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
             return "{0} {1}".format("GENUS" if not genus else genus.name, self.name)
 
-        elif self.rank > self.RANK_SPECIES:
+        elif self.rank > Taxon.RANK_SPECIES:
             genus = self.get_ancestors().filter(rank=Taxon.RANK_GENUS).first()
             species = self.get_ancestors().filter(rank=Taxon.RANK_SPECIES).first()
             return "{0} {1} {2} {3}".format(
                 "GENUS" if not genus else genus.name,
                 "SPECIES" if not species else species.name,
-                self.get_rank_display().lower(),
+                Taxon.RANK_ABBREVIATIONS[self.rank],
                 self.name)
         else:
             return self.name
@@ -1858,7 +1865,10 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     def build_taxonomic_name(self):
         """Build the taxonomic name."""
         if self.author:
-            return "{0} ({1})".format(self.build_canonical_name, self.author)
+            return "{0} ({1})".format(
+                self.build_canonical_name,
+                self.author.replace("(", "").replace(")", "").strip()
+            )
         else:
             return self.build_canonical_name
 
@@ -1914,12 +1924,9 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
                 for x in self.document_set.all()]
 
     @property
-    def is_listed(self):
-        """Whether this Taxon has a conservation listing.
-
-        TODO only count currently active gazettals.
-        """
-        return self.taxon_gazettals.count() > 0
+    def is_currently_listed(self):
+        """Whether this Taxon has a current conservation listing."""
+        return self.active_gazettals.count() > 0
 
 
 @receiver(pre_save, sender=Taxon)
@@ -1929,7 +1936,7 @@ def taxon_pre_save(sender, instance, *args, **kwargs):
         instance.canonical_name = instance.build_canonical_name
         instance.taxonomic_name = instance.build_taxonomic_name
     except:
-        logger.info("[taxon_pre_save] skipping can/tax name.")
+        logger.info("[taxon_pre_save] Failed to build canonical/taxonomic name, skipping.")
     instance.vernacular_name = instance.build_vernacular_name
     instance.vernacular_names = instance.build_vernacular_names
 
