@@ -109,6 +109,12 @@
         </small>
         <small class="float-right">
           {% admin_areaencounter_list_link object.pk "community" %}
+          <a class="btn btn-primary btn-sm text-left ml-2"
+             href="{% url 'occurrence:communityareaencounter-list' %}?community={{ object.pk }}"
+             title="List occurrences of {{object }}">
+            <span class="oi oi-target" aria-hidden="true"></span>
+            <span class="oi oi-list" aria-hidden="true"></span>
+          </a>
         </small>
         {% endif %}
       </h3>
