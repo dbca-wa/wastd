@@ -5,6 +5,7 @@ import django_filters
 from conservation.models import ConservationCategory
 from django.contrib.gis.db import models as geo_models
 from django.contrib.gis.db.models import Extent, Union, Collect  # noqa
+from django.db.models import Q
 from django_filters.filters import (
     BooleanFilter, ModelChoiceFilter, ModelMultipleChoiceFilter)
 from django_filters.widgets import BooleanWidget  # noqa
@@ -43,7 +44,6 @@ class TaxonFilter(django_filters.FilterSet):
         label="DBCA Regions and Districts",
         queryset=Area.objects.filter(
             area_type__in=[
-                Area.AREATYPE_LOCALITY,  # until reg/dist are populated
                 Area.AREATYPE_DBCA_REGION,
                 Area.AREATYPE_DBCA_DISTRICT]),
         method='taxa_occurring_in_area'
@@ -92,7 +92,7 @@ class TaxonFilter(django_filters.FilterSet):
             taxon_pks_in_area = set(
                 [x["taxon__pk"]
                  for x in occ_models.TaxonAreaEncounter.objects.filter(
-                    point__intersects=search_area
+                    Q(point__intersects=search_area) | Q(geom__intersects=search_area)
                 ).values("taxon__pk")]
             )
             return queryset.filter(pk__in=taxon_pks_in_area)
@@ -118,7 +118,6 @@ class CommunityFilter(django_filters.FilterSet):
         label="DBCA Regions and Districts",
         queryset=Area.objects.filter(
             area_type__in=[
-                Area.AREATYPE_LOCALITY,  # until reg/dist are populated
                 Area.AREATYPE_DBCA_REGION,
                 Area.AREATYPE_DBCA_DISTRICT]),
         method='communities_occurring_in_area'
@@ -157,7 +156,7 @@ class CommunityFilter(django_filters.FilterSet):
             com_pks_in_area = set(
                 [x["community__pk"]
                  for x in occ_models.CommunityAreaEncounter.objects.filter(
-                    point__intersects=search_area
+                    Q(point__intersects=search_area) | Q(geom__intersects=search_area)
                 ).values("community__pk")]
             )
             return queryset.filter(pk__in=com_pks_in_area)
