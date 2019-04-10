@@ -78,6 +78,37 @@
         title="Nominate a species for a conservation status">
         Lodge nomination »</a>
       </p>
+
+      <p>
+        {% if request.user.is_staff %}
+        <a class="btn btn-warning btn-block mb-2 text-left"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&current=false"
+           title="Browse non-current animal names requiring manual changes to conservation listing to their current counterparts">
+          <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+          <span class="align-left">Browse non-current thr/prio animals</span>
+        </a>
+        <a class="btn btn-warning btn-block mb-2 text-left"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
+           title="Browse non-terminal animal names requiring manual changes to conservation listing to their terminal descendants">
+          <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+          <span class="align-left">Browse non-terminal thr/prio animals</span>
+        </a>
+
+        <a class="btn btn-warning btn-block mb-2 text-left"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&current=false"
+           title="Browse non-current plant names requiring manual changes to conservation listing to their current counterparts">
+          <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+          <span class="align-left">Browse non-current thr/prio plants</span>
+        </a>
+        <a class="btn btn-warning btn-block mb-2 text-left"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
+           title="Browse non-terminal plant names requiring manual changes to conservation listing to their terminal descendants">
+          <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+          <span class="align-left">Browse non-terminal thr/prio plants</span>
+        </a>
+        {% endif %}
+
+      </p>
     </div>
 
     <div class="col-lg-4 col-md-6 col-12">

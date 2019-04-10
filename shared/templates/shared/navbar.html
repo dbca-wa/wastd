@@ -34,19 +34,19 @@
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true&conservation_level=threatened"
                  title="Browse, filter and search species currently listed as threatened or priority in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
                 <span class="align-left">Browse all threatened and priority species</span>
               </a>
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true&conservation_level=threatened"
                  title="Browse, filter and search species currently listed as threatened in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
                 <span class="align-left">Browse all threatened species</span>
               </a>
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true&conservation_level=priority"
                  title="Browse, filter and search species currently listed as priority in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-warning" aria-hidden="true"></span>
                 <span class="align-left">Browse all priority species</span>
               </a>
               <a class="dropdown-item"
@@ -73,21 +73,35 @@
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority"
                  title="Browse, filter and search animals currently listed as threatened or priority in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
                 <span class="align-left">Browse threatened and priority animals</span>
               </a>
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened"
                  title="Browse, filter and search animals currently listed as threatened in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
                 <span class="align-left">Browse threatened animals</span>
               </a>
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=priority"
                  title="Browse, filter and search animals currently listed as priority in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-warning" aria-hidden="true"></span>
                 <span class="align-left">Browse priority animals</span>
               </a>
+              {% if request.user.is_staff %}
+              <a class="dropdown-item"
+                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&current=false"
+                 title="Browse non-current animal names requiring manual changes to conservation listing to their current counterparts">
+                <span class="oi oi-grid-three-up text-success" aria-hidden="true"></span>
+                <span class="align-left">Browse non-current thr/prio animals</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
+                 title="Browse non-terminal animal names requiring manual changes to conservation listing to their terminal descendants">
+                <span class="oi oi-grid-three-up text-success" aria-hidden="true"></span>
+                <span class="align-left">Browse non-terminal thr/prio animals</span>
+              </a>
+              {% endif %}
               <a class="dropdown-item"
                  href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.ANIMALS_PK }}"
                  title="Browse, filter and search threatened animal occurrences">
@@ -106,21 +120,35 @@
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority"
                  title="Browse, filter and search plants (sensu latu) currently listed as threatened or priority in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
                 <span class="align-left">Browse threatened and priority plants</span>
               </a>
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened"
                  title="Browse, filter and search plants (sensu latu) currently listed as threatened in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
                 <span class="align-left">Browse threatened plants</span>
               </a>
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=priority"
                  title="Browse, filter and search plants (sensu latu) currently listed as priority in Western Australia">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="oi oi-grid-three-up text-warning" aria-hidden="true"></span>
                 <span class="align-left">Browse priority plants</span>
               </a>
+              {% if request.user.is_staff %}
+              <a class="dropdown-item"
+                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&current=false"
+                 title="Browse non-current plant names requiring manual changes to conservation listing to their current counterparts">
+                <span class="oi oi-grid-three-up text-success" aria-hidden="true"></span>
+                <span class="align-left">Browse non-current thr/prio plants</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
+                 title="Browse non-terminal plant names requiring manual changes to conservation listing to their terminal descendants">
+                <span class="oi oi-grid-three-up text-success" aria-hidden="true"></span>
+                <span class="align-left">Browse non-terminal thr/prio plants</span>
+              </a>
+              {% endif %}
               <a class="dropdown-item"
                  href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.PLANTS_PK }}"
                  title="Browse, filter and search threatened plant (sensu latu) occurrences">
