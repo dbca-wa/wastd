@@ -49,10 +49,15 @@
     </h6>
     {% endif %}
 
-    {% include "include/vernaculars.html" %}
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        {% include "include/vernaculars.html" %}
+      </li>
+      <li class="list-group-item">
+        {% include 'conservation/include/gazettal_labels.html' %}
+      </li>
 
-    {% include 'conservation/include/gazettal_labels.html' %}
-
+    </ul>
   </div>
 
   <ul class="list-group list-group-flush">

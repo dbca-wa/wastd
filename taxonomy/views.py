@@ -72,10 +72,11 @@ class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         queryset = Taxon.objects.order_by(
             "-rank",
         ).prefetch_related(
+            "paraphyletic_groups",
             "taxon_gazettal",
-            "conservationaction_set",
             "conservationthreat_set",
-            "document_set"
+            "conservationaction_set",
+            "document_set",
         )
 
         # name_id is mutually exclusive to other parameters
@@ -116,6 +117,7 @@ class CommunityListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView
         """Queryset."""
         queryset = Community.objects.all().prefetch_related(
             "community_gazettal",
+            "conservationthreat_set",
             "conservationaction_set",
             "document_set"
         )

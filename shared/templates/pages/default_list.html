@@ -20,12 +20,17 @@
   <div id="filters-row" class="col-lg-3 col-md-4 col-sm-6 col-12">
     <form method="get">
       <div class="row-fluid">
+      <button
+        class="btn btn-primary my-2 my-sm-0 btn-block"
+        title="Filter fesults by below criteria." type="submit">
+        Filter results
+      </button>
         {% bootstrap_form list_filter.form %}
       </div>
       <button
-        class="btn btn-primary my-2 my-sm-0"
-        title="Filter by above criteria." type="submit">
-        Go
+        class="btn btn-primary my-2 my-sm-0 btn-block"
+        title="Filter results by above criteria." type="submit">
+        Filter results
       </button>
     </form>
   </div><!-- /#filters-row -->
