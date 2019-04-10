@@ -6,13 +6,16 @@ from conservation.models import ConservationCategory
 from django.contrib.gis.db import models as geo_models
 from django.contrib.gis.db.models import Extent, Union, Collect  # noqa
 from django.db.models import Q
-from django_filters.filters import (
-    BooleanFilter, ModelChoiceFilter, ModelMultipleChoiceFilter)
+from django_filters.filters import (  # noqa
+    BooleanFilter,
+    ChoiceFilter, MultipleChoiceFilter,
+    ModelChoiceFilter, ModelMultipleChoiceFilter)
 from django_filters.widgets import BooleanWidget  # noqa
 
 # from django import forms
-from taxonomy.models import Community, Taxon
+from conservation import models as cons_models
 from occurrence import models as occ_models
+from taxonomy.models import Community, Taxon
 from shared.filters import FILTER_OVERRIDES
 from wastd.observations.models import Area
 
@@ -48,6 +51,11 @@ class TaxonFilter(django_filters.FilterSet):
                 Area.AREATYPE_DBCA_DISTRICT]),
         method='taxa_occurring_in_area'
     )
+    conservation_level = MultipleChoiceFilter(
+        label="Conservation Level",
+        choices=cons_models.ConservationCategory.LEVEL_CHOICES,
+        method='taxon_conservation_level'
+    )
 
     class Meta:
         """Class opts."""
@@ -57,6 +65,7 @@ class TaxonFilter(django_filters.FilterSet):
             "paraphyletic_groups",
             "admin_areas",
             "eoo",
+            "conservation_level",
             "taxon_gazettal__category",
             "taxonomic_name",
             "vernacular_names",
@@ -99,6 +108,27 @@ class TaxonFilter(django_filters.FilterSet):
         else:
             return queryset
 
+    def taxon_conservation_level(self, queryset, name, value):
+        """Return Taxa matching a conservation level.
+
+        * The filter returns a list of ConservationCategory levels as ``value``
+        * The Taxon PKs are calculated from active, WA CommunityGazettals
+          with categories matching the level
+        * The queryset is filtered by the list of Taxon PKs with
+          active taxon listings in WA  matching the conservation level
+        """
+        if value:
+            print(value)
+            taxon_pks = set([x["taxon__pk"] for x in
+                             cons_models.TaxonGazettal.objects.filter(
+                scope=cons_models.Gazettal.SCOPE_WESTERN_AUSTRALIA,
+                status=cons_models.Gazettal.STATUS_EFFECTIVE,
+                category__level__in=value
+            ).values("taxon__pk")])
+            return queryset.filter(pk__in=taxon_pks)
+        else:
+            return queryset
+
 
 class CommunityFilter(django_filters.FilterSet):
     """Filter for Community."""
@@ -122,6 +152,11 @@ class CommunityFilter(django_filters.FilterSet):
                 Area.AREATYPE_DBCA_DISTRICT]),
         method='communities_occurring_in_area'
     )
+    conservation_level = MultipleChoiceFilter(
+        label="Conservation Level",
+        choices=cons_models.ConservationCategory.LEVEL_CHOICES,
+        method='community_conservation_level'
+    )
 
     class Meta:
         """Class opts."""
@@ -130,6 +165,7 @@ class CommunityFilter(django_filters.FilterSet):
         fields = [
             "admin_areas",
             "eoo",
+            "conservation_level",
             "community_gazettal__category",
             "code",
             "name",
@@ -147,6 +183,7 @@ class CommunityFilter(django_filters.FilterSet):
         * The Taxon PKs are calculated from occurrences (CommunityAreaEncounters)
           ``intersect``ing the search_area
         * The queryset is filtered by the list of Community PKs with occurrences
+          in the matching areas
         """
         if value:
             area_pks = [area.pk for area in value]
@@ -160,5 +197,25 @@ class CommunityFilter(django_filters.FilterSet):
                 ).values("community__pk")]
             )
             return queryset.filter(pk__in=com_pks_in_area)
+        else:
+            return queryset
+
+    def community_conservation_level(self, queryset, name, value):
+        """Return Communities matching a conservation level.
+
+        * The filter returns a list of ConservationCategory levels as ``value``
+        * The Community PKs are calculated from active, WA CommunityGazettals
+          with categories matching the level
+        * The queryset is filtered by the list of Community PKs with
+          active community listings in WA  matching the conservation level
+        """
+        if value:
+            print(value)
+            pks = set([x["community__pk"] for x in
+                       cons_models.CommunityGazettal.objects.filter(
+                scope=cons_models.Gazettal.SCOPE_WESTERN_AUSTRALIA,
+                status=cons_models.Gazettal.STATUS_EFFECTIVE,
+                category__level__in=value).values("community__pk")])
+            return queryset.filter(pk__in=pks)
         else:
             return queryset

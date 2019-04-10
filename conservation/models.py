@@ -647,6 +647,15 @@ class ConservationList(models.Model):
 class ConservationCategory(models.Model):
     """A Conservation Category like CR, EN, VU."""
 
+    LEVEL_THREATENED = "threatened"
+    LEVEL_PRIORITY = "priority"
+    LEVEL_OTHER = "other"
+    LEVEL_CHOICES = (
+        (LEVEL_THREATENED, "Threatened"),
+        (LEVEL_PRIORITY, "Priority"),
+        (LEVEL_OTHER, "Other"),
+    )
+
     conservation_list = models.ForeignKey(
         ConservationList,
         on_delete=models.CASCADE,
@@ -683,7 +692,15 @@ class ConservationCategory(models.Model):
         default=True,
         verbose_name=_("Is current"),
         help_text=_("Whether this category should be shown for "
-                    "new conservatin listings."),
+                    "new conservation listings."),
+    )
+
+    level = models.CharField(
+        max_length=500,
+        choices=LEVEL_CHOICES,
+        default=LEVEL_OTHER,
+        verbose_name=_("Conservation level"),
+        help_text=_("The general conservation status, threatened, prority, or other."),
     )
 
     class Meta:
