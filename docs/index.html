@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.20.0 documentation</title>
+  <title>TSC 0.20.2 documentation</title>
   
 
   
@@ -423,7 +423,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.20.0 documentation</li>
+      <li>TSC 0.20.2 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -12531,6 +12531,26 @@ object the first time, the query is executed.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="conservation.models.ConservationCategory.LEVEL_CHOICES">
+<code class="descname">LEVEL_CHOICES</code><em class="property"> = (('threatened', 'Threatened'), ('priority', 'Priority'), ('other', 'Other'))</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_CHOICES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationCategory.LEVEL_OTHER">
+<code class="descname">LEVEL_OTHER</code><em class="property"> = 'other'</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_OTHER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationCategory.LEVEL_PRIORITY">
+<code class="descname">LEVEL_PRIORITY</code><em class="property"> = 'priority'</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_PRIORITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationCategory.LEVEL_THREATENED">
+<code class="descname">LEVEL_THREATENED</code><em class="property"> = 'threatened'</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_THREATENED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="exception">
 <dt id="conservation.models.ConservationCategory.MultipleObjectsReturned">
 <em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#conservation.models.ConservationCategory.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
@@ -12600,6 +12620,11 @@ object the first time, the query is executed.</p>
 object the first time, the query is executed.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="conservation.models.ConservationCategory.get_level_display">
+<code class="descname">get_level_display</code><span class="sig-paren">(</span><em>*</em>, <em>field=&lt;django.db.models.fields.CharField: level&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationCategory.get_level_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="conservation.models.ConservationCategory.id">
 <code class="descname">id</code><a class="headerlink" href="#conservation.models.ConservationCategory.id" title="Permalink to this definition">¶</a></dt>
@@ -12610,6 +12635,13 @@ object the first time, the query is executed.</p>
 <dl class="attribute">
 <dt id="conservation.models.ConservationCategory.label">
 <code class="descname">label</code><a class="headerlink" href="#conservation.models.ConservationCategory.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationCategory.level">
+<code class="descname">level</code><a class="headerlink" href="#conservation.models.ConservationCategory.level" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
