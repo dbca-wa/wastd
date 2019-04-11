@@ -2,9 +2,11 @@
 """Conservation forms."""
 
 from django import forms
+from django.contrib.contenttypes.forms import generic_inlineformset_factory
+from django.contrib.admin import widgets as admin_widgets  # noqa
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
+from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit, Div
 from leaflet.forms.widgets import LeafletWidget
 
 from wastd.users import widgets as usr_widgets
@@ -187,6 +189,15 @@ class DocumentForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
+                'Document',
+                Div(
+                    Div('document_type', css_class="col-3"),
+                    Div('title', css_class="col-9"),
+                    css_class='row'
+                ),
+                "comments",
+            ),
+            Fieldset(
                 'Relations',
                 "taxa",
                 "communities",
@@ -194,18 +205,21 @@ class DocumentForm(forms.ModelForm):
             ),
             Fieldset(
                 'Dates',
-                "effective_from",
-                "effective_to",
-                "effective_from_commonwealth",
-                "effective_to_commonwealth",
-                "last_reviewed_on",
-                "review_due",
-            ),
-            Fieldset(
-                'Document',
-                "document_type",
-                "title",
-                "comments"
+                Div(
+                    Div('effective_from', css_class="col-6"),
+                    Div('effective_to', css_class="col-6"),
+                    css_class='row'
+                ),
+                Div(
+                    Div('effective_from_commonwealth', css_class="col-6"),
+                    Div('effective_to_commonwealth', css_class="col-6"),
+                    css_class='row'
+                ),
+                Div(
+                    Div('last_reviewed_on', css_class="col-6"),
+                    Div('review_due', css_class="col-6"),
+                    css_class='row'
+                ),
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')
@@ -228,16 +242,52 @@ class DocumentForm(forms.ModelForm):
             "effective_to_commonwealth",
             "last_reviewed_on",
             "review_due",
-            "comments"
+            "comments",
         )
         widgets = {
             'taxa': tax_widgets.TaxonMultipleWidget(),
             'communities': tax_widgets.CommunityMultipleWidget(),
             'team': usr_widgets.UserMultipleWidget(),
-            'effective_from': shared_forms.DateTimeInput(),
+            'effective_from': shared_forms.DateTimeInput(),  # widgets.AdminSplitDateTime(),
             'effective_to': shared_forms.DateTimeInput(),
             'effective_from_commonwealth': shared_forms.DateTimeInput(),
             'effective_to_commonwealth': shared_forms.DateTimeInput(),
             'last_reviewed_on': shared_forms.DateTimeInput(),
             'review_due': shared_forms.DateTimeInput(),
         }
+
+
+class FileAttachmentForm(forms.ModelForm):
+    """A model form for FileAttachments."""
+
+    class Meta:
+        """Class options."""
+
+        model = cons_models.FileAttachment
+        exclude = ()
+        widgets = {
+            "author": usr_widgets.UserWidget(),
+        }
+
+FileAttachmentFormSet = generic_inlineformset_factory(
+    cons_models.FileAttachment, form=FileAttachmentForm, extra=1
+)
+
+
+class FileAttachmentFormSetHelper(FormHelper):
+    """FileAttachmentFormSetHelper."""
+
+    def __init__(self, *args, **kwargs):
+        """Init."""
+        super(FileAttachmentFormSetHelper, self).__init__(*args, **kwargs)
+        self.form_method = 'post'
+        self.layout = Layout(
+            Fieldset(
+                'File attachment',
+                'attachment',
+                'title',
+                'author',
+                Div('current', 'confidential',),
+            ),
+        )
+        self.render_required_fields = True

@@ -291,6 +291,16 @@ class DocumentUpdateView(
             raise Http404
         return obj
 
+    def get_context_data(self, **kwargs):
+        """Context with inline formsets."""
+        data = super(DocumentUpdateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = cons_forms.FileAttachmentFormSet(self.request.POST, instance=self.object)
+        else:
+            data['formset'] = cons_forms.FileAttachmentFormSet(instance=self.object)
+        data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
+        return data
+
 
 # ---------------------------------------------------------------------------#
 # Create Views
@@ -387,3 +397,13 @@ class DocumentCreateView(
         # if "pk" in self.kwargs:
         #     initial["conservation_action"] = cons_models.ConservationAction.objects.get(pk=self.kwargs["pk"])
         return initial
+
+    def get_context_data(self, **kwargs):
+        """Context with inline formsets."""
+        data = super(DocumentCreateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = cons_forms.FileAttachmentFormSet(self.request.POST)
+        else:
+            data['formset'] = cons_forms.FileAttachmentFormSet()
+        data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
+        return data

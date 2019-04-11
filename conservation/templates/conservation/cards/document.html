@@ -83,12 +83,21 @@
     <a href="{{ object.get_absolute_url }}"
         title="View document"
         role="button"
-        class="btn btn-primary btn-sm btn-block">
+        class="btn btn-primary btn-sm btn-block text-left">
       <span class="oi oi-eye" aria-hidden="true"></span>
       <span class="oi oi-document" aria-hidden="true"></span>
       View details
     </a>
-    {% include 'conservation/include/document_add.html' with subject="taxa" document_id=object.pk label=True block=True %}
+    <a href="{{ object.update_url }}"
+        title="Edit document metadata and attachment"
+        role="button"
+        class="btn btn-primary btn-sm btn-block text-left">
+      <span class="oi oi-pencil" aria-hidden="true"></span>
+      <span class="oi oi-document" aria-hidden="true"></span>
+      Update metadata and attachments
+    </a>
+
+    <!-- {% include 'conservation/include/document_add.html' with subject="taxa" document_id=object.pk label=True block=True %} -->
 
   </div><!-- /.card-footer -->
 </div><!-- /.card -->
