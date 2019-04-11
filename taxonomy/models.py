@@ -1,44 +1,26 @@
 # -*- coding: utf-8 -*-
 """Taxonomic models.
 
-The models in this module maintain a plain copy of WACensus data as published by KMI Geoserver.
-The data is to be inserted and updated via the TSC API.
+The ``Hbv*`` models maintain a plain copy of WACensus data as published by KMI Geoserver.
+They are populated and updated through the TSC API.
+
+Taxon, Crossreferece, and Vernacular are populated from Hbv* through ``taxonomy.utils.make_taxon_names``.
+Community is initally populated from TEC through the API, then updated both through the admin and the API.
 """
 from __future__ import absolute_import, unicode_literals
-
-# import itertools
-# import urllib
-# import slugify
-# from datetime import timedelta
-# from dateutil import tz
 import logging
 
 from django.contrib.gis.db import models as geo_models
-# from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
-# from django.contrib.gis.db import models as geo_models
-# from django.contrib.gis.db.models.query import GeoQuerySet
 from django.urls import reverse
-# from rest_framework.reverse import reverse as rest_reverse
-# from django.template import loader
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+
 from mptt.models import MPTTModel, TreeForeignKey
-# from wastd.users.models import User
+
 from shared.models import LegacySourceMixin, UrlsMixin, RenderMixin
-
-
-# from django.utils.safestring import mark_safe
-
-# from durationfield.db.models.fields.duration import DurationField
-# from django.db.models.fields import DurationField
-# from django_fsm import FSMField, transition
-# from django_fsm_log.decorators import fsm_log_by
-# from django_fsm_log.models import StateLog
-
-# from polymorphic.models import PolymorphicModel
 
 
 logger = logging.getLogger(__name__)

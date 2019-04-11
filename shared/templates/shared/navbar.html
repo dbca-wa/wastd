@@ -23,7 +23,7 @@
             <span class="oi oi-grid-three-up" aria-hidden="true"></span>
             Species
             </a>
-            <div class="dropdown-menu" aria-labelledby="nav-li-tax">
+            <div class="dropdown-menu" aria-labelledby="nav-li-species">
 
               <a class="dropdown-item"
                  href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true"
@@ -158,10 +158,9 @@
             </div>
           </li>
 
-
           <li class="nav-item dropdown">
             <a  class="nav-link dropdown-toggle" href="/"
-              id="nav-li-species"
+              id="nav-li-conservation"
               title="Communities"
               data-toggle="dropdown"
               aria-haspopup="true"
@@ -169,7 +168,7 @@
             <span class="oi oi-grid-three-up" aria-hidden="true"></span>
             Communities
             </a>
-            <div class="dropdown-menu" aria-labelledby="nav-li-com">
+            <div class="dropdown-menu" aria-labelledby="nav-li-communities">
 
               <a class="dropdown-item"
                  href="{% url 'taxonomy:community-list' %}"
@@ -186,30 +185,36 @@
             </div>
           </li>
 
-          <li class="nav-item">
-            <a class="nav-link"
-               href="{% url 'conservation:conservationthreat-list' %}"
-               title="Browse, filter and search conservation threats">
-            <span class="oi oi-flash" aria-hidden="true"></span>
-            Threats
+          <li class="nav-item dropdown">
+            <a  class="nav-link dropdown-toggle" href="/"
+              id="nav-li-conservation"
+              title="Conservation"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false">
+            <span class="oi oi-pulse" aria-hidden="true"></span>
+            Conservation
             </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link"
-               href="{% url 'conservation:conservationaction-list' %}"
-               title="Browse, filter and search conservation actions">
-            <span class="oi oi-task" aria-hidden="true"></span>
-            Actions
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'conservation:document-list' %}"
-              title="Browse, filter and search conservation documents">
-            <span class="oi oi-document" aria-hidden="true"></span>
-            Documents
-            </a>
+            <div class="dropdown-menu" aria-labelledby="nav-li-conservation">
+              <a class="dropdown-item"
+                 href="{% url 'conservation:conservationthreat-list' %}"
+                 title="Browse, filter and search conservation threats">
+                <span class="oi oi-flash" aria-hidden="true"></span>
+                Threats
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'conservation:conservationaction-list' %}"
+                 title="Browse, filter and search conservation actions">
+                <span class="oi oi-flash" aria-hidden="true"></span>
+                Actions
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'conservation:document-list' %}"
+                 title="Browse, filter and search conservation documents">
+                <span class="oi oi-flash" aria-hidden="true"></span>
+                Documents
+              </a>
+            </div>
           </li>
 
           <li class="nav-item">
