@@ -47,21 +47,54 @@
           All »
         </a>
       </p>
+      <p>
+        <a class="btn btn-danger"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority"
+           title="Browse, filter and search conservation significantanimals">
+          Animals »
+        </a>
+        <a class="btn btn-danger"
+           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority"
+           title="Browse, filter and search conservation significant plants (sensu latu)">
+          Plants »
+        </a>
+        <a class="btn btn-danger" href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority"
+            title="Browse, filter and search conservation significant species">
+          All »
+        </a>
+      </p>
       <h4>Occurrences</h4>
       <p>
         <a class="btn btn-primary"
            href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.ANIMALS_PK }}"
-           title="Browse, filter and search threatened animal occurrences">
+           title="Browse, filter and search all animal occurrences">
           Animals »
         </a>
         <a class="btn btn-primary"
            href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.PLANTS_PK }}"
-           title="Browse, filter and search threatened plant (sensu latu) occurrences">
+           title="Browse, filter and search all plant (sensu latu) occurrences">
           Plants »
         </a>
         <a class="btn btn-primary"
           href="{% url 'occurrence:taxonareaencounter-list' %}"
-          title="Browse species occurrences">
+          title="Browse all species occurrences">
+          All »
+        </a>
+      </p>
+      <p>
+        <a class="btn btn-danger"
+           href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.ANIMALS_PK }}&conservation_level=threatened&conservation_level=priority"
+           title="Browse, filter and search conservation significant animal occurrences">
+          Animals »
+        </a>
+        <a class="btn btn-danger"
+           href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.PLANTS_PK }}&conservation_level=threatened&conservation_level=priority"
+           title="Browse, filter and search conservation significant plant (sensu latu) occurrences">
+          Plants »
+        </a>
+        <a class="btn btn-danger"
+          href="{% url 'occurrence:taxonareaencounter-list' %}?conservation_level=threatened&conservation_level=priority"
+          title="Browse conservation significant species occurrences">
           All »
         </a>
       </p>
@@ -123,16 +156,30 @@
       </p>
       <p>
         <a class="btn btn-primary" href="{% url 'taxonomy:community-list' %}"
-            title="Browse, filter and search Communities">
+            title="Browse, filter and search communities">
+          Browse communities »
+        </a>
+      </p>
+      <p>
+        <a class="btn btn-danger" href="{% url 'taxonomy:community-list' %}?conservation_level=threatened&conservation_level=priority"
+            title="Browse, filter and search conservation significant communities">
           Browse communities »
         </a>
       </p>
       <h4>Occurrences</h4>
       <p>
         <a class="btn btn-primary"
-        href="{% url 'occurrence:communityareaencounter-list' %}"
-        title="Browse community occurrences">
-        Browse occurrences »</a>
+          href="{% url 'occurrence:communityareaencounter-list' %}"
+          title="Browse community occurrences">
+          Browse occurrences »
+        </a>
+      </p>
+      <p>
+        <a class="btn btn-danger"
+          href="{% url 'occurrence:communityareaencounter-list' %}?conservation_level=threatened&conservation_level=priority"
+          title="Browse conservation significant community occurrences">
+          Browse occurrences »
+        </a>
       </p>
       <p>
         <a class="btn btn-primary"

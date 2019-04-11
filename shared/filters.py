@@ -22,11 +22,11 @@ class CustomDateRangeFilter(django_filters.DateRangeFilter):
         # ('yesterday', _('Yesterday')),
         ('past-six-months', _('Within past 6 months')),
         ('past-three-months', _('Within past 3 months')),
-        ('month', _('This month')),
-        # ('week', _('Within past week')),
+        ('this-month', _('This month')),
+        # ('past-week', _('Within past week')),
         ('next-three-months', _('Within next 3 months')),
         ('next-six-months', _('Within next 6 months')),
-        ('year', _('Anytime this year')),
+        ('this-year', _('Anytime this year')),
     ]
 
     filters = {
@@ -40,15 +40,15 @@ class CustomDateRangeFilter(django_filters.DateRangeFilter):
         #     '%s__month' % name: (now().date() - relativedelta(days=+1)).month,
         #     '%s__day' % name: (now().date() - relativedelta(days=+1)).day,
         # }),
-        # 'week': lambda qs, name: qs.filter(**{
+        # 'past-week': lambda qs, name: qs.filter(**{
         #     '%s__gte' % name: now().date() - relativedelta(days=-7),
         #     '%s__lt' % name: now().date() + relativedelta(days=+1),
         # }),
-        'month': lambda qs, name: qs.filter(**{
+        'this-month': lambda qs, name: qs.filter(**{
             '%s__year' % name: now().year,
             '%s__month' % name: now().month
         }),
-        'year': lambda qs, name: qs.filter(**{
+        'this-year': lambda qs, name: qs.filter(**{
             '%s__year' % name: now().year,
         }),
         'past-three-months': lambda qs, name: qs.filter(**{
@@ -86,17 +86,23 @@ FILTER_OVERRIDES = {
     },
     geo_models.PointField: {
         'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'intersects',
-                            'widget': LeafletWidget(attrs=LEAFLET_SETTINGS)},
+        'extra': lambda f: {
+            'lookup_expr': 'intersects',
+            'widget': LeafletWidget(attrs=LEAFLET_SETTINGS)
+        },
     },
     geo_models.PolygonField: {
         'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'intersects',
-                            'widget': LeafletWidget(attrs=LEAFLET_SETTINGS)},
+        'extra': lambda f: {
+            'lookup_expr': 'intersects',
+            'widget': LeafletWidget(attrs=LEAFLET_SETTINGS)
+        },
     },
     geo_models.MultiPolygonField: {
         'filter_class': django_filters.CharFilter,
-        'extra': lambda f: {'lookup_expr': 'intersects',
-                            'widget': LeafletWidget(attrs=LEAFLET_SETTINGS)},
+        'extra': lambda f: {
+            'lookup_expr': 'intersects',
+            'widget': LeafletWidget(attrs=LEAFLET_SETTINGS)
+        },
     }
 }

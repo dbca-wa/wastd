@@ -361,7 +361,7 @@ class ConservationAction(RenderMixin, UrlsMixin, models.Model):
         ConservationActionCategory,
         blank=True, null=True,
         on_delete=models.SET_NULL,
-        verbose_name=_("Managment action category"),
+        verbose_name=_("Conservation action category"),
         help_text=_("Choose the overarching category."),
     )
 
@@ -396,7 +396,7 @@ class ConservationAction(RenderMixin, UrlsMixin, models.Model):
     )
 
     status = models.PositiveIntegerField(
-        verbose_name=_("Status"),
+        verbose_name=_("Completion status"),
         default=STATUS_NEW,
         choices=STATUS_CHOICES,
         help_text=_("Completion status."), )

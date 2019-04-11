@@ -47,15 +47,15 @@ class ConservationThreatFilter(django_filters.FilterSet):
         filter_overrides = FILTER_OVERRIDES
         fields = [
             "admin_areas",
+            'category',
+            'current_impact',
+            'potential_onset',
+            'potential_impact',
             "taxa",
             "taxa__paraphyletic_groups",
             "communities",
             "document",
             'target_area',
-            'category',
-            'current_impact',
-            'potential_onset',
-            'potential_impact'
         ]
 
     def related_taxa_or_communities_in_area(self, queryset, name, value):
@@ -130,13 +130,13 @@ class ConservationActionFilter(django_filters.FilterSet):
         filter_overrides = FILTER_OVERRIDES
         fields = [
             "admin_areas",
+            'category',
+            'status',
             "taxa",
             "taxa__paraphyletic_groups",
             "communities",
             "document",
             'target_area',
-            'category',
-            'status',
         ]
 
     def related_taxa_or_communities_in_area(self, queryset, name, value):
@@ -208,15 +208,15 @@ class DocumentFilter(django_filters.FilterSet):
             "admin_areas",
             "document_type",
             "status",
-            "taxa__paraphyletic_groups",
-            "taxa",
-            "communities",
             "effective_from",
             "effective_to",
             "effective_from_commonwealth",
             "effective_to_commonwealth",
             "last_reviewed_on",
             "review_due",
+            "taxa__paraphyletic_groups",
+            "taxa",
+            "communities",
         ]
 
     def related_taxa_or_communities_in_area(self, queryset, name, value):
