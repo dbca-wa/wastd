@@ -790,7 +790,7 @@ class ActiveGazettalManager(models.Manager):
 
 @python_2_unicode_compatible
 class Gazettal(models.Model):
-    """The allocation of a ConservationCategory.
+    """The allocation of one or more ConservationCategories and Criteria.
 
     Approval state is tracked as django-fsm field.
     ConservationCategory can change during approval process.

@@ -106,10 +106,12 @@
       </p>
       <h4>Conservation listing</h4>
       <p>
-        <a class="btn btn-success"
-        href="{% url 'admin:conservation_taxongazettal_add' %}"
-        title="Nominate a species for a conservation status">
-        Lodge nomination »</a>
+        <a class="btn btn-primary btn-block mb-2 text-left"
+          href="{% url 'conservation:taxon-conservationlisting-create' %}"
+          title="Nominate a species for a conservation status">
+          <span class="oi oi-plus" aria-hidden="true"></span>
+          <span class="align-left">Propose conservation listing</span>
+        </a>
       </p>
 
       <p>

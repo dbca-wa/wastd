@@ -4,10 +4,12 @@
 from django import forms
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
 from django.contrib.admin import widgets as admin_widgets  # noqa
+from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit, Div
 from leaflet.forms.widgets import LeafletWidget
+from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget  # noqa
 
 from wastd.users import widgets as usr_widgets
 from conservation import models as cons_models
@@ -180,6 +182,95 @@ class ConservationActivityForm(forms.ModelForm):
         }
 
 
+class TaxonConservationListingForm(forms.ModelForm):
+    """Form for Taxon conservation listing (Gazettal)."""
+
+    category = forms.ModelMultipleChoiceField(
+        queryset=cons_models.ConservationCategory.objects.all(),
+        label=_("Conservation Categories"),
+        widget=ModelSelect2MultipleWidget(
+            model=cons_models.ConservationCategory,
+            search_fields=[
+                'code__icontains',
+                'label__icontains',
+                'description__icontains'
+            ],
+            dependent_fields={'conservation_list__scope': 'scope'},
+            max_results=500,
+        )
+    )
+
+    criteria = forms.ModelMultipleChoiceField(
+        queryset=cons_models.ConservationCriterion.objects.all(),
+        label=_("Conservation Criteria"),
+        widget=ModelSelect2MultipleWidget(
+            model=cons_models.ConservationCriterion,
+            search_fields=[
+                'code__icontains',
+                'label__icontains',
+                'description__icontains'
+            ],
+            dependent_fields={'conservation_list__scope': 'scope'},
+            max_results=500,
+        )
+    )
+
+    class Meta:
+        """Class options."""
+
+        model = cons_models.TaxonGazettal
+        fields = (
+            "taxon",
+            "scope",
+            "category",
+            "criteria",
+            "proposed_on",
+            "last_reviewed_on",
+            "review_due",
+            "comments"
+        )
+        widgets = {
+            'taxon': tax_widgets.TaxonWidget(),
+            'proposed_on': shared_forms.DateInput(),
+            'last_reviewed_on': shared_forms.DateInput(),
+            'review_due': shared_forms.DateInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(TaxonConservationListingForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+
+            Fieldset(
+                "Conservation Listing",
+                Div(
+                    Div("taxon", css_class="col col-12"),
+                    css_class='row'
+                ),
+                Div(
+                    Div('scope', css_class="col col-lg-4 col-md-12 col-12"),
+                    Div('category', css_class="col col-lg-4 col-md-6 col-12"),
+                    Div('criteria', css_class="col col-lg-4 col-md-6 col-12"),
+                    css_class='row'
+                ),
+            ),
+            Fieldset(
+                "Approval process",
+                Div(
+                    Div("proposed_on", css_class="col col-md-4 col-12"),
+                    Div("last_reviewed_on", css_class="col col-md-4 col-12"),
+                    Div("review_due", css_class="col col-md-4 col-12"),
+                    css_class='row'
+                ),
+                "comments",
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+
+
 class DocumentForm(forms.ModelForm):
     """Form for Documents."""
 
@@ -191,8 +282,8 @@ class DocumentForm(forms.ModelForm):
             Fieldset(
                 'Document',
                 Div(
-                    Div('document_type', css_class="col-3"),
-                    Div('title', css_class="col-9"),
+                    Div('document_type', css_class="col-3 col-sm-12"),
+                    Div('title', css_class="col-9 col-sm-12"),
                     css_class='row'
                 ),
                 "comments",
@@ -206,8 +297,8 @@ class DocumentForm(forms.ModelForm):
             Fieldset(
                 'Dates',
                 Div(
-                    Div('effective_from', css_class="col-6"),
-                    Div('effective_to', css_class="col-6"),
+                    Div('effective_from', css_class="col-6 col-sm-12"),
+                    Div('effective_to', css_class="col-6 col-sm-12"),
                     css_class='row'
                 ),
                 Div(
@@ -216,8 +307,8 @@ class DocumentForm(forms.ModelForm):
                     css_class='row'
                 ),
                 Div(
-                    Div('last_reviewed_on', css_class="col-6"),
-                    Div('review_due', css_class="col-6"),
+                    Div('last_reviewed_on', css_class="col-6 col-sm-12"),
+                    Div('review_due', css_class="col-6 col-sm-12"),
                     css_class='row'
                 ),
             ),
@@ -284,10 +375,14 @@ class FileAttachmentFormSetHelper(FormHelper):
         self.layout = Layout(
             Fieldset(
                 'File attachment',
-                'attachment',
-                'title',
-                'author',
-                Div('current', 'confidential',),
+                Div(
+                    Div('attachment', css_class="col col-lg-3 col-md-6 col-12"),
+                    Div('author', css_class="col col-lg-3 col-md-6 col-12"),
+                    Div('current', css_class="col col-lg-3 col-md-6 col-12"),
+                    Div('confidential', css_class="col col-lg-3 col-md-6 col-12"),
+                    css_class='row'
+                ),
+                'title'
             ),
         )
         self.render_required_fields = True

@@ -81,7 +81,7 @@
     {% admin_taxon_change_link request.user block=False label=False %}
     </div>
     <div class="row">
-    {% taxongazettal_add request.user block=True label=True %}
+    {% include 'conservation/include/taxonconservationlisting_add.html' with label=True block=True taxon=object %}
     {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=True %}
     {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=True %}
     {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=True %}

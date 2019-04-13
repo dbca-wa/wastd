@@ -383,6 +383,33 @@ class ConservationActivityCreateView(
         )
 
 
+class TaxonConservationListingCreateView(
+        SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
+    """Create view for Taxon Conservation Listing."""
+
+    template_name = "pages/default_form.html"
+    form_class = cons_forms.TaxonConservationListingForm
+    model = cons_models.TaxonGazettal
+
+    def get_initial(self):
+        """Initial form values."""
+        initial = super(TaxonConservationListingCreateView, self).get_initial()
+        if "taxon" in self.request.GET:
+            initial["taxon"] = self.request.GET["taxon"]
+        initial["proposed_on"] = timezone.now()
+        return initial
+
+    def get_context_data(self, **kwargs):
+        """Context with inline formsets."""
+        data = super(TaxonConservationListingCreateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = cons_forms.FileAttachmentFormSet(self.request.POST)
+        else:
+            data['formset'] = cons_forms.FileAttachmentFormSet()
+        data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
+        return data
+
+
 class DocumentCreateView(
         SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
     """Create view for Document."""

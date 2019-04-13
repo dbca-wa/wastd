@@ -6,7 +6,7 @@
     target="_">
   <span class="oi oi-plus" aria-hidden="true"></span>
   <span class="oi oi-document" aria-hidden="true"></span>
-  {% if label %}Attach new document{% endif %}
+  {% if label %}Attach new conservation document{% endif %}
 </a>
 {% endif %}
 <a href="{% url 'conservation:document-create' %}?{{ subject }}={{ object.pk }}"
@@ -15,5 +15,5 @@
     class="btn btn-primary btn-sm{% if block %} btn-block{% endif%} text-left">
   <span class="oi oi-plus" aria-hidden="true"></span>
   <span class="oi oi-document" aria-hidden="true"></span>
-  {% if label %}Attach new document{% endif %}
+  {% if label %}Attach new conservation document{% endif %}
 </a>

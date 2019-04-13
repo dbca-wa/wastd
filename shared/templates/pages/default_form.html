@@ -6,10 +6,10 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
+      {% crispy form form.helper %}
       {% if formset %}
       {% crispy formset formset_helper %}
       {% endif %}
-      {% crispy form form.helper %}
     </div><!-- .col -->
   </div><!-- .row -->
 </div><!-- .container -->
