@@ -286,8 +286,8 @@ class TaxonConservationListingForm(forms.ModelForm):
                 ),
                 Div(
                     # Div('scope', css_class="col col-lg-4 col-md-12 col-12"),
-                    Div('category', css_class="col col-md-6 col-12"),
-                    Div('criteria', css_class="col col-md-6 col-12"),
+                    Div('category', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    Div('criteria', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
                     css_class='row'
                 ),
             ),
