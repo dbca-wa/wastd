@@ -186,31 +186,67 @@ class TaxonConservationListingForm(forms.ModelForm):
     """Form for Taxon conservation listing (Gazettal)."""
 
     category = forms.ModelMultipleChoiceField(
-        queryset=cons_models.ConservationCategory.objects.all(),
+        queryset=cons_models.ConservationCategory.objects.filter(
+            conservation_list__scope_species=True,
+            conservation_list__scope_wa=True,
+            conservation_list__active_to__isnull=True
+        ).prefetch_related(
+            'conservation_list'
+        ).order_by(
+            "conservation_list__code", "rank"
+        ),
         label=_("Conservation Categories"),
         widget=ModelSelect2MultipleWidget(
             model=cons_models.ConservationCategory,
+            queryset=cons_models.ConservationCategory.objects.filter(
+                conservation_list__scope_species=True,
+                conservation_list__scope_wa=True,
+                conservation_list__active_to__isnull=True
+            ).prefetch_related(
+                'conservation_list'
+            ).order_by(
+                "conservation_list__code", "rank"
+            ),
             search_fields=[
+                'conservation_list__code__icontains',
                 'code__icontains',
                 'label__icontains',
                 'description__icontains'
             ],
-            dependent_fields={'conservation_list__scope': 'scope'},
+            # dependent_fields={'conservation_list__code': 'scope'},
             max_results=500,
         )
     )
 
     criteria = forms.ModelMultipleChoiceField(
-        queryset=cons_models.ConservationCriterion.objects.all(),
+        queryset=cons_models.ConservationCriterion.objects.filter(
+            conservation_list__scope_species=True,
+            conservation_list__scope_wa=True,
+            conservation_list__active_to__isnull=True
+        ).prefetch_related(
+            'conservation_list'
+        ).order_by(
+            "conservation_list__code", "rank"
+        ),
         label=_("Conservation Criteria"),
         widget=ModelSelect2MultipleWidget(
             model=cons_models.ConservationCriterion,
+            queryset=cons_models.ConservationCriterion.objects.filter(
+                conservation_list__scope_species=True,
+                conservation_list__scope_wa=True,
+                conservation_list__active_to__isnull=True
+            ).prefetch_related(
+                'conservation_list'
+            ).order_by(
+                "conservation_list__code", "rank"
+            ),
             search_fields=[
+                'conservation_list__code__icontains',
                 'code__icontains',
                 'label__icontains',
                 'description__icontains'
             ],
-            dependent_fields={'conservation_list__scope': 'scope'},
+            # dependent_fields={'conservation_list__code': 'scope'},
             max_results=500,
         )
     )
@@ -221,7 +257,7 @@ class TaxonConservationListingForm(forms.ModelForm):
         model = cons_models.TaxonGazettal
         fields = (
             "taxon",
-            "scope",
+            # "scope",
             "category",
             "criteria",
             "proposed_on",
@@ -249,9 +285,9 @@ class TaxonConservationListingForm(forms.ModelForm):
                     css_class='row'
                 ),
                 Div(
-                    Div('scope', css_class="col col-lg-4 col-md-12 col-12"),
-                    Div('category', css_class="col col-lg-4 col-md-6 col-12"),
-                    Div('criteria', css_class="col col-lg-4 col-md-6 col-12"),
+                    # Div('scope', css_class="col col-lg-4 col-md-12 col-12"),
+                    Div('category', css_class="col col-md-6 col-12"),
+                    Div('criteria', css_class="col col-md-6 col-12"),
                     css_class='row'
                 ),
             ),

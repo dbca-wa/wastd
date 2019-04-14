@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Conservation views."""
 from __future__ import unicode_literals
+from dateutil.relativedelta import relativedelta
 
 from django.http import Http404
 from django.urls import reverse
@@ -397,6 +398,7 @@ class TaxonConservationListingCreateView(
         if "taxon" in self.request.GET:
             initial["taxon"] = self.request.GET["taxon"]
         initial["proposed_on"] = timezone.now()
+        initial["review_due"] = timezone.now() + relativedelta(years=+5)
         return initial
 
     def get_context_data(self, **kwargs):
