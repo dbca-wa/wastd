@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block extrastyle %}
-{% compress css %}
+{% compress css %} {# # pragma: no cover #}
 {% leaflet_css %}
 {% include 'shared/map.css' %}
 <style>
@@ -29,7 +29,7 @@
 <script src="//use.fontawesome.com/f8f5501a45.js"></script>
 {% leaflet_js %}
 {% include 'shared/map.js' %}
-{% compress js %}
+{% compress js %} {# # pragma: no cover #}
 <script type="text/javascript">
 function map_init(map, options) {
     {% include 'shared/styles.js' %}

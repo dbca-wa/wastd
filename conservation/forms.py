@@ -37,14 +37,20 @@ class ConservationThreatForm(forms.ModelForm):
             ),
             Fieldset(
                 'Threat',
-                'encountered_on',
-                'encountered_by',
-                'category',
-                'cause',
-                "area_affected_percent",
-                "current_impact",
-                "potential_impact",
-                "potential_onset",
+                Div(
+                    Div('encountered_on', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    Div('encountered_by', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    css_class='row'
+                ),
+                Div(
+                    Div('area_affected_percent', css_class="col col-lg-3 col-md-6 col-sm-12 col-12"),
+                    Div('current_impact', css_class="col col-lg-3 col-md-6 col-sm-12 col-12"),
+                    Div('potential_impact', css_class="col col-lg-3 col-md-6 col-sm-12 col-12"),
+                    Div('potential_onset', css_class="col col-lg-3 col-md-6 col-sm-12 col-12"),
+                    css_class='row'
+                ),
+                Div(Div('category', css_class="col col-12"), css_class='row'),
+                Div(Div('cause', css_class="col col-12"), css_class='row'),
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')
@@ -105,9 +111,11 @@ class ConservationActionForm(forms.ModelForm):
             Fieldset(
                 'Implementation',
                 'implementation_notes',
-                'completion_date',
-                'expenditure',
-                # 'attachments'
+                Div(
+                    Div('completion_date', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    Div('expenditure', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    css_class='row'
+                ),
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')
@@ -307,6 +315,130 @@ class TaxonConservationListingForm(forms.ModelForm):
         )
 
 
+class CommunityConservationListingForm(forms.ModelForm):
+    """Form for Community conservation listing (Gazettal)."""
+
+    category = forms.ModelMultipleChoiceField(
+        queryset=cons_models.ConservationCategory.objects.filter(
+            conservation_list__scope_communities=True,
+            conservation_list__scope_wa=True,
+            conservation_list__active_to__isnull=True
+        ).prefetch_related(
+            'conservation_list'
+        ).order_by(
+            "conservation_list__code", "rank"
+        ),
+        label=_("Conservation Categories"),
+        widget=ModelSelect2MultipleWidget(
+            model=cons_models.ConservationCategory,
+            queryset=cons_models.ConservationCategory.objects.filter(
+                conservation_list__scope_communities=True,
+                conservation_list__scope_wa=True,
+                conservation_list__active_to__isnull=True
+            ).prefetch_related(
+                'conservation_list'
+            ).order_by(
+                "conservation_list__code", "rank"
+            ),
+            search_fields=[
+                'conservation_list__code__icontains',
+                'code__icontains',
+                'label__icontains',
+                'description__icontains'
+            ],
+            # dependent_fields={'conservation_list__code': 'scope'},
+            max_results=500,
+        )
+    )
+
+    criteria = forms.ModelMultipleChoiceField(
+        queryset=cons_models.ConservationCriterion.objects.filter(
+            conservation_list__scope_communities=True,
+            conservation_list__scope_wa=True,
+            conservation_list__active_to__isnull=True
+        ).prefetch_related(
+            'conservation_list'
+        ).order_by(
+            "conservation_list__code", "rank"
+        ),
+        label=_("Conservation Criteria"),
+        widget=ModelSelect2MultipleWidget(
+            model=cons_models.ConservationCriterion,
+            queryset=cons_models.ConservationCriterion.objects.filter(
+                conservation_list__scope_communities=True,
+                conservation_list__scope_wa=True,
+                conservation_list__active_to__isnull=True
+            ).prefetch_related(
+                'conservation_list'
+            ).order_by(
+                "conservation_list__code", "rank"
+            ),
+            search_fields=[
+                'conservation_list__code__icontains',
+                'code__icontains',
+                'label__icontains',
+                'description__icontains'
+            ],
+            # dependent_fields={'conservation_list__code': 'scope'},
+            max_results=500,
+        )
+    )
+
+    class Meta:
+        """Class options."""
+
+        model = cons_models.CommunityGazettal
+        fields = (
+            "community",
+            # "scope",
+            "category",
+            "criteria",
+            "proposed_on",
+            "last_reviewed_on",
+            "review_due",
+            "comments"
+        )
+        widgets = {
+            'community': tax_widgets.CommunityWidget(),
+            'proposed_on': shared_forms.DateInput(),
+            'last_reviewed_on': shared_forms.DateInput(),
+            'review_due': shared_forms.DateInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(CommunityConservationListingForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Conservation Listing",
+                Div(
+                    Div("community", css_class="col col-12"),
+                    css_class='row'
+                ),
+                Div(
+                    # Div('scope', css_class="col col-lg-4 col-md-12 col-12"),
+                    Div('category', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    Div('criteria', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    css_class='row'
+                ),
+            ),
+            Fieldset(
+                "Approval process",
+                Div(
+                    Div("proposed_on", css_class="col col-md-4 col-12"),
+                    Div("last_reviewed_on", css_class="col col-md-4 col-12"),
+                    Div("review_due", css_class="col col-md-4 col-12"),
+                    css_class='row'
+                ),
+                "comments",
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+
+
 class DocumentForm(forms.ModelForm):
     """Form for Documents."""
 
@@ -333,18 +465,18 @@ class DocumentForm(forms.ModelForm):
             Fieldset(
                 'Dates',
                 Div(
-                    Div('effective_from', css_class="col-6 col-sm-12"),
-                    Div('effective_to', css_class="col-6 col-sm-12"),
+                    Div('effective_from', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    Div('effective_to', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
                     css_class='row'
                 ),
                 Div(
-                    Div('effective_from_commonwealth', css_class="col-6"),
-                    Div('effective_to_commonwealth', css_class="col-6"),
+                    Div('last_reviewed_on', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    Div('review_due', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
                     css_class='row'
                 ),
                 Div(
-                    Div('last_reviewed_on', css_class="col-6 col-sm-12"),
-                    Div('review_due', css_class="col-6 col-sm-12"),
+                    Div('effective_from_commonwealth', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    Div('effective_to_commonwealth', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
                     css_class='row'
                 ),
             ),

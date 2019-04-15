@@ -58,46 +58,46 @@ def conservationaction_cards(user, actions, area=None):
 # -----------------------------------------------------------------------------
 # Conservation listing
 #
-@register.inclusion_tag('conservation/include/gazettal_row.html', takes_context=True)
-def taxongazettal_rows(context, user):
-    """Render a Gazettal as row."""
-    return {
-        "object": context["object"],
-        "is_staff": True,
-        "gazettals": context["object"].taxon_gazettal.all
-    }
+# @register.inclusion_tag('conservation/include/gazettal_row.html', takes_context=True)
+# def taxongazettal_rows(context, user):
+#     """Render a Gazettal as row."""
+#     return {
+#         "object": context["object"],
+#         "is_staff": True,
+#         "gazettals": context["object"].taxon_gazettal.all
+#     }
 
 
-@register.inclusion_tag('conservation/include/gazettal_row.html', takes_context=True)
-def communitygazettal_rows(context, user):
-    """Render a Gazettal as row."""
-    return {
-        "object": context["object"],
-        "is_staff": True,
-        "gazettals": context["object"].community_gazettal.all
-    }
+# @register.inclusion_tag('conservation/include/gazettal_row.html', takes_context=True)
+# def communitygazettal_rows(context, user):
+#  s   """Render a Gazettal as row."""
+#     return {
+#         "object": context["object"],
+#         "is_staff": True,
+#         "gazettals": context["object"].community_gazettal.all
+#     }
 
 
-@register.inclusion_tag('conservation/include/taxongazettal_add.html', takes_context=True)
-def taxongazettal_add(context, user, block=False, label=False):
-    """Render an "add cons listing" link for staff."""
-    return {
-        "object": context["object"],
-        "is_staff": True,
-        "block": block,
-        "label": label
-    }
+# @register.inclusion_tag('conservation/include/taxongazettal_add.html', takes_context=True)
+# def taxongazettal_add(context, user, block=False, label=False):
+#     """Render an "add cons listing" link for staff."""
+#     return {
+#         "object": context["object"],
+#         "is_staff": True,
+#         "block": block,
+#         "label": label
+#     }
 
 
-@register.inclusion_tag('conservation/include/communitygazettal_add.html', takes_context=True)
-def communitygazettal_add(context, user, block=False, label=False):
-    """Render an "add cons listing" link for staff."""
-    return {
-        "object": context["object"],
-        "is_staff": True,
-        "block": block,
-        "label": label
-    }
+# @register.inclusion_tag('conservation/include/communitygazettal_add.html', takes_context=True)
+# def communitygazettal_add(context, user, block=False, label=False):
+#     """Render an "add cons listing" link for staff."""
+#     return {
+#         "object": context["object"],
+#         "is_staff": True,
+#         "block": block,
+#         "label": label
+#     }
 
 
 # -----------------------------------------------------------------------------

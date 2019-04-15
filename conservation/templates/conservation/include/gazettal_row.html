@@ -1,4 +1,4 @@
-{% for gazettal in gazettals %}
+{% for gazettal in object.conservation_listings.all %}
 <div class="row d-block">
   <div class="col-12">
     <div class="card shadow-lg">
@@ -6,7 +6,7 @@
         <h5 class="card-title">
           {{ gazettal }}
           <small class="float-right">
-            {% if is_staff %}
+            {% if request.user.is_staff %}
             <a href="{{ gazettal.absolute_admin_url }}"
               class="btn btn-success btn-sm"
               title="Because you have DBCA Curator privileges, you may edit this conservation listing." target="_">
@@ -64,8 +64,6 @@
             {% endif %}
           </span>
         </p>
-
-
       </div>
     </div>
   </div>

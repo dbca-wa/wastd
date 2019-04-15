@@ -40,9 +40,12 @@ urlpatterns = [
             views.ConservationActivityUpdateView.as_view(),
             name="conservationactivity-update"),
 
-    re_path(r'^taxon-conservationlisting/create/$',
+    re_path(r'^nominate-taxon/$',
             views.TaxonConservationListingCreateView.as_view(),
             name="taxon-conservationlisting-create"),
+    re_path(r'^nominate-community/$',
+            views.CommunityConservationListingCreateView.as_view(),
+            name="community-conservationlisting-create"),
 
     re_path(r'^documents/$',
             views.DocumentListView.as_view(),

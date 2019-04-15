@@ -388,6 +388,12 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'pages/index.html')
 
+    def test_healthcheck_loads(self):
+        """Test index page."""
+        response = self.client.get(reverse("healthcheck"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'pages/healthcheck.html')
+
     def test_map_loads(self):
         """Test map page."""
         response = self.client.get(reverse("map"))

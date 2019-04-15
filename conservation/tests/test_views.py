@@ -309,9 +309,15 @@ class TaxonGazettalViewTests(TestCase):
         response = self.client.get(self.gaz.absolute_admin_add_url)
         self.assertEqual(response.status_code, 200)
 
+    def test_create_view(self):
+        """Test TaxonGazettal create view."""
+        url = reverse("conservation:taxon-conservationlisting-create")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
-class CommunityGazettalViewTests(TestCase):
-    """TaxonGazettal view tests."""
+
+class CommunityConservationListingViewTests(TestCase):
+    """CommunityConservationListing view tests."""
 
     def setUp(self):
         """Set up."""
@@ -346,6 +352,12 @@ class CommunityGazettalViewTests(TestCase):
     def test_absolute_admin_add_url(self):
         """Test absolute_admin_add_url loads."""
         response = self.client.get(self.gaz.absolute_admin_add_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_view(self):
+        """Test CommunityConservationListing create view."""
+        url = reverse("conservation:community-conservationlisting-create")
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
 

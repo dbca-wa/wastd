@@ -73,7 +73,7 @@ class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
             "-rank",
         ).prefetch_related(
             "paraphyletic_groups",
-            "taxon_gazettal",
+            "conservation_listings",
             "conservationthreat_set",
             "conservationaction_set",
             "document_set",
@@ -116,10 +116,10 @@ class CommunityListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView
     def get_queryset(self):
         """Queryset."""
         queryset = Community.objects.all().prefetch_related(
-            "community_gazettal",
+            "conservation_listings",
             "conservationthreat_set",
             "conservationaction_set",
-            "document_set"
+            "document_set",
         )
         return CommunityFilter(self.request.GET, queryset=queryset).qs
 
@@ -139,7 +139,10 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
             name_id=self.kwargs.get("name_id")
         ).prefetch_related(
             "taxon_occurrences",
+            "conservation_listings",
             "conservationaction_set",
+            "conservationthreat_set",
+            "document_set",
         ).first()
         if not t:
             raise Http404
@@ -191,7 +194,10 @@ class CommunityDetailView(DetailViewBreadcrumbMixin, DetailView):
             pk=self.kwargs.get("pk")
         ).prefetch_related(
             "community_occurrences",
-            "conservationaction_set"
+            "conservation_listings",
+            "conservationaction_set",
+            "conservationthreat_set",
+            "document_set",
         ).first()
         if not com:
             raise Http404  # pragma: no cover

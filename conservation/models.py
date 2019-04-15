@@ -532,8 +532,6 @@ def update_consaction_caches(sender, instance, *args, **kwargs):
 
 # -----------------------------------------------------------------------------
 # Conservation lists
-
-
 @python_2_unicode_compatible
 class ConservationList(models.Model):
     """A Conservation List like BCA, EPBC, RedList."""
@@ -1326,7 +1324,7 @@ class TaxonGazettal(Gazettal):
 
     taxon = models.ForeignKey(Taxon,
                               on_delete=models.CASCADE,
-                              related_name="taxon_gazettal")
+                              related_name="conservation_listings")
 
     class Meta:
         """Class opts."""
@@ -1400,7 +1398,7 @@ class CommunityGazettal(Gazettal):
 
     community = models.ForeignKey(Community,
                                   on_delete=models.CASCADE,
-                                  related_name="community_gazettal")
+                                  related_name="conservation_listings")
 
     class Meta:
         """Class opts."""

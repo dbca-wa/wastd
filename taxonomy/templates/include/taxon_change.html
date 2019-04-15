@@ -1,9 +1,9 @@
-{% if is_staff %}
+{% if request.user.is_staff %}
 <a href="{% url 'admin:taxonomy_taxon_change' object.pk %}"
-  {% if btn %}class="btn btn-success btn-sm{% if block %} btn-block{% endif%}"{% endif%}
+  {% if btn %}class="btn btn-success btn-sm{% if block %} btn-block{% endif%} text-left"{% endif%}
   role="button"
   target="_"
-  title="Edit Taxon details.">
+  title="Edit Taxon details">
   <span class="oi oi-pencil" aria-hidden="true"></span>
   {% if label %}Edit Taxon details{% endif %}
 </a>

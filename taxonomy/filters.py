@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 """Taxonomy filters."""
 # from django.contrib.auth.models import User
-import django_filters
-from conservation.models import ConservationCategory
 from django.contrib.gis.db import models as geo_models
 from django.contrib.gis.db.models import Extent, Union, Collect  # noqa
 from django.db.models import Q
+import django_filters
+from django_filters.widgets import BooleanWidget  # noqa
 from django_filters.filters import (  # noqa
-    BooleanFilter,
+    BooleanFilter, CharFilter,
     ChoiceFilter, MultipleChoiceFilter,
     ModelChoiceFilter, ModelMultipleChoiceFilter)
-from django_filters.widgets import BooleanWidget  # noqa
+
+from leaflet.forms.widgets import LeafletWidget
 
 # from django import forms
 from conservation import models as cons_models
@@ -32,17 +33,6 @@ class TaxonFilter(django_filters.FilterSet):
         label="Taxonomic name is current",
         widget=BooleanWidget()
     )
-    taxon_gazettal__category = ModelChoiceFilter(
-        label="Conservation listed as",
-        queryset=ConservationCategory.objects.filter(
-            conservation_list__scope_species=True
-        ).order_by(
-            "conservation_list__code", "rank"
-        ).prefetch_related(
-            "conservation_list"
-        )
-    )
-    eoo = geo_models.PolygonField()
     admin_areas = ModelMultipleChoiceFilter(
         label="DBCA Regions and Districts",
         queryset=Area.objects.filter(
@@ -51,10 +41,27 @@ class TaxonFilter(django_filters.FilterSet):
                 Area.AREATYPE_DBCA_DISTRICT]),
         method='taxa_occurring_in_area'
     )
+    eoo = geo_models.PolygonField()
+    aoo = CharFilter(
+        label="Area of Occupancy (AOO) intersects",
+        widget=LeafletWidget(),
+        method="taxa_occurring_in_poly",
+    )
     conservation_level = MultipleChoiceFilter(
         label="Conservation Level",
         choices=cons_models.ConservationCategory.LEVEL_CHOICES,
         method='taxon_conservation_level'
+    )
+    categories = ModelMultipleChoiceFilter(
+        label="Conservation Listing Categories",
+        queryset=cons_models.ConservationCategory.objects.filter(
+            conservation_list__scope_species=True
+        ).order_by(
+            "conservation_list__code", "rank"
+        ).prefetch_related(
+            "conservation_list"
+        ),
+        method="taxa_with_conservation_criteria"
     )
 
     class Meta:
@@ -65,8 +72,9 @@ class TaxonFilter(django_filters.FilterSet):
             "paraphyletic_groups",
             "admin_areas",
             "eoo",
+            "aoo",
             "conservation_level",
-            "taxon_gazettal__category",
+            "categories",
             "taxonomic_name",
             "vernacular_names",
             "rank",
@@ -83,7 +91,7 @@ class TaxonFilter(django_filters.FilterSet):
         return queryset.filter(children__isnull=value)
 
     def taxa_occurring_in_area(self, queryset, name, value):
-        """Return Taxa occurring in the given Area.
+        """Return Taxa occurring in the given list of ``Area`` instances.
 
         * The filter returns a list of Area objects as ``value``
         * We need to extract their PKs to create a queryset equivalent to
@@ -102,6 +110,26 @@ class TaxonFilter(django_filters.FilterSet):
                 [x["taxon__pk"]
                  for x in occ_models.TaxonAreaEncounter.objects.filter(
                     Q(point__intersects=search_area) | Q(geom__intersects=search_area)
+                ).values("taxon__pk")]
+            )
+            return queryset.filter(pk__in=taxon_pks_in_area)
+        else:
+            return queryset
+
+    def taxa_occurring_in_poly(self, queryset, name, value):
+        """Return Taxa occurring in the given Area polygon.
+
+        * The filter returns a ``value``
+        * (magic) value becomes search area
+        * The Taxon PKs are calculated from occurrences (TaxonAreaEncounters)
+          ``intersect``ing the search_area
+        * The queryset is filtered by the list of Taxon PKs with occurrences
+        """
+        if value:
+            taxon_pks_in_area = set(
+                [x["taxon__pk"]
+                 for x in occ_models.TaxonAreaEncounter.objects.filter(
+                    Q(point__intersects=value) | Q(geom__intersects=value)
                 ).values("taxon__pk")]
             )
             return queryset.filter(pk__in=taxon_pks_in_area)
@@ -129,21 +157,28 @@ class TaxonFilter(django_filters.FilterSet):
         else:
             return queryset
 
+    def taxa_with_conservation_criteria(self, queryset, name, value):
+        """Return Taxa matching a conservation level.
+
+        * The filter returns a list of ConservationCategories as ``value``
+        * The Taxon PKs are calculated from TaxonGazettals
+          with categories matching the list of categories in ``value``
+        * The queryset is filtered by the list of Taxon PKs
+          matching the conservation level
+        """
+        if value:
+            taxon_pks = set(
+                [x["taxon__pk"] for x in
+                 cons_models.TaxonGazettal.objects.filter(
+                    category__in=value).values("taxon__pk")])
+            return queryset.filter(pk__in=taxon_pks)
+        else:
+            return queryset
+
 
 class CommunityFilter(django_filters.FilterSet):
     """Filter for Community."""
 
-    community_gazettal__category = ModelMultipleChoiceFilter(
-        queryset=ConservationCategory.objects.filter(
-            conservation_list__scope_communities=True
-        ).order_by(
-            "conservation_list__code",
-            "rank"
-        ).prefetch_related(
-            "conservation_list"
-        )
-    )
-    eoo = geo_models.PolygonField()
     admin_areas = ModelMultipleChoiceFilter(
         label="DBCA Regions and Districts",
         queryset=Area.objects.filter(
@@ -152,10 +187,27 @@ class CommunityFilter(django_filters.FilterSet):
                 Area.AREATYPE_DBCA_DISTRICT]),
         method='communities_occurring_in_area'
     )
+    eoo = geo_models.PolygonField()
+    aoo = CharFilter(
+        label="Area of Occupancy (AOO) intersects",
+        widget=LeafletWidget(),
+        method="communities_occurring_in_poly",
+    )
     conservation_level = MultipleChoiceFilter(
         label="Conservation Level",
         choices=cons_models.ConservationCategory.LEVEL_CHOICES,
         method='community_conservation_level'
+    )
+    categories = ModelMultipleChoiceFilter(
+        label="Conservation Listing Categories",
+        queryset=cons_models.ConservationCategory.objects.filter(
+            conservation_list__scope_communities=True
+        ).order_by(
+            "conservation_list__code", "rank"
+        ).prefetch_related(
+            "conservation_list"
+        ),
+        method="communities_with_conservation_criteria"
     )
 
     class Meta:
@@ -165,8 +217,9 @@ class CommunityFilter(django_filters.FilterSet):
         fields = [
             "admin_areas",
             "eoo",
+            "aoo",
             "conservation_level",
-            "community_gazettal__category",
+            "categories",
             "code",
             "name",
             "description",
@@ -200,6 +253,26 @@ class CommunityFilter(django_filters.FilterSet):
         else:
             return queryset
 
+    def communities_occurring_in_poly(self, queryset, name, value):
+        """Return Communities occurring in the given Area polygon.
+
+        * The filter returns a ``value``
+        * (magic) value becomes search area
+        * The Community PKs are calculated from occurrences (CommunityAreaEncounters)
+          ``intersect``ing the search_area
+        * The queryset is filtered by the list of Community PKs with occurrences
+        """
+        if value:
+            pks_in_area = set(
+                [x["community__pk"]
+                 for x in occ_models.CommunityAreaEncounter.objects.filter(
+                    Q(point__intersects=value) | Q(geom__intersects=value)
+                ).values("community__pk")]
+            )
+            return queryset.filter(pk__in=pks_in_area)
+        else:
+            return queryset
+
     def community_conservation_level(self, queryset, name, value):
         """Return Communities matching a conservation level.
 
@@ -217,5 +290,23 @@ class CommunityFilter(django_filters.FilterSet):
                 status=cons_models.Gazettal.STATUS_EFFECTIVE,
                 category__level__in=value).values("community__pk")])
             return queryset.filter(pk__in=pks)
+        else:
+            return queryset
+
+    def communities_with_conservation_criteria(self, queryset, name, value):
+        """Return Communities matching a conservation level.
+
+        * The filter returns a list of ConservationCategories as ``value``
+        * The Taxon PKs are calculated from CommunityGazettals
+          with categories matching the list of categories in ``value``
+        * The queryset is filtered by the list of Taxon PKs
+          matching the conservation level
+        """
+        if value:
+            print(value)
+            community_pks = set([x["community__pk"] for x in
+                                 cons_models.CommunityGazettal.objects.filter(
+                category__in=value).values("community__pk")])
+            return queryset.filter(pk__in=community_pks)
         else:
             return queryset

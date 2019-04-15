@@ -78,14 +78,21 @@
       <span class="oi oi-project" aria-hidden="true"></span>
       Explore
     </a>
-    {% admin_taxon_change_link request.user block=False label=False %}
+    <a class="btn btn-secondary btn-sm" data-toggle="collapse"
+      href="#actions{{ object.pk }}" role="button" aria-expanded="false" aria-controls="actions{{ object.pk }}">
+      <span class="oi oi-expand-down" aria-hidden="true"></span>
+      More
+    </a>
     </div>
+    <div class="collapse" id="actions{{ object.pk }}">
     <div class="row">
+    {% admin_taxon_change_link request.user block=True label=True %}
     {% include 'conservation/include/taxonconservationlisting_add.html' with label=True block=True taxon=object %}
     {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=True %}
     {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=True %}
     {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=True %}
     {% taxonareaencounter_add_link object.name_id block=True label=True %}
+    </div>
     </div>
   </div>
 </div>

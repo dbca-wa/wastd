@@ -264,6 +264,11 @@ class TaxonBulkViewTests(TestCase):
         'taxonomy/fixtures/test_community.json',
     ]
 
+    def test_taxon_list_url_loads(self):
+        """Test taxon-list."""
+        response = self.client.get(Taxon.objects.last().list_url())
+        self.assertEqual(response.status_code, 200)
+
     def test_taxon_detail_url_loads(self):
         """Test Taxon detail_url."""
         t = Taxon.objects.last()

@@ -1882,7 +1882,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         return [{'label': x.label_cache,
                  'url': x.absolute_admin_url,
                  'is_active': x.is_active}
-                for x in self.taxon_gazettal.all()]
+                for x in self.conservation_listings.all()]
 
     @property
     def active_gazettals(self):
@@ -1895,7 +1895,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         return [{'label': x.label_cache,
                  'url': x.absolute_admin_url,
                  'is_active': x.is_active}
-                for x in self.taxon_gazettal.filter(
+                for x in self.conservation_listings.filter(
                 status=Gazettal.STATUS_EFFECTIVE)]
 
     @property
@@ -2153,7 +2153,7 @@ class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
         return [{'label': x.label_cache,
                  'url': x.absolute_admin_url,
                  'is_active': x.is_active}
-                for x in self.community_gazettal.all()]
+                for x in self.conservation_listings.all()]
 
     @property
     def active_gazettals(self):
@@ -2166,5 +2166,5 @@ class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
         return [{'label': x.label_cache,
                  'url': x.absolute_admin_url,
                  'is_active': x.is_active}
-                for x in self.community_gazettal.filter(
+                for x in self.conservation_listings.filter(
             status=Gazettal.STATUS_EFFECTIVE)]

@@ -20,17 +20,26 @@
   </ul>
 
   <div class="card-footer">
-    <a href="{% url 'taxonomy:community-detail' object.pk %}"
-      class="btn btn-primary btn-sm btn-block text-left"
-      title="View details for community {{ object }}.">
-      <span class="oi oi-eye" aria-hidden="true"></span>
-      View Details
-    </a>
-    {% communitygazettal_add request.user block=True label=True %}
-    {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=True %}
-    {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=True %}
-    {% include 'conservation/include/document_add.html' with subject="communities" label=True block=True %}
-    {% admin_areaencounter_create_link object.pk "community" block=True label=True %}
-    {% communityareaencounter_add_link object.pk block=True label=True %}
+    <div class="row mb-2">
+      <a href="{% url 'taxonomy:community-detail' object.pk %}"
+        class="btn btn-primary btn-sm mr-2 flex-fill"
+        title="View details for community {{ object }}.">
+        <span class="oi oi-eye" aria-hidden="true"></span>
+        View Details
+      </a>
+      <a class="btn btn-secondary btn-sm" data-toggle="collapse"
+        href="#actions{{ object.pk }}" role="button" aria-expanded="false" aria-controls="actions{{ object.pk }}">
+        <span class="oi oi-expand-down" aria-hidden="true"></span>
+        More
+      </a>
+    </div>
+    <div class="collapse" id="actions{{ object.pk }}">
+      {% include 'conservation/include/communityconservationlisting_add.html' with label=True block=True community=object %}
+      {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=True %}
+      {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=True %}
+      {% include 'conservation/include/document_add.html' with subject="communities" label=True block=True %}
+      {% admin_areaencounter_create_link object.pk "community" block=True label=True %}
+      {% communityareaencounter_add_link object.pk block=True label=True %}
+    </div>
   </div>
 </div>

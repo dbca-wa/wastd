@@ -252,6 +252,16 @@ class ConservationActionUpdateView(
             raise Http404
         return obj
 
+    def get_context_data(self, **kwargs):
+        """Context with inline formsets."""
+        data = super(ConservationActionUpdateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = cons_forms.FileAttachmentFormSet(self.request.POST, instance=self.object)
+        else:
+            data['formset'] = cons_forms.FileAttachmentFormSet(instance=self.object)
+        data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
+        return data
+
 
 class ConservationActivityUpdateView(
         SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
@@ -383,6 +393,16 @@ class ConservationActivityCreateView(
             Breadcrumb("Create a new {0}".format(self.model._meta.verbose_name), None)
         )
 
+    def get_context_data(self, **kwargs):
+        """Context with inline formsets."""
+        data = super(ConservationActivityCreateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = cons_forms.FileAttachmentFormSet(self.request.POST)
+        else:
+            data['formset'] = cons_forms.FileAttachmentFormSet()
+        data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
+        return data
+
 
 class TaxonConservationListingCreateView(
         SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
@@ -410,6 +430,50 @@ class TaxonConservationListingCreateView(
             data['formset'] = cons_forms.FileAttachmentFormSet()
         data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
         return data
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(_("Nominate any current, terminal taxonomic name for conservation listing in Western Australia"),
+                       reverse("conservation:taxon-conservationlisting-create"))
+        )
+
+
+class CommunityConservationListingCreateView(
+        SuccessUrlMixin, CreateViewBreadcrumbMixin, CreateView):
+    """Create view for Community Conservation Listing."""
+
+    template_name = "pages/default_form.html"
+    form_class = cons_forms.CommunityConservationListingForm
+    model = cons_models.CommunityGazettal
+
+    def get_initial(self):
+        """Initial form values."""
+        initial = super(CommunityConservationListingCreateView, self).get_initial()
+        if "community" in self.request.GET:
+            initial["community"] = self.request.GET["community"]
+        initial["proposed_on"] = timezone.now()
+        initial["review_due"] = timezone.now() + relativedelta(years=+5)
+        return initial
+
+    def get_context_data(self, **kwargs):
+        """Context with inline formsets."""
+        data = super(CommunityConservationListingCreateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = cons_forms.FileAttachmentFormSet(self.request.POST)
+        else:
+            data['formset'] = cons_forms.FileAttachmentFormSet()
+        data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
+        return data
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(_("Nominate any ecological community for conservation listing in Western Australia"),
+                       reverse("conservation:community-conservationlisting-create"))
+        )
 
 
 class DocumentCreateView(

@@ -38,10 +38,12 @@
       <hr class="my-4">
       <h3>Conservation Listings
         <small class="float-right">
-          {% communitygazettal_add request.user block=False label=False %}
+          {% include 'conservation/include/communityconservationlisting_add.html' with label=False block=False community=object %}
         </small>
       </h3>
-      <p>{% communitygazettal_rows request.user %}</p>
+      <p>
+        {% include 'conservation/include/gazettal_row.html' %}
+      </p>
 
       <hr class="my-4">
       <h3>Conservation Threats
@@ -65,14 +67,15 @@
           {% include 'conservation/include/document_add.html' with subject="communities" label=False block=False %}
         </small>
       </h3>
-      <p>{% document_row request.user %}</p>
+      <p>{% include 'conservation/include/document_row.html' %}</p>
 
       <hr class="my-4">
+      <h3>Actions</h3>
       <p class="lead">
         {% if request.user.is_staff %}
           {% admin_absoluteadminurl_link object "community" label=True %}
         {% endif %}
-        {% communitygazettal_add request.user block=False label=True %}
+        {% include 'conservation/include/communityconservationlisting_add.html' with label=False block=False community=object %}
         {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=False %}
         {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=False %}
         {% include 'conservation/include/document_add.html' with subject="communities" label=True block=False %}

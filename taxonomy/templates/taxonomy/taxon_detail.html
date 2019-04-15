@@ -87,25 +87,28 @@
       {% endfor %}
       </p>
 
+      <p>
       {% drilldown_tree_for_node object as taxon_phylogeny %}
       {% drilldown_tree_for_node object as drilldown %}
       {% for node,structure in drilldown|tree_info %}
-          {% if structure.new_level %}<ul><li>{% else %}</li><li>{% endif %}
-          {% if node == object %}
-                  <strong>{{ node.taxonomic_name }}</strong>
-          {% else %}
-                  <a href="{{ node.get_absolute_url }}">{{ node.taxonomic_name }}</a>
-          {% endif %}
-          {% for level in structure.closed_levels %}</li></ul>{% endfor %}
+      {% if node == object %}
+      <strong>{{ node.get_rank_display }} {{ node.taxonomic_name }}</strong><br/>
+      {% else %}
+      <a href="{{ node.get_absolute_url }}">{{ node.get_rank_display }} {{ node.taxonomic_name }}</a><br/>
+      {% endif %}
       {% endfor %}
+      </p>
+
 
       <hr class="my-4">
       <h3>Conservation Listings
         <small class="float-right">
-          {% taxongazettal_add request.user %}
+          {% include 'conservation/include/taxonconservationlisting_add.html' with label=False block=False taxon=object %}
         </small>
       </h3>
-      <p>{% taxongazettal_rows request.user %}</p>
+      <p>
+      {% include 'conservation/include/gazettal_row.html' %}
+      </p>
 
       <hr class="my-4">
       <h3>Conservation Threats
@@ -132,9 +135,10 @@
       <p>{% document_row request.user %}</p>
 
       <hr class="my-4">
+      <h3>Actions</h3>
       <p class="lead">
           {% admin_absoluteadminurl_link object "taxon" label=True %}
-          {% taxongazettal_add request.user label=True %}
+          {% include 'conservation/include/taxonconservationlisting_add.html' with label=False block=False taxon=object %}
           {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=False %}
           {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=False %}
           {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=False %}
