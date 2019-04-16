@@ -417,26 +417,24 @@ class ConservationFixtureTests(TestCase):
     ]
 
     def test_get_absolute_url_taxon(self):
-        """Test Taxon with ConservationThreat get absolute url loads."""
+        """Test Taxon with ConservationThreats and Conservation listings get absolute url loads."""
         t = cons_models.ConservationThreat.objects.last().taxa.first()
-        u = get_user_model().objects.first()
-        self.client.force_login(u)
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        t = cons_models.TaxonGazettal.objects.last().taxon
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_get_absolute_url_threat(self):
         """Test ConservationThreat get absolute url loads."""
         t = cons_models.ConservationThreat.objects.last()
-        u = get_user_model().objects.first()
-        self.client.force_login(u)
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_get_absolute_url_action(self):
         """Test ConservationAction get absolute url loads."""
         t = cons_models.ConservationAction.objects.last()
-        u = get_user_model().objects.first()
-        self.client.force_login(u)
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
@@ -480,8 +478,12 @@ class ConservationFixtureTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_absolute_url_document(self):
-        """Test ConservationAction get absolute url."""
+        """Test Document and Taxon with Document get absolute url."""
         url = cons_models.Document.objects.last().get_absolute_url()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        url = cons_models.Document.objects.last().taxa.first().get_absolute_url()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
