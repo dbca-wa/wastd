@@ -90,20 +90,6 @@ class ConservationThreatViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class ConservationThreatViewFixtureTests(TestCase):
-    """View tests for ConservationThreat with test data from fixtures."""
-
-    fixtures = [
-        "conservation/fixtures/test_data.json",
-    ]
-
-    def test_get_absolute_url(self):
-        """Test ConservationAction get absolute url loads."""
-        t = cons_models.ConservationThreat.objects.last().taxa.first()
-        response = self.client.get(t.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-
-
 class ConservationActionCategoryViewTests(TestCase):
     """View tests for ConservationActionCategory."""
 
@@ -125,6 +111,12 @@ class ConservationActionCategoryViewTests(TestCase):
     def test_conservation_action_category_absolute_admin_url(self):
         """Test ConservationActionCategory absolute admin url."""
         response = self.client.get(self.object.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_list_action(self):
+        """Test admin change list for ConservationAction."""
+        url = reverse("admin:conservation_conservationaction_changelist")
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
 
@@ -414,4 +406,87 @@ class DocumentViewTests(TestCase):
     def test_update_url_loads(self):
         """Test conservationaction-update."""
         response = self.client.get(self.object.update_url)
+        self.assertEqual(response.status_code, 200)
+
+
+class ConservationFixtureTests(TestCase):
+    """View tests for Conservation models with test data from fixtures."""
+
+    fixtures = [
+        "conservation/fixtures/test_data.json",
+    ]
+
+    def test_get_absolute_url_taxon(self):
+        """Test Taxon with ConservationThreat get absolute url loads."""
+        t = cons_models.ConservationThreat.objects.last().taxa.first()
+        u = get_user_model().objects.first()
+        self.client.force_login(u)
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_absolute_url_threat(self):
+        """Test ConservationThreat get absolute url loads."""
+        t = cons_models.ConservationThreat.objects.last()
+        u = get_user_model().objects.first()
+        self.client.force_login(u)
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_absolute_url_action(self):
+        """Test ConservationAction get absolute url loads."""
+        t = cons_models.ConservationAction.objects.last()
+        u = get_user_model().objects.first()
+        self.client.force_login(u)
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_list_threat(self):
+        """Test admin change list for ConservationThreat."""
+        url = reverse("admin:conservation_conservationthreat_changelist")
+        u = get_user_model().objects.first()
+        self.client.force_login(u)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_list_action(self):
+        """Test admin change list for ConservationAction."""
+        url = reverse("admin:conservation_conservationaction_changelist")
+        u = get_user_model().objects.first()
+        self.client.force_login(u)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_url_loads_threat(self):
+        """Test conservationthreat-list loads."""
+        url = cons_models.ConservationThreat.objects.last().list_url()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_url_loads_action(self):
+        """Test conservationaction-list loads."""
+        url = cons_models.ConservationActivity.objects.last().conservation_action.list_url()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    # TODO list view with filters from index/navbar links
+    # requires wastd.observations.Area (District/Region)
+
+    def test_absolute_admin_url_document(self):
+        """Test Document absolute admin url."""
+        url = cons_models.Document.objects.last().absolute_admin_url
+        u = get_user_model().objects.first()
+        self.client.force_login(u)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_absolute_url_document(self):
+        """Test ConservationAction get absolute url."""
+        url = cons_models.Document.objects.last().get_absolute_url()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_url_loads_document(self):
+        """Test conservationaction-list."""
+        url = cons_models.Document.objects.last().list_url()
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

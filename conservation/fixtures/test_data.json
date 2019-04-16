@@ -1184,5 +1184,29 @@
         },
         "model": "conservation.conservationthreat",
         "pk": 2
+    },
+    {
+    "model": "conservation.document",
+    "pk": 2,
+    "fields": {
+        "source": 0,
+        "source_id": null,
+        "document_type": 0,
+        "status": 80,
+        "effective_from": "2015-10-01T04:00:00Z",
+        "effective_to": "2020-10-01T04:00:00Z",
+        "effective_from_commonwealth": null,
+        "effective_to_commonwealth": null,
+        "review_due": null,
+        "last_reviewed_on": null,
+        "title": "Claypan Recovery Plan",
+        "comments": "",
+        "taxa": [2155, 23744],
+        "communities": [
+            218
+        ],
+        "team": [4]
     }
+}
+
 ]
