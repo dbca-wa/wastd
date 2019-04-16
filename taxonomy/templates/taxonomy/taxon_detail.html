@@ -138,7 +138,7 @@
       <h3>Actions</h3>
       <p class="lead">
           {% admin_absoluteadminurl_link object "taxon" label=True %}
-          {% include 'conservation/include/taxonconservationlisting_add.html' with label=False block=False taxon=object %}
+          {% include 'conservation/include/taxonconservationlisting_add.html' with label=True block=False taxon=object %}
           {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=False %}
           {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=False %}
           {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=False %}

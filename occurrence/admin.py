@@ -69,7 +69,7 @@ class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmi
 
     # Change list
     list_display = ["area_type", "code", "name", "source", "source_id", "status", ]
-    list_filter = ["area_type", "source", "status", ]
+    list_filter = ["area_type", "source", "status", "geolocation_capture_method"]
     search_fields = ("code", "name", )
     date_hierarchy = 'encountered_on'
 
@@ -85,7 +85,7 @@ class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmi
          ),
         (_('Location'), {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("point", "geom", "accuracy",)}
+            'fields': ("point", "geom", "accuracy", "geolocation_capture_method")}
          ),
         (_('Data lineage'), {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),

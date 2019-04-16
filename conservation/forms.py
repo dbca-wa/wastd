@@ -22,6 +22,35 @@ from shared import forms as shared_forms
 class ConservationThreatForm(forms.ModelForm):
     """Common form for ConservationThreat."""
 
+    class Meta:
+        """Class options."""
+
+        model = cons_models.ConservationThreat
+        fields = (
+            "taxa",
+            "communities",
+            "document",
+            "occurrence_area_code",
+            "target_area",
+            "category",
+            "cause",
+            "encountered_by",
+            "encountered_on",
+            "area_affected_percent",
+            "current_impact",
+            "potential_impact",
+            "potential_onset",
+        )
+        widgets = {
+            'taxa': tax_widgets.TaxonMultipleWidget(),
+            'communities': tax_widgets.CommunityMultipleWidget(),
+            'document': cons_widgets.DocumentWidget(),
+            'target_area': LeafletWidget(attrs=LEAFLET_SETTINGS),
+            'category': cons_widgets.ConservationThreatCategoryWidget(),
+            "encountered_on": shared_forms.DateTimeInput(),
+            "encountered_by": usr_widgets.UserWidget(),
+        }
+
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
         super(ConservationThreatForm, self).__init__(*args, **kwargs)
@@ -57,10 +86,14 @@ class ConservationThreatForm(forms.ModelForm):
             )
         )
 
+
+class ConservationActionForm(forms.ModelForm):
+    """Common form for ConservationAction."""
+
     class Meta:
         """Class options."""
 
-        model = cons_models.ConservationThreat
+        model = cons_models.ConservationAction
         fields = (
             "taxa",
             "communities",
@@ -68,13 +101,11 @@ class ConservationThreatForm(forms.ModelForm):
             "occurrence_area_code",
             "target_area",
             "category",
-            "cause",
-            "encountered_by",
-            "encountered_on",
-            "area_affected_percent",
-            "current_impact",
-            "potential_impact",
-            "potential_onset",
+            "instructions",
+            "implementation_notes",
+            "completion_date",
+            "expenditure",
+            # "attachments"
         )
         widgets = {
             'taxa': tax_widgets.TaxonMultipleWidget(),
@@ -82,13 +113,8 @@ class ConservationThreatForm(forms.ModelForm):
             'document': cons_widgets.DocumentWidget(),
             'target_area': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'category': cons_widgets.ConservationActionCategoryWidget(),
-            "encountered_on": shared_forms.DateTimeInput(),
-            "encountered_by": usr_widgets.UserWidget(),
+            'completion_date': shared_forms.DateInput(),
         }
-
-
-class ConservationActionForm(forms.ModelForm):
-    """Common form for ConservationAction."""
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
@@ -122,35 +148,25 @@ class ConservationActionForm(forms.ModelForm):
             )
         )
 
+
+class ConservationActivityForm(forms.ModelForm):
+    """Common form for ConservationActivity."""
+
     class Meta:
         """Class options."""
 
-        model = cons_models.ConservationAction
+        model = cons_models.ConservationActivity
         fields = (
-            "taxa",
-            "communities",
-            "document",
-            "occurrence_area_code",
-            "target_area",
-            "category",
-            "instructions",
+            "conservation_action",
             "implementation_notes",
             "completion_date",
             "expenditure",
             # "attachments"
         )
         widgets = {
-            'taxa': tax_widgets.TaxonMultipleWidget(),
-            'communities': tax_widgets.CommunityMultipleWidget(),
-            'document': cons_widgets.DocumentWidget(),
-            'target_area': LeafletWidget(attrs=LEAFLET_SETTINGS),
-            'category': cons_widgets.ConservationActionCategoryWidget(),
+            'conservation_action': cons_widgets.ConservationActionWidget(),
             'completion_date': shared_forms.DateInput(),
         }
-
-
-class ConservationActivityForm(forms.ModelForm):
-    """Common form for ConservationActivity."""
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
@@ -172,22 +188,6 @@ class ConservationActivityForm(forms.ModelForm):
                 Submit('submit', 'Submit', css_class='button white')
             )
         )
-
-    class Meta:
-        """Class options."""
-
-        model = cons_models.ConservationActivity
-        fields = (
-            "conservation_action",
-            "implementation_notes",
-            "completion_date",
-            "expenditure",
-            # "attachments"
-        )
-        widgets = {
-            'conservation_action': cons_widgets.ConservationActionWidget(),
-            'completion_date': shared_forms.DateInput(),
-        }
 
 
 class TaxonConservationListingForm(forms.ModelForm):

@@ -212,6 +212,30 @@ class ConservationActionInline(admin.TabularInline):
     # TODO: https://stackoverflow.com/questions/5223048/django-set-initial-data-to-formset-with-manytomany
 
 
+@admin.register(cons_models.ConservationCategory)
+class ConservationCategoryAdmin(FSMTransitionMixin, VersionAdmin):
+    """Admin for ConservationCategory."""
+
+    search_fields = [
+        'conservation_list__code__icontains',
+        'code__icontains',
+        'label__icontains',
+        'description__icontains'
+    ]
+
+
+@admin.register(cons_models.ConservationCriterion)
+class ConservationCriterionAdmin(FSMTransitionMixin, VersionAdmin):
+    """Admin for ConservationCriterion."""
+
+    search_fields = [
+        'conservation_list__code__icontains',
+        'code__icontains',
+        'label__icontains',
+        'description__icontains'
+    ]
+
+
 class ConservationCategoryInline(admin.TabularInline):
     """Inline admin for ConservationCategory."""
 
@@ -320,8 +344,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     # Detail View layout and widgets
     form = s2form(cons_models.TaxonGazettal, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ["taxon", ]
-    filter_horizontal = ("category", "criteria",)
+    autocomplete_fields = ["taxon", "category", "criteria", ]
     inlines = [CustomStateLogInline, FileAttachmentInline]
 
     fieldsets = (
@@ -399,8 +422,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     # Detail View
     form = s2form(cons_models.CommunityGazettal, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ["community", ]
-    filter_horizontal = ("category", "criteria",)
+    autocomplete_fields = ["community", "category", "criteria", ]
     inlines = [CustomStateLogInline, FileAttachmentInline]
 
     fieldsets = (
@@ -481,7 +503,6 @@ class DocumentAdmin(FSMTransitionMixin, VersionAdmin):
     # Detail View
     form = s2form(cons_models.Document, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ["taxa", "communities", "team", ]
     inlines = [
         # ConservationActionInline, # throws admin.E028
         CustomStateLogInline,

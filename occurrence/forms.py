@@ -29,6 +29,7 @@ class AreaEncounterForm(forms.ModelForm):
             "description",
             "geom",
             "accuracy",
+            "geolocation_capture_method",
             "encountered_on",
             "encountered_by"
         )
@@ -52,6 +53,7 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             "geom",
             "point",
             "accuracy",
+            "geolocation_capture_method",
             "encountered_on",
             "encountered_by"
         )
@@ -89,6 +91,7 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
                 "geom",
                 "point",
                 "accuracy",
+                "geolocation_capture_method",
             ),
             ButtonHolder(
                 Submit("submit",
@@ -114,6 +117,7 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
             "geom",
             "point",
             "accuracy",
+            "geolocation_capture_method",
             "encountered_on",
             "encountered_by"
         )
@@ -151,6 +155,7 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
                 "geom",
                 "point",
                 "accuracy",
+                "geolocation_capture_method",
             ),
             ButtonHolder(
                 Submit("submit",

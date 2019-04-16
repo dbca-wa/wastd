@@ -90,6 +90,20 @@ class ConservationThreatViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class ConservationThreatViewFixtureTests(TestCase):
+    """View tests for ConservationThreat with test data from fixtures."""
+
+    fixtures = [
+        "conservation/fixtures/test_data.json",
+    ]
+
+    def test_get_absolute_url(self):
+        """Test ConservationAction get absolute url loads."""
+        t = cons_models.ConservationThreat.objects.last().taxa.first()
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+
 class ConservationActionCategoryViewTests(TestCase):
     """View tests for ConservationActionCategory."""
 

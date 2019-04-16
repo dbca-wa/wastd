@@ -26,6 +26,17 @@ class DocumentMultipleWidget(ModelSelect2MultipleWidget):
     ]
 
 
+class ConservationThreatCategoryWidget(ModelSelect2Widget):
+    """ConservationThreatCategory ModelSelect2Widget."""
+
+    model = cons_models.ConservationThreatCategory
+    search_fields = [
+        "code__icontains",
+        "label__icontains",
+        "description__icontains",
+    ]
+
+
 class ConservationActionCategoryWidget(ModelSelect2Widget):
     """ConservationActionCategory ModelSelect2Widget."""
 

@@ -230,6 +230,16 @@ class ConservationThreatUpdateView(
             raise Http404
         return obj
 
+    def get_context_data(self, **kwargs):
+        """Context with inline formsets."""
+        data = super(ConservationThreatUpdateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = cons_forms.FileAttachmentFormSet(self.request.POST, instance=self.object)
+        else:
+            data['formset'] = cons_forms.FileAttachmentFormSet(instance=self.object)
+        data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
+        return data
+
 
 class ConservationActionUpdateView(
         SuccessUrlMixin, UpdateViewBreadcrumbMixin, UpdateView):
@@ -281,6 +291,16 @@ class ConservationActivityUpdateView(
         if not obj:
             raise Http404
         return obj
+
+    def get_context_data(self, **kwargs):
+        """Context with inline formsets."""
+        data = super(ConservationActivityUpdateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = cons_forms.FileAttachmentFormSet(self.request.POST, instance=self.object)
+        else:
+            data['formset'] = cons_forms.FileAttachmentFormSet(instance=self.object)
+        data["formset_helper"] = cons_forms.FileAttachmentFormSetHelper()
+        return data
 
 
 class DocumentUpdateView(

@@ -70,6 +70,13 @@ def create_test_fixtures():
     print("./manage.py dump_object taxonomy.HbvXref 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_xrefs.json")
     print("./manage.py dump_object taxonomy.HbvParent 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_parents.json")
 
+    # cave bat with actions, threats, occurrences
+    # print("./manage.py dump_object taxonomy.Taxon 1174 2155 27401 39308 23744 -k -n > conservation/fixtures/test_taxon.json")  # noqa
+    # print("./manage.py dump_object conservation.ConservationThreat 1 2 -k -n > conservation/fixtures/test_threats.json")  # noqa
+    # print("./manage.py dump_object conservation.ConservationAction 12 13 -k -n > conservation/fixtures/test_actions.json") # noqa
+    # print("./manage.py dump_object occurrence.TaxonAreaEncounter 564632 -k -n > conservation/fixtures/test_occ.json")
+    # de-dupe and merge into conservation/fixtures/test_data.json
+
     # This throws an error on related objects
     # with open("taxonomy/fixtures/test_crossreference.json", 'w+') as f:
     #     call_command('dump_object', 'taxonomy.Crossreference', xref_pks, stdout=f)

@@ -62,26 +62,30 @@
   </div><!-- /.card-body -->
 
   <div class="card-footer">
-    <!-- Conservation threat view -->
-    <a href="{{ object.get_absolute_url }}"
-        title="View conservation threat"
-        role="button"
-        class="btn btn-primary btn-sm btn-block">
-      <span class="oi oi-eye" aria-hidden="true"></span>
-      <span class="oi oi-task" aria-hidden="true"></span>
-      View details
-    </a>
-    <!-- /Conservation threat view -->
+    <div class="row">
+      <div class="col-12">
 
-    <!-- Conservation threat update -->
-    <a href="{{ object.update_url }}"
-        title="Edit conservation threat."
-        role="button"
-        class="btn btn-primary btn-sm btn-block">
-      <span class="oi oi-pencil" aria-hidden="true"></span>
-      <span class="oi oi-task" aria-hidden="true"></span>
-      Edit details
-    </a>
+        <!-- View details -->
+        <a href="{{ object.get_absolute_url }}"
+            title="View {{ object }}"
+            role="button"
+            class="btn btn-primary btn-sm mr-2">
+          <span class="oi oi-eye" aria-hidden="true"></span>
+          <span class="oi oi-task" aria-hidden="true"></span>
+          View
+        </a>
+        <!-- Edit details -->
+        <a href="{{ object.update_url }}"
+            title="Edit {{ object }}."
+            role="button"
+            class="btn btn-primary btn-sm">
+          <span class="oi oi-pencil" aria-hidden="true"></span>
+          <span class="oi oi-task" aria-hidden="true"></span>
+          Edit
+        </a>
+
+      </div>
+    </div>
     <!-- /Conservation threat update -->
   </div><!-- /.card-footer -->
 </div><!-- /.card -->
