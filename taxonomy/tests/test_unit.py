@@ -49,13 +49,13 @@ class TaxonUtilsTests(TestCase):
     """Unit tests for taxonomy utils."""
 
     fixtures = [
-        'taxonomy/fixtures/test_taxonomy.json',
-        # 'taxonomy/fixtures/test_wacensus.json',
+        # 'taxonomy/fixtures/test_taxonomy.json',
+        'taxonomy/fixtures/test_wacensus.json',
     ]
 
     def test_update_taxon(self):
         """Test reconstructing Taxon, Crossreference and Vernacular from Hbv*."""
-        # update_taxon() # requires a consistent subset of the taxonomic tree
+        update_taxon()  # requires a consistent subset of the taxonomic tree
         pass
 
 

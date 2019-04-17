@@ -3,8 +3,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
+import sys
 import io
 import logging
+from contextlib import redirect_stdout
 
 # from django.utils.timezone import is_aware, make_aware
 # from pdb import set_trace
@@ -60,33 +62,84 @@ def create_test_fixtures():
         call_command('dump_object', 'taxonomy.Community', *com_pks, '-n', stdout=f)
         f.readlines()
 
-    buf = io.StringIO()
-    call_command(
-        "merge_fixtures",
-        "taxonomy/fixtures/test_supra.json",
-        "taxonomy/fixtures/test_crossreference.json",
-        "taxonomy/fixtures/test_taxon.json",
-        "taxonomy/fixtures/test_community.json",
-        stdout=buf
-    )
-    buf.seek(0)
-    with open("taxonomy/fixtures/test_taxonomy.json", 'w+') as f:
-        f.write(buf.read())
-
-    print("./manage.py merge_fixtures taxonomy/fixtures/test_supra.json taxonomy/fixtures/test_crossreference.json "
-          "taxonomy/fixtures/test_taxon.json taxonomy/fixtures/test_community.json "
-          "> taxonomy/fixtures/test_taxonomy.json ")
+    f = io.StringIO()
+    with redirect_stdout(f):
+        call_command(
+            "merge_fixtures",
+            "taxonomy/fixtures/test_supra.json",
+            "taxonomy/fixtures/test_crossreference.json",
+            "taxonomy/fixtures/test_taxon.json",
+            "taxonomy/fixtures/test_community.json"
+        )
+        with open("taxonomy/fixtures/test_taxonomy.json", 'w+') as ff:
+            ff.write(f.getvalue())
 
     # Conservation: taxon with actions, threats
-    # print("./manage.py dump_object taxonomy.Taxon 1170 1174 2155 27401 39308 23744 -k -n > conservation/fixtures/test_taxon.json")  # noqa
-    # print("./manage.py dump_object conservation.Document 2 -k -n > conservation/fixtures/test_docs.json")  # noqa
-    # print("./manage.py dump_object conservation.ConservationThreat 1 2 -k -n > conservation/fixtures/test_threats.json")  # noqa
-    # print("./manage.py dump_object conservation.ConservationAction 12 13 -k -n > conservation/fixtures/test_actions.json") # noqa
-    # print("./manage.py dump_object occurrence.TaxonAreaEncounter 564632 -k -n > conservation/fixtures/test_occ.json")
-    # de-dupe and merge into conservation/fixtures/test_conservation.json
-
     # Occurrences: Taxon, Community with occurrences > test_occuccence.json
-    # Taxonomy: Hbv* for a phylogeny of a Taxon
+
+    # Taxonomy: Hbv* for phylogenic trees of 50 Taxa of rank forma
+    taxon_pks = set(
+        [y for x in [
+            [x.pk for x in t.get_family()]
+            for t in tax_models.Taxon.objects.filter(rank=tax_models.Taxon.RANK_FORMA)[1:50]
+        ] for y in x]
+    )
+    kingdom_nids = [t.name_id for t in tax_models.Taxon.objects.filter(rank=tax_models.Taxon.RANK_KINGDOM)]
+    form_nids = [t.name_id for t in tax_models.Taxon.objects.filter(pk__in=taxon_pks)]
+    taxon_nameids = set(kingdom_nids + form_nids)
+    old_name_ids = [x.old_name_id for x in tax_models.HbvXref.objects.filter(new_name_id__in=taxon_nameids)
+                    if x.old_name_id not in taxon_nameids and x.old_name_id is not None]
+    new_name_ids = [x.new_name_id for x in tax_models.HbvXref.objects.filter(old_name_id__in=taxon_nameids)
+                    if x.new_name_id not in taxon_nameids and x.new_name_id is not None]
+    pnt_pks = [x.pk for x in tax_models.HbvParent.objects.filter(name_id__in=taxon_nameids)] +\
+        [x.pk for x in tax_models.HbvParent.objects.filter(parent_nid__in=taxon_nameids)]
+    xrf_old_pks = [x.pk for x in tax_models.HbvXref.objects.filter(old_name_id__in=taxon_nameids)]
+    xrf_new_pks = [x.pk for x in tax_models.HbvXref.objects.filter(new_name_id__in=taxon_nameids)]
+    # TODO: recursion {xrefs reference other Taxa referencing other xrefs}
+    name_pks = [x.pk for x in tax_models.HbvName.objects.filter(name_id__in=taxon_nameids)]
+    fam_pks = [x.pk for x in tax_models.HbvFamily.objects.filter(name_id__in=taxon_nameids)]
+    gen_pks = [x.pk for x in tax_models.HbvGenus.objects.filter(name_id__in=taxon_nameids)]
+    spe_pks = [x.pk for x in tax_models.HbvSpecies.objects.filter(name_id__in=taxon_nameids)]
+    ver_pks = [x.pk for x in tax_models.HbvVernacular.objects.filter(name_id__in=taxon_nameids)]
+    grp_pks = [x.pk for x in tax_models.HbvGroup.objects.filter(name_id__in=taxon_nameids)]
+
+    with open("taxonomy/fixtures/test_tax_names.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.HbvName', *name_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_tax_pnt.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.HbvParent', *pnt_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_tax_fam.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.HbvFamily', *fam_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_tax_gen.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.HbvGenus', *gen_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_tax_spe.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.HbvSpecies', *spe_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_tax_ver.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.HbvVernacular', *ver_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_tax_grp.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.HbvGroup', *grp_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
+
+    f = io.StringIO()
+    with redirect_stdout(f):
+        call_command(
+            "merge_fixtures",
+            "taxonomy/fixtures/test_supra.json",
+            "taxonomy/fixtures/test_tax_names.json",
+            "taxonomy/fixtures/test_tax_pnt.json",
+            "taxonomy/fixtures/test_tax_fam.json",
+            "taxonomy/fixtures/test_tax_gen.json",
+            "taxonomy/fixtures/test_tax_spe.json",
+            "taxonomy/fixtures/test_tax_ver.json",
+            "taxonomy/fixtures/test_tax_grp.json",
+        )
+        with open("taxonomy/fixtures/test_wacensus.json", 'w+') as ff:
+            ff.write(f.getvalue())
 
 
 def make_family(fam, kingdom_dict, current_dict, publication_dict):
@@ -192,7 +245,11 @@ def make_species(x, current_dict, publication_dict):
 
     Return The created or updated instance of Taxon or None if parent id is missing.
     """
+    if not tax_models.HbvParent.objects.filter(name_id=x.name_id).exists():
+        logger.warn("[make_species] missing HbvParent with name_id {0}".format(x.name_id))
+        return None
     parent_nid = tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid
+
     if not tax_models.Taxon.objects.filter(name_id=parent_nid).exists():
         logger.warn("[make_species] missing parent taxon with name_id {0}, re-run to fix.".format(parent_nid))
         return None
@@ -226,11 +283,16 @@ def make_subspecies(x, current_dict, publication_dict):
 
     Return The created or updated instance of Taxon.
     """
+    if not tax_models.HbvParent.objects.filter(name_id=x.name_id).exists():
+        logger.warn("[make_species] missing HbvParent with name_id {0}".format(x.name_id))
+        return None
+    parent_nid = tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid
+
     dd = dict(
         name=force_text(x.infra_name),
         rank=tax_models.Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
-        parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
+        parent=tax_models.Taxon.objects.get(name_id=parent_nid),
         author=x.author,
         field_code=x.species_code
     )
@@ -256,11 +318,16 @@ def make_variety(x, current_dict, publication_dict):
 
     Return The created or updated instance of Taxon.
     """
+    if not tax_models.HbvParent.objects.filter(name_id=x.name_id).exists():
+        logger.warn("[make_species] missing HbvParent with name_id {0}".format(x.name_id))
+        return None
+    parent_nid = tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid
+
     dd = dict(
         name=force_text(x.infra_name),
         rank=tax_models.Taxon.RANK_VARIETY,
         current=current_dict[x.is_current],
-        parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
+        parent=tax_models.Taxon.objects.get(name_id=parent_nid),
         author=x.author,
         field_code=x.species_code
     )
@@ -296,12 +363,17 @@ def make_form(x, current_dict, publication_dict):
 
     Return The created or updated instance of Taxon.
     """
+    if not tax_models.HbvParent.objects.filter(name_id=x.name_id).exists():
+        logger.warn("[make_species] missing HbvParent with name_id {0}".format(x.name_id))
+        return None
+    parent_nid = tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid
+
     dd = dict(
         name=force_text(x.infra_name) if force_text(
             x.infra_rank) == 'forma' else force_text(x.infra_name2),
         rank=tax_models.Taxon.RANK_FORMA,
         current=current_dict[x.is_current],
-        parent=tax_models.Taxon.objects.get(name_id=tax_models.HbvParent.objects.get(name_id=x.name_id).parent_nid),
+        parent=tax_models.Taxon.objects.get(name_id=parent_nid),
         author=x.author,
         field_code=x.species_code
     )
