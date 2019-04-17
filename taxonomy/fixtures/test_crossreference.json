@@ -1,370 +1,11 @@
 [
 {
     "model": "taxonomy.taxon",
-    "pk": 6,
-    "fields": {
-        "name_id": 25910,
-        "parent": 1,
-        "rank": 10,
-        "name": "Animalia",
-        "canonical_name": "Animalia",
-        "taxonomic_name": "Animalia",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 56662,
-        "rght": 63895,
-        "tree_id": 3,
-        "level": 1,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 376,
-    "fields": {
-        "name_id": 38523,
-        "parent": 4,
-        "rank": 30,
-        "name": "Magnoliophyta",
-        "canonical_name": "Magnoliophyta",
-        "taxonomic_name": "Magnoliophyta",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 4297,
-        "rght": 51446,
-        "tree_id": 3,
-        "level": 2,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 8,
-    "fields": {
-        "name_id": 39106,
-        "parent": 6,
-        "rank": 30,
-        "name": "Arthropoda",
-        "canonical_name": "Arthropoda",
-        "taxonomic_name": "Arthropoda",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 56675,
-        "rght": 57332,
-        "tree_id": 3,
-        "level": 2,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 484,
-    "fields": {
-        "name_id": 38599,
-        "parent": 438,
-        "rank": 70,
-        "name": "Proteales",
-        "canonical_name": "Proteales",
-        "taxonomic_name": "Proteales",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 44769,
-        "rght": 47878,
-        "tree_id": 3,
-        "level": 4,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 377,
-    "fields": {
-        "name_id": 38531,
-        "parent": 376,
-        "rank": 50,
-        "name": "Liliopsida",
-        "canonical_name": "Liliopsida",
-        "taxonomic_name": "Liliopsida",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 4298,
-        "rght": 13551,
-        "tree_id": 3,
-        "level": 3,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 438,
-    "fields": {
-        "name_id": 38533,
-        "parent": 376,
-        "rank": 50,
-        "name": "Magnoliopsida",
-        "canonical_name": "Magnoliopsida",
-        "taxonomic_name": "Magnoliopsida",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 13552,
-        "rght": 51445,
-        "tree_id": 3,
-        "level": 3,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 30,
-    "fields": {
-        "name_id": 39118,
-        "parent": 8,
-        "rank": 50,
-        "name": "Entognatha",
-        "canonical_name": "Entognatha",
-        "taxonomic_name": "Entognatha",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 56994,
-        "rght": 57005,
-        "tree_id": 3,
-        "level": 3,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 1182,
-    "fields": {
-        "name_id": 22793,
-        "parent": 484,
-        "rank": 90,
-        "name": "Proteaceae",
-        "canonical_name": "Proteaceae",
-        "taxonomic_name": "Proteaceae (Juss.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "Juss.",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 44770,
-        "rght": 47869,
-        "tree_id": 3,
-        "level": 5,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 488,
-    "fields": {
-        "name_id": 38606,
-        "parent": 438,
-        "rank": 70,
-        "name": "Sapindales",
-        "canonical_name": "Sapindales",
-        "taxonomic_name": "Sapindales",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 49123,
-        "rght": 50182,
-        "tree_id": 3,
-        "level": 4,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 391,
-    "fields": {
-        "name_id": 38542,
-        "parent": 377,
-        "rank": 70,
-        "name": "Asparagales",
-        "canonical_name": "Asparagales",
-        "taxonomic_name": "Asparagales",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 4815,
-        "rght": 7704,
-        "tree_id": 3,
-        "level": 4,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 463,
-    "fields": {
-        "name_id": 38568,
-        "parent": 438,
-        "rank": 70,
-        "name": "Fabales",
-        "canonical_name": "Fabales",
-        "taxonomic_name": "Fabales",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 24877,
-        "rght": 31328,
-        "tree_id": 3,
-        "level": 4,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 31,
-    "fields": {
-        "name_id": 39146,
-        "parent": 30,
-        "rank": 70,
-        "name": "Collembola",
-        "canonical_name": "Collembola",
-        "taxonomic_name": "Collembola",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 56995,
-        "rght": 57004,
-        "tree_id": 3,
-        "level": 4,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 1809,
-    "fields": {
-        "name_id": 21316,
-        "parent": 1182,
-        "rank": 130,
-        "name": "Banksia",
-        "canonical_name": "Banksia",
-        "taxonomic_name": "Banksia (L.f.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "L.f.",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 44775,
-        "rght": 45300,
-        "tree_id": 3,
-        "level": 6,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 1810,
-    "fields": {
-        "name_id": 21318,
-        "parent": 1182,
-        "rank": 130,
-        "name": "Dryandra",
-        "canonical_name": "Dryandra",
-        "taxonomic_name": "Dryandra (R.Br.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "R.Br.",
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 45481,
-        "rght": 45882,
-        "tree_id": 3,
-        "level": 6,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 1200,
-    "fields": {
-        "name_id": 22845,
-        "parent": 488,
-        "rank": 90,
-        "name": "Rutaceae",
-        "canonical_name": "Rutaceae",
-        "taxonomic_name": "Rutaceae (Juss.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "Juss.",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 49124,
-        "rght": 49835,
-        "tree_id": 3,
-        "level": 5,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
     "pk": 1,
     "fields": {
         "name_id": 0,
         "parent": null,
+        "supra_group": null,
         "rank": 5,
         "name": "Eukarya",
         "canonical_name": "Eukarya",
@@ -377,70 +18,25 @@
         "current": true,
         "eoo": null,
         "lft": 1,
-        "rght": 64534,
+        "rght": 65122,
         "tree_id": 3,
         "level": 0,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 401,
+    "pk": 6,
     "fields": {
-        "name_id": 22787,
-        "parent": 391,
-        "rank": 90,
-        "name": "Orchidaceae",
-        "canonical_name": "Orchidaceae",
-        "taxonomic_name": "Orchidaceae (Juss.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "Juss.",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 5836,
-        "rght": 7465,
-        "tree_id": 3,
-        "level": 5,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 464,
-    "fields": {
-        "name_id": 34857,
-        "parent": 463,
-        "rank": 90,
-        "name": "Fabaceae",
-        "canonical_name": "Fabaceae",
-        "taxonomic_name": "Fabaceae (Lindl.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "Lindl.",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 25046,
-        "rght": 31327,
-        "tree_id": 3,
-        "level": 5,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 32,
-    "fields": {
-        "name_id": 39228,
-        "parent": 31,
-        "rank": 90,
-        "name": "Entomobryidae",
-        "canonical_name": "Entomobryidae",
-        "taxonomic_name": "Entomobryidae",
+        "name_id": 25910,
+        "parent": 1,
+        "supra_group": null,
+        "rank": 10,
+        "name": "Animalia",
+        "canonical_name": "Animalia",
+        "taxonomic_name": "Animalia",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
@@ -448,131 +44,13 @@
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 56996,
-        "rght": 57003,
+        "lft": 57192,
+        "rght": 64467,
         "tree_id": 3,
-        "level": 5,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 6371,
-    "fields": {
-        "name_id": 21262,
-        "parent": 401,
-        "rank": 130,
-        "name": "Caladenia",
-        "canonical_name": "Caladenia",
-        "taxonomic_name": "Caladenia (R.Br.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "R.Br.",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 5843,
-        "rght": 6404,
-        "tree_id": 3,
-        "level": 6,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 7379,
-    "fields": {
-        "name_id": 32576,
-        "parent": 1809,
-        "rank": 190,
-        "name": "dallanneyi",
-        "canonical_name": "Banksia dallanneyi",
-        "taxonomic_name": "Banksia dallanneyi (A.R.Mast & K.R.Thiele)",
-        "vernacular_name": "Couch Honeypot",
-        "field_code": null,
-        "vernacular_names": "Couch Honeypot",
-        "author": "A.R.Mast & K.R.Thiele",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 45226,
-        "rght": 45239,
-        "tree_id": 3,
-        "level": 7,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 11275,
-    "fields": {
-        "name_id": 16672,
-        "parent": 1810,
-        "rank": 190,
-        "name": "lindleyana",
-        "canonical_name": "Dryandra lindleyana",
-        "taxonomic_name": "Dryandra lindleyana (Meisn.)",
-        "vernacular_name": "Couch Honeypot",
-        "field_code": null,
-        "vernacular_names": "Couch Honeypot",
-        "author": "Meisn.",
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 45848,
-        "rght": 45861,
-        "tree_id": 3,
-        "level": 7,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 7746,
-    "fields": {
-        "name_id": 4413,
-        "parent": 1960,
-        "rank": 190,
-        "name": "crenulata",
-        "canonical_name": "Boronia crenulata",
-        "taxonomic_name": "Boronia crenulata (Sm.)",
-        "vernacular_name": "Aniseed Boronia",
-        "field_code": null,
-        "vernacular_names": "Aniseed Boronia",
-        "author": "Sm.",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 49186,
-        "rght": 49209,
-        "tree_id": 3,
-        "level": 7,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 1960,
-    "fields": {
-        "name_id": 21639,
-        "parent": 1200,
-        "rank": 130,
-        "name": "Boronia",
-        "canonical_name": "Boronia",
-        "taxonomic_name": "Boronia (Sm.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "Sm.",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 49145,
-        "rght": 49394,
-        "tree_id": 3,
-        "level": 6,
-        "paraphyletic_groups": []
+        "level": 1,
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
@@ -581,6 +59,7 @@
     "fields": {
         "name_id": 25908,
         "parent": 1,
+        "supra_group": null,
         "rank": 10,
         "name": "Plantae",
         "canonical_name": "Plantae",
@@ -592,95 +71,598 @@
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 478,
-        "rght": 52409,
+        "lft": 490,
+        "rght": 52747,
         "tree_id": 3,
         "level": 1,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 6389,
+    "pk": 5,
     "fields": {
-        "name_id": 21287,
-        "parent": 401,
-        "rank": 130,
-        "name": "Microtis",
-        "canonical_name": "Microtis",
-        "taxonomic_name": "Microtis (R.Br.)",
+        "name_id": 25909,
+        "parent": 1,
+        "supra_group": null,
+        "rank": 10,
+        "name": "Fungi",
+        "canonical_name": "Fungi",
+        "taxonomic_name": "Fungi",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
-        "author": "R.Br.",
+        "author": null,
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 6797,
-        "rght": 6844,
+        "lft": 52748,
+        "rght": 57191,
         "tree_id": 3,
-        "level": 6,
-        "paraphyletic_groups": []
+        "level": 1,
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 6385,
+    "pk": 8,
     "fields": {
-        "name_id": 21282,
-        "parent": 401,
-        "rank": 130,
-        "name": "Goadbyella",
-        "canonical_name": "Goadbyella",
-        "taxonomic_name": "Goadbyella (R.S.Rogers)",
+        "name_id": 39106,
+        "parent": 6,
+        "supra_group": null,
+        "rank": 30,
+        "name": "Arthropoda",
+        "canonical_name": "Arthropoda",
+        "taxonomic_name": "Arthropoda",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
-        "author": "R.S.Rogers",
+        "author": null,
         "publication_status": 2,
         "current": false,
         "eoo": null,
-        "lft": 6761,
-        "rght": 6764,
+        "lft": 57205,
+        "rght": 57884,
         "tree_id": 3,
-        "level": 6,
-        "paraphyletic_groups": []
+        "level": 2,
+        "paraphyletic_groups": [
+            20
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 6396,
+    "pk": 376,
     "fields": {
-        "name_id": 21298,
-        "parent": 401,
-        "rank": 130,
-        "name": "Thelymitra",
-        "canonical_name": "Thelymitra",
-        "taxonomic_name": "Thelymitra (J.R.Forst. & G.Forst.)",
+        "name_id": 38523,
+        "parent": 4,
+        "supra_group": null,
+        "rank": 30,
+        "name": "Magnoliophyta",
+        "canonical_name": "Magnoliophyta",
+        "taxonomic_name": "Magnoliophyta",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
-        "author": "J.R.Forst. & G.Forst.",
+        "author": null,
         "publication_status": 2,
-        "current": true,
+        "current": false,
         "eoo": null,
-        "lft": 7217,
-        "rght": 7342,
+        "lft": 4265,
+        "rght": 51702,
         "tree_id": 3,
-        "level": 6,
-        "paraphyletic_groups": []
+        "level": 2,
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 3088,
+    "pk": 185,
     "fields": {
-        "name_id": 21522,
-        "parent": 464,
+        "name_id": 38620,
+        "parent": 5,
+        "supra_group": null,
+        "rank": 30,
+        "name": "Basidiomycota",
+        "canonical_name": "Basidiomycota",
+        "taxonomic_name": "Basidiomycota",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 55971,
+        "rght": 56836,
+        "tree_id": 3,
+        "level": 2,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 377,
+    "fields": {
+        "name_id": 38531,
+        "parent": 376,
+        "supra_group": null,
+        "rank": 50,
+        "name": "Liliopsida",
+        "canonical_name": "Liliopsida",
+        "taxonomic_name": "Liliopsida",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 4266,
+        "rght": 13573,
+        "tree_id": 3,
+        "level": 3,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 447,
+    "fields": {
+        "name_id": 38550,
+        "parent": 438,
+        "supra_group": null,
+        "rank": 70,
+        "name": "Caryophyllales",
+        "canonical_name": "Caryophyllales",
+        "taxonomic_name": "Caryophyllales",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 19543,
+        "rght": 22532,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 30,
+    "fields": {
+        "name_id": 39118,
+        "parent": 8,
+        "supra_group": null,
+        "rank": 50,
+        "name": "Entognatha",
+        "canonical_name": "Entognatha",
+        "taxonomic_name": "Entognatha",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 57546,
+        "rght": 57557,
+        "tree_id": 3,
+        "level": 3,
+        "paraphyletic_groups": [
+            20
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 438,
+    "fields": {
+        "name_id": 38533,
+        "parent": 376,
+        "supra_group": null,
+        "rank": 50,
+        "name": "Magnoliopsida",
+        "canonical_name": "Magnoliopsida",
+        "taxonomic_name": "Magnoliopsida",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 13574,
+        "rght": 51701,
+        "tree_id": 3,
+        "level": 3,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 186,
+    "fields": {
+        "name_id": 38621,
+        "parent": 185,
+        "supra_group": null,
+        "rank": 50,
+        "name": "Basidiomycetes",
+        "canonical_name": "Basidiomycetes",
+        "taxonomic_name": "Basidiomycetes",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 55972,
+        "rght": 56723,
+        "tree_id": 3,
+        "level": 3,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 467,
+    "fields": {
+        "name_id": 38578,
+        "parent": 438,
+        "supra_group": null,
+        "rank": 70,
+        "name": "Lamiales",
+        "canonical_name": "Lamiales",
+        "taxonomic_name": "Lamiales",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 32657,
+        "rght": 35570,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 389,
+    "fields": {
+        "name_id": 38541,
+        "parent": 377,
+        "supra_group": null,
+        "rank": 70,
+        "name": "Arecales",
+        "canonical_name": "Arecales",
+        "taxonomic_name": "Arecales",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 4743,
+        "rght": 4786,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 439,
+    "fields": {
+        "name_id": 38543,
+        "parent": 438,
+        "supra_group": null,
+        "rank": 70,
+        "name": "Asterales",
+        "canonical_name": "Asterales",
+        "taxonomic_name": "Asterales",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 14303,
+        "rght": 19024,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 391,
+    "fields": {
+        "name_id": 38542,
+        "parent": 377,
+        "supra_group": null,
+        "rank": 70,
+        "name": "Asparagales",
+        "canonical_name": "Asparagales",
+        "taxonomic_name": "Asparagales",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 4787,
+        "rght": 7698,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 1110,
+    "fields": {
+        "name_id": 22826,
+        "parent": 447,
+        "supra_group": "DICOT",
+        "rank": 90,
+        "name": "Droseraceae",
+        "canonical_name": "Droseraceae",
+        "taxonomic_name": "Droseraceae (Salisb.)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Salisb.",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 21914,
+        "rght": 22341,
+        "tree_id": 3,
+        "level": 5,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 31,
+    "fields": {
+        "name_id": 39146,
+        "parent": 30,
+        "supra_group": null,
+        "rank": 70,
+        "name": "Collembola",
+        "canonical_name": "Collembola",
+        "taxonomic_name": "Collembola",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 57547,
+        "rght": 57556,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": [
+            20
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 463,
+    "fields": {
+        "name_id": 38568,
+        "parent": 438,
+        "supra_group": null,
+        "rank": 70,
+        "name": "Fabales",
+        "canonical_name": "Fabales",
+        "taxonomic_name": "Fabales",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 24949,
+        "rght": 31412,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 199,
+    "fields": {
+        "name_id": 38631,
+        "parent": 186,
+        "supra_group": null,
+        "rank": 70,
+        "name": "Polyporales",
+        "canonical_name": "Polyporales",
+        "taxonomic_name": "Polyporales",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 56151,
+        "rght": 56224,
+        "tree_id": 3,
+        "level": 4,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 1150,
+    "fields": {
+        "name_id": 22907,
+        "parent": 467,
+        "supra_group": "DICOT",
+        "rank": 90,
+        "name": "Scrophulariaceae",
+        "canonical_name": "Scrophulariaceae",
+        "taxonomic_name": "Scrophulariaceae (Juss.)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Juss.",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 33788,
+        "rght": 34751,
+        "tree_id": 3,
+        "level": 5,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 390,
+    "fields": {
+        "name_id": 22753,
+        "parent": 389,
+        "supra_group": "MONOCOT",
+        "rank": 90,
+        "name": "Arecaceae",
+        "canonical_name": "Arecaceae",
+        "taxonomic_name": "Arecaceae (Bercht. & J.Presl)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Bercht. & J.Presl",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 4744,
+        "rght": 4785,
+        "tree_id": 3,
+        "level": 5,
+        "paraphyletic_groups": [
+            8,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 440,
+    "fields": {
+        "name_id": 22924,
+        "parent": 439,
+        "supra_group": "DICOT",
+        "rank": 90,
+        "name": "Asteraceae",
+        "canonical_name": "Asteraceae",
+        "taxonomic_name": "Asteraceae (Bercht. & J. Presl)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Bercht. & J. Presl",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 16292,
+        "rght": 19023,
+        "tree_id": 3,
+        "level": 5,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 401,
+    "fields": {
+        "name_id": 22787,
+        "parent": 391,
+        "supra_group": "MONOCOT",
+        "rank": 90,
+        "name": "Orchidaceae",
+        "canonical_name": "Orchidaceae",
+        "taxonomic_name": "Orchidaceae (Juss.)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Juss.",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 5814,
+        "rght": 7457,
+        "tree_id": 3,
+        "level": 5,
+        "paraphyletic_groups": [
+            8,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 1925,
+    "fields": {
+        "name_id": 21491,
+        "parent": 1110,
+        "supra_group": null,
         "rank": 130,
-        "name": "Cassia",
-        "canonical_name": "Cassia",
-        "taxonomic_name": "Cassia (L.)",
+        "name": "Drosera",
+        "canonical_name": "Drosera",
+        "taxonomic_name": "Drosera (L.)",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
@@ -688,11 +670,265 @@
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 27451,
-        "rght": 27556,
+        "lft": 21921,
+        "rght": 22340,
         "tree_id": 3,
         "level": 6,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 32,
+    "fields": {
+        "name_id": 39228,
+        "parent": 31,
+        "supra_group": "INVERT",
+        "rank": 90,
+        "name": "Entomobryidae",
+        "canonical_name": "Entomobryidae",
+        "taxonomic_name": "Entomobryidae",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 57548,
+        "rght": 57555,
+        "tree_id": 3,
+        "level": 5,
+        "paraphyletic_groups": [
+            20,
+            15
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 464,
+    "fields": {
+        "name_id": 34857,
+        "parent": 463,
+        "supra_group": "DICOT",
+        "rank": 90,
+        "name": "Fabaceae",
+        "canonical_name": "Fabaceae",
+        "taxonomic_name": "Fabaceae (Lindl.)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Lindl.",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 25118,
+        "rght": 31411,
+        "tree_id": 3,
+        "level": 5,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 200,
+    "fields": {
+        "name_id": 23364,
+        "parent": 199,
+        "supra_group": "FUNGUS",
+        "rank": 90,
+        "name": "Polyporaceae",
+        "canonical_name": "Polyporaceae",
+        "taxonomic_name": "Polyporaceae (Corda)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Corda",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 56154,
+        "rght": 56223,
+        "tree_id": 3,
+        "level": 5,
+        "paraphyletic_groups": [
+            4,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 41240,
+    "fields": {
+        "name_id": 49070,
+        "parent": 200,
+        "supra_group": null,
+        "rank": 130,
+        "name": "Picipes",
+        "canonical_name": "Picipes",
+        "taxonomic_name": "Picipes (Zmitr. & Kovalenko)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Zmitr. & Kovalenko",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 56219,
+        "rght": 56222,
+        "tree_id": 3,
+        "level": 6,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 2296,
+    "fields": {
+        "name_id": 22098,
+        "parent": 1150,
+        "supra_group": null,
+        "rank": 130,
+        "name": "Eremophila",
+        "canonical_name": "Eremophila",
+        "taxonomic_name": "Eremophila (R.Br.)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "R.Br.",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 33847,
+        "rght": 34698,
+        "tree_id": 3,
+        "level": 6,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 1648,
+    "fields": {
+        "name_id": 21134,
+        "parent": 390,
+        "supra_group": null,
+        "rank": 130,
+        "name": "Livistona",
+        "canonical_name": "Livistona",
+        "taxonomic_name": "Livistona (R.Br.)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "R.Br.",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 4745,
+        "rght": 4774,
+        "tree_id": 3,
+        "level": 6,
+        "paraphyletic_groups": [
+            8,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 2578,
+    "fields": {
+        "name_id": 22636,
+        "parent": 440,
+        "supra_group": null,
+        "rank": 130,
+        "name": "Cyanthillium",
+        "canonical_name": "Cyanthillium",
+        "taxonomic_name": "Cyanthillium (Blume)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Blume",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 18743,
+        "rght": 18756,
+        "tree_id": 3,
+        "level": 6,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 1783,
+    "fields": {
+        "name_id": 21281,
+        "parent": 401,
+        "supra_group": null,
+        "rank": 130,
+        "name": "Geodorum",
+        "canonical_name": "Geodorum",
+        "taxonomic_name": "Geodorum (Jacks.)",
+        "vernacular_name": "",
+        "field_code": null,
+        "vernacular_names": "",
+        "author": "Jacks.",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 6733,
+        "rght": 6740,
+        "tree_id": 3,
+        "level": 6,
+        "paraphyletic_groups": [
+            8,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 11123,
+    "fields": {
+        "name_id": 3095,
+        "parent": 1925,
+        "supra_group": null,
+        "rank": 190,
+        "name": "erythrorhiza",
+        "canonical_name": "Drosera erythrorhiza",
+        "taxonomic_name": "Drosera erythrorhiza (Lindl.)",
+        "vernacular_name": "Red Ink Sundew",
+        "field_code": "DROERY",
+        "vernacular_names": "Red Ink Sundew",
+        "author": "Lindl.",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 21946,
+        "rght": 21957,
+        "tree_id": 3,
+        "level": 7,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
     }
 },
 {
@@ -701,6 +937,7 @@
     "fields": {
         "name_id": 39286,
         "parent": 32,
+        "supra_group": null,
         "rank": 130,
         "name": "Australotomurus",
         "canonical_name": "Australotomurus",
@@ -712,347 +949,373 @@
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 56997,
-        "rght": 57002,
+        "lft": 57549,
+        "rght": 57554,
         "tree_id": 3,
         "level": 6,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            20,
+            15
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 8299,
+    "pk": 3088,
     "fields": {
-        "name_id": 44899,
-        "parent": 6371,
-        "rank": 190,
-        "name": "straminichila",
-        "canonical_name": "Caladenia straminichila",
-        "taxonomic_name": "Caladenia straminichila (A.P.Br. & G.Brockman)",
+        "name_id": 21522,
+        "parent": 464,
+        "supra_group": null,
+        "rank": 130,
+        "name": "Cassia",
+        "canonical_name": "Cassia",
+        "taxonomic_name": "Cassia (L.)",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
-        "author": "A.P.Br. & G.Brockman",
+        "author": "L.",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 6378,
-        "rght": 6379,
+        "lft": 27525,
+        "rght": 27630,
         "tree_id": 3,
-        "level": 7,
-        "paraphyletic_groups": []
+        "level": 6,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 8277,
+    "pk": 3526,
     "fields": {
-        "name_id": 20396,
-        "parent": 6371,
-        "rank": 190,
-        "name": "sp. Boyup Brook (R.W. Hearn ARA 5890)",
-        "canonical_name": "Caladenia sp. Boyup Brook (R.W. Hearn ARA 5890)",
-        "taxonomic_name": "Caladenia sp. Boyup Brook (R.W. Hearn ARA 5890)",
+        "name_id": 38732,
+        "parent": 200,
+        "supra_group": null,
+        "rank": 130,
+        "name": "Royoporus",
+        "canonical_name": "Royoporus",
+        "taxonomic_name": "Royoporus (A.B.De)",
         "vernacular_name": "",
         "field_code": null,
+        "vernacular_names": "",
+        "author": "A.B.De",
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 56173,
+        "rght": 56176,
+        "tree_id": 3,
+        "level": 6,
+        "paraphyletic_groups": [
+            4,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 41427,
+    "fields": {
+        "name_id": 49071,
+        "parent": 41240,
+        "supra_group": null,
+        "rank": 190,
+        "name": "badius",
+        "canonical_name": null,
+        "taxonomic_name": null,
+        "vernacular_name": "",
+        "field_code": "PICBAD",
+        "vernacular_names": "",
+        "author": "(Pers.) Zmitr. & Kovalenko",
+        "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 56220,
+        "rght": 56221,
+        "tree_id": 3,
+        "level": 7,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 25134,
+    "fields": {
+        "name_id": 38835,
+        "parent": 3526,
+        "supra_group": null,
+        "rank": 190,
+        "name": "badius",
+        "canonical_name": "Royoporus badius",
+        "taxonomic_name": "Royoporus badius ((Pers.) A.B.De)",
+        "vernacular_name": "",
+        "field_code": "ROYBAD",
+        "vernacular_names": "",
+        "author": "(Pers.) A.B.De",
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 56174,
+        "rght": 56175,
+        "tree_id": 3,
+        "level": 7,
+        "paraphyletic_groups": [
+            4,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 41281,
+    "fields": {
+        "name_id": 49040,
+        "parent": 2296,
+        "supra_group": null,
+        "rank": 190,
+        "name": "sp. Kalgoorlie (V. Clarke & A. Brown VTC 590)",
+        "canonical_name": null,
+        "taxonomic_name": null,
+        "vernacular_name": "",
+        "field_code": "ERESP.",
+        "vernacular_names": "",
+        "author": null,
+        "publication_status": 0,
+        "current": true,
+        "eoo": null,
+        "lft": 34696,
+        "rght": 34697,
+        "tree_id": 3,
+        "level": 7,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 11861,
+    "fields": {
+        "name_id": 29438,
+        "parent": 2296,
+        "supra_group": null,
+        "rank": 190,
+        "name": "sp. Kalgoorlie (V. Clark & A. Brown VTC 590)",
+        "canonical_name": "Eremophila sp. Kalgoorlie (V. Clark & A. Brown VTC 590)",
+        "taxonomic_name": "Eremophila sp. Kalgoorlie (V. Clark & A. Brown VTC 590)",
+        "vernacular_name": "",
+        "field_code": "ERESP.",
         "vernacular_names": "",
         "author": null,
         "publication_status": 0,
         "current": false,
         "eoo": null,
-        "lft": 6344,
-        "rght": 6345,
+        "lft": 34568,
+        "rght": 34569,
         "tree_id": 3,
         "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 35367,
+    "pk": 41311,
     "fields": {
-        "name_id": 16635,
-        "parent": 7746,
-        "rank": 200,
-        "name": "angustifolia",
-        "canonical_name": "Boronia crenulata subspecies angustifolia",
-        "taxonomic_name": "Boronia crenulata subspecies angustifolia (Paul G.Wilson)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "Paul G.Wilson",
-        "publication_status": 1,
-        "current": false,
-        "eoo": null,
-        "lft": 49195,
-        "rght": 49196,
-        "tree_id": 3,
-        "level": 8,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 38191,
-    "fields": {
-        "name_id": 32580,
-        "parent": 7379,
-        "rank": 210,
-        "name": "dallanneyi",
-        "canonical_name": "Banksia dallanneyi variety dallanneyi",
-        "taxonomic_name": "Banksia dallanneyi variety dallanneyi (A.R.Mast & K.R.Thiele)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "A.R.Mast & K.R.Thiele",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 45233,
-        "rght": 45234,
-        "tree_id": 3,
-        "level": 8,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 38503,
-    "fields": {
-        "name_id": 16678,
-        "parent": 11275,
-        "rank": 210,
-        "name": "lindleyana",
-        "canonical_name": "Dryandra lindleyana variety lindleyana",
-        "taxonomic_name": "Dryandra lindleyana variety lindleyana (Meisn.)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "Meisn.",
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 45859,
-        "rght": 45860,
-        "tree_id": 3,
-        "level": 8,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 35369,
-    "fields": {
-        "name_id": 16636,
-        "parent": 7746,
-        "rank": 200,
-        "name": "viminea",
-        "canonical_name": "Boronia crenulata subspecies viminea",
-        "taxonomic_name": "Boronia crenulata subspecies viminea ((Lindl.) Paul G.Wilson)",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": "(Lindl.) Paul G.Wilson",
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 49197,
-        "rght": 49198,
-        "tree_id": 3,
-        "level": 8,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 7769,
-    "fields": {
-        "name_id": 9024,
-        "parent": 1960,
+        "name_id": 49021,
+        "parent": 1648,
+        "supra_group": null,
         "rank": 190,
-        "name": "machardiana",
-        "canonical_name": "Boronia machardiana",
-        "taxonomic_name": "Boronia machardiana (F.Muell.)",
+        "name": "leichhardtii",
+        "canonical_name": null,
+        "taxonomic_name": null,
         "vernacular_name": "",
-        "field_code": null,
+        "field_code": "LIVLEI",
         "vernacular_names": "",
         "author": "F.Muell.",
         "publication_status": 2,
+        "current": true,
+        "eoo": null,
+        "lft": 4772,
+        "rght": 4773,
+        "tree_id": 3,
+        "level": 7,
+        "paraphyletic_groups": [
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 16928,
+    "fields": {
+        "name_id": 19040,
+        "parent": 1648,
+        "supra_group": null,
+        "rank": 190,
+        "name": "lorophylla",
+        "canonical_name": "Livistona lorophylla",
+        "taxonomic_name": "Livistona lorophylla (Becc.)",
+        "vernacular_name": "",
+        "field_code": "LIVLOR",
+        "vernacular_names": "",
+        "author": "Becc.",
+        "publication_status": 2,
         "current": false,
         "eoo": null,
-        "lft": 49330,
-        "rght": 49331,
+        "lft": 4764,
+        "rght": 4765,
         "tree_id": 3,
         "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            8,
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 1299,
+    "pk": 41272,
     "fields": {
-        "name_id": 26038,
-        "parent": 4,
-        "rank": 90,
-        "name": "Porphyridiaceae",
-        "canonical_name": "Porphyridiaceae",
-        "taxonomic_name": "Porphyridiaceae",
-        "vernacular_name": "",
-        "field_code": null,
-        "vernacular_names": "",
-        "author": null,
-        "publication_status": 2,
-        "current": true,
-        "eoo": null,
-        "lft": 2909,
-        "rght": 2914,
-        "tree_id": 3,
-        "level": 2,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 17787,
-    "fields": {
-        "name_id": 1657,
-        "parent": 6389,
+        "name_id": 49015,
+        "parent": 2578,
+        "supra_group": null,
         "rank": 190,
-        "name": "alba",
-        "canonical_name": "Microtis alba",
-        "taxonomic_name": "Microtis alba (R.Br.)",
-        "vernacular_name": "White Mignonette Orchid",
-        "field_code": null,
-        "vernacular_names": "White Mignonette Orchid",
-        "author": "R.Br.",
+        "name": "gracile",
+        "canonical_name": null,
+        "taxonomic_name": null,
+        "vernacular_name": "",
+        "field_code": "CYAGRA",
+        "vernacular_names": "",
+        "author": "(Lander & P.J.H.Hurter) K.R.Thiele & E.E.Schill.",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 6798,
-        "rght": 6799,
+        "lft": 18754,
+        "rght": 18755,
         "tree_id": 3,
         "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 13560,
+    "pk": 41273,
     "fields": {
-        "name_id": 8526,
-        "parent": 6385,
+        "name_id": 49014,
+        "parent": 2578,
+        "supra_group": null,
         "rank": 190,
         "name": "gracilis",
-        "canonical_name": "Goadbyella gracilis",
-        "taxonomic_name": "Goadbyella gracilis (R.S.Rogers)",
-        "vernacular_name": "The Lost Orchid",
-        "field_code": null,
-        "vernacular_names": "The Lost Orchid",
-        "author": "R.S.Rogers",
+        "canonical_name": null,
+        "taxonomic_name": null,
+        "vernacular_name": "",
+        "field_code": "CYAGRA",
+        "vernacular_names": "",
+        "author": "(Lander & P.J.H.Hurter) K.R.Thiele & E.E.Schill.",
         "publication_status": 2,
         "current": false,
         "eoo": null,
-        "lft": 6762,
-        "rght": 6763,
+        "lft": 18752,
+        "rght": 18753,
         "tree_id": 3,
         "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 22690,
+    "pk": 13411,
     "fields": {
-        "name_id": 13687,
-        "parent": 6396,
+        "name_id": 8525,
+        "parent": 1783,
+        "supra_group": null,
         "rank": 190,
-        "name": "dedmaniarum",
-        "canonical_name": "Thelymitra dedmaniarum",
-        "taxonomic_name": "Thelymitra dedmaniarum (R.S.Rogers)",
-        "vernacular_name": "Cinnamon Sun Orchid",
-        "field_code": null,
-        "vernacular_names": "Cinnamon Sun Orchid, Bronze Orchid",
-        "author": "R.S.Rogers",
+        "name": "densiflorum",
+        "canonical_name": "Geodorum densiflorum",
+        "taxonomic_name": "Geodorum densiflorum ((Lam.) Schltr.)",
+        "vernacular_name": "",
+        "field_code": "GEODEN",
+        "vernacular_names": "",
+        "author": "(Lam.) Schltr.",
         "publication_status": 2,
         "current": true,
-        "eoo": "SRID=4326;POLYGON ((116.119277 -31.740633, 116.119226 -31.740637, 116.119175 -31.740639, 116.119124 -31.740638, 116.119074 -31.740635, 116.119023 -31.740629, 116.118973 -31.74062, 116.118924 -31.740609, 116.118875 -31.740595, 116.118827 -31.740579, 116.118779 -31.740561, 116.118733 -31.74054, 116.118688 -31.740517, 116.118644 -31.740491, 116.118601 -31.740464, 116.11856 -31.740434, 116.118521 -31.740402, 116.113888 -31.736483, 116.11385 -31.736449, 116.113814 -31.736413, 116.113779 -31.736376, 116.113747 -31.736336, 116.113716 -31.736296, 116.113688 -31.736253, 116.113662 -31.73621, 116.113638 -31.736165, 115.871771 -31.250168, 115.871748 -31.250117, 115.871728 -31.250066, 115.87171 -31.250013, 115.871695 -31.24996, 115.871684 -31.249906, 115.871675 -31.249851, 115.871669 -31.249796, 115.871667 -31.249741, 115.871633 -31.247918, 115.871634 -31.247866, 115.871637 -31.247814, 115.871643 -31.247762, 115.871651 -31.247711, 115.871662 -31.24766, 115.871676 -31.247609, 115.871693 -31.24756, 115.871712 -31.247511, 115.871733 -31.247464, 115.871757 -31.247417, 115.871784 -31.247372, 115.871812 -31.247329, 115.871843 -31.247287, 115.871876 -31.247246, 115.871911 -31.247208, 115.871949 -31.247171, 115.871988 -31.247136, 115.872028 -31.247104, 115.872071 -31.247073, 115.872115 -31.247045, 115.87216 -31.247019, 115.872207 -31.246995, 115.872254 -31.246974, 115.872303 -31.246956, 115.872353 -31.24694, 115.872403 -31.246927, 115.87537 -31.246227, 115.875423 -31.246216, 115.875475 -31.246208, 115.875528 -31.246203, 115.875582 -31.2462, 115.875635 -31.246201, 115.875688 -31.246204, 115.875741 -31.24621, 115.875794 -31.246219, 115.875846 -31.246231, 115.875897 -31.246245, 115.875947 -31.246262, 115.875997 -31.246282, 115.876045 -31.246305, 115.876092 -31.24633, 115.876138 -31.246357, 115.876182 -31.246387, 115.876225 -31.246419, 115.876265 -31.246454, 115.876304 -31.24649, 115.876341 -31.246529, 115.876376 -31.246569, 115.876408 -31.246611, 115.876439 -31.246655, 115.876466 -31.246701, 116.157755 -31.734862, 116.15778 -31.734908, 116.157803 -31.734955, 116.157823 -31.735003, 116.15784 -31.735053, 116.157855 -31.735103, 116.157867 -31.735154, 116.157877 -31.735205, 116.157883 -31.735257, 116.157888 -31.735309, 116.157889 -31.735362, 116.157887 -31.735414, 116.157883 -31.735466, 116.157877 -31.735518, 116.157867 -31.735569, 116.157855 -31.73562, 116.15784 -31.735671, 116.157822 -31.73572, 116.157802 -31.735768, 116.15778 -31.735815, 116.157755 -31.735861, 116.157727 -31.735906, 116.157698 -31.735949, 116.157666 -31.735991, 116.157632 -31.73603, 116.157596 -31.736068, 116.157558 -31.736104, 116.157518 -31.736138, 116.157477 -31.73617, 116.157433 -31.7362, 116.157389 -31.736227, 116.157343 -31.736252, 116.157296 -31.736275, 116.157247 -31.736295, 116.157198 -31.736312, 116.157148 -31.736327, 116.157097 -31.736339, 116.157045 -31.736349, 116.154768 -31.73671, 116.154721 -31.736716, 116.119277 -31.740633))",
-        "lft": 7286,
-        "rght": 7287,
+        "eoo": null,
+        "lft": 6736,
+        "rght": 6737,
         "tree_id": 3,
         "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            8,
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 22689,
+    "pk": 13413,
     "fields": {
-        "name_id": 13650,
-        "parent": 6396,
+        "name_id": 34882,
+        "parent": 1783,
+        "supra_group": null,
         "rank": 190,
-        "name": "dedmaniae",
-        "canonical_name": "Thelymitra dedmaniae",
-        "taxonomic_name": "Thelymitra dedmaniae (R.S.Rogers)",
+        "name": "terrestre",
+        "canonical_name": "Geodorum terrestre",
+        "taxonomic_name": "Geodorum terrestre ((L.) Garay)",
         "vernacular_name": "",
-        "field_code": null,
+        "field_code": "GEOTER",
         "vernacular_names": "",
-        "author": "R.S.Rogers",
+        "author": "(L.) Garay",
         "publication_status": 2,
         "current": false,
         "eoo": null,
-        "lft": 7284,
-        "rght": 7285,
+        "lft": 6738,
+        "rght": 6739,
         "tree_id": 3,
         "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            8,
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 38309,
+    "pk": 35811,
     "fields": {
-        "name_id": 11579,
-        "parent": 8808,
-        "rank": 210,
-        "name": "desolata",
-        "canonical_name": "Cassia desolata variety desolata",
-        "taxonomic_name": "Cassia desolata variety desolata (F.Muell.)",
+        "name_id": 13214,
+        "parent": 11123,
+        "supra_group": null,
+        "rank": 200,
+        "name": "geniculata",
+        "canonical_name": "Drosera erythrorhiza subspecies geniculata",
+        "taxonomic_name": "Drosera erythrorhiza subspecies geniculata (N.G.Marchant & Lowrie)",
         "vernacular_name": "",
-        "field_code": null,
+        "field_code": "DROERYGEN",
         "vernacular_names": "",
-        "author": "F.Muell.",
+        "author": "N.G.Marchant & Lowrie",
         "publication_status": 2,
         "current": false,
         "eoo": null,
-        "lft": 27547,
-        "rght": 27548,
+        "lft": 21953,
+        "rght": 21954,
         "tree_id": 3,
         "level": 8,
-        "paraphyletic_groups": []
-    }
-},
-{
-    "model": "taxonomy.taxon",
-    "pk": 8808,
-    "fields": {
-        "name_id": 8959,
-        "parent": 3088,
-        "rank": 190,
-        "name": "desolata",
-        "canonical_name": "Cassia desolata",
-        "taxonomic_name": "Cassia desolata (F.Muell.)",
-        "vernacular_name": "Grey Cassia",
-        "field_code": null,
-        "vernacular_names": "Grey Cassia",
-        "author": "F.Muell.",
-        "publication_status": 2,
-        "current": false,
-        "eoo": null,
-        "lft": 27546,
-        "rght": 27549,
-        "tree_id": 3,
-        "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
     }
 },
 {
@@ -1061,22 +1324,26 @@
     "fields": {
         "name_id": 48574,
         "parent": 4167,
+        "supra_group": null,
         "rank": 190,
         "name": "morbidus",
         "canonical_name": "Australotomurus morbidus",
         "taxonomic_name": "Australotomurus morbidus (Greenslade & Jordana)",
         "vernacular_name": "Guildford springtail",
-        "field_code": null,
-        "vernacular_names": "Guildford springtail, cemetery springtail",
+        "field_code": "AUSMOR",
+        "vernacular_names": "cemetery springtail, Guildford springtail",
         "author": "Greenslade & Jordana",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 57000,
-        "rght": 57001,
+        "lft": 57552,
+        "rght": 57553,
         "tree_id": 3,
         "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            20,
+            15
+        ]
     }
 },
 {
@@ -1085,134 +1352,180 @@
     "fields": {
         "name_id": 33929,
         "parent": 4167,
+        "supra_group": null,
         "rank": 190,
         "name": "sp (SAM122621)",
         "canonical_name": "Australotomurus sp (SAM122621)",
         "taxonomic_name": "Australotomurus sp (SAM122621)",
         "vernacular_name": "Guildford Springtail",
-        "field_code": null,
+        "field_code": "AUSSP",
         "vernacular_names": "Guildford Springtail",
         "author": null,
         "publication_status": 2,
         "current": false,
         "eoo": null,
-        "lft": 56998,
-        "rght": 56999,
+        "lft": 57550,
+        "rght": 57551,
         "tree_id": 3,
         "level": 7,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            20,
+            15
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 38309,
+    "fields": {
+        "name_id": 11579,
+        "parent": 8808,
+        "supra_group": null,
+        "rank": 210,
+        "name": "desolata",
+        "canonical_name": "Cassia desolata variety desolata",
+        "taxonomic_name": "Cassia desolata variety desolata (F.Muell.)",
+        "vernacular_name": "",
+        "field_code": "CASDESDES",
+        "vernacular_names": "",
+        "author": "F.Muell.",
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 27621,
+        "rght": 27622,
+        "tree_id": 3,
+        "level": 8,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 8808,
+    "fields": {
+        "name_id": 8959,
+        "parent": 3088,
+        "supra_group": null,
+        "rank": 190,
+        "name": "desolata",
+        "canonical_name": "Cassia desolata",
+        "taxonomic_name": "Cassia desolata (F.Muell.)",
+        "vernacular_name": "Grey Cassia",
+        "field_code": "CASDES",
+        "vernacular_names": "Grey Cassia",
+        "author": "F.Muell.",
+        "publication_status": 2,
+        "current": false,
+        "eoo": null,
+        "lft": 27620,
+        "rght": 27623,
+        "tree_id": 3,
+        "level": 7,
+        "paraphyletic_groups": [
+            3,
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.crossreference",
-    "pk": 8345,
+    "pk": 8447,
     "fields": {
-        "xref_id": 31493,
-        "predecessor": 8277,
-        "successor": 8299,
-        "reason": 8,
-        "authorised_by": "J. Percy-Bower",
+        "xref_id": 31553,
+        "predecessor": 3526,
+        "successor": null,
+        "reason": 3,
+        "authorised_by": "R. Rees",
         "authorised_on": null,
         "effective_to": null,
-        "comments": "Fide A.P. Brown in sched. (02/06/2015)"
+        "comments": "This genus does not occur in WA. See I.V. Zmitrovich & A. Kovalenko in Int.J.Med.Mushr. 18:35 (2016)"
     }
 },
 {
     "model": "taxonomy.crossreference",
-    "pk": 8338,
+    "pk": 8446,
     "fields": {
-        "xref_id": 31313,
-        "predecessor": 35367,
+        "xref_id": 31513,
+        "predecessor": 25134,
+        "successor": 41427,
+        "reason": 2,
+        "authorised_by": "R. Rees",
+        "authorised_on": null,
+        "effective_to": null,
+        "comments": "See I.V. Zmitrovich & A. Kovalenko in Int.J.Med.Mushr. 18:35 (2016)"
+    }
+},
+{
+    "model": "taxonomy.crossreference",
+    "pk": 8445,
+    "fields": {
+        "xref_id": 31393,
+        "predecessor": 11861,
+        "successor": 41281,
+        "reason": 8,
+        "authorised_by": "M. Falconer",
+        "authorised_on": null,
+        "effective_to": null,
+        "comments": "Fide A.P. Brown in litt. (30/01/2019)"
+    }
+},
+{
+    "model": "taxonomy.crossreference",
+    "pk": 8444,
+    "fields": {
+        "xref_id": 31273,
+        "predecessor": 16928,
+        "successor": 41311,
+        "reason": 1,
+        "authorised_by": "C. Parker",
+        "authorised_on": null,
+        "effective_to": null,
+        "comments": "See J.L. Dowe in Nuytsia 29:248 (2018)"
+    }
+},
+{
+    "model": "taxonomy.crossreference",
+    "pk": 8431,
+    "fields": {
+        "xref_id": 31213,
+        "predecessor": 41273,
+        "successor": 41272,
+        "reason": 6,
+        "authorised_by": "C. Parker",
+        "authorised_on": null,
+        "effective_to": null,
+        "comments": "Fide A.S. George in litt. (13/12/2018)"
+    }
+},
+{
+    "model": "taxonomy.crossreference",
+    "pk": 8388,
+    "fields": {
+        "xref_id": 31534,
+        "predecessor": 13413,
+        "successor": 13411,
+        "reason": 0,
+        "authorised_by": "C. Parker",
+        "authorised_on": null,
+        "effective_to": null,
+        "comments": "Fide R.L. Barrett in litt. (08/06/2018)"
+    }
+},
+{
+    "model": "taxonomy.crossreference",
+    "pk": 8360,
+    "fields": {
+        "xref_id": 31594,
+        "predecessor": 35811,
         "successor": null,
         "reason": 7,
         "authorised_by": "C. Parker",
         "authorised_on": null,
         "effective_to": null,
-        "comments": "This entry is an error, refer to Boronia crenulata subsp. crenulata var. angustifolia Paul G.Wilson [NameID 17627]"
-    }
-},
-{
-    "model": "taxonomy.crossreference",
-    "pk": 8336,
-    "fields": {
-        "xref_id": 31354,
-        "predecessor": 38503,
-        "successor": 38191,
-        "reason": 2,
-        "authorised_by": "J. Percy-Bower",
-        "authorised_on": null,
-        "effective_to": null,
-        "comments": "See A.R. Mast & K.R. Thiele in Austral.Syst.Bot. 20:67 (2007)"
-    }
-},
-{
-    "model": "taxonomy.crossreference",
-    "pk": 8335,
-    "fields": {
-        "xref_id": 31294,
-        "predecessor": 7769,
-        "successor": 35369,
-        "reason": 1,
-        "authorised_by": "J. Percy-Bower",
-        "authorised_on": null,
-        "effective_to": null,
-        "comments": "See M.F. Duretto et al. in Fl.Australia 26:143 (2013)"
-    }
-},
-{
-    "model": "taxonomy.crossreference",
-    "pk": 8333,
-    "fields": {
-        "xref_id": 31373,
-        "predecessor": 1299,
-        "successor": null,
-        "reason": 3,
-        "authorised_by": "J. Percy-Bower",
-        "authorised_on": null,
-        "effective_to": null,
-        "comments": "This family does not occur in WA. Fide J.M. Huisman in litt. (11/12/2018)"
-    }
-},
-{
-    "model": "taxonomy.crossreference",
-    "pk": 8321,
-    "fields": {
-        "xref_id": 30933,
-        "predecessor": 13560,
-        "successor": 17787,
-        "reason": 0,
-        "authorised_by": "C. Parker",
-        "authorised_on": null,
-        "effective_to": null,
-        "comments": "See J.W. Green in Census of the Vascular Plants of Western Australia, Edn. 2:55 (1985)"
-    }
-},
-{
-    "model": "taxonomy.crossreference",
-    "pk": 8293,
-    "fields": {
-        "xref_id": 30693,
-        "predecessor": 22689,
-        "successor": 22690,
-        "reason": 6,
-        "authorised_by": "C. Parker",
-        "authorised_on": null,
-        "effective_to": null,
-        "comments": "See National Species List. https://id.biodiversity.org.au/instance/apni/708362 [accessed 02/10/2018]"
-    }
-},
-{
-    "model": "taxonomy.crossreference",
-    "pk": 1869,
-    "fields": {
-        "xref_id": 1751,
-        "predecessor": 8808,
-        "successor": 38309,
-        "reason": 4,
-        "authorised_by": null,
-        "authorised_on": null,
-        "effective_to": null,
-        "comments": null
+        "comments": "This entry is an error, refer to Drosera gigantea subsp. geniculata N.G.Marchant & Lowrie [NameID 16244]"
     }
 },
 {
@@ -1224,6 +1537,20 @@
         "successor": 39841,
         "reason": 5,
         "authorised_by": "Georgie Anderson",
+        "authorised_on": null,
+        "effective_to": null,
+        "comments": null
+    }
+},
+{
+    "model": "taxonomy.crossreference",
+    "pk": 1869,
+    "fields": {
+        "xref_id": 1751,
+        "predecessor": 8808,
+        "successor": 38309,
+        "reason": 4,
+        "authorised_by": null,
         "authorised_on": null,
         "effective_to": null,
         "comments": null

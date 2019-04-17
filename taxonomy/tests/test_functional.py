@@ -64,8 +64,4 @@ class TaxonListFilterTests(TestCase):
 
     """
 
-    fixtures = [
-        'taxonomy/fixtures/test_crossreference.json',
-        'taxonomy/fixtures/test_taxon.json',
-        'taxonomy/fixtures/test_community.json',
-    ]
+    fixtures = ['taxonomy/fixtures/test_taxonomy.json', ]
