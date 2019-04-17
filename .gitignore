@@ -87,3 +87,7 @@ dbperf
 .Rproj.user
 *.Rproj
 .Rhistory
+
+
+# temp test fixtures
+taxonomy/fixtures/test_tax_*
