@@ -48,7 +48,10 @@ MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
 class TaxonUtilsTests(TestCase):
     """Unit tests for taxonomy utils."""
 
-    fixtures = ['taxonomy/fixtures/test_wacensus.json', ]
+    fixtures = [
+        'taxonomy/fixtures/test_taxonomy.json',
+        # 'taxonomy/fixtures/test_wacensus.json',
+    ]
 
     def test_update_taxon(self):
         """Test reconstructing Taxon, Crossreference and Vernacular from Hbv*."""

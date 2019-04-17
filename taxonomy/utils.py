@@ -73,6 +73,10 @@ def create_test_fixtures():
     with open("taxonomy/fixtures/test_taxonomy.json", 'w+') as f:
         f.write(buf.read())
 
+    print("./manage.py merge_fixtures taxonomy/fixtures/test_supra.json taxonomy/fixtures/test_crossreference.json "
+          "taxonomy/fixtures/test_taxon.json taxonomy/fixtures/test_community.json "
+          "> taxonomy/fixtures/test_taxonomy.json ")
+
     # Conservation: taxon with actions, threats
     # print("./manage.py dump_object taxonomy.Taxon 1170 1174 2155 27401 39308 23744 -k -n > conservation/fixtures/test_taxon.json")  # noqa
     # print("./manage.py dump_object conservation.Document 2 -k -n > conservation/fixtures/test_docs.json")  # noqa
