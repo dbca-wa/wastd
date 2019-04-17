@@ -2,11 +2,13 @@
 """Helpers for Taxonomy module."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+import io
 import logging
 
 # from django.utils.timezone import is_aware, make_aware
 # from pdb import set_trace
-# from django.core.management import call_command
+from django.core.management import call_command  # noqa
 from django.db import transaction
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_text
@@ -33,62 +35,54 @@ def create_test_fixtures():
 
     taxonomy/fixtures/test_community.json
 
-    * The first 10 communities with related objects.
-
-    taxonomy/fixtures/test_names.json
-    taxonomy/fixtures/test_vernaculars.json
-    taxonomy/fixtures/test_xrefs.json
-    taxonomy/fixtures/test_parents.json
-
-    * The first ten instances of each staging table.
     * TODO: Use name_ids from crossreference's involved taxa to select a contiguous set of Hbv objects.
     """
-    c0 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_MIS).last()
-    c1 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_TSY).last()
-    c2 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_NSY).last()
-    c3 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_EXC).last()
-    c4 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_CON).last()
-    c5 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_FOR).last()
-    c6 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_OGV).last()
-    c7 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_ERR).last()
-    c8 = tax_models.Crossreference.objects.filter(reason=tax_models.Crossreference.REASON_ISY).last()
-    tv = tax_models.Taxon.objects.exclude(vernacular_name__isnull=True).last()
+    taxon_with_vernaculars = tax_models.Taxon.objects.exclude(vernacular_name__isnull=True).last().pk
+    xref_cold_platter = [tax_models.Crossreference.objects.filter(reason=r).last().pk
+                         for r in [x[0] for x in tax_models.Crossreference.REASONS]]
+    taxon_pks = [taxon_with_vernaculars, ]
+    com_pks = [x.pk for x in tax_models.Community.objects.all()[1:10]]
+    supra_pks = [x.pk for x in tax_models.HbvSupra.objects.all()]
 
-    xref_pks = " ".join([str(x.pk) for x in[c0, c1, c2, c3, c4, c5, c6, c7, c8]])
-    taxon_pks = " ".join([str(x) for x in [tv.pk, ]])
-    com_pks = " ".join([str(x.pk) for x in tax_models.Community.objects.all()[1:10]])
+    with open("taxonomy/fixtures/test_supra.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.HbvSupra', *supra_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
 
-    print("./manage.py dump_object taxonomy.Crossreference {0} -k "
-          "> taxonomy/fixtures/test_crossreference.json".format(xref_pks))
-    print("./manage.py dump_object taxonomy.Taxon {0} -k "
-          "> taxonomy/fixtures/test_taxon.json".format(taxon_pks))
-    print("./manage.py dump_object taxonomy.Community {0} -k "
-          "> taxonomy/fixtures/test_community.json".format(com_pks))
+    with open("taxonomy/fixtures/test_crossreference.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.Crossreference', *xref_cold_platter, '-k', '-n', stdout=f)
+        f.readlines()
 
-    print("./manage.py dump_object taxonomy.HbvName 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_names.json")
-    print("./manage.py dump_object taxonomy.HbvVernacular 1 2 3 4 5 6 7 > taxonomy/fixtures/test_vernaculars.json")
-    print("./manage.py dump_object taxonomy.HbvXref 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_xrefs.json")
-    print("./manage.py dump_object taxonomy.HbvParent 1 2 3 4 5 6 7 8 9 10 > taxonomy/fixtures/test_parents.json")
+    with open("taxonomy/fixtures/test_taxon.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.Taxon', *taxon_pks, '-k', '-n', stdout=f)
+        f.readlines()
 
-    # cave bat with actions, threats, occurrences
-    # print("./manage.py dump_object taxonomy.Taxon 1174 2155 27401 39308 23744 -k -n > conservation/fixtures/test_taxon.json")  # noqa
+    with open("taxonomy/fixtures/test_community.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.Community', *com_pks, '-n', stdout=f)
+        f.readlines()
+
+    buf = io.StringIO()
+    call_command(
+        "merge_fixtures",
+        "taxonomy/fixtures/test_supra.json",
+        "taxonomy/fixtures/test_crossreference.json",
+        "taxonomy/fixtures/test_taxon.json",
+        "taxonomy/fixtures/test_community.json",
+        stdout=buf
+    )
+    buf.seek(0)
+    with open("taxonomy/fixtures/test_taxonomy.json", 'w+') as f:
+        f.write(buf.read())
+
+    # Conservation: taxon with actions, threats
+    # print("./manage.py dump_object taxonomy.Taxon 1170 1174 2155 27401 39308 23744 -k -n > conservation/fixtures/test_taxon.json")  # noqa
+    # print("./manage.py dump_object conservation.Document 2 -k -n > conservation/fixtures/test_docs.json")  # noqa
     # print("./manage.py dump_object conservation.ConservationThreat 1 2 -k -n > conservation/fixtures/test_threats.json")  # noqa
     # print("./manage.py dump_object conservation.ConservationAction 12 13 -k -n > conservation/fixtures/test_actions.json") # noqa
     # print("./manage.py dump_object occurrence.TaxonAreaEncounter 564632 -k -n > conservation/fixtures/test_occ.json")
-    # de-dupe and merge into conservation/fixtures/test_data.json
+    # de-dupe and merge into conservation/fixtures/test_conservation.json
 
-    # This throws an error on related objects
-    # with open("taxonomy/fixtures/test_crossreference.json", 'w+') as f:
-    #     call_command('dump_object', 'taxonomy.Crossreference', xref_pks, stdout=f)
-    #     f.readlines()
-
-    # with open("taxonomy/fixtures/test_taxon.json", 'w+') as f:
-    #     call_command('dump_object', 'taxonomy.Taxon', taxon_pks, stdout=f)
-    #     f.readlines()
-
-    # with open("taxonomy/fixtures/test_community.json", 'w+') as f:
-    #     call_command('dump_object', 'taxonomy.Community', com_pks, stdout=f)
-    #     f.readlines()
+    # Occurrences: Taxon, Community with occurrences > test_occuccence.json
+    # Taxonomy: Hbv* for a phylogeny of a Taxon
 
 
 def make_family(fam, kingdom_dict, current_dict, publication_dict):

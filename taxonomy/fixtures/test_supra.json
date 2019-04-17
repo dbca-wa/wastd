@@ -1,0 +1,233 @@
+[
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 17,
+    "fields": {
+        "ogc_fid": 16,
+        "supra_code": "WATERMOULD",
+        "supra_name": "Water Mould",
+        "updated_on": "2015-08-23Z",
+        "md5_rowhash": "233a479ad00fdf8664e24e9c67444b15"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 10,
+    "fields": {
+        "ogc_fid": 9,
+        "supra_code": "SLIMEMOULD",
+        "supra_name": "Slime Mould",
+        "updated_on": "2011-04-10Z",
+        "md5_rowhash": "abbf8cc06c4fc21e25c11c506e391715"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 11,
+    "fields": {
+        "ogc_fid": 10,
+        "supra_code": "REPTILE",
+        "supra_name": "Reptile",
+        "updated_on": "2011-04-10Z",
+        "md5_rowhash": "830aa2c94517020a8d78d2f399816619"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 18,
+    "fields": {
+        "ogc_fid": 17,
+        "supra_code": "PROTIST",
+        "supra_name": "Protist",
+        "updated_on": "2015-08-23Z",
+        "md5_rowhash": "0608a6eda8469af5d38e6e6ffead1eee"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 22,
+    "fields": {
+        "ogc_fid": null,
+        "supra_code": "PLANTS",
+        "supra_name": "Plants sensu latu",
+        "updated_on": null,
+        "md5_rowhash": null
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 2,
+    "fields": {
+        "ogc_fid": 1,
+        "supra_code": "MOSS",
+        "supra_name": "Bryopsid (Moss)",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "348d87da17322a388ce0ed8ff6b72720"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 8,
+    "fields": {
+        "ogc_fid": 7,
+        "supra_code": "MONOCOT",
+        "supra_name": "Monocotyledon",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "428d1962ca6507fda2ea8fad0512f60a"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 13,
+    "fields": {
+        "ogc_fid": 12,
+        "supra_code": "MAMMAL",
+        "supra_name": "Mammal",
+        "updated_on": "2011-04-10Z",
+        "md5_rowhash": "7ac0634c6ed735d245d1b190129cf362"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 6,
+    "fields": {
+        "ogc_fid": 5,
+        "supra_code": "LIVERWORT",
+        "supra_name": "Hepatic (Liverwort)",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "ea7280c2b937ba2c03f6726e77289208"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 7,
+    "fields": {
+        "ogc_fid": 6,
+        "supra_code": "LICHEN",
+        "supra_name": "Lichen",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "a6cbd49b0609ba87fc713832cabab398"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 15,
+    "fields": {
+        "ogc_fid": 14,
+        "supra_code": "INVERT",
+        "supra_name": "Invertebrate",
+        "updated_on": "2011-04-10Z",
+        "md5_rowhash": "8db403594e47ba1eb449cd85ac88dec7"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 5,
+    "fields": {
+        "ogc_fid": 4,
+        "supra_code": "GYMNO",
+        "supra_name": "Gymnosperm",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "18ec864c978db5b3817dcb0e4f78b47e"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 4,
+    "fields": {
+        "ogc_fid": 3,
+        "supra_code": "FUNGUS",
+        "supra_name": "Fungus",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "27ba16d8becf32a31906c8168113f22c"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 14,
+    "fields": {
+        "ogc_fid": 13,
+        "supra_code": "FISH",
+        "supra_name": "Fish",
+        "updated_on": "2011-04-10Z",
+        "md5_rowhash": "bcab1977c0027ffe33a207b7e011c110"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 9,
+    "fields": {
+        "ogc_fid": 8,
+        "supra_code": "FERN",
+        "supra_name": "Pteridophyte (Fern)",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "d522d6b3cbb1943989d59c02a1b12184"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 3,
+    "fields": {
+        "ogc_fid": 2,
+        "supra_code": "DICOT",
+        "supra_name": "Dicotyledon",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "6036aaa1d159d78946c814eaec5d1a66"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 12,
+    "fields": {
+        "ogc_fid": 11,
+        "supra_code": "BIRD",
+        "supra_name": "Bird",
+        "updated_on": "2011-04-10Z",
+        "md5_rowhash": "bd0c45caa7d9dcdf1f18ff09f05d50fb"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 19,
+    "fields": {
+        "ogc_fid": 18,
+        "supra_code": "BACTERIUM",
+        "supra_name": "Bacterium",
+        "updated_on": "2015-08-23Z",
+        "md5_rowhash": "c470ff948d9e9279a0a043f4e9cae594"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 20,
+    "fields": {
+        "ogc_fid": null,
+        "supra_code": "ANIMALS",
+        "supra_name": "Animals",
+        "updated_on": null,
+        "md5_rowhash": null
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 16,
+    "fields": {
+        "ogc_fid": 15,
+        "supra_code": "AMPHI",
+        "supra_name": "Amphibian",
+        "updated_on": "2011-04-10Z",
+        "md5_rowhash": "68dcb7428f834614a5f6f2949b096913"
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 1,
+    "fields": {
+        "ogc_fid": 0,
+        "supra_code": "ALGA",
+        "supra_name": "Alga",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "ac75154fd5c5b9237d20d833bfe0a506"
+    }
+}
+]

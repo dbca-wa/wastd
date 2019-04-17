@@ -5,6 +5,7 @@
     "fields": {
         "name_id": 0,
         "parent": null,
+        "supra_group": null,
         "rank": 5,
         "name": "Eukarya",
         "canonical_name": "Eukarya",
@@ -17,10 +18,12 @@
         "current": true,
         "eoo": null,
         "lft": 1,
-        "rght": 64534,
+        "rght": 65122,
         "tree_id": 3,
         "level": 0,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
@@ -29,6 +32,7 @@
     "fields": {
         "name_id": 25911,
         "parent": 1,
+        "supra_group": null,
         "rank": 10,
         "name": "Chromista",
         "canonical_name": "Chromista",
@@ -40,83 +44,96 @@
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 63896,
-        "rght": 64533,
+        "lft": 64468,
+        "rght": 65121,
         "tree_id": 3,
         "level": 1,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 918,
+    "pk": 41197,
     "fields": {
-        "name_id": 48499,
+        "name_id": 48912,
         "parent": 7,
+        "supra_group": "ALGA",
         "rank": 90,
-        "name": "Hapalospongidiaceae",
-        "canonical_name": "Hapalospongidiaceae",
-        "taxonomic_name": "Hapalospongidiaceae (Reyes-G\u00f3mez & Le\u00f3n-Alvarez)",
+        "name": "Lessoniaceae",
+        "canonical_name": "Lessoniaceae",
+        "taxonomic_name": "Lessoniaceae (Setch. & N.L.Gardner)",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
-        "author": "Reyes-G\u00f3mez & Le\u00f3n-Alvarez",
+        "author": "Setch. & N.L.Gardner",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 64527,
-        "rght": 64532,
+        "lft": 65113,
+        "rght": 65120,
         "tree_id": 3,
         "level": 2,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 4349,
+    "pk": 4279,
     "fields": {
-        "name_id": 26225,
-        "parent": 918,
+        "name_id": 26177,
+        "parent": 41197,
+        "supra_group": null,
         "rank": 130,
-        "name": "Hapalospongidion",
-        "canonical_name": "Hapalospongidion",
-        "taxonomic_name": "Hapalospongidion (Saunders)",
+        "name": "Ecklonia",
+        "canonical_name": "Ecklonia",
+        "taxonomic_name": "Ecklonia (Hornemann)",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
-        "author": "Saunders",
+        "author": "Hornemann",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 64528,
-        "rght": 64531,
+        "lft": 65114,
+        "rght": 65119,
         "tree_id": 3,
         "level": 3,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            1,
+            22
+        ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 27518,
+    "pk": 27503,
     "fields": {
-        "name_id": 26909,
-        "parent": 4349,
+        "name_id": 26805,
+        "parent": 4279,
+        "supra_group": null,
         "rank": 190,
-        "name": "capitatum",
-        "canonical_name": "Hapalospongidion capitatum",
-        "taxonomic_name": "Hapalospongidion capitatum (Womersley)",
+        "name": "radiata",
+        "canonical_name": "Ecklonia radiata",
+        "taxonomic_name": "Ecklonia radiata ((C.Agardh) J.Agardh)",
         "vernacular_name": "",
-        "field_code": null,
+        "field_code": "ECKRAD",
         "vernacular_names": "",
-        "author": "Womersley",
+        "author": "(C.Agardh) J.Agardh",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 64529,
-        "rght": 64530,
+        "lft": 65117,
+        "rght": 65118,
         "tree_id": 3,
         "level": 4,
-        "paraphyletic_groups": []
+        "paraphyletic_groups": [
+            1,
+            22
+        ]
     }
 }
 ]

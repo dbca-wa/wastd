@@ -48,15 +48,7 @@ MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
 class TaxonUtilsTests(TestCase):
     """Unit tests for taxonomy utils."""
 
-    fixtures = [
-        'taxonomy/fixtures/test_family.json',
-        'taxonomy/fixtures/test_genus.json',
-        'taxonomy/fixtures/test_names.json',
-        'taxonomy/fixtures/test_parents.json',
-        'taxonomy/fixtures/test_species.json',
-        'taxonomy/fixtures/test_vernaculars.json',
-        'taxonomy/fixtures/test_xrefs.json',
-    ]
+    fixtures = ['taxonomy/fixtures/test_wacensus.json', ]
 
     def test_update_taxon(self):
         """Test reconstructing Taxon, Crossreference and Vernacular from Hbv*."""
@@ -67,11 +59,7 @@ class TaxonUtilsTests(TestCase):
 class TaxonUnitTests(TestCase):
     """Taxon unit tests."""
 
-    fixtures = [
-        'taxonomy/fixtures/test_crossreference.json',
-        'taxonomy/fixtures/test_taxon.json',
-        'taxonomy/fixtures/test_community.json',
-    ]
+    fixtures = ['taxonomy/fixtures/test_taxonomy.json', ]
 
     def test_taxon_creation(self):
         """Test creating a Taxon."""

@@ -36,11 +36,7 @@ from taxonomy.models import Community, Taxon  # noqa
 class CommunityViewTests(TestCase):
     """Community tests."""
 
-    fixtures = [
-        'taxonomy/fixtures/test_crossreference.json',
-        'taxonomy/fixtures/test_taxon.json',
-        'taxonomy/fixtures/test_community.json',
-    ]
+    fixtures = ['taxonomy/fixtures/test_taxonomy.json', ]
 
     def setUp(self):
         """Shared objects."""
@@ -114,11 +110,7 @@ class CommunityViewTests(TestCase):
 class TaxonViewTests(TestCase):
     """Taxon view tests."""
 
-    fixtures = [
-        'taxonomy/fixtures/test_crossreference.json',
-        'taxonomy/fixtures/test_taxon.json',
-        'taxonomy/fixtures/test_community.json',
-    ]
+    fixtures = ['taxonomy/fixtures/test_taxonomy.json', ]
 
     def setUp(self):
         """Shared objects."""
@@ -258,11 +250,7 @@ class TaxonViewTests(TestCase):
 class TaxonBulkViewTests(TestCase):
     """Taxon view tests."""
 
-    fixtures = [
-        'taxonomy/fixtures/test_crossreference.json',
-        'taxonomy/fixtures/test_taxon.json',
-        'taxonomy/fixtures/test_community.json',
-    ]
+    fixtures = ['taxonomy/fixtures/test_taxonomy.json', ]
 
     def test_taxon_list_url_loads(self):
         """Test taxon-list."""
