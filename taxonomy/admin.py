@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals
 # import floppyforms as ff
 from django.contrib import admin
 from easy_select2 import select2_modelform as s2form
+from import_export.admin import ImportExportModelAdmin
 # from django.utils.translation import ugettext_lazy as _
 # from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
@@ -233,7 +234,7 @@ class CommunityAreaEncounterInline(admin.StackedInline):
 
 
 @admin.register(Taxon)
-class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
+class TaxonAdmin(ImportExportModelAdmin, MPTTModelAdmin, VersionAdmin):
     """Admin for Taxon."""
 
     search_fields = ("taxonomic_name", "vernacular_names", "field_code", "name_id")
@@ -252,7 +253,7 @@ class TaxonAdmin(MPTTModelAdmin, VersionAdmin):
 
 
 @admin.register(Community)
-class CommunityAdmin(VersionAdmin):
+class CommunityAdmin(ImportExportModelAdmin, VersionAdmin):
     """Admin for Community."""
 
     search_fields = ("code", "name", "description")

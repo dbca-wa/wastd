@@ -146,7 +146,6 @@ class TaxonFilter(django_filters.FilterSet):
           active taxon listings in WA  matching the conservation level
         """
         if value:
-            print(value)
             taxon_pks = set([x["taxon__pk"] for x in
                              cons_models.TaxonGazettal.objects.filter(
                 scope=cons_models.Gazettal.SCOPE_WESTERN_AUSTRALIA,
@@ -243,13 +242,12 @@ class CommunityFilter(django_filters.FilterSet):
             search_area = Area.objects.filter(
                 pk__in=area_pks
             ).aggregate(Collect('geom'))["geom__collect"]
-            com_pks_in_area = set(
-                [x["community__pk"]
-                 for x in occ_models.CommunityAreaEncounter.objects.filter(
-                    Q(point__intersects=search_area) | Q(geom__intersects=search_area)
-                ).values("community__pk")]
+            pks = set([x["community__pk"] for x in
+                       occ_models.CommunityAreaEncounter.objects.filter(
+                Q(point__intersects=search_area) | Q(geom__intersects=search_area)
+            ).values("community__pk")]
             )
-            return queryset.filter(pk__in=com_pks_in_area)
+            return queryset.filter(pk__in=pks)
         else:
             return queryset
 
@@ -263,13 +261,13 @@ class CommunityFilter(django_filters.FilterSet):
         * The queryset is filtered by the list of Community PKs with occurrences
         """
         if value:
-            pks_in_area = set(
+            pks = set(
                 [x["community__pk"]
                  for x in occ_models.CommunityAreaEncounter.objects.filter(
                     Q(point__intersects=value) | Q(geom__intersects=value)
                 ).values("community__pk")]
             )
-            return queryset.filter(pk__in=pks_in_area)
+            return queryset.filter(pk__in=pks)
         else:
             return queryset
 
@@ -283,7 +281,6 @@ class CommunityFilter(django_filters.FilterSet):
           active community listings in WA  matching the conservation level
         """
         if value:
-            print(value)
             pks = set([x["community__pk"] for x in
                        cons_models.CommunityGazettal.objects.filter(
                 scope=cons_models.Gazettal.SCOPE_WESTERN_AUSTRALIA,
@@ -303,10 +300,9 @@ class CommunityFilter(django_filters.FilterSet):
           matching the conservation level
         """
         if value:
-            print(value)
-            community_pks = set([x["community__pk"] for x in
-                                 cons_models.CommunityGazettal.objects.filter(
+            pks = set([x["community__pk"] for x in
+                       cons_models.CommunityGazettal.objects.filter(
                 category__in=value).values("community__pk")])
-            return queryset.filter(pk__in=community_pks)
+            return queryset.filter(pk__in=pks)
         else:
             return queryset

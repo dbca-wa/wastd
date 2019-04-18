@@ -22,7 +22,6 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from shared.models import LegacySourceMixin, UrlsMixin, RenderMixin
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -1891,12 +1890,26 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         TODO save as list field on model, populate in pre_save.
         TODO make active_gazettals a manager method on Gazettal
         """
-        from conservation.models import Gazettal
+        from conservation import models as cons_models
         return [{'label': x.label_cache,
                  'url': x.absolute_admin_url,
                  'is_active': x.is_active}
                 for x in self.conservation_listings.filter(
-                status=Gazettal.STATUS_EFFECTIVE)]
+                status=cons_models.Gazettal.STATUS_EFFECTIVE)]
+
+    @property
+    def active_conservation_listing_state(self):
+        """Return the first active conservation listing in state scope or None."""
+        from conservation import models as cons_models
+        cl = self.conservation_listings.filter(
+            scope=cons_models.Gazettal.SCOPE_WESTERN_AUSTRALIA,
+            status=cons_models.Gazettal.STATUS_EFFECTIVE
+        )
+        if cl.exists():
+            # defensive against multiple, although logic should enforce max one active
+            return cl.first()
+        else:
+            return None
 
     @property
     def documents(self):
@@ -1909,6 +1922,37 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     def is_currently_listed(self):
         """Whether this Taxon has a current conservation listing."""
         return self.active_gazettals.count() > 0
+
+    # Properties used in API -------------------------------------------------#
+    @property
+    def conservation_code_state(self):
+        """A shorthand conservation code for the current state listing.
+
+        Values: T, 1,2,3,4,5
+        T: any listing with conservation category CR, EN, VU
+        1..5: Priority listings of levels P1 through P5
+
+        From the current state listing, get the conservation code
+        ConservationListing.conservation_code is a property returning
+        the highest code (T,1..5) of all categories.
+        """
+        return "Coming soon"
+
+    @property
+    def conservation_list_state(self):
+        """The conservation list name for the current state listing.
+
+        From the current state listing, get the name.
+        """
+        cl = self.active_conservation_listing_state
+        if cl:
+            return cl.conservation_list.name
+        else:
+            return None
+
+    # conservation_category_state = serializers.ReadOnlyField()    # wa_iucn
+    # conservation_criteria_state = serializers.ReadOnlyField()    # iucn_criteria
+    # conservation_category_cwth = serializers.ReadOnlyField()     # epbc
 
 
 @receiver(pre_save, sender=Taxon)
