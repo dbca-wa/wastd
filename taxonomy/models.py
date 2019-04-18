@@ -1912,6 +1912,20 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
             return None
 
     @property
+    def active_conservation_listing_national(self):
+        """Return the first active conservation listing in national scope or None."""
+        from conservation import models as cons_models
+        cl = self.conservation_listings.filter(
+            scope=cons_models.ConservationListing.SCOPE_COMMONWEALTH,
+            status=cons_models.ConservationListing.STATUS_EFFECTIVE
+        )
+        if cl.exists():
+            # defensive against multiple, although logic should enforce max one active
+            return cl.first()
+        else:
+            return None
+
+    @property
     def documents(self):
         """Return a dict of Documents and admin urls."""
         return [{'obj': x,
@@ -1921,7 +1935,10 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     @property
     def is_currently_listed(self):
         """Whether this Taxon has a current conservation listing."""
-        return self.active_gazettals.count() > 0
+        from conservation import models as cons_models
+        return self.conservation_listings.filter(
+            status=cons_models.ConservationListing.STATUS_EFFECTIVE
+        ).exists()
 
     # Properties used in API -------------------------------------------------#
     @property
@@ -1938,7 +1955,9 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         """
         cl = self.active_conservation_listing_state
         if cl:
-            return cl.category.first()
+            # TODO return cl.category.first().conservation_shortcode
+            return cl.category.first().__str__()
+
         else:
             return None
 
@@ -1954,9 +1973,63 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         else:
             return None
 
-    # conservation_category_state = serializers.ReadOnlyField()    # wa_iucn
-    # conservation_criteria_state = serializers.ReadOnlyField()    # iucn_criteria
-    # conservation_category_cwth = serializers.ReadOnlyField()     # epbc
+    @property
+    def conservation_category_state(self):
+        """The primary conservation category for the current state listing.
+
+        The categories are ordered by their rank.
+        The Threatened categories (CR, EN, VU) are above the
+        international agreements (MI, MA, CT).
+        The first available category is returned as the primary one.
+
+        TODO test that MI/MA/CT are returned only if no CR/EN/VU present.
+        """
+        cl = self.active_conservation_listing_state
+        if cl:
+            return cl.category.first().__str__()
+        else:
+            return None
+
+    @property
+    def conservation_categories_state(self):
+        """All conservation categories for the current state listing.
+
+        The categories are stored in category_cache.
+        """
+        cl = self.active_conservation_listing_state
+        if cl:
+            return cl.category_cache
+        else:
+            return None
+
+    @property
+    def conservation_criteria_state(self):
+        """The list of conservation criteria for the current state listing.
+
+        The criteria are stored in criteria_cache.
+        """
+        cl = self.active_conservation_listing_state
+        if cl:
+            return cl.criteria_cache
+        else:
+            return None
+
+    @property
+    def conservation_category_national(self):
+        """The primary conservation category for the current national listing.
+
+        The categories are ordered by their rank.
+        The Threatened categories (CR, EN, VU) are above the
+        international agreements (MI, MA, CT).
+        The first available category is returned as the primary one.
+
+        TODO test that MI/MA/CT are returned only if no CR/EN/VU present.
+        """
+        cl = self.active_conservation_listing_national
+        if cl:
+            return cl.category.first()
+        else:
+            return None
 
 
 @receiver(pre_save, sender=Taxon)
