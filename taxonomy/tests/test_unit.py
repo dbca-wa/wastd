@@ -91,8 +91,8 @@ class TaxonUnitTests(TestCase):
         """Test the vernacular names."""
         pass
 
-    def test_gazettals(self):
-        """Test gazettals."""
+    def test_ConservationListings(self):
+        """Test ConservationListings."""
         pass
 
     def test_documents(self):
@@ -135,16 +135,16 @@ class TemplateTagTests(TestCase):
                           current=True,
                           parent=None))
 
-        self.gaz = cons_models.TaxonGazettal.objects.create(
+        self.gaz = cons_models.TaxonConservationListing.objects.create(
             taxon=self.taxon,
-            scope=cons_models.TaxonGazettal.SCOPE_WESTERN_AUSTRALIA,
+            scope=cons_models.TaxonConservationListing.SCOPE_WESTERN_AUSTRALIA,
             # TODO cons category, cons criteria
         )
 
-    # def test_gazettal_labels(self):
+    # def test_ConservationListing_labels(self):
     #     """Template tag test example."""
     #     c = {'original': self.taxon, 'user': self.user}
-    #     t = get_template('include/gazettal.html')
+    #     t = get_template('include/ConservationListing.html')
     #     r = t.render(c)
     #     self.assertInHTML(r, '<h6 class="card-subtitle mb-2">')
 

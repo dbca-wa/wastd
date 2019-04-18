@@ -132,7 +132,9 @@
           {% include 'conservation/include/document_add.html' with subject="taxa" label=False block=False %}
         </small>
       </h3>
-      <p>{% document_row request.user %}</p>
+      <p>
+        {% include 'conservation/include/document_row.html' %}
+      </p>
 
       <hr class="my-4">
       <h3>Actions</h3>

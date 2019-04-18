@@ -778,16 +778,16 @@ class ConservationCriterion(models.Model):
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
-class ActiveGazettalManager(models.Manager):
-    """Custom Gazettal manager to return only active Gazettals."""
+class ActiveConservationListingManager(models.Manager):
+    """Custom ConservationListing manager to return only active ConservationListings."""
 
     def get_queryset(self):
-        """Return only active Gazettals."""
-        return super().get_queryset().filter(status=Gazettal.STATUS_EFFECTIVE)
+        """Return only active ConservationListings."""
+        return super().get_queryset().filter(status=ConservationListing.STATUS_EFFECTIVE)
 
 
 @python_2_unicode_compatible
-class Gazettal(models.Model):
+class ConservationListing(models.Model):
     """The allocation of one or more ConservationCategories and Criteria.
 
     Approval state is tracked as django-fsm field.
@@ -798,7 +798,7 @@ class Gazettal(models.Model):
 
     Some conservation categories are mutually exclusiver than others.
     To prevent invalid combinations of ConservationCategories,
-    the transition to Gazettal.STATUS_EFFECTIVE must take care of
+    the transition to ConservationListing.STATUS_EFFECTIVE must take care of
     closing just the mutually exclusive ones.
     """
 
@@ -868,7 +868,7 @@ class Gazettal(models.Model):
         verbose_name=_("Scope"),
         default=SCOPE_WESTERN_AUSTRALIA,
         choices=SCOPES,
-        help_text=_("In which legislation does this Gazettal apply?"), )
+        help_text=_("In which legislation does this ConservationListing apply?"), )
 
     # Conservation status
     category = models.ManyToManyField(
@@ -906,7 +906,7 @@ class Gazettal(models.Model):
     effective_from = models.DateTimeField(
         blank=True, null=True,
         verbose_name=_("Effective from"),
-        help_text=_("The date printed on the Departmental Gazettal notice "
+        help_text=_("The date printed on the Departmental ConservationListing notice "
                     "containing this Conservation Listing."),
     )
 
@@ -951,12 +951,12 @@ class Gazettal(models.Model):
 
     label_cache = models.TextField(
         blank=True, null=True,
-        verbose_name=_("Gazettal label"),
+        verbose_name=_("ConservationListing label"),
         help_text=_("An auto-generated label for the Conservation Listing."),
     )
 
     objects = models.Manager()
-    active = ActiveGazettalManager()
+    active = ActiveConservationListingManager()
 
     class Meta:
         """Class opts."""
@@ -1013,7 +1013,7 @@ class Gazettal(models.Model):
     @property
     def is_active(self):
         """Return True if status currently in effect."""
-        return self.status == Gazettal.STATUS_EFFECTIVE
+        return self.status == ConservationListing.STATUS_EFFECTIVE
 
     # ------------------------------------------------------------------------#
     # Django-FSM transitions
@@ -1040,18 +1040,18 @@ class Gazettal(models.Model):
         # permission='conservation.can_recall_to_proposed'
     )
     def recall_to_proposed(self):
-        """Reset a new Gazettal to status "new" (proposed).
+        """Reset a new ConservationListing to status "new" (proposed).
 
-        This transition allows to reset any Gazettal to status "new"
+        This transition allows to reset any ConservationListing to status "new"
         (before any endorsement) to start over freshly.
-        This operation is equivalent to starting a new Gazettal.
+        This operation is equivalent to starting a new ConservationListing.
 
         Source: all but STATUS_PROPOSED
         Target: STATUS_PROPOSED
         Permissions: staff
         Gatecheck: can_recall_to_proposed (pass)
         """
-        logger.info("[Gazettal status] recall_to_proposed")
+        logger.info("[ConservationListing status] recall_to_proposed")
 
     # STATUS_PROPOSED -> STATUS_IN_EXPERT_REVIEW -----------------------------#
     def can_submit_for_expert_review(self):
@@ -1067,14 +1067,14 @@ class Gazettal(models.Model):
         # permission='conservation.can_submit_for_expert_review'
     )
     def submit_for_expert_review(self):
-        """Submit a new Gazettal for expert review.
+        """Submit a new ConservationListing for expert review.
 
         Source: STATUS_PROPOSED
         Target: STATUS_IN_EXPERT_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires panel approval
         """
-        logger.info("[Gazettal status] submit_for_expert_review")
+        logger.info("[ConservationListing status] submit_for_expert_review")
 
     # PROPOSED / IN_EXPERT_REVIEW -> STATUS_IN_PUBLIC_REVIEW -----------------#
     def can_submit_for_public_review(self):
@@ -1090,14 +1090,14 @@ class Gazettal(models.Model):
         # permission='conservation.can_submit_for_expert_review'
     )
     def submit_for_public_review(self):
-        """Submit a new Gazettal for public review.
+        """Submit a new ConservationListing for public review.
 
         Source: STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW
         Target: STATUS_IN_PUBLIC_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires panel approval
         """
-        logger.info("[Gazettal status] submit_for_public_review")
+        logger.info("[ConservationListing status] submit_for_public_review")
 
     # STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW ->
     # STATUS_IN_PANEL_REVIEW  ------------------------------------------------#
@@ -1114,7 +1114,7 @@ class Gazettal(models.Model):
         # permission='conservation.can_submit_for_panel_review'
     )
     def submit_for_panel_review(self):
-        """Submit a new Gazettal for panel review.
+        """Submit a new ConservationListing for panel review.
 
         A proposed review can optionally go to an expert, to the public,
         or go directly for panel review.
@@ -1124,7 +1124,7 @@ class Gazettal(models.Model):
         Permissions: curators
         Gatecheck: At least one category requires panel approval
         """
-        logger.info("[Gazettal status] submit_for_panel_review")
+        logger.info("[ConservationListing status] submit_for_panel_review")
 
     # STATUS_IN_PANEL_REVIEW -> STATUS_IN_BM_REVIEW --------------------------#
     def can_submit_for_bm_review(self):
@@ -1140,14 +1140,14 @@ class Gazettal(models.Model):
         # permission='conservation.submit_for_bm_review'
     )
     def submit_for_bm_review(self):
-        """Submit a new Gazettal for Branch Manager review once panel endorses.
+        """Submit a new ConservationListing for Branch Manager review once panel endorses.
 
         Source: STATUS_IN_PANEL_REVIEW
         Target: STATUS_IN_BM_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires ministerial approval
         """
-        logger.info("[Gazettal status] submit_for_bm_review")
+        logger.info("[ConservationListing status] submit_for_bm_review")
 
     # STATUS_IN_BM_REVIEW -> STATUS_IN_DIR_REVIEW ----------------------------#
     def can_submit_for_dir_review(self):
@@ -1163,14 +1163,14 @@ class Gazettal(models.Model):
         # permission='conservation.can_submit_for_dir_review'
     )
     def submit_for_director_review(self):
-        """Submit a new Gazettal for Dir BCS review once BM endorses.
+        """Submit a new ConservationListing for Dir BCS review once BM endorses.
 
         Source: STATUS_IN_BM_REVIEW
         Target: STATUS_IN_DIR_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires ministerial approval
         """
-        logger.info("[Gazettal status] submit_for_director_review")
+        logger.info("[ConservationListing status] submit_for_director_review")
 
     # STATUS_IN_DIR_REVIEW -> STATUS_IN_DG_REVIEW ----------------------------#
     def can_submit_for_dg_review(self):
@@ -1186,14 +1186,14 @@ class Gazettal(models.Model):
         # permission='conservation.can_submit_for_dg_review'
     )
     def submit_for_director_general_review(self):
-        """Submit a new Gazettal for DG review once Director endorses.
+        """Submit a new ConservationListing for DG review once Director endorses.
 
         Source: STATUS_IN_DIR_REVIEW
         Target: STATUS_IN_DG_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires ministerial approval
         """
-        logger.info("[Gazettal status] submit_for_director_general_review")
+        logger.info("[ConservationListing status] submit_for_director_general_review")
 
     # STATUS_IN_DG_REVIEW -> STATUS_IN_MIN_REVIEW ----------------------------#
     def can_submit_for_minister_review(self):
@@ -1209,14 +1209,14 @@ class Gazettal(models.Model):
         # permission='conservation.can_submit_for_dg_review'
     )
     def submit_for_minister_review(self):
-        """Submit a new Gazettal for DG review once Director endorses.
+        """Submit a new ConservationListing for DG review once Director endorses.
 
         Source: STATUS_IN_DG_REVIEW
         Target: STATUS_IN_MIN_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires ministerial approval
         """
-        logger.info("[Gazettal status] submit_for_minister_review")
+        logger.info("[ConservationListing status] submit_for_minister_review")
 
     # ALL -> STATUS_EFFECTIVE -------------------------------------------------#
     def can_mark_gazetted(self):
@@ -1234,15 +1234,15 @@ class Gazettal(models.Model):
     # def mark_gazetted(self):
     #     """Mark a conservation listing as gazetted.
 
-    #     This transition allows any source status to fast-track any Gazettal.
+    #     This transition allows any source status to fast-track any ConservationListing.
 
     #     Source: all but STATUS_EFFECTIVE
     #     Target: STATUS_EFFECTIVE
     #     Permissions: curators
     #     Gatecheck: can_mark_gazetted (pass)
     #     """
-    #     logger.info("[Gazettal status] you should override this method to "
-    #                 "close other Tax/ComGazettals in same scope.")
+    #     logger.info("[ConservationListing status] you should override this method to "
+    #                 "close other Tax/ComConservationListings in same scope.")
 
     # STATUS_* -> STATUS_CLOSED ----------------------------------------------#
     def can_mark_delisted(self):
@@ -1276,7 +1276,7 @@ class Gazettal(models.Model):
         Permissions: curators
         Gatecheck: can_mark_delisted (pass)
         """
-        logger.info("[Gazettal status] mark_delisted")
+        logger.info("[ConservationListing status] mark_delisted")
 
     # STATUS_* -> STATUS_CLOSED ----------------------------------------------#
     def can_mark_rejected(self):
@@ -1308,18 +1308,18 @@ class Gazettal(models.Model):
         Permissions: curators
         Gatecheck: can_mark_rejected (pass)
         """
-        logger.info("[Gazettal status] mark_rejected")
+        logger.info("[ConservationListing status] mark_rejected")
 
     # end Django-FSM
     # ------------------------------------------------------------------------#
 
 
 @python_2_unicode_compatible
-class TaxonGazettal(Gazettal):
-    """The Gazettal of a ConservationCategory against a Taxon.
+class TaxonConservationListing(ConservationListing):
+    """The ConservationListing of a ConservationCategory against a Taxon.
 
-    There can only be one Gazettal per scope.
-    Transition to "gazetted" shall close any other Gazettals of same scope.
+    There can only be one ConservationListing per scope.
+    Transition to "gazetted" shall close any other ConservationListings of same scope.
     """
 
     taxon = models.ForeignKey(Taxon,
@@ -1358,43 +1358,43 @@ class TaxonGazettal(Gazettal):
     @fsm_log_by
     @transition(
         field='status',
-        source=[Gazettal.STATUS_PROPOSED,
-                Gazettal.STATUS_IN_EXPERT_REVIEW,
-                Gazettal.STATUS_IN_PUBLIC_REVIEW,
-                Gazettal.STATUS_IN_PANEL_REVIEW,
-                Gazettal.STATUS_IN_BM_REVIEW,
-                Gazettal.STATUS_IN_DIR_REVIEW,
-                Gazettal.STATUS_IN_DG_REVIEW,
-                Gazettal.STATUS_IN_MIN_REVIEW,
-                Gazettal.STATUS_CLOSED],
-        target=Gazettal.STATUS_EFFECTIVE,
-        # conditions=[Gazettal.can_mark_gazetted],
+        source=[ConservationListing.STATUS_PROPOSED,
+                ConservationListing.STATUS_IN_EXPERT_REVIEW,
+                ConservationListing.STATUS_IN_PUBLIC_REVIEW,
+                ConservationListing.STATUS_IN_PANEL_REVIEW,
+                ConservationListing.STATUS_IN_BM_REVIEW,
+                ConservationListing.STATUS_IN_DIR_REVIEW,
+                ConservationListing.STATUS_IN_DG_REVIEW,
+                ConservationListing.STATUS_IN_MIN_REVIEW,
+                ConservationListing.STATUS_CLOSED],
+        target=ConservationListing.STATUS_EFFECTIVE,
+        # conditions=[ConservationListing.can_mark_gazetted],
         # permission='conservation.can_mark_gazetted'
     )
     def mark_gazetted(self):
         """Mark a conservation listing as gazetted.
 
-        This transition allows any source status to fast-track any Gazettal.
+        This transition allows any source status to fast-track any ConservationListing.
 
         Source: all but STATUS_EFFECTIVE
         Target: STATUS_EFFECTIVE
         Permissions: curators
         Gatecheck: can_mark_gazetted (pass)
         """
-        logger.info("[Taxon Gazettal] mark_gazetted should now mark older "
-                    "Gazettals as de-listed.")
+        logger.info("[Taxon ConservationListing] mark_gazetted should now mark older "
+                    "ConservationListings as de-listed.")
         # TODO fsm_log_by request.user if coming from request
-        [gazettal.mark_delisted() for gazettal in
-         self.taxon.taxon_gazettal.filter(
+        [x.mark_delisted() for x in
+         self.taxon.taxon_conservationlisting.filter(
             scope=self.scope,
-            status=Gazettal.STATUS_EFFECTIVE
+            status=ConservationListing.STATUS_EFFECTIVE
         ).exclude(pk=self.pk)]
         # TODO: set fsm_log_by
 
 
 @python_2_unicode_compatible
-class CommunityGazettal(Gazettal):
-    """The Gazettal of a ConservationCategory against a Community."""
+class CommunityConservationListing(ConservationListing):
+    """The ConservationListing of a ConservationCategory against a Community."""
 
     community = models.ForeignKey(Community,
                                   on_delete=models.CASCADE,
@@ -1432,49 +1432,49 @@ class CommunityGazettal(Gazettal):
     @fsm_log_by
     @transition(
         field='status',
-        source=[Gazettal.STATUS_PROPOSED,
-                Gazettal.STATUS_IN_EXPERT_REVIEW,
-                Gazettal.STATUS_IN_PUBLIC_REVIEW,
-                Gazettal.STATUS_IN_PANEL_REVIEW,
-                Gazettal.STATUS_IN_BM_REVIEW,
-                Gazettal.STATUS_IN_DIR_REVIEW,
-                Gazettal.STATUS_IN_DG_REVIEW,
-                Gazettal.STATUS_IN_MIN_REVIEW,
-                Gazettal.STATUS_CLOSED],
-        target=Gazettal.STATUS_EFFECTIVE,
-        # conditions=[Gazettal.can_mark_gazetted],
+        source=[ConservationListing.STATUS_PROPOSED,
+                ConservationListing.STATUS_IN_EXPERT_REVIEW,
+                ConservationListing.STATUS_IN_PUBLIC_REVIEW,
+                ConservationListing.STATUS_IN_PANEL_REVIEW,
+                ConservationListing.STATUS_IN_BM_REVIEW,
+                ConservationListing.STATUS_IN_DIR_REVIEW,
+                ConservationListing.STATUS_IN_DG_REVIEW,
+                ConservationListing.STATUS_IN_MIN_REVIEW,
+                ConservationListing.STATUS_CLOSED],
+        target=ConservationListing.STATUS_EFFECTIVE,
+        # conditions=[ConservationListing.can_mark_gazetted],
         # permission='conservation.can_mark_gazetted'
     )
     def mark_gazetted(self):
         """Mark a conservation listing as gazetted.
 
-        This transition allows any source status to fast-track any Gazettal.
+        This transition allows any source status to fast-track any ConservationListing.
 
         Source: all but STATUS_EFFECTIVE
         Target: STATUS_EFFECTIVE
         Permissions: curators
         Gatecheck: can_mark_gazetted (pass)
         """
-        logger.info("[Community Gazettal] De-list previous "
-                    "Gazettals in same scope.")
-        [gazettal.mark_delisted() for gazettal in
-         self.community.community_gazettal.filter(
+        logger.info("[Community ConservationListing] De-list previous "
+                    "ConservationListings in same scope.")
+        [ConservationListing.mark_delisted() for ConservationListing in
+         self.community.community_ConservationListing.filter(
             scope=self.scope,
-            status=Gazettal.STATUS_EFFECTIVE
+            status=ConservationListing.STATUS_EFFECTIVE
         ).exclude(pk=self.pk)]
 
 
-@receiver(pre_save, sender=TaxonGazettal)
-@receiver(pre_save, sender=CommunityGazettal)
-def gazettal_caches(sender, instance, *args, **kwargs):
-    """Gazettal: Cache expensive lookups."""
+@receiver(pre_save, sender=TaxonConservationListing)
+@receiver(pre_save, sender=CommunityConservationListing)
+def conservationlisting_caches(sender, instance, *args, **kwargs):
+    """ConservationListing: Cache expensive lookups."""
     if instance.pk:
-        logger.info("[gazettal_caches] Updating cache fields.")
+        logger.info("[ConservationListing_caches] Updating cache fields.")
         instance.category_cache = instance.build_category_cache
         instance.criteria_cache = instance.build_criteria_cache
         instance.label_cache = instance.build_label_cache
     else:
-        logger.info("[gazettal_caches] New Gazettal, re-save to populate caches.")
+        logger.info("[ConservationListing_caches] New ConservationListing, re-save to populate caches.")
 
 
 # -----------------------------------------------------------------------------
@@ -1576,7 +1576,7 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         default=STATUS_PROPOSED,
         db_index=True,
         verbose_name=_("Approval status"),
-        help_text=_("The approval status of the Gazettal."),
+        help_text=_("The approval status of the ConservationListing."),
     )
 
     effective_from = models.DateTimeField(
@@ -1687,18 +1687,18 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         # permission='conservation.can_recall_to_proposed'
     )
     def recall_to_proposed(self):
-        """Reset a new Gazettal to status "new" (proposed).
+        """Reset a new ConservationListing to status "new" (proposed).
 
-        This transition allows to reset any Gazettal to status "new"
+        This transition allows to reset any ConservationListing to status "new"
         (before any endorsement) to start over freshly.
-        This operation is equivalent to starting a new Gazettal.
+        This operation is equivalent to starting a new ConservationListing.
 
         Source: all but STATUS_PROPOSED
         Target: STATUS_PROPOSED
         Permissions: staff
         Gatecheck: can_recall_to_proposed (pass)
         """
-        logger.info("[Gazettal status] recall_to_proposed")
+        logger.info("[ConservationListing status] recall_to_proposed")
 
     # STATUS_PROPOSED -> STATUS_IN_EXPERT_REVIEW -----------------------------#
     def can_submit_for_expert_review(self):
@@ -1714,14 +1714,14 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         # permission='conservation.can_submit_for_expert_review'
     )
     def submit_for_expert_review(self):
-        """Submit a new Gazettal for expert review.
+        """Submit a new ConservationListing for expert review.
 
         Source: STATUS_PROPOSED
         Target: STATUS_IN_EXPERT_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires panel approval
         """
-        logger.info("[Gazettal status] submit_for_expert_review")
+        logger.info("[ConservationListing status] submit_for_expert_review")
 
     # PROPOSED / IN_EXPERT_REVIEW -> STATUS_IN_PUBLIC_REVIEW -----------------#
     def can_submit_for_public_review(self):
@@ -1737,14 +1737,14 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         # permission='conservation.can_submit_for_expert_review'
     )
     def submit_for_public_review(self):
-        """Submit a new Gazettal for public review.
+        """Submit a new ConservationListing for public review.
 
         Source: STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW
         Target: STATUS_IN_PUBLIC_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires panel approval
         """
-        logger.info("[Gazettal status] submit_for_public_review")
+        logger.info("[ConservationListing status] submit_for_public_review")
 
     # STATUS_PROPOSED, STATUS_IN_EXPERT_REVIEW, STATUS_IN_PUBLIC_REVIEW ->
     # STATUS_IN_PANEL_REVIEW  ------------------------------------------------#
@@ -1761,7 +1761,7 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         # permission='conservation.can_submit_for_panel_review'
     )
     def submit_for_panel_review(self):
-        """Submit a new Gazettal for panel review.
+        """Submit a new ConservationListing for panel review.
 
         A proposed review can optionally go to an expert, to the public,
         or go directly for panel review.
@@ -1771,7 +1771,7 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         Permissions: curators
         Gatecheck: At least one category requires panel approval
         """
-        logger.info("[Gazettal status] submit_for_panel_review")
+        logger.info("[ConservationListing status] submit_for_panel_review")
 
     # STATUS_IN_PANEL_REVIEW -> STATUS_IN_BM_REVIEW --------------------------#
     def can_submit_for_bm_review(self):
@@ -1787,14 +1787,14 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         # permission='conservation.submit_for_bm_review'
     )
     def submit_for_bm_review(self):
-        """Submit a new Gazettal for Branch Manager review once panel endorses.
+        """Submit a new ConservationListing for Branch Manager review once panel endorses.
 
         Source: STATUS_IN_PANEL_REVIEW
         Target: STATUS_IN_BM_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires ministerial approval
         """
-        logger.info("[Gazettal status] submit_for_bm_review")
+        logger.info("[ConservationListing status] submit_for_bm_review")
 
     # STATUS_IN_BM_REVIEW -> STATUS_IN_DIR_REVIEW ----------------------------#
     def can_submit_for_dir_review(self):
@@ -1810,14 +1810,14 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         # permission='conservation.can_submit_for_dir_review'
     )
     def submit_for_director_review(self):
-        """Submit a new Gazettal for Dir BCS review once BM endorses.
+        """Submit a new ConservationListing for Dir BCS review once BM endorses.
 
         Source: STATUS_IN_BM_REVIEW
         Target: STATUS_IN_DIR_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires ministerial approval
         """
-        logger.info("[Gazettal status] submit_for_director_review")
+        logger.info("[ConservationListing status] submit_for_director_review")
 
     # STATUS_IN_DIR_REVIEW -> STATUS_IN_DG_REVIEW ----------------------------#
     def can_submit_for_dg_review(self):
@@ -1833,14 +1833,14 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         # permission='conservation.can_submit_for_dg_review'
     )
     def submit_for_director_general_review(self):
-        """Submit a new Gazettal for DG review once Director endorses.
+        """Submit a new ConservationListing for DG review once Director endorses.
 
         Source: STATUS_IN_DIR_REVIEW
         Target: STATUS_IN_DG_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires ministerial approval
         """
-        logger.info("[Gazettal status] submit_for_director_general_review")
+        logger.info("[ConservationListing status] submit_for_director_general_review")
 
     # STATUS_IN_DG_REVIEW -> STATUS_IN_MIN_REVIEW ----------------------------#
     def can_submit_for_minister_review(self):
@@ -1856,14 +1856,14 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         # permission='conservation.can_submit_for_dg_review'
     )
     def submit_for_minister_review(self):
-        """Submit a new Gazettal for DG review once Director endorses.
+        """Submit a new ConservationListing for DG review once Director endorses.
 
         Source: STATUS_IN_DG_REVIEW
         Target: STATUS_IN_MIN_REVIEW
         Permissions: curators
         Gatecheck: At least one category requires ministerial approval
         """
-        logger.info("[Gazettal status] submit_for_minister_review")
+        logger.info("[ConservationListing status] submit_for_minister_review")
 
     # ALL -> STATUS_EFFECTIVE -------------------------------------------------#
     def can_mark_gazetted(self):
@@ -1888,8 +1888,8 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         Permissions: curators
         Gatecheck: can_mark_gazetted (pass)
         """
-        logger.info("[Gazettal status] you should override this method to "
-                    "close other Tax/ComGazettals in same scope.")
+        logger.info("[ConservationListing status] you should override this method to "
+                    "close other Tax/ComConservationListings in same scope.")
 
     # STATUS_* -> STATUS_CLOSED ----------------------------------------------#
     def can_mark_delisted(self):
@@ -1920,7 +1920,7 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         Permissions: curators
         Gatecheck: can_mark_delisted (pass)
         """
-        logger.info("[Gazettal status] mark_inactive")
+        logger.info("[ConservationListing status] mark_inactive")
 
     # STATUS_EFFECTIVE -> STATUS_ADOPTED_COMMONWEALTH
     # TODO
@@ -1955,7 +1955,7 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         Permissions: curators
         Gatecheck: can_mark_rejected (pass)
         """
-        logger.info("[Gazettal status] mark_rejected")
+        logger.info("[ConservationListing status] mark_rejected")
 
     # end Django-FSM
     # ------------------------------------------------------------------------#

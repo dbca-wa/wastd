@@ -1587,8 +1587,8 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     * Taxonomic events can involve more than one name.
 
     A legally gazetted name is published every year for names with conservation status.
-    The gazettal process can lag behind the publication process by up to a year at the
-    current rate of gazettal (annual).
+    The conservation listing (gazettal) process can lag behind the publication
+    process by up to a year at the current rate of gazettal (annual).
 
     Get Parents: https://stackoverflow.com/a/6565577/2813717
     """
@@ -1874,7 +1874,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
 
     @property
     def gazettals(self):
-        """Return a dict of Gazettal labels and admin URLs.
+        """Return a dict of ConservationListing labels and admin URLs.
 
         TODO save as list field on model, populate in pre_save.
         """
@@ -1885,25 +1885,25 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
 
     @property
     def active_gazettals(self):
-        """Return a dict of active Gazettal labels and admin URLs.
+        """Return a dict of active ConservationListing labels and admin URLs.
 
         TODO save as list field on model, populate in pre_save.
-        TODO make active_gazettals a manager method on Gazettal
+        TODO make active_gazettals a manager method on ConservationListing
         """
         from conservation import models as cons_models
         return [{'label': x.label_cache,
                  'url': x.absolute_admin_url,
                  'is_active': x.is_active}
                 for x in self.conservation_listings.filter(
-                status=cons_models.Gazettal.STATUS_EFFECTIVE)]
+                status=cons_models.ConservationListing.STATUS_EFFECTIVE)]
 
     @property
     def active_conservation_listing_state(self):
         """Return the first active conservation listing in state scope or None."""
         from conservation import models as cons_models
         cl = self.conservation_listings.filter(
-            scope=cons_models.Gazettal.SCOPE_WESTERN_AUSTRALIA,
-            status=cons_models.Gazettal.STATUS_EFFECTIVE
+            scope=cons_models.ConservationListing.SCOPE_WESTERN_AUSTRALIA,
+            status=cons_models.ConservationListing.STATUS_EFFECTIVE
         )
         if cl.exists():
             # defensive against multiple, although logic should enforce max one active
@@ -1936,7 +1936,11 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         ConservationListing.conservation_code is a property returning
         the highest code (T,1..5) of all categories.
         """
-        return "Coming soon"
+        cl = self.active_conservation_listing_state
+        if cl:
+            return cl.category.first()
+        else:
+            return None
 
     @property
     def conservation_list_state(self):
@@ -2190,7 +2194,7 @@ class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
     # Derived properties
     @property
     def gazettals(self):
-        """Return a dict of Gazettal labels and admin URLs.
+        """Return a dict of ConservationListing labels and admin URLs.
 
         TODO save as list field on model, populate in pre_save.
         """
@@ -2201,14 +2205,14 @@ class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
 
     @property
     def active_gazettals(self):
-        """Return a dict of active Gazettal labels and admin URLs.
+        """Return a dict of active ConservationListing labels and admin URLs.
 
         TODO save as list field on model, populate in pre_save.
-        TODO make active_gazettals a manager method on Gazettal
+        TODO make active_gazettals a manager method on ConservationListing
         """
-        from conservation.models import Gazettal
+        from conservation.models import ConservationListing
         return [{'label': x.label_cache,
                  'url': x.absolute_admin_url,
                  'is_active': x.is_active}
                 for x in self.conservation_listings.filter(
-            status=Gazettal.STATUS_EFFECTIVE)]
+            status=ConservationListing.STATUS_EFFECTIVE)]

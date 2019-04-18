@@ -21,7 +21,7 @@ from conservation import models as cons_models
 
 # Test fileattachment creation, str
 # Test cons crit, cons cat
-# Test gazettal
+# Test ConservationListing
 
 
 class ConservationThreatModelTests(TestCase):
@@ -161,8 +161,8 @@ class ConservationCriterionModelTests(TestCase):
         pass
 
 
-class TaxonGazettalModelTests(TestCase):
-    """Unit tests for TaxonGazettal."""
+class TaxonConservationListingModelTests(TestCase):
+    """Unit tests for TaxonConservationListing."""
 
     def setUp(self):
         """Set up."""
@@ -173,9 +173,9 @@ class TaxonGazettalModelTests(TestCase):
                           current=True,
                           parent=None))
 
-        self.gaz = cons_models.TaxonGazettal.objects.create(
+        self.gaz = cons_models.TaxonConservationListing.objects.create(
             taxon=self.taxon,
-            scope=cons_models.TaxonGazettal.SCOPE_WESTERN_AUSTRALIA,
+            scope=cons_models.TaxonConservationListing.SCOPE_WESTERN_AUSTRALIA,
         )
 
     def test__str__(self):
@@ -189,8 +189,8 @@ class TaxonGazettalModelTests(TestCase):
         self.assertEqual(self.gaz.__str__(), x)
 
 
-class CommunityGazettalModelTests(TestCase):
-    """Unit tests for CommunityGazettal."""
+class CommunityConservationListingModelTests(TestCase):
+    """Unit tests for CommunityConservationListing."""
 
     def setUp(self):
         """Set up."""
@@ -206,9 +206,9 @@ class CommunityGazettalModelTests(TestCase):
             name="name0",
             _fill_optional=['eoo'])
         self.com0.save()
-        self.gaz = cons_models.CommunityGazettal.objects.create(
+        self.gaz = cons_models.CommunityConservationListing.objects.create(
             community=self.com0,
-            scope=cons_models.CommunityGazettal.SCOPE_WESTERN_AUSTRALIA,
+            scope=cons_models.CommunityConservationListing.SCOPE_WESTERN_AUSTRALIA,
         )
         self.user = get_user_model().objects.create_superuser(
             username="superuser",

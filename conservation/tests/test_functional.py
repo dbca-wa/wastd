@@ -41,7 +41,7 @@ This test suite is a walk-through of the following conservation business process
 * [REQ 32] Capture the following attributes from species/communities nomination workflow:
   * Date of TSSC/TECSC assessment
   * Date of ministerial approval
-  * Date of gazettal
+  * Date of ConservationListing
   * Date referred to Commonwealth
   * Date listed under EPBC Act
 * [REQ 33][REQ 39] Allow for the recording, per species or community, of
@@ -55,7 +55,7 @@ This test suite is a walk-through of the following conservation business process
 * [REQ 35] Capture the following attributes from management/recovery plan workflow:
   * document type: Whether full, interim or national recovery plan,
   * any additional attributes
-  * Date of approval by Director + DG + Minister + gazettal date
+  * Date of approval by Director + DG + Minister + ConservationListing date
 * [REQ 36] Allow the recovery team to record the annual report;
   the system is to remind the recovery team that the annual report is due;
   system is to alert officer if annual report is not submitted by due date.
@@ -144,7 +144,7 @@ from conservation import models as cons_models  # noqa
 
 
 class ConservationListingLifeCycleTests(TestCase):
-    """Functional tests for the ConservationListing (Gazettal) life cycle.
+    """Functional tests for the ConservationListing (ConservationListing) life cycle.
 
     This test suite tests:
 
@@ -152,9 +152,9 @@ class ConservationListingLifeCycleTests(TestCase):
     * Approval steps through instances (committee, branch manager,
       director, director general, minister) - who is allowed to approve what when
       (permissions, conditions, consequences)
-    * Gazettal, date and time, publication, where is it shown (DBCA website?)
+    * ConservationListing, date and time, publication, where is it shown (DBCA website?)
     * Review at set dates - reminders, todo lists, who is responsible
-    * Retiring a CL: through creting a new gazettal, through ministerial decision,
+    * Retiring a CL: through creting a new ConservationListing, through ministerial decision,
     through notice (national) or API  (international)
     """
 
@@ -162,7 +162,7 @@ class ConservationListingLifeCycleTests(TestCase):
         """Set up."""
         pass
 
-    def test_only_admin_can_create_gazettal(self):
+    def test_only_admin_can_create_ConservationListing(self):
         """Conservation Listings can only be created by admins.
 
         Only data curators with admin access can create new conservation listings.
@@ -194,7 +194,7 @@ class TaxonomicNameChanges(TestCase):
 
 
 class ConservationListingReportingTests(TestCase):
-    """Functional tests for ConservationListing (Gazettal) reporting.
+    """Functional tests for ConservationListing (ConservationListing) reporting.
 
     This test suite tests:
 
