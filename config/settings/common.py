@@ -414,7 +414,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework_jsonp.renderers.JSONPRenderer',
-        'rest_framework_csv.renderers.CSVRenderer',
+        # 'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework_yaml.renderers.YAMLRenderer',
         'rest_framework_latex.renderers.LatexRenderer',
     ),
@@ -427,11 +427,31 @@ REST_FRAMEWORK = {
         'rest_framework_filters.backends.RestFrameworkFilterBackend',
     ),
 
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'proxy_pagination.ProxyPagination',
+
     'PAGE_SIZE': 100,
     'HTML_SELECT_CUTOFF': 100,
 }
+
+# PROXY_PAGINATION_PARAM = 'pager'
+# PROXY_PAGINATION_DEFAULT = 'rest_framework.pagination.LimitOffsetPagination'
+# PROXY_PAGINATION_MAPPING = {
+#     'lim': 'rest_framework.pagination.LimitOffsetPagination',
+
+#     # FieldError at /api/1/taxon/: Cannot resolve keyword 'created' into field.
+#     'cur': 'rest_framework.pagination.CursorPagination',
+
+#     # does nothing
+#     'geo': 'rest_framework_gis.pagination.GeoJsonPagination',
+
+#     # AttributeError: module 'rest_framework.viewsets' has no attribute 'ModelViewSet'.
+#     # 'geolim': 'shared.api.MyGeoJsonPagination',
+
+#     # AttributeError: 'NoneType' object has no attribute 'rsplit'.
+#     # 'none': None
+# }
 
 # Shared Latex resources for DRF-latex
 # http://drf-latex.readthedocs.io/en/latest/

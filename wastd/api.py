@@ -35,7 +35,20 @@ This API is built using:
 import logging
 
 import rest_framework_filters as filters
-from conservation.models import (
+# from django.db import models as django_models
+from django.template import Context, Template
+from django.db.models import Prefetch
+
+from django_filters import rest_framework as rf_filters
+
+from rest_framework import pagination, routers, serializers, status, viewsets
+from rest_framework.response import Response as RestResponse
+from rest_framework_gis.fields import GeometryField
+from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
+
+from conservation.models import (  # noqa
+    Gazettal,
     CommunityGazettal,
     ConservationCategory,
     ConservationCriterion,
@@ -43,16 +56,6 @@ from conservation.models import (
     Document,
     TaxonGazettal
 )
-# from django.db import models as django_models
-from django.template import Context, Template
-from django_filters import rest_framework as rf_filters
-from occurrence import models as occ_models
-from rest_framework import pagination, routers, serializers, status, viewsets
-from rest_framework.response import Response as RestResponse
-from rest_framework_gis.fields import GeometryField
-from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from shared.api import BatchUpsertQualityControlViewSet, BatchUpsertViewSet, FastBatchUpsertViewSet, MyGeoJsonPagination
 from taxonomy.models import (
     Community,
     Crossreference,
@@ -68,7 +71,14 @@ from taxonomy.models import (
     Taxon,
     Vernacular
 )
-
+from shared.api import (  # noqa
+    CustomCSVRenderer,
+    BatchUpsertQualityControlViewSet,
+    BatchUpsertViewSet,
+    FastBatchUpsertViewSet,
+    CustomLimitOffsetPagination,
+    MyGeoJsonPagination)
+from occurrence import models as occ_models
 from wastd.observations.models import Observation  # LineTransectEncounter
 from wastd.observations.models import Survey  # SiteVisit,
 from wastd.observations.models import (
@@ -1937,15 +1947,35 @@ class HbvParentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TaxonSerializer(serializers.ModelSerializer):
-    """Serializer for Taxon."""
+class TaxonSerializer(
+    GeoFeatureModelSerializer
+    # serializers.ModelSerializer
+):
+    """Serializer for Taxon.
 
-    # taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True)
+    Includes a summary of conservation status which is ingested into WACensus.
+
+    Example:
+
+    NAME_ID | CONSV_CODE    | LIST_CODE | EPBC  | WA_IUCN   | IUCN_CRITERIA
+    228     | 3             | Priority  |       |           |
+    297     | T             | WCA_1991  | EN    | VU        | D1+2
+    436     | T             | WCA_1991  | EN    | EN        | B1+2c
+    """
+
+    # taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True) # yeah nah
+
+    conservation_code_state = serializers.ReadOnlyField()          # consv_code
+    conservation_list_state = serializers.ReadOnlyField()        # list_code
+    # conservation_category_state = serializers.ReadOnlyField()    # wa_iucn
+    # conservation_criteria_state = serializers.ReadOnlyField()    # iucn_criteria
+    # conservation_category_cwth = serializers.ReadOnlyField()     # epbc
 
     class Meta:
         """Opts."""
 
         model = Taxon
+        geo_field = "eoo"
         fields = (
             'name_id',
             'name',
@@ -1959,7 +1989,9 @@ class TaxonSerializer(serializers.ModelSerializer):
             'canonical_name',
             'taxonomic_name',
             # 'taxon_occurrences',
-            'eoo'
+            'eoo',
+            'conservation_code_state',
+            'conservation_list_state'
         )
 
 
@@ -2017,7 +2049,7 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
         )
 
 
-class CommunitySerializer(serializers.ModelSerializer):
+class CommunitySerializer(GeoFeatureModelSerializer):
     """Serializer for Community."""
 
     # community_occurrences = OccurrenceCommunityAreaEncounterPolyInlineSerializer(many=True)
@@ -2026,6 +2058,7 @@ class CommunitySerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = Community
+        geo_field = 'eoo'
         fields = (
             'code',
             'name',
@@ -2315,16 +2348,16 @@ class TaxonFilter(filters.FilterSet):
         model = Taxon
         fields = {
             'name_id': ['exact', ],
-            'name': '__all__',
-            'rank': '__all__',
-            'parent': ['exact', ],  # __all__ is a performance bomb
-            'publication_status': '__all__',
-            'current': ['exact', ],
-            'author': '__all__',
-            'canonical_name': '__all__',
-            'taxonomic_name': '__all__',
-            'vernacular_name': '__all__',
-            'vernacular_names': '__all__',
+            'name': ['icontains', ],
+            'rank': ['icontains', 'in', ],
+            # 'parent': ['exact', ],  # performance bomb
+            'publication_status': ['isnull', ],
+            'current': ['isnull', ],
+            'author': ['icontains', ],
+            'canonical_name': ['icontains', ],
+            'taxonomic_name': ['icontains', ],
+            # 'vernacular_name': ['icontains', ],
+            'vernacular_names': ['icontains', ],
             # 'eoo' requires polygon filter
         }
 
@@ -2607,14 +2640,27 @@ class HbvParentViewSet(BatchUpsertViewSet):
 router.register("parents", HbvParentViewSet)
 
 
-class TaxonViewSet(FastBatchUpsertViewSet):
+class TaxonViewSet(BatchUpsertViewSet):
     """View set for Taxon.
 
     See HBV Names for details and usage examples.
     All filters are available on all fields.
     """
 
-    queryset = Taxon.objects.all()
+    queryset = Taxon.objects.prefetch_related(
+        # "paraphyletic_groups",
+        Prefetch("conservation_listings",
+                 queryset=TaxonGazettal.objects.filter(
+                     scope=Gazettal.SCOPE_WESTERN_AUSTRALIA,
+                     status=Gazettal.STATUS_EFFECTIVE),
+                 to_attr="conservation_listings_active_wa"
+                 ),
+        # Prefetch("conservation_listings__scope",),
+        # Prefetch("conservation_listings__status",),
+        # "conservationthreat_set",
+        # "conservationaction_set",
+        # "document_set",
+    )
     serializer_class = TaxonSerializer
     filter_class = TaxonFilter
     model = Taxon
@@ -2672,9 +2718,16 @@ class CommunityViewSet(BatchUpsertViewSet):
     All filters are available on all fields.
     """
 
-    queryset = Community.objects.all()
+    queryset = Community.objects.all().prefetch_related(
+        "conservation_listings",
+        # "conservationthreat_set",
+        # "conservationaction_set",
+        # "document_set",
+    )
     serializer_class = CommunitySerializer
     filter_class = CommunityFilter
+    # pagination_class = CustomLimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
     model = Community
     uid_fields = ("code",)
 
@@ -2895,7 +2948,7 @@ router.register("conservationlist", ConservationListViewSet)
 
 # TaxonGazettal -------------------------------------------------------------------#
 class TaxonGazettalSerializer(serializers.ModelSerializer):
-    """Serializer for ConservationCriterion."""
+    """Serializer for TaxonConservationListing."""
 
     # taxon = FastTaxonSerializer(many=False)
     taxon = serializers.SlugRelatedField(

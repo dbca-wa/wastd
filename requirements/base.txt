@@ -30,6 +30,7 @@ djangorestframework-csv
 djangorestframework-yaml
 djangorestframework-jsonp
 djangorestframework-filters==1.0.0.dev0
+drf-proxy-pagination
 django-url-filter
 #dynamic-rest
 rest-framework-latex

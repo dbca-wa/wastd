@@ -5,6 +5,9 @@ from collections import OrderedDict
 
 from rest_framework import pagination, status, viewsets  # , serializers, routers
 from rest_framework.response import Response as RestResponse
+from rest_framework_csv.renderers import CSVRenderer
+from rest_framework.settings import api_settings
+
 from shared.models import QualityControlMixin
 
 # from taxonomy.models import Taxon
@@ -12,9 +15,40 @@ from shared.models import QualityControlMixin
 logger = logging.getLogger(__name__)
 
 
-class MyGeoJsonPagination(pagination.LimitOffsetPagination):
+class CustomCSVRenderer(CSVRenderer):
+    """Custom CSV Renderer."""
+
+    def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        """Discard pagination cruft before rendering."""
+        if "results" in data:
+            content = data["results"]
+        elif "features" in data:
+            content = data["features"]
+        else:
+            content = data
+        return super().render(
+            content,
+            media_type=media_type,
+            renderer_context=renderer_context,
+            writer_opts=writer_opts)
+
+
+class CustomLimitOffsetPagination(pagination.LimitOffsetPagination):
+    """Opt-out LimitOffset pagination.
+
+    Include GET parameter ``no_page`` to deactivate pagination.
     """
-    A geoJSON implementation of a LimitOffset pagination serializer.
+
+    def paginate_queryset(self, queryset, request, view=None):
+        """Turn off pagination based on query param ``no_page``."""
+        if 'no_page' in request.query_params:
+            return None
+        return super().paginate_queryset(queryset, request, view)
+
+
+class MyGeoJsonPagination(CustomLimitOffsetPagination):
+    """
+    Paginate GeoJSON with LimitOffset.
 
     Attempt to un-break HTML filter controls in browsable API.
 
@@ -23,13 +57,22 @@ class MyGeoJsonPagination(pagination.LimitOffsetPagination):
 
     def get_paginated_response(self, data):
         """Return a GeoJSON FeatureCollection with pagination links."""
-        return RestResponse(OrderedDict([
-            ('type', 'FeatureCollection'),
-            ('count', self.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('features', data['features']),
-        ]))
+        # if "format" in self.request.query_params and self.request.query_params["format"] == "json":
+        if "features" in data:
+            results = data["features"]
+        else:
+            results = data["results"]
+        return RestResponse(
+            OrderedDict([
+                ('type', 'FeatureCollection'),
+                ('count', self.count),
+                ('next', self.get_next_link()),
+                ('previous', self.get_previous_link()),
+                ('features', results),
+            ])
+        )
+
+        # return super().get_paginated_response(self, data)
 
 
 class FastLimitOffsetPagination(pagination.LimitOffsetPagination):
@@ -44,7 +87,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
     Override split_data for nested serializers, e.g. TaxonAreaEncounters.taxon.
     """
 
-    pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (CustomCSVRenderer, )
     model = None
     uid_fields = ()
 
