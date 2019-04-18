@@ -40,6 +40,11 @@ from django.template import Context, Template
 from django.db.models import Prefetch
 
 from django_filters import rest_framework as rf_filters
+from django_filters.widgets import BooleanWidget  # noqa
+from django_filters.filters import (  # noqa
+    BooleanFilter, CharFilter,
+    ChoiceFilter, MultipleChoiceFilter,
+    ModelChoiceFilter, ModelMultipleChoiceFilter)
 
 from rest_framework import pagination, routers, serializers, status, viewsets
 from rest_framework.response import Response as RestResponse
@@ -214,13 +219,13 @@ class InBBoxHTMLMixin:
 
     def to_html(self, request, queryset, view):
         """Representation as HTML."""
-        return self.template.render(Context({'bbox_param': self.bbox_param}))
+        return self.template.render(Context({"bbox_param": self.bbox_param}))
 
 
 class CustomBBoxFilter(InBBoxHTMLMixin, InBBoxFilter):
     """Custom BBox filter."""
 
-    bbox_param = 'in_bbox'
+    bbox_param = "in_bbox"
 
 
 # Users ----------------------------------------------------------------#
@@ -231,7 +236,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = ('pk', 'username', 'name', 'nickname', 'aliases', 'role', 'email', 'phone', )
+        fields = ("pk", "username", "name", "nickname", "aliases", "role", "email", "phone", )
 
 
 class FastUserSerializer(serializers.ModelSerializer):
@@ -241,7 +246,7 @@ class FastUserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = ('pk', 'username', 'name',)
+        fields = ("pk", "username", "name",)
 
 
 # ViewSets define the view behavior.
@@ -265,7 +270,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = '[API][UserViewSet][create_one] {0} {1}'.format(verb, obj.__str__())
+        msg = "[API][UserViewSet][create_one] {0} {1}".format(verb, obj.__str__())
         content = {"id": obj.id, "msg": msg}
         logger.info(msg)
 
@@ -280,17 +285,17 @@ class UserViewSet(viewsets.ModelViewSet):
         * a list of GeoJSON feature property dicts.
         """
         # pdb.set_trace()
-        if 'name' in request.data:
+        if "name" in request.data:
             res = self.create_one(request.data)
             return res
-        elif type(request.data) == list and 'name' in request.data[1]:
+        elif type(request.data) == list and "name" in request.data[1]:
             res = [self.create_one(data) for data in request.data]
             return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-router.register(r'users', UserViewSet)
+router.register(r"users", UserViewSet)
 
 
 # Areas --------------------------------------------------------------------#
@@ -333,8 +338,8 @@ class AreaFilter(filters.FilterSet):
 
         model = Area
         fields = {
-            'area_type': ['exact', 'in', 'startswith'],
-            'name': ['exact', 'iexact', 'in', 'startswith', 'contains', 'icontains'],
+            "area_type": ["exact", "in", "startswith"],
+            "name": ["exact", "iexact", "in", "startswith", "contains", "icontains"],
         }
 
 
@@ -362,11 +367,11 @@ class AreaViewSet(viewsets.ModelViewSet):
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
     filter_class = AreaFilter
-    bbox_filter_field = 'geom'
+    bbox_filter_field = "geom"
     pagination_class = MyGeoJsonPagination
 
 
-router.register(r'area', AreaViewSet)
+router.register(r"area", AreaViewSet)
 
 
 # Surveys --------------------------------------------------------------------#
@@ -382,7 +387,7 @@ class SurveySerializer(GeoFeatureModelSerializer):
 
         model = Survey
         geo_field = "start_location"
-        fields = '__all__'
+        fields = "__all__"
 
 
 class FastSurveySerializer(serializers.ModelSerializer):
@@ -396,15 +401,15 @@ class FastSurveySerializer(serializers.ModelSerializer):
 
         model = Survey
         fields = [
-            'id',
-            'site',
-            'start_time',
-            'end_time',
-            'start_comments',
-            'end_comments',
-            'reporter',
-            'absolute_admin_url',
-            'production'
+            "id",
+            "site",
+            "start_time",
+            "end_time",
+            "start_comments",
+            "end_comments",
+            "reporter",
+            "absolute_admin_url",
+            "production"
         ]
 
 
@@ -423,18 +428,18 @@ class SurveyFilter(filters.FilterSet):
 
         model = Survey
         fields = {
-            'id': '__all__',
-            'start_time': '__all__',
-            'end_time': '__all__',
-            'start_comments': '__all__',
-            'end_comments': '__all__',
-            'reporter': '__all__',
-            'device_id': '__all__',
-            'end_device_id': '__all__',
-            'source_id': '__all__',
-            'end_source_id': '__all__',
-            'status': '__all__',
-            'production': '__all__',
+            "id": "__all__",
+            "start_time": "__all__",
+            "end_time": "__all__",
+            "start_comments": "__all__",
+            "end_comments": "__all__",
+            "reporter": "__all__",
+            "device_id": "__all__",
+            "end_device_id": "__all__",
+            "source_id": "__all__",
+            "end_source_id": "__all__",
+            "status": "__all__",
+            "production": "__all__",
         }
 
 
@@ -476,12 +481,12 @@ class ObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = Observation
-        fields = ('observation_name',
-                  #  'as_latex'
+        fields = ("observation_name",
+                  #  "as_latex"
                   )
 
     def to_representation(self, obj):
-        """Resolve the Observation instance to the child class's serializer."""
+        """Resolve the Observation instance to the child class"s serializer."""
         if isinstance(obj, TurtleMorphometricObservation):
             return TurtleMorphometricObservationSerializer(
                 obj, context=self.context).to_representation(obj)
@@ -545,9 +550,9 @@ class MediaAttachmentSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = MediaAttachment
-        fields = ('observation_name',  # 'as_latex',
-                  'media_type', 'title', 'attachment', 'filepath')
-        # fields = '__all__'
+        fields = ("observation_name",  # "as_latex",
+                  "media_type", "title", "attachment", "filepath")
+        # fields = "__all__"
 
 
 class TagObservationSerializer(serializers.ModelSerializer):
@@ -559,9 +564,9 @@ class TagObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TagObservation
-        fields = ('observation_name',  # 'as_latex',
-                  'tag_type', 'name', 'tag_location',
-                  'status', 'comments', )
+        fields = ("observation_name",  # "as_latex",
+                  "tag_type", "name", "tag_location",
+                  "status", "comments", )
 
 
 class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
@@ -573,18 +578,18 @@ class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TurtleMorphometricObservation
-        fields = ('observation_name', 'as_latex',
-                  'curved_carapace_length_mm', 'curved_carapace_length_accuracy',
-                  'straight_carapace_length_mm', 'straight_carapace_length_accuracy',
-                  'curved_carapace_width_mm', 'curved_carapace_width_accuracy',
-                  'tail_length_carapace_mm', 'tail_length_carapace_accuracy',
-                  'tail_length_vent_mm', 'tail_length_vent_accuracy',
-                  'tail_length_plastron_mm', 'tail_length_plastron_accuracy',
-                  'maximum_head_width_mm', 'maximum_head_width_accuracy',
-                  'maximum_head_length_mm', 'maximum_head_length_accuracy',
-                  'body_depth_mm', 'body_depth_accuracy',
-                  'body_weight_g', 'body_weight_accuracy',
-                  'handler', 'recorder', )
+        fields = ("observation_name", "as_latex",
+                  "curved_carapace_length_mm", "curved_carapace_length_accuracy",
+                  "straight_carapace_length_mm", "straight_carapace_length_accuracy",
+                  "curved_carapace_width_mm", "curved_carapace_width_accuracy",
+                  "tail_length_carapace_mm", "tail_length_carapace_accuracy",
+                  "tail_length_vent_mm", "tail_length_vent_accuracy",
+                  "tail_length_plastron_mm", "tail_length_plastron_accuracy",
+                  "maximum_head_width_mm", "maximum_head_width_accuracy",
+                  "maximum_head_length_mm", "maximum_head_length_accuracy",
+                  "body_depth_mm", "body_depth_accuracy",
+                  "body_weight_g", "body_weight_accuracy",
+                  "handler", "recorder", )
 
 
 class ManagementActionSerializer(serializers.ModelSerializer):
@@ -596,8 +601,8 @@ class ManagementActionSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = ManagementAction
-        fields = ('observation_name',  # 'as_latex',
-                  'management_actions', 'comments', )
+        fields = ("observation_name",  # "as_latex",
+                  "management_actions", "comments", )
 
 
 class TurtleNestObservationSerializer(serializers.ModelSerializer):
@@ -609,18 +614,18 @@ class TurtleNestObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TurtleNestObservation
-        fields = ('observation_name',  # 'as_latex',
-                  'nest_position', 'eggs_laid', 'egg_count',
-                  'egg_count_calculated',
-                  'no_emerged', 'no_egg_shells',
-                  'no_live_hatchlings_neck_of_nest',
-                  'no_live_hatchlings', 'no_dead_hatchlings',
-                  'no_undeveloped_eggs', 'no_unhatched_eggs',
-                  'no_unhatched_term', 'no_depredated_eggs',
-                  'nest_depth_top', 'nest_depth_bottom',
-                  'sand_temp', 'air_temp', 'water_temp', 'egg_temp',
-                  'hatching_success', 'emergence_success',
-                  'comments')
+        fields = ("observation_name",  # "as_latex",
+                  "nest_position", "eggs_laid", "egg_count",
+                  "egg_count_calculated",
+                  "no_emerged", "no_egg_shells",
+                  "no_live_hatchlings_neck_of_nest",
+                  "no_live_hatchlings", "no_dead_hatchlings",
+                  "no_undeveloped_eggs", "no_unhatched_eggs",
+                  "no_unhatched_term", "no_depredated_eggs",
+                  "nest_depth_top", "nest_depth_bottom",
+                  "sand_temp", "air_temp", "water_temp", "egg_temp",
+                  "hatching_success", "emergence_success",
+                  "comments")
 
 
 class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
@@ -632,9 +637,9 @@ class TurtleNestDisturbanceObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TurtleNestDisturbanceObservation
-        fields = ('observation_name',  # 'as_latex',
-                  'disturbance_cause', 'disturbance_cause_confidence',
-                  'disturbance_severity', 'comments', )
+        fields = ("observation_name",  # "as_latex",
+                  "disturbance_cause", "disturbance_cause_confidence",
+                  "disturbance_severity", "comments", )
 
 
 class TurtleDamageObservationSerializer(serializers.ModelSerializer):
@@ -646,8 +651,8 @@ class TurtleDamageObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TurtleDamageObservation
-        fields = ('observation_name',  # 'as_latex',
-                  'body_part', 'damage_type', 'damage_age', 'description', )
+        fields = ("observation_name",  # "as_latex",
+                  "body_part", "damage_type", "damage_age", "description", )
 
 
 class TrackTallyObservationSerializer(serializers.ModelSerializer):
@@ -659,8 +664,8 @@ class TrackTallyObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TrackTallyObservation
-        fields = ('observation_name',  # 'as_latex',
-                  'species', 'nest_type', )
+        fields = ("observation_name",  # "as_latex",
+                  "species", "nest_type", )
 
 
 class TurtleNestDisturbanceTallyObservationSerializer(serializers.ModelSerializer):
@@ -672,8 +677,8 @@ class TurtleNestDisturbanceTallyObservationSerializer(serializers.ModelSerialize
         """Class options."""
 
         model = TurtleNestDisturbanceTallyObservation
-        fields = ('observation_name',  # 'as_latex',
-                  'species', 'disturbance_cause', )
+        fields = ("observation_name",  # "as_latex",
+                  "species", "disturbance_cause", )
 
 
 class TemperatureLoggerSettingsSerializer(serializers.ModelSerializer):
@@ -685,8 +690,8 @@ class TemperatureLoggerSettingsSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TemperatureLoggerSettings
-        fields = ('observation_name',  # 'as_latex',
-                  'logging_interval', 'recording_start', 'tested', )
+        fields = ("observation_name",  # "as_latex",
+                  "logging_interval", "recording_start", "tested", )
 
 
 class DispatchRecordSerializer(serializers.ModelSerializer):
@@ -698,8 +703,8 @@ class DispatchRecordSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = DispatchRecord
-        fields = ('observation_name',  # 'as_latex',
-                  'sent_to',)
+        fields = ("observation_name",  # "as_latex",
+                  "sent_to",)
 
 
 class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
@@ -711,14 +716,14 @@ class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TemperatureLoggerDeployment
-        fields = ('observation_name',  # 'as_latex', #
-                  'depth_mm',
-                  'marker1_present',
-                  'distance_to_marker1_mm',
-                  'marker2_present',
-                  'distance_to_marker2_mm',
-                  'habitat',
-                  'distance_to_vegetation_mm', )
+        fields = ("observation_name",  # "as_latex", #
+                  "depth_mm",
+                  "marker1_present",
+                  "distance_to_marker1_mm",
+                  "marker2_present",
+                  "distance_to_marker2_mm",
+                  "habitat",
+                  "distance_to_vegetation_mm", )
 
 
 class NestTagObservationSerializer(serializers.ModelSerializer):
@@ -730,12 +735,12 @@ class NestTagObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = NestTagObservation
-        fields = ('observation_name',  # 'as_latex', #
-                  'status',
-                  'flipper_tag_id',
-                  'date_nest_laid',
-                  'tag_label',
-                  'comments',
+        fields = ("observation_name",  # "as_latex", #
+                  "status",
+                  "flipper_tag_id",
+                  "date_nest_laid",
+                  "tag_label",
+                  "comments",
                   )
 
 
@@ -748,10 +753,10 @@ class HatchlingMorphometricObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = HatchlingMorphometricObservation
-        fields = ('observation_name',  # 'as_latex', #
-                  'straight_carapace_length_mm',
-                  'straight_carapace_width_mm',
-                  'body_weight_g',
+        fields = ("observation_name",  # "as_latex", #
+                  "straight_carapace_length_mm",
+                  "straight_carapace_width_mm",
+                  "body_weight_g",
                   )
 
 
@@ -764,11 +769,11 @@ class DugongMorphometricObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = DugongMorphometricObservation
-        fields = ('observation_name',  # 'as_latex', #
-                  'body_length_mm',
-                  'body_girth_mm',
-                  'tail_fluke_width_mm',
-                  'tusks_found',
+        fields = ("observation_name",  # "as_latex", #
+                  "body_length_mm",
+                  "body_girth_mm",
+                  "tail_fluke_width_mm",
+                  "tusks_found",
                   )
 
 
@@ -784,7 +789,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     the plain nested writeable API:
 
     * :mod:`wastd.observations.models.Observation.observation_name` is a property
-      method to return the child model's name
+      method to return the child model"s name
     * :mod:`wastd.api.ObservationSerializer` includes the `observation_name` in
       the API dict
     * :mod:`wastd.api.EncounterSerializer.create` and `update` (coming) handle
@@ -818,19 +823,19 @@ class EncounterSerializer(GeoFeatureModelSerializer):
         """Class options.
 
         The non-standard name `where` is declared as the geo field for the
-        GeoJSON serializer's benefit.
+        GeoJSON serializer"s benefit.
         """
 
         model = Encounter
-        name = 'encounter'
-        fields = ('pk', 'area', 'site', 'survey',
-                  'where', 'location_accuracy', 'when',
-                  'name', 'observer', 'reporter', 'comments',
-                  'status', 'source', 'source_id', 'encounter_type',
-                  'leaflet_title', 'latitude', 'longitude', 'crs',
-                  'absolute_admin_url', 'photographs', 'tx_logs',
-                  #  'as_html', 'as_latex',
-                  'observation_set', )
+        name = "encounter"
+        fields = ("pk", "area", "site", "survey",
+                  "where", "location_accuracy", "when",
+                  "name", "observer", "reporter", "comments",
+                  "status", "source", "source_id", "encounter_type",
+                  "leaflet_title", "latitude", "longitude", "crs",
+                  "absolute_admin_url", "photographs", "tx_logs",
+                  #  "as_html", "as_latex",
+                  "observation_set", )
         geo_field = "where"
         id_field = "source_id"
 
@@ -849,7 +854,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     #     """
     #     print("EncounterSerializer.save() called".format())
     #     # Keep observation_set in the fridge, make Encounter first
-    #     obs_data = validated_data.pop('observation_set')
+    #     obs_data = validated_data.pop("observation_set")
 
         # Extract Users from encounter: observer, reporter
         # o = validated_data.pop("observer")
@@ -901,7 +906,7 @@ class FastEncounterSerializer(GeoFeatureModelSerializer):
     the plain nested writeable API:
 
     * :mod:`wastd.observations.models.Observation.observation_name` is a property
-      method to return the child model's name
+      method to return the child model"s name
     * :mod:`wastd.api.ObservationSerializer` includes the `observation_name` in
       the API dict
     * :mod:`wastd.api.EncounterSerializer.create` and `update` (coming) handle
@@ -935,19 +940,19 @@ class FastEncounterSerializer(GeoFeatureModelSerializer):
         """Class options.
 
         The non-standard name `where` is declared as the geo field for the
-        GeoJSON serializer's benefit.
+        GeoJSON serializer"s benefit.
         """
 
         model = Encounter
-        name = 'encounter'
-        fields = ('pk', 'area', 'site', 'survey',
-                  'where', 'location_accuracy', 'when',
-                  'name', 'observer', 'reporter', 'comments',
-                  'status', 'source', 'source_id', 'encounter_type',
-                  'leaflet_title', 'latitude', 'longitude', 'crs',
-                  'absolute_admin_url', 'photographs', 'tx_logs',
-                  #  'as_html', 'as_latex',
-                  # 'observation_set',
+        name = "encounter"
+        fields = ("pk", "area", "site", "survey",
+                  "where", "location_accuracy", "when",
+                  "name", "observer", "reporter", "comments",
+                  "status", "source", "source_id", "encounter_type",
+                  "leaflet_title", "latitude", "longitude", "crs",
+                  "absolute_admin_url", "photographs", "tx_logs",
+                  #  "as_html", "as_latex",
+                  # "observation_set",
                   )
         geo_field = "where"
         id_field = "source_id"
@@ -963,19 +968,19 @@ class AnimalEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = AnimalEncounter
-        fields = ('pk', 'area', 'site', 'survey', 'source', 'source_id',
-                  'encounter_type', 'leaflet_title',
-                  'status', 'observer', 'reporter', 'comments',
-                  'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
-                  'when', 'name',
-                  'name', 'taxon', 'species', 'health', 'sex', 'maturity', 'behaviour',
-                  'habitat', 'activity', 'nesting_event',
-                  'checked_for_injuries',
-                  'scanned_for_pit_tags',
-                  'checked_for_flipper_tags',
-                  'cause_of_death', 'cause_of_death_confidence',
-                  'absolute_admin_url', 'photographs', 'tx_logs',
-                  'observation_set', )
+        fields = ("pk", "area", "site", "survey", "source", "source_id",
+                  "encounter_type", "leaflet_title",
+                  "status", "observer", "reporter", "comments",
+                  "where", "latitude", "longitude", "crs", "location_accuracy",
+                  "when", "name",
+                  "name", "taxon", "species", "health", "sex", "maturity", "behaviour",
+                  "habitat", "activity", "nesting_event",
+                  "checked_for_injuries",
+                  "scanned_for_pit_tags",
+                  "checked_for_flipper_tags",
+                  "cause_of_death", "cause_of_death_confidence",
+                  "absolute_admin_url", "photographs", "tx_logs",
+                  "observation_set", )
         geo_field = "where"
         id_field = "source_id"
 
@@ -987,17 +992,17 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = TurtleNestEncounter
-        fields = ('pk', 'area', 'site', 'survey', 'source', 'source_id',
-                  'encounter_type', 'leaflet_title',
-                  'status', 'observer', 'reporter', 'comments',
-                  'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
-                  'when', 'name',
-                  'nest_age', 'nest_type', 'species', 'habitat', 'disturbance',
-                  'comments',
-                  'absolute_admin_url', 'photographs', 'tx_logs',
-                  'observation_set',
+        fields = ("pk", "area", "site", "survey", "source", "source_id",
+                  "encounter_type", "leaflet_title",
+                  "status", "observer", "reporter", "comments",
+                  "where", "latitude", "longitude", "crs", "location_accuracy",
+                  "when", "name",
+                  "nest_age", "nest_type", "species", "habitat", "disturbance",
+                  "comments",
+                  "absolute_admin_url", "photographs", "tx_logs",
+                  "observation_set",
                   )
-        # read_only = ('photographs',)
+        # read_only = ("photographs",)
         geo_field = "where"
 
 
@@ -1008,15 +1013,15 @@ class LoggerEncounterSerializer(EncounterSerializer):
         """Class options."""
 
         model = LoggerEncounter
-        fields = ('pk', 'area', 'site', 'survey', 'source', 'source_id',
-                  'encounter_type', 'leaflet_title',
-                  'status', 'observer', 'reporter', 'comments',
-                  'where', 'latitude', 'longitude', 'crs', 'location_accuracy',
-                  'when', 'name',
-                  'deployment_status', 'comments',
-                  'comments',
-                  'absolute_admin_url', 'photographs', 'tx_logs',
-                  'observation_set', )
+        fields = ("pk", "area", "site", "survey", "source", "source_id",
+                  "encounter_type", "leaflet_title",
+                  "status", "observer", "reporter", "comments",
+                  "where", "latitude", "longitude", "crs", "location_accuracy",
+                  "when", "name",
+                  "deployment_status", "comments",
+                  "comments",
+                  "absolute_admin_url", "photographs", "tx_logs",
+                  "observation_set", )
         geo_field = "where"
 
 
@@ -1031,8 +1036,8 @@ class TagObservationEncounterSerializer(GeoFeatureModelSerializer):
 
         model = TagObservation
         geo_field = "point"
-        fields = ('encounter', 'observation_name', 'tag_type', 'name',
-                  'tag_location', 'status', 'comments', )
+        fields = ("encounter", "observation_name", "tag_type", "name",
+                  "tag_location", "status", "comments", )
 
 
 class TurtleNestObservationEncounterSerializer(GeoFeatureModelSerializer):
@@ -1047,16 +1052,16 @@ class TurtleNestObservationEncounterSerializer(GeoFeatureModelSerializer):
         model = TurtleNestObservation
         geo_field = "point"
         fields = (
-            'encounter', 'observation_name',
+            "encounter", "observation_name",
 
-            'latitude', 'longitude',
-            'nest_position', 'eggs_laid', 'egg_count',
-            'hatching_success', 'emergence_success',
-            'no_egg_shells', 'no_live_hatchlings_neck_of_nest', 'no_live_hatchlings',
-            'no_dead_hatchlings', 'no_undeveloped_eggs',
-            'no_unhatched_eggs', 'no_unhatched_term', 'no_depredated_eggs',
-            'nest_depth_top', 'nest_depth_bottom',
-            'sand_temp', 'air_temp', 'water_temp', 'egg_temp', 'comments',
+            "latitude", "longitude",
+            "nest_position", "eggs_laid", "egg_count",
+            "hatching_success", "emergence_success",
+            "no_egg_shells", "no_live_hatchlings_neck_of_nest", "no_live_hatchlings",
+            "no_dead_hatchlings", "no_undeveloped_eggs",
+            "no_unhatched_eggs", "no_unhatched_term", "no_depredated_eggs",
+            "nest_depth_top", "nest_depth_bottom",
+            "sand_temp", "air_temp", "water_temp", "egg_temp", "comments",
         )
 
 
@@ -1070,19 +1075,19 @@ class EncounterFilter(filters.FilterSet):
 
         model = Encounter
         fields = {
-            'area': '__all__',
-            'encounter_type': '__all__',
-            'status': '__all__',
-            'site': '__all__',
-            'survey': '__all__',
-            'source': '__all__',
-            'location_accuracy': '__all__',
-            'when': '__all__',
-            'name': '__all__',
-            'source_id': '__all__',
-            'observer': '__all__',
-            'reporter': '__all__',
-            'comments': '__all__',
+            "area": "__all__",
+            "encounter_type": "__all__",
+            "status": "__all__",
+            "site": "__all__",
+            "survey": "__all__",
+            "source": "__all__",
+            "location_accuracy": "__all__",
+            "when": "__all__",
+            "name": "__all__",
+            "source_id": "__all__",
+            "observer": "__all__",
+            "reporter": "__all__",
+            "comments": "__all__",
         }
 
 
@@ -1106,11 +1111,11 @@ class EncounterViewSet(viewsets.ModelViewSet):
     # area and site
     For convenience and performance, every Encounter links to the general area of its occurrence (Locality)
     as well as the site it was observed in, if known.
-    Encounters can filtered to a Locality or Site via the respective area's ID.
+    Encounters can filtered to a Locality or Site via the respective area"s ID.
 
-    * Find your Locality's ID in
+    * Find your Locality"s ID in
       [/api/1/areas/?area_type=Locality](/api/1/areas/?area_type=Locality)
-    * Find your Site's ID in
+    * Find your Site"s ID in
       [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site)
     * [/api/1/encounters/?site=19](/api/1/encounters/?site=19) Cable Beach Broome
     * [/api/1/encounters/?site=13](/api/1/encounters/?site=13) Port Hedland
@@ -1143,7 +1148,7 @@ class EncounterViewSet(viewsets.ModelViewSet):
     appropriate filter string values.
 
     # comments
-    Where data are captured digitally, the username is guessed from data collecctors' supplied names.
+    Where data are captured digitally, the username is guessed from data collecctors" supplied names.
     This process sometimes goes wrong, and a log is kept in comments.
 
     * [/api/1/encounters/?comments__icontains=QA](/api/1/encounters/?comments__icontains=QA)
@@ -1212,12 +1217,12 @@ class EncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/encounters/?observer=100](/api/1/encounters/?reporter=100) Reporter with ID 100
     """
 
-    latex_name = 'latex/encounter.tex'
+    latex_name = "latex/encounter.tex"
     queryset = Encounter.objects.all()
     serializer_class = EncounterSerializer
-    search_fields = ('name', 'source_id', )
+    search_fields = ("name", "source_id", )
 
-    bbox_filter_field = 'where'
+    bbox_filter_field = "where"
     # bbox_filter_include_overlapping = True
     pagination_class = MyGeoJsonPagination
     filter_class = EncounterFilter
@@ -1237,24 +1242,24 @@ class TurtleNestEncounterFilter(filters.FilterSet):
 
         model = TurtleNestEncounter
         fields = {
-            'area': '__all__',
-            'encounter_type': '__all__',
-            'status': '__all__',
-            'site': '__all__',
-            'survey': '__all__',
-            'source': '__all__',
-            'source_id': '__all__',
-            'location_accuracy': '__all__',
-            'when': '__all__',
-            'name': '__all__',
-            'observer': '__all__',
-            'reporter': '__all__',
-            'nest_age': '__all__',
-            'nest_type': '__all__',
-            'species': '__all__',
-            'habitat': '__all__',
-            'disturbance': '__all__',
-            'comments': '__all__',
+            "area": "__all__",
+            "encounter_type": "__all__",
+            "status": "__all__",
+            "site": "__all__",
+            "survey": "__all__",
+            "source": "__all__",
+            "source_id": "__all__",
+            "location_accuracy": "__all__",
+            "when": "__all__",
+            "name": "__all__",
+            "observer": "__all__",
+            "reporter": "__all__",
+            "nest_age": "__all__",
+            "nest_type": "__all__",
+            "species": "__all__",
+            "habitat": "__all__",
+            "disturbance": "__all__",
+            "comments": "__all__",
         }
 
 
@@ -1329,7 +1334,7 @@ class TurtleNestEncounterViewSet(viewsets.ModelViewSet):
     * [/api/1/turtle-nest-encounters/?name=WA1234](/api/1/turtle-nest-encounters/?name=WA1234) Turtle name if known
     """
 
-    latex_name = 'latex/turtlenestencounter.tex'
+    latex_name = "latex/turtlenestencounter.tex"
     queryset = TurtleNestEncounter.objects.all()
     serializer_class = TurtleNestEncounterSerializer
     filter_class = TurtleNestEncounterFilter
@@ -1350,29 +1355,29 @@ class AnimalEncounterFilter(filters.FilterSet):
 
         model = AnimalEncounter
         fields = {
-            'encounter_type': '__all__',
-            'status': '__all__',
-            'area': '__all__',
-            'site': '__all__',
-            'survey': '__all__',
-            'source': '__all__',
-            'source_id': '__all__',
-            'location_accuracy': '__all__',
-            'when': '__all__',
-            'name': '__all__',
-            'observer': '__all__',
-            'reporter': '__all__',
-            'taxon': '__all__',
-            'species': '__all__',
-            'health': '__all__',
-            'sex': '__all__',
-            'maturity': '__all__',
-            'habitat': '__all__',
-            'checked_for_injuries': '__all__',
-            'scanned_for_pit_tags': '__all__',
-            'checked_for_flipper_tags': '__all__',
-            'cause_of_death': '__all__',
-            'cause_of_death_confidence': '__all__',
+            "encounter_type": "__all__",
+            "status": "__all__",
+            "area": "__all__",
+            "site": "__all__",
+            "survey": "__all__",
+            "source": "__all__",
+            "source_id": "__all__",
+            "location_accuracy": "__all__",
+            "when": "__all__",
+            "name": "__all__",
+            "observer": "__all__",
+            "reporter": "__all__",
+            "taxon": "__all__",
+            "species": "__all__",
+            "health": "__all__",
+            "sex": "__all__",
+            "maturity": "__all__",
+            "habitat": "__all__",
+            "checked_for_injuries": "__all__",
+            "scanned_for_pit_tags": "__all__",
+            "checked_for_flipper_tags": "__all__",
+            "cause_of_death": "__all__",
+            "cause_of_death_confidence": "__all__",
         }
 
 
@@ -1413,8 +1418,8 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
     # Other filters
     Other enabled filters (typically these categories will be used later during analysis):
 
-    'health', 'sex', 'maturity', 'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags',
-    'cause_of_death', 'cause_of_death_confidence'
+    "health", "sex", "maturity", "checked_for_injuries", "scanned_for_pit_tags", "checked_for_flipper_tags",
+    "cause_of_death", "cause_of_death_confidence"
 
     # habitat
     * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
@@ -1430,11 +1435,11 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 
     """
 
-    latex_name = 'latex/animalencounter.tex'
+    latex_name = "latex/animalencounter.tex"
     queryset = AnimalEncounter.objects.all()
     serializer_class = AnimalEncounterSerializer
     filter_class = AnimalEncounterFilter
-    search_fields = ('name', 'source_id', 'behaviour', )
+    search_fields = ("name", "source_id", "behaviour", )
     pagination_class = MyGeoJsonPagination
     # filter_backends = (CustomBBoxFilter, filters.DjangoFilterBackend, )
 
@@ -1446,14 +1451,14 @@ class AnimalEncounterViewSet(viewsets.ModelViewSet):
 class LoggerEncounterViewSet(viewsets.ModelViewSet):
     """LoggerEncounter view set."""
 
-    latex_name = 'latex/loggerencounter.tex'
+    latex_name = "latex/loggerencounter.tex"
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
     filter_fields = [
-        'encounter_type', 'status', 'area', 'site', 'survey', 'source', 'source_id',
-        'location_accuracy', 'when', 'name', 'observer', 'reporter',
-        'deployment_status', 'comments']
-    search_fields = ('name', 'source_id', )
+        "encounter_type", "status", "area", "site", "survey", "source", "source_id",
+        "location_accuracy", "when", "name", "observer", "reporter",
+        "deployment_status", "comments"]
+    search_fields = ("name", "source_id", )
     pagination_class = MyGeoJsonPagination
 
     def pre_latex(self, t_dir, data):
@@ -1481,8 +1486,8 @@ class TagObservationViewSet(viewsets.ModelViewSet):
 
     queryset = TagObservation.objects.all()
     serializer_class = TagObservationEncounterSerializer
-    filter_fields = ['tag_type', 'tag_location', 'name', 'status', 'comments']
-    search_fields = ('name', 'comments', )
+    filter_fields = ["tag_type", "tag_location", "name", "status", "comments"]
+    search_fields = ("name", "comments", )
     pagination_class = MyGeoJsonPagination
 
 
@@ -1491,8 +1496,8 @@ class TurtleNestObservationViewSet(viewsets.ModelViewSet):
 
     queryset = TurtleNestObservation.objects.all()
     serializer_class = TurtleNestObservationEncounterSerializer
-    filter_fields = ['encounter__area', 'encounter__site', 'nest_position', 'eggs_laid', 'encounter__status']
-    search_fields = ('comments', )
+    filter_fields = ["encounter__area", "encounter__site", "nest_position", "eggs_laid", "encounter__status"]
+    search_fields = ("comments", )
     pagination_class = MyGeoJsonPagination
 
 
@@ -1510,13 +1515,13 @@ class NestTagObservationEncounterSerializer(GeoFeatureModelSerializer):
         model = NestTagObservation
         geo_field = "point"
         fields = (
-            'encounter',
-            'observation_name',
-            'status',
-            'flipper_tag_id',
-            'date_nest_laid',
-            'tag_label',
-            'comments',)
+            "encounter",
+            "observation_name",
+            "status",
+            "flipper_tag_id",
+            "date_nest_laid",
+            "tag_label",
+            "comments",)
 
 
 class NestTagObservationViewSet(viewsets.ModelViewSet):
@@ -1524,11 +1529,11 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
 
     queryset = NestTagObservation.objects.all()
     serializer_class = NestTagObservationEncounterSerializer
-    filter_fields = ['status', 'flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments']
+    filter_fields = ["status", "flipper_tag_id", "date_nest_laid", "tag_label", "comments"]
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
-router.register(r'nesttag-observations', NestTagObservationViewSet)
+router.register(r"nesttag-observations", NestTagObservationViewSet)
 
 
 class TurtleNestDisturbanceObservationEncounterSerializer(GeoFeatureModelSerializer):
@@ -1543,12 +1548,12 @@ class TurtleNestDisturbanceObservationEncounterSerializer(GeoFeatureModelSeriali
         model = TurtleNestDisturbanceObservation
         geo_field = "point"
         fields = (
-            'encounter',
-            'observation_name',
-            'disturbance_cause',
-            'disturbance_cause_confidence',
-            'disturbance_severity',
-            'comments', )
+            "encounter",
+            "observation_name",
+            "disturbance_cause",
+            "disturbance_cause_confidence",
+            "disturbance_severity",
+            "comments", )
 
 
 class TurtleNestDisturbanceObservationEncounterViewSet(viewsets.ModelViewSet):
@@ -1556,21 +1561,21 @@ class TurtleNestDisturbanceObservationEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = TurtleNestDisturbanceObservation.objects.all()
     serializer_class = TurtleNestDisturbanceObservationEncounterSerializer
-    filter_fields = ['disturbance_cause', 'disturbance_cause_confidence', 'disturbance_severity', ]
+    filter_fields = ["disturbance_cause", "disturbance_cause_confidence", "disturbance_severity", ]
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
 # ----------------------------------------------------------------------------#
 
-router.register(r'encounters', EncounterViewSet)
-router.register(r'animal-encounters', AnimalEncounterViewSet)
-router.register(r'turtle-nest-encounters', TurtleNestEncounterViewSet)
-router.register(r'logger-encounters', LoggerEncounterViewSet)
-router.register(r'observations', ObservationViewSet)
-router.register(r'media-attachments', MediaAttachmentViewSet)
-router.register(r'tag-observations', TagObservationViewSet)
-router.register(r'disturbance-observations', TurtleNestDisturbanceObservationEncounterViewSet)
-router.register(r'turtle-nest-excavations', TurtleNestObservationViewSet)
+router.register(r"encounters", EncounterViewSet)
+router.register(r"animal-encounters", AnimalEncounterViewSet)
+router.register(r"turtle-nest-encounters", TurtleNestEncounterViewSet)
+router.register(r"logger-encounters", LoggerEncounterViewSet)
+router.register(r"observations", ObservationViewSet)
+router.register(r"media-attachments", MediaAttachmentViewSet)
+router.register(r"tag-observations", TagObservationViewSet)
+router.register(r"disturbance-observations", TurtleNestDisturbanceObservationEncounterViewSet)
+router.register(r"turtle-nest-excavations", TurtleNestObservationViewSet)
 
 # Area -------------------------------------------------------------------#
 
@@ -1582,11 +1587,11 @@ class OccurrenceAreaEncounterPolySerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.AreaEncounter
-        fields = ('id', 'code', 'label', 'name', 'description', 'as_html',
-                  'source', 'source_id', 'status',
-                  'encountered_on',  'encountered_by',
-                  'area_type',  'accuracy', 'northern_extent', )
-        geo_field = 'geom'
+        fields = ("id", "code", "label", "name", "description", "as_html",
+                  "source", "source_id", "status",
+                  "encountered_on",  "encountered_by",
+                  "area_type",  "accuracy", "northern_extent", )
+        geo_field = "geom"
 
 
 class OccurrenceAreaEncounterPointSerializer(GeoFeatureModelSerializer):
@@ -1596,11 +1601,11 @@ class OccurrenceAreaEncounterPointSerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.AreaEncounter
-        fields = ('id', 'code', 'label', 'name', 'description', 'as_html',
-                  'source', 'source_id', 'status',
-                  'encountered_on',  'encountered_by',
-                  'area_type',  'accuracy', 'northern_extent', )
-        geo_field = 'point'
+        fields = ("id", "code", "label", "name", "description", "as_html",
+                  "source", "source_id", "status",
+                  "encountered_on",  "encountered_by",
+                  "area_type",  "accuracy", "northern_extent", )
+        geo_field = "point"
 
 
 class OccurrenceAreaEncounterFilter(filters.FilterSet):
@@ -1612,15 +1617,15 @@ class OccurrenceAreaEncounterFilter(filters.FilterSet):
         model = occ_models.AreaEncounter
         fields = {
 
-            'area_type': ['exact', 'in'],
-            'accuracy': ['exact', 'gt', 'lt'],
-            'code': ['exact', 'icontains', 'in'],
-            'label': ['exact', 'icontains', 'in'],
-            'name': ['exact', 'icontains', 'in'],
-            'description': ['exact', 'icontains', 'in'],
-            'northern_extent': ['exact', 'gt', 'lt'],
-            'source': ['exact', 'in'],
-            'source_id': ['exact', 'in'],
+            "area_type": ["exact", "in"],
+            "accuracy": ["exact", "gt", "lt"],
+            "code": ["exact", "icontains", "in"],
+            "label": ["exact", "icontains", "in"],
+            "name": ["exact", "icontains", "in"],
+            "description": ["exact", "icontains", "in"],
+            "northern_extent": ["exact", "gt", "lt"],
+            "source": ["exact", "in"],
+            "source_id": ["exact", "in"],
         }
 
 
@@ -1657,48 +1662,48 @@ class OccurrenceTaxonAreaEncounterPolyInlineSerializer(GeoFeatureModelSerializer
     class Meta:
         """Opts."""
 
-        exclude = ('taxon', )
+        exclude = ("taxon", )
         model = occ_models.TaxonAreaEncounter
-        id_field = 'id'
-        geo_field = 'geom'
+        id_field = "id"
+        geo_field = "geom"
 
 
 class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter."""
 
-    taxon = serializers.SlugRelatedField(queryset=Taxon.objects.all(), slug_field='name_id')
+    taxon = serializers.SlugRelatedField(queryset=Taxon.objects.all(), slug_field="name_id")
     # geom = GeometryField()
 
     class Meta:
         """Opts."""
 
         model = occ_models.TaxonAreaEncounter
-        fields = ('taxon',
-                  'id', 'code', 'label', 'name', 'description', 'as_html',
-                  'source', 'source_id', 'status',
-                  'encountered_on',  'encountered_by',
-                  'area_type',  'accuracy', 'northern_extent', 'point')
-        id_field = 'id'
-        geo_field = 'geom'
+        fields = ("taxon",
+                  "id", "code", "label", "name", "description", "as_html",
+                  "source", "source_id", "status",
+                  "encountered_on",  "encountered_by",
+                  "area_type",  "accuracy", "northern_extent", "point")
+        id_field = "id"
+        geo_field = "geom"
 
 
 class OccurrenceTaxonAreaEncounterPointSerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter."""
 
-    taxon = serializers.SlugRelatedField(queryset=Taxon.objects.all(), slug_field='name_id')
+    taxon = serializers.SlugRelatedField(queryset=Taxon.objects.all(), slug_field="name_id")
     # point = PointField()
 
     class Meta:
         """Opts."""
 
         model = occ_models.TaxonAreaEncounter
-        fields = ('taxon',
-                  'id', 'code', 'label', 'name', 'description', 'as_html',
-                  'source', 'source_id', 'status',
-                  'encountered_on',  'encountered_by',
-                  'area_type',  'accuracy', 'northern_extent', )
-        id_field = 'id'
-        geo_field = 'point'
+        fields = ("taxon",
+                  "id", "code", "label", "name", "description", "as_html",
+                  "source", "source_id", "status",
+                  "encountered_on",  "encountered_by",
+                  "area_type",  "accuracy", "northern_extent", )
+        id_field = "id"
+        geo_field = "point"
 
 
 class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
@@ -1709,15 +1714,15 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
 
         model = occ_models.TaxonAreaEncounter
         fields = {
-            'area_type': ['exact', 'in'],
-            'accuracy': ['exact', 'gt', 'lt'],
-            'code': ['exact', 'icontains', 'in'],
-            'label': ['exact', 'icontains', 'in'],
-            'name': ['exact', 'icontains', 'in'],
-            'description': ['exact', 'icontains', 'in'],
-            'northern_extent': ['exact', 'gt', 'lt'],
-            'source': ['exact', 'in'],
-            'source_id': ['exact', 'in'],
+            "area_type": ["exact", "in"],
+            "accuracy": ["exact", "gt", "lt"],
+            "code": ["exact", "icontains", "in"],
+            "label": ["exact", "icontains", "in"],
+            "name": ["exact", "icontains", "in"],
+            "description": ["exact", "icontains", "in"],
+            "northern_extent": ["exact", "gt", "lt"],
+            "source": ["exact", "in"],
+            "source_id": ["exact", "in"],
         }
 
 
@@ -1757,46 +1762,46 @@ class OccurrenceCommunityAreaEncounterPolyInlineSerializer(GeoFeatureModelSerial
     class Meta:
         """Opts."""
 
-        exclude = ('community', )
+        exclude = ("community", )
         model = occ_models.CommunityAreaEncounter
-        id_field = 'id'
-        geo_field = 'geom'
+        id_field = "id"
+        geo_field = "geom"
 
 
 class OccurrenceCommunityAreaEncounterPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence CommunityAreaEncounter."""
 
-    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field='code')
+    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field="code")
 
     class Meta:
         """Opts."""
 
         model = occ_models.CommunityAreaEncounter
-        fields = ('community',
-                  'id', 'code', 'label', 'name', 'description', 'as_html',
-                  'source', 'source_id', 'status',
-                  'encountered_on',  'encountered_by',
-                  'area_type',  'accuracy', 'northern_extent', 'point')
-        id_field = 'id'
-        geo_field = 'geom'
+        fields = ("community",
+                  "id", "code", "label", "name", "description", "as_html",
+                  "source", "source_id", "status",
+                  "encountered_on",  "encountered_by",
+                  "area_type",  "accuracy", "northern_extent", "point")
+        id_field = "id"
+        geo_field = "geom"
 
 
 class OccurrenceCommunityAreaEncounterPointSerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence CommunityAreaEncounter."""
 
-    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field='code')
+    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field="code")
 
     class Meta:
         """Opts."""
 
         model = occ_models.CommunityAreaEncounter
-        fields = ('community',
-                  'id', 'code', 'label', 'name', 'description', 'as_html',
-                  'source', 'source_id', 'status',
-                  'encountered_on',  'encountered_by',
-                  'area_type',  'accuracy', 'northern_extent', )
-        id_field = 'id'
-        geo_field = 'point'
+        fields = ("community",
+                  "id", "code", "label", "name", "description", "as_html",
+                  "source", "source_id", "status",
+                  "encountered_on",  "encountered_by",
+                  "area_type",  "accuracy", "northern_extent", )
+        id_field = "id"
+        geo_field = "point"
 
 
 class OccurrenceCommunityAreaEncounterFilter(filters.FilterSet):
@@ -1808,15 +1813,15 @@ class OccurrenceCommunityAreaEncounterFilter(filters.FilterSet):
         model = occ_models.CommunityAreaEncounter
         fields = {
 
-            'area_type': ['exact', 'in'],
-            'accuracy': ['exact', 'gt', 'lt'],
-            'code': ['exact', 'icontains', 'in'],
-            'label': ['exact', 'icontains', 'in'],
-            'name': ['exact', 'icontains', 'in'],
-            'description': ['exact', 'icontains', 'in'],
-            'northern_extent': ['exact', 'gt', 'lt'],
-            'source': ['exact', 'in'],
-            'source_id': ['exact', 'in'],
+            "area_type": ["exact", "in"],
+            "accuracy": ["exact", "gt", "lt"],
+            "code": ["exact", "icontains", "in"],
+            "label": ["exact", "icontains", "in"],
+            "name": ["exact", "icontains", "in"],
+            "description": ["exact", "icontains", "in"],
+            "northern_extent": ["exact", "gt", "lt"],
+            "source": ["exact", "in"],
+            "source_id": ["exact", "in"],
         }
 
 
@@ -1864,7 +1869,7 @@ class HbvNameSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvName
-        fields = '__all__'
+        fields = "__all__"
 
 
 class HbvSupraSerializer(serializers.ModelSerializer):
@@ -1874,7 +1879,7 @@ class HbvSupraSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvSupra
-        fields = '__all__'
+        fields = "__all__"
 
 
 class HbvGroupSerializer(serializers.ModelSerializer):
@@ -1884,7 +1889,7 @@ class HbvGroupSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvGroup
-        fields = '__all__'
+        fields = "__all__"
 
 
 class HbvFamilySerializer(serializers.ModelSerializer):
@@ -1894,7 +1899,7 @@ class HbvFamilySerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvFamily
-        fields = '__all__'
+        fields = "__all__"
 
 
 class HbvGenusSerializer(serializers.ModelSerializer):
@@ -1904,7 +1909,7 @@ class HbvGenusSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvGenus
-        fields = '__all__'
+        fields = "__all__"
 
 
 class HbvSpeciesSerializer(serializers.ModelSerializer):
@@ -1914,7 +1919,7 @@ class HbvSpeciesSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvSpecies
-        fields = '__all__'
+        fields = "__all__"
 
 
 class HbvVernacularSerializer(serializers.ModelSerializer):
@@ -1924,7 +1929,7 @@ class HbvVernacularSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvVernacular
-        fields = '__all__'
+        fields = "__all__"
 
 
 class HbvXrefSerializer(serializers.ModelSerializer):
@@ -1934,7 +1939,7 @@ class HbvXrefSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvXref
-        fields = '__all__'
+        fields = "__all__"
 
 
 class HbvParentSerializer(serializers.ModelSerializer):
@@ -1944,12 +1949,12 @@ class HbvParentSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = HbvParent
-        fields = '__all__'
+        fields = "__all__"
 
 
 class TaxonSerializer(
-    GeoFeatureModelSerializer
-    # serializers.ModelSerializer
+    # GeoFeatureModelSerializer
+    serializers.ModelSerializer
 ):
     """Serializer for Taxon.
 
@@ -1965,33 +1970,40 @@ class TaxonSerializer(
 
     # taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True) # yeah nah
 
+    is_currently_listed = serializers.ReadOnlyField()
     conservation_code_state = serializers.ReadOnlyField()          # consv_code
     conservation_list_state = serializers.ReadOnlyField()        # list_code
-    # conservation_category_state = serializers.ReadOnlyField()    # wa_iucn
-    # conservation_criteria_state = serializers.ReadOnlyField()    # iucn_criteria
-    # conservation_category_cwth = serializers.ReadOnlyField()     # epbc
+    conservation_category_state = serializers.ReadOnlyField()    # wa_iucn (primary)
+    conservation_categories_state = serializers.ReadOnlyField()    # wa_iucn (all)
+    conservation_criteria_state = serializers.ReadOnlyField()    # iucn_criteria
+    conservation_category_national = serializers.ReadOnlyField()     # epbc
 
     class Meta:
         """Opts."""
 
         model = Taxon
-        geo_field = "eoo"
+        # geo_field = "eoo"
         fields = (
-            'name_id',
-            'name',
-            'rank',
-            'parent',
-            'author',
-            'current',
-            'publication_status',
-            'vernacular_name',
-            'vernacular_names',
-            'canonical_name',
-            'taxonomic_name',
-            # 'taxon_occurrences',
-            'eoo',
-            'conservation_code_state',
-            'conservation_list_state'
+            "name_id",
+            "name",
+            "rank",
+            "parent",
+            "author",
+            "current",
+            "publication_status",
+            "vernacular_name",
+            "vernacular_names",
+            "canonical_name",
+            "taxonomic_name",
+            # "taxon_occurrences",
+            # "eoo",
+            "is_currently_listed",
+            "conservation_code_state",
+            "conservation_list_state",
+            "conservation_category_state",
+            "conservation_categories_state",
+            "conservation_criteria_state",
+            "conservation_category_national",
         )
 
 
@@ -2003,9 +2015,9 @@ class FastTaxonSerializer(serializers.ModelSerializer):
 
         model = Taxon
         fields = (
-            'name_id',
-            'taxonomic_name',
-            'vernacular_names',
+            "name_id",
+            "taxonomic_name",
+            "vernacular_names",
         )
 
 
@@ -2019,11 +2031,11 @@ class VernacularSerializer(serializers.ModelSerializer):
 
         model = Vernacular
         fields = (
-            'ogc_fid',
-            'taxon',
-            'name',
-            'language',
-            'preferred',
+            "ogc_fid",
+            "taxon",
+            "name",
+            "language",
+            "preferred",
         )
 
 
@@ -2038,14 +2050,14 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
 
         model = Crossreference
         fields = (
-            'xref_id',
-            'predecessor',
-            'successor',
-            'reason',
-            'authorised_by',
-            'authorised_on',
-            'effective_to',
-            'comments',
+            "xref_id",
+            "predecessor",
+            "successor",
+            "reason",
+            "authorised_by",
+            "authorised_on",
+            "effective_to",
+            "comments",
         )
 
 
@@ -2058,13 +2070,13 @@ class CommunitySerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = Community
-        geo_field = 'eoo'
+        geo_field = "eoo"
         fields = (
-            'code',
-            'name',
-            'description',
-            # 'community_occurrences',
-            'eoo'
+            "code",
+            "name",
+            "description",
+            # "community_occurrences",
+            "eoo"
         )
 
 # Taxonomy: Filters -------------------------------------------------------------------#
@@ -2078,58 +2090,58 @@ class HbvNameFilter(filters.FilterSet):
 
         model = HbvName
         fields = {
-            'rank_name': '__all__',
-            'is_current': '__all__',
-            'naturalised_status': '__all__',
-            'naturalised_certainty': '__all__',
-            'is_eradicated': '__all__',
-            'informal': '__all__',
-            'name': '__all__',
-            'name_id': '__all__',
-            'full_name': '__all__',
-            'vernacular': '__all__',
-            'all_vernaculars': '__all__',
-            'author': '__all__',
-            "ogc_fid": '__all__',
-            "name_id": '__all__',
-            "kingdom_id": '__all__',
-            "rank_id": '__all__',
-            "rank_name": '__all__',
-            "name1": '__all__',
-            "name2": '__all__',
-            "rank3": '__all__',
-            "name3": '__all__',
-            "rank4": '__all__',
-            "name4": '__all__',
-            "pub_id": '__all__',
-            "vol_info": '__all__',
-            "pub_year": '__all__',
-            "is_current": '__all__',
-            "origin": '__all__',
-            "naturalised_status": '__all__',
-            "naturalised_certainty": '__all__',
-            "is_eradicated": '__all__',
-            "naturalised_comments": '__all__',
-            "informal": '__all__',
-            "form_desc_yr": '__all__',
-            "form_desc_mn": '__all__',
-            "form_desc_dy": '__all__',
-            "comments": '__all__',
-            "added_by": '__all__',
-            "added_on": '__all__',
-            "updated_by": '__all__',
-            "updated_on": '__all__',
-            "family_code": '__all__',
-            "family_nid": '__all__',
-            "name": '__all__',
-            "full_name": '__all__',
-            "author": '__all__',
-            "reference": '__all__',
-            "editor": '__all__',
-            "vernacular": '__all__',
-            "all_vernaculars": '__all__',
-            "linear_sequence": '__all__',
-            "md5_rowhash": '__all__',
+            "rank_name": "__all__",
+            "is_current": "__all__",
+            "naturalised_status": "__all__",
+            "naturalised_certainty": "__all__",
+            "is_eradicated": "__all__",
+            "informal": "__all__",
+            "name": "__all__",
+            "name_id": "__all__",
+            "full_name": "__all__",
+            "vernacular": "__all__",
+            "all_vernaculars": "__all__",
+            "author": "__all__",
+            "ogc_fid": "__all__",
+            "name_id": "__all__",
+            "kingdom_id": "__all__",
+            "rank_id": "__all__",
+            "rank_name": "__all__",
+            "name1": "__all__",
+            "name2": "__all__",
+            "rank3": "__all__",
+            "name3": "__all__",
+            "rank4": "__all__",
+            "name4": "__all__",
+            "pub_id": "__all__",
+            "vol_info": "__all__",
+            "pub_year": "__all__",
+            "is_current": "__all__",
+            "origin": "__all__",
+            "naturalised_status": "__all__",
+            "naturalised_certainty": "__all__",
+            "is_eradicated": "__all__",
+            "naturalised_comments": "__all__",
+            "informal": "__all__",
+            "form_desc_yr": "__all__",
+            "form_desc_mn": "__all__",
+            "form_desc_dy": "__all__",
+            "comments": "__all__",
+            "added_by": "__all__",
+            "added_on": "__all__",
+            "updated_by": "__all__",
+            "updated_on": "__all__",
+            "family_code": "__all__",
+            "family_nid": "__all__",
+            "name": "__all__",
+            "full_name": "__all__",
+            "author": "__all__",
+            "reference": "__all__",
+            "editor": "__all__",
+            "vernacular": "__all__",
+            "all_vernaculars": "__all__",
+            "linear_sequence": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
@@ -2141,11 +2153,11 @@ class HbvSupraFilter(filters.FilterSet):
 
         model = HbvSupra
         fields = {
-            'ogc_fid': '__all__',
-            'supra_code': '__all__',
-            'supra_name': '__all__',
-            'updated_on': '__all__',
-            'md5_rowhash': '__all__',
+            "ogc_fid": "__all__",
+            "supra_code": "__all__",
+            "supra_name": "__all__",
+            "updated_on": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
@@ -2157,14 +2169,14 @@ class HbvGroupFilter(filters.FilterSet):
 
         model = HbvGroup
         fields = {
-            'ogc_fid': '__all__',
-            'class_id': '__all__',
-            'name_id': '__all__',
-            'updated_by': '__all__',
-            'updated_on': '__all__',
-            'rank_name': '__all__',
-            'name': '__all__',
-            'md5_rowhash': '__all__',
+            "ogc_fid": "__all__",
+            "class_id": "__all__",
+            "name_id": "__all__",
+            "updated_by": "__all__",
+            "updated_on": "__all__",
+            "rank_name": "__all__",
+            "name": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
@@ -2176,31 +2188,31 @@ class HbvFamilyFilter(filters.FilterSet):
 
         model = HbvFamily
         fields = {
-            "ogc_fid": '__all__',
-            "name_id": '__all__',
-            "kingdom_id": '__all__',
-            "rank_id": '__all__',
-            "rank_name": '__all__',
-            "family_name": '__all__',
-            "is_current": '__all__',
-            "informal": '__all__',
-            "comments": '__all__',
-            "family_code": '__all__',
-            "linear_sequence": '__all__',
-            "order_nid": '__all__',
-            "order_name": '__all__',
-            "class_nid": '__all__',
-            "class_name": '__all__',
-            "division_nid": '__all__',
-            "division_name": '__all__',
-            "kingdom_name": '__all__',
-            "author": '__all__',
-            "editor": '__all__',
-            "reference": '__all__',
-            "supra_code": '__all__',
-            "added_on": '__all__',
-            "updated_on": '__all__',
-            "md5_rowhash": '__all__',
+            "ogc_fid": "__all__",
+            "name_id": "__all__",
+            "kingdom_id": "__all__",
+            "rank_id": "__all__",
+            "rank_name": "__all__",
+            "family_name": "__all__",
+            "is_current": "__all__",
+            "informal": "__all__",
+            "comments": "__all__",
+            "family_code": "__all__",
+            "linear_sequence": "__all__",
+            "order_nid": "__all__",
+            "order_name": "__all__",
+            "class_nid": "__all__",
+            "class_name": "__all__",
+            "division_nid": "__all__",
+            "division_name": "__all__",
+            "kingdom_name": "__all__",
+            "author": "__all__",
+            "editor": "__all__",
+            "reference": "__all__",
+            "supra_code": "__all__",
+            "added_on": "__all__",
+            "updated_on": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
@@ -2212,24 +2224,24 @@ class HbvGenusFilter(filters.FilterSet):
 
         model = HbvGenus
         fields = {
-            'ogc_fid': '__all__',
-            "name_id": '__all__',
-            "kingdom_id": '__all__',
-            "rank_id": '__all__',
-            "rank_name": '__all__',
-            "genus": '__all__',
-            "is_current": '__all__',
-            "informal": '__all__',
-            "comments": '__all__',
-            "family_code": '__all__',
-            "family_nid": '__all__',
-            "author": '__all__',
-            "editor": '__all__',
-            "reference": '__all__',
-            "genusid": '__all__',
-            "added_on": '__all__',
-            "updated_on": '__all__',
-            "md5_rowhash": '__all__',
+            "ogc_fid": "__all__",
+            "name_id": "__all__",
+            "kingdom_id": "__all__",
+            "rank_id": "__all__",
+            "rank_name": "__all__",
+            "genus": "__all__",
+            "is_current": "__all__",
+            "informal": "__all__",
+            "comments": "__all__",
+            "family_code": "__all__",
+            "family_nid": "__all__",
+            "author": "__all__",
+            "editor": "__all__",
+            "reference": "__all__",
+            "genusid": "__all__",
+            "added_on": "__all__",
+            "updated_on": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
@@ -2241,38 +2253,38 @@ class HbvSpeciesFilter(filters.FilterSet):
 
         model = HbvSpecies
         fields = {
-            'ogc_fid': '__all__',
-            "name_id": '__all__',
-            "kingdom_id": '__all__',
-            "rank_id": '__all__',
-            "rank_name": '__all__',
-            "family_code": '__all__',
-            "family_nid": '__all__',
-            "genus": '__all__',
-            "species": '__all__',
-            "infra_rank": '__all__',
-            "infra_name": '__all__',
-            "infra_rank2": '__all__',
-            "infra_name2": '__all__',
-            "author": '__all__',
-            "editor": '__all__',
-            "reference": '__all__',
-            "comments": '__all__',
-            "vernacular": '__all__',
-            "all_vernaculars": '__all__',
-            "species_name": '__all__',
-            "species_code": '__all__',
-            "is_current": '__all__',
-            "naturalised": '__all__',
-            "naturalised_status": '__all__',
-            "naturalised_certainty": '__all__',
-            "is_eradicated": '__all__',
-            "naturalised_comments": '__all__',
-            "informal": '__all__',
-            "added_on": '__all__',
-            "updated_on": '__all__',
-            "consv_code": '__all__',
-            'md5_rowhash': '__all__',
+            "ogc_fid": "__all__",
+            "name_id": "__all__",
+            "kingdom_id": "__all__",
+            "rank_id": "__all__",
+            "rank_name": "__all__",
+            "family_code": "__all__",
+            "family_nid": "__all__",
+            "genus": "__all__",
+            "species": "__all__",
+            "infra_rank": "__all__",
+            "infra_name": "__all__",
+            "infra_rank2": "__all__",
+            "infra_name2": "__all__",
+            "author": "__all__",
+            "editor": "__all__",
+            "reference": "__all__",
+            "comments": "__all__",
+            "vernacular": "__all__",
+            "all_vernaculars": "__all__",
+            "species_name": "__all__",
+            "species_code": "__all__",
+            "is_current": "__all__",
+            "naturalised": "__all__",
+            "naturalised_status": "__all__",
+            "naturalised_certainty": "__all__",
+            "is_eradicated": "__all__",
+            "naturalised_comments": "__all__",
+            "informal": "__all__",
+            "added_on": "__all__",
+            "updated_on": "__all__",
+            "consv_code": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
@@ -2284,17 +2296,17 @@ class HbvVernacularFilter(filters.FilterSet):
 
         model = HbvVernacular
         fields = {
-            'ogc_fid': '__all__',
-            "name_id": '__all__',
-            "name": '__all__',
-            "vernacular": '__all__',
-            "language": '__all__',
-            "lang_pref": '__all__',
-            "preferred": '__all__',
-            "source": '__all__',
-            "updated_by": '__all__',
-            "updated_on": '__all__',
-            "md5_rowhash": '__all__',
+            "ogc_fid": "__all__",
+            "name_id": "__all__",
+            "name": "__all__",
+            "vernacular": "__all__",
+            "language": "__all__",
+            "lang_pref": "__all__",
+            "preferred": "__all__",
+            "source": "__all__",
+            "updated_by": "__all__",
+            "updated_on": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
@@ -2306,18 +2318,18 @@ class HbvXrefFilter(filters.FilterSet):
 
         model = HbvXref
         fields = {
-            'ogc_fid': '__all__',
-            "xref_id": '__all__',
-            "old_name_id": '__all__',
-            "new_name_id": '__all__',
-            "xref_type": '__all__',
-            "active": '__all__',
-            "authorised_by": '__all__',
-            "authorised_on": '__all__',
-            "comments": '__all__',
-            "added_on": '__all__',
-            "updated_on": '__all__',
-            'md5_rowhash': '__all__',
+            "ogc_fid": "__all__",
+            "xref_id": "__all__",
+            "old_name_id": "__all__",
+            "new_name_id": "__all__",
+            "xref_type": "__all__",
+            "active": "__all__",
+            "authorised_by": "__all__",
+            "authorised_on": "__all__",
+            "comments": "__all__",
+            "added_on": "__all__",
+            "updated_on": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
@@ -2329,36 +2341,43 @@ class HbvParentFilter(filters.FilterSet):
 
         model = HbvParent
         fields = {
-            'ogc_fid': '__all__',
-            "name_id": '__all__',
-            "class_id": '__all__',
-            "parent_nid": '__all__',
-            "updated_by": '__all__',
-            "updated_on": '__all__',
-            'md5_rowhash': '__all__',
+            "ogc_fid": "__all__",
+            "name_id": "__all__",
+            "class_id": "__all__",
+            "parent_nid": "__all__",
+            "updated_by": "__all__",
+            "updated_on": "__all__",
+            "md5_rowhash": "__all__",
         }
 
 
 class TaxonFilter(filters.FilterSet):
     """Taxon filter."""
 
+    # is_currently_listed = BooleanFilter(
+    #     label="Is conservation significant",
+    #     widget=BooleanWidget()
+    # )
+    # TODO needs method
+
     class Meta:
         """Class opts."""
 
         model = Taxon
         fields = {
-            'name_id': ['exact', ],
-            'name': ['icontains', ],
-            'rank': ['icontains', 'in', ],
-            # 'parent': ['exact', ],  # performance bomb
-            'publication_status': ['isnull', ],
-            'current': ['isnull', ],
-            'author': ['icontains', ],
-            'canonical_name': ['icontains', ],
-            'taxonomic_name': ['icontains', ],
-            # 'vernacular_name': ['icontains', ],
-            'vernacular_names': ['icontains', ],
-            # 'eoo' requires polygon filter
+            "name_id": ["exact", ],
+            "name": ["icontains", ],
+            "rank": ["icontains", "in", ],
+            # "parent": ["exact", ],  # performance bomb
+            "publication_status": ["isnull", ],
+            "current": ["isnull", ],
+            "author": ["icontains", ],
+            "canonical_name": ["icontains", ],
+            "taxonomic_name": ["icontains", ],
+            # "vernacular_name": ["icontains", ],
+            "vernacular_names": ["icontains", ],
+            # "eoo" requires polygon filter,
+            # "is_currently_listed": ["isnull", ],
         }
 
 
@@ -2370,12 +2389,12 @@ class FastTaxonFilter(filters.FilterSet):
 
         model = Taxon
         fields = {
-            'name_id': '__all__',
-            'name': '__all__',
-            'canonical_name': '__all__',
-            'taxonomic_name': '__all__',
-            'vernacular_name': '__all__',
-            'vernacular_names': '__all__',
+            "name_id": "__all__",
+            "name": "__all__",
+            "canonical_name": "__all__",
+            "taxonomic_name": "__all__",
+            "vernacular_name": "__all__",
+            "vernacular_names": "__all__",
         }
 
 
@@ -2387,11 +2406,11 @@ class VernacularFilter(filters.FilterSet):
 
         model = Vernacular
         fields = {
-            'ogc_fid': '__all__',
-            # 'taxon': '__all__',
-            'name': '__all__',
-            'language': '__all__',
-            'preferred': ['exact', ],
+            "ogc_fid": "__all__",
+            # "taxon": "__all__",
+            "name": "__all__",
+            "language": "__all__",
+            "preferred": ["exact", ],
         }
 
 
@@ -2403,14 +2422,14 @@ class CrossreferenceFilter(filters.FilterSet):
 
         model = Crossreference
         fields = {
-            'xref_id': '__all__',
-            # 'predecessor': '__all__',
-            # 'successor': '__all__',
-            'reason': '__all__',
-            'authorised_by': '__all__',
-            'authorised_on': '__all__',
-            'effective_to': '__all__',
-            'comments': '__all__',
+            "xref_id": "__all__",
+            # "predecessor": "__all__",
+            # "successor": "__all__",
+            "reason": "__all__",
+            "authorised_by": "__all__",
+            "authorised_on": "__all__",
+            "effective_to": "__all__",
+            "comments": "__all__",
         }
 
 
@@ -2422,9 +2441,9 @@ class CommunityFilter(filters.FilterSet):
 
         model = Community
         fields = {
-            'code': '__all__',
-            'name': '__all__',
-            'description': '__all__',
+            "code": "__all__",
+            "name": "__all__",
+            "description": "__all__",
         }
 
 
@@ -2592,11 +2611,11 @@ class HbvVernacularViewSet(BatchUpsertViewSet):
         unique_data, update_data = self.split_data(data)
 
         if None in unique_data.values() or data["name_id"] is None:
-            logger.warning('[API][create_one] Skipping invalid data: {0}'.format(str(data)))
+            logger.warning("[API][create_one] Skipping invalid data: {0}".format(str(data)))
             return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
         logger.debug(
-            '[API][create_one] Creating/updating with unique fields {0}, data {1}'.format(
+            "[API][create_one] Creating/updating with unique fields {0}, data {1}".format(
                 str(unique_data), str(update_data)))
         try:
             obj, created = self.model.objects.get_or_create(**unique_data)
@@ -2604,14 +2623,14 @@ class HbvVernacularViewSet(BatchUpsertViewSet):
             self.model.objects.filter(**unique_data).update(**update_data)
             obj.save()  # to update caches
             # if created:
-            logger.info('[API][create_one] {0} {1}: {2}'.format(
+            logger.info("[API][create_one] {0} {1}: {2}".format(
                 verb, self.model._meta.verbose_name, str(unique_data)))
             # else:
-            # logger.info('[API][create_one] {0} {1} ({2}): {3}'.format(
+            # logger.info("[API][create_one] {0} {1} ({2}): {3}".format(
             # verb, self.model._meta.verbose_name, obj.pk, obj))
             return RestResponse(data, status=status.HTTP_200_OK)
         except:
-            logger.warning('[API][create_one] Failed with {0}'.format(str(data)))
+            logger.warning("[API][create_one] Failed with {0}".format(str(data)))
 
 router.register("vernaculars", HbvVernacularViewSet)
 
@@ -2662,6 +2681,7 @@ class TaxonViewSet(BatchUpsertViewSet):
         # "document_set",
     )
     serializer_class = TaxonSerializer
+    pagination_class = CustomLimitOffsetPagination  # if no geofeaturemodel serializer
     filter_class = TaxonFilter
     model = Taxon
     uid_fields = ("name_id", )
@@ -2742,7 +2762,7 @@ class ConservationCategorySerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = ConservationCategory
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ConservationCategoryFilter(filters.FilterSet):
@@ -2753,10 +2773,10 @@ class ConservationCategoryFilter(filters.FilterSet):
 
         model = ConservationCategory
         fields = {
-            'conservation_list': ['exact', 'in'],
-            'code': ['exact', 'icontains'],
-            'label': ['exact', 'icontains'],
-            'description': ['icontains'],
+            "conservation_list": ["exact", "in"],
+            "code": ["exact", "icontains"],
+            "label": ["exact", "icontains"],
+            "description": ["icontains"],
         }
 
 
@@ -2783,7 +2803,7 @@ class ConservationCriterionSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = ConservationCriterion
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ConservationCriterionFilter(filters.FilterSet):
@@ -2794,10 +2814,10 @@ class ConservationCriterionFilter(filters.FilterSet):
 
         model = ConservationCriterion
         fields = {
-            'code': ['exact', 'icontains'],
-            'label': ['exact', 'icontains'],
-            'description': ['icontains'],
-            'conservation_list': ['exact', 'in'],
+            "code": ["exact", "icontains"],
+            "label": ["exact", "icontains"],
+            "description": ["icontains"],
+            "conservation_list": ["exact", "in"],
         }
 
 
@@ -2829,8 +2849,8 @@ class ConservationListSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Custom create with nested ConsCat serializer."""
-        cat_data = validated_data.pop('conservationcategory_set', [])
-        crit_data = validated_data.pop('conservationcriterion_set', [])
+        cat_data = validated_data.pop("conservationcategory_set", [])
+        crit_data = validated_data.pop("conservationcriterion_set", [])
 
         conservation_list = ConservationList.objects.update_or_create(
             code=validated_data["code"], defaults=validated_data)
@@ -2848,7 +2868,7 @@ class ConservationListSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = ConservationList
-        fields = '__all__'
+        fields = "__all__"
 
 
 class FastConservationListSerializer(serializers.ModelSerializer):
@@ -2858,7 +2878,7 @@ class FastConservationListSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = ConservationList
-        fields = ['id', 'code', 'label', ]
+        fields = ["id", "code", "label", ]
 
 
 class ConservationListFilter(filters.FilterSet):
@@ -2869,17 +2889,17 @@ class ConservationListFilter(filters.FilterSet):
 
         model = ConservationList
         fields = {
-            'code': ['exact', 'icontains'],
-            'label': ['exact', 'icontains'],
-            'description': ['icontains'],
-            'active_from': ['exact', 'year__gt'],
-            'active_to': ['exact', 'year__gt'],
-            'scope_wa': ['exact', ],
-            'scope_cmw': ['exact', ],
-            'scope_intl': ['exact', ],
-            'scope_species': ['exact', ],
-            'scope_communities': ['exact', ],
-            'approval_level': ['exact']
+            "code": ["exact", "icontains"],
+            "label": ["exact", "icontains"],
+            "description": ["icontains"],
+            "active_from": ["exact", "year__gt"],
+            "active_to": ["exact", "year__gt"],
+            "scope_wa": ["exact", ],
+            "scope_cmw": ["exact", ],
+            "scope_intl": ["exact", ],
+            "scope_species": ["exact", ],
+            "scope_communities": ["exact", ],
+            "approval_level": ["exact"]
         }
 
 
@@ -2896,11 +2916,11 @@ class ConservationListViewSet(viewsets.ModelViewSet):
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance."""
-        if 'csrfmiddlewaretoken' in data:
-            data.pop('csrfmiddlewaretoken')
+        if "csrfmiddlewaretoken" in data:
+            data.pop("csrfmiddlewaretoken")
 
-        cat_data = data.pop('conservationcategory_set', [])
-        crit_data = data.pop('conservationcriterion_set', [])
+        cat_data = data.pop("conservationcategory_set", [])
+        crit_data = data.pop("conservationcriterion_set", [])
 
         if data["active_from"] == {}:
             data["active_from"] = None
@@ -2953,15 +2973,15 @@ class TaxonConservationListingSerializer(serializers.ModelSerializer):
     # taxon = FastTaxonSerializer(many=False)
     taxon = serializers.SlugRelatedField(
         queryset=Taxon.objects.all(),
-        slug_field='name_id',
-        style={'base_template': 'input.html'}
+        slug_field="name_id",
+        style={"base_template": "input.html"}
     )
 
     class Meta:
         """Opts."""
 
         model = TaxonConservationListing
-        fields = '__all__'
+        fields = "__all__"
 
 
 class TaxonConservationListingFilter(filters.FilterSet):
@@ -2977,25 +2997,25 @@ class TaxonConservationListingFilter(filters.FilterSet):
 
         model = TaxonConservationListing
         fields = {
-            # 'taxon': '__all__',
-            # 'taxon': ['exact', ],
-            'scope': ['exact', 'in'],
-            'status': ['exact', 'in'],
-            'category': ['exact', 'in'],
-            'criteria': ['exact', 'in'],
-            'proposed_on': ['exact', 'year__gt'],
-            'effective_from': ['exact', 'year__gt'],
-            'effective_to': ['exact', 'year__gt'],
-            'last_reviewed_on': ['exact', 'year__gt'],
-            'review_due': ['exact', 'year__gt'],
-            'comments': ['exact', 'icontains'],
+            # "taxon": "__all__",
+            # "taxon": ["exact", ],
+            "scope": ["exact", "in"],
+            "status": ["exact", "in"],
+            "category": ["exact", "in"],
+            "criteria": ["exact", "in"],
+            "proposed_on": ["exact", "year__gt"],
+            "effective_from": ["exact", "year__gt"],
+            "effective_to": ["exact", "year__gt"],
+            "last_reviewed_on": ["exact", "year__gt"],
+            "review_due": ["exact", "year__gt"],
+            "comments": ["exact", "icontains"],
         }
 
 
 class TaxonConservationListingViewSet(BatchUpsertViewSet):
     """View set for TaxonConservationListing."""
 
-    queryset = TaxonConservationListing.objects.all().select_related('taxon')
+    queryset = TaxonConservationListing.objects.all().select_related("taxon")
     serializer_class = TaxonConservationListingSerializer
     filter_class = TaxonConservationListingFilter
     pagination_class = pagination.LimitOffsetPagination
@@ -3031,14 +3051,14 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
-            msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
+            msg = "[API][create_one] Skipping invalid data: {0} {1}".format(
                 str(update_data), str(unique_data))
             logger.warning(msg)
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        logger.debug('[API][create_one] Received '
-                     '{0} with unique fields {1}'.format(
+        logger.debug("[API][create_one] Received "
+                     "{0} with unique fields {1}".format(
                          self.model._meta.verbose_name, str(unique_data)))
 
         # Without the QA status deciding whether to update existing data:
@@ -3051,7 +3071,7 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
+        msg = "[API][create_one] {0} {1}".format(verb, obj.__str__())
         content = {"id": obj.id, "msg": msg}
         logger.info(msg)
         return RestResponse(content, status=st)
@@ -3064,13 +3084,13 @@ class CommunityConservationListingSerializer(serializers.ModelSerializer):
     """Serializer for CommunityConservationListing."""
 
     # community = FastTaxonSerializer(many=False)
-    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field='code')
+    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field="code")
 
     class Meta:
         """Opts."""
 
         model = CommunityConservationListing
-        fields = '__all__'
+        fields = "__all__"
 
 
 class CommunityConservationListingFilter(filters.FilterSet):
@@ -3081,24 +3101,24 @@ class CommunityConservationListingFilter(filters.FilterSet):
 
         model = CommunityConservationListing
         fields = {
-            'community': ['exact', ],
-            'scope': ['exact', 'in'],
-            'status': ['exact', 'in'],
-            'category': ['exact', 'in'],
-            'criteria': ['exact', 'in'],
-            'proposed_on': ['exact', 'year__gt'],
-            'effective_from': ['exact', 'year__gt'],
-            'effective_to': ['exact', 'year__gt'],
-            'last_reviewed_on': ['exact', 'year__gt'],
-            'review_due': ['exact', 'year__gt'],
-            'comments': ['exact', 'icontains'],
+            "community": ["exact", ],
+            "scope": ["exact", "in"],
+            "status": ["exact", "in"],
+            "category": ["exact", "in"],
+            "criteria": ["exact", "in"],
+            "proposed_on": ["exact", "year__gt"],
+            "effective_from": ["exact", "year__gt"],
+            "effective_to": ["exact", "year__gt"],
+            "last_reviewed_on": ["exact", "year__gt"],
+            "review_due": ["exact", "year__gt"],
+            "comments": ["exact", "icontains"],
         }
 
 
 class CommunityConservationListingViewSet(BatchUpsertViewSet):
     """View set for CommunityConservationListing."""
 
-    queryset = CommunityConservationListing.objects.all().select_related('community')
+    queryset = CommunityConservationListing.objects.all().select_related("community")
     serializer_class = CommunityConservationListingSerializer
     filter_class = CommunityConservationListingFilter
     pagination_class = pagination.LimitOffsetPagination
@@ -3134,14 +3154,14 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
-            msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
+            msg = "[API][create_one] Skipping invalid data: {0} {1}".format(
                 str(update_data), str(unique_data))
             logger.warning(msg)
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        logger.debug('[API][create_one] Received '
-                     '{0} with unique fields {1}'.format(
+        logger.debug("[API][create_one] Received "
+                     "{0} with unique fields {1}".format(
                          self.model._meta.verbose_name, str(unique_data)))
 
         # Without the QA status deciding whether to update existing data:
@@ -3154,7 +3174,7 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
 
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
+        msg = "[API][create_one] {0} {1}".format(verb, obj.__str__())
         content = {"id": obj.id, "msg": msg}
         logger.info(msg)
         return RestResponse(content, status=st)
@@ -3174,7 +3194,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         """Opts."""
 
         model = Document
-        fields = '__all__'
+        fields = "__all__"
 
 
 class DocumentFilter(filters.FilterSet):
@@ -3185,16 +3205,16 @@ class DocumentFilter(filters.FilterSet):
 
         model = Document
         fields = {
-            'source': ['exact', 'in'],
-            'document_type': ['exact', 'in'],
-            'title': ['icontains'],
-            'status': ['exact', 'in'],
-            'effective_from': ['exact', 'year__gt'],
-            'effective_to': ['exact', 'year__gt'],
-            'effective_from_commonwealth': ['exact', 'year__gt'],
-            'effective_to_commonwealth': ['exact', 'year__gt'],
-            'review_due': ['exact', 'year__gt'],
-            "last_reviewed_on": ['exact', 'year__gt'],
+            "source": ["exact", "in"],
+            "document_type": ["exact", "in"],
+            "title": ["icontains"],
+            "status": ["exact", "in"],
+            "effective_from": ["exact", "year__gt"],
+            "effective_to": ["exact", "year__gt"],
+            "effective_from_commonwealth": ["exact", "year__gt"],
+            "effective_to_commonwealth": ["exact", "year__gt"],
+            "review_due": ["exact", "year__gt"],
+            "last_reviewed_on": ["exact", "year__gt"],
         }
 
 

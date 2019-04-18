@@ -60,8 +60,10 @@ class MyGeoJsonPagination(CustomLimitOffsetPagination):
         # if "format" in self.request.query_params and self.request.query_params["format"] == "json":
         if "features" in data:
             results = data["features"]
-        else:
+        elif "results" in data:
             results = data["results"]
+        else:
+            results = data
         return RestResponse(
             OrderedDict([
                 ('type', 'FeatureCollection'),
