@@ -430,7 +430,7 @@ class TaxonConservationListingCreateView(
 
     template_name = "pages/default_form.html"
     form_class = cons_forms.TaxonConservationListingForm
-    model = cons_models.TaxonGazettal
+    model = cons_models.TaxonConservationListing
 
     def get_initial(self):
         """Initial form values."""
@@ -466,7 +466,7 @@ class CommunityConservationListingCreateView(
 
     template_name = "pages/default_form.html"
     form_class = cons_forms.CommunityConservationListingForm
-    model = cons_models.CommunityGazettal
+    model = cons_models.CommunityConservationListing
 
     def get_initial(self):
         """Initial form values."""

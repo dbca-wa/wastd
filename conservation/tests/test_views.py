@@ -282,8 +282,8 @@ class ConservationCriterionViewTests(TestCase):
         pass
 
 
-class TaxonGazettalViewTests(TestCase):
-    """TaxonGazettal view tests."""
+class TaxonConservationListingViewTests(TestCase):
+    """TaxonConservationListing view tests."""
 
     def setUp(self):
         """Set up."""
@@ -294,9 +294,9 @@ class TaxonGazettalViewTests(TestCase):
                           current=True,
                           parent=None))
 
-        self.gaz = cons_models.TaxonGazettal.objects.create(
+        self.gaz = cons_models.TaxonConservationListing.objects.create(
             taxon=self.taxon,
-            scope=cons_models.TaxonGazettal.SCOPE_WESTERN_AUSTRALIA,
+            scope=cons_models.TaxonConservationListing.SCOPE_WESTERN_AUSTRALIA,
         )
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
@@ -316,7 +316,7 @@ class TaxonGazettalViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_create_view(self):
-        """Test TaxonGazettal create view."""
+        """Test TaxonConservationListing create view."""
         url = reverse("conservation:taxon-conservationlisting-create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -339,9 +339,9 @@ class CommunityConservationListingViewTests(TestCase):
             name="name0",
             _fill_optional=['eoo'])
         self.com0.save()
-        self.gaz = cons_models.CommunityGazettal.objects.create(
+        self.gaz = cons_models.CommunityConservationListing.objects.create(
             community=self.com0,
-            scope=cons_models.CommunityGazettal.SCOPE_WESTERN_AUSTRALIA,
+            scope=cons_models.CommunityConservationListing.SCOPE_WESTERN_AUSTRALIA,
         )
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
@@ -422,7 +422,7 @@ class ConservationFixtureTests(TestCase):
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
-        t = cons_models.TaxonGazettal.objects.last().taxon
+        t = cons_models.TaxonConservationListing.objects.last().taxon
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 

@@ -1269,7 +1269,7 @@
             "status": 90,
             "taxon": 2155
         },
-        "model": "conservation.taxongazettal",
+        "model": "conservation.taxonconservationlisting",
         "pk": 2
     },
     {
@@ -1294,7 +1294,7 @@
             "status": 80,
             "taxon": 2155
         },
-        "model": "conservation.taxongazettal",
+        "model": "conservation.taxonconservationlisting",
         "pk": 3
     }
 ]

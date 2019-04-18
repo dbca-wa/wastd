@@ -191,7 +191,7 @@ class ConservationActivityForm(forms.ModelForm):
 
 
 class TaxonConservationListingForm(forms.ModelForm):
-    """Form for Taxon conservation listing (Gazettal)."""
+    """Form for Taxon conservation listing (ConservationListing)."""
 
     category = forms.ModelMultipleChoiceField(
         queryset=cons_models.ConservationCategory.objects.filter(
@@ -262,7 +262,7 @@ class TaxonConservationListingForm(forms.ModelForm):
     class Meta:
         """Class options."""
 
-        model = cons_models.TaxonGazettal
+        model = cons_models.TaxonConservationListing
         fields = (
             "taxon",
             # "scope",
@@ -316,7 +316,7 @@ class TaxonConservationListingForm(forms.ModelForm):
 
 
 class CommunityConservationListingForm(forms.ModelForm):
-    """Form for Community conservation listing (Gazettal)."""
+    """Form for Community conservation listing (ConservationListing)."""
 
     category = forms.ModelMultipleChoiceField(
         queryset=cons_models.ConservationCategory.objects.filter(
@@ -387,7 +387,7 @@ class CommunityConservationListingForm(forms.ModelForm):
     class Meta:
         """Class options."""
 
-        model = cons_models.CommunityGazettal
+        model = cons_models.CommunityConservationListing
         fields = (
             "community",
             # "scope",

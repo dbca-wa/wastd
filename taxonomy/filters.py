@@ -140,16 +140,16 @@ class TaxonFilter(django_filters.FilterSet):
         """Return Taxa matching a conservation level.
 
         * The filter returns a list of ConservationCategory levels as ``value``
-        * The Taxon PKs are calculated from active, WA CommunityGazettals
+        * The Taxon PKs are calculated from active, WA CommunityConservationListings
           with categories matching the level
         * The queryset is filtered by the list of Taxon PKs with
           active taxon listings in WA  matching the conservation level
         """
         if value:
             taxon_pks = set([x["taxon__pk"] for x in
-                             cons_models.TaxonGazettal.objects.filter(
-                scope=cons_models.Gazettal.SCOPE_WESTERN_AUSTRALIA,
-                status=cons_models.Gazettal.STATUS_EFFECTIVE,
+                             cons_models.TaxonConservationListing.objects.filter(
+                scope=cons_models.ConservationListing.SCOPE_WESTERN_AUSTRALIA,
+                status=cons_models.ConservationListing.STATUS_EFFECTIVE,
                 category__level__in=value
             ).values("taxon__pk")])
             return queryset.filter(pk__in=taxon_pks)
@@ -160,7 +160,7 @@ class TaxonFilter(django_filters.FilterSet):
         """Return Taxa matching a conservation level.
 
         * The filter returns a list of ConservationCategories as ``value``
-        * The Taxon PKs are calculated from TaxonGazettals
+        * The Taxon PKs are calculated from TaxonConservationListings
           with categories matching the list of categories in ``value``
         * The queryset is filtered by the list of Taxon PKs
           matching the conservation level
@@ -168,7 +168,7 @@ class TaxonFilter(django_filters.FilterSet):
         if value:
             taxon_pks = set(
                 [x["taxon__pk"] for x in
-                 cons_models.TaxonGazettal.objects.filter(
+                 cons_models.TaxonConservationListing.objects.filter(
                     category__in=value).values("taxon__pk")])
             return queryset.filter(pk__in=taxon_pks)
         else:
@@ -275,16 +275,16 @@ class CommunityFilter(django_filters.FilterSet):
         """Return Communities matching a conservation level.
 
         * The filter returns a list of ConservationCategory levels as ``value``
-        * The Community PKs are calculated from active, WA CommunityGazettals
+        * The Community PKs are calculated from active, WA CommunityConservationListings
           with categories matching the level
         * The queryset is filtered by the list of Community PKs with
           active community listings in WA  matching the conservation level
         """
         if value:
             pks = set([x["community__pk"] for x in
-                       cons_models.CommunityGazettal.objects.filter(
-                scope=cons_models.Gazettal.SCOPE_WESTERN_AUSTRALIA,
-                status=cons_models.Gazettal.STATUS_EFFECTIVE,
+                       cons_models.CommunityConservationListing.objects.filter(
+                scope=cons_models.ConservationListing.SCOPE_WESTERN_AUSTRALIA,
+                status=cons_models.ConservationListing.STATUS_EFFECTIVE,
                 category__level__in=value).values("community__pk")])
             return queryset.filter(pk__in=pks)
         else:
@@ -294,14 +294,14 @@ class CommunityFilter(django_filters.FilterSet):
         """Return Communities matching a conservation level.
 
         * The filter returns a list of ConservationCategories as ``value``
-        * The Taxon PKs are calculated from CommunityGazettals
+        * The Taxon PKs are calculated from CommunityConservationListings
           with categories matching the list of categories in ``value``
         * The queryset is filtered by the list of Taxon PKs
           matching the conservation level
         """
         if value:
             pks = set([x["community__pk"] for x in
-                       cons_models.CommunityGazettal.objects.filter(
+                       cons_models.CommunityConservationListing.objects.filter(
                 category__in=value).values("community__pk")])
             return queryset.filter(pk__in=pks)
         else:

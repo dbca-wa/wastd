@@ -301,9 +301,9 @@ class ConservationListAdmin(VersionAdmin):
                FileAttachmentInline]
 
 
-@admin.register(cons_models.TaxonGazettal)
-class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
-    """Admin for TaxonGazettal."""
+@admin.register(cons_models.TaxonConservationListing)
+class TaxonConservationListingAdmin(FSMTransitionMixin, VersionAdmin):
+    """Admin for TaxonConservationListing."""
 
     save_on_top = True
     date_hierarchy = "effective_from"
@@ -342,7 +342,7 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("comments", )
 
     # Detail View layout and widgets
-    form = s2form(cons_models.TaxonGazettal, attrs=S2ATTRS)
+    form = s2form(cons_models.TaxonConservationListing, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = ["taxon", "category", "criteria", ]
     inlines = [CustomStateLogInline, FileAttachmentInline]
@@ -382,12 +382,12 @@ class TaxonGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             ).order_by(
                 "conservation_list__code", "rank"
             )
-        return super(TaxonGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+        return super(TaxonConservationListingAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
-@admin.register(cons_models.CommunityGazettal)
-class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
-    """Admin for CommunityGazettal."""
+@admin.register(cons_models.CommunityConservationListing)
+class CommunityConservationListingAdmin(FSMTransitionMixin, VersionAdmin):
+    """Admin for CommunityConservationListing."""
 
     save_on_top = True
     date_hierarchy = "effective_from"
@@ -420,7 +420,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
     search_fields = ("comments", )
 
     # Detail View
-    form = s2form(cons_models.CommunityGazettal, attrs=S2ATTRS)
+    form = s2form(cons_models.CommunityConservationListing, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = ["community", "category", "criteria", ]
     inlines = [CustomStateLogInline, FileAttachmentInline]
@@ -459,7 +459,7 @@ class CommunityGazettalAdmin(FSMTransitionMixin, VersionAdmin):
             ).order_by(
                 "conservation_list__code", "rank"
             )
-        return super(CommunityGazettalAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+        return super(CommunityConservationListingAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
 @admin.register(cons_models.Document)

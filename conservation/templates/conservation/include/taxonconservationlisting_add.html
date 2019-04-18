@@ -1,5 +1,5 @@
 {% if request.user.is_staff %}
-<a href="{% url 'admin:conservation_taxongazettal_add' %}{% if taxon %}?taxon={{ object.pk }}{% endif %}"
+<a href="{% url 'admin:conservation_taxonconservationlisting_add' %}{% if taxon %}?taxon={{ object.pk }}{% endif %}"
   class="btn btn-success btn-sm{% if block %} btn-block{% endif %} text-left"
   title="Because you have DBCA Curator privileges, you may propose a new conservation listing."
   target="_">

@@ -48,13 +48,13 @@ from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from conservation.models import (  # noqa
-    Gazettal,
-    CommunityGazettal,
+    ConservationListing,
+    CommunityConservationListing,
     ConservationCategory,
     ConservationCriterion,
     ConservationList,
     Document,
-    TaxonGazettal
+    TaxonConservationListing
 )
 from taxonomy.models import (
     Community,
@@ -2650,9 +2650,9 @@ class TaxonViewSet(BatchUpsertViewSet):
     queryset = Taxon.objects.prefetch_related(
         # "paraphyletic_groups",
         Prefetch("conservation_listings",
-                 queryset=TaxonGazettal.objects.filter(
-                     scope=Gazettal.SCOPE_WESTERN_AUSTRALIA,
-                     status=Gazettal.STATUS_EFFECTIVE),
+                 queryset=TaxonConservationListing.objects.filter(
+                     scope=ConservationListing.SCOPE_WESTERN_AUSTRALIA,
+                     status=ConservationListing.STATUS_EFFECTIVE),
                  to_attr="conservation_listings_active_wa"
                  ),
         # Prefetch("conservation_listings__scope",),
@@ -2946,8 +2946,8 @@ class ConservationListViewSet(viewsets.ModelViewSet):
 router.register("conservationlist", ConservationListViewSet)
 
 
-# TaxonGazettal -------------------------------------------------------------------#
-class TaxonGazettalSerializer(serializers.ModelSerializer):
+# TaxonConservationListing -------------------------------------------------------------------#
+class TaxonConservationListingSerializer(serializers.ModelSerializer):
     """Serializer for TaxonConservationListing."""
 
     # taxon = FastTaxonSerializer(many=False)
@@ -2960,22 +2960,22 @@ class TaxonGazettalSerializer(serializers.ModelSerializer):
     class Meta:
         """Opts."""
 
-        model = TaxonGazettal
+        model = TaxonConservationListing
         fields = '__all__'
 
 
-class TaxonGazettalFilter(filters.FilterSet):
-    """TaxonGazettal filter.
+class TaxonConservationListingFilter(filters.FilterSet):
+    """TaxonConservationListing filter.
 
     Performance: Excluding taxon from filter speeds up
-    loading an empty TaxonGazettal List
+    loading an empty TaxonConservationListing List
     from 14 sec (with) to 5 sec (without).
     """
 
     class Meta:
         """Class opts."""
 
-        model = TaxonGazettal
+        model = TaxonConservationListing
         fields = {
             # 'taxon': '__all__',
             # 'taxon': ['exact', ],
@@ -2992,19 +2992,19 @@ class TaxonGazettalFilter(filters.FilterSet):
         }
 
 
-class TaxonGazettalViewSet(BatchUpsertViewSet):
-    """View set for TaxonGazettal."""
+class TaxonConservationListingViewSet(BatchUpsertViewSet):
+    """View set for TaxonConservationListing."""
 
-    queryset = TaxonGazettal.objects.all().select_related('taxon')
-    serializer_class = TaxonGazettalSerializer
-    filter_class = TaxonGazettalFilter
+    queryset = TaxonConservationListing.objects.all().select_related('taxon')
+    serializer_class = TaxonConservationListingSerializer
+    filter_class = TaxonConservationListingFilter
     pagination_class = pagination.LimitOffsetPagination
     uid_fields = ("source", "source_id")
-    model = TaxonGazettal
+    model = TaxonConservationListing
 
     def split_data(self, data):
         """Custom split data: resolve taxon."""
-        unique_fields, update_data = super(TaxonGazettalViewSet, self).split_data(data)
+        unique_fields, update_data = super(TaxonConservationListingViewSet, self).split_data(data)
         try:
             update_data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
         except Exception as e:
@@ -3056,12 +3056,12 @@ class TaxonGazettalViewSet(BatchUpsertViewSet):
         logger.info(msg)
         return RestResponse(content, status=st)
 
-router.register("taxongazettal", TaxonGazettalViewSet)
+router.register("taxonConservationListing", TaxonConservationListingViewSet)
 
 
-# CommunityGazettal -------------------------------------------------------------------#
-class CommunityGazettalSerializer(serializers.ModelSerializer):
-    """Serializer for CommunityGazettal."""
+# CommunityConservationListing -------------------------------------------------------------------#
+class CommunityConservationListingSerializer(serializers.ModelSerializer):
+    """Serializer for CommunityConservationListing."""
 
     # community = FastTaxonSerializer(many=False)
     community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field='code')
@@ -3069,17 +3069,17 @@ class CommunityGazettalSerializer(serializers.ModelSerializer):
     class Meta:
         """Opts."""
 
-        model = CommunityGazettal
+        model = CommunityConservationListing
         fields = '__all__'
 
 
-class CommunityGazettalFilter(filters.FilterSet):
-    """CommunityGazettal filter."""
+class CommunityConservationListingFilter(filters.FilterSet):
+    """CommunityConservationListing filter."""
 
     class Meta:
         """Class opts."""
 
-        model = CommunityGazettal
+        model = CommunityConservationListing
         fields = {
             'community': ['exact', ],
             'scope': ['exact', 'in'],
@@ -3095,19 +3095,19 @@ class CommunityGazettalFilter(filters.FilterSet):
         }
 
 
-class CommunityGazettalViewSet(BatchUpsertViewSet):
-    """View set for CommunityGazettal."""
+class CommunityConservationListingViewSet(BatchUpsertViewSet):
+    """View set for CommunityConservationListing."""
 
-    queryset = CommunityGazettal.objects.all().select_related('community')
-    serializer_class = CommunityGazettalSerializer
-    filter_class = CommunityGazettalFilter
+    queryset = CommunityConservationListing.objects.all().select_related('community')
+    serializer_class = CommunityConservationListingSerializer
+    filter_class = CommunityConservationListingFilter
     pagination_class = pagination.LimitOffsetPagination
     uid_fields = ("source", "source_id")
-    model = CommunityGazettal
+    model = CommunityConservationListing
 
     def split_data(self, data):
         """Custom split data: resolve community."""
-        unique_fields, update_data = super(CommunityGazettalViewSet, self).split_data(data)
+        unique_fields, update_data = super(CommunityConservationListingViewSet, self).split_data(data)
         try:
             update_data["community"] = Community.objects.get(code=data["community"])
         except Exception as e:
@@ -3160,7 +3160,7 @@ class CommunityGazettalViewSet(BatchUpsertViewSet):
         return RestResponse(content, status=st)
 
 
-router.register("communitygazettal", CommunityGazettalViewSet)
+router.register("communityConservationListing", CommunityConservationListingViewSet)
 
 
 # Document -------------------------------------------------------------------#
