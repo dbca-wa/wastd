@@ -1,8 +1,30 @@
 <!-- conservation/cards/conservationaction.html -->
-<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg">
-  <h6 class="card-header">
-    <div class="row">
-      <span class="badge badge-secondary" title="Conservation Action">
+<div class="card {% if collapse %}{% else %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
+
+  <div class="card-header">
+    <h5 class="card-title">
+      {{ object.instructions }}
+      {% if collapse %}
+      <small class="float-right">
+        <!-- View details -->
+        <a href="{{ object.get_absolute_url }}"
+            title="View {{ object }}">
+          <span class="oi oi-eye" aria-hidden="true"></span>
+          <!-- <span class="oi oi-task" aria-hidden="true"></span> -->
+          <!-- View -->
+        </a>
+        <!-- Edit details -->
+        <a href="{{ object.update_url }}"
+            title="Edit {{ object }}.">
+          <span class="oi oi-pencil" aria-hidden="true"></span>
+          <!-- <span class="oi oi-task" aria-hidden="true"></span> -->
+          <!-- Edit -->
+        </a>
+      </small>
+      {% endif %}
+    </h5>
+    <h6 class="card-subtitle">
+     <span class="badge badge-warning" title="Conservation Action">
         <span class="oi oi-list" aria-hidden="true"></span>
         {{ object.category }}
       </span>
@@ -10,11 +32,12 @@
         <span class="oi oi-task" aria-hidden="true"></span>
         Progress: {{ object.get_status_display }}
       </span>
-    </div>
-  {{ object.instructions }}
-  </h6>
+    </h6>
+  </div>
 
   <div class="card-body">
+
+    {% if collapse %}{% else %}
     <h6 class="card-subtitle mb-2 text-muted">
       <!-- taxa -->
       {% for taxon in object.taxa.all %}
@@ -47,8 +70,9 @@
       </p>
       {% endif %}
       <!-- area code -->
-
     </h6>
+    {% endif %}
+
     <p class="card-text">
       <span class="oi oi-calendar"
         title="Completion date" aria-hidden="true"></span>
@@ -72,48 +96,56 @@
     </p>
 
     <!-- activities -->
-    {% for act in object.conservationactivity_set.all %}
-        <div class="card card-md col-12">
-          <div class="card-header">
-            <p class="card-text">
-              <span class="oi oi-calendar"
-              title="Expenditure" aria-hidden="true"></span>
-                {% if act.completion_date%}
-                {{ act.completion_date|date:"D d M Y" }}
-                {% else %}
-                ongoing
-                {% endif %}
-              <span class="float-right">
-                <span class="oi oi-dollar"
-                      title="Expenditure" aria-hidden="true"></span>
-                {{ act.expenditure }}
-              </span>
-            </p>
-          </div>
-          <div class="card-body">
-            <p class="card-text">
-              <span class="oi oi-comment-square"
-                title="Notes" aria-hidden="true"></span>
-              {% if act.implementation_notes %}
-              {{ act.implementation_notes }}
-              {% endif %}
-            </p>
-          </div>
-
-          <div class="card-footer">
-            <a href="{{ act.update_url }}" class="btn btn-sm btn-block btn-primary">
-              <span class="oi oi-pencil" aria-hidden="true"></span>
-              <span class="oi oi-task" aria-hidden="true"></span>
-              Update progress
-            </a>
-          </div>
-
+    <div class="card-group">
+      {% for act in object.conservationactivity_set.all %}
+      <div class="card {% if collapse %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
+        <div class="card-header">
+          <p class="card-text">
+            <span class="oi oi-calendar" title="Expenditure" aria-hidden="true"></span>
+            {% if act.completion_date%}{{ act.completion_date|date:"D d M Y" }}{% else %}ongoing{% endif %}
+            {% if collapse %}
+            <span class="float-right">
+              <a href="{{ act.update_url }}">
+                <span class="oi oi-pencil" aria-hidden="true"></span>
+                <!-- <span class="oi oi-task" aria-hidden="true"></span>
+                Edit -->
+              </a>
+            </span>
+            {% endif %}
+            <span class="float-right">
+              <span class="oi oi-dollar"
+                    title="Expenditure" aria-hidden="true"></span>
+              {{ act.expenditure }}
+            </span>
+          </p>
         </div>
-    {% endfor %}
+        <div class="card-body">
+          <p class="card-text">
+            <span class="oi oi-comment-square"
+              title="Notes" aria-hidden="true"></span>
+            {% if act.implementation_notes %}
+            {{ act.implementation_notes }}
+            {% endif %}
+          </p>
+        </div>
+
+        {% if collapse %}{% else %}
+        <div class="card-footer">
+          <a href="{{ act.update_url }}" class="btn btn-sm btn-block btn-primary">
+            <span class="oi oi-pencil" aria-hidden="true"></span>
+            <span class="oi oi-task" aria-hidden="true"></span>
+            Update progress
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
     <!-- /activities -->
 
   </div><!-- /.card-body -->
 
+  {% if collapse %}{% else %}
   <div class="card-footer">
     <!-- Conservation activity view -->
     <a href="{{ object.get_absolute_url }}"
@@ -146,5 +178,7 @@
     </a>
     <!-- /Conservation action update -->
   </div><!-- /.card-footer -->
+  {% endif %}
+
 </div><!-- /.card -->
 <!-- conservation/cards/conservationaction.html -->

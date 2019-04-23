@@ -1,18 +1,39 @@
 {% for document in object.document_set.all %}
-<li class="list-group-item">
-  {% for attachment in document.attachments.all %}
-  <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
-  <span class="badge badge-{% if attachment.confidential == True%}danger{% else %}success{% endif %}">
-    <span class="oi oi-document" aria-hidden="true"></span>
-  </span>
-  </a>
-  {% endfor %}
-  {{ document }}
-  {% if is_staff %}
-    <a href="{{ document.absolute_admin_url }}"
-      title="Because you have DBCA Curator privileges, you may edit this Document." target="_">
-      <span class="oi oi-pencil" aria-hidden="true"></span>
-    </a>
-  {% endif %}
-</li>
+<div class="row d-block">
+  <div class="col-12">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <h6 class="card-title">
+          {{ document }}
+        </h6>
+
+          {% for attachment in document.attachments.all %}
+          <a href="{{ attachment.attachment.url }}" target="_blank" title="{{ attachment.title }}">
+            <span class="btn btn-sm btn-{% if attachment.confidential == True%}danger{% else %}success{% endif %}">
+              <span class="oi oi-cloud-download" aria-hidden="true"></span>
+              <span class="oi oi-document" aria-hidden="true"></span>
+            </span>
+          </a>
+          {% endfor %}
+
+          {% if request.user.is_staff %}
+          <a href="{{ document.absolute_admin_url }}"
+            class="btn btn-sm btn-success text-right"
+            title="Because you have DBCA Curator privileges, you may edit this Document.">
+            <span class="oi oi-pencil" aria-hidden="true"></span>
+            <span class="oi oi-document" aria-hidden="true"></span>
+          </a>
+          {% endif %}
+
+          <a href="{{ document.get_absolute_url }}"
+            class="btn btn-sm btn-primary text-right"
+            title="View document details.">
+            <span class="oi oi-eye" aria-hidden="true"></span>
+            <span class="oi oi-document" aria-hidden="true"></span>
+          </a>
+
+      </div>
+    </div>
+  </div>
+</div>
 {% endfor %}

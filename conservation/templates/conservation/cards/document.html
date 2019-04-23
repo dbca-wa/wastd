@@ -1,21 +1,41 @@
 {% load taxonomy_tags %}
 <!-- conservation/cards/document.html -->
-<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg">
-  <h6 class="card-header">
-    <div class="row">
+<div class="card {% if collapse %}{% else %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
+  <div class="card-header">
+    <h5 class="card-title">
+      {{ object.title }}
+      {% if collapse %}
+      <small class="float-right">
+        <!-- View details -->
+        <a href="{{ object.get_absolute_url }}"
+            title="View {{ object }}">
+          <span class="oi oi-eye" aria-hidden="true"></span>
+          <!-- <span class="oi oi-document" aria-hidden="true"></span> -->
+          <!-- View -->
+        </a>
+        <!-- Edit details -->
+        <a href="{{ object.update_url }}"
+            title="Edit {{ object }}.">
+          <span class="oi oi-pencil" aria-hidden="true"></span>
+          <!-- <span class="oi oi-document" aria-hidden="true"></span> -->
+          <!-- Edit -->
+        </a>
+      </small>
+      {% endif %}
+    </h5>
+    <h6 class="card-subtitle">
       <span class="badge badge-warning" title="Document type">
         {{ object.get_document_type_display }}
       </span>
       <span class="badge badge-success" title="Approval status">
         {{ object.get_status_display }}
       </span>
-    </div>
-    <div class="row">
-      {{ object.title }}
-    </div>
-  </h6>
+    </h6>
+  </div>
+
   <div class="card-body">
-    <h6 class="card-subtitle mb-2 text-muted">
+
+    {% if collapse %}{% else %}
       <!-- taxa -->
       {% for taxon in object.taxa.all %}
       <p class="card-text">
@@ -37,10 +57,9 @@
           </a>
       </p>
       {% endfor %}
-    </h6>
+    {% endif %}
 
     <p class="card-text">
-      <div>
       <span class="badge badge-primary" title="Effective dates">
         <span class="oi oi-calendar" aria-hidden="true"></span>
         Effective from
@@ -50,8 +69,6 @@
         -
         {% endif %}
       </span>
-      </div>
-      <div>
       <span class="badge badge-primary" title="Effective dates">
         <span class="oi oi-calendar" aria-hidden="true"></span>
         Effective to
@@ -61,8 +78,6 @@
         -
         {% endif %}
       </span>
-      </div>
-      <div>
       <span class="badge badge-primary" title="Reviewed last">
         <span class="oi oi-check" aria-hidden="true"></span>
         Last reviewed on
@@ -72,8 +87,6 @@
           -
           {% endif %}
       </span>
-      </div>
-      <div>
       <span class="badge badge-primary" title="Review due">
         <span class="oi oi-bell" aria-hidden="true"></span>
         Next review due on
@@ -83,11 +96,27 @@
         -
         {% endif %}
       </span>
-      </div>
     </p>
 
-    {% include 'conservation/include/conservationaction_rows.html' with actions=object.conservationaction_set.all document=object %}
-    {% include 'conservation/include/conservationthreat_rows.html' with threats=object.conservationthreat_set.all document=object %}
+    {% with document=object threats=object.conservationthreat_set.all actions=object.conservationaction_set.all %}
+
+    <div class="card-group">
+      {% for object in threats %}
+      {% if object.document == document %}
+      {% include 'conservation/cards/conservationthreat.html' with collapse=True %}
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="card-group">
+      {% for object in actions %}
+      {% if object.document == document %}
+      {% include 'conservation/cards/conservationaction.html' with collapse=True %}
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    {% endwith %}
 
     {% for attachment in object.attachments.all %}
     <p class="card-text">
@@ -100,9 +129,9 @@
       <span class="oi oi-{% if attachment.current %}check{% else%}x{% endif %}" title="Is current?"></span>
     </p>
     {% endfor %}
-
   </div><!-- /.card-body -->
 
+  {% if collapse %}{% else %}
   <div class="card-footer">
     <a href="{{ object.get_absolute_url }}"
         title="View document"
@@ -120,8 +149,8 @@
       <span class="oi oi-document" aria-hidden="true"></span>
       Update metadata and attachments
     </a>
-
     <!-- {% include 'conservation/include/document_add.html' with subject="taxa" document_id=object.pk label=True block=True %} -->
-
   </div><!-- /.card-footer -->
+  {% endif %}
+
 </div><!-- /.card -->

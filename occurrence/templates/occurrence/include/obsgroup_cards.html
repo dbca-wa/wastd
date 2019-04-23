@@ -1,6 +1,6 @@
 <!-- obsgroup-cards -->
 {% regroup object.observations.all|dictsort:"model_name_verbose" by model_name_verbose as observations %}
-<div class="card-columns">
+<div class="card-group">
 {% for obstype in observations %}
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg"
      id="occ-{{ obstype.grouper }}">

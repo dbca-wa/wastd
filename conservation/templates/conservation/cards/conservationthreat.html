@@ -1,17 +1,38 @@
 <!-- conservation/cards/conservationthreat.html -->
-<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg">
-  <h6 class="card-header">
-    <div class="row">
-      <span class="badge badge-secondary" title="Conservation Threat">
-        <span class="oi oi-list" aria-hidden="true"></span>
+<div class="card {% if collapse %}{% else %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
+
+  <div class="card-header">
+    <h5 class="card-title">
+      {{ object.cause }}
+      {% if collapse %}
+      <small class="float-right">
+        <!-- View details -->
+        <a href="{{ object.get_absolute_url }}"
+            title="View {{ object }}">
+          <span class="oi oi-eye" aria-hidden="true"></span>
+          <!-- <span class="oi oi-task" aria-hidden="true"></span> -->
+          <!-- View -->
+        </a>
+        <!-- Edit details -->
+        <a href="{{ object.update_url }}"
+            title="Edit {{ object }}.">
+          <span class="oi oi-pencil" aria-hidden="true"></span>
+          <!-- <span class="oi oi-task" aria-hidden="true"></span> -->
+          <!-- Edit -->
+        </a>
+      </small>
+      {% endif %}
+    </h5>
+    <h6 class="card-subtitle">
+      <span class="badge badge-warning" title="Document type">
         {{ object.category }}
       </span>
-
-    </div>
-  {{ object.cause }}
-  </h6>
+    </h6>
+  </div>
 
   <div class="card-body">
+
+  {% if collapse %}{% else %}
     <h6 class="card-subtitle mb-2 text-muted">
       <!-- taxa -->
       {% for taxon in object.taxa.all %}
@@ -43,10 +64,10 @@
         {{ object.document }}
       </p>
       {% endif %}
-
       <!-- area code -->
-
     </h6>
+    {% endif %}
+
     <p class="card-text">
       <span class="oi oi-flash"
         title="Encountered on" aria-hidden="true"></span>
@@ -61,6 +82,7 @@
 
   </div><!-- /.card-body -->
 
+  {% if collapse %}{% else %}
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
@@ -88,5 +110,7 @@
     </div>
     <!-- /Conservation threat update -->
   </div><!-- /.card-footer -->
+  {% endif %}
+
 </div><!-- /.card -->
 <!-- conservation/cards/conservationthreat.html -->
