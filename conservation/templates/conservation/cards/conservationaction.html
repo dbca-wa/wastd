@@ -17,9 +17,14 @@
         <a href="{{ object.update_url }}"
             title="Edit {{ object }}.">
           <span class="oi oi-pencil" aria-hidden="true"></span>
-          <!-- <span class="oi oi-task" aria-hidden="true"></span> -->
-          <!-- Edit -->
         </a>
+        {% if request.user.is_staff %}
+        <a href="{{ object.absolute_admin_url }}"
+            class="text-success"
+            title="Edit {{ object }}.">
+          <span class="oi oi-pencil" aria-hidden="true"></span>
+        </a>
+        {% endif %}
       </small>
       {% endif %}
     </h5>
@@ -105,6 +110,8 @@
             {% if act.completion_date%}{{ act.completion_date|date:"D d M Y" }}{% else %}ongoing{% endif %}
             {% if collapse %}
             <span class="float-right">
+              <span class="oi oi-dollar" title="Expenditure" aria-hidden="true"></span>
+              {{ act.expenditure }}
               <a href="{{ act.update_url }}">
                 <span class="oi oi-pencil" aria-hidden="true"></span>
                 <!-- <span class="oi oi-task" aria-hidden="true"></span>
@@ -112,11 +119,6 @@
               </a>
             </span>
             {% endif %}
-            <span class="float-right">
-              <span class="oi oi-dollar"
-                    title="Expenditure" aria-hidden="true"></span>
-              {{ act.expenditure }}
-            </span>
           </p>
         </div>
         <div class="card-body">

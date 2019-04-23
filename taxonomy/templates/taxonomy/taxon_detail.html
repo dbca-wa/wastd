@@ -107,9 +107,11 @@
           {% include 'conservation/include/taxonconservationlisting_add.html' with label=False block=False taxon=object %}
         </small>
       </h3>
-      <p>
-      {% include 'conservation/include/gazettal_row.html' %}
-      </p>
+      <div class="row">
+        {% for object in object.conservation_listings.all %}
+        {% include 'conservation/cards/conservationlisting.html' with collapse=True %}
+        {% endfor %}
+      </div>
 
       <hr class="my-4">
       <h3>Conservation Threats

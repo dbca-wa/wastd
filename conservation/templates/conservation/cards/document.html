@@ -17,9 +17,14 @@
         <a href="{{ object.update_url }}"
             title="Edit {{ object }}.">
           <span class="oi oi-pencil" aria-hidden="true"></span>
-          <!-- <span class="oi oi-document" aria-hidden="true"></span> -->
-          <!-- Edit -->
         </a>
+        {% if request.user.is_staff %}
+        <a href="{{ object.absolute_admin_url }}"
+            class="text-success"
+            title="Edit {{ object }}.">
+          <span class="oi oi-pencil" aria-hidden="true"></span>
+        </a>
+        {% endif %}
       </small>
       {% endif %}
     </h5>
@@ -103,7 +108,9 @@
     <div class="card-group">
       {% for object in threats %}
       {% if object.document == document %}
+      {% if collapse %}{% else %}<div class="row"><div class="col col-12">{% endif %}
       {% include 'conservation/cards/conservationthreat.html' with collapse=True %}
+      {% if collapse %}{% else %}</div></div>{% endif %}
       {% endif %}
       {% endfor %}
     </div>
@@ -111,24 +118,46 @@
     <div class="card-group">
       {% for object in actions %}
       {% if object.document == document %}
+      {% if collapse %}{% else %}<div class="row"><div class="col col-12">{% endif %}
       {% include 'conservation/cards/conservationaction.html' with collapse=True %}
+      {% if collapse %}{% else %}</div></div>{% endif %}
       {% endif %}
       {% endfor %}
     </div>
 
     {% endwith %}
 
-    {% for attachment in object.attachments.all %}
-    <p class="card-text">
-      <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
-      <span class="badge badge-{% if attachment.confidential == True%}danger{% else %}success{% endif %}">
-        <span class="oi oi-document" aria-hidden="true"></span>
-      </span>
-      </a>
-      {{ attachment.title }} by {{ attachment.author }}
-      <span class="oi oi-{% if attachment.current %}check{% else%}x{% endif %}" title="Is current?"></span>
-    </p>
-    {% endfor %}
+
+    <div class="card-group">
+      {% for attachment in object.attachments.all %}
+      <div class="card {% if collapse %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
+        <div class="card-header">
+          <h5 class="card-title">
+            {{ attachment.title }} by {{ attachment.author }}
+          </h5>
+          <p class="">
+            {% if attachment.confidential %}
+            <span class="badge badge-danger">
+              Confidential
+            </span>
+            {% endif %}
+            {% if attachment.current %}
+            <span class="badge badge-success">
+              Current
+            </span>
+            {% endif %}
+
+            <span class="float-right">
+              <a href="{{ attachment.attachment.url }}" target="_" title="{{ attachment.title }}">
+                <span class="oi oi-cloud-download" aria-hidden="true"></span>
+              </a>
+            </span>
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
   </div><!-- /.card-body -->
 
   {% if collapse %}{% else %}
