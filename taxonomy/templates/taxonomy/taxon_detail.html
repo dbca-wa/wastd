@@ -101,7 +101,6 @@
       {% endfor %}
       </p>
 
-
       <hr class="my-4">
       <h3>Conservation Listings
         <small class="float-right">
@@ -118,7 +117,11 @@
           {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=False block=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/include/conservationthreat_rows.html' with threats=conservationthreats_general %}</p>
+      <div class="row">
+        {% for object in conservationthreats_general %}
+        {% include 'conservation/cards/conservationthreat.html' with collapse=True %}
+        {% endfor %}
+      </div>
 
       <hr class="my-4">
       <h3>Conservation Actions
@@ -126,7 +129,11 @@
           {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=False block=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/include/conservationaction_rows.html' with actions=conservationactions_general %}</p>
+      <div class="row">
+        {% for object in conservationactions_general %}
+        {% include 'conservation/cards/conservationaction.html' with collapse=True %}
+        {% endfor %}
+      </div>
 
       <hr class="my-4">
       <h3>Documents
@@ -134,9 +141,11 @@
           {% include 'conservation/include/document_add.html' with subject="taxa" label=False block=False %}
         </small>
       </h3>
-      <p>
-        {% include 'conservation/include/document_row.html' %}
-      </p>
+      <div class="row">
+        {% for object in object.document_set.all %}
+        {% include 'conservation/cards/document.html' with collapse=True %}
+        {% endfor %}
+      </div>
 
       <hr class="my-4">
       <h3>Actions</h3>
@@ -211,14 +220,22 @@
             </h5>
             <div class="card-body">
               <!-- Conservation threats for area {{ site.grouper }} -->
-              {% conservationthreat_cards request.user  conservationthreats_area area=site.grouper %}
+              {% for object in conservationthreats_area %}
+              {% if object.occurrence_area_code == site.grouper %}
+              {% include 'conservation/cards/conservationthreat.html' with collapse=True %}
+              {% endif %}
+              {% endfor %}
 
               <!-- Conservation actions for area {{ site.grouper }} -->
-              {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
+              {% for object in conservationactions_area %}
+              {% if object.occurrence_area_code == site.grouper %}
+              {% include 'conservation/cards/conservationaction.html' with collapse=True %}
+              {% endif %}
+              {% endfor %}
 
               <!-- Occurrences for area {{ site.grouper }} -->
-              {% for occ in site.list|dictsortreversed:"encountered_on" %}
-              {{ occ.as_card }}
+              {% for object in site.list|dictsortreversed:"encountered_on" %}
+              {% include 'occurrence/cards/areaencounter.html' with collapse=True %}
               {% endfor %}
             </div>
           </div>

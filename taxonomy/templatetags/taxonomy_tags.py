@@ -36,16 +36,16 @@ def rangify(value):
 # -----------------------------------------------------------------------------
 # Conservation threats
 #
-@register.inclusion_tag('conservation/include/conservationthreat_cards.html', takes_context=False)
-def conservationthreat_cards(user, threats, area=None):
-    """Render a conservation threat in a card."""
-    return {"threats": threats.filter(occurrence_area_code=area) if area else threats}
+# @register.inclusion_tag('conservation/include/conservationthreat_cards.html', takes_context=False)
+# def conservationthreat_cards(user, threats, area=None):
+#     """Render a conservation threat in a card."""
+#     return {"threats": threats.filter(occurrence_area_code=area) if area else threats}
 
 
-# -----------------------------------------------------------------------------
-# Conservation actions
-#
-@register.inclusion_tag('conservation/include/conservationaction_cards.html', takes_context=False)
-def conservationaction_cards(user, actions, area=None):
-    """Render a conservation Action in a card."""
-    return {"actions": actions.filter(occurrence_area_code=area) if area else actions}
+# # -----------------------------------------------------------------------------
+# # Conservation actions
+# #
+# @register.inclusion_tag('conservation/include/conservationaction_cards.html', takes_context=False)
+# def conservationaction_cards(user, actions, area=None):
+#     """Render a conservation Action in a card."""
+#     return {"actions": actions.filter(occurrence_area_code=area) if area else actions}

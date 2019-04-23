@@ -1951,134 +1951,6 @@ class HbvParentSerializer(serializers.ModelSerializer):
         model = HbvParent
         fields = "__all__"
 
-
-class TaxonSerializer(
-    # GeoFeatureModelSerializer
-    serializers.ModelSerializer
-):
-    """Serializer for Taxon.
-
-    Includes a summary of conservation status which is ingested into WACensus.
-
-    Example:
-
-    NAME_ID | CONSV_CODE    | LIST_CODE | EPBC  | WA_IUCN   | IUCN_CRITERIA
-    228     | 3             | Priority  |       |           |
-    297     | T             | WCA_1991  | EN    | VU        | D1+2
-    436     | T             | WCA_1991  | EN    | EN        | B1+2c
-    """
-
-    # taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True) # yeah nah
-
-    is_currently_listed = serializers.ReadOnlyField()
-    conservation_code_state = serializers.ReadOnlyField()          # consv_code
-    conservation_list_state = serializers.ReadOnlyField()        # list_code
-    conservation_category_state = serializers.ReadOnlyField()    # wa_iucn (primary)
-    conservation_categories_state = serializers.ReadOnlyField()    # wa_iucn (all)
-    conservation_criteria_state = serializers.ReadOnlyField()    # iucn_criteria
-    conservation_category_national = serializers.ReadOnlyField()     # epbc
-
-    class Meta:
-        """Opts."""
-
-        model = Taxon
-        # geo_field = "eoo"
-        fields = (
-            "name_id",
-            "name",
-            "rank",
-            "parent",
-            "author",
-            "current",
-            "publication_status",
-            "vernacular_name",
-            "vernacular_names",
-            "canonical_name",
-            "taxonomic_name",
-            # "taxon_occurrences",
-            # "eoo",
-            "is_currently_listed",
-            "conservation_code_state",
-            "conservation_list_state",
-            "conservation_category_state",
-            "conservation_categories_state",
-            "conservation_criteria_state",
-            "conservation_category_national",
-        )
-
-
-class FastTaxonSerializer(serializers.ModelSerializer):
-    """Minimal serializer for Taxon to be used in other serializers."""
-
-    class Meta:
-        """Opts."""
-
-        model = Taxon
-        fields = (
-            "name_id",
-            "taxonomic_name",
-            "vernacular_names",
-        )
-
-
-class VernacularSerializer(serializers.ModelSerializer):
-    """Serializer for Vernacular."""
-
-    taxon = FastTaxonSerializer(many=False)
-
-    class Meta:
-        """Opts."""
-
-        model = Vernacular
-        fields = (
-            "ogc_fid",
-            "taxon",
-            "name",
-            "language",
-            "preferred",
-        )
-
-
-class CrossreferenceSerializer(serializers.ModelSerializer):
-    """Serializer for Crossreference."""
-
-    predecessor = FastTaxonSerializer(many=False)
-    successor = FastTaxonSerializer(many=False)
-
-    class Meta:
-        """Opts."""
-
-        model = Crossreference
-        fields = (
-            "xref_id",
-            "predecessor",
-            "successor",
-            "reason",
-            "authorised_by",
-            "authorised_on",
-            "effective_to",
-            "comments",
-        )
-
-
-class CommunitySerializer(GeoFeatureModelSerializer):
-    """Serializer for Community."""
-
-    # community_occurrences = OccurrenceCommunityAreaEncounterPolyInlineSerializer(many=True)
-
-    class Meta:
-        """Opts."""
-
-        model = Community
-        geo_field = "eoo"
-        fields = (
-            "code",
-            "name",
-            "description",
-            # "community_occurrences",
-            "eoo"
-        )
-
 # Taxonomy: Filters -------------------------------------------------------------------#
 
 
@@ -2351,102 +2223,6 @@ class HbvParentFilter(filters.FilterSet):
         }
 
 
-class TaxonFilter(filters.FilterSet):
-    """Taxon filter."""
-
-    # is_currently_listed = BooleanFilter(
-    #     label="Is conservation significant",
-    #     widget=BooleanWidget()
-    # )
-    # TODO needs method
-
-    class Meta:
-        """Class opts."""
-
-        model = Taxon
-        fields = {
-            "name_id": ["exact", ],
-            "name": ["icontains", ],
-            "rank": ["icontains", "in", ],
-            # "parent": ["exact", ],  # performance bomb
-            "publication_status": ["isnull", ],
-            "current": ["isnull", ],
-            "author": ["icontains", ],
-            "canonical_name": ["icontains", ],
-            "taxonomic_name": ["icontains", ],
-            # "vernacular_name": ["icontains", ],
-            "vernacular_names": ["icontains", ],
-            # "eoo" requires polygon filter,
-            # "is_currently_listed": ["isnull", ],
-        }
-
-
-class FastTaxonFilter(filters.FilterSet):
-    """Taxon filter."""
-
-    class Meta:
-        """Class opts."""
-
-        model = Taxon
-        fields = {
-            "name_id": "__all__",
-            "name": "__all__",
-            "canonical_name": "__all__",
-            "taxonomic_name": "__all__",
-            "vernacular_name": "__all__",
-            "vernacular_names": "__all__",
-        }
-
-
-class VernacularFilter(filters.FilterSet):
-    """Vernacular filter."""
-
-    class Meta:
-        """Class opts."""
-
-        model = Vernacular
-        fields = {
-            "ogc_fid": "__all__",
-            # "taxon": "__all__",
-            "name": "__all__",
-            "language": "__all__",
-            "preferred": ["exact", ],
-        }
-
-
-class CrossreferenceFilter(filters.FilterSet):
-    """Crossreference filter."""
-
-    class Meta:
-        """Class opts."""
-
-        model = Crossreference
-        fields = {
-            "xref_id": "__all__",
-            # "predecessor": "__all__",
-            # "successor": "__all__",
-            "reason": "__all__",
-            "authorised_by": "__all__",
-            "authorised_on": "__all__",
-            "effective_to": "__all__",
-            "comments": "__all__",
-        }
-
-
-class CommunityFilter(filters.FilterSet):
-    """Community filter."""
-
-    class Meta:
-        """Class opts."""
-
-        model = Community
-        fields = {
-            "code": "__all__",
-            "name": "__all__",
-            "description": "__all__",
-        }
-
-
 # Taxonomy: Viewsets ---------------------------------------------------------#
 class HbvNameViewSet(BatchUpsertViewSet):
     """View set for HbvName.
@@ -2659,11 +2435,112 @@ class HbvParentViewSet(BatchUpsertViewSet):
 router.register("parents", HbvParentViewSet)
 
 
+# ----------------------------------------------------------------------------#
+# Taxon
+#
+class TaxonSerializer(
+    # GeoFeatureModelSerializer
+    serializers.ModelSerializer
+):
+    """Serializer for Taxon.
+
+    Includes a summary of conservation status which is ingested into WACensus.
+
+    Example:
+
+    NAME_ID | CONSV_CODE    | LIST_CODE | EPBC  | WA_IUCN   | IUCN_CRITERIA
+    228     | 3             | Priority  |       |           |
+    297     | T             | WCA_1991  | EN    | VU        | D1+2
+    436     | T             | WCA_1991  | EN    | EN        | B1+2c
+    """
+
+    # taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True) # yeah nah
+
+    is_currently_listed = serializers.ReadOnlyField()
+    conservation_code_state = serializers.ReadOnlyField()          # consv_code
+    conservation_list_state = serializers.ReadOnlyField()        # list_code
+    conservation_category_state = serializers.ReadOnlyField()    # wa_iucn (primary)
+    conservation_categories_state = serializers.ReadOnlyField()    # wa_iucn (all)
+    conservation_criteria_state = serializers.ReadOnlyField()    # iucn_criteria
+    conservation_category_national = serializers.ReadOnlyField()     # epbc
+
+    class Meta:
+        """Opts."""
+
+        model = Taxon
+        # geo_field = "eoo"
+        fields = (
+            "name_id",
+            "name",
+            "rank",
+            "parent",
+            "author",
+            "current",
+            "publication_status",
+            "vernacular_name",
+            "vernacular_names",
+            "canonical_name",
+            "taxonomic_name",
+            # "taxon_occurrences",
+            # "eoo",
+            "is_currently_listed",
+            "conservation_code_state",
+            "conservation_list_state",
+            "conservation_category_state",
+            "conservation_categories_state",
+            "conservation_criteria_state",
+            "conservation_category_national",
+        )
+
+
+class FastTaxonSerializer(serializers.ModelSerializer):
+    """Minimal serializer for Taxon to be used in other serializers."""
+
+    class Meta:
+        """Opts."""
+
+        model = Taxon
+        fields = (
+            "name_id",
+            "taxonomic_name",
+            "vernacular_names",
+        )
+
+
+class TaxonFilter(filters.FilterSet):
+    """Taxon filter."""
+
+    # is_currently_listed = BooleanFilter(
+    #     label="Is conservation significant",
+    #     widget=BooleanWidget()
+    # )
+    # TODO needs method
+
+    class Meta:
+        """Class opts."""
+
+        model = Taxon
+        fields = {
+            "name_id": ["exact", ],
+            "name": ["icontains", ],
+            "rank": ["icontains", "in", ],
+            # "parent": ["exact", ],  # performance bomb
+            "publication_status": ["isnull", ],
+            "current": ["isnull", ],
+            "author": ["icontains", ],
+            "canonical_name": ["icontains", ],
+            "taxonomic_name": ["icontains", ],
+            # "vernacular_name": ["icontains", ],
+            "vernacular_names": ["icontains", ],
+            # "eoo" requires polygon filter,
+            # "is_currently_listed": ["isnull", ],
+        }
+
+
 class TaxonViewSet(BatchUpsertViewSet):
     """View set for Taxon.
 
     See HBV Names for details and usage examples.
-    All filters are available on all fields.
     """
 
     queryset = Taxon.objects.prefetch_related(
@@ -2694,9 +2571,46 @@ class FastTaxonViewSet(FastBatchUpsertViewSet):
 
     queryset = Taxon.objects.all()
     serializer_class = FastTaxonSerializer
-    filter_class = FastTaxonFilter
+    filter_class = TaxonFilter
 
 router.register("taxon-fast", FastTaxonViewSet, base_name="taxon_fast")
+
+
+# ----------------------------------------------------------------------------#
+# Vernacular
+#
+class VernacularSerializer(serializers.ModelSerializer):
+    """Serializer for Vernacular."""
+
+    taxon = FastTaxonSerializer(many=False)
+
+    class Meta:
+        """Opts."""
+
+        model = Vernacular
+        fields = (
+            "ogc_fid",
+            "taxon",
+            "name",
+            "language",
+            "preferred",
+        )
+
+
+class VernacularFilter(filters.FilterSet):
+    """Vernacular filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Vernacular
+        fields = {
+            "ogc_fid": "__all__",
+            # "taxon": "__all__",
+            "name": "__all__",
+            "language": "__all__",
+            "preferred": ["exact", ],
+        }
 
 
 class VernacularViewSet(BatchUpsertViewSet):
@@ -2715,6 +2629,50 @@ class VernacularViewSet(BatchUpsertViewSet):
 router.register("vernacular", VernacularViewSet)
 
 
+# ----------------------------------------------------------------------------#
+# Crossreference
+#
+class CrossreferenceSerializer(serializers.ModelSerializer):
+    """Serializer for Crossreference."""
+
+    predecessor = FastTaxonSerializer(many=False)
+    successor = FastTaxonSerializer(many=False)
+
+    class Meta:
+        """Opts."""
+
+        model = Crossreference
+        fields = (
+            "xref_id",
+            "predecessor",
+            "successor",
+            "reason",
+            "authorised_by",
+            "authorised_on",
+            "effective_to",
+            "comments",
+        )
+
+
+class CrossreferenceFilter(filters.FilterSet):
+    """Crossreference filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Crossreference
+        fields = {
+            "xref_id": "__all__",
+            # "predecessor": "__all__",
+            # "successor": "__all__",
+            "reason": "__all__",
+            "authorised_by": "__all__",
+            "authorised_on": "__all__",
+            "effective_to": "__all__",
+            "comments": "__all__",
+        }
+
+
 class CrossreferenceViewSet(BatchUpsertViewSet):
     """View set for Crossreference.
 
@@ -2729,6 +2687,42 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
     uid_fields = ("xref_id", )
 
 router.register("crossreference", CrossreferenceViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# Community
+#
+class CommunitySerializer(GeoFeatureModelSerializer):
+    """Serializer for Community."""
+
+    # community_occurrences = OccurrenceCommunityAreaEncounterPolyInlineSerializer(many=True)
+
+    class Meta:
+        """Opts."""
+
+        model = Community
+        geo_field = "eoo"
+        fields = (
+            "code",
+            "name",
+            "description",
+            # "community_occurrences",
+            "eoo"
+        )
+
+
+class CommunityFilter(filters.FilterSet):
+    """Community filter."""
+
+    class Meta:
+        """Class opts."""
+
+        model = Community
+        fields = {
+            "code": "__all__",
+            "name": "__all__",
+            "description": "__all__",
+        }
 
 
 class CommunityViewSet(BatchUpsertViewSet):
@@ -2754,7 +2748,9 @@ class CommunityViewSet(BatchUpsertViewSet):
 router.register("community", CommunityViewSet)
 
 
-# ConservationCategory -------------------------------------------------------#
+# ----------------------------------------------------------------------------#
+# ConservationCategory
+#
 class ConservationCategorySerializer(serializers.ModelSerializer):
     """Serializer for ConservationCategory."""
 
@@ -2795,7 +2791,9 @@ class ConservationCategoryViewSet(viewsets.ModelViewSet):
 router.register("conservationcategory", ConservationCategoryViewSet)
 
 
-# ConservationCriterion ------------------------------------------------------#
+# ----------------------------------------------------------------------------#
+# ConservationCriterion
+#
 class ConservationCriterionSerializer(serializers.ModelSerializer):
     """Serializer for ConservationCriterion."""
 
@@ -2840,7 +2838,9 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
 router.register("conservationcriterion", ConservationCriterionViewSet)
 
 
-# ConservationList -------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
+# ConservationList
+#
 class ConservationListSerializer(serializers.ModelSerializer):
     """Serializer for ConservationList."""
 
@@ -2966,7 +2966,9 @@ class ConservationListViewSet(viewsets.ModelViewSet):
 router.register("conservationlist", ConservationListViewSet)
 
 
-# TaxonConservationListing -------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
+# TaxonConservationListing
+#
 class TaxonConservationListingSerializer(serializers.ModelSerializer):
     """Serializer for TaxonConservationListing."""
 
@@ -3079,7 +3081,9 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 router.register("taxonConservationListing", TaxonConservationListingViewSet)
 
 
-# CommunityConservationListing -------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
+# CommunityConservationListing
+#
 class CommunityConservationListingSerializer(serializers.ModelSerializer):
     """Serializer for CommunityConservationListing."""
 
@@ -3183,7 +3187,9 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
 router.register("communityConservationListing", CommunityConservationListingViewSet)
 
 
-# Document -------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
+# Document
+#
 class DocumentSerializer(serializers.ModelSerializer):
     """Serializer for Document.
 

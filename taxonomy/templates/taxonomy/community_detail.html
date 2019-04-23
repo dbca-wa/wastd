@@ -51,7 +51,11 @@
           {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=False block=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/include/conservationthreat_rows.html' with threats=conservationthreats_general %}</p>
+      <div class="row">
+        {% for object in conservationthreats_general %}
+        {% include 'conservation/cards/conservationthreat.html' with collapse=True %}
+        {% endfor %}
+      </div>
 
       <hr class="my-4">
       <h3>Conservation Actions
@@ -59,7 +63,11 @@
           {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=False block=False %}
         </small>
       </h3>
-      <p>{% include 'conservation/include/conservationaction_rows.html' with actions=conservationactions_general %}</p>
+      <div class="row">
+        {% for object in conservationactions_general %}
+        {% include 'conservation/cards/conservationaction.html' with collapse=True %}
+        {% endfor %}
+      </div>
 
       <hr class="my-4">
       <h3>Documents
@@ -67,16 +75,16 @@
           {% include 'conservation/include/document_add.html' with subject="communities" label=False block=False %}
         </small>
       </h3>
-      <p>
-        {% include 'conservation/include/document_row.html' %}
-      </p>
+      <div class="row">
+        {% for object in object.document_set.all %}
+        {% include 'conservation/cards/document.html' with collapse=True %}
+        {% endfor %}
+      </div>
 
       <hr class="my-4">
       <h3>Actions</h3>
       <p class="lead">
-        {% if request.user.is_staff %}
-          {% admin_absoluteadminurl_link object "community" label=True %}
-        {% endif %}
+        {% include 'taxonomy/include/community_change.html' with label=True block=False %}
         {% include 'conservation/include/communityconservationlisting_add.html' with label=False block=False community=object %}
         {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=False %}
         {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=False %}
@@ -144,14 +152,22 @@
             </h5>
             <div class="card-body">
               <!-- conservation threats for area {{ site.grouper }} -->
-              {% conservationthreat_cards request.user  conservationthreats_area area=site.grouper %}
+              {% for object in conservationthreats_area %}
+              {% if object.occurrence_area_code == site.grouper %}
+              {% include 'conservation/cards/conservationthreat.html' with colapse=True %}
+              {% endif %}
+              {% endfor %}
 
               <!-- conservation actions for area {{ site.grouper }} -->
-              {% conservationaction_cards request.user  conservationactions_area area=site.grouper %}
+              {% for object in conservationactions_area %}
+              {% if object.occurrence_area_code == site.grouper %}
+              {% include 'conservation/cards/conservationaction.html' with colapse=True %}
+              {% endif %}
+              {% endfor %}
 
               <!-- Occurrences for area {{ site.grouper }} -->
-              {% for occ in site.list|dictsortreversed:"encountered_on" %}
-              {{ occ.as_card }}
+              {% for object in site.list|dictsortreversed:"encountered_on" %}
+              {% include 'occurrence/cards/areaencounter.html' with collapse=True %}
               {% endfor %}
             </div>
           </div>
