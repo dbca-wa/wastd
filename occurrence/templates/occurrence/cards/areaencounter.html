@@ -16,8 +16,15 @@
             title="Edit {{ object }}.">
           <span class="oi oi-pencil" aria-hidden="true"></span>
         </a>
-      </small>
+      {% if request.user.is_staff %}
+        <a href="{{ object.absolute_admin_url }}"
+            class="text-success"
+            title="Edit {{ object }}.">
+          <span class="oi oi-pencil" aria-hidden="true"></span>
+        </a>
+        {% endif %}
       {% endif %}
+      </small>
     </h6>
     <h6 class="card-subtitle">
 
