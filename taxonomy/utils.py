@@ -10,11 +10,17 @@ from contextlib import redirect_stdout
 
 # from django.utils.timezone import is_aware, make_aware
 # from pdb import set_trace
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission, Group
+from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command  # noqa
 from django.db import transaction
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_text
+
 from taxonomy import models as tax_models
+from conservation import models as cons_models
+
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +82,75 @@ def create_test_fixtures():
 
     # Conservation: taxon with actions, threats
     # Occurrences: Taxon, Community with occurrences > test_occuccence.json
+    cl_pks = [x.pk for x in cons_models.ConservationList.objects.all()]
+    thr_pks = [x.pk for x in cons_models.ConservationThreat.objects.all()]
+    act_pks = [x.pk for x in cons_models.ConservationAction.objects.all()]
+    activity_pks = [x.pk for x in cons_models.ConservationActivity.objects.all()]
+    doc_pks = [x.pk for x in cons_models.Document.objects.all()]
+    tax_pks = set(
+        list(set([y for x in
+                  [[t.pk for t in x.taxa.all()]
+                   for x in cons_models.ConservationAction.objects.all()] for y in x])) +
+        list(set([y for x in
+                  [[t.pk for t in x.taxa.all()]
+                   for x in cons_models.ConservationThreat.objects.all()] for y in x])) +
+        list(set([y for x in
+                  [[t.pk for t in x.taxa.all()]
+                   for x in cons_models.Document.objects.all()] for y in x]))
+    )
+    com_pks = set(
+        list(set([y for x in
+                  [[t.pk for t in x.communities.all()]
+                   for x in cons_models.ConservationAction.objects.all()] for y in x])) +
+        list(set([y for x in
+                  [[t.pk for t in x.communities.all()]
+                   for x in cons_models.ConservationThreat.objects.all()] for y in x])) +
+        list(set([y for x in
+                  [[t.pk for t in x.communities.all()]
+                   for x in cons_models.Document.objects.all()] for y in x]))
+    )
+    with open("taxonomy/fixtures/test_conservationlist.json", 'w+') as f:
+        call_command('dump_object', 'conservation.ConservationList', *cl_pks, '-k', '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_conservationthreat.json", 'w+') as f:
+        call_command('dump_object', 'conservation.ConservationThreat', *thr_pks, '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_conservationaction.json", 'w+') as f:
+        call_command('dump_object', 'conservation.ConservationAction', *act_pks, '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_conservationactivity.json", 'w+') as f:
+        call_command('dump_object', 'conservation.ConservationActivity', *activity_pks, '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_document.json", 'w+') as f:
+        call_command('dump_object', 'conservation.Document', *doc_pks, '-n', stdout=f)  # noqa
+        f.readlines()
+    with open("taxonomy/fixtures/test_groups.json", 'w+') as f:
+        call_command('dump_object', 'auth.Group', 1, 2, 3, stdout=f)
+        f.readlines()
+    with open("taxonomy/fixtures/test_users.json", 'w+') as f:
+        call_command('dump_object', 'users.User', 1, 4,
+                     get_user_model().objects.get(username="amym").pk,
+                     get_user_model().objects.get(username="georginaa").pk,
+                     stdout=f)
+        f.readlines()
+    with open("taxonomy/fixtures/test_communities.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.Community', *com_pks, '-n', stdout=f)
+        f.readlines()
+    with open("taxonomy/fixtures/test_woylie.json", 'w+') as f:
+        call_command('dump_object', 'taxonomy.Taxon', *tax_pks, '-k', '-n', stdout=f)
+        f.readlines()
+
+    # f = io.StringIO()
+    # with redirect_stdout(f):
+    #     call_command(
+    #         "merge_fixtures",
+    #         "taxonomy/fixtures/test_permissions.json",
+    #         "taxonomy/fixtures/test_groups.json",
+    #         "taxonomy/fixtures/test_users.json",
+    #         "taxonomy/fixtures/test_woylie.json",
+    #     )
+    #     with open("taxonomy/fixtures/test_conservation.json", 'w+') as ff:
+    #         ff.write(f.getvalue())
 
     # Taxonomy: Hbv* for phylogenic trees of 50 Taxa of rank forma
     taxon_pks = set(

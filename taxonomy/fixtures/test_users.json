@@ -1,0 +1,102 @@
+[
+{
+    "model": "users.user",
+    "pk": 1947,
+    "fields": {
+        "password": "",
+        "last_login": "2018-07-04T07:15:52.762Z",
+        "is_superuser": false,
+        "username": "georginaa",
+        "first_name": "Georgina",
+        "last_name": "Anderson",
+        "email": "georgina.anderson@dbca.wa.gov.au",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2018-04-11T23:24:37Z",
+        "name": "Georgina Anderson",
+        "nickname": "",
+        "aliases": "",
+        "role": "Curator Threatened Fauna extraordinaire",
+        "phone": "",
+        "groups": [
+            1,
+            3
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$24000$wihqyaywtyGT$WxlUF5y37SdwB5DtdEOlG6X+PMzNGQZFhiVkYcrFOAQ=",
+        "last_login": "2019-02-15T05:16:37.517Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "Florian",
+        "last_name": "Mayer",
+        "email": "florian.wendelin.mayer@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2016-08-10T03:11:27Z",
+        "name": "Florian Mayer (Admin)",
+        "nickname": "",
+        "aliases": "",
+        "role": null,
+        "phone": "+61414239161",
+        "groups": [
+            1
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$120000$wVbCwJPIIytA$LjAchzK19mb66LIkyYtO+ZcCU34VBVNM1qEI2lv5KbA=",
+        "last_login": "2019-04-16T02:26:29.527Z",
+        "is_superuser": true,
+        "username": "florianm",
+        "first_name": "Florian",
+        "last_name": "Mayer",
+        "email": "florian.mayer@dbca.wa.gov.au",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2016-08-10T08:10:42.443Z",
+        "name": "Florian Mayer",
+        "nickname": "",
+        "aliases": "",
+        "role": "QA proofreader, Developer, Admin",
+        "phone": "+61414239161",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 1874,
+    "fields": {
+        "password": "",
+        "last_login": "2018-08-14T04:22:31.129Z",
+        "is_superuser": false,
+        "username": "amym",
+        "first_name": "Amy",
+        "last_name": "Mutton",
+        "email": "amy.mutton@dbca.wa.gov.au",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2017-12-20T05:20:01Z",
+        "name": "Amy Mutton",
+        "nickname": "",
+        "aliases": "",
+        "role": "Curator Threatened Fauna",
+        "phone": "",
+        "groups": [
+            1,
+            3
+        ],
+        "user_permissions": []
+    }
+}
+]

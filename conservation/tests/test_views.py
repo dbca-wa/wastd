@@ -413,7 +413,16 @@ class ConservationFixtureTests(TestCase):
     """View tests for Conservation models with test data from fixtures."""
 
     fixtures = [
-        "conservation/fixtures/test_data.json",
+        "taxonomy/fixtures/test_groups.json",
+        "taxonomy/fixtures/test_users.json",
+        "taxonomy/fixtures/test_supra.json",
+        "taxonomy/fixtures/test_conservationlist.json",
+        "taxonomy/fixtures/test_communities.json",
+        "taxonomy/fixtures/test_conservationthreat.json",
+        "taxonomy/fixtures/test_conservationaction.json",
+        "taxonomy/fixtures/test_conservationactivity.json",
+        "taxonomy/fixtures/test_document.json",
+        "taxonomy/fixtures/test_woylie.json",
     ]
 
     def test_get_absolute_url_taxon(self):
@@ -441,7 +450,7 @@ class ConservationFixtureTests(TestCase):
     def test_admin_list_threat(self):
         """Test admin change list for ConservationThreat."""
         url = reverse("admin:conservation_conservationthreat_changelist")
-        u = get_user_model().objects.first()
+        u = get_user_model().objects.filter(is_superuser=True).first()
         self.client.force_login(u)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -449,7 +458,7 @@ class ConservationFixtureTests(TestCase):
     def test_admin_list_action(self):
         """Test admin change list for ConservationAction."""
         url = reverse("admin:conservation_conservationaction_changelist")
-        u = get_user_model().objects.first()
+        u = get_user_model().objects.filter(is_superuser=True).first()
         self.client.force_login(u)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -472,7 +481,7 @@ class ConservationFixtureTests(TestCase):
     def test_absolute_admin_url_document(self):
         """Test Document absolute admin url."""
         url = cons_models.Document.objects.last().absolute_admin_url
-        u = get_user_model().objects.first()
+        u = get_user_model().objects.filter(is_superuser=True).first()
         self.client.force_login(u)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

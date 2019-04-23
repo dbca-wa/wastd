@@ -6,25 +6,7 @@
       {{ object.cause }}
       {% if collapse %}
       <small class="float-right">
-        <!-- View details -->
-        <a href="{{ object.get_absolute_url }}"
-            title="View {{ object }}">
-          <span class="oi oi-eye" aria-hidden="true"></span>
-          <!-- <span class="oi oi-task" aria-hidden="true"></span> -->
-          <!-- View -->
-        </a>
-        <!-- Edit details -->
-        <a href="{{ object.update_url }}"
-            title="Edit {{ object }}.">
-          <span class="oi oi-pencil" aria-hidden="true"></span>
-        </a>
-        {% if request.user.is_staff %}
-        <a href="{{ object.absolute_admin_url }}"
-            class="text-success"
-            title="Edit {{ object }}.">
-          <span class="oi oi-pencil" aria-hidden="true"></span>
-        </a>
-        {% endif %}
+      {% include 'shared/details_update_admin.html' %}
       </small>
       {% endif %}
     </h5>
@@ -91,26 +73,7 @@
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
-
-        <!-- View details -->
-        <a href="{{ object.get_absolute_url }}"
-            title="View {{ object }}"
-            role="button"
-            class="btn btn-primary btn-sm mr-2">
-          <span class="oi oi-eye" aria-hidden="true"></span>
-          <span class="oi oi-task" aria-hidden="true"></span>
-          View
-        </a>
-        <!-- Edit details -->
-        <a href="{{ object.update_url }}"
-            title="Edit {{ object }}."
-            role="button"
-            class="btn btn-primary btn-sm">
-          <span class="oi oi-pencil" aria-hidden="true"></span>
-          <span class="oi oi-task" aria-hidden="true"></span>
-          Edit
-        </a>
-
+        {% include 'shared/details_update_admin.html' with btn=True label=True %}
       </div>
     </div>
     <!-- /Conservation threat update -->
