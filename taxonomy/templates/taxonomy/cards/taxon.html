@@ -1,6 +1,7 @@
 {% load staticfiles taxonomy_tags occurrence_tags %}
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow">
   <!-- <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map"> -->
+  <!-- Want: ImageBank image carousel -->
   <div class="card-body">
 
     <h6 class="card-subtitle mb-2 text-muted">
@@ -8,7 +9,11 @@
 
     <!-- Name ID -->
     <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
-      {{ object.name_id }}
+      <a class="text-white" target="_blank" rel="nofollow"
+      href="https://florabase.dpaw.wa.gov.au/search/advanced?id={{ object.name_id }}"
+      title="Search FloraBase for this NameID">
+      {{object.name_id}}
+      </a>
     </span>
 
     <!-- Rank -->
@@ -16,7 +21,7 @@
       {{ object.get_rank_display }}
     </span>
 
-    {% include "include/taxonomic_status.html" %}
+    {% include "taxonomy/include/taxonomic_status.html" %}
 
     <!-- Publication status -->
     {% if object.publication_status < 2 %}
@@ -34,7 +39,7 @@
     </h6>
 
     <h6 class="card-subtitle mb-2 text-muted">
-    {% include "include/paraphyletic_groups.html" %}
+    {% include "taxonomy/include/paraphyletic_groups.html" %}
     </h6>
 
     <h5 class="card-title {% if object.current == False %}text-muted{% endif %}">
@@ -48,21 +53,10 @@
       {{ object.author }}
     </h6>
     {% endif %}
-
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        {% include "include/vernaculars.html" %}
-      </li>
-      <li class="list-group-item">
-        {% include 'conservation/include/gazettal_labels.html' %}
-      </li>
-
-    </ul>
-  </div>
-
-  <ul class="list-group list-group-flush">
+    {% include "taxonomy/include/vernaculars.html" %}
+    {% include 'conservation/include/gazettal_labels.html' %}
     {% include 'conservation/include/document.html' %}
-  </ul>
+  </div>
 
   <div class="card-footer">
     <div class="row mb-2">
@@ -86,7 +80,7 @@
     </div>
     <div class="collapse" id="actions{{ object.pk }}">
     <div class="row">
-    {% admin_taxon_change_link request.user block=True label=True %}
+    {% include 'taxonomy/include/taxon_change.html' with label=True block=True %}
     {% include 'conservation/include/taxonconservationlisting_add.html' with label=True block=True taxon=object %}
     {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=True %}
     {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=True %}

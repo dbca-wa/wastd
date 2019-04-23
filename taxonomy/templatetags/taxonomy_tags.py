@@ -21,16 +21,16 @@ def rangify(value):
     return range(min_val, max_val)
 
 
-@register.inclusion_tag('include/taxon_change.html', takes_context=True)
-def admin_taxon_change_link(context, user, btn=True, block=False, label=False):
-    """Render a link to the admin taxon change view."""
-    return {
-        "object": context["object"],
-        "is_staff": True,
-        "btn": btn,
-        "block": block,
-        "label": label
-    }
+# @register.inclusion_tag('include/taxon_change.html', takes_context=True)
+# def admin_taxon_change_link(context, user, btn=True, block=False, label=False):
+#     """Render a link to the admin taxon change view."""
+#     return {
+#         "object": context["object"],
+#         "is_staff": True,
+#         "btn": btn,
+#         "block": block,
+#         "label": label
+#     }
 
 
 # -----------------------------------------------------------------------------
@@ -39,9 +39,7 @@ def admin_taxon_change_link(context, user, btn=True, block=False, label=False):
 @register.inclusion_tag('conservation/include/conservationthreat_cards.html', takes_context=False)
 def conservationthreat_cards(user, threats, area=None):
     """Render a conservation threat in a card."""
-    return {
-        "threats": threats.filter(occurrence_area_code=area) if area else threats
-    }
+    return {"threats": threats.filter(occurrence_area_code=area) if area else threats}
 
 
 # -----------------------------------------------------------------------------
@@ -50,6 +48,4 @@ def conservationthreat_cards(user, threats, area=None):
 @register.inclusion_tag('conservation/include/conservationaction_cards.html', takes_context=False)
 def conservationaction_cards(user, actions, area=None):
     """Render a conservation Action in a card."""
-    return {
-        "actions": actions.filter(occurrence_area_code=area) if area else actions
-    }
+    return {"actions": actions.filter(occurrence_area_code=area) if area else actions}

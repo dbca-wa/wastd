@@ -38,7 +38,11 @@ class TaxonFilter(django_filters.FilterSet):
         queryset=Area.objects.filter(
             area_type__in=[
                 Area.AREATYPE_DBCA_REGION,
-                Area.AREATYPE_DBCA_DISTRICT]),
+                Area.AREATYPE_DBCA_DISTRICT]
+        ).order_by(
+            "area_type",
+            "name"
+        ),
         method='taxa_occurring_in_area'
     )
     eoo = geo_models.PolygonField()
@@ -183,7 +187,11 @@ class CommunityFilter(django_filters.FilterSet):
         queryset=Area.objects.filter(
             area_type__in=[
                 Area.AREATYPE_DBCA_REGION,
-                Area.AREATYPE_DBCA_DISTRICT]),
+                Area.AREATYPE_DBCA_DISTRICT]
+        ).order_by(
+            "area_type",
+            "name"
+        ),
         method='communities_occurring_in_area'
     )
     eoo = geo_models.PolygonField()

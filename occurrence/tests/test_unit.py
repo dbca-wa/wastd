@@ -145,6 +145,14 @@ class CommunityAreaEncounterTests(TestCase):
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
         self.cae.save()
+        self.cae1 = occ_models.CommunityAreaEncounter.objects.create(
+            community=self.com0,
+            code="testcode",
+            encountered_on=timezone.now(),
+            encountered_by=self.user,
+            point=GEOSGeometry('POINT (115.1 -32.1)', srid=4326)
+        )
+        self.cae1.save()
 
         self.asssp1 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.cae,
@@ -180,6 +188,8 @@ class CommunityAreaEncounterTests(TestCase):
         )
         self.aa2.save()
 
+        self.ae = occ_models.AreaEncounter.objects.first()
+
         self.client.force_login(self.user)
 
     def test_cae_creation(self):
@@ -197,6 +207,14 @@ class CommunityAreaEncounterTests(TestCase):
             self.cae.community)
         self.assertEqual(label, self.cae.__str__())
 
+        label = "Encounter at [{0}] ({1}) {2} on {3} by {4}".format(
+            self.ae.areaencounter_ptr.get_area_type_display(),
+            self.ae.areaencounter_ptr.code,
+            self.ae.areaencounter_ptr.name,
+            self.ae.areaencounter_ptr.encountered_on,
+            self.ae.areaencounter_ptr.encountered_by)
+        self.assertEqual(label, self.ae.areaencounter_ptr.__str__())
+
     def test_cae_latitude(self):
         """Test the latitude from the point."""
         self.assertEqual(self.cae.latitude, -32)
@@ -209,11 +227,34 @@ class CommunityAreaEncounterTests(TestCase):
         """Test that the derived point is either the centroid of geom or None."""
         self.assertIsNone(self.cae.geom)
         self.assertIsNone(self.cae.derived_point)
+        # TODO test with CAE/TAE/AE with geom not none
+
+    def derived_northern_extent(self):
+        """Test that the derived point is either the centroid of geom or None."""
+        self.assertIsNone(self.cae.geom)
+        self.assertIsNone(self.cae.derived_northern_extent)
+        self.assertIsNone(self.ae.areaencounter_ptr.geom)
+        self.assertIsNone(self.ae.areaencounter_ptr.derived_northern_extent)
+        # TODO test with CAE/TAE/AE with geom not none
 
     def test_popup(self):
         """Test HTML popup."""
         self.assertIn(self.cae.code, self.cae.as_html)
         self.assertIn(self.cae.code, self.cae.derived_html)
+
+        self.assertIn(self.ae.areaencounter_ptr.code, self.cae.as_html)
+        self.assertIn(self.ae.areaencounter_ptr.code, self.cae.derived_html)
+
+    def test_subject(self):
+        """Test subject."""
+        self.assertEqual(self.ae.areaencounter_ptr.subject, self.ae.areaencounter_ptr)
+        self.assertEqual(self.cae.subject, self.cae.community)
+
+    def test_get_nearby_encounters(self):
+        """Test nearby encounters picks up encounters within specified range."""
+        self.assertTrue(self.cae.get_nearby_encounters(dist_dd=1).count() > 0)
+        self.assertTrue(self.ae.areaencounter_ptr.get_nearby_encounters(dist_dd=1).count() > 0)
+        self.assertTrue(self.cae.nearby_same(dist_dd=1).count() > 0)
 
     # ------------------------------------------------------------------------#
     # CAE AssociatedSpeciesObservation
@@ -314,6 +355,15 @@ class TaxonAreaEncounterTests(TestCase):
         )
         self.tae.save()
 
+        self.tae1 = occ_models.TaxonAreaEncounter.objects.create(
+            taxon=self.taxon0,
+            code="testcode1",
+            encountered_on=timezone.now(),
+            encountered_by=self.user,
+            point=GEOSGeometry('POINT (115.1 -32.1)', srid=4326)
+        )
+        self.tae1.save()
+
         self.asssp1 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.tae,
             taxon=self.taxon1
@@ -342,6 +392,9 @@ class TaxonAreaEncounterTests(TestCase):
         )
         self.fatt.save()
 
+        self.ae = occ_models.AreaEncounter.objects.first()
+        self.og = occ_models.ObservationGroup.objects.first()
+
         self.client.force_login(self.user)
 
     def test_tae_creation(self):
@@ -363,6 +416,42 @@ class TaxonAreaEncounterTests(TestCase):
         """Test HTML popup."""
         self.assertIn(self.tae.code, self.tae.as_html)
         self.assertIn(self.tae.code, self.tae.derived_html)
+
+    def test_subject(self):
+        """Test subject."""
+        self.assertEqual(self.tae.subject, self.tae.taxon)
+
+    def test_get_nearby_encounters(self):
+        """Test nearby encounters picks up encounters within specified range."""
+        self.assertTrue(self.tae.get_nearby_encounters(dist_dd=1).count() > 0)
+        self.assertTrue(self.ae.areaencounter_ptr.get_nearby_encounters(dist_dd=1).count() > 0)
+        self.assertTrue(self.tae.nearby_same(dist_dd=1).count() > 0)
+
+    # ------------------------------------------------------------------------#
+    # ObsGroup
+    def test_obsgroup_str(self):
+        """Test ObsGroup str()."""
+        label = u"Obs {0} for {1}".format(self.og.pk, self.og.encounter.__str__())
+        self.assertEqual(label, self.og.observationgroup_ptr.__str__())
+
+    def test_obsgroup_point(self):
+        """Test ObsGroup point, longitude, latitude."""
+        self.assertEqual(self.og.observationgroup_ptr.point,
+                         self.og.observationgroup_ptr.encounter.point)
+        self.assertEqual(self.og.observationgroup_ptr.latitude,
+                         self.og.observationgroup_ptr.encounter.point.y)
+        self.assertEqual(self.og.observationgroup_ptr.longitude,
+                         self.og.observationgroup_ptr.encounter.point.x)
+
+    def test_obsgroup_datetime(self):
+        """Test ObsGroup datetime."""
+        self.assertEqual(self.og.observationgroup_ptr.datetime,
+                         self.og.encounter.encountered_on)
+
+    def test_obsgroup_observation_name(self):
+        """Test ObsGroup observation_name."""
+        self.assertEqual(self.og.observationgroup_ptr.observation_name,
+                         self.og.observationgroup_ptr.polymorphic_ctype.model)
 
     # ------------------------------------------------------------------------#
     # TAE AssociatedSpeciesObservation

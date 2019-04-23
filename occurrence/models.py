@@ -518,9 +518,10 @@ class ObservationGroup(
         """The encounter's longitude."""
         return self.encounter.point.x or ''
 
+    @property
     def datetime(self):
         """The encounter's timestamp."""
-        return self.encounter.observed_on or ''
+        return self.encounter.encountered_on or ''
 
     # Display and cached properties
     @property

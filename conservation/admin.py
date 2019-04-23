@@ -34,6 +34,7 @@ class ConservationThreatCategoryAdmin(VersionAdmin):
     prepopulated_fields = {"code": ("label",)}
     list_display = ("code", "label", "description", )
     search_fields = ("code", "label", "description")
+    prepopulated_fields = {"code": ("label",), }
     save_on_top = True
 
 
@@ -44,7 +45,7 @@ class ConservationThreatAdmin(ImportExportModelAdmin, VersionAdmin):
     model = cons_models.ConservationThreat
     form = s2form(cons_models.ConservationThreat, attrs=S2ATTRS)
     resource_class = cons_resources.ConservationThreatResource
-    autocomplete_fields = ['taxa', 'communities', "category", ]
+    autocomplete_fields = ["taxa", "communities", "category", ]
 
     list_display = (
         "pk",
@@ -95,12 +96,12 @@ class ConservationThreatAdmin(ImportExportModelAdmin, VersionAdmin):
     def taxon_list(self, obj):
         """Make M2M taxa readable."""
         return ", ".join([taxon.__str__() for taxon in obj.taxa.all()])
-    taxon_list.short_description = 'Species'
+    taxon_list.short_description = "Species"
 
     def com_list(self, obj):
         """Make M2M taxa readable."""
         return ", ".join([com.__str__() for com in obj.communities.all()])
-    com_list.short_description = 'Communities'
+    com_list.short_description = "Communities"
 
 
 @admin.register(cons_models.ConservationActionCategory)
@@ -132,7 +133,7 @@ class ConservationActionAdmin(ImportExportModelAdmin, VersionAdmin):
     model = cons_models.ConservationAction
     form = s2form(cons_models.ConservationAction, attrs=S2ATTRS)
     resource_class = cons_resources.ConservationActionResource
-    autocomplete_fields = ['taxa', 'communities', "category", ]
+    autocomplete_fields = ["taxa", "communities", "category", ]
 
     list_display = (
         "pk",
@@ -187,17 +188,17 @@ class ConservationActionAdmin(ImportExportModelAdmin, VersionAdmin):
     def taxon_list(self, obj):
         """Make M2M taxa readable."""
         return ", ".join([taxon.__str__() for taxon in obj.taxa.all()])
-    taxon_list.short_description = 'Species'
+    taxon_list.short_description = "Species"
 
     def com_list(self, obj):
         """Make M2M taxa readable."""
         return ", ".join([com.__str__() for com in obj.communities.all()])
-    com_list.short_description = 'Communities'
+    com_list.short_description = "Communities"
 
     def status(self, obj):
         """Make status readable."""
         return obj.status
-    status.short_description = 'Progress'
+    status.short_description = "Progress"
 
 
 class ConservationActionInline(admin.TabularInline):
@@ -217,10 +218,10 @@ class ConservationCategoryAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for ConservationCategory."""
 
     search_fields = [
-        'conservation_list__code__icontains',
-        'code__icontains',
-        'label__icontains',
-        'description__icontains'
+        "conservation_list__code__icontains",
+        "code__icontains",
+        "label__icontains",
+        "description__icontains"
     ]
 
 
@@ -229,10 +230,10 @@ class ConservationCriterionAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for ConservationCriterion."""
 
     search_fields = [
-        'conservation_list__code__icontains',
-        'code__icontains',
-        'label__icontains',
-        'description__icontains'
+        "conservation_list__code__icontains",
+        "code__icontains",
+        "label__icontains",
+        "description__icontains"
     ]
 
 
@@ -369,7 +370,7 @@ class TaxonConservationListingAdmin(FSMTransitionMixin, VersionAdmin):
             kwargs["queryset"] = cons_models.ConservationCategory.objects.filter(
                 conservation_list__scope_species=True
             ).prefetch_related(
-                'conservation_list'
+                "conservation_list"
             ).order_by(
                 "conservation_list__code", "rank"
             )
@@ -378,7 +379,7 @@ class TaxonConservationListingAdmin(FSMTransitionMixin, VersionAdmin):
             kwargs["queryset"] = cons_models.ConservationCriterion.objects.filter(
                 conservation_list__scope_species=True
             ).prefetch_related(
-                'conservation_list'
+                "conservation_list"
             ).order_by(
                 "conservation_list__code", "rank"
             )
@@ -446,7 +447,7 @@ class CommunityConservationListingAdmin(FSMTransitionMixin, VersionAdmin):
             kwargs["queryset"] = cons_models.ConservationCategory.objects.filter(
                 conservation_list__scope_communities=True
             ).prefetch_related(
-                'conservation_list'
+                "conservation_list"
             ).order_by(
                 "conservation_list__code", "rank"
             )
@@ -455,7 +456,7 @@ class CommunityConservationListingAdmin(FSMTransitionMixin, VersionAdmin):
             kwargs["queryset"] = cons_models.ConservationCriterion.objects.filter(
                 conservation_list__scope_communities=True
             ).prefetch_related(
-                'conservation_list'
+                "conservation_list"
             ).order_by(
                 "conservation_list__code", "rank"
             )
