@@ -25,7 +25,11 @@
       <p>
         <!-- Name ID -->
           <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
+            <a class="text-white" target="_blank" rel="nofollow"
+            href="https://florabase.dpaw.wa.gov.au/search/advanced?id={{ object.name_id }}"
+            title="Search FloraBase for this NameID">
             {{object.name_id}}
+            </a>
           </span>
 
           <!-- Rank -->
@@ -33,7 +37,7 @@
             {{ object.get_rank_display }}
           </span>
 
-          {% include "include/taxonomic_status.html" %}
+          {% include "taxonomy/include/taxonomic_status.html" %}
 
           <!-- Publication status -->
           {% if object.publication_status < 2 %}
@@ -52,12 +56,10 @@
 
       <h1 class="display-4">
         {{ object.canonical_name }}
-        <small class="float-right">
-          {% if request.user.is_staff %}
-            {% admin_absoluteadminurl_link object "taxon" %}
-          {% endif %}
-        </small>
       </h1>
+      <small class="float-right">
+        {% include 'taxonomy/include/taxon_change.html' with label=False block=False %}
+      </small>
 
       <!-- Author -->
       {% if object.author %}
@@ -68,7 +70,7 @@
       {% endif %}
 
       <p class="lead">
-        {% include "include/vernaculars.html" %}
+        {% include "taxonomy/include/vernaculars.html" %}
       </p>
 
       <p>
@@ -139,7 +141,7 @@
       <hr class="my-4">
       <h3>Actions</h3>
       <p class="lead">
-          {% admin_absoluteadminurl_link object "taxon" label=True %}
+          {% include 'taxonomy/include/taxon_change.html' with label=True block=False %}
           {% include 'conservation/include/taxonconservationlisting_add.html' with label=True block=False taxon=object %}
           {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=False %}
           {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=False %}

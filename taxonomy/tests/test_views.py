@@ -207,6 +207,9 @@ class TaxonViewTests(TestCase):
         response = self.client.get(Taxon.objects.last().absolute_admin_url)
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.get(self.taxon0.absolute_admin_url)
+        self.assertEqual(response.status_code, 200)
+
     def test_taxon_list_url_loads(self):
         """Test taxon-list."""
         response = self.client.get(Taxon.objects.last().list_url())
@@ -250,7 +253,10 @@ class TaxonViewTests(TestCase):
 class TaxonBulkViewTests(TestCase):
     """Taxon view tests."""
 
-    fixtures = ['taxonomy/fixtures/test_taxonomy.json', ]
+    fixtures = [
+        'taxonomy/fixtures/test_taxonomy.json',
+        'taxonomy/fixtures/test_wacensus.json',
+    ]
 
     def test_taxon_list_url_loads(self):
         """Test taxon-list."""
@@ -262,3 +268,16 @@ class TaxonBulkViewTests(TestCase):
         t = Taxon.objects.last()
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+    def test_update_taxon_view(self):
+        """Test the update_taxon view."""
+        url = reverse("taxonomy:task-update-taxon")
+        self.user = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+        self.user.save()
+
+        # works and redirects to home view
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)

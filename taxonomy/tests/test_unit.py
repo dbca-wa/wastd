@@ -40,7 +40,7 @@ from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
 
 from taxonomy import models as tax_models
 from taxonomy.templatetags import taxonomy_tags as tt
-from taxonomy.utils import update_taxon  # noqa
+from taxonomy.utils import update_taxon, create_test_fixtures   # noqa
 from conservation import models as cons_models
 MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
 
@@ -49,13 +49,18 @@ class TaxonUtilsTests(TestCase):
     """Unit tests for taxonomy utils."""
 
     fixtures = [
-        # 'taxonomy/fixtures/test_taxonomy.json',
+        'taxonomy/fixtures/test_taxonomy.json',
         'taxonomy/fixtures/test_wacensus.json',
     ]
 
     def test_update_taxon(self):
         """Test reconstructing Taxon, Crossreference and Vernacular from Hbv*."""
         update_taxon()  # requires a consistent subset of the taxonomic tree
+        pass
+
+    def test_create_test_fixtures(self):
+        """Test create_test_fixtures."""
+        # create_test_fixtures()
         pass
 
 
@@ -91,7 +96,7 @@ class TaxonUnitTests(TestCase):
         """Test the vernacular names."""
         pass
 
-    def test_ConservationListings(self):
+    def test_ConservationListings(self):  # noqa
         """Test ConservationListings."""
         pass
 
