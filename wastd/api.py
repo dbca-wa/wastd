@@ -37,7 +37,7 @@ import logging
 import rest_framework_filters as filters
 # from django.db import models as django_models
 from django.template import Context, Template
-from django.db.models import Prefetch
+from django.db.models import Prefetch  # noqa
 
 from django_filters import rest_framework as rf_filters
 from django_filters.widgets import BooleanWidget  # noqa
@@ -2438,10 +2438,7 @@ router.register("parents", HbvParentViewSet)
 # ----------------------------------------------------------------------------#
 # Taxon
 #
-class TaxonSerializer(
-    # GeoFeatureModelSerializer
-    serializers.ModelSerializer
-):
+class TaxonSerializer(serializers.ModelSerializer):
     """Serializer for Taxon.
 
     Includes a summary of conservation status which is ingested into WACensus.
@@ -2456,13 +2453,13 @@ class TaxonSerializer(
 
     # taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True) # yeah nah
 
-    is_currently_listed = serializers.ReadOnlyField()
-    conservation_code_state = serializers.ReadOnlyField()          # consv_code
-    conservation_list_state = serializers.ReadOnlyField()        # list_code
-    conservation_category_state = serializers.ReadOnlyField()    # wa_iucn (primary)
-    conservation_categories_state = serializers.ReadOnlyField()    # wa_iucn (all)
-    conservation_criteria_state = serializers.ReadOnlyField()    # iucn_criteria
-    conservation_category_national = serializers.ReadOnlyField()     # epbc
+    # is_currently_listed = serializers.ReadOnlyField()
+    # conservation_code_state = serializers.ReadOnlyField()           # consv_code
+    # conservation_list_state = serializers.ReadOnlyField()           # list_code
+    # conservation_category_state = serializers.ReadOnlyField()       # wa_iucn (primary)
+    # conservation_categories_state = serializers.ReadOnlyField()     # wa_iucn (all)
+    # conservation_criteria_state = serializers.ReadOnlyField()       # iucn_criteria
+    # conservation_category_national = serializers.ReadOnlyField()    # epbc
 
     class Meta:
         """Opts."""
@@ -2481,8 +2478,6 @@ class TaxonSerializer(
             "vernacular_names",
             "canonical_name",
             "taxonomic_name",
-            # "taxon_occurrences",
-            # "eoo",
             "is_currently_listed",
             "conservation_code_state",
             "conservation_list_state",
@@ -2543,20 +2538,21 @@ class TaxonViewSet(BatchUpsertViewSet):
     See HBV Names for details and usage examples.
     """
 
-    queryset = Taxon.objects.prefetch_related(
-        # "paraphyletic_groups",
-        Prefetch("conservation_listings",
-                 queryset=TaxonConservationListing.objects.filter(
-                     scope=ConservationListing.SCOPE_WESTERN_AUSTRALIA,
-                     status=ConservationListing.STATUS_EFFECTIVE),
-                 to_attr="conservation_listings_active_wa"
-                 ),
-        # Prefetch("conservation_listings__scope",),
-        # Prefetch("conservation_listings__status",),
-        # "conservationthreat_set",
-        # "conservationaction_set",
-        # "document_set",
-    )
+    queryset = Taxon.objects.all()
+    # prefetch_related(
+    # # "paraphyletic_groups",
+    #     Prefetch("conservation_listings",
+    #              queryset=TaxonConservationListing.objects.filter(
+    #                  scope=ConservationListing.SCOPE_WESTERN_AUSTRALIA,
+    #                  status=ConservationListing.STATUS_EFFECTIVE),
+    #              to_attr="conservation_listings_active_wa"
+    #              ),
+    # Prefetch("conservation_listings__scope",),
+    # Prefetch("conservation_listings__status",),
+    # "conservationthreat_set",
+    # "conservationaction_set",
+    # "document_set",
+    # )
     serializer_class = TaxonSerializer
     pagination_class = CustomLimitOffsetPagination  # if no geofeaturemodel serializer
     filter_class = TaxonFilter
