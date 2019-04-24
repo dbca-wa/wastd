@@ -74,27 +74,7 @@
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
-        <!-- Edit details -->
-        {% if request.user.is_staff %}
-        <a href="{{ object.absolute_admin_url }}"
-            title="Edit {{ object }}."
-            role="button"
-            class="btn btn-success btn-sm">
-          <span class="oi oi-pencil" aria-hidden="true"></span>
-          <span class="oi oi-shield" aria-hidden="true"></span>
-          Edit
-        </a>
-        {% endif %}
-        <!-- Edit details -->
-        <a href="{{ object.update_url }}"
-            title="Edit {{ object }}."
-            role="button"
-            class="btn btn-primary btn-sm">
-          <span class="oi oi-pencil" aria-hidden="true"></span>
-          <span class="oi oi-shield" aria-hidden="true"></span>
-          Edit
-        </a>
-
+        {% include 'shared/details_update_admin.html' with btn=True label=True %}
       </div>
     </div>
     <!-- /Conservation threat update -->

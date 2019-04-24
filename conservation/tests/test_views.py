@@ -16,7 +16,8 @@ https://github.com/sigma-geosistemas/mommy_spatial_generators
 """
 from __future__ import unicode_literals
 
-from django.utils import timezone  # noqa
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry  # Point, Polygon   # noqa
@@ -46,10 +47,22 @@ class ConservationThreatViewTests(TestCase):
             name="name0",
             _fill_optional=['eoo'])
         self.com0.save()
+        self.doc = cons_models.Document.objects.create(
+            title="test doc",
+            document_type=cons_models.Document.TYPE_RECOVERY_PLAN,
+            # attachment=self.fatt1
+            # TODO add dates
+        )
         self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
-            code="weeds", label="Weeds", description="invasive weeds")
+            code="weeds",
+            label="Weeds",
+            description="invasive weeds"
+        )
         self.object = cons_models.ConservationThreat.objects.create(
-            category=self.consthreatcat, cause="burn some stuff")
+            category=self.consthreatcat,
+            cause="burn some stuff",
+            document=self.doc
+        )
         self.object.taxa.add(self.taxon0)
         self.object.communities.add(self.com0)
         self.user = get_user_model().objects.create_superuser(
@@ -379,6 +392,45 @@ class DocumentViewTests(TestCase):
             password="test")
         self.user.save()
 
+        self.taxon0 = mommy.make(
+            Taxon,
+            name_id=1000,
+            name="name0",
+            _fill_optional=['rank', 'eoo'])
+        self.taxon0.save()
+        self.com0 = mommy.make(
+            Community,
+            code="code0",
+            name="name0",
+            _fill_optional=['eoo'])
+        self.com0.save()
+        self.object = cons_models.Document.objects.create(
+            title="test doc",
+            document_type=cons_models.Document.TYPE_RECOVERY_PLAN,
+            # attachment=self.fatt1
+            # TODO add dates
+
+            effective_from=timezone.now(),
+            effective_to=timezone.now() + relativedelta(months=+6),
+            effective_from_commonwealth=timezone.now(),
+            effective_to_commonwealth=timezone.now() + relativedelta(months=+6),
+            review_due=timezone.now() + relativedelta(months=+6),
+            last_reviewed_on=timezone.now() + relativedelta(days=-10),
+        )
+        self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
+            code="weeds",
+            label="Weeds",
+            description="invasive weeds"
+        )
+        self.threat = cons_models.ConservationThreat.objects.create(
+            category=self.consthreatcat,
+            cause="burn some stuff",
+            document=self.object
+        )
+        self.object.taxa.add(self.taxon0)
+        self.object.communities.add(self.com0)
+
+        # TODO add attachment
         # self.fatt1 = cons_models.FileAttachment.objects.create(
         #     attachment=SimpleUploadedFile('testfile.txt', b'These are the file contents.'),
         #     title="test",
@@ -389,11 +441,7 @@ class DocumentViewTests(TestCase):
         # self.fatt1.save()
         # Error: fatt1 has no content_type
 
-        self.object = cons_models.Document.objects.create(
-            title="test doc",
-            document_type=cons_models.Document.TYPE_RECOVERY_PLAN,
-            # attachment=self.fatt1
-        )
+        # TODO add actions
 
         self.client.force_login(self.user)
 
@@ -448,6 +496,12 @@ class ConservationFixtureTests(TestCase):
         t = cons_models.TaxonConservationListing.objects.last().taxon
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+        u = get_user_model().objects.filter(is_superuser=True).first()
+        self.client.force_login(u)
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        # TODO verify that staff can see the conservation listing absolute admin url
 
     def test_list_url_taxon(self):
         """Test Taxon list url loads to show document preview."""

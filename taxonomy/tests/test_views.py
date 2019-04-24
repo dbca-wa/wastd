@@ -14,6 +14,7 @@ View tests call every page and verify that
 """
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.utils import timezone  # noqa
 # from django.http import Http404
 from django.contrib.auth import get_user_model  # noqa
@@ -212,8 +213,26 @@ class TaxonViewTests(TestCase):
 
     def test_taxon_list_url_loads(self):
         """Test taxon-list."""
-        response = self.client.get(Taxon.objects.last().list_url())
+        list_url = Taxon.list_url()
+        response = self.client.get(list_url)
         self.assertEqual(response.status_code, 200)
+
+        for filter_args in [
+            "?paraphyletic_groups={0}&is_terminal_taxon=true".format(settings.ANIMALS_PK),
+            "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority".format(settings.ANIMALS_PK),  # noqa
+            "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=priority".format(settings.ANIMALS_PK),
+            "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=threatened".format(settings.ANIMALS_PK),
+            "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority".format(settings.PLANTS_PK),  # noqa
+            "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=threatened".format(settings.PLANTS_PK),
+            "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=priority".format(settings.PLANTS_PK),
+            "?is_terminal_taxon=true",
+            # "admin_areas=1", # needs an observations.Area
+            '?eoo={"type"%3A"Polygon"%2C"coordinates"%3A[[[111.357422%2C-30.190717]%2C[111.357422%2C-24.974106]%2C[122.519531%2C-24.974106]%2C[122.519531%2C-30.190717]%2C[111.357422%2C-30.190717]]]}',  # noqa
+            # "?categories=5&categories=2&categories=3", # needs cons cat
+            # TODO add other filters
+        ]:
+            response = self.client.get(list_url + filter_args)
+            self.assertEqual(response.status_code, 200)
 
     def test_taxon_list_url_with_nameid(self):
         """Test taxon-list with name_id.
