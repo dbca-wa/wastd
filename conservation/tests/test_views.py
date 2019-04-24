@@ -336,7 +336,7 @@ class TaxonConservationListingViewTests(TestCase):
 
     def test_create_view(self):
         """Test TaxonConservationListing create view."""
-        url = reverse("conservation:taxon-conservationlisting-create")
+        url = reverse("conservation:taxonconservationlisting-create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -386,7 +386,7 @@ class CommunityConservationListingViewTests(TestCase):
 
     def test_create_view(self):
         """Test CommunityConservationListing create view."""
-        url = reverse("conservation:community-conservationlisting-create")
+        url = reverse("conservation:communityconservationlisting-create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
