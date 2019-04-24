@@ -82,31 +82,31 @@ def create_test_fixtures():
 
     # Conservation: taxon with actions, threats
     # Occurrences: Taxon, Community with occurrences > test_occuccence.json
-    cl_pks = [x.pk for x in cons_models.ConservationList.objects.all()]
-    thr_pks = [x.pk for x in cons_models.ConservationThreat.objects.all()]
-    act_pks = [x.pk for x in cons_models.ConservationAction.objects.all()]
-    activity_pks = [x.pk for x in cons_models.ConservationActivity.objects.all()]
-    doc_pks = [x.pk for x in cons_models.Document.objects.all()]
+    cl_pks = list(cons_models.ConservationList.objects.all().values_list("pk", flat=True))
+    thr_pks = list(cons_models.ConservationThreat.objects.all().values_list("pk", flat=True))
+    act_pks = list(cons_models.ConservationAction.objects.all().values_list("pk", flat=True))
+    activity_pks = list(cons_models.ConservationActivity.objects.all().values_list("pk", flat=True))
+    doc_pks = list(cons_models.Document.objects.all().values_list("pk", flat=True))
     tax_pks = set(
         list(set([y for x in
-                  [[t.pk for t in x.taxa.all()]
+                  [list(x.taxa.all().values_list("pk", flat=True))
                    for x in cons_models.ConservationAction.objects.all()] for y in x])) +
         list(set([y for x in
-                  [[t.pk for t in x.taxa.all()]
+                  [list(x.taxa.all().values_list("pk", flat=True))
                    for x in cons_models.ConservationThreat.objects.all()] for y in x])) +
         list(set([y for x in
-                  [[t.pk for t in x.taxa.all()]
+                  [list(x.taxa.all().values_list("pk", flat=True))
                    for x in cons_models.Document.objects.all()] for y in x]))
     )
     com_pks = set(
         list(set([y for x in
-                  [[t.pk for t in x.communities.all()]
+                  [list(x.communities.all().values_list("pk", flat=True))
                    for x in cons_models.ConservationAction.objects.all()] for y in x])) +
         list(set([y for x in
-                  [[t.pk for t in x.communities.all()]
+                  [list(x.communities.all().values_list("pk", flat=True))
                    for x in cons_models.ConservationThreat.objects.all()] for y in x])) +
         list(set([y for x in
-                  [[t.pk for t in x.communities.all()]
+                  [list(x.communities.all().values_list("pk", flat=True))
                    for x in cons_models.Document.objects.all()] for y in x]))
     )
     with open("taxonomy/fixtures/test_conservationlist.json", 'w+') as f:
@@ -153,30 +153,29 @@ def create_test_fixtures():
     #         ff.write(f.getvalue())
 
     # Taxonomy: Hbv* for phylogenic trees of 50 Taxa of rank forma
-    taxon_pks = set(
-        [y for x in [
-            [x.pk for x in t.get_family()]
-            for t in tax_models.Taxon.objects.filter(rank=tax_models.Taxon.RANK_FORMA)[1:50]
-        ] for y in x]
-    )
-    kingdom_nids = [t.name_id for t in tax_models.Taxon.objects.filter(rank=tax_models.Taxon.RANK_KINGDOM)]
-    form_nids = [t.name_id for t in tax_models.Taxon.objects.filter(pk__in=taxon_pks)]
+    taxon_pks = set([y for x in [
+        list(t.get_family().values_list("pk", flat=True))
+        for t in tax_models.Taxon.objects.filter(rank=tax_models.Taxon.RANK_FORMA)[1:50]
+    ] for y in x])
+    kingdom_nids = list(tax_models.Taxon.objects.filter(
+        rank=tax_models.Taxon.RANK_KINGDOM).values_list("name_id", flat=True))
+    form_nids = list(tax_models.Taxon.objects.filter(pk__in=taxon_pks).values_list("name_id", flat=True))
     taxon_nameids = set(kingdom_nids + form_nids)
     old_name_ids = [x.old_name_id for x in tax_models.HbvXref.objects.filter(new_name_id__in=taxon_nameids)
                     if x.old_name_id not in taxon_nameids and x.old_name_id is not None]
     new_name_ids = [x.new_name_id for x in tax_models.HbvXref.objects.filter(old_name_id__in=taxon_nameids)
                     if x.new_name_id not in taxon_nameids and x.new_name_id is not None]
-    pnt_pks = [x.pk for x in tax_models.HbvParent.objects.filter(name_id__in=taxon_nameids)] +\
-        [x.pk for x in tax_models.HbvParent.objects.filter(parent_nid__in=taxon_nameids)]
-    xrf_old_pks = [x.pk for x in tax_models.HbvXref.objects.filter(old_name_id__in=taxon_nameids)]
-    xrf_new_pks = [x.pk for x in tax_models.HbvXref.objects.filter(new_name_id__in=taxon_nameids)]
+    pnt_pks = list(tax_models.HbvParent.objects.filter(name_id__in=taxon_nameids).values_list("pk", flat=True)) +\
+        list(tax_models.HbvParent.objects.filter(parent_nid__in=taxon_nameids).values_list("pk", flat=True))
+    xrf_old_pks = list(tax_models.HbvXref.objects.filter(old_name_id__in=taxon_nameids).values_list("pk", flat=True))
+    xrf_new_pks = list(tax_models.HbvXref.objects.filter(new_name_id__in=taxon_nameids).values_list("pk", flat=True))
     # TODO: recursion {xrefs reference other Taxa referencing other xrefs}
-    name_pks = [x.pk for x in tax_models.HbvName.objects.filter(name_id__in=taxon_nameids)]
-    fam_pks = [x.pk for x in tax_models.HbvFamily.objects.filter(name_id__in=taxon_nameids)]
-    gen_pks = [x.pk for x in tax_models.HbvGenus.objects.filter(name_id__in=taxon_nameids)]
-    spe_pks = [x.pk for x in tax_models.HbvSpecies.objects.filter(name_id__in=taxon_nameids)]
-    ver_pks = [x.pk for x in tax_models.HbvVernacular.objects.filter(name_id__in=taxon_nameids)]
-    grp_pks = [x.pk for x in tax_models.HbvGroup.objects.filter(name_id__in=taxon_nameids)]
+    name_pks = list(tax_models.HbvName.objects.filter(name_id__in=taxon_nameids).values_list("pk", flat=True))
+    fam_pks = list(tax_models.HbvFamily.objects.filter(name_id__in=taxon_nameids).values_list("pk", flat=True))
+    gen_pks = list(tax_models.HbvGenus.objects.filter(name_id__in=taxon_nameids).values_list("pk", flat=True))
+    spe_pks = list(tax_models.HbvSpecies.objects.filter(name_id__in=taxon_nameids).values_list("pk", flat=True))
+    ver_pks = list(tax_models.HbvVernacular.objects.filter(name_id__in=taxon_nameids).values_list("pk", flat=True))
+    grp_pks = list(tax_models.HbvGroup.objects.filter(name_id__in=taxon_nameids).values_list("pk", flat=True))
 
     with open("taxonomy/fixtures/test_tax_names.json", 'w+') as f:
         call_command('dump_object', 'taxonomy.HbvName', *name_pks, '-k', '-n', stdout=f)  # noqa
@@ -265,7 +264,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
               rank=tax_models.Taxon.RANK_FAMILY,
               current=current_dict[fam.is_current],
               parent=lowest_parent,
-              author=fam.author)
+              author=fam.author.replace("(", "").replace(")", "").strip())
     if fam.informal is not None:
         dd['publication_status'] = publication_dict[fam.informal]
         print(dd['publication_status'])
@@ -294,7 +293,7 @@ def make_genus(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_GENUS,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=x.family_nid),
-        author=x.author
+        author=x.author.replace("(", "").replace(")", "").strip()
     )
     if x.informal is not None:
         dd['publication_status'] = publication_dict[x.informal]
@@ -334,7 +333,7 @@ def make_species(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_SPECIES,
         current=current_dict[x.is_current],
         parent_id=tax_models.Taxon.objects.get(name_id=parent_nid).pk,
-        author=x.author,
+        author=x.author.replace("(", "").replace(")", "").strip(),
         field_code=x.species_code
     )
     if x.informal is not None:
@@ -368,7 +367,7 @@ def make_subspecies(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=parent_nid),
-        author=x.author,
+        author=x.author.replace("(", "").replace(")", "").strip(),
         field_code=x.species_code
     )
     if x.informal is not None:
@@ -403,7 +402,7 @@ def make_variety(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_VARIETY,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=parent_nid),
-        author=x.author,
+        author=x.author.replace("(", "").replace(")", "").strip(),
         field_code=x.species_code
     )
     if x.informal is not None:
@@ -449,7 +448,7 @@ def make_form(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_FORMA,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=parent_nid),
-        author=x.author,
+        author=x.author.replace("(", "").replace(")", "").strip(),
         field_code=x.species_code
     )
     if x.informal is not None:

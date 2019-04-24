@@ -20,6 +20,7 @@ from django.utils import timezone  # noqa
 
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry  # Point, Polygon   # noqa
+from django.core.files.uploadedfile import SimpleUploadedFile  # noqa
 from django.test import TestCase
 from django.urls import reverse  # noqa
 from model_mommy import mommy  # noqa
@@ -372,15 +373,28 @@ class DocumentViewTests(TestCase):
 
     def setUp(self):
         """Set up."""
-        self.object = cons_models.Document.objects.create(
-            title="test doc",
-            document_type=cons_models.Document.TYPE_RECOVERY_PLAN
-        )
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
             email="super@gmail.com",
             password="test")
         self.user.save()
+
+        # self.fatt1 = cons_models.FileAttachment.objects.create(
+        #     attachment=SimpleUploadedFile('testfile.txt', b'These are the file contents.'),
+        #     title="test",
+        #     author=self.user,
+        #     confidential=True,
+        #     current=True
+        # )
+        # self.fatt1.save()
+        # Error: fatt1 has no content_type
+
+        self.object = cons_models.Document.objects.create(
+            title="test doc",
+            document_type=cons_models.Document.TYPE_RECOVERY_PLAN,
+            # attachment=self.fatt1
+        )
+
         self.client.force_login(self.user)
 
     def test_absolute_admin_url(self):
@@ -432,6 +446,21 @@ class ConservationFixtureTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         t = cons_models.TaxonConservationListing.objects.last().taxon
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_url_taxon(self):
+        """Test Taxon list url loads to show document preview."""
+        t = cons_models.Document.objects.last().taxa.first()
+        response = self.client.get(t.list_url() + "?name_id={0}".format(t.name_id))
+        self.assertEqual(response.status_code, 200)
+        # TODO assert document title in response
+        # TODO assert document include template used
+
+        t = cons_models.TaxonConservationListing.objects.last().taxon
+        response = self.client.get(t.list_url() + "?name_id={0}".format(t.name_id))
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 

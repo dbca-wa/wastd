@@ -1874,56 +1874,69 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
 
     @property
     def gazettals(self):
-        """Return a dict of ConservationListing labels and admin URLs.
+        """Return a dict of TaxonConservationListing labels and admin URLs.
 
         TODO save as list field on model, populate in pre_save.
         """
-        return [{'label': x.label_cache,
-                 'url': x.absolute_admin_url,
-                 'is_active': x.is_active}
-                for x in self.conservation_listings.all()]
+        from conservation import models as cons_models
+        return [
+            {'label': x.label_cache,
+             'url': x.absolute_admin_url,
+             'is_active': True}
+            for x in cons_models.TaxonConservationListing.active.filter(
+                taxon__pk=self.pk
+            ).values(
+                "label_cache", "absolute_admin_url", True
+            )
+        ]
 
     @property
     def active_gazettals(self):
-        """Return a dict of active ConservationListing labels and admin URLs.
+        """Return a dict of active TaxonConservationListing labels and admin URLs.
 
         TODO save as list field on model, populate in pre_save.
-        TODO make active_gazettals a manager method on ConservationListing
+        TODO make active_gazettals a manager method on TaxonConservationListing
         """
         from conservation import models as cons_models
-        return [{'label': x.label_cache,
-                 'url': x.absolute_admin_url,
-                 'is_active': x.is_active}
-                for x in self.conservation_listings.filter(
-                status=cons_models.ConservationListing.STATUS_EFFECTIVE)]
+        return [
+            {'label': x.label_cache,
+             'url': x.absolute_admin_url,
+             'is_active': x.is_active}
+            for x in
+            cons_models.TaxonConservationListing.active.filter(
+                taxon__pk=self.pk
+            ).values(
+                "label_cache", "absolute_admin_url", True
+            )
+        ]
+        # self.conservation_listings.filter(status=cons_models.ConservationListing.STATUS_EFFECTIVE)
 
     @property
     def active_conservation_listing_state(self):
         """Return the first active conservation listing in state scope or None."""
         from conservation import models as cons_models
-        cl = self.conservation_listings.filter(
-            scope=cons_models.ConservationListing.SCOPE_WESTERN_AUSTRALIA,
-            status=cons_models.ConservationListing.STATUS_EFFECTIVE
-        )
-        if cl.exists():
-            # defensive against multiple, although logic should enforce max one active
-            return cl.first()
-        else:
-            return None
+        return cons_models.TaxonConservationListing.active_state.filter(taxon__pk=self.pk).first()
+        # cl = cons_models.ConservationListing.active_state.filter(taxon__pk=self.pk).first()
+        # if cl.exists():
+        #     # defensive against multiple, although logic should enforce max one active
+        #     return cl
+        # else:
+        #     return None
 
     @property
     def active_conservation_listing_national(self):
         """Return the first active conservation listing in national scope or None."""
         from conservation import models as cons_models
-        cl = self.conservation_listings.filter(
-            scope=cons_models.ConservationListing.SCOPE_COMMONWEALTH,
-            status=cons_models.ConservationListing.STATUS_EFFECTIVE
-        )
-        if cl.exists():
-            # defensive against multiple, although logic should enforce max one active
-            return cl.first()
-        else:
-            return None
+        return cons_models.TaxonConservationListing.active_national.filter(taxon__pk=self.pk).first()
+        # cl = self.conservation_listings.filter(
+        #     scope=cons_models.ConservationListing.SCOPE_COMMONWEALTH,
+        #     status=cons_models.ConservationListing.STATUS_EFFECTIVE
+        # )
+        # if cl.exists():
+        #     # defensive against multiple, although logic should enforce max one active
+        #     return cl.first()
+        # else:
+        #     return None
 
     @property
     def documents(self):
@@ -1936,9 +1949,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     def is_currently_listed(self):
         """Whether this Taxon has a current conservation listing."""
         from conservation import models as cons_models
-        return self.conservation_listings.filter(
-            status=cons_models.ConservationListing.STATUS_EFFECTIVE
-        ).exists()
+        return cons_models.TaxonConservationListing.active.filter(taxon__pk=self.pk).exists()
 
     # Properties used in API -------------------------------------------------#
     @property
@@ -1956,7 +1967,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         cl = self.active_conservation_listing_state
         if cl:
             # TODO return cl.category.first().conservation_shortcode
-            return cl.category.first().__str__()
+            return cl.category.__str__()
 
         else:
             return None
@@ -1969,7 +1980,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         """
         cl = self.active_conservation_listing_state
         if cl:
-            return cl.conservation_list.name
+            return cl.category.first().conservation_list.code
         else:
             return None
 
@@ -1986,7 +1997,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         """
         cl = self.active_conservation_listing_state
         if cl:
-            return cl.category.first().__str__()
+            return cl.category.first().code
         else:
             return None
 
@@ -2027,14 +2038,17 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
         """
         cl = self.active_conservation_listing_national
         if cl:
-            return cl.category.first()
+            return cl.category.first().code
         else:
             return None
 
 
 @receiver(pre_save, sender=Taxon)
 def taxon_pre_save(sender, instance, *args, **kwargs):
-    """Taxon: Build names (expensive lookups)."""
+    """Taxon: Build names (expensive lookups).
+
+    TODO: cache conservation listing lookups.
+    """
     try:
         instance.canonical_name = instance.build_canonical_name
         instance.taxonomic_name = instance.build_taxonomic_name

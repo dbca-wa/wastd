@@ -55,11 +55,14 @@ class TaxonUtilsTests(TestCase):
 
     def test_update_taxon(self):
         """Test reconstructing Taxon, Crossreference and Vernacular from Hbv*."""
-        update_taxon()  # requires a consistent subset of the taxonomic tree
+        update_taxon()
         pass
 
     def test_create_test_fixtures(self):
-        """Test create_test_fixtures."""
+        """Test create_test_fixtures.
+
+        TODO: write to other, temporary files instead of overwriting test fixtures.
+        """
         # create_test_fixtures()
         pass
 

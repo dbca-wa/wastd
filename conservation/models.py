@@ -783,7 +783,31 @@ class ActiveConservationListingManager(models.Manager):
 
     def get_queryset(self):
         """Return only active ConservationListings."""
-        return super().get_queryset().filter(status=ConservationListing.STATUS_EFFECTIVE)
+        return super().get_queryset().filter(
+            status=ConservationListing.STATUS_EFFECTIVE
+        )
+
+
+class ActiveStateConservationListingManager(models.Manager):
+    """Custom ConservationListing manager to return only active ConservationListings in WA."""
+
+    def get_queryset(self):
+        """Return only active ConservationListings."""
+        return super().get_queryset().filter(
+            status=ConservationListing.STATUS_EFFECTIVE,
+            scope=ConservationListing.SCOPE_WESTERN_AUSTRALIA
+        )
+
+
+class ActiveNationalConservationListingManager(models.Manager):
+    """Custom ConservationListing manager to return only active ConservationListings in CWTH."""
+
+    def get_queryset(self):
+        """Return only active ConservationListings."""
+        return super().get_queryset().filter(
+            status=ConservationListing.STATUS_EFFECTIVE,
+            scope=ConservationListing.SCOPE_COMMONWEALTH
+        )
 
 
 @python_2_unicode_compatible
@@ -957,6 +981,8 @@ class ConservationListing(models.Model):
 
     objects = models.Manager()
     active = ActiveConservationListingManager()
+    active_state = ActiveStateConservationListingManager()
+    active_national = ActiveNationalConservationListingManager()
 
     class Meta:
         """Class opts."""
