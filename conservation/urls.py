@@ -42,10 +42,10 @@ urlpatterns = [
 
     re_path(r'^nominate-taxon/$',
             views.TaxonConservationListingCreateView.as_view(),
-            name="taxon-conservationlisting-create"),
+            name="taxonconservationlisting-create"),
     re_path(r'^nominate-community/$',
             views.CommunityConservationListingCreateView.as_view(),
-            name="community-conservationlisting-create"),
+            name="communityconservationlisting-create"),
 
     re_path(r'^documents/$',
             views.DocumentListView.as_view(),

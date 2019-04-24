@@ -319,6 +319,11 @@ class TaxonConservationListingViewTests(TestCase):
         self.user.save()
         self.client.force_login(self.user)
 
+    def test_list_url_loads(self):
+        """Test conservationactivity-list."""
+        response = self.client.get(self.gaz.list_url())
+        self.assertEqual(response.status_code, 200)
+
     def test_absolute_admin_url(self):
         """Test absolute_admin_url loads."""
         response = self.client.get(self.gaz.absolute_admin_url)
@@ -363,6 +368,11 @@ class CommunityConservationListingViewTests(TestCase):
             password="test")
         self.user.save()
         self.client.force_login(self.user)
+
+    def test_list_url_loads(self):
+        """Test conservationactivity-list."""
+        response = self.client.get(self.gaz.list_url())
+        self.assertEqual(response.status_code, 200)
 
     def test_absolute_admin_url(self):
         """Test absolute_admin_url loads."""

@@ -93,6 +93,9 @@
         {% include 'conservation/include/document_add.html' with subject="communities" label=True block=False %}
         {% admin_areaencounter_create_link object.pk "community" label=True %}
         {% communityareaencounter_add_link object.pk label=True %}
+        {% if request.user.is_staff %}
+        {% admin_areaencounter_create_link object.pk "community" label=True %}
+        {% endif %}
       </p>
     </div><!-- /.jumbotron -->
   </div><!-- /.col#taxon-detail-main -->
@@ -117,18 +120,14 @@
         {% endif %}
         <small class="float-right">
           {% communityareaencounter_add_link object.pk %}
-        </small>
-        {% if request.user.is_staff %}
-        <small class="float-right">
+          {% if request.user.is_staff %}
           {% admin_areaencounter_create_link object.pk "community" %}
-        </small>
-        <small class="float-right">
           {% admin_areaencounter_list_link object.pk "community" %}
-          <a class="btn btn-primary btn-sm text-left ml-2"
+          <a class="btn btn-primary btn-sm text-left"
              href="{% url 'occurrence:communityareaencounter-list' %}?community={{ object.pk }}"
              title="List occurrences of {{object }}">
-            <span class="oi oi-target" aria-hidden="true"></span>
             <span class="oi oi-list" aria-hidden="true"></span>
+            <span class="oi oi-target" aria-hidden="true"></span>
           </a>
         </small>
         {% endif %}

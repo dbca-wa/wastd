@@ -8,7 +8,7 @@
   {% if label %}Propose conservation listing{% endif %}
 </a>
 {% endif %}
-<a href="{% url 'conservation:community-conservationlisting-create' %}{% if community %}?community={{ community.pk }}{% endif %}"
+<a href="{% url 'conservation:communityconservationlisting-create' %}{% if community %}?community={{ community.pk }}{% endif %}"
   class="btn btn-primary btn-sm{% if block %} btn-block{% endif%} text-left"
   title="Propose a new community conservation listing">
   <span class="oi oi-plus" aria-hidden="true"></span>

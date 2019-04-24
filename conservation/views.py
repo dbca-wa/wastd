@@ -141,11 +141,10 @@ class DocumentListView(
             queryset=queryset
         ).qs
 
+
 # ---------------------------------------------------------------------------#
 # Detail Views
 #
-
-
 class ConservationThreatDetailView(DetailViewBreadcrumbMixin, DetailView):
     """ConservationThreat DetailView."""
 
@@ -456,7 +455,7 @@ class TaxonConservationListingCreateView(
         return (
             Breadcrumb(_('Home'), reverse('home')),
             Breadcrumb(_("Nominate any current, terminal taxonomic name for conservation listing in Western Australia"),
-                       reverse("conservation:taxon-conservationlisting-create"))
+                       reverse("conservation:taxonconservationlisting-create"))
         )
 
 
@@ -492,7 +491,7 @@ class CommunityConservationListingCreateView(
         return (
             Breadcrumb(_('Home'), reverse('home')),
             Breadcrumb(_("Nominate any ecological community for conservation listing in Western Australia"),
-                       reverse("conservation:community-conservationlisting-create"))
+                       reverse("conservation:communityconservationlisting-create"))
         )
 
 

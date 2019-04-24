@@ -3,20 +3,19 @@
   <div class="col-12">
     <div class="card shadow-lg">
       <div class="card-body">
-        <h6 class="card-title">
-          {{ document }}
-        </h6>
-
+        <p class="card-text mb-1">
+          {{ document.title }}
+        </p>
+          <span class="badge badge-warning">{{ document.get_document_type_display }}</span>
           {% for attachment in document.attachments.all %}
-          <a href="{{ attachment.attachment.url }}" target="_blank" title="{{ attachment.title }}">
-            <span class="btn btn-sm btn-{% if attachment.confidential == True%}danger{% else %}success{% endif %}">
+          <a href="{{ attachment.attachment.url }}" target="_blank"
+            class="text-{% if attachment.confidential == True%}danger{% else %}success{% endif %} mr-2"
+            title="{{ attachment.title }}">
               <span class="oi oi-cloud-download" aria-hidden="true"></span>
-              <span class="oi oi-document" aria-hidden="true"></span>
-            </span>
           </a>
           {% endfor %}
 
-          {% include 'shared/details_update_admin.html' with btn=True label=False %}
+          {% include 'shared/details_update_admin.html' with btn=False label=False object=document %}
 
       </div>
     </div>
