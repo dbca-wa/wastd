@@ -1,8 +1,8 @@
-{% for gazettal in object.active_gazettals %}
+{% for object in object.active_gazettals %}
 <h6 class="card-subtitle mb-2">
-  <span class="badge badge-{% if gazettal.is_active %}danger{% else %}secondary{% endif %}">
-  <span class="oi oi-warning" title="Listed as {{ gazettal.label }}" aria-hidden="true"></span>
-    {{ gazettal.label }}
+  <span class="badge badge-{% if object.is_active %}danger{% else %}secondary{% endif %}">
+  <span class="oi oi-warning" title="Listed as {{ object.label_cache }}" aria-hidden="true"></span>
+    {{ object.label_cache }}
   </span>
 </h6>
 {% endfor %}

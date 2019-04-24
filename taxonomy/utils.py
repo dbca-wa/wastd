@@ -25,7 +25,7 @@ from conservation import models as cons_models
 logger = logging.getLogger(__name__)
 
 
-def create_test_fixtures():
+def create_test_fixtures():  # pragma: no cover
     """Create test fixtures for Taxonomy.
 
     This utility creates the following fixtures:
@@ -264,7 +264,7 @@ def make_family(fam, kingdom_dict, current_dict, publication_dict):
               rank=tax_models.Taxon.RANK_FAMILY,
               current=current_dict[fam.is_current],
               parent=lowest_parent,
-              author=fam.author.replace("(", "").replace(")", "").strip())
+              author=fam.author.replace("(", "").replace(")", "").strip() if fam.author else "")
     if fam.informal is not None:
         dd['publication_status'] = publication_dict[fam.informal]
         print(dd['publication_status'])
@@ -293,7 +293,7 @@ def make_genus(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_GENUS,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=x.family_nid),
-        author=x.author.replace("(", "").replace(")", "").strip()
+        author=x.author.replace("(", "").replace(")", "").strip() if x.author else ""
     )
     if x.informal is not None:
         dd['publication_status'] = publication_dict[x.informal]
@@ -333,7 +333,7 @@ def make_species(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_SPECIES,
         current=current_dict[x.is_current],
         parent_id=tax_models.Taxon.objects.get(name_id=parent_nid).pk,
-        author=x.author.replace("(", "").replace(")", "").strip(),
+        author=x.author.replace("(", "").replace(")", "").strip() if x.author else "",
         field_code=x.species_code
     )
     if x.informal is not None:
@@ -367,7 +367,7 @@ def make_subspecies(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_SUBSPECIES,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=parent_nid),
-        author=x.author.replace("(", "").replace(")", "").strip(),
+        author=x.author.replace("(", "").replace(")", "").strip() if x.author else "",
         field_code=x.species_code
     )
     if x.informal is not None:
@@ -402,7 +402,7 @@ def make_variety(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_VARIETY,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=parent_nid),
-        author=x.author.replace("(", "").replace(")", "").strip(),
+        author=x.author.replace("(", "").replace(")", "").strip() if x.author else "",
         field_code=x.species_code
     )
     if x.informal is not None:
@@ -448,7 +448,7 @@ def make_form(x, current_dict, publication_dict):
         rank=tax_models.Taxon.RANK_FORMA,
         current=current_dict[x.is_current],
         parent=tax_models.Taxon.objects.get(name_id=parent_nid),
-        author=x.author.replace("(", "").replace(")", "").strip(),
+        author=x.author.replace("(", "").replace(")", "").strip() if x.author else "",
         field_code=x.species_code
     )
     if x.informal is not None:

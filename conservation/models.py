@@ -654,6 +654,25 @@ class ConservationCategory(models.Model):
         (LEVEL_OTHER, "Other"),
     )
 
+    SHORTCODE_OTHER = "O"
+    SHORTCODE_EXTINCT = "X"
+    SHORTCODE_THREATENED = "T"
+    SHORTCODE_P1 = "1"
+    SHORTCODE_P2 = "2"
+    SHORTCODE_P3 = "3"
+    SHORTCODE_P4 = "4"
+    SHORTCODE_P5 = "5"
+    SHORTCODE_CHOICES = (
+        (SHORTCODE_OTHER, "Other"),
+        (SHORTCODE_EXTINCT, "Presumed extinct"),
+        (SHORTCODE_THREATENED, "Threatened"),
+        (SHORTCODE_P1, "Priority 1"),
+        (SHORTCODE_P2, "Priority 2"),
+        (SHORTCODE_P3, "Priority 2"),
+        (SHORTCODE_P4, "Priority 3"),
+        (SHORTCODE_P5, "Priority 5"),
+    )
+
     conservation_list = models.ForeignKey(
         ConservationList,
         on_delete=models.CASCADE,
@@ -698,6 +717,13 @@ class ConservationCategory(models.Model):
         choices=LEVEL_CHOICES,
         default=LEVEL_OTHER,
         verbose_name=_("Conservation level"),
+        help_text=_("The general conservation status, threatened, prority, or other."),
+    )
+    short_code = models.CharField(
+        max_length=500,
+        choices=SHORTCODE_CHOICES,
+        default=SHORTCODE_OTHER,
+        verbose_name=_("Conservation short code"),
         help_text=_("The general conservation status, threatened, prority, or other."),
     )
 
@@ -1483,8 +1509,8 @@ class CommunityConservationListing(ConservationListing):
         """
         logger.info("[Community ConservationListing] De-list previous "
                     "ConservationListings in same scope.")
-        [ConservationListing.mark_delisted() for ConservationListing in
-         self.community.community_ConservationListing.filter(
+        [x.mark_delisted() for x in
+         self.community.community_conservationlisting.filter(
             scope=self.scope,
             status=ConservationListing.STATUS_EFFECTIVE
         ).exclude(pk=self.pk)]
