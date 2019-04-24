@@ -505,7 +505,7 @@ class ConservationActivity(UrlsMixin, models.Model):
         return self.conservation_action.absolute_admin_url
 
     def list_url(self):
-        """ObsGroup list is not defined."""
+        """Conservation action detail url lists its cons activities."""
         return self.conservation_action.get_absolute_url()
 
     def get_absolute_url(self):
@@ -837,7 +837,7 @@ class ActiveNationalConservationListingManager(models.Manager):
 
 
 @python_2_unicode_compatible
-class ConservationListing(models.Model):
+class ConservationListing(RenderMixin, UrlsMixin, models.Model):
     """The allocation of one or more ConservationCategories and Criteria.
 
     Approval state is tracked as django-fsm field.
@@ -1021,12 +1021,6 @@ class ConservationListing(models.Model):
 
     # -------------------------------------------------------------------------
     # URLs
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
-
     @property
     def absolute_admin_add_url(self):
         """Return the absolute admin add URL."""
@@ -1395,11 +1389,13 @@ class TaxonConservationListing(ConservationListing):
 
     # -------------------------------------------------------------------------
     # URLs
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+    def list_url(self):
+        """Subject list contains all conservation listings."""
+        return self.taxon.list_url()
+
+    def update_url(self):
+        """Update through subject."""
+        return self.taxon.absolute_admin_url
 
     def get_absolute_url(self):
         """Detail url."""
@@ -1469,11 +1465,13 @@ class CommunityConservationListing(ConservationListing):
 
     # -------------------------------------------------------------------------
     # URLs
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+    def list_url(self):
+        """Subject list contains all conservation listings."""
+        return self.community.list_url()
+
+    def update_url(self):
+        """Update through subject."""
+        return self.community.absolute_admin_url
 
     def get_absolute_url(self):
         """Detail url."""

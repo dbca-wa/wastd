@@ -1,22 +1,22 @@
 <!-- View details -->
 <a href="{{ object.get_absolute_url }}"
-    {% if btn %} role="button" class="btn btn-primary btn-sm mr-2"{% endif %}
-    title="View {{ object }}.">
+  {% if btn %} role="button" class="btn btn-primary btn-sm mr-2"{% endif %}
+  title="View {{ object }}.">
   <span class="oi oi-eye" aria-hidden="true"></span>
   {% if label %}View{% endif %}
 </a>
 <!-- Edit details -->
 <a href="{{ object.update_url }}"
-    {% if btn %} role="button" class="btn btn-primary btn-sm mr-2"{% endif %}
-    title="Edit {{ object }}.">
+  {% if btn %} role="button" class="btn btn-primary btn-sm mr-2"{% endif %}
+  title="Edit {{ object }}.">
   <span class="oi oi-pencil" aria-hidden="true"></span>
   {% if label %}Edit{% endif %}
 </a>
 <!-- Edit details (admin) -->
 {% if request.user.is_staff %}
 <a href="{{ object.absolute_admin_url }}"
-    {% if btn %} role="button" class="btn btn-success btn-sm mr-2"{% else %}class="success"{% endif %}
-    title="As data curator, you may edit {{ object }} through the data curation portal.">
+  {% if btn %} role="button" class="btn btn-success btn-sm mr-2"{% else %}class="text-success"{% endif %}
+  title="As data curator, you may edit {{ object }} through the data curation portal.">
   <span class="oi oi-pencil" aria-hidden="true"></span>
   {% if label %}Edit{% endif %}
 </a>
