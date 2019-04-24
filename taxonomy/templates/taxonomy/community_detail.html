@@ -21,7 +21,6 @@
 
   <!-- Community details -->
   <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
-    <div class="jumbotron">
 
       <h1 class="display-4">
         {{ object.code}}
@@ -35,150 +34,216 @@
         {{ object.name }}
       </h3>
 
-      <hr class="my-4">
-      <h3>Conservation Listings
-        <small class="float-right">
-          {% include 'conservation/include/communityconservationlisting_add.html' with label=False block=False community=object %}
-        </small>
-      </h3>
-      <div class="row">
-        {% for object in object.conservation_listings.all %}
-        {% include 'conservation/cards/conservationlisting.html' with collapse=True %}
-        {% endfor %}
-      </div>
-
-      <hr class="my-4">
-      <h3>Conservation Threats
-        <small class="float-right">
-          {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=False block=False %}
-        </small>
-      </h3>
-      <div class="row">
-        {% for object in conservationthreats_general %}
-        {% include 'conservation/cards/conservationthreat.html' with collapse=True %}
-        {% endfor %}
-      </div>
-
-      <hr class="my-4">
-      <h3>Conservation Actions
-        <small class="float-right">
-          {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=False block=False %}
-        </small>
-      </h3>
-      <div class="row">
-        {% for object in conservationactions_general %}
-        {% include 'conservation/cards/conservationaction.html' with collapse=True %}
-        {% endfor %}
-      </div>
-
-      <hr class="my-4">
-      <h3>Documents
-        <small class="float-right">
-          {% include 'conservation/include/document_add.html' with subject="communities" label=False block=False %}
-        </small>
-      </h3>
-      <div class="row">
-        {% for object in object.document_set.all %}
-        {% include 'conservation/cards/document.html' with collapse=True %}
-        {% endfor %}
-      </div>
-
-      <hr class="my-4">
-      <h3>Actions</h3>
-      <p class="lead">
-        {% include 'taxonomy/include/community_change.html' with label=True block=False %}
-        {% include 'conservation/include/communityconservationlisting_add.html' with label=False block=False community=object %}
-        {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=False %}
-        {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=False %}
-        {% include 'conservation/include/document_add.html' with subject="communities" label=True block=False %}
-        {% admin_areaencounter_create_link object.pk "community" label=True %}
-        {% communityareaencounter_add_link object.pk label=True %}
-        {% if request.user.is_staff %}
-        {% admin_areaencounter_create_link object.pk "community" label=True %}
-        {% endif %}
-      </p>
-    </div><!-- /.jumbotron -->
   </div><!-- /.col#taxon-detail-main -->
 
   <div class="col-12 col-md-6 col-lg-4" id="taxon-detail-map">
-    <div id="map">
+    <div id="detailmap">
       {% leaflet_map "detailmap" callback="window.map_init" %}
     </div>
   </div><!-- /.col#taxon-detail-map -->
 </div><!-- /.row -->
 
-<!-- Comunity occurrence records -->
-<div class="row" id="occ-row">
-  <div class="col-12" id="occ-main">
-    <div class="jumbotron">
-      <p class="lead">
-      <h3>Occurrences
-        {% if occurrence_total > max_cards %}
-        <small>
-          (First {{ max_cards }} of {{ occurrence_total }})
-        </small>
-        {% endif %}
-        <small class="float-right">
-          {% communityareaencounter_add_link object.pk %}
-          {% if request.user.is_staff %}
-          {% admin_areaencounter_create_link object.pk "community" %}
-          {% admin_areaencounter_list_link object.pk "community" %}
-          <a class="btn btn-primary btn-sm text-left"
-             href="{% url 'occurrence:communityareaencounter-list' %}?community={{ object.pk }}"
-             title="List occurrences of {{object }}">
-            <span class="oi oi-list" aria-hidden="true"></span>
-            <span class="oi oi-target" aria-hidden="true"></span>
-          </a>
-        </small>
-        {% endif %}
-      </h3>
-
-      <div class="row">
-      {% regroup occurrences|dictsort:"code" by code as occ_list %}
-
-      {% for site in occ_list %}
-          <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg"
-            id="occ-{{ site.grouper }}">
-            <h5 class="card-header">
-              {{ site.grouper|title }}
-              <div class="row">
-                <div class="col-12">
-                  <small>
-                    {% include 'conservation/include/conservationthreat_add.html' with subject="communities" area=site.grouper label=False block=False %}
-                    {% include 'conservation/include/conservationaction_add.html' with subject="communities" area=site.grouper label=False block=False %}
-                    {% communityareaencounter_add_link object.pk area_code=site.grouper %}
-                  </small>
-                </div>
-              </div>
-            </h5>
-            <div class="card-body">
-              <!-- conservation threats for area {{ site.grouper }} -->
-              {% for object in conservationthreats_area %}
-              {% if object.occurrence_area_code == site.grouper %}
-              {% include 'conservation/cards/conservationthreat.html' with colapse=True %}
-              {% endif %}
-              {% endfor %}
-
-              <!-- conservation actions for area {{ site.grouper }} -->
-              {% for object in conservationactions_area %}
-              {% if object.occurrence_area_code == site.grouper %}
-              {% include 'conservation/cards/conservationaction.html' with colapse=True %}
-              {% endif %}
-              {% endfor %}
-
-              <!-- Occurrences for area {{ site.grouper }} -->
-              {% for object in site.list|dictsortreversed:"encountered_on" %}
-              {% include 'occurrence/cards/areaencounter.html' with collapse=True %}
+<div class="row" id="cons-row">
+  <div class="col-12">
+    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="pills-listings-tab" data-toggle="pill" href="#pills-listings" role="tab"
+        aria-controls="pills-listings" aria-selected="true">
+          Conservation Listings
+          <span class="badge badge-light">{{ object.conservation_listings.count }}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="pills-threats-tab" data-toggle="pill" href="#pills-threats" role="tab"
+        aria-controls="pills-threats" aria-selected="false">
+        Conservation Threats
+        <span class="badge badge-light">{{ object.conservationthreat_set.count }}</span>
+      </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="pills-consactions-tab" data-toggle="pill" href="#pills-consactions" role="tab"
+        aria-controls="pills-consactions" aria-selected="false">
+        Conservation Actions
+        <span class="badge badge-light">{{ object.conservationaction_set.count }}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="pills-documents-tab" data-toggle="pill" href="#pills-documents" role="tab"
+        aria-controls="pills-documents" aria-selected="false">
+        Documents
+        <span class="badge badge-light">{{ object.document_set.count }}</span>
+      </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="pills-occ-tab" data-toggle="pill" href="#pills-occ" role="tab" aria-controls="pills-occ"
+        aria-selected="false">
+        Occurrences
+        <span class="badge badge-light">{{ occurrence_total }}</span>
+      </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="pills-actions-tab" data-toggle="pill" href="#pills-actions" role="tab"
+        aria-controls="pills-actions" aria-selected="false">Actions</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+      <div class="tab-pane fade show active" id="pills-listings" role="tabpanel"
+      aria-labelledby="pills-listings-tab">
+         <div class="row">
+          <div class="col col-12">
+            <span class="float-right">
+              {% include 'conservation/include/communityconservationlisting_add.html' with label=False block=False community=object %}
+            </span>
+            <div class="row">
+              {% for object in object.conservation_listings.all %}
+              {% include 'conservation/cards/conservationlisting.html' with collapse=False %}
               {% endfor %}
             </div>
           </div>
-      {% endfor %}
+        </div>
       </div>
-      {# render_table occurrence_table #}
-      </p>
+      <div class="tab-pane fade" id="pills-threats" role="tabpanel"
+      aria-labelledby="pills-threats-tab">
+        <div class="row">
+          <div class="col col-12">
+            <span class="float-right">
+              {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=False block=False %}
+            </span>
+            <div class="row">
+              {% for object in object.conservationthreat_set.all %}
+              {% include 'conservation/cards/conservationthreat.html' with collapse=False %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="pills-consactions" role="tabpanel"
+      aria-labelledby="pills-consactions-tab">
+        <div class="row">
+          <div class="col col-12">
+            <span class="float-right">
+              {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=False block=False %}
+            </span>
+            <div class="row">
+              {% for object in object.conservationaction_set.all %}
+              {% include 'conservation/cards/conservationaction.html' with collapse=False %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="pills-documents" role="tabpanel"
+      aria-labelledby="pills-documents-tab">
+        <div class="row">
+          <div class="col col-12">
+            <span class="float-right">
+              {% include 'conservation/include/document_add.html' with subject="communities" label=False block=False %}
+            </span>
+            <div class="row">
+              {% for object in object.document_set.all %}
+              {% include 'conservation/cards/document.html' with collapse=False %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="pills-actions" role="tabpanel"
+      aria-labelledby="pills-actions-tab">
+        <div class="row">
+          <div class="col col-12">
+            {% include 'taxonomy/include/community_change.html' with label=True block=False %}
+            {% include 'conservation/include/communityconservationlisting_add.html' with label=True block=False community=object %}
+            {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=False %}
+            {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=False %}
+            {% include 'conservation/include/document_add.html' with subject="communities" label=True block=False %}
+            {% communityareaencounter_add_link object.pk label=True %}
+            {% if request.user.is_staff %}
+            {% admin_areaencounter_create_link object.pk "community" label=True %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="pills-occ" role="tabpanel" aria-labelledby="pills-occ-tab">
+        <!-- community occurrence records -->
+        <div class="row" id="occ-row">
+          <div class="col col-12" id="occ-main">
+
+              <p class="lead">
+              <h3>Occurrences
+                {% if occurrence_total > 100 %}
+                <small>
+                  (First {{ max_cards }} of {{ occurrence_total }})
+                </small>
+                {% endif %}
+                <small class="float-right">
+                  {% communityareaencounter_add_link object.pk %}
+                  {% if request.user.is_staff %}
+                  {% admin_areaencounter_create_link object.pk "community" %}
+                  {% admin_areaencounter_list_link object.pk "community" %}
+                  <a class="btn btn-primary btn-sm text-left"
+                     href="{% url 'occurrence:communityareaencounter-list' %}?community={{ object.pk }}"
+                     title="List occurrences of {{object }}">
+                    <span class="oi oi-list" aria-hidden="true"></span>
+                    <span class="oi oi-target" aria-hidden="true"></span>
+                  </a>
+                </small>
+                {% endif %}
+              </h3>
+
+              <div class="row">
+              {% regroup occurrences|dictsort:"code" by code as occ_list %}
+
+              {% if occ_list %}
+              {% for site in occ_list %}
+                  <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg"
+                    id="occ-{{ site.grouper }}">
+                    <h5 class="card-header">
+                     {{ site.grouper|title }}
+                      <div class="row">
+                        <div class="col-12">
+                          <small>
+                            {% include 'conservation/include/conservationthreat_add.html' with subject="communities" area=site.grouper label=False block=False %}
+                            {% include 'conservation/include/conservationaction_add.html' with subject="communities" area=site.grouper label=False block=False %}
+                            {% communityareaencounter_add_link object.pk area_code=site.grouper %}
+                          </small>
+                        </div>
+                      </div>
+                    </h5>
+                    <div class="card-body">
+                      <!-- Conservation threats for area {{ site.grouper }} -->
+                      {% for object in conservationthreats_area %}
+                      {% if object.occurrence_area_code == site.grouper %}
+                      {% include 'conservation/cards/conservationthreat.html' with collapse=True %}
+                      {% endif %}
+                      {% endfor %}
+
+                      <!-- Conservation actions for area {{ site.grouper }} -->
+                      {% for object in conservationactions_area %}
+                      {% if object.occurrence_area_code == site.grouper %}
+                      {% include 'conservation/cards/conservationaction.html' with collapse=True %}
+                      {% endif %}
+                      {% endfor %}
+
+                      <!-- Occurrences for area {{ site.grouper }} -->
+                      {% for object in site.list|dictsortreversed:"encountered_on" %}
+                      {% include 'occurrence/cards/areaencounter.html' with collapse=True %}
+                      {% endfor %}
+                    </div>
+                  </div>
+              {% endfor %}
+              {% else %}
+              {% render_table occurrence_table %}
+              {% endif %}
+              </div>
+              </p>
+
+          </div>
+        </div><!-- /#occ-row -->
+      </div>
     </div>
   </div>
-</div><!-- /#occ-row -->
+</div>
+
 {% endblock %}
 
 {% block javascript%}
