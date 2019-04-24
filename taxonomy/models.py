@@ -1874,76 +1874,34 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
 
     @property
     def gazettals(self):
-        """Return a dict of TaxonConservationListing labels and admin URLs.
-
-        TODO save as list field on model, populate in pre_save.
-        """
+        """Return a dict of TaxonConservationListing labels and admin URLs."""
         from conservation import models as cons_models
-        return [
-            {'label': x.label_cache,
-             'url': x.absolute_admin_url,
-             'is_active': True}
-            for x in cons_models.TaxonConservationListing.active.filter(
-                taxon__pk=self.pk
-            ).values(
-                "label_cache", "absolute_admin_url", True
-            )
-        ]
+        return cons_models.TaxonConservationListing.objects.filter(taxon__pk=self.pk)
 
     @property
     def active_gazettals(self):
-        """Return a dict of active TaxonConservationListing labels and admin URLs.
-
-        TODO save as list field on model, populate in pre_save.
-        TODO make active_gazettals a manager method on TaxonConservationListing
-        """
+        """Return a dict of active TaxonConservationListing labels and admin URLs."""
         from conservation import models as cons_models
-        return [
-            {'label': x.label_cache,
-             'url': x.absolute_admin_url,
-             'is_active': x.is_active}
-            for x in
-            cons_models.TaxonConservationListing.active.filter(
-                taxon__pk=self.pk
-            ).values(
-                "label_cache", "absolute_admin_url", True
-            )
-        ]
-        # self.conservation_listings.filter(status=cons_models.ConservationListing.STATUS_EFFECTIVE)
+        return cons_models.TaxonConservationListing.active.filter(taxon__pk=self.pk)
 
     @property
     def active_conservation_listing_state(self):
         """Return the first active conservation listing in state scope or None."""
         from conservation import models as cons_models
         return cons_models.TaxonConservationListing.active_state.filter(taxon__pk=self.pk).first()
-        # cl = cons_models.ConservationListing.active_state.filter(taxon__pk=self.pk).first()
-        # if cl.exists():
-        #     # defensive against multiple, although logic should enforce max one active
-        #     return cl
-        # else:
-        #     return None
 
     @property
     def active_conservation_listing_national(self):
         """Return the first active conservation listing in national scope or None."""
         from conservation import models as cons_models
         return cons_models.TaxonConservationListing.active_national.filter(taxon__pk=self.pk).first()
-        # cl = self.conservation_listings.filter(
-        #     scope=cons_models.ConservationListing.SCOPE_COMMONWEALTH,
-        #     status=cons_models.ConservationListing.STATUS_EFFECTIVE
-        # )
-        # if cl.exists():
-        #     # defensive against multiple, although logic should enforce max one active
-        #     return cl.first()
-        # else:
-        #     return None
 
-    @property
-    def documents(self):
-        """Return a dict of Documents and admin urls."""
-        return [{'obj': x,
-                 'url': x.absolute_admin_url}
-                for x in self.document_set.all()]
+    # @property
+    # def documents(self):
+    #     """Return a dict of Documents and admin urls."""
+    #     return [{'obj': x,
+    #              'url': x.absolute_admin_url}
+    #             for x in self.document_set.all()]
 
     @property
     def is_currently_listed(self):
@@ -1962,7 +1920,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
 
         From the current state listing, get the conservation code
         ConservationListing.conservation_code is a property returning
-        the highest code (T,1..5) of all categories.
+        the highest code (X,T,1..5) of all categories.
         """
         cl = self.active_conservation_listing_state
         if cl:

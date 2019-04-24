@@ -222,7 +222,7 @@ class TaxonViewTests(TestCase):
         * taxon-list with invalid name_id should still load but show warning.
         """
         response = self.client.get("{0}?name_id={1}".format(
-            Taxon.objects.last().list_url(),
+            Taxon.list_url(),
             Taxon.objects.last().name_id)
         )
         self.assertEqual(response.status_code, 200)
