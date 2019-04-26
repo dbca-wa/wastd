@@ -8,9 +8,9 @@ import uuid
 
 from django.db import models
 from django.db.models import options
-from django.template import loader, TemplateDoesNotExist
+# from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse
-from django.utils.safestring import mark_safe
+from django.utils.safestring import mark_safe  # noqa
 from django.utils.translation import ugettext_lazy as _
 # from durationfield.db.models.fields.duration import DurationField
 # from django.db.models.fields import DurationField
@@ -91,7 +91,12 @@ class RenderMixin(models.Model):
     Helper functions ``as_card``, ``as_latex`` render the model
     through the respective templates and return the HTML or Latex source code as safe string.
 
-    The template are expected at ``<app_label>/{card, latex}/model_name.{html,tex}``.
+    The template are expected at
+
+    Provides a standard template path ``<app_label>/{card, latex}/model_name.{html,tex}``.
+    Use in templates with
+
+    {% include object.card_template %}
     """
 
     class Meta:
@@ -104,32 +109,46 @@ class RenderMixin(models.Model):
         """Return model options."""
         return self._meta
 
-    def do_render(self, template_type="card", path=None):
-        """Render a template to a safe string."""
-        if path is None:
-            if getattr(self._meta, "card_template", None):
-                path = self._meta.card_template
-            else:
-                path = "{0}/{1}/{2}.html".format(
-                    self._meta.app_label,
-                    template_type,
-                    self._meta.model_name)
-        try:
-            template = loader.get_template(path)
-        except TemplateDoesNotExist:
-            msg = "Missing template {0} for {1}".format(path, self.__str__())
-            return mark_safe(msg)
-        return mark_safe(template.render({"object": self}))
+    # def do_render(self, template_type="cards", path=None):
+    #     """Render a template to a safe string."""
+    #     if path is None:
+    #         if getattr(self.opts, "card_template", None):
+    #             path = self.opts.card_template
+    #         else:
+    #             path = "{0}/{1}/{2}.html".format(
+    #                 self.opts.app_label,
+    #                 template_type,
+    #                 self.opts.model_name)
+    #     try:
+    #         template = loader.get_template(path)
+    #     except TemplateDoesNotExist:
+    #         msg = "Missing template {0} for {1}".format(path, self.__str__())
+    #         return mark_safe(msg)
+    #     return mark_safe(template.render({"object": self}))
+
+    # @property
+    # def as_card(self, path=None):
+    #     """Return as rendered HTML card."""
+    #     return self.do_render(template_type="cards", path=path)
+
+    # @property
+    # def as_latex(self, path=None):
+    #     """Return as Latex source."""
+    #     return self.do_render(template_type="latex", path=path)
 
     @property
-    def as_card(self, path=None):
-        """Return as rendered HTML card."""
-        return self.do_render(template_type="cards", path=path)
+    def card_template(self):
+        """The standard card template path is app_label/cards/model_name.html."""
+        return "{0}/cards/{1}.html".format(
+            self.opts.app_label,
+            self.opts.model_name)
 
     @property
-    def as_latex(self, path=None):
-        """Return as Latex source."""
-        return self.do_render(template_type="latex", path=path)
+    def latex_template(self):
+        """The standard latex template path is app_label/latex/model_name.html."""
+        return "{0}/latex/{1}.html".format(
+            self.opts.app_label,
+            self.opts.model_name)
 
 
 class UrlsMixin(models.Model):

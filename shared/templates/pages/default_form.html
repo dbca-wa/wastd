@@ -5,14 +5,26 @@
 {% include 'shared/breadcrumbs.html' %}
 <div class="container">
   <div class="row">
-    <div class="col-12">
+    <div class="col col-12 mb-3">
+
+      <!-- The main form -->
       {% crispy form form.helper %}
+
+      <!-- One formset, optional -->
       {% if formset %}
       {% crispy formset formset_helper %}
       {% endif %}
+
+      <!-- Many formsets, optional -->
+      {% if formset_list %}
+      {% for fs in formset_list  %}
+      {% crispy formset formset_helper %}
+      {% endfor %}
+      {% endif %}
+
     </div><!-- .col -->
   </div><!-- .row -->
-</div><!-- .container -->
+</div> --><!-- .container
 {% endblock %}
 
 {% block extrastyle %}

@@ -40,6 +40,7 @@ class TaxonAreaEncounterFilter(django_filters.FilterSet):
 
         model = occ_models.TaxonAreaEncounter
         fields = [
+            "status",
             "admin_areas",
             "taxon__paraphyletic_groups",
             "taxon",
@@ -105,6 +106,7 @@ class CommunityAreaEncounterFilter(django_filters.FilterSet):
 
         model = occ_models.CommunityAreaEncounter
         fields = [
+            "status",
             "admin_areas",
             "community",
             "area_type",

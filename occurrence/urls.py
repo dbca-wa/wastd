@@ -61,6 +61,30 @@ urlpatterns = [
 
     # ------------------------------------------------------------------------#
     # Occurrence ObsGroups
+    re_path(r'^(?P<occ_pk>\d+)/habitat-composition/report$',
+            views.HabitatCompositionCreateView.as_view(),
+            name='habitatcomposition-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/habitat-composition/(?P<obs_pk>\d+)/$',
+            views.HabitatCompositionUpdateView.as_view(),
+            name='habitatcomposition-update'),
+
+    re_path(r'^(?P<occ_pk>\d+)/occurrence-condition/report$',
+            views.OccurrenceConditionCreateView.as_view(),
+            name='occurrencecondition-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/occurrence-condition/(?P<obs_pk>\d+)/$',
+            views.OccurrenceConditionUpdateView.as_view(),
+            name='occurrencecondition-update'),
+
+    re_path(r'^(?P<occ_pk>\d+)/area-assessment/report$',
+            views.AreaAssessmentCreateView.as_view(),
+            name='areaassessment-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/area-assessment/(?P<obs_pk>\d+)/$',
+            views.AreaAssessmentUpdateView.as_view(),
+            name='areaassessment-update'),
+
     re_path(r'^(?P<occ_pk>\d+)/associated-species/report$',
             views.AssociatedSpeciesCreateView.as_view(),
             name='associatedspecies-create'),
@@ -84,13 +108,4 @@ urlpatterns = [
     re_path(r'^(?P<occ_pk>\d+)/file-attachment/(?P<obs_pk>\d+)/$',
             views.FileAttachmentUpdateView.as_view(),
             name='fileattachment-update'),
-
-    re_path(r'^(?P<occ_pk>\d+)/area-assessment/report$',
-            views.AreaAssessmentCreateView.as_view(),
-            name='areaassessment-create'),
-
-    re_path(r'^(?P<occ_pk>\d+)/area-assessment/(?P<obs_pk>\d+)/$',
-            views.AreaAssessmentUpdateView.as_view(),
-            name='areaassessment-update'),
-
 ]
