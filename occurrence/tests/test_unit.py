@@ -432,12 +432,12 @@ class TaxonAreaEncounterTests(TestCase):
     def test_obsgroup_str(self):
         """Test ObsGroup str()."""
         label = "[{0} {1}][{2} {3}] {4}".format(
-            self.og.encounter._meta.verbose_name,
-            self.og.encounter.pk,
-            self.og.opts.verbose_name,
-            self.og.pk,
-            self.og.tldr if self.og.tldr else ""
-        ).strip()
+            self.og.observationgroup_ptr.encounter.opts.verbose_name,
+            self.og.observationgroup_ptr.encounter.pk,
+            self.og.observationgroup_ptr.opts.verbose_name,
+            self.og.observationgroup_ptr.pk,
+            self.og.observationgroup_ptr.tldr
+        )
         self.assertEqual(label, self.og.observationgroup_ptr.__str__())
 
     def test_obsgroup_point(self):

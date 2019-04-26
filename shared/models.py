@@ -191,9 +191,6 @@ class UrlsMixin(models.Model):
         return reverse('{0}:{1}-detail'.format(
             self._meta.app_label, self._meta.model_name),
             kwargs={'pk': self.pk})
-        # raise NotImplementedError(
-        # "Error: please implement {0}.get_absolute_url().".format(
-        # self._meta.model_name))
 
     @classmethod
     def list_url(cls):
@@ -206,9 +203,6 @@ class UrlsMixin(models.Model):
         """Create url. Default: app:model-create."""
         return reverse('{0}:{1}-create'.format(
             cls._meta.app_label, cls._meta.model_name))
-        # raise NotImplementedError(
-        # "Error: please implement {0}.create_url().".format(
-        #         self._meta.model_name))
 
     @property
     def update_url(self):
@@ -216,9 +210,6 @@ class UrlsMixin(models.Model):
         return reverse('{0}:{1}-update'.format(
             self._meta.app_label, self._meta.model_name),
             kwargs={'pk': self.pk})
-        # raise NotImplementedError(
-        # "Error: please implement {0}.update_url().".format(
-        #         self._meta.model_name))
 
 
 class ObservationAuditMixin(models.Model):
@@ -339,6 +330,12 @@ class QualityControlMixin(models.Model):
         """Class opts."""
 
         abstract = True
+
+    @property
+    def status_colour(self):
+        """Return a Bootstrap4 CSS colour class for each status."""
+        return self.STATUS_LABELS[self.status]
+
 
 # FSM transitions --------------------------------------------------------#
     def can_proofread(self):

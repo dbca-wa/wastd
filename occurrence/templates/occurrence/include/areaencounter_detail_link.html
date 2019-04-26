@@ -1,6 +1,6 @@
-<a href="{{ detail_url }}"
+<a href="{{ object.get_absolute_url }}"
   class="text-left flex-fill mr-2"
-  title="View and add details of this{% if subject %} {{ subject }}{% endif %} occurrence.">
+  title="View and add details.">
   <span class="oi oi-eye" aria-hidden="true"></span>
   {% if label %}View{% endif %}
 </a>

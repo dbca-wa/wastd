@@ -30,17 +30,6 @@ def admin_areaencounter_create_link(pk, subject, block=False, label=False):
     }
 
 
-@register.inclusion_tag('occurrence/include/admin_absoluteadminurl_link.html', takes_context=False)
-def admin_absoluteadminurl_link(original, subject, block=False, label=False):
-    """Render a link to the original's admin change_view."""
-    return {
-        "change_url": original.absolute_admin_url,
-        "subject": subject,
-        "block": block,
-        "label": label
-    }
-
-
 @register.inclusion_tag('occurrence/include/admin_areaencounter_list_link.html', takes_context=False)
 def admin_areaencounter_list_link(pk, subject, block=False, label=False):
     """Render an "list subject area occurrences" link for a subject."""
@@ -93,55 +82,53 @@ def communityareaencounter_add_link(pk, area_code=None, block=False, label=False
     }
 
 
-@register.inclusion_tag('occurrence/cards/areaencounter.html', takes_context=False)
-def areaencounter_card(occurrence, subject, user, block=False, label=False):
-    """Render a card for a taxon or comunity area encounter."""
-    return {
-        "object": occurrence,
-        "subject": subject,
-        "is_staff": user.is_staff,
-        "block": block,
-        "label": label
-    }
+# @register.inclusion_tag('occurrence/cards/areaencounter.html', takes_context=False)
+# def areaencounter_card(occurrence, subject, user, block=False, label=False):
+#     """Render a card for a taxon or community area encounter."""
+#     return {
+#         "object": occurrence,
+#         "subject": subject,
+#         "is_staff": user.is_staff,
+#         "block": block,
+#         "label": label
+#     }
 
 
-@register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
-def taxonareaencounter_detail_link(original, block=False, label=False):
-    """Render an "view taxon area occurrence" link for a taxon."""
-    return {
-        "detail_url": original.get_absolute_url(),
-        "subject": "taxon",
-        "block": block,
-        "label": label
-    }
+# @register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
+# def taxonareaencounter_detail_link(object, block=False, label=False):
+#     """Render an "view taxon area occurrence" link for a taxon."""
+#     return {
+
+#         "block": block,
+#         "label": label
+#     }
 
 
-@register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
-def communityareaencounter_detail_link(original, block=False, label=False):
-    """Render an "view community area occurrence" link for a community."""
-    return {
-        "detail_url": original.get_absolute_url(),
-        "subject": "community",
-        "block": block,
-        "label": label
-    }
+# @register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
+# def communityareaencounter_detail_link(object, block=False, label=False):
+#     """Render an "view community area occurrence" link for a community."""
+#     return {
+
+#         "block": block,
+#         "label": label
+#     }
 
 
-@register.inclusion_tag('occurrence/include/areaencounter_update_link.html', takes_context=False)
-def areaencounter_update_link(original, block=False, label=False):
-    """Render an "update taxon area occurrence" link for a taxon."""
-    return {
-        "update_url": original.update_url,
-        "block": block,
-        "label": label
-    }
+# @register.inclusion_tag('occurrence/include/areaencounter_update_link.html', takes_context=True)
+# def areaencounter_update_link(object, block=False, label=False):
+#     """Render an "update taxon area occurrence" link for a taxon."""
+#     return {
+#         "update_url": object.update_url,
+#         "block": block,
+#         "label": label
+#     }
 
 
-@register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
-def areaencounter_detail_link(original, block=False, label=False):
-    """Render an "view area occurrence" link."""
-    return {
-        "detail_url": original.get_absolute_url(),
-        "block": block,
-        "label": label
-    }
+# @register.inclusion_tag('occurrence/include/areaencounter_detail_link.html', takes_context=False)
+# def areaencounter_detail_link(original, block=False, label=False):
+#     """Render an "view area occurrence" link."""
+#     return {
+#         "detail_url": original.get_absolute_url(),
+#         "block": block,
+#         "label": label
+#     }

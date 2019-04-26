@@ -1,0 +1,31 @@
+{% load observations %}
+<a href="{{ object.update_url }}"
+  class="text-left mr-2"
+  title="Update details of this occurrence.">
+  <span class="oi oi-pencil" aria-hidden="true"></span>
+  {% if label %}Edit{% endif %}
+</a>
+<span class="badge badge-{{ object.status|tb_status_icon }}">
+{% if request.user.is_staff %}
+  <a href="{{ object.absolute_admin_url }}"
+  class="text-left text-success"
+  title="Edit in the data curation portal.">
+  <span class="oi oi-pencil" aria-hidden="true"></span>
+  {% if label %}Edit{% endif %}
+</a>
+{% endif %}
+  QA: {{ object.get_status_display }}
+</span>
+<!-- TODO: make into form -->
+<!-- <div class="row">
+  <div class="col col-12 mt-2">
+    {% for tx in object.get_available_status_transitions %}
+    <input type="submit"
+    class="button button-xs"
+    value="{{ tx.custom.verbose }}"
+    name="_fsmtransition-status-{{ tx.name }}"
+    title="{{ tx.custom.explanation }}"
+    />
+    {% endfor %}
+  </div>
+</div> -->

@@ -1,5 +1,5 @@
 {% extends "pages/base.html" %}
-{% load staticfiles compress leaflet_tags geojson_tags mptt_tags taxonomy_tags occurrence_tags observations crispy_forms_tags bootstrap4 %}
+{% load compress leaflet_tags geojson_tags taxonomy_tags %}
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
@@ -19,28 +19,22 @@
 {% block content %}
 {% include 'shared/breadcrumbs.html' %}
 <div class="row" id="row-occ-detail">
-  <!-- Taxon details -->
+  <!-- Subject details -->
   <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="occ-detail-main">
     <div class="jumbotron">
 
       <div class="d-flex flex-row">
         <div class="mr-auto">
-          <h3>Species occurrence</h3>
+          <h3>{{ object.opts.verbose_name }}</h3>
         </div>
         <div>
-           <a href="{{ object.absolute_admin_url }}"
-              class="btn btn-{{ object.status|tb_status_icon }} btn-sm"
-              target="_" title="Edit record in new tab">
-              <i class="oi oi-pencil"></i>
-              QA: {{ object.get_status_display }}
-          </a>
-          {% areaencounter_update_link object block=False label=False %}
+          {% include "shared/update_links_qa.html" with label=False %}
         </div>
       </div>
 
       <div class="row">
         <div class="col col-12">
-          <h6>{{ object.taxon }}</h6>
+          <h6>{{ object.subject }}</h6>
         </div>
       </div>
 
@@ -113,7 +107,7 @@
 {{ block.super }}
 {% leaflet_js %}
 {% include 'shared/map.js' %}
-{% compress js %}{# pragma: no cover #}
+{% compress js %} {# pragma: no cover #}
 <script type="text/javascript">
 $( "#toggle-qa-new" ).click(function() {
     $( ".qa-new" ).toggle();

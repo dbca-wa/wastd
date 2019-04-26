@@ -1,10 +1,12 @@
 <!-- View details -->
+{% if not hide_details %}
 <a href="{{ object.get_absolute_url }}"
   {% if btn %} role="button" class="btn btn-primary btn-sm mr-2"{% endif %}
   title="View {{ object }}.">
   <span class="oi oi-eye" aria-hidden="true"></span>
   {% if label %}View{% endif %}
 </a>
+{% endif %}
 <!-- Edit details -->
 <a href="{{ object.update_url }}"
   {% if btn %} role="button" class="btn btn-primary btn-sm mr-2"{% endif %}

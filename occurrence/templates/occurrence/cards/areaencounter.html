@@ -6,31 +6,9 @@
       {{ object.encountered_on }}
       {% if collapse %}
       <small class="float-right">
-        <!-- View details -->
-        <a href="{{ object.get_absolute_url }}"
-            title="View {{ object }}">
-          <span class="oi oi-eye" aria-hidden="true"></span>
-        </a>
-        <!-- Edit details -->
-        <a href="{{ object.update_url }}"
-            title="Edit {{ object }}.">
-          <span class="oi oi-pencil" aria-hidden="true"></span>
-        </a>
-      {% if request.user.is_staff %}
-        <a href="{{ object.absolute_admin_url }}"
-            class="text-success"
-            title="Edit {{ object }}.">
-          <span class="oi oi-pencil" aria-hidden="true"></span>
-        </a>
-        {% endif %}
-      {% endif %}
+      {% include "shared/update_links_qa.html" with label=False %}
       </small>
-    </h6>
-    <h6 class="card-subtitle">
-
-      <span class="badge badge-{{ object.status|tb_status_icon }}" title="QA status">
-      QA: {{ object.get_status_display }}
-    </span>
+      {% endif %}
     </h6>
   </div>
 
@@ -59,11 +37,8 @@
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
-      {% areaencounter_detail_link object block=False label=True %}
-      {% areaencounter_update_link object block=False label=True %}
-      {% if request.user.is_staff %}
-      {% admin_absoluteadminurl_link object "occurrence" block=False label=True %}
-      {% endif %}
+      {% include "occurrence/include/areaencounter_detail_link.html" with label=True %}
+      {% include "shared/update_links_qa.html" with label=True %}
       </div><!-- /.col -->
     </div><!-- /.row -->
   </div><!-- /.card-footer -->
