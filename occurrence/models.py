@@ -475,13 +475,11 @@ class ObservationGroup(
 
     def __str__(self):
         """The unicode representation."""
-        # return u"Obs {0} for {1}".format(self.pk, self.encounter.__str__())
-        return "[{0} {1}][{2} {3}] {4}".format(
-            self.encounter.opts.verbose_name,
+        return "[{0} {1}] {2} {3}".format(
+            self.encounter.opts.verbose_name.title(),
             self.encounter.pk,
             self.opts.verbose_name,
-            self.pk,
-            self.tldr
+            self.pk
         )
 
     # -------------------------------------------------------------------------
@@ -512,7 +510,7 @@ class ObservationGroup(
     @property
     def tldr(self):
         """A text summary of the observation."""
-        return "Observation Summary"
+        return ""
 
     # Location and date
     @property
@@ -552,7 +550,7 @@ class ObservationGroup(
     @property
     def model_name_verbose(self):
         """Return the model's verbose name."""
-        return self._meta.verbose_name
+        return self.opts.verbose_name
 
     # -------------------------------------------------------------------------
     # Functions
@@ -744,8 +742,9 @@ class AreaAssessment(ObservationGroup):
     """A description of survey effort at a flora or TEC site.
 
     TODO add
-    # survey method
-    # EncounterType
+    # survey method CLD
+    # EncounterType CLD
+    # land manager present Bool
     """
 
     SURVEY_TYPE_DEFAULT = 'partial'
@@ -809,10 +808,11 @@ class AreaAssessment(ObservationGroup):
 
 
 class OccurrenceCondition(ObservationGroup):
-    """Community occurrence condition on date of encounter."""
+    """Community occurrence condition on date of encounter.
 
-    # estimated area in percent of total area following bush forever scale
-    # pristine_pc, excellent_pc, very_good_pc, good_pc, degraded_pc, completely_degraded_pc
+    Estimated percentages of observed area at each bush forever scale.
+    """
+
     pristine_percent = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         blank=True, null=True,
@@ -849,15 +849,19 @@ class OccurrenceCondition(ObservationGroup):
         verbose_name=_("Completely_degraded [%]"),
         help_text=_("The proportion of habitat in percent [0..100] in completely degraded condition."),
     )
-
-
-class HabitatCondition(ObservationGroup):
-    """Habitat condition on date of encounter."""
-
     # soil condition(enum+other)
-    # occ cond obs: pc habitat in condition x
-    # land manager present
-    pass
+
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
+        return "PRS {0}, EXC {1}, VGD {2}, GOO {3}, DGR {4}, CDG {5}".format(
+            self.pristine_percent,
+            self.excellent_percent,
+            self.very_good_percent,
+            self.good_percent,
+            self.degraded_percent,
+            self.completely_degraded_percent
+        )
 
 
 class FireHistory(ObservationGroup):
@@ -899,7 +903,7 @@ class FireHistory(ObservationGroup):
     @property
     def tldr(self):
         """A text summary of the observation."""
-        return u"{0} intensity fire on {1}".format(
+        return "{0} intensity fire on {1}".format(
             self.get_fire_intensity_display(),
             self.last_fire_date.strftime("%d/%m/%Y"),
         )
@@ -955,7 +959,7 @@ class AssociatedSpecies(ObservationGroup):
 class VegetationClassification(ObservationGroup):
     """NVIS classification categories."""
 
-    # four fields withj autocomplete, NVIS FK
+    # four fields with autocomplete, NVIS FK
     pass
 
 
@@ -1031,6 +1035,6 @@ class WildlifeIncident(ObservationGroup):
 
 
 # -----------------------------------------------------------------------------
-# TEC Uses: AreaAss, Thr, OccCond, HabComp, HabCond, VegClass, FireHist, AssSp, FileAtt
-# TFA Uses: AreaAss, SpecimenObs, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen, Sample
+# TEC Uses: AreaAss, Thr, OccCond, HabComp, VegClass, FireHist, AssSp, FileAtt
+# TFA Uses: AreaAss, Thr, OccCond, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen, Sample, WildlInc
 # TFL Uses: AreaAss, Thr, HabComp, HabCond, AssSp, FireHist, FileAtt, Specimen

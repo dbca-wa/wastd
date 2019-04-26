@@ -24,11 +24,10 @@
 
       <h1 class="display-4">
         {{ object.code}}
-
-        {% if request.user.is_staff %}
-          {% admin_absoluteadminurl_link object "community" %}
-        {% endif %}
       </h1>
+      <small class="float-right">
+        {% include "shared/details_update_admin.html" with label=False hide_detail=True %}
+      </small>
 
       <h3 class="card-subtitle mb-2 text-muted">
         {{ object.name }}
