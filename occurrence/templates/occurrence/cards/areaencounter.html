@@ -4,11 +4,6 @@
   <div class="card-header">
     <h6 class="card-title">
       {{ object.encountered_on }}
-      {% if collapse %}
-      <small class="float-right">
-      {% include "shared/update_links_qa.html" with label=False %}
-      </small>
-      {% endif %}
     </h6>
   </div>
 
@@ -33,15 +28,12 @@
     </p>
   </div><!-- /.card-body -->
 
-  {% if collapse %}{% else %}
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
-      {% include "occurrence/include/areaencounter_detail_link.html" with label=True %}
-      {% include "shared/update_links_qa.html" with label=True %}
+        {% include "shared/update_links_qa.html" with label=True %}
       </div><!-- /.col -->
     </div><!-- /.row -->
   </div><!-- /.card-footer -->
-  {% endif %}
 
 </div><!-- /.card -->

@@ -288,6 +288,11 @@ class TaxonBulkViewTests(TestCase):
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
+        t = Taxon.objects.filter(vernacular_names__isnull=False).last()
+        response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'taxonomy/include/vernaculars.html')
+
     def test_update_taxon_view(self):
         """Test the update_taxon view."""
         url = reverse("taxonomy:task-update-taxon")

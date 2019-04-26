@@ -1815,7 +1815,7 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     @property
     def update_url(self):
         """Admin update url."""
-        return reverse('admin:taxonomy_taxon_change', kwargs={'pk': self.pk})
+        self.absolute_admin_url
 
     # -------------------------------------------------------------------------
     # Derived properties
@@ -2233,7 +2233,7 @@ class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
     @property
     def update_url(self):
         """Admin update url."""
-        return reverse('admin:taxonomy_community_change', kwargs={'pk': self.pk})
+        return self.absolute_admin_url
 
     # -------------------------------------------------------------------------
     # Derived properties

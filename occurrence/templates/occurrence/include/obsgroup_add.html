@@ -4,14 +4,12 @@
   <span class="oi oi-plus" aria-hidden="true"></span>
   Report Habitat Composition
 </a>
-{% if community %}
 <a href="{% url 'occurrence:occurrencecondition-create' occ_pk=object.id %}"
   class="btn btn-primary btn-sm text-left"
-  title="Report the occurrence condition">
+  title="Report the habitat condition">
   <span class="oi oi-plus" aria-hidden="true"></span>
-  Report Occurrence Condition
+  Report Habitat Condition
 </a>
-{% endif %}
 <a href="{% url 'occurrence:areaassessment-create' occ_pk=object.id %}"
   class="btn btn-primary btn-sm text-left"
   title="Report an area assessment">

@@ -276,24 +276,6 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertTrue(isinstance(self.aa1, occ_models.AreaAssessment))
         self.assertTrue(isinstance(self.aa2, occ_models.AreaAssessment))
 
-    def test_aa_str(self):
-        """Test AreaAssessmentObservation.tldr."""
-        aa0_str = "{0} of {1} m2 in {2} mins".format(
-            self.aa0.get_survey_type_display(),
-            self.aa0.area_surveyed_m2,
-            self.aa0.survey_duration_min)
-        self.assertEqual(aa0_str, self.aa0.tldr)
-        aa1_str = "{0} of {1} m2 in {2} mins".format(
-            self.aa1.get_survey_type_display(),
-            self.aa1.area_surveyed_m2,
-            self.aa1.survey_duration_min)
-        self.assertEqual(aa1_str, self.aa1.tldr)
-        aa2_str = "{0} of {1} m2 in {2} mins".format(
-            self.aa2.get_survey_type_display(),
-            self.aa2.area_surveyed_m2,
-            self.aa2.survey_duration_min)
-        self.assertEqual(aa2_str, self.aa2.tldr)
-
     def test_aa_survey_effort_minutes_per_100sqm(self):
         """Test AreaAssessmentObservation.survey_effort_minutes_per_100sqm."""
         se = round(100 * (self.aa2.survey_duration_min / self.aa2.area_surveyed_m2))
@@ -431,12 +413,11 @@ class TaxonAreaEncounterTests(TestCase):
     # ObsGroup
     def test_obsgroup_str(self):
         """Test ObsGroup str()."""
-        label = "[{0} {1}][{2} {3}] {4}".format(
+        label = "[{0} {1}] {2} {3}".format(
             self.og.observationgroup_ptr.encounter.opts.verbose_name,
             self.og.observationgroup_ptr.encounter.pk,
             self.og.observationgroup_ptr.opts.verbose_name,
-            self.og.observationgroup_ptr.pk,
-            self.og.observationgroup_ptr.tldr
+            self.og.observationgroup_ptr.pk
         )
         self.assertEqual(label, self.og.observationgroup_ptr.__str__())
 
