@@ -1,34 +1,8 @@
-{% load fsm_admin observations bootstrap4 %}
 <div class="card-footer">
   <div class="row">
     <div class="col col-12">
-     <a href="{{ object.update_url }}"
-        class="text-left mr-2 flex-fill"
-        title="Edit">
-        <span class="oi oi-pencil" aria-hidden="true"></span>
-        Edit
-      </a>
-      <a href="{{ object.absolute_admin_url }}"
-        class="float-right"
-        title="Edit and QA in data curation portal">
-        <span class="oi oi-pencil" aria-hidden="true"></span>
-        <span class="badge badge-{{ object.status|tb_status_icon }}">
-          QA: {{ object.get_status_display }}
-        </span>
-      </a>
-      </div><!-- /.col -->
+      {% include "shared/update_links_qa.html" with label=True %}
+    </div><!-- /.col -->
   </div><!-- /.row -->
-  <!-- TODO: make into form -->
-  <!-- <div class="row">
-    <div class="col col-12 mt-2">
-      {% for tx in object.get_available_status_transitions %}
-      <input type="submit"
-      class="button button-xs"
-      value="{{ tx.custom.verbose }}"
-      name="_fsmtransition-status-{{ tx.name }}"
-      title="{{ tx.custom.explanation }}"
-      />
-      {% endfor %}
-    </div>
-  </div> -->
 </div><!-- /.card-footer -->
+

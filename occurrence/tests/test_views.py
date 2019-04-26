@@ -134,6 +134,19 @@ class CommunityAreaEncounterTests(TestCase):
         )
         self.aa2.save()
 
+        self.soiltype, created = occ_models.SoilType.objects.get_or_create(
+            code="test-soil-type", label="Test soil type")
+
+        self.hc = occ_models.HabitatComposition.objects.create(
+            encounter=self.cae,
+            # landform,
+            # rock_type,
+            # loose_rock_percent,
+            soil_type=self.soiltype,
+            # soil_colour,
+            # drainage,
+        )
+
         self.client.force_login(self.user)
 
     def test_cae_absolute_admin_url_loads(self):
@@ -162,6 +175,7 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/habitatcomposition.html')
 
         response = self.client.get(self.cae1.get_absolute_url())
         self.assertEqual(response.status_code, 200)

@@ -280,17 +280,20 @@ class AreaEncounter(PolymorphicModel,
             return None
 
     @property
+    def card_template(self):
+        """One shared template works for both TAE and CAE."""
+        return "occurrence/cards/areaencounter.html"
+
+    @property
+    def html_template(self):
+        """One shared template works for both TAE and CAE."""
+        return "occurrence/popup/areaencounter.html"
+
+    @property
     def derived_html(self):
         """Generate HTML popup content."""
-        template = "occurrence/popup/{0}.html".format(self._meta.model_name)
-        try:
-            t = loader.get_template(template)
-            return mark_safe(t.render({"original": self}))
-        except:
-            logger.info(
-                "[occurrence.models.{0}] Template missing: {1}".format(
-                    self._meta.model_name, template))
-            return self.__str__()
+        t = loader.get_template(self.html_template)
+        return mark_safe(t.render({"object": self}))
 
     @property
     def subject(self):
@@ -474,12 +477,12 @@ class ObservationGroup(
         """The unicode representation."""
         # return u"Obs {0} for {1}".format(self.pk, self.encounter.__str__())
         return "[{0} {1}][{2} {3}] {4}".format(
-            self.encounter._meta.verbose_name,
+            self.encounter.opts.verbose_name,
             self.encounter.pk,
-            self._meta.verbose_name,
+            self.opts.verbose_name,
             self.pk,
-            self.tldr if self.tldr else ""
-        ).strip()
+            self.tldr
+        )
 
     # -------------------------------------------------------------------------
     # URLs

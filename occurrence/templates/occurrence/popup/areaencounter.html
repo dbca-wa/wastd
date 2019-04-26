@@ -1,0 +1,25 @@
+{% load bootstrap4 %}
+<div class="row">
+  <div class="col col-12">
+    <div class="mr-auto">
+      <h5>{{ object.get_area_type_display }}</h5>
+    </div>
+    <div>
+      <span class="text-right">
+      {% include "shared/update_links_qa.html" with label=False %}
+      </span>
+    </div>
+    <h6>{{ object.subject }}</h6>
+    <p><i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;{{ object.encountered_on|date:"r" }}</p>
+    <p><i class="oi oi-globe" aria-hidden="true"></i>&nbsp;[{{ object.code }}] {{ object.name }}</p>
+    <p><i class="oi oi-person" aria-hidden="true"></i>&nbsp;
+      <a href="mailto:{{ object.encountered_by.email }}"
+       target="_"
+       title="Send email to {{ object.encountered_by.fullname }}"
+       subject="Question about TSC Encounter {{ object }}">
+      {{ object.encountered_by.name }}
+      </a>
+    </p>
+    <p>{{ object.description|safe }}</p>
+  </div>
+</div><!-- /.row -->
