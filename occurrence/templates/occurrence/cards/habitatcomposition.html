@@ -1,0 +1,27 @@
+{% load occurrence_tags observations bootstrap4 %}
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg qa-{{ object.status }}">
+
+ <div class="card-body">
+
+    <p class="card-text">
+      Landform {{ object.landform.label }}
+    </p>
+    <p class="card-text">
+      Rock type {{ object.rock_type.label }}
+    </p>
+    <p class="card-text">
+      Loose rock {{ object.loose_rock_percent }} &percnt;
+    </p>
+    <p class="card-text">
+      Soil type {{ object.soil_type.label }}
+    </p>
+    <p class="card-text">
+      Soil colour {{ object.soil_colour.label }}
+    </p>
+    <p class="card-text">
+      Drainage {{ object.drainage.label }}
+    </p>
+
+  </div><!-- /.card-body -->
+ {% include 'occurrence/include/obsgroup_card_footer.html' %}
+</div><!-- /.card -->

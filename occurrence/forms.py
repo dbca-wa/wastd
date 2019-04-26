@@ -2,7 +2,7 @@
 """Occurrence forms."""
 from django import forms
 
-from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit
+from crispy_forms.layout import ButtonHolder, Fieldset, Layout, Submit, Div
 from crispy_forms.helper import FormHelper
 from leaflet.forms.widgets import LeafletWidget
 
@@ -12,6 +12,10 @@ from occurrence import models as occ_models
 from occurrence import widgets as occ_widgets
 from shared.admin import S2ATTRS, LEAFLET_WIDGET_ATTRS, LEAFLET_SETTINGS, FORMFIELD_OVERRIDES  # noqa
 from shared import forms as shared_forms
+
+HALF = "col col-lg-6 col-md-6 col-sm-12 col-12"
+THIRDS = "col col-lg-4 col-md-4 col-sm-6 col-12"
+QUARTER = "col col-lg-3 col-md-3 col-sm-6 col-12"
 
 
 class AreaEncounterForm(forms.ModelForm):
@@ -72,31 +76,43 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                "Who",
-                "encountered_by",
+                "Observer",
+                Div(
+                    Div("encountered_on", css_class=HALF),
+                    Div("encountered_by", css_class=HALF),
+                    css_class="row"
+                ),
             ),
             Fieldset(
-                "When",
-                "encountered_on",
+                "Subject",
+                Div(
+                    Div("taxon", css_class="col col-12"),
+                    Div("description", css_class="col col-12"),
+                    css_class="row"
+                ),
             ),
             Fieldset(
-                "What",
-                "taxon",
-                "description",
-            ),
-            Fieldset(
-                "Where",
-                "area_type",
-                "code",
-                "geom",
-                "point",
-                "accuracy",
-                "geolocation_capture_method",
+                "Location",
+                Div(
+                    Div("area_type", css_class=HALF),
+                    Div("code", css_class=HALF),
+                    css_class="row"
+                ),
+                Div(
+                    Div("geom", css_class=HALF),
+                    Div("point", css_class=HALF),
+                    css_class="row"
+                ),
+                Div(
+                    Div("geolocation_capture_method", css_class=HALF),
+                    Div("accuracy", css_class=HALF),
+                    css_class="row"
+                ),
             ),
             ButtonHolder(
                 Submit("submit",
                        "Submit",
-                       css_class="button white")
+                       css_class="button white btn-block")
             )
         )
 
@@ -136,31 +152,43 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                "Who",
-                "encountered_by",
+                "Observer",
+                Div(
+                    Div("encountered_on", css_class=HALF),
+                    Div("encountered_by", css_class=HALF),
+                    css_class="row"
+                ),
             ),
             Fieldset(
-                "When",
-                "encountered_on",
+                "Subject",
+                Div(
+                    Div("community", css_class="col col-12"),
+                    Div("description", css_class="col col-12"),
+                    css_class="row"
+                ),
             ),
             Fieldset(
-                "What",
-                "community",
-                "description",
-            ),
-            Fieldset(
-                "Where",
-                "area_type",
-                "code",
-                "geom",
-                "point",
-                "accuracy",
-                "geolocation_capture_method",
+                "Location",
+                Div(
+                    Div("area_type", css_class=HALF),
+                    Div("code", css_class=HALF),
+                    css_class="row"
+                ),
+                Div(
+                    Div("geom", css_class=HALF),
+                    Div("point", css_class=HALF),
+                    css_class="row"
+                ),
+                Div(
+                    Div("geolocation_capture_method", css_class=HALF),
+                    Div("accuracy", css_class=HALF),
+                    css_class="row"
+                ),
             ),
             ButtonHolder(
                 Submit("submit",
                        "Submit",
-                       css_class="button white")
+                       css_class="button white btn-block")
             )
         )
 
@@ -168,6 +196,151 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
 # ----------------------------------------------------------------------------#
 # ObservationGroup forms
 #
+class HabitatCompositionForm(forms.ModelForm):
+    """HabitatComposition Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.HabitatComposition
+        fields = (
+            "encounter",
+            "landform",
+            "rock_type",
+            "loose_rock_percent",
+            "soil_type",
+            "soil_colour",
+            "drainage",
+        )
+        widgets = {
+            "encounter": occ_widgets.AreaEncounterWidget(),
+            # "taxon": tax_widgets.TaxonWidget(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(HabitatCompositionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "Habitat Composition",
+                Div(
+                    Div("landform", css_class=THIRDS),
+                    Div("rock_type", css_class=THIRDS),
+                    Div("loose_rock_percent", css_class=THIRDS),
+                    css_class="row"
+                ),
+                Div(
+                    Div("soil_type", css_class=THIRDS),
+                    Div("soil_colour", css_class=THIRDS),
+                    Div("drainage", css_class=THIRDS),
+                    css_class="row"
+                ),
+            ),
+            ButtonHolder(
+                Submit("submit",
+                       "Submit",
+                       css_class="button btn-block")
+            )
+        )
+
+
+class AreaAssessmentForm(forms.ModelForm):
+    """AreaAssessment Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.AreaAssessment
+        fields = (
+            "encounter",
+            "survey_type",
+            "area_surveyed_m2",
+            "survey_duration_min",
+        )
+        widgets = {
+            "encounter": occ_widgets.AreaEncounterWidget(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(AreaAssessmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "Survey Effort",
+                Div(
+                    Div("survey_type", css_class=THIRDS),
+                    Div("area_surveyed_m2", css_class=THIRDS),
+                    Div("survey_duration_min", css_class=THIRDS),
+                    css_class='row'
+                ),
+            ),
+            ButtonHolder(
+                Submit("submit",
+                       "Submit",
+                       css_class="button btn-block")
+            )
+        )
+
+
+class OccurrenceConditionForm(forms.ModelForm):
+    """OccurrenceCondition Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.OccurrenceCondition
+        fields = (
+            "encounter",
+            "pristine_percent",
+            "excellent_percent",
+            "very_good_percent",
+            "good_percent",
+            "degraded_percent",
+            "completely_degraded_percent",
+        )
+        widgets = {
+            "encounter": occ_widgets.AreaEncounterWidget(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(OccurrenceConditionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "Occurrence Condition",
+                Div(
+                    Div("pristine_percent", css_class=THIRDS),
+                    Div("excellent_percent", css_class=THIRDS),
+                    Div("very_good_percent", css_class=THIRDS),
+                    Div("good_percent", css_class=THIRDS),
+                    Div("degraded_percent", css_class=THIRDS),
+                    Div("completely_degraded_percent", css_class=THIRDS),
+                    css_class='row'
+                ),
+            ),
+            ButtonHolder(
+                Submit("submit",
+                       "Submit",
+                       css_class="button btn-block")
+            )
+        )
+
+
 class AssociatedSpeciesForm(forms.ModelForm):
     """Associated Species Form."""
 
@@ -197,7 +370,7 @@ class AssociatedSpeciesForm(forms.ModelForm):
             ButtonHolder(
                 Submit("submit",
                        "Submit",
-                       css_class="button white")
+                       css_class="button btn-block")
             )
         )
 
@@ -229,14 +402,17 @@ class FireHistoryForm(forms.ModelForm):
                 "encounter"
             ),
             Fieldset(
-                "Fire History",
-                "last_fire_date",
-                "fire_intensity"
+                "Evidence of past fire",
+                Div(
+                    Div("last_fire_date", css_class=HALF),
+                    Div("fire_intensity", css_class=HALF),
+                    css_class="row"
+                ),
             ),
             ButtonHolder(
                 Submit("submit",
                        "Submit",
-                       css_class="button white")
+                       css_class="button btn-block")
             )
         )
 
@@ -270,55 +446,17 @@ class FileAttachmentForm(forms.ModelForm):
                 "encounter"
             ),
             Fieldset(
-                "File attachment",
-                "attachment",
-                "title",
-                "author",
-                "confidential"
+                Div(
+                    Div('attachment', css_class=THIRDS),
+                    Div('author', css_class=THIRDS),
+                    Div('confidential', css_class=THIRDS),
+                    css_class='row'
+                ),
+                'title'
             ),
             ButtonHolder(
                 Submit("submit",
                        "Submit",
-                       css_class="button white")
-            )
-        )
-
-
-class AreaAssessmentForm(forms.ModelForm):
-    """AreaAssessment Form."""
-
-    class Meta:
-        """Class options."""
-
-        model = occ_models.AreaAssessment
-        fields = (
-            "encounter",
-            "survey_type",
-            "area_surveyed_m2",
-            "survey_duration_min",
-        )
-        widgets = {
-            "encounter": occ_widgets.AreaEncounterWidget(),
-        }
-
-    def __init__(self, *args, **kwargs):
-        """Customise form layout."""
-        super(AreaAssessmentForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Fieldset(
-                "Observation made during encounter",
-                "encounter"
-            ),
-            Fieldset(
-                "Survey Effort",
-                "survey_type",
-                "area_surveyed_m2",
-                "survey_duration_min",
-            ),
-            ButtonHolder(
-                Submit("submit",
-                       "Submit",
-                       css_class="button white")
+                       css_class="button btn-block")
             )
         )

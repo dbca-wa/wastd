@@ -1,7 +1,6 @@
-<a class="btn btn-sm btn-success text-left" target="_"
-    href="{{ list_url }}"
+<a href="{{ list_url }}"
+    class="text-left text-success"
     title="Because you have DBCA Curator privileges, you may view all occurrences of this taxon in the data curation portal.">
   <span class="oi oi-list" aria-hidden="true"></span>
-  <span class="oi oi-target" aria-hidden="true"></span>
   {% if label %}View all {{ occurrence_total }} occurrences{% endif %}
 </a>

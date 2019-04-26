@@ -290,6 +290,68 @@ class ObservationGroupUpdateView(UpdateViewBreadcrumbMixin, UpdateView):
 # ---------------------------------------------------------------------------#
 # ObservationGroup Instance Views
 #
+class HabitatCompositionCreateView(ObservationGroupCreateView):
+    """Create view for HabitatComposition."""
+
+    model = occ_models.HabitatComposition
+    form_class = occ_forms.HabitatCompositionForm
+
+
+class HabitatCompositionUpdateView(ObservationGroupUpdateView):
+    """Update view for HabitatComposition."""
+
+    model = occ_models.HabitatComposition
+    form_class = occ_forms.HabitatCompositionForm
+
+
+class OccurrenceConditionCreateView(ObservationGroupCreateView):
+    """Create view for OccurrenceCondition."""
+
+    model = occ_models.OccurrenceCondition
+    form_class = occ_forms.OccurrenceConditionForm
+
+
+class OccurrenceConditionUpdateView(ObservationGroupUpdateView):
+    """Update view for OccurrenceCondition."""
+
+    model = occ_models.OccurrenceCondition
+    form_class = occ_forms.OccurrenceConditionForm
+
+
+class AreaAssessmentCreateView(ObservationGroupCreateView):
+    """Create view for AreaAssessment."""
+
+    model = occ_models.AreaAssessment
+    form_class = occ_forms.AreaAssessmentForm
+
+
+class AreaAssessmentUpdateView(ObservationGroupUpdateView):
+    """Update view for AreaAssessment."""
+
+    model = occ_models.AreaAssessment
+    form_class = occ_forms.AreaAssessmentForm
+
+
+class FileAttachmentCreateView(ObservationGroupCreateView):
+    """Create view for FileAttachment."""
+
+    model = occ_models.FileAttachment
+    form_class = occ_forms.FileAttachmentForm
+
+    def get_initial(self):
+        """Initial form values."""
+        initial = super(FileAttachmentCreateView, self).get_initial()
+        initial["author"] = initial["encounter"].encountered_by
+        return initial
+
+
+class FileAttachmentUpdateView(ObservationGroupUpdateView):
+    """Update view for FileAttachment."""
+
+    model = occ_models.FileAttachment
+    form_class = occ_forms.FileAttachmentForm
+
+
 class AssociatedSpeciesCreateView(ObservationGroupCreateView):
     """Create view for AssociatedSpecies."""
 
@@ -298,7 +360,7 @@ class AssociatedSpeciesCreateView(ObservationGroupCreateView):
 
 
 class AssociatedSpeciesUpdateView(ObservationGroupUpdateView):
-    """Update view for AssociatedSpeciesObservation."""
+    """Update view for AssociatedSpecies."""
 
     model = occ_models.AssociatedSpecies
     form_class = occ_forms.AssociatedSpeciesForm
@@ -312,41 +374,7 @@ class FireHistoryCreateView(ObservationGroupCreateView):
 
 
 class FireHistoryUpdateView(ObservationGroupUpdateView):
-    """Update view for FireHistoryObservation."""
+    """Update view for FireHistory."""
 
     model = occ_models.FireHistory
     form_class = occ_forms.FireHistoryForm
-
-
-class FileAttachmentCreateView(ObservationGroupCreateView):
-    """Create view for FileAttachmentObservation."""
-
-    model = occ_models.FileAttachment
-    form_class = occ_forms.FileAttachmentForm
-
-    def get_initial(self):
-        """Initial form values."""
-        initial = super(FileAttachmentCreateView, self).get_initial()
-        initial["author"] = initial["encounter"].encountered_by
-        return initial
-
-
-class FileAttachmentUpdateView(ObservationGroupUpdateView):
-    """Update view for FileAttachmentObservation."""
-
-    model = occ_models.FileAttachment
-    form_class = occ_forms.FileAttachmentForm
-
-
-class AreaAssessmentCreateView(ObservationGroupCreateView):
-    """Create view for AreaAssessment."""
-
-    model = occ_models.AreaAssessment
-    form_class = occ_forms.AreaAssessmentForm
-
-
-class AreaAssessmentUpdateView(ObservationGroupUpdateView):
-    """Update view for AreaAssessmentObservation."""
-
-    model = occ_models.AreaAssessment
-    form_class = occ_forms.AreaAssessmentForm

@@ -3,9 +3,11 @@
 from __future__ import unicode_literals
 
 from django.contrib.gis.db import models as geo_models
+from django.utils.translation import ugettext_lazy as _
 
 from django_fsm_log.admin import StateLogInline
 from leaflet.forms.widgets import LeafletWidget
+from reversion.admin import VersionAdmin
 
 
 # Fix collapsing widget width
@@ -34,3 +36,22 @@ class CustomStateLogInline(StateLogInline):
     """Custom StateLogInline."""
 
     classes = ('grp-collapse', 'grp-closed', 'wide', 'extrapretty', )
+
+
+class CodeLabelDescriptionAdmin(VersionAdmin):
+    """VersionAdmin for CodeLabelDescriptionMixin models."""
+
+    # Change list
+    list_display = ["code", "label", "description", ]
+    search_fields = ("code", "label", "description",)
+
+    # Change view
+    formfield_overrides = FORMFIELD_OVERRIDES
+    prepopulated_fields = {"code": ("label",)}
+
+    fieldsets = (
+        (_('Details'), {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': ("label", "description", "code")}
+         ),
+    )

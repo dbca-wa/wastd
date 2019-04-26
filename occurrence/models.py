@@ -18,23 +18,27 @@ from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save  # noqa
 from django.dispatch import receiver
-# from rest_framework.reverse import reverse as rest_reverse
 
 from django.template import loader
 # from django.contrib.gis.db.models.query import GeoQuerySet
 # from django.urls import reverse
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+
 # from durationfield.db.models.fields.duration import DurationField
 # from django.db.models.fields import DurationField
 # from django_fsm import FSMField, transition
 # from django_fsm_log.decorators import fsm_log_by
 # from django_fsm_log.models import StateLog
+# from rest_framework.reverse import reverse as rest_reverse
 from polymorphic.models import PolymorphicModel
+
 # from wastd.users.models import User
 from shared.models import (
+    CodeLabelDescriptionMixin,
     RenderMixin,
     LegacySourceMixin,
     ObservationAuditMixin,
@@ -42,13 +46,6 @@ from shared.models import (
     UrlsMixin
 )
 from taxonomy.models import Community, Taxon
-
-# import os
-# import urllib
-# import slugify
-# from datetime import timedelta
-# from dateutil import tz
-
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -200,7 +197,6 @@ class AreaEncounter(PolymorphicModel,
         choices=GEOLOCATION_CAPTURE_METHOD_CHOICES,
         help_text=_(
             "How were the coordinates of the geolocation captured? "
-            ""
         ),
     )
 
@@ -350,11 +346,6 @@ class TaxonAreaEncounter(AreaEncounter):
         """Return the subject of the encounter."""
         return self.taxon
 
-    @property
-    def as_card(self, path="occurrence/cards/areaencounter.html"):
-        """Return as rendered HTML card."""
-        return self.do_render(template_type="cards", path=path)
-
     # -------------------------------------------------------------------------
     # Functions
     def nearby_same(self, dist_dd=0.005):
@@ -481,7 +472,14 @@ class ObservationGroup(
 
     def __str__(self):
         """The unicode representation."""
-        return u"Obs {0} for {1}".format(self.pk, self.encounter.__str__())
+        # return u"Obs {0} for {1}".format(self.pk, self.encounter.__str__())
+        return "[{0} {1}][{2} {3}] {4}".format(
+            self.encounter._meta.verbose_name,
+            self.encounter.pk,
+            self._meta.verbose_name,
+            self.pk,
+            self.tldr if self.tldr else ""
+        ).strip()
 
     # -------------------------------------------------------------------------
     # URLs
@@ -502,6 +500,17 @@ class ObservationGroup(
 
     # -------------------------------------------------------------------------
     # Derived properties
+    @property
+    def opts(self):
+        """Model opts."""
+        return self._meta
+
+    # Text representation
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
+        return "Observation Summary"
+
     # Location and date
     @property
     def point(self):
@@ -541,24 +550,6 @@ class ObservationGroup(
     def model_name_verbose(self):
         """Return the model's verbose name."""
         return self._meta.verbose_name
-
-    # @property
-    # def as_html(self):
-    #     """Return as rendered HTML popup."""
-    #     t = loader.get_template("occurrence/popup/{0}.html".format(self.observation_name))
-    #     return mark_safe(t.render({"object": self}))
-
-    # @property
-    # def as_card(self):
-    #     """Return as rendered HTML card."""
-    #     t = loader.get_template("occurrence/cards/{0}.html".format(self.observation_name))
-    #     return mark_safe(t.render({"object": self}))
-
-    # @property
-    # def as_latex(self):
-    #     """Return as raw Latex fragment."""
-    #     t = loader.get_template("occurrence/latex/{0}.tex".format(self.observation_name))
-    #     return mark_safe(t.render({"object": self}))
 
     # -------------------------------------------------------------------------
     # Functions
@@ -617,33 +608,135 @@ class FileAttachment(ObservationGroup):
         verbose_name = "File Attachment"
         verbose_name_plural = "File Attachments"
 
-    def __str__(self):
-        """The full name."""
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
         return "{0} ({1})".format(self.title, self.author.fullname)
 
 
 # -----------------------------------------------------------------------------
 # Site level observations
 #
+class Landform(CodeLabelDescriptionMixin, models.Model):
+    """The landform.
+
+    Sources:
+
+    Gillian Stack 2017: TPFR Field Manual, Appendix 5, Landform.
+    McDonald et al 1998: The Australian Soil and Land Survey Field Handbook.
+    Hill et al 1996: Wetland of the Swan Coastal Plain - Wetland Mapping,
+    Clasification and Evaluation Vol 2a.
+    """
+
+    pass
+
+
+class RockType(CodeLabelDescriptionMixin, models.Model):
+    """The rock type.
+
+    Sources:
+
+    Gillian Stack 2017: TPFR Field Manual, Appendix 6, Rock type. p31.
+    """
+
+    pass
+
+
+class SoilType(CodeLabelDescriptionMixin, models.Model):
+    """The soil type.
+
+    Sources:
+
+    Gillian Stack 2017: TPFR Field Manual, Appendix 7, Soil type. p32.
+    """
+
+    pass
+
+
+class SoilColour(CodeLabelDescriptionMixin, models.Model):
+    """The soil colour.
+
+    Sources:
+
+    Gillian Stack 2017: TPFR Field Manual, Appendix 8, Soil colour. p33.
+    """
+
+    pass
+
+
+class Drainage(CodeLabelDescriptionMixin, models.Model):
+    """The water drainage."""
+
+    pass
+
+
 class HabitatComposition(ObservationGroup):
     """Habitat composition."""
 
-    # landform(enum+other)
-    # rock type(enum+other)
-    # loose rock (range pc)
-    # soil type(enum+other)
-    # soil colour(enum+other)
-    # drainage(enum+other)
-    # specific landform element
-    pass
+    landform = models.ForeignKey(
+        Landform,
+        on_delete=models.CASCADE,
+        verbose_name=_("Landform"),
+        blank=True, null=True,
+        help_text=_("The landform."))
+
+    rock_type = models.ForeignKey(
+        RockType,
+        on_delete=models.CASCADE,
+        verbose_name=_("Rock type"),
+        blank=True, null=True,
+        help_text=_("Add missing rock types via the data curation portal."))
+
+    loose_rock_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True, null=True,
+        verbose_name=_("Loose rock [%]"),
+        help_text=_("The proportion of habitat covered by loose rock "
+                    "in percent from none (0) to all (100)."),
+    )
+
+    soil_type = models.ForeignKey(
+        SoilType,
+        on_delete=models.CASCADE,
+        verbose_name=_("Soil type"),
+        blank=True, null=True,
+        help_text=_("Add missing soil types via the data curation portal.")
+    )
+
+    soil_colour = models.ForeignKey(
+        SoilColour,
+        on_delete=models.CASCADE,
+        verbose_name=_("Soil colour"),
+        blank=True, null=True,
+        help_text=_("Add missing soil colours via the data curation portal.")
+    )
+
+    drainage = models.ForeignKey(
+        Drainage,
+        on_delete=models.CASCADE,
+        verbose_name=_("Drainage"),
+        blank=True, null=True,
+        help_text=_("Add missing drainage types via the data curation portal.")
+    )
+
+    def tldr(self):
+        """A text summary of the observation."""
+        return "Lf {0}, RT {1}, LR {2}%, ST {3}, SC {4}, Dr {5}".format(
+            self.landform.label,
+            self.rocktype.label,
+            self.loose_rock_percent,
+            self.soiltype.label,
+            self.soilcolour.label,
+            self.drainage.label,
+
+        )
+
 
 # Fire response is OOS
 
 # -----------------------------------------------------------------------------
 # Survey level observations
 #
-
-
 class AreaAssessment(ObservationGroup):
     """A description of survey effort at a flora or TEC site.
 
@@ -691,8 +784,9 @@ class AreaAssessment(ObservationGroup):
         verbose_name = "Area Assessment"
         verbose_name_plural = "Area Assessments"
 
-    def __str__(self):
-        """The full name."""
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
         return "{0} of {1} m2 in {2} mins".format(
             self.get_survey_type_display(),
             self.area_surveyed_m2,
@@ -716,7 +810,42 @@ class OccurrenceCondition(ObservationGroup):
 
     # estimated area in percent of total area following bush forever scale
     # pristine_pc, excellent_pc, very_good_pc, good_pc, degraded_pc, completely_degraded_pc
-    pass
+    pristine_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True, null=True,
+        verbose_name=_("Pristine [%]"),
+        help_text=_("The proportion of habitat in percent [0..100] in pristine condition."),
+    )
+    excellent_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True, null=True,
+        verbose_name=_("Excellent [%]"),
+        help_text=_("The proportion of habitat in percent [0..100] in excellent condition."),
+    )
+    very_good_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True, null=True,
+        verbose_name=_("Very good [%]"),
+        help_text=_("The proportion of habitat in percent [0..100] in very good condition."),
+    )
+    good_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True, null=True,
+        verbose_name=_("Good [%]"),
+        help_text=_("The proportion of habitat in percent [0..100] in good condition."),
+    )
+    degraded_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True, null=True,
+        verbose_name=_("Degraded [%]"),
+        help_text=_("The proportion of habitat in percent [0..100] in degraded condition."),
+    )
+    completely_degraded_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True, null=True,
+        verbose_name=_("Completely_degraded [%]"),
+        help_text=_("The proportion of habitat in percent [0..100] in completely degraded condition."),
+    )
 
 
 class HabitatCondition(ObservationGroup):
@@ -764,13 +893,13 @@ class FireHistory(ObservationGroup):
         verbose_name = "Fire History"
         verbose_name_plural = "Fire Histories"
 
-    def __str__(self):
-        """The unicode representation."""
-        return u"Encounter {0} Obs {1}: Fire on {2}, intensity {3}".format(
-            self.encounter.pk,
-            self.pk,
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
+        return u"{0} intensity fire on {1}".format(
+            self.get_fire_intensity_display(),
             self.last_fire_date.strftime("%d/%m/%Y"),
-            self.get_fire_intensity_display())
+        )
 
 
 # -----------------------------------------------------------------------------
@@ -810,10 +939,10 @@ class AssociatedSpecies(ObservationGroup):
         verbose_name = "Associated Species"
         verbose_name_plural = "Associated Species"
 
-    def __str__(self):
-        """The unicode representation."""
-        return u"Encounter {0} Obs {1}: Associated species {2}".format(
-            self.encounter.pk, self.pk, self.taxon)
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
+        return self.taxon
 
 
 # -----------------------------------------------------------------------------
