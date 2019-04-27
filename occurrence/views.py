@@ -304,18 +304,18 @@ class HabitatCompositionUpdateView(ObservationGroupUpdateView):
     form_class = occ_forms.HabitatCompositionForm
 
 
-class OccurrenceConditionCreateView(ObservationGroupCreateView):
-    """Create view for OccurrenceCondition."""
+class HabitatConditionCreateView(ObservationGroupCreateView):
+    """Create view for HabitatCondition."""
 
-    model = occ_models.OccurrenceCondition
-    form_class = occ_forms.OccurrenceConditionForm
+    model = occ_models.HabitatCondition
+    form_class = occ_forms.HabitatConditionForm
 
 
-class OccurrenceConditionUpdateView(ObservationGroupUpdateView):
-    """Update view for OccurrenceCondition."""
+class HabitatConditionUpdateView(ObservationGroupUpdateView):
+    """Update view for HabitatCondition."""
 
-    model = occ_models.OccurrenceCondition
-    form_class = occ_forms.OccurrenceConditionForm
+    model = occ_models.HabitatCondition
+    form_class = occ_forms.HabitatConditionForm
 
 
 class AreaAssessmentCreateView(ObservationGroupCreateView):

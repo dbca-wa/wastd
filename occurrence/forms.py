@@ -50,6 +50,7 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
         formfield_overrides = FORMFIELD_OVERRIDES
         fields = (
             "taxon",
+            "encounter_type",
             "area_type",
             "code",
             "name",
@@ -76,10 +77,11 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                "Observer",
+                "Encounter",
                 Div(
-                    Div("encountered_on", css_class=HALF),
-                    Div("encountered_by", css_class=HALF),
+                    Div("encountered_on", css_class=THIRDS),
+                    Div("encountered_by", css_class=THIRDS),
+                    Div("encounter_type", css_class=THIRDS),
                     css_class="row"
                 ),
             ),
@@ -126,6 +128,7 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
         model = occ_models.CommunityAreaEncounter
         fields = (
             "community",
+            "encounter_type",
             "area_type",
             "code",
             "name",
@@ -152,10 +155,11 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                "Observer",
+                "Encounter",
                 Div(
-                    Div("encountered_on", css_class=HALF),
-                    Div("encountered_by", css_class=HALF),
+                    Div("encountered_on", css_class=THIRDS),
+                    Div("encountered_by", css_class=THIRDS),
+                    Div("encounter_type", css_class=THIRDS),
                     css_class="row"
                 ),
             ),
@@ -259,6 +263,7 @@ class AreaAssessmentForm(forms.ModelForm):
         fields = (
             "encounter",
             "survey_type",
+            "survey_method",
             "area_surveyed_m2",
             "survey_duration_min",
         )
@@ -278,9 +283,10 @@ class AreaAssessmentForm(forms.ModelForm):
             Fieldset(
                 "Survey Effort",
                 Div(
-                    Div("survey_type", css_class=THIRDS),
-                    Div("area_surveyed_m2", css_class=THIRDS),
-                    Div("survey_duration_min", css_class=THIRDS),
+                    Div("survey_type", css_class=QUARTER),
+                    Div("survey_method", css_class=QUARTER),
+                    Div("area_surveyed_m2", css_class=QUARTER),
+                    Div("survey_duration_min", css_class=QUARTER),
                     css_class='row'
                 ),
             ),
@@ -292,13 +298,13 @@ class AreaAssessmentForm(forms.ModelForm):
         )
 
 
-class OccurrenceConditionForm(forms.ModelForm):
-    """OccurrenceCondition Form."""
+class HabitatConditionForm(forms.ModelForm):
+    """HabitatCondition Form."""
 
     class Meta:
         """Class options."""
 
-        model = occ_models.OccurrenceCondition
+        model = occ_models.HabitatCondition
         fields = (
             "encounter",
             "pristine_percent",
@@ -314,7 +320,7 @@ class OccurrenceConditionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
-        super(OccurrenceConditionForm, self).__init__(*args, **kwargs)
+        super(HabitatConditionForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(

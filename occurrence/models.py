@@ -51,6 +51,12 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
+class EncounterType(CodeLabelDescriptionMixin, models.Model):
+    """The encounter type."""
+
+    pass
+
+
 class AreaEncounter(PolymorphicModel,
                     RenderMixin,
                     UrlsMixin,
@@ -169,6 +175,13 @@ class AreaEncounter(PolymorphicModel,
     # Time: ObservationAuditMixin provides date and observer -----------------#
     #
     # Encounter type: what brought the observer to the encounter? opportunistic, research, monitoring
+    encounter_type = models.ForeignKey(
+        EncounterType,
+        on_delete=models.CASCADE,
+        verbose_name=_("Encounter Type"),
+        blank=True, null=True,
+        help_text=_("Add missing encounter types via the data curation portal.")
+    )
 
     # Geolocation ------------------------------------------------------------#
     area_type = models.PositiveIntegerField(
@@ -738,14 +751,15 @@ class HabitatComposition(ObservationGroup):
 # -----------------------------------------------------------------------------
 # Survey level observations
 #
-class AreaAssessment(ObservationGroup):
-    """A description of survey effort at a flora or TEC site.
 
-    TODO add
-    # survey method CLD
-    # EncounterType CLD
-    # land manager present Bool
-    """
+class SurveyMethod(CodeLabelDescriptionMixin, models.Model):
+    """The survey method."""
+
+    pass
+
+
+class AreaAssessment(ObservationGroup):
+    """A description of survey effort at a flora or TEC site."""
 
     SURVEY_TYPE_DEFAULT = 'partial'
     SURVEY_TYPE_CHOICES = (
@@ -766,6 +780,14 @@ class AreaAssessment(ObservationGroup):
         help_text=_(
             "How much of the occurrence has been surveyed?"
         ),
+    )
+
+    survey_method = models.ForeignKey(
+        SurveyMethod,
+        on_delete=models.CASCADE,
+        verbose_name=_("Survey Method"),
+        blank=True, null=True,
+        help_text=_("Add missing survey methods via the data curation portal.")
     )
 
     area_surveyed_m2 = models.PositiveIntegerField(
@@ -807,8 +829,8 @@ class AreaAssessment(ObservationGroup):
             return None
 
 
-class OccurrenceCondition(ObservationGroup):
-    """Community occurrence condition on date of encounter.
+class HabitatCondition(ObservationGroup):
+    """Community occurrence or habitat condition on date of encounter.
 
     Estimated percentages of observed area at each bush forever scale.
     """
@@ -912,9 +934,17 @@ class FireHistory(ObservationGroup):
 # -----------------------------------------------------------------------------
 # Population level observations
 #
+class VegetationClassification(ObservationGroup):
+    """NVIS classification categories."""
+
+    # four fields with autocomplete, NVIS FK
+    pass
+
+
 class PlantCount(ObservationGroup):
     """Population plant count."""
 
+    # land manager present Bool
     # population count accuracy (actual, extrpol, estimate)
     # count method (enum)
     # what counted (plants, clumps, clonal stems)
@@ -955,14 +985,6 @@ class AssociatedSpecies(ObservationGroup):
 # -----------------------------------------------------------------------------
 # Individual level observations
 #
-
-class VegetationClassification(ObservationGroup):
-    """NVIS classification categories."""
-
-    # four fields with autocomplete, NVIS FK
-    pass
-
-
 class AnimalObservation(ObservationGroup):
     """Observation of an Animal.
 
@@ -1036,5 +1058,5 @@ class WildlifeIncident(ObservationGroup):
 
 # -----------------------------------------------------------------------------
 # TEC Uses: AreaAss, Thr, OccCond, HabComp, VegClass, FireHist, AssSp, FileAtt
-# TFA Uses: AreaAss, Thr, OccCond, VegClass, Hab, AssSp, FireHist, FileAtt, Specimen, Sample, WildlInc
+# TFA Uses: AreaAss, Thr, OccCond, VegClass, AssSp, FireHist, FileAtt, Specimen, Sample, WildlInc
 # TFL Uses: AreaAss, Thr, HabComp, HabCond, AssSp, FireHist, FileAtt, Specimen

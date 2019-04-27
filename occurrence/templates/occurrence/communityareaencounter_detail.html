@@ -47,6 +47,13 @@
 
       <div class="row">
         <div class="col col-12">
+        <i class="oi oi-map" aria-hidden="true"></i>&nbsp;
+        {{ object.encounter_type }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col col-12">
         <i class="oi oi-globe" aria-hidden="true"></i>&nbsp;
         {{ object.get_area_type_display }} [{{ object.code }}] {% if object.name %}{{ object.name }}{% endif %}
         </div>
