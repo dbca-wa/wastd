@@ -265,6 +265,7 @@ class TaxonViewTests(TestCase):
 
     # def test_taxon_update_url_loads(self):
     #     """Test Taxon update_url."""
+    #     self.client.force_login(self.user)
     #     response = self.client.get(self.taxon0.update_url)
     #     self.assertEqual(response.status_code, 200)
 
@@ -288,7 +289,8 @@ class TaxonBulkViewTests(TestCase):
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
-        t = Taxon.objects.filter(vernacular_names__isnull=False).last()
+        t.vernacular_names = "test name 1, test name 2"
+        t.save()
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'taxonomy/include/vernaculars.html')

@@ -96,6 +96,7 @@ class AreaAssessmentAdmin(FSMTransitionMixin, VersionAdmin):
     list_display = [
         "encounter",
         "survey_type",
+        "survey_method",
         "area_surveyed_m2",
         "survey_duration_min",
     ]
@@ -114,11 +115,11 @@ class AreaAssessmentInline(admin.TabularInline):
 
 
 # -----------------------------------------------------------------------------
-# OccurrenceCondition
+# HabitatCondition
 #
-@admin.register(occ_models.OccurrenceCondition)
-class OccurrenceConditionAdmin(FSMTransitionMixin, VersionAdmin):
-    """OccurrenceCondition Admin."""
+@admin.register(occ_models.HabitatCondition)
+class HabitatConditionAdmin(FSMTransitionMixin, VersionAdmin):
+    """HabitatCondition Admin."""
 
     list_display = [
         "encounter",
@@ -129,17 +130,17 @@ class OccurrenceConditionAdmin(FSMTransitionMixin, VersionAdmin):
         "degraded_percent",
         "completely_degraded_percent",
     ]
-    form = occ_forms.OccurrenceConditionForm
+    form = occ_forms.HabitatConditionForm
     fsm_field = ['status', ]
 
 
-class OccurrenceConditionInline(admin.TabularInline):
-    """OccurrenceCondition Inline."""
+class HabitatConditionInline(admin.TabularInline):
+    """HabitatCondition Inline."""
 
     extra = 1
     max_num = 1  # limit max number
-    model = occ_models.OccurrenceCondition
-    form = occ_forms.OccurrenceConditionForm
+    model = occ_models.HabitatCondition
+    form = occ_forms.HabitatConditionForm
     classes = ('grp-collapse grp-open',)
 
 # -----------------------------------------------------------------------------
@@ -229,8 +230,8 @@ class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmi
     """Admin for Area."""
 
     # Change list
-    list_display = ["area_type", "code", "name", "source", "source_id", "status", ]
-    list_filter = ["area_type", "source", "status", "geolocation_capture_method"]
+    list_display = ["encounter_type", "area_type", "code", "name", "source", "source_id", "status", ]
+    list_filter = ["encounter_type", "area_type", "source", "status", "geolocation_capture_method"]
     search_fields = ("code", "name", )
     date_hierarchy = 'encountered_on'
 
@@ -242,7 +243,7 @@ class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmi
     fieldsets = (
         (_('Details'), {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("area_type", "code", "name", "description",)}
+            'fields': ("encounter_type", "area_type", "code", "name", "description",)}
          ),
         (_('Location'), {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -311,7 +312,7 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
         FileAttachmentInline,
         AreaAssessmentInline,
         HabitatCompositionInline,
-        OccurrenceConditionInline,
+        HabitatConditionInline,
         FireHistoryInline,
         AssociatedSpeciesInline,
     ]

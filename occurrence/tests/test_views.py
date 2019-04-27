@@ -147,6 +147,16 @@ class CommunityAreaEncounterTests(TestCase):
             # drainage,
         )
 
+        self.habcond = occ_models.HabitatCondition.objects.get_or_create(
+            encounter=self.cae,
+            pristine_percent=12,
+            excellent_percent=23,
+            very_good_percent=34,
+            good_percent=45,
+            degraded_percent=56,
+            completely_degraded_percent=67,
+        )
+
         self.client.force_login(self.user)
 
     def test_cae_absolute_admin_url_loads(self):
@@ -176,6 +186,7 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
         self.assertTemplateUsed(response, 'occurrence/cards/habitatcomposition.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/habitatcondition.html')
 
         response = self.client.get(self.cae1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -394,6 +405,16 @@ class TaxonAreaEncounterTests(TestCase):
 
         # TODO add cons threat
 
+        self.habcond = occ_models.HabitatCondition.objects.get_or_create(
+            encounter=self.tae,
+            pristine_percent=12,
+            excellent_percent=23,
+            very_good_percent=34,
+            good_percent=45,
+            degraded_percent=56,
+            completely_degraded_percent=67,
+        )
+
         self.client.force_login(self.user)
 
     def test_home_loads(self):
@@ -451,6 +472,7 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/habitatcondition.html')
 
     def test_tae_update_url_loads(self):
         """Test taxon update url works and loads."""

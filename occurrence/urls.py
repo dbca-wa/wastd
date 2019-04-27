@@ -69,13 +69,13 @@ urlpatterns = [
             views.HabitatCompositionUpdateView.as_view(),
             name='habitatcomposition-update'),
 
-    re_path(r'^(?P<occ_pk>\d+)/occurrence-condition/report$',
-            views.OccurrenceConditionCreateView.as_view(),
-            name='occurrencecondition-create'),
+    re_path(r'^(?P<occ_pk>\d+)/habitat-condition/report$',
+            views.HabitatConditionCreateView.as_view(),
+            name='habitatcondition-create'),
 
-    re_path(r'^(?P<occ_pk>\d+)/occurrence-condition/(?P<obs_pk>\d+)/$',
-            views.OccurrenceConditionUpdateView.as_view(),
-            name='occurrencecondition-update'),
+    re_path(r'^(?P<occ_pk>\d+)/habitat-condition/(?P<obs_pk>\d+)/$',
+            views.HabitatConditionUpdateView.as_view(),
+            name='habitatcondition-update'),
 
     re_path(r'^(?P<occ_pk>\d+)/area-assessment/report$',
             views.AreaAssessmentCreateView.as_view(),
