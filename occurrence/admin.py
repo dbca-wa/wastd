@@ -207,6 +207,34 @@ class FireHistoryInline(admin.TabularInline):
 
 
 # -----------------------------------------------------------------------------
+# VegetationClassification
+#
+@admin.register(occ_models.VegetationClassification)
+class VegetationClassificationAdmin(FSMTransitionMixin, VersionAdmin):
+    """VegetationClassification Admin."""
+
+    list_display = [
+        "encounter",
+        "level1",
+        "level2",
+        "level3",
+        "level4",
+    ]
+    form = occ_forms.VegetationClassificationForm
+    fsm_field = ['status', ]
+
+
+class VegetationClassificationInline(admin.TabularInline):
+    """VegetationClassification Inline."""
+
+    extra = 1
+    # max_num = 1  # limit max number
+    model = occ_models.VegetationClassification
+    form = occ_forms.VegetationClassificationForm
+    classes = ('grp-collapse grp-open',)
+
+
+# -----------------------------------------------------------------------------
 # Associated Species
 #
 @admin.register(occ_models.AssociatedSpecies)
@@ -293,6 +321,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
         HabitatCompositionInline,
         AreaAssessmentInline,
         FireHistoryInline,
+        VegetationClassificationInline,
         AssociatedSpeciesInline,
     ]
 
@@ -324,5 +353,6 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
         AreaAssessmentInline,
         HabitatConditionInline,
         FireHistoryInline,
+        VegetationClassificationInline,
         AssociatedSpeciesInline,
     ]

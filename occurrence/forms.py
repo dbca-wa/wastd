@@ -436,6 +436,48 @@ class FireHistoryForm(forms.ModelForm):
         )
 
 
+class VegetationClassificationForm(forms.ModelForm):
+    """VegetationClassification Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.VegetationClassification
+        fields = (
+            "encounter",
+            "level1",
+            "level2",
+            "level3",
+            "level4",
+        )
+        widgets = {
+            "encounter": occ_widgets.AreaEncounterWidget(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(VegetationClassificationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "Vegetation Classification",
+                "level1",
+                "level2",
+                "level3",
+                "level4",
+            ),
+            ButtonHolder(
+                Submit("submit",
+                       "Submit",
+                       css_class="button btn-block")
+            )
+        )
+
+
 class AssociatedSpeciesForm(forms.ModelForm):
     """Associated Species Form."""
 

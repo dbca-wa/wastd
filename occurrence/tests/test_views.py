@@ -140,6 +140,15 @@ class CommunityAreaEncounterTests(TestCase):
         )
         self.fh1.save()
 
+        self.vc = occ_models.VegetationClassification.objects.create(
+            encounter=self.cae,
+            level1="lsdkfjlksdf",
+            level2="slkdjflskdjf",
+            level3="sdklsjdf",
+            level4="sldkfjslkdjfskdf"
+        )
+        self.vc.save()
+
         self.aa0 = occ_models.AreaAssessment.objects.create(
             encounter=self.cae,
             area_surveyed_m2=None,
@@ -208,12 +217,13 @@ class CommunityAreaEncounterTests(TestCase):
 
         response = self.client.get(self.cae.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'occurrence/cards/firehistory.html')
-        self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
-        self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
         self.assertTemplateUsed(response, 'occurrence/cards/habitatcomposition.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/habitatcondition.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/firehistory.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/vegetationclassification.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
 
         response = self.client.get(self.cae1.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -401,6 +411,15 @@ class TaxonAreaEncounterTests(TestCase):
         )
         self.fh1.save()
 
+        self.vc = occ_models.VegetationClassification.objects.create(
+            encounter=self.tae,
+            level1="lsdkfjlksdf",
+            level2="slkdjflskdjf",
+            level3="sdklsjdf",
+            level4="sldkfjslkdjfskdf"
+        )
+        self.vc.save()
+
         self.fatt = occ_models.FileAttachment.objects.create(
             encounter=self.tae,
             attachment=SimpleUploadedFile(
@@ -506,11 +525,12 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertContains(response, self.fatt.title)
         self.assertContains(response, self.fatt.author)
         self.assertTemplateUsed(response, 'occurrence/taxonareaencounter_detail.html')
-        self.assertTemplateUsed(response, 'occurrence/cards/firehistory.html')
-        self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
-        self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/areaassessment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/habitatcondition.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/firehistory.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/vegetationclassification.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
 
         # Test that map centers around tae.point if tae.geom is None
         self.tae.geom = None
