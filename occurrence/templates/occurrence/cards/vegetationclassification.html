@@ -1,0 +1,27 @@
+{% load occurrence_tags observations bootstrap4 %}
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg qa-{{ object.status }}">
+
+ <div class="card-body">
+
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.level1 }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.level2 }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.level3 }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.level4 }}
+    </p>
+
+  </div><!-- /.card-body -->
+
+ {% include 'occurrence/include/obsgroup_card_footer.html' %}
+
+</div><!-- /.card -->
