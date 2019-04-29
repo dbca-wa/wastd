@@ -27,6 +27,7 @@ from django.urls import reverse  # noqa
 from model_mommy import mommy  # noqa
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
 from taxonomy.models import Taxon, Community
+from wastd.observations.models import Area
 from conservation import models as cons_models
 
 
@@ -390,6 +391,12 @@ class CommunityConservationListingViewTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_community_detail_url_loads(self):
+        """Test Community detail_url."""
+        response = self.client.get(self.com0.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'conservation/cards/conservationlisting.html')
+
 
 class DocumentViewTests(TestCase):
     """View tests for Document."""
@@ -465,6 +472,12 @@ class DocumentViewTests(TestCase):
         response = self.client.get(self.object.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
+    def test_community_detail_url_loads(self):
+        """Test Community detail_url."""
+        response = self.client.get(self.com0.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'conservation/cards/document.html')
+
     def test_list_url_loads(self):
         """Test conservationaction-list."""
         response = self.client.get(self.object.list_url())
@@ -514,7 +527,7 @@ class ConservationFixtureTests(TestCase):
         # TODO verify that staff can see the conservation listing absolute admin url
 
     def test_list_url_taxon(self):
-        """Test Taxon list url loads to show document preview."""
+        """Test Taxon list url with filter settings."""
         t = cons_models.Document.objects.last().taxa.first()
         response = self.client.get(t.list_url() + "?name_id={0}".format(t.name_id))
         self.assertEqual(response.status_code, 200)
@@ -526,6 +539,12 @@ class ConservationFixtureTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(t.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        a, created = Area.objects.get_or_create(
+            name="WA",
+            geom='{"type": "Polygon", "coordinates": [[[110, -38], [110,-15],[125,-15],[125,-38],[110, -38]]]}')
+        response = self.client.get(t.list_url() + "?admin_areas={0}".format(a.pk))
         self.assertEqual(response.status_code, 200)
 
     def test_get_absolute_url_threat(self):
@@ -562,14 +581,17 @@ class ConservationFixtureTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_list_url_loads_action(self):
+    def test_conservationactivity_list_url_loads_action(self):
         """Test conservationaction-list loads."""
         url = cons_models.ConservationActivity.objects.last().conservation_action.list_url()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    # TODO list view with filters from index/navbar links
-    # requires wastd.observations.Area (District/Region)
+        a, created = Area.objects.get_or_create(
+            name="WA",
+            geom='{"type": "Polygon", "coordinates": [[[110, -38], [110,-15],[125,-15],[125,-38],[110, -38]]]}')
+        response = self.client.get(url + "?admin_areas={0}".format(a.pk))
+        self.assertEqual(response.status_code, 200)
 
     def test_absolute_admin_url_document(self):
         """Test Document absolute admin url."""
