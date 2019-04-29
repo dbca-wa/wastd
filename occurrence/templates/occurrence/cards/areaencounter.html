@@ -10,7 +10,7 @@
   <div class="card-body">
     {% if collapse %}{% else %}
       <p class="card-text">
-        <a href="{{ subject.get_absolute_url }}">
+        <a href="{{ object.subject.get_absolute_url }}">
           <span class="oi oi-eye" title="Subject" aria-hidden="true"></span>
           {{ object.subject }}
         </a>
