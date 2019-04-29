@@ -61,6 +61,14 @@ urlpatterns = [
 
     # ------------------------------------------------------------------------#
     # Occurrence ObsGroups
+    re_path(r'^(?P<occ_pk>\d+)/file-attachment/report$',
+            views.FileAttachmentCreateView.as_view(),
+            name='fileattachment-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/file-attachment/(?P<obs_pk>\d+)/$',
+            views.FileAttachmentUpdateView.as_view(),
+            name='fileattachment-update'),
+
     re_path(r'^(?P<occ_pk>\d+)/habitat-composition/report$',
             views.HabitatCompositionCreateView.as_view(),
             name='habitatcomposition-create'),
@@ -68,14 +76,6 @@ urlpatterns = [
     re_path(r'^(?P<occ_pk>\d+)/habitat-composition/(?P<obs_pk>\d+)/$',
             views.HabitatCompositionUpdateView.as_view(),
             name='habitatcomposition-update'),
-
-    re_path(r'^(?P<occ_pk>\d+)/habitat-condition/report$',
-            views.HabitatConditionCreateView.as_view(),
-            name='habitatcondition-create'),
-
-    re_path(r'^(?P<occ_pk>\d+)/habitat-condition/(?P<obs_pk>\d+)/$',
-            views.HabitatConditionUpdateView.as_view(),
-            name='habitatcondition-update'),
 
     re_path(r'^(?P<occ_pk>\d+)/area-assessment/report$',
             views.AreaAssessmentCreateView.as_view(),
@@ -85,13 +85,13 @@ urlpatterns = [
             views.AreaAssessmentUpdateView.as_view(),
             name='areaassessment-update'),
 
-    re_path(r'^(?P<occ_pk>\d+)/associated-species/report$',
-            views.AssociatedSpeciesCreateView.as_view(),
-            name='associatedspecies-create'),
+    re_path(r'^(?P<occ_pk>\d+)/habitat-condition/report$',
+            views.HabitatConditionCreateView.as_view(),
+            name='habitatcondition-create'),
 
-    re_path(r'^(?P<occ_pk>\d+)/associated-species/(?P<obs_pk>\d+)/$',
-            views.AssociatedSpeciesUpdateView.as_view(),
-            name='associatedspecies-update'),
+    re_path(r'^(?P<occ_pk>\d+)/habitat-condition/(?P<obs_pk>\d+)/$',
+            views.HabitatConditionUpdateView.as_view(),
+            name='habitatcondition-update'),
 
     re_path(r'^(?P<occ_pk>\d+)/fire-history/report$',
             views.FireHistoryCreateView.as_view(),
@@ -101,11 +101,12 @@ urlpatterns = [
             views.FireHistoryUpdateView.as_view(),
             name='firehistory-update'),
 
-    re_path(r'^(?P<occ_pk>\d+)/file-attachment/report$',
-            views.FileAttachmentCreateView.as_view(),
-            name='fileattachment-create'),
+    re_path(r'^(?P<occ_pk>\d+)/associated-species/report$',
+            views.AssociatedSpeciesCreateView.as_view(),
+            name='associatedspecies-create'),
 
-    re_path(r'^(?P<occ_pk>\d+)/file-attachment/(?P<obs_pk>\d+)/$',
-            views.FileAttachmentUpdateView.as_view(),
-            name='fileattachment-update'),
+    re_path(r'^(?P<occ_pk>\d+)/associated-species/(?P<obs_pk>\d+)/$',
+            views.AssociatedSpeciesUpdateView.as_view(),
+            name='associatedspecies-update'),
+
 ]

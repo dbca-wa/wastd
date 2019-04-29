@@ -829,6 +829,12 @@ class AreaAssessment(ObservationGroup):
             return None
 
 
+class SoilCondition(CodeLabelDescriptionMixin, models.Model):
+    """The soil condition."""
+
+    pass
+
+
 class HabitatCondition(ObservationGroup):
     """Community occurrence or habitat condition on date of encounter.
 
@@ -841,48 +847,61 @@ class HabitatCondition(ObservationGroup):
         verbose_name=_("Pristine [%]"),
         help_text=_("The proportion of habitat in percent [0..100] in pristine condition."),
     )
+
     excellent_percent = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         blank=True, null=True,
         verbose_name=_("Excellent [%]"),
         help_text=_("The proportion of habitat in percent [0..100] in excellent condition."),
     )
+
     very_good_percent = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         blank=True, null=True,
         verbose_name=_("Very good [%]"),
         help_text=_("The proportion of habitat in percent [0..100] in very good condition."),
     )
+
     good_percent = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         blank=True, null=True,
         verbose_name=_("Good [%]"),
         help_text=_("The proportion of habitat in percent [0..100] in good condition."),
     )
+
     degraded_percent = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         blank=True, null=True,
         verbose_name=_("Degraded [%]"),
         help_text=_("The proportion of habitat in percent [0..100] in degraded condition."),
     )
+
     completely_degraded_percent = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         blank=True, null=True,
         verbose_name=_("Completely_degraded [%]"),
         help_text=_("The proportion of habitat in percent [0..100] in completely degraded condition."),
     )
-    # soil condition(enum+other)
+
+    soil_condition = models.ForeignKey(
+        SoilCondition,
+        on_delete=models.CASCADE,
+        verbose_name=_("Soil condition"),
+        blank=True, null=True,
+        help_text=_("Add missing soil conditions via the data curation portal.")
+    )
 
     @property
     def tldr(self):
         """A text summary of the observation."""
-        return "PRS {0}, EXC {1}, VGD {2}, GOO {3}, DGR {4}, CDG {5}".format(
+        return "PRS {0}, EXC {1}, VGD {2}, GOO {3}, DGR {4}, CDG {5}, SC {6}".format(
             self.pristine_percent,
             self.excellent_percent,
             self.very_good_percent,
             self.good_percent,
             self.degraded_percent,
-            self.completely_degraded_percent
+            self.completely_degraded_percent,
+            self.soil_condition
         )
 
 
@@ -935,10 +954,34 @@ class FireHistory(ObservationGroup):
 # Population level observations
 #
 class VegetationClassification(ObservationGroup):
-    """NVIS classification categories."""
+    """Veg Classification should follow NVIS classification categories.
 
-    # four fields with autocomplete, NVIS FK
-    pass
+    This is a free text version for legacy data.
+    """
+
+    level1 = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Level 1"),
+        help_text=_("The first classification level."),
+    )
+
+    level2 = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Level 2"),
+        help_text=_("The first classification level."),
+    )
+
+    level3 = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Level 3"),
+        help_text=_("The first classification level."),
+    )
+
+    level4 = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Level 4"),
+        help_text=_("The first classification level."),
+    )
 
 
 class PlantCount(ObservationGroup):
@@ -1057,6 +1100,6 @@ class WildlifeIncident(ObservationGroup):
 
 
 # -----------------------------------------------------------------------------
-# TEC Uses: AreaAss, Thr, OccCond, HabComp, VegClass, FireHist, AssSp, FileAtt
-# TFA Uses: AreaAss, Thr, OccCond, VegClass, AssSp, FireHist, FileAtt, Specimen, Sample, WildlInc
-# TFL Uses: AreaAss, Thr, HabComp, HabCond, AssSp, FireHist, FileAtt, Specimen
+# TEC Uses: FileAtt, HabComp, AreaAss, HabCond, Thr, FireHist, VegClass,             AssSp
+# TFA Uses: FileAtt,          AreaAss, HabCond, Thr, FireHist, VegClass, AnimalObs,  AssSp, Specimen, WildlInc
+# TFL Uses: FileAtt, HabComp, AreaAss, HabCond, Thr, FireHist,           PlantCount, AssSp, Specimen
