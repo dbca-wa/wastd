@@ -200,6 +200,51 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
 # ----------------------------------------------------------------------------#
 # ObservationGroup forms
 #
+class FileAttachmentForm(forms.ModelForm):
+    """FileAttachment Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.FileAttachment
+        fields = (
+            "encounter",
+            "attachment",
+            "title",
+            "author",
+            "confidential"
+        )
+        widgets = {
+            "encounter": occ_widgets.AreaEncounterWidget(),
+            "author": usr_widgets.UserWidget(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(FileAttachmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                Div(
+                    Div('attachment', css_class=THIRDS),
+                    Div('author', css_class=THIRDS),
+                    Div('confidential', css_class=THIRDS),
+                    css_class='row'
+                ),
+                'title'
+            ),
+            ButtonHolder(
+                Submit("submit",
+                       "Submit",
+                       css_class="button btn-block")
+            )
+        )
+
+
 class HabitatCompositionForm(forms.ModelForm):
     """HabitatComposition Form."""
 
@@ -313,6 +358,7 @@ class HabitatConditionForm(forms.ModelForm):
             "good_percent",
             "degraded_percent",
             "completely_degraded_percent",
+            "soil_condition",
         )
         widgets = {
             "encounter": occ_widgets.AreaEncounterWidget(),
@@ -333,45 +379,12 @@ class HabitatConditionForm(forms.ModelForm):
                     Div("pristine_percent", css_class=THIRDS),
                     Div("excellent_percent", css_class=THIRDS),
                     Div("very_good_percent", css_class=THIRDS),
-                    Div("good_percent", css_class=THIRDS),
-                    Div("degraded_percent", css_class=THIRDS),
-                    Div("completely_degraded_percent", css_class=THIRDS),
+                    Div("good_percent", css_class=QUARTER),
+                    Div("degraded_percent", css_class=QUARTER),
+                    Div("completely_degraded_percent", css_class=QUARTER),
+                    Div("soil_condition", css_class=QUARTER),
                     css_class='row'
                 ),
-            ),
-            ButtonHolder(
-                Submit("submit",
-                       "Submit",
-                       css_class="button btn-block")
-            )
-        )
-
-
-class AssociatedSpeciesForm(forms.ModelForm):
-    """Associated Species Form."""
-
-    class Meta:
-        """Class options."""
-
-        model = occ_models.AssociatedSpecies
-        fields = ("encounter", "taxon",)
-        widgets = {
-            "encounter": occ_widgets.AreaEncounterWidget(),
-            "taxon": tax_widgets.TaxonWidget(),
-        }
-
-    def __init__(self, *args, **kwargs):
-        """Customise form layout."""
-        super(AssociatedSpeciesForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Fieldset(
-                "Observation made during encounter",
-                "encounter"
-            ),
-            Fieldset(
-                "Associated Species",
-                "taxon",
             ),
             ButtonHolder(
                 Submit("submit",
@@ -423,28 +436,22 @@ class FireHistoryForm(forms.ModelForm):
         )
 
 
-class FileAttachmentForm(forms.ModelForm):
-    """FileAttachment Form."""
+class AssociatedSpeciesForm(forms.ModelForm):
+    """Associated Species Form."""
 
     class Meta:
         """Class options."""
 
-        model = occ_models.FileAttachment
-        fields = (
-            "encounter",
-            "attachment",
-            "title",
-            "author",
-            "confidential"
-        )
+        model = occ_models.AssociatedSpecies
+        fields = ("encounter", "taxon",)
         widgets = {
             "encounter": occ_widgets.AreaEncounterWidget(),
-            "author": usr_widgets.UserWidget(),
+            "taxon": tax_widgets.TaxonWidget(),
         }
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
-        super(FileAttachmentForm, self).__init__(*args, **kwargs)
+        super(AssociatedSpeciesForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
@@ -452,13 +459,8 @@ class FileAttachmentForm(forms.ModelForm):
                 "encounter"
             ),
             Fieldset(
-                Div(
-                    Div('attachment', css_class=THIRDS),
-                    Div('author', css_class=THIRDS),
-                    Div('confidential', css_class=THIRDS),
-                    css_class='row'
-                ),
-                'title'
+                "Associated Species",
+                "taxon",
             ),
             ButtonHolder(
                 Submit("submit",

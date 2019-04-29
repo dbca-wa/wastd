@@ -28,6 +28,34 @@ from occurrence import resources as occ_resources
 
 
 # -----------------------------------------------------------------------------
+# FileAttachment
+#
+@admin.register(occ_models.FileAttachment)
+class FileAttachmentAdmin(FSMTransitionMixin, VersionAdmin):
+    """FileAttachment Admin."""
+
+    list_display = [
+        "encounter",
+        "attachment",
+        "title",
+        "author",
+        "confidential"
+    ]
+    form = occ_forms.FileAttachmentForm
+    fsm_field = ['status', ]
+
+
+class FileAttachmentInline(admin.TabularInline):
+    """FileAttachment Inline."""
+
+    extra = 1
+    # max_num = 1  # limit max number
+    model = occ_models.FileAttachment
+    form = occ_forms.FileAttachmentForm
+    classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
+
+
+# -----------------------------------------------------------------------------
 # HabitatComposition
 #
 @admin.register(occ_models.Landform)
@@ -117,6 +145,13 @@ class AreaAssessmentInline(admin.TabularInline):
 # -----------------------------------------------------------------------------
 # HabitatCondition
 #
+@admin.register(occ_models.SoilCondition)
+class SoilConditionAdmin(CodeLabelDescriptionAdmin):
+    """Admin for SoilCondition."""
+
+    pass
+
+
 @admin.register(occ_models.HabitatCondition)
 class HabitatConditionAdmin(FSMTransitionMixin, VersionAdmin):
     """HabitatCondition Admin."""
@@ -129,6 +164,7 @@ class HabitatConditionAdmin(FSMTransitionMixin, VersionAdmin):
         "good_percent",
         "degraded_percent",
         "completely_degraded_percent",
+        "soil_condition",
     ]
     form = occ_forms.HabitatConditionForm
     fsm_field = ['status', ]
@@ -142,58 +178,6 @@ class HabitatConditionInline(admin.TabularInline):
     model = occ_models.HabitatCondition
     form = occ_forms.HabitatConditionForm
     classes = ('grp-collapse grp-open',)
-
-# -----------------------------------------------------------------------------
-# Associated Species
-#
-
-
-@admin.register(occ_models.AssociatedSpecies)
-class AssociatedSpeciesAdmin(FSMTransitionMixin, VersionAdmin):
-    """Associated Species Admin."""
-
-    list_display = ["encounter", "taxon", ]
-    form = occ_forms.AssociatedSpeciesForm
-    fsm_field = ['status', ]
-    autocomplete_fields = ['taxon', ]
-
-
-class AssociatedSpeciesInline(admin.TabularInline):
-    """Associated Species  Inline."""
-
-    extra = 1
-    # max_num = 1  # limit max number
-    model = occ_models.AssociatedSpecies
-    form = occ_forms.AssociatedSpeciesForm
-    classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
-
-
-# -----------------------------------------------------------------------------
-# FileAttachment
-#
-@admin.register(occ_models.FileAttachment)
-class FileAttachmentAdmin(FSMTransitionMixin, VersionAdmin):
-    """FileAttachment Admin."""
-
-    list_display = [
-        "encounter",
-        "attachment",
-        "title",
-        "author",
-        "confidential"
-    ]
-    form = occ_forms.FileAttachmentForm
-    fsm_field = ['status', ]
-
-
-class FileAttachmentInline(admin.TabularInline):
-    """FileAttachment Inline."""
-
-    extra = 1
-    # max_num = 1  # limit max number
-    model = occ_models.FileAttachment
-    form = occ_forms.FileAttachmentForm
-    classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
 
 
 # -----------------------------------------------------------------------------
@@ -220,6 +204,29 @@ class FireHistoryInline(admin.TabularInline):
     model = occ_models.FireHistory
     form = occ_forms.FireHistoryForm
     classes = ('grp-collapse grp-open',)
+
+
+# -----------------------------------------------------------------------------
+# Associated Species
+#
+@admin.register(occ_models.AssociatedSpecies)
+class AssociatedSpeciesAdmin(FSMTransitionMixin, VersionAdmin):
+    """Associated Species Admin."""
+
+    list_display = ["encounter", "taxon", ]
+    form = occ_forms.AssociatedSpeciesForm
+    fsm_field = ['status', ]
+    autocomplete_fields = ['taxon', ]
+
+
+class AssociatedSpeciesInline(admin.TabularInline):
+    """Associated Species  Inline."""
+
+    extra = 1
+    # max_num = 1  # limit max number
+    model = occ_models.AssociatedSpecies
+    form = occ_forms.AssociatedSpeciesForm
+    classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
 
 
 # -----------------------------------------------------------------------------
@@ -278,11 +285,13 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
             'fields': ("taxon",)}
          ),
     ) + AreaEncounterAdmin.fieldsets
+    # TFA Uses: FileAtt,          AreaAss, HabCond, Thr, FireHist, VegClass, AnimalObs,  AssSp, Specimen, WildlInc
+    # TFL Uses: FileAtt, HabComp, AreaAss, HabCond, Thr, FireHist,           PlantCount, AssSp, Specimen
     inlines = [
         CustomStateLogInline,
         FileAttachmentInline,
-        AreaAssessmentInline,
         HabitatCompositionInline,
+        AreaAssessmentInline,
         FireHistoryInline,
         AssociatedSpeciesInline,
     ]
@@ -307,11 +316,12 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
         'fields': ("community", )}
     ),) + AreaEncounterAdmin.fieldsets
+    # TEC Uses: FileAtt, HabComp, AreaAss, HabCond, Thr, FireHist, VegClass,             AssSp
     inlines = [
         CustomStateLogInline,
         FileAttachmentInline,
-        AreaAssessmentInline,
         HabitatCompositionInline,
+        AreaAssessmentInline,
         HabitatConditionInline,
         FireHistoryInline,
         AssociatedSpeciesInline,

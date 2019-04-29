@@ -290,48 +290,6 @@ class ObservationGroupUpdateView(UpdateViewBreadcrumbMixin, UpdateView):
 # ---------------------------------------------------------------------------#
 # ObservationGroup Instance Views
 #
-class HabitatCompositionCreateView(ObservationGroupCreateView):
-    """Create view for HabitatComposition."""
-
-    model = occ_models.HabitatComposition
-    form_class = occ_forms.HabitatCompositionForm
-
-
-class HabitatCompositionUpdateView(ObservationGroupUpdateView):
-    """Update view for HabitatComposition."""
-
-    model = occ_models.HabitatComposition
-    form_class = occ_forms.HabitatCompositionForm
-
-
-class HabitatConditionCreateView(ObservationGroupCreateView):
-    """Create view for HabitatCondition."""
-
-    model = occ_models.HabitatCondition
-    form_class = occ_forms.HabitatConditionForm
-
-
-class HabitatConditionUpdateView(ObservationGroupUpdateView):
-    """Update view for HabitatCondition."""
-
-    model = occ_models.HabitatCondition
-    form_class = occ_forms.HabitatConditionForm
-
-
-class AreaAssessmentCreateView(ObservationGroupCreateView):
-    """Create view for AreaAssessment."""
-
-    model = occ_models.AreaAssessment
-    form_class = occ_forms.AreaAssessmentForm
-
-
-class AreaAssessmentUpdateView(ObservationGroupUpdateView):
-    """Update view for AreaAssessment."""
-
-    model = occ_models.AreaAssessment
-    form_class = occ_forms.AreaAssessmentForm
-
-
 class FileAttachmentCreateView(ObservationGroupCreateView):
     """Create view for FileAttachment."""
 
@@ -352,18 +310,46 @@ class FileAttachmentUpdateView(ObservationGroupUpdateView):
     form_class = occ_forms.FileAttachmentForm
 
 
-class AssociatedSpeciesCreateView(ObservationGroupCreateView):
-    """Create view for AssociatedSpecies."""
+class HabitatCompositionCreateView(ObservationGroupCreateView):
+    """Create view for HabitatComposition."""
 
-    model = occ_models.AssociatedSpecies
-    form_class = occ_forms.AssociatedSpeciesForm
+    model = occ_models.HabitatComposition
+    form_class = occ_forms.HabitatCompositionForm
 
 
-class AssociatedSpeciesUpdateView(ObservationGroupUpdateView):
-    """Update view for AssociatedSpecies."""
+class HabitatCompositionUpdateView(ObservationGroupUpdateView):
+    """Update view for HabitatComposition."""
 
-    model = occ_models.AssociatedSpecies
-    form_class = occ_forms.AssociatedSpeciesForm
+    model = occ_models.HabitatComposition
+    form_class = occ_forms.HabitatCompositionForm
+
+
+class AreaAssessmentCreateView(ObservationGroupCreateView):
+    """Create view for AreaAssessment."""
+
+    model = occ_models.AreaAssessment
+    form_class = occ_forms.AreaAssessmentForm
+
+
+class AreaAssessmentUpdateView(ObservationGroupUpdateView):
+    """Update view for AreaAssessment."""
+
+    model = occ_models.AreaAssessment
+    form_class = occ_forms.AreaAssessmentForm
+
+
+class HabitatConditionCreateView(ObservationGroupCreateView):
+    """Create view for HabitatCondition."""
+
+    model = occ_models.HabitatCondition
+    form_class = occ_forms.HabitatConditionForm
+
+
+class HabitatConditionUpdateView(ObservationGroupUpdateView):
+    """Update view for HabitatCondition."""
+
+    model = occ_models.HabitatCondition
+    form_class = occ_forms.HabitatConditionForm
 
 
 class FireHistoryCreateView(ObservationGroupCreateView):
@@ -378,3 +364,17 @@ class FireHistoryUpdateView(ObservationGroupUpdateView):
 
     model = occ_models.FireHistory
     form_class = occ_forms.FireHistoryForm
+
+
+class AssociatedSpeciesCreateView(ObservationGroupCreateView):
+    """Create view for AssociatedSpecies."""
+
+    model = occ_models.AssociatedSpecies
+    form_class = occ_forms.AssociatedSpeciesForm
+
+
+class AssociatedSpeciesUpdateView(ObservationGroupUpdateView):
+    """Update view for AssociatedSpecies."""
+
+    model = occ_models.AssociatedSpecies
+    form_class = occ_forms.AssociatedSpeciesForm
