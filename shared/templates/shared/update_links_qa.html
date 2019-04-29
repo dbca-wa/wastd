@@ -1,7 +1,7 @@
 <!-- View details -->
 {% if not hide_details %}
 <a href="{{ object.get_absolute_url }}"
-  {% if btn %} role="button" class="btn btn-primary btn-sm mr-2"{% endif %}
+  class="mr-2 text-primary"
   title="View {{ object }}.">
   <span class="oi oi-eye" aria-hidden="true"></span>
   {% if label %}View{% endif %}
@@ -9,7 +9,7 @@
 {% endif %}
 <!-- Edit details -->
 <a href="{{ object.update_url }}"
-  class="text-left mr-2"
+  class="text-primary mr-2"
   title="Update details of this occurrence.">
   <span class="oi oi-pencil" aria-hidden="true"></span>
   {% if label %}Edit{% endif %}
@@ -18,7 +18,7 @@
 
   {% if request.user.is_staff %}
   <a href="{{ object.absolute_admin_url }}"
-  class="text-left text-success"
+  class="text-primary text-success"
   title="Edit in the data curation portal.">
   <span class="oi oi-pencil" aria-hidden="true"></span>
   {% if label %}Edit{% endif %}

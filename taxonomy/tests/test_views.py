@@ -25,7 +25,8 @@ from model_mommy import mommy  # noqa
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
 
 from conservation import models as cons_models
-from taxonomy.models import Community, Taxon, Crossreference
+from taxonomy.models import Community, Taxon, Crossreference, Vernacular
+from wastd.observations.models import Area
 # from django.contrib.contenttypes.models import ContentType
 
 MOMMY_CUSTOM_FIELDS_GEN = MOMMY_SPATIAL_FIELDS
@@ -97,6 +98,27 @@ class CommunityViewTests(TestCase):
         response = self.client.get(self.com0.list_url())
         self.assertEqual(response.status_code, 200)
 
+        wa_poly = '{"type":"Polygon","coordinates":[[[110,-35],[110,-10],[135,-10],[135,-35],[110,-35]]]}'
+
+        a, created = Area.objects.get_or_create(name="WA", geom=wa_poly)
+        response = self.client.get(self.com0.list_url() + "?admin_areas={0}".format(a.pk))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.com0.list_url() + "?eoo=" + wa_poly)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.com0.list_url() + "?aoo=" + wa_poly)
+        self.assertEqual(response.status_code, 200)
+
+        # cat1 = cons_models.ConservationCategory.objects.first()
+        # cat2 = cons_models.ConservationCategory.objects.last()
+
+        # response = self.client.get(self.com0.list_url() + "?categories=" + cat1.pk)
+        # self.assertEqual(response.status_code, 200)
+
+        # response = self.client.get(self.com0.list_url() + "?categories=" + cat1.pk + "&categories=" + cat2.pk)
+        # self.assertEqual(response.status_code, 200)
+
     def test_com_detail_url_loads(self):
         """Test Community detail_url."""
         response = self.client.get(self.com0.get_absolute_url())
@@ -134,7 +156,9 @@ class TaxonViewTests(TestCase):
             name_id=1000,
             name="name0",
             publication_status=0,
-            _fill_optional=['rank', 'eoo', 'vernacular_name', 'vernacular_names'])
+            _fill_optional=['rank', 'eoo', ])
+        self.taxon0.save()
+        self.ver0 = mommy.make(Vernacular, taxon=self.taxon0, name="vern0", language=Vernacular.LANGUAGE_ENGLISH)
         self.taxon0.save()
 
         self.taxon1 = mommy.make(
@@ -145,7 +169,14 @@ class TaxonViewTests(TestCase):
             publication_status=1,
             parent=self.taxon0,
             author="ze author",
+            vernacular_name="some vernacular name",
+            vernacular_names="some vernacular name",
             _fill_optional=['rank', 'eoo'])
+        self.taxon1.save()
+        self.ver1a = mommy.make(Vernacular, taxon=self.taxon1, name="vern1a",
+                                language=Vernacular.LANGUAGE_ENGLISH, preferred=True)
+        self.ver1b = mommy.make(Vernacular, taxon=self.taxon1, name="vern1b",
+                                language=Vernacular.LANGUAGE_ENGLISH)
         self.taxon1.save()
 
         self.taxon2 = mommy.make(
@@ -187,6 +218,8 @@ class TaxonViewTests(TestCase):
         self.consaction.taxa.add(self.taxon0)
         self.consaction.communities.add(self.com0)
 
+        # TODO add cons threats with area code
+
         self.user = get_user_model().objects.create_superuser(
             username="superuser",
             email="super@gmail.com",
@@ -217,6 +250,9 @@ class TaxonViewTests(TestCase):
         response = self.client.get(list_url)
         self.assertEqual(response.status_code, 200)
 
+        wa_poly = '{"type":"Polygon","coordinates":[[[110,-35],[110,-10],[135,-10],[135,-35],[110,-35]]]}'
+        a, created = Area.objects.get_or_create(name="WA", geom=wa_poly)
+
         for filter_args in [
             "?paraphyletic_groups={0}&is_terminal_taxon=true".format(settings.ANIMALS_PK),
             "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority".format(settings.ANIMALS_PK),  # noqa
@@ -226,8 +262,9 @@ class TaxonViewTests(TestCase):
             "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=threatened".format(settings.PLANTS_PK),
             "?paraphyletic_groups={0}&is_terminal_taxon=true&conservation_level=priority".format(settings.PLANTS_PK),
             "?is_terminal_taxon=true",
-            # "admin_areas=1", # needs an observations.Area
+            "?admin_areas=a.pk",
             '?eoo={"type"%3A"Polygon"%2C"coordinates"%3A[[[111.357422%2C-30.190717]%2C[111.357422%2C-24.974106]%2C[122.519531%2C-24.974106]%2C[122.519531%2C-30.190717]%2C[111.357422%2C-30.190717]]]}',  # noqa
+            '?aoo={"type"%3A"Polygon"%2C"coordinates"%3A[[[111.357422%2C-30.190717]%2C[111.357422%2C-24.974106]%2C[122.519531%2C-24.974106]%2C[122.519531%2C-30.190717]%2C[111.357422%2C-30.190717]]]}',  # noqa
             # "?categories=5&categories=2&categories=3", # needs cons cat
             # TODO add other filters
         ]:
@@ -269,6 +306,25 @@ class TaxonViewTests(TestCase):
     #     response = self.client.get(self.taxon0.update_url)
     #     self.assertEqual(response.status_code, 200)
 
+    def test_taxon_detail_url_shows_all_vernaculars(self):
+        """Test Taxon detail_url shows preferred and vernacular names (if different to preferred)."""
+        # taxon0: additional vernacular names
+        response = self.client.get(self.taxon0.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'taxonomy/include/vernaculars.html')
+        # print("Taxon 0 vn: {0}, vnames: {1}".format(self.taxon0.vernacular_name, self.taxon0.vernacular_names))
+        self.assertEqual(self.taxon0.vernacular_name, self.taxon0.vernacular_names)
+        self.assertContains(response, self.taxon0.vernacular_name)
+
+        # taxon 1: only perferred vernacular names
+        response = self.client.get(self.taxon1.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'taxonomy/include/vernaculars.html')
+        # print("Taxon 1 vn: {0}, vnames: {1}".format(self.taxon0.vernacular_name, self.taxon0.vernacular_names))
+        self.assertNotEqual(self.taxon1.vernacular_name, self.taxon1.vernacular_names)
+        self.assertContains(response, self.taxon1.vernacular_name)
+        self.assertContains(response, self.taxon1.vernacular_names)
+
 
 class TaxonBulkViewTests(TestCase):
     """Taxon view tests."""
@@ -279,21 +335,38 @@ class TaxonBulkViewTests(TestCase):
     ]
 
     def test_taxon_list_url_loads(self):
-        """Test taxon-list."""
-        response = self.client.get(Taxon.objects.last().list_url())
+        """Test taxon-list with filters."""
+        t = Taxon.objects.last()
+        response = self.client.get(t.list_url())
         self.assertEqual(response.status_code, 200)
+
+        wa_poly = '{"type":"Polygon","coordinates":[[[110,-35],[110,-10],[135,-10],[135,-35],[110,-35]]]}'
+
+        a, created = Area.objects.get_or_create(name="WA", geom=wa_poly)
+        response = self.client.get(t.list_url() + "?admin_areas={0}".format(a.pk))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(t.list_url() + "?eoo=" + wa_poly)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(t.list_url() + "?aoo=" + wa_poly)
+        self.assertEqual(response.status_code, 200)
+
+        # Requires conservation list and categories
+        # cat1 = cons_models.ConservationCategory.objects.first()
+        # cat2 = cons_models.ConservationCategory.objects.last()
+
+        # response = self.client.get(t.list_url() + "?categories=" + cat1.pk)
+        # self.assertEqual(response.status_code, 200)
+
+        # response = self.client.get(t.list_url() + "?categories=" + cat1.pk + "&categories=" + cat2.pk)
+        # self.assertEqual(response.status_code, 200)
 
     def test_taxon_detail_url_loads(self):
         """Test Taxon detail_url."""
         t = Taxon.objects.last()
         response = self.client.get(t.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-
-        t.vernacular_names = "test name 1, test name 2"
-        t.save()
-        response = self.client.get(t.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'taxonomy/include/vernaculars.html')
 
     def test_update_taxon_view(self):
         """Test the update_taxon view."""

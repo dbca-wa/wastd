@@ -81,8 +81,6 @@ class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
 
         # name_id is mutually exclusive to other parameters
         if self.request.GET.get("name_id"):
-            # t = queryset.filter(name_id=self.request.GET.get("name_id"))
-            # return list(chain(t.first().get_ancestors(), t, t.first().get_children()))
             try:
                 return queryset.filter(
                     name_id=self.request.GET.get("name_id")

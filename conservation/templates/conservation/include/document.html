@@ -7,6 +7,7 @@
           {{ document.title }}
         </p>
           <span class="badge badge-warning">{{ document.get_document_type_display }}</span>
+          <span class="float-right">
           {% for attachment in document.attachments.all %}
           <a href="{{ attachment.attachment.url }}" target="_blank"
             class="text-{% if attachment.confidential == True%}danger{% else %}success{% endif %} mr-2"
@@ -16,7 +17,7 @@
           {% endfor %}
 
           {% include 'shared/details_update_admin.html' with btn=False label=False object=document %}
-
+          </span>
       </div>
     </div>
   </div>

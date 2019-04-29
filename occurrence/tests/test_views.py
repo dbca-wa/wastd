@@ -17,6 +17,7 @@ from django.urls import reverse
 from model_mommy import mommy
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
 from occurrence import models as occ_models
+from conservation import models as cons_models
 from taxonomy.models import Community, Taxon  # noqa
 # from django.contrib.contenttypes.models import ContentType
 
@@ -65,10 +66,34 @@ class CommunityAreaEncounterTests(TestCase):
             password="test")
         self.user.save()
 
+        self.consthreatcat = cons_models.ConservationThreatCategory.objects.create(
+            code="weeds",
+            label="Weeds",
+            description="invasive weeds"
+        )
+        self.consthreat = cons_models.ConservationThreat.objects.create(
+            category=self.consthreatcat,
+            cause="burnif of some stuff",
+            occurrence_area_code="area1"
+        )
+        self.consthreat.communities.add(self.com0)
+
+        self.consactioncat = cons_models.ConservationActionCategory.objects.create(
+            code="burn",
+            label="Burn",
+            description="Burn everything")
+        self.consact = cons_models.ConservationAction.objects.create(
+            category=self.consactioncat,
+            instructions="burn some stuff",
+            occurrence_area_code="area1")
+        self.consact.communities.add(self.com0)
+
         self.cae = occ_models.CommunityAreaEncounter.objects.create(
             community=self.com0,
             encountered_on=timezone.now(),
             encountered_by=self.user,
+            code="area1",
+            label="Area 1",
             point=GEOSGeometry('POINT (115 -32)', srid=4326),
             geom=GEOSGeometry(
                 '{ "type": "Polygon", "coordinates": [ [  [ 116.586914, -32.916485 ], '
@@ -80,6 +105,8 @@ class CommunityAreaEncounterTests(TestCase):
             community=self.com0,
             encountered_on=timezone.now(),
             encountered_by=self.user,
+            code="area2",
+            label="Area 2",
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
         )
 
@@ -195,6 +222,13 @@ class CommunityAreaEncounterTests(TestCase):
         """Test Community detail_url."""
         response = self.client.get(self.cae.community.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.cae.code.title())
+        self.assertContains(response, self.cae1.code.title())
+        self.assertContains(response, self.consthreat.cause)
+        self.assertContains(response, self.consact.instructions)
+        self.assertTemplateUsed(response, 'conservation/cards/conservationthreat.html')
+        self.assertTemplateUsed(response, 'conservation/cards/conservationaction.html')
+        self.assertTemplateUsed(response, 'occurrence/cards/areaencounter.html')
 
     def test_cae_update_url_loads(self):
         """Test CommunityAreaEncounter update_url."""
@@ -212,6 +246,8 @@ class CommunityAreaEncounterTests(TestCase):
 
         response = self.client.get(occ_models.CommunityAreaEncounter.create_url())
         self.assertEqual(response.status_code, 200)
+
+        # test create CAE with args: com pk, area code
 
     # ------------------------------------------------------------------------#
     # CAE AssociatedSpeciesObservation
@@ -330,6 +366,8 @@ class TaxonAreaEncounterTests(TestCase):
             taxon=self.taxon0,
             encountered_on=timezone.now(),
             encountered_by=self.user,
+            code="area1",
+            label="Area 1",
             point=GEOSGeometry('POINT (115 -32)', srid=4326),
             geom=GEOSGeometry(
                 '{ "type": "Polygon", "coordinates": [ [  [ 116.586914, -32.916485 ], '
@@ -473,6 +511,12 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertTemplateUsed(response, 'occurrence/cards/fileattachment.html')
         self.assertTemplateUsed(response, 'occurrence/cards/associatedspecies.html')
         self.assertTemplateUsed(response, 'occurrence/cards/habitatcondition.html')
+
+        # Test that map centers around tae.point if tae.geom is None
+        self.tae.geom = None
+        self.tae.save()
+        response = self.client.get(self.tae.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
 
     def test_tae_update_url_loads(self):
         """Test taxon update url works and loads."""
