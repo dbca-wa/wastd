@@ -155,10 +155,8 @@
             {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=False %}
             {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=False %}
             {% include 'conservation/include/document_add.html' with subject="communities" label=True block=False %}
-            {% communityareaencounter_add_link object.pk label=True %}
-            {% if request.user.is_staff %}
-            {% admin_areaencounter_create_link object.pk "community" label=True %}
-            {% endif %}
+            {% include 'occurrence/include/areaencounter_add_link.html' with subject="community" pk=object.pk label=True %}
+
           </div>
         </div>
       </div>
@@ -175,9 +173,8 @@
                 </small>
                 {% endif %}
                 <small class="float-right">
-                  {% communityareaencounter_add_link object.pk %}
+                  {% include 'occurrence/include/areaencounter_add_link.html' with subject="community" pk=object.pk label=True %}
                   {% if request.user.is_staff %}
-                  {% admin_areaencounter_create_link object.pk "community" %}
                   {% admin_areaencounter_list_link object.pk "community" %}
                   <a class="btn btn-primary btn-sm text-left"
                      href="{% url 'occurrence:communityareaencounter-list' %}?community={{ object.pk }}"
@@ -203,7 +200,7 @@
                           <small>
                             {% include 'conservation/include/conservationthreat_add.html' with subject="communities" area=site.grouper label=False block=False %}
                             {% include 'conservation/include/conservationaction_add.html' with subject="communities" area=site.grouper label=False block=False %}
-                            {% communityareaencounter_add_link object.pk area_code=site.grouper %}
+                            {% include 'occurrence/include/areaencounter_add_link.html' with subject="community" pk=object.pk label=True area_code=site.grouper %}
                           </small>
                         </div>
                       </div>

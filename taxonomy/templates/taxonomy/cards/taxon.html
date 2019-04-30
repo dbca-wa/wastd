@@ -85,7 +85,7 @@
         {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=True %}
         {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=True %}
         {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=True %}
-        {% taxonareaencounter_add_link object.name_id block=True label=True %}
+        {% include 'occurrence/include/areaencounter_add_link.html' with subject="taxon" pk=object.pk name_id=object.name_id label=True %}
       </div>
     </div>
   </div>

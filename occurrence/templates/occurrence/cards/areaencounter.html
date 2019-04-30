@@ -1,33 +1,28 @@
 {% load observations occurrence_tags %}
-<div class="card {% if collapse %}{% else %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
-
+<div class="card {% if not collapse %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
   <div class="card-header">
     <h6 class="card-title">
       {{ object.encountered_on }} {{ object.encounter_type }}
     </h6>
   </div>
-
   <div class="card-body">
     {% if collapse %}{% else %}
-      <p class="card-text">
-        <a href="{{ object.subject.get_absolute_url }}">
-          <span class="oi oi-eye" title="Subject" aria-hidden="true"></span>
-          {{ object.subject }}
-        </a>
+    <p class="card-text">
+      <a href="{{ object.subject.get_absolute_url }}">
+        <span class="oi oi-eye" title="Subject" aria-hidden="true"></span>
+        {{ object.subject }}
+      </a>
     </p>
     {% endif %}
-
     <h6 class="card-text">
       <span class="oi oi-person" title="Encountered by" aria-hidden="true"></span>
       {{ object.encountered_by }}
     </h6>
-
     <p class="card-text">
       <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
       {{ object.description }}
     </p>
   </div><!-- /.card-body -->
-
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
@@ -35,5 +30,4 @@
       </div><!-- /.col -->
     </div><!-- /.row -->
   </div><!-- /.card-footer -->
-
 </div><!-- /.card -->
