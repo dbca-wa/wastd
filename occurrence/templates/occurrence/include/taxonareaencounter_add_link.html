@@ -1,0 +1,33 @@
+{% load occurrence_tags %}
+{% if request.user.is_staff %}
+<a   href="{% url 'admin:occurrence_taxonareaencounter_add' %}?taxon={{ object.pk }}"
+  {% if btn %}
+  class="text-left btn btn-sm btn-success{% if block %} btn-block{% else %} mr-2{% endif %}"
+  {% else %}
+  class="text-left text-success{% if block %} display-block{% else %} mr-2{% endif %}"
+  {% endif %}
+  title="Report a new occurrence of {{ object }} through the data curation portal.">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  <span class="oi oi-target" aria-hidden="true"></span>
+  {% if label %}Report occurrence{% endif %}
+</a>
+{% endif %}
+<a
+  {% if area_code and area_code != 'NONE' %}
+  href="{% url 'occurrence:taxon-occurrence-area-create' name_id=object.name_id area_code=area_code|sanitize_tag_label %}"
+  {% else %}
+  href="{% url 'occurrence:taxon-occurrence-create' name_id=object.name_id %}"
+  {% endif %}
+
+  {% if btn %}
+  class="text-left btn btn-sm btn-primary {% if block %} btn-block{% endif %}"
+  {% else %}
+  class="text-left {% if block %} display-block{% endif %}"
+  {% endif %}
+  title="Report a new occurrence of {{ object }}.">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  <span class="oi oi-target" aria-hidden="true"></span>
+  {% if label %}Report occurrence
+  {% if area_code and area_code != "NONE" %} at {{ area_code }}{% endif %}
+  {% endif %}
+</a>

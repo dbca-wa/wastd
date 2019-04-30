@@ -1,0 +1,31 @@
+{% if request.user.is_staff %}
+<a href="{% url 'admin:occurrence_taxonareaencounter_changelist' %}?taxon__id__exact={{ object.pk }}"
+  {% if btn %}
+  class="text-left btn btn-sm btn-success{% if block %} btn-block{% else %} mr-2{% endif %}"
+  {% else %}
+  class="text-left text-success{% if block %} display-block{% else %} mr-2{% endif %}"
+  {% endif %}
+  title="View all occurrences of this {{ object }} in the data curation portal.">
+  <span class="oi oi-list" aria-hidden="true"></span>
+  {% if label %}
+  View all {% if occurrence_total %}{{ occurrence_total }} {% endif %}occurrences
+  {% else %}
+  <span class="oi oi-target" aria-hidden="true"></span>
+  {% endif %}
+</a>
+{% endif  %}
+<a href="{% url 'occurrence:taxonareaencounter-list' %}?taxon={{ object.pk }}"
+  {% if btn %}
+  class="text-left btn btn-sm btn-primary{% if block %} btn-block{% else %} mr-2{% endif %}"
+  {% else %}
+  class="text-left {% if block %} display-block{% endif %}"
+  {% endif %}
+  title="List occurrences of {{ object }}">
+  <span class="oi oi-list" aria-hidden="true"></span>
+  {% if label %}
+  View all {% if occurrence_total %}{{ occurrence_total }} {% endif %}occurrences
+  {% else %}
+  <span class="oi oi-target" aria-hidden="true"></span>
+  {% endif %}
+</a>
+

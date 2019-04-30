@@ -1,4 +1,4 @@
-{% load staticfiles taxonomy_tags occurrence_tags %}
+{% load staticfiles taxonomy_tags %}
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow">
   <!-- <img class="card-img-top" src="{% static 'images/map_example.png' %}" alt="Occurrence map"> -->
   <!-- Want: ImageBank image carousel -->
@@ -73,7 +73,8 @@
       Explore
     </a>
     <a class="btn btn-secondary btn-sm" data-toggle="collapse"
-      href="#actions{{ object.pk }}" role="button" aria-expanded="false" aria-controls="actions{{ object.pk }}">
+      href="#actions{{ object.pk }}" role="button"
+      aria-expanded="false" aria-controls="actions{{ object.pk }}">
       <span class="oi oi-caret-bottom" aria-hidden="true"></span>
       More
     </a>
@@ -85,7 +86,7 @@
         {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=True %}
         {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=True %}
         {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=True %}
-        {% include 'occurrence/include/areaencounter_add_link.html' with subject="taxon" pk=object.pk name_id=object.name_id label=True %}
+        {% include 'occurrence/include/taxonareaencounter_add_link.html' with label=True block=True btn=True %}
       </div>
     </div>
   </div>
