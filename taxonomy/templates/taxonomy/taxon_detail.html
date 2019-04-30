@@ -1,5 +1,5 @@
 {% extends "pages/base.html" %}
-{% load staticfiles compress leaflet_tags geojson_tags mptt_tags taxonomy_tags occurrence_tags observations crispy_forms_tags bootstrap4 %}
+{% load staticfiles compress leaflet_tags geojson_tags mptt_tags taxonomy_tags observations crispy_forms_tags bootstrap4 %}
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
@@ -225,7 +225,7 @@
             {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=False %}
             {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=False %}
             {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=False %}
-            {% include 'occurrence/include/areaencounter_add_link.html' with subject="taxon" pk=object.pk name_id=object.name_id label=True %}
+            {% include 'occurrence/include/taxonareaencounter_add_link.html' with label=True block=False btn=True %}
           </div>
         </div>
       </div>
@@ -242,18 +242,9 @@
                 </small>
                 {% endif %}
                 <small class="float-right">
-                  {% include 'occurrence/include/areaencounter_add_link.html' with subject="taxon" pk=object.pk name_id=object.name_id label=True %}
-                  {% if request.user.is_staff %}
-
-                  {% admin_areaencounter_list_link object.pk "taxon" %}
-                  <a class="btn btn-primary btn-sm text-left"
-                     href="{% url 'occurrence:taxonareaencounter-list' %}?taxon={{ object.pk }}"
-                     title="List occurrences of {{object }}">
-                    <span class="oi oi-list" aria-hidden="true"></span>
-                    <span class="oi oi-target" aria-hidden="true"></span>
-                  </a>
+                  {% include 'occurrence/include/taxonareaencounter_list_link.html' with label=False block=False btn=True %}
+                  {% include 'occurrence/include/taxonareaencounter_add_link.html' with label=False block=False btn=True %}
                 </small>
-                {% endif %}
               </h3>
 
               <div class="row">
@@ -270,7 +261,7 @@
                           <small>
                             {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" area=site.grouper label=False block=False %}
                             {% include 'conservation/include/conservationaction_add.html' with subject="taxa" area=site.grouper label=False block=False %}
-                            {% include 'occurrence/include/areaencounter_add_link.html' with subject="taxon" pk=object.pk name_id=object.name_id label=True area_code=site.grouper %}
+                            {% include 'occurrence/include/taxonareaencounter_add_link.html' with label=False block=False btn=True area_code=site.grouper %}
                           </small>
                         </div>
                       </div>

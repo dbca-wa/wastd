@@ -1,6 +1,6 @@
 {% if request.user.is_staff %}
 <a href="{% url 'admin:conservation_taxonconservationlisting_add' %}{% if taxon %}?taxon={{ object.pk }}{% endif %}"
-  class="btn btn-success btn-sm{% if block %} btn-block{% endif %} text-left"
+  class="btn btn-success btn-sm{% if block %} btn-block{% endif %} text-left mb-2"
   title="Because you have DBCA Curator privileges, you may propose a new conservation listing."
   target="_">
   <span class="oi oi-plus" aria-hidden="true"></span>
@@ -9,7 +9,7 @@
 </a>
 {% endif %}
 <a href="{% url 'conservation:taxonconservationlisting-create' %}{% if taxon %}?taxon={{ taxon.pk }}{% endif %}"
-  class="btn btn-primary btn-sm{% if block %} btn-block{% endif%} text-left"
+  class="btn btn-primary btn-sm{% if block %} btn-block{% endif%} text-left mb-2"
   title="Propose a new taxon conservation listing">
   <span class="oi oi-plus" aria-hidden="true"></span>
   <span class="oi oi-shield" aria-hidden="true"></span>

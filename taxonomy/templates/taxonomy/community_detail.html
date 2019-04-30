@@ -1,5 +1,5 @@
 {% extends "pages/base.html" %}
-{% load staticfiles compress leaflet_tags geojson_tags taxonomy_tags occurrence_tags observations bootstrap4 %}
+{% load staticfiles compress leaflet_tags geojson_tags taxonomy_tags observations bootstrap4 %}
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
@@ -155,8 +155,7 @@
             {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=False %}
             {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=False %}
             {% include 'conservation/include/document_add.html' with subject="communities" label=True block=False %}
-            {% include 'occurrence/include/areaencounter_add_link.html' with subject="community" pk=object.pk label=True %}
-
+            {% include 'occurrence/include/communityareaencounter_add_link.html' with label=True block=False btn=True %}
           </div>
         </div>
       </div>
@@ -173,17 +172,9 @@
                 </small>
                 {% endif %}
                 <small class="float-right">
-                  {% include 'occurrence/include/areaencounter_add_link.html' with subject="community" pk=object.pk label=True %}
-                  {% if request.user.is_staff %}
-                  {% admin_areaencounter_list_link object.pk "community" %}
-                  <a class="btn btn-primary btn-sm text-left"
-                     href="{% url 'occurrence:communityareaencounter-list' %}?community={{ object.pk }}"
-                     title="List occurrences of {{object }}">
-                    <span class="oi oi-list" aria-hidden="true"></span>
-                    <span class="oi oi-target" aria-hidden="true"></span>
-                  </a>
+                  {% include 'occurrence/include/communityareaencounter_list_link.html' with label=False block=False btn=True %}
+                  {% include 'occurrence/include/communityareaencounter_add_link.html' with btn=True block=False %}
                 </small>
-                {% endif %}
               </h3>
 
               <div class="row">
@@ -198,9 +189,9 @@
                       <div class="row">
                         <div class="col-12">
                           <small>
-                            {% include 'conservation/include/conservationthreat_add.html' with subject="communities" area=site.grouper label=False block=False %}
-                            {% include 'conservation/include/conservationaction_add.html' with subject="communities" area=site.grouper label=False block=False %}
-                            {% include 'occurrence/include/areaencounter_add_link.html' with subject="community" pk=object.pk label=True area_code=site.grouper %}
+                            {% include 'conservation/include/conservationthreat_add.html' with subject="communities" area=site.grouper block=False %}
+                            {% include 'conservation/include/conservationaction_add.html' with subject="communities" area=site.grouper block=False %}
+                            {% include 'occurrence/include/communityareaencounter_add_link.html' with area_code=site.grouper block=False btn=True %}
                           </small>
                         </div>
                       </div>
