@@ -225,10 +225,7 @@
             {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=False %}
             {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=False %}
             {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=False %}
-            {% taxonareaencounter_add_link object.name_id label=True %}
-            {% if request.user.is_staff %}
-            {% admin_areaencounter_create_link object.pk "taxon" label=True %}
-            {% endif %}
+            {% include 'occurrence/include/areaencounter_add_link.html' with subject="taxon" pk=object.pk name_id=object.name_id label=True %}
           </div>
         </div>
       </div>
@@ -245,9 +242,9 @@
                 </small>
                 {% endif %}
                 <small class="float-right">
-                  {% taxonareaencounter_add_link object.name_id %}
+                  {% include 'occurrence/include/areaencounter_add_link.html' with subject="taxon" pk=object.pk name_id=object.name_id label=True %}
                   {% if request.user.is_staff %}
-                  {% admin_areaencounter_create_link object.pk "taxon" %}
+
                   {% admin_areaencounter_list_link object.pk "taxon" %}
                   <a class="btn btn-primary btn-sm text-left"
                      href="{% url 'occurrence:taxonareaencounter-list' %}?taxon={{ object.pk }}"
@@ -273,7 +270,7 @@
                           <small>
                             {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" area=site.grouper label=False block=False %}
                             {% include 'conservation/include/conservationaction_add.html' with subject="taxa" area=site.grouper label=False block=False %}
-                            {% taxonareaencounter_add_link object.name_id area_code=site.grouper %}
+                            {% include 'occurrence/include/areaencounter_add_link.html' with subject="taxon" pk=object.pk name_id=object.name_id label=True area_code=site.grouper %}
                           </small>
                         </div>
                       </div>

@@ -35,8 +35,7 @@
       {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=True %}
       {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=True %}
       {% include 'conservation/include/document_add.html' with subject="communities" label=True block=True %}
-      {% admin_areaencounter_create_link object.pk "community" block=True label=True %}
-      {% communityareaencounter_add_link object.pk block=True label=True %}
+      {% include 'occurrence/include/areaencounter_add_link.html' with subject="community" pk=object.pk label=True block=True %}
     </div>
   </div>
 </div>

@@ -1,7 +1,26 @@
-<a href="{{ add_url }}"
-  class="text-left"
+{% load occurrence_tags %}
+{% with admin_url='admin:occurrence_{{ subject }}areaencounter_add' user_url='occurrence:{{ subject }}-occurrence-area-create' %}
+{% if request.user.is_staff %}
+<a
+  href="{% url admin_url
+    {{ subject }}={{ pk }}
+    {% if area_code and area_code != 'NONE' %}area_code={{ area_code|sanitize_tag_label }}{% endif %}
+    %}"
+  class="text-left text-success{% if block %} display-block{% endif %}"
+  title="Create a new {{ subject }} occurrence record through the data curation portal.">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  {% if label %}Report occurrence{% endif %}
+</a>
+{% endif %}
+<a href="{% url user_url
+    {% if name_id %}name_id={{ name_id}}{% endif %}
+    {% if not name_id and pk %}pk={{ pk }}{% endif %}
+    {% if area_code and area_code != 'NONE' %}area_code={{ area_code|sanitize_tag_label }}{% endif %}
+    %}"
+  class="text-left{% if block %} display-block{% endif %}"
   title="Report a new occurrence record of this {{ subject }}.">
   <span class="oi oi-plus" aria-hidden="true"></span>
   <span class="oi oi-target" aria-hidden="true"></span>
   {% if label %}Report occurrence{% if area_code and area_code != "NONE" %} at {{ area_code }}{% endif %}{% endif %}
 </a>
+{% endwith %}
