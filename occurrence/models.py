@@ -752,6 +752,12 @@ class HabitatComposition(ObservationGroup):
 # Survey level observations
 #
 
+class SurveyType(CodeLabelDescriptionMixin, models.Model):
+    """The survey type."""
+
+    pass
+
+
 class SurveyMethod(CodeLabelDescriptionMixin, models.Model):
     """The survey method."""
 
@@ -761,25 +767,12 @@ class SurveyMethod(CodeLabelDescriptionMixin, models.Model):
 class AreaAssessment(ObservationGroup):
     """A description of survey effort at a flora or TEC site."""
 
-    SURVEY_TYPE_DEFAULT = 'partial'
-    SURVEY_TYPE_CHOICES = (
-        (SURVEY_TYPE_DEFAULT, "Partial survey"),
-        ("edge", "Edge Survey"),
-        ("full", "Full Survey"),
-        ("opportunistic", "Opportunistic Encounter"),
-        ("monitoring", "Monitoring"),
-        ("translocation", "Fauna Translocation Event"),
-        ("historical", "Historical Report"),
-    )
-
-    survey_type = models.CharField(
+    survey_type = models.ForeignKey(
+        SurveyType,
+        on_delete=models.CASCADE,
         verbose_name=_("Survey Type"),
-        max_length=100,
-        default=SURVEY_TYPE_DEFAULT,
-        choices=SURVEY_TYPE_CHOICES,
-        help_text=_(
-            "How much of the occurrence has been surveyed?"
-        ),
+        blank=True, null=True,
+        help_text=_("Add missing survey types via the data curation portal."),
     )
 
     survey_method = models.ForeignKey(
@@ -984,25 +977,223 @@ class VegetationClassification(ObservationGroup):
     )
 
 
+class CountAccuracy(CodeLabelDescriptionMixin, models.Model):
+    """Accuracy levels."""
+
+    pass
+
+
+class CountMethod(CodeLabelDescriptionMixin, models.Model):
+    """The count method."""
+
+    pass
+
+
+class CountSubject(CodeLabelDescriptionMixin, models.Model):
+    """The count subject."""
+
+    pass
+
+
+class PlantCondition(CodeLabelDescriptionMixin, models.Model):
+    """The plant condition."""
+
+    pass
+
+
 class PlantCount(ObservationGroup):
     """Population plant count."""
 
-    # land manager present Bool
-    # population count accuracy (actual, extrpol, estimate)
-    # count method (enum)
-    # what counted (plants, clumps, clonal stems)
-    # population structure: mature/juveniles/seedlings(prop totals) x alive/dead
-    # estimated area of population m2
-    # quadrats present bool
-    # number of quadrats surveyed
-    # size of quadrats
-    # detailed data attached
-    # total area of quadrats m2
-    # total alive: mature/juv/seedl(prop total)
-    # reproductive state (m2m: clonal, gegetative, flowerbud, flower, imature fuit, fruit, dehisced fruit)
-    # percentage in flower
-    # condition of plants(enum healthy, moderate, poor, senescent)
-    pass
+    # Survey level
+    land_manager_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Land Manager Present"),
+        help_text=_("Especially on private property, was the land manager or owner present?"),)
+
+    count_method = models.ForeignKey(
+        CountMethod,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Plant Count Method"),
+        help_text=_("Add missing lookup values via the data curation portal.")
+    )
+
+    count_accuracy = models.ForeignKey(
+        CountAccuracy,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Plant Count Accuracy"),
+        help_text=_("Add missing lookup values via the data curation portal.")
+    )
+
+    count_subject = models.ForeignKey(
+        CountSubject,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Counted Subject"),
+        help_text=_("What was counted?"),
+    )
+
+    # Plant Count (Detailed)
+    no_alive_mature = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number Alive Mature"),
+        help_text=_("Number of alive, mature individuals counted."),
+    )
+
+    no_alive_juvenile = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number Alive Juvenile"),
+        help_text=_("Number of alive, juvenile individuals counted."),
+    )
+
+    no_alive_seedlings = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number Alive Seedlings"),
+        help_text=_("Number of alive seedlings counted."),
+    )
+    no_dead_mature = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number Dead Mature"),
+        help_text=_("Number of dead, mature individuals counted."),
+    )
+    no_dead_juvenile = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number Dead Juvenile"),
+        help_text=_("Number of dead, juvenile individuals counted."),
+    )
+    no_dead_seedlings = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number Dead Seedlings"),
+        help_text=_("Number of dead seedlings counted."),
+    )
+
+    # Plant Count (Simple)
+    no_alive_simple = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number Alive (Simple)"),
+        help_text=_("Number of alive individuals counted in a simple count."),
+    )
+
+    no_dead_simple = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number Dead (Simple)"),
+        help_text=_("Number of dead individuals counted in a simple count."),
+    )
+
+    # Quadrats
+    population_area_estimated_m2 = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Estimated population area [m2]"),
+        help_text=_("The estimated area of the encountered plant"
+                    " population in square meters."),
+    )
+
+    quadrats_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Quadrats Present"),
+        help_text=_("Were survey quadrats present?"),)
+
+    quadrats_details_attached = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Quadrat Details Attached"),
+        help_text=_("Are details of quadrat surveys uploaded as File Attachment?"),)
+
+    no_quadrats_surveyed = models.PositiveIntegerField(
+        verbose_name=_("Number of Quadrats Surveyed"),
+        blank=True, null=True,
+        help_text=_("Number of quadrats which were surveyed."),
+    )
+
+    quadrat_area_individual_m2 = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Individual Quadrat Area [m2]"),
+        help_text=_("The area one individual survey quadrat in square meters."),
+    )
+
+    quadrat_area_total_m2 = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Total Quadrat Area [m2]"),
+        help_text=_("The area all survey quadrats combined in square meters."),
+    )
+
+    # Flowering
+    flowering_plants_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        blank=True, null=True,
+        verbose_name=_("Flowering Plants [%]"),
+        help_text=_("The proportion of plants of surveyed population in ."),
+    )
+
+    clonal_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Clonal Peproduction Present"),
+        help_text=_("Was evidence of clonal reproduction found?"),)
+
+    vegetative_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Vegetative State Present"),
+        help_text=_("Were plants in vegetative state found?"),)
+
+    flowerbuds_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Flower Buds Present"),
+        help_text=_("Were plants with flower buds found?"),)
+
+    flowers_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Flowers Present"),
+        help_text=_("Were plants with flowers found?"),)
+
+    immature_fruit_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Immature Fruit Present"),
+        help_text=_("Were plants with immature fruit found?"),)
+
+    ripe_fruit_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Ripe Fruit Present"),
+        help_text=_("Were plants with ripe fruit found?"),)
+
+    dehisced_fruit_present = models.BooleanField(
+        db_index=True,
+        default=False,
+        verbose_name=_("Dehisced Fruit Present"),
+        help_text=_("Were plants with dehisced fruit found?"),)
+
+    # Plant condition
+    plant_condition = models.ForeignKey(
+        PlantCondition,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Plant condition"),
+        help_text=_("What condition were most of the plants in?"),
+    )
+
+    comments = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Comments"),
+        help_text=_("Any further comments on the plant population."),
+    )
+
+    @property
+    def no_alive_total(self):
+        """The total number of alive individuals counted."""
+        return (self.no_alive_mature or 0) + (self.no_alive_juvenile or 0) + (self.no_alive_seedlings)
+
+    @property
+    def no_dead_total(self):
+        """The total number of dead individuals counted."""
+        return (self.no_dead_mature or 0) + (self.no_dead_juvenile or 0) + (self.no_dead_seedlings)
 
 
 class AssociatedSpecies(ObservationGroup):

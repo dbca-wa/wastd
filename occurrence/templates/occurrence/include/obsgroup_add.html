@@ -24,13 +24,19 @@
   Report Habitat Condition
 </a>
 <a href="{% url 'occurrence:firehistory-create' occ_pk=object.id %}"
-  class="btn btn-primary btn-sm  text-left"
+  class="btn btn-primary btn-sm text-left"
   title="Report evidence of a past fire">
   <span class="oi oi-plus" aria-hidden="true"></span>
   Report Fire History
 </a>
+<a href="{% url 'occurrence:plantcount-create' occ_pk=object.id %}"
+  class="btn btn-primary btn-sm text-left"
+  title="Report a PLant Count">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  Report Plant Count
+</a>
 <a href="{% url 'occurrence:vegetationclassification-create' occ_pk=object.id %}"
-  class="btn btn-primary btn-sm  text-left"
+  class="btn btn-primary btn-sm text-left"
   title="Report vegetation classification">
   <span class="oi oi-plus" aria-hidden="true"></span>
   Report Vegetation Classification
