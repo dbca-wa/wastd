@@ -1,0 +1,51 @@
+{% load occurrence_tags observations bootstrap4 %}
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg qa-{{ object.status }}">
+
+ <div class="card-body">
+
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object }}
+    </p>
+    <!--
+# # Survey level
+# "land_manager_present",
+# "count_method",
+# "count_accuracy",
+# "count_subject",
+# # Plant Count (Detailed)
+# "no_alive_mature",
+# "no_alive_juvenile",
+# "no_alive_seedlings",
+# "no_dead_mature",
+# "no_dead_juvenile",
+# "no_dead_seedlings",
+# # Plant Count (Simple)
+# "no_alive_simple",
+# "no_dead_simple",
+# # Quadrats
+# "population_area_estimated_m2",
+# "quadrats_present",
+# "quadrats_details_attached",
+# "no_quadrats_surveyed",
+# "quadrat_area_individual_m2",
+# "quadrat_area_total_m2",
+# # Flowering
+# "flowering_plants_percent",
+# "clonal_present",
+# "vegetative_present",
+# "flowerbuds_present",
+# "flowers_present",
+# "immature_fruit_present",
+# "ripe_fruit_present",
+# "dehisced_fruit_present",
+# "plant_condition",
+# "comments",
+
+     -->
+
+  </div><!-- /.card-body -->
+
+  {% include 'occurrence/include/obsgroup_card_footer.html' %}
+
+</div><!-- /.card -->

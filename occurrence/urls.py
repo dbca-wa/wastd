@@ -101,6 +101,14 @@ urlpatterns = [
             views.FireHistoryUpdateView.as_view(),
             name='firehistory-update'),
 
+    re_path(r'^(?P<occ_pk>\d+)/plant-count/report$',
+            views.PlantCountCreateView.as_view(),
+            name='plantcount-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/plant-count/(?P<obs_pk>\d+)/$',
+            views.PlantCountUpdateView.as_view(),
+            name='plantcount-update'),
+
     re_path(r'^(?P<occ_pk>\d+)/vegetation-classification/report$',
             views.VegetationClassificationCreateView.as_view(),
             name='vegetationclassification-create'),

@@ -366,6 +366,20 @@ class FireHistoryUpdateView(ObservationGroupUpdateView):
     form_class = occ_forms.FireHistoryForm
 
 
+class PlantCountCreateView(ObservationGroupCreateView):
+    """Create view for PlantCount."""
+
+    model = occ_models.PlantCount
+    form_class = occ_forms.PlantCountForm
+
+
+class PlantCountUpdateView(ObservationGroupUpdateView):
+    """Update view for PlantCount."""
+
+    model = occ_models.PlantCount
+    form_class = occ_forms.PlantCountForm
+
+
 class VegetationClassificationCreateView(ObservationGroupCreateView):
     """Create view for VegetationClassification."""
 

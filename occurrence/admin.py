@@ -117,6 +117,13 @@ class HabitatCompositionInline(admin.TabularInline):
 # -----------------------------------------------------------------------------
 # AreaAssessment
 #
+@admin.register(occ_models.SurveyMethod)
+class SurveyMethodAdmin(CodeLabelDescriptionAdmin):
+    """Admin for SurveyMethod."""
+
+    pass
+
+
 @admin.register(occ_models.AreaAssessment)
 class AreaAssessmentAdmin(FSMTransitionMixin, VersionAdmin):
     """AreaAssessment Admin."""
@@ -203,6 +210,105 @@ class FireHistoryInline(admin.TabularInline):
     # max_num = 1  # limit max number
     model = occ_models.FireHistory
     form = occ_forms.FireHistoryForm
+    classes = ('grp-collapse grp-open',)
+
+# -----------------------------------------------------------------------------
+# PlantCount
+#
+
+
+@admin.register(occ_models.CountAccuracy)
+class CountAccuracyAdmin(CodeLabelDescriptionAdmin):
+    """Admin for CountAccuracy."""
+
+    pass
+
+
+@admin.register(occ_models.CountMethod)
+class CountMethodAdmin(CodeLabelDescriptionAdmin):
+    """Admin for CountMethod."""
+
+    pass
+
+
+@admin.register(occ_models.CountSubject)
+class CountSubjectAdmin(CodeLabelDescriptionAdmin):
+    """Admin for CountSubject."""
+
+    pass
+
+
+@admin.register(occ_models.PlantCondition)
+class PlantConditionAdmin(CodeLabelDescriptionAdmin):
+    """Admin for PlantCondition."""
+
+    pass
+
+
+@admin.register(occ_models.PlantCount)
+class PlantCountAdmin(FSMTransitionMixin, VersionAdmin):
+    """PlantCount Admin."""
+
+    list_display = [
+        "land_manager_present",
+        "count_method",
+        "count_accuracy",
+        "count_subject",
+        # Plant Count (Detailed)
+        "no_alive_mature",
+        "no_alive_juvenile",
+        "no_alive_seedlings",
+        "no_dead_mature",
+        "no_dead_juvenile",
+        "no_dead_seedlings",
+        # Plant Count (Simple)
+        "no_alive_simple",
+        "no_dead_simple",
+        # Quadrats
+        "population_area_estimated_m2",
+        "quadrats_present",
+        "quadrats_details_attached",
+        "no_quadrats_surveyed",
+        "quadrat_area_individual_m2",
+        "quadrat_area_total_m2",
+        # Flowering
+        "flowering_plants_percent",
+        "clonal_present",
+        "vegetative_present",
+        "flowerbuds_present",
+        "flowers_present",
+        "immature_fruit_present",
+        "ripe_fruit_present",
+        "dehisced_fruit_present",
+        "plant_condition",
+        "comments",
+    ]
+    list_filter = [
+        "count_method",
+        "count_accuracy",
+        "quadrats_present",
+        "quadrats_details_attached",
+        "flowering_plants_percent",
+        "clonal_present",
+        "vegetative_present",
+        "flowerbuds_present",
+        "flowers_present",
+        "immature_fruit_present",
+        "ripe_fruit_present",
+        "dehisced_fruit_present",
+        "plant_condition",
+    ]
+    form = occ_forms.PlantCountForm
+    fsm_field = ['status', ]
+
+
+class PlantCountInline(admin.TabularInline):
+    """PlantCount Inline."""
+
+    extra = 1
+    max_num = 1  # limit max number
+    model = occ_models.PlantCount
+    form = occ_forms.PlantCountForm
     classes = ('grp-collapse grp-open',)
 
 
