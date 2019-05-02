@@ -10,7 +10,7 @@
     <!-- Name ID -->
     <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
       <a class="text-white" target="_blank" rel="nofollow"
-      href="https://florabase.dpaw.wa.gov.au/search/advanced?id={{ object.name_id }}"
+      href="https://florabase.dpaw.wa.gov.au/browse/profile/{{ object.name_id }}"
       title="Search FloraBase for this NameID">
       {{object.name_id}}
       </a>
@@ -60,7 +60,8 @@
 
   <div class="card-footer">
     <div class="row mb-2">
-    <a href="{{ object.get_absolute_url }}"
+    <a
+      href="{{ object.get_absolute_url }}"
       class="btn btn-primary btn-sm mr-2 flex-fill"
       title="View details.">
       <span class="oi oi-eye" aria-hidden="true"></span>

@@ -60,7 +60,8 @@ def reconstruct_missing_surveys(buffer_mins=30):
     """
     logger.info("[QA][reconstruct_missing_surveys] Rounding up the orphans...")
     tne = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)
-    logger.info("[QA][reconstruct_missing_surveys] Done. Found {0} orphans witout survey.".format(tne.count()))
+    logger.info("[QA][reconstruct_missing_surveys] Done. "
+                "Found {0} orphans witout survey.".format(tne.count()))
     logger.info("[QA][reconstruct_missing_surveys] Inferring missing survey data...")
     tne_all = [[t.site.id, t.when.date(), t.when, t.reporter] for t in tne]
     tne_idx = [[t[0], t[1]] for t in tne_all]
@@ -71,7 +72,8 @@ def reconstruct_missing_surveys(buffer_mins=30):
                                          index=['date', 'site'],
                                          values=['datetime', 'reporter'],
                                          aggfunc={'datetime': [min, max], 'reporter': 'first'})
-    logger.info("[QA][reconstruct_missing_surveys] Done. Creating {0} missing surveys...".format(len(missing_surveys)))
+    logger.info("[QA][reconstruct_missing_surveys] Done. "
+                "Creating {0} missing surveys...".format(len(missing_surveys)))
 
     bfr = timedelta(minutes=buffer_mins)
     for idx, row in missing_surveys.iterrows():

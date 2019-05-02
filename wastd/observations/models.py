@@ -586,6 +586,7 @@ NEST_DAMAGE_CHOICES = (
     ("vehicle", "(V)ehicle damage"),
     ("unknown", "(U)nknown"),
     ("other", "(O)ther identifiable (see comments)"),
+    ("test", "Training or test record"),
 )
 # End lookups ----------------------------------------------------------------#
 

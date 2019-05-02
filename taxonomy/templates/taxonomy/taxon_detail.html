@@ -17,41 +17,41 @@
 
 {% block content %}
 {% include 'shared/breadcrumbs.html' %}
+
 <div class="row">
 
   <!-- Taxon details -->
   <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
 
-        <!-- Name ID -->
-          <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
-            <a class="text-white" target="_blank" rel="nofollow"
-            href="https://florabase.dpaw.wa.gov.au/search/advanced?id={{ object.name_id }}"
-            title="Search FloraBase for this NameID">
-            {{object.name_id}}
-            </a>
-          </span>
+      <!-- Name ID -->
+      <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
+        <a class="text-white" target="_blank" rel="nofollow"
+        href="https://florabase.dpaw.wa.gov.au/browse/profile/{{ object.name_id }}"
+        title="Search FloraBase for this NameID">
+        {{ object.name_id }}
+        </a>
+      </span>
 
-          <!-- Rank -->
-          <span class="badge badge-primary" title="Taxonomic rank: {{ object.get_rank_display }}">
-            {{ object.get_rank_display }}
-          </span>
+      <!-- Rank -->
+      <span class="badge badge-primary" title="Taxonomic rank: {{ object.get_rank_display }}">
+        {{ object.get_rank_display }}
+      </span>
 
-          {% include "taxonomy/include/taxonomic_status.html" %}
+      {% include "taxonomy/include/taxonomic_status.html" %}
 
-          <!-- Publication status -->
-          {% if object.publication_status < 2 %}
-          <span class="badge badge-secondary">
-            {{ object.get_publication_status_display }}
-          </span>
-          {% endif %}
+      <!-- Publication status -->
+      {% if object.publication_status < 2 %}
+      <span class="badge badge-secondary">
+        {{ object.get_publication_status_display }}
+      </span>
+      {% endif %}
 
-          <!-- Leaf nodes are terminal taxa -->
-          {% if object.is_leaf_node %}
-          <span class="badge badge-success">
-            <span class="oi oi-media-stop" title="Terminal Taxon" aria-hidden="true"></span>
-          </span>
-          {% endif %}
-
+      <!-- Leaf nodes are terminal taxa -->
+      {% if object.is_leaf_node %}
+      <span class="badge badge-success">
+        <span class="oi oi-media-stop" title="Terminal Taxon" aria-hidden="true"></span>
+      </span>
+      {% endif %}
 
       <h1 class="display-4">
         {{ object.canonical_name }}
@@ -81,10 +81,12 @@
       {% endfor %}
 
       {% for xref in object.precedes.all %}
-      <a href="{% url 'taxonomy:taxon-detail' name_id=xref.successor.name_id %}"
-          class="badge badge-secondary" title="View successor">
+      <a
+        href="{% if xref.successor %}{% url 'taxonomy:taxon-detail' name_id=xref.successor.name_id %}{% endif %}"
+        class="badge badge-secondary" title="View successor">
         {{ xref.successor }}
-      </a> supercedes as {{ xref.get_reason_display }}<br />
+      </a>
+      supercedes as {{ xref.get_reason_display }}<br />
       {% endfor %}
       </p>
 
@@ -110,7 +112,6 @@
   </div><!-- /.col#taxon-occ -->
 
 </div><!-- /.row -->
-
 
 <div class="row" id="cons-row">
   <div class="col-12">
