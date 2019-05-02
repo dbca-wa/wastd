@@ -388,6 +388,83 @@ class TurtleNestObservationAdmin(VersionAdmin, admin.ModelAdmin):
     encounter_link.allow_tags = True
 
 
+@admin.register(TurtleNestDisturbanceObservation)
+class TurtleNestDisturbanceObservationAdmin(VersionAdmin, admin.ModelAdmin):
+    """Admin for TurtleNestDisturbanceObservation."""
+
+    save_on_top = True
+    date_hierarchy = 'encounter__when'
+    list_display = (
+        'pk', 'area', 'site', 'latitude', 'longitude',  'date',
+        'disturbance_cause', 'disturbance_cause_confidence', 'disturbance_severity', 'comments',
+        'encounter_link', 'status', 'comments')
+    list_filter = (
+        'encounter__area',
+        'encounter__site',
+        'disturbance_cause',
+        'disturbance_cause_confidence',
+        'disturbance_severity',
+        'encounter__status',
+    )
+    search_fields = ('comments', )
+    readonly_fields = ('encounter', )
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+
+    def area(self, obj):
+        """Make data source readable."""
+        return obj.encounter.area
+    area.short_description = 'Area'
+
+    def site(self, obj):
+        """Make data source readable."""
+        return obj.encounter.site
+    site.short_description = 'Site'
+
+    def tag_name(self, obj):
+        """Nest tag name."""
+        return obj.name
+    tag_name.short_description = 'Nest Tag ID'
+
+    def status(self, obj):
+        """Make health status human readable."""
+        return obj.encounter.get_status_display()
+    status.short_description = 'Status'
+
+    def latitude(self, obj):
+        """Make data source readable."""
+        return obj.encounter.latitude
+    latitude.short_description = 'Latitude'
+
+    def longitude(self, obj):
+        """Make data source readable."""
+        return obj.encounter.longitude
+    longitude.short_description = 'Longitude'
+
+    def date(self, obj):
+        """Make data source readable."""
+        return obj.encounter.when
+    date.short_description = 'Date'
+
+    def encounter_link(self, obj):
+        """A link to the encounter."""
+        return mark_safe(
+            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
+                                           obj.encounter.__str__()))
+    encounter_link.short_description = 'Encounter'
+    encounter_link.allow_tags = True
+
+
 class FieldMediaAttachmentInline(admin.TabularInline):
     """TabularInlineAdmin for FieldMediaAttachment."""
 
