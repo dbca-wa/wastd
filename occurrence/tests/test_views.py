@@ -583,6 +583,23 @@ class TaxonAreaEncounterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     # ------------------------------------------------------------------------#
+    # TAE PlantCount
+    # def test_pc_absolute_admin_url_loads(self):
+    #     """Test FireHistoryObservation absolute_admin_url."""
+    #     response = self.client.get(self.fh1.absolute_admin_url)
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_pc_detail_url_loads(self):
+    #     """Test FireHistoryObservation get_absolute_url."""
+    #     response = self.client.get(self.fh1.get_absolute_url())
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_pc_update_url_loads(self):
+    #     """Test FireHistoryObservation update_url."""
+    #     response = self.client.get(self.fh1.update_url)
+    #     self.assertEqual(response.status_code, 200)
+
+    # ------------------------------------------------------------------------#
     # TAE FileAttachmentObservation
     def test_fatt_absolute_admin_url_loads(self):
         """Test FileAttachmentObservation absolute_admin_url."""

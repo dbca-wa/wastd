@@ -301,8 +301,57 @@ class PlantCountAdmin(FSMTransitionMixin, VersionAdmin):
     form = occ_forms.PlantCountForm
     fsm_field = ['status', ]
 
+    fieldsets = (
+        (_('Plant count survey'), {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': (("count_method", "count_accuracy", "count_subject"))}
+         ),
+        (_('Plant Count (Detailed)'), {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': (
+                "no_alive_mature",
+                "no_alive_juvenile",
+                "no_alive_seedlings",
+                "no_dead_mature",
+                "no_dead_juvenile",
+                "no_dead_seedlings",
+            )}
+         ),
+        (_('Plant Count (Simple)'), {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': ("no_alive_simple", "no_dead_simple",)}
+         ),
+        (_('Quadrats'), {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': (
+                "quadrats_present",
+                "quadrats_details_attached",
+                "no_quadrats_surveyed",
+                "quadrat_area_individual_m2",
+                "quadrat_area_total_m2",
+                "population_area_estimated_m2",
+            )}
+         ),
+        (_('Flowering'), {
+            'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+            'fields': (
+                "flowering_plants_percent",
+                "clonal_present",
+                "vegetative_present",
+                "flowerbuds_present",
+                "flowers_present",
+                "immature_fruit_present",
+                "ripe_fruit_present",
+                "dehisced_fruit_present",
+                "plant_condition",
+                "comments",
 
-class PlantCountInline(admin.TabularInline):
+            )}
+         ),
+    )
+
+
+class PlantCountInline(admin.StackedInline):
     """PlantCount Inline."""
 
     extra = 1
@@ -427,6 +476,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
         HabitatCompositionInline,
         AreaAssessmentInline,
         FireHistoryInline,
+        PlantCountInline,
         VegetationClassificationInline,
         AssociatedSpeciesInline,
     ]

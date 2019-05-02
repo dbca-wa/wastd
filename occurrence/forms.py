@@ -443,64 +443,87 @@ class PlantCountForm(forms.ModelForm):
         """Class options."""
 
         model = occ_models.PlantCount
-        fields = (
-            "encounter",
-
-        )
+        exclude = []
         widgets = {
             "encounter": occ_widgets.AreaEncounterWidget(),
-            # "last_fire_date": shared_forms.DateInput(),
         }
 
     def __init__(self, *args, **kwargs):
         """Customise form layout."""
-        super(FireHistoryForm, self).__init__(*args, **kwargs)
+        super(PlantCountForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
                 "Observation made during encounter",
                 "encounter"
             ),
-            # Fieldset(
-            #     "Plant count survey",
-            # "land_manager_present",
-            # "count_method",
-            # "count_accuracy",
-            # "count_subject",
-            #     Div(
-            #         Div("", css_class=HALF),
-            #         Div("", css_class=HALF),
-            #         css_class="row"
-            #     ),
-            # ),
-            # # Plant Count (Detailed)
-            # "no_alive_mature",
-            # "no_alive_juvenile",
-            # "no_alive_seedlings",
-            # "no_dead_mature",
-            # "no_dead_juvenile",
-            # "no_dead_seedlings",
-            # # Plant Count (Simple)
-            # "no_alive_simple",
-            # "no_dead_simple",
-            # # Quadrats
-            # "population_area_estimated_m2",
-            # "quadrats_present",
-            # "quadrats_details_attached",
-            # "no_quadrats_surveyed",
-            # "quadrat_area_individual_m2",
-            # "quadrat_area_total_m2",
-            # # Flowering
-            # "flowering_plants_percent",
-            # "clonal_present",
-            # "vegetative_present",
-            # "flowerbuds_present",
-            # "flowers_present",
-            # "immature_fruit_present",
-            # "ripe_fruit_present",
-            # "dehisced_fruit_present",
-            # "plant_condition",
-            # "comments",
+            Fieldset(
+                "Plant count survey",
+                Div(
+                    Div("land_manager_present", css_class=QUARTER),
+                    Div("count_method", css_class=QUARTER),
+                    Div("count_accuracy", css_class=QUARTER),
+                    Div("count_subject", css_class=QUARTER),
+                    css_class="row"
+                ),
+            ),
+            Fieldset(
+                "Plant Count (Detailed)",
+                Div(
+                    Div("no_alive_mature", css_class=THIRDS),
+                    Div("no_alive_juvenile", css_class=THIRDS),
+                    Div("no_alive_seedlings", css_class=THIRDS),
+                    css_class="row"
+                ),
+                Div(
+                    Div("no_dead_mature", css_class=THIRDS),
+                    Div("no_dead_juvenile", css_class=THIRDS),
+                    Div("no_dead_seedlings", css_class=THIRDS),
+                    css_class="row"
+                ),
+            ),
+            Fieldset(
+                "Plant Count (Simple)",
+                Div(
+                    Div("no_alive_simple", css_class=HALF),
+                    Div("no_dead_simple", css_class=HALF),
+                    css_class="row"
+                ),
+            ),
+            Fieldset(
+                "Quadrats",
+                Div(
+                    Div("quadrats_present", css_class=THIRDS),
+                    Div("quadrats_details_attached", css_class=THIRDS),
+                    Div("no_quadrats_surveyed", css_class=THIRDS),
+                    css_class="row"
+                ),
+                Div(
+                    Div("population_area_estimated_m2", css_class=THIRDS),
+                    Div("quadrat_area_individual_m2", css_class=THIRDS),
+                    Div("quadrat_area_total_m2", css_class=THIRDS),
+                    css_class="row"
+                ),
+            ),
+            Fieldset(
+                "Flowering",
+                Div(
+                    Div("flowering_plants_percent", css_class=QUARTER),
+                    Div("clonal_present", css_class=QUARTER),
+                    Div("vegetative_present", css_class=QUARTER),
+                    Div("flowerbuds_present", css_class=QUARTER),
+                    css_class="row"
+                ),
+                Div(
+                    Div("flowers_present", css_class=QUARTER),
+                    Div("immature_fruit_present", css_class=QUARTER),
+                    Div("ripe_fruit_present", css_class=QUARTER),
+                    Div("dehisced_fruit_present", css_class=QUARTER),
+                    css_class="row"
+                ),
+                "plant_condition",
+                "comments",
+            ),
             ButtonHolder(
                 Submit("submit",
                        "Submit",
