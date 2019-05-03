@@ -3646,9 +3646,14 @@ class TurtleNestDisturbanceObservation(Observation):
     * Disturbance by other turtles
     * Environmental disturbance (cyclones, tides)
     * Anthropogenic disturbance (vehicle damage, poaching, research, harvest)
+
+    Disturbance severity can range from negligible disturbance to total destruction.
+
+    Disturbance cause contains a training category to mark training or test records.
     """
 
     NEST_VIABILITY_CHOICES = (
+        ("negligible", "negligible disturbance"),
         ("partly", "nest partly destroyed"),
         ("completely", "nest completely destroyed"),
         (NA_VALUE, "nest in indeterminate condition"),
