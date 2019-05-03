@@ -15,7 +15,8 @@ class TaxonWidget(ModelSelect2Widget):
     search_fields = [
         "taxonomic_name__icontains",
         "vernacular_names__icontains",
-        "field_code__icontains"
+        "field_code__icontains",
+        "name_id__icontains",
     ]
 
 
@@ -30,7 +31,8 @@ class TaxonMultipleWidget(ModelSelect2MultipleWidget):
     search_fields = [
         "taxonomic_name__icontains",
         "vernacular_names__icontains",
-        "field_code__icontains"
+        "field_code__icontains",
+        "name_id__icontains",
     ]
 
 
