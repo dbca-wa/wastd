@@ -27,8 +27,8 @@
 
   window.addEventListener("map:init", function (event) {
     var map = event.detail.map;
-    {% include 'shared/overlays.html' %}
     {% include 'shared/styles.js' %}
+    {% include 'shared/overlays.html' %}
     map.addControl(new L.control.fullscreen());
     map.addControl(new L.Control.Geocoder({placeholder: '⇧+⏎ to search'}));
 });

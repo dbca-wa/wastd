@@ -402,9 +402,10 @@ class TurtleNestDisturbanceObservationAdmin(VersionAdmin, admin.ModelAdmin):
         'encounter__area',
         'encounter__site',
         'disturbance_cause',
+        'encounter__status',
+        'encounter__encounter_type',
         'disturbance_cause_confidence',
         'disturbance_severity',
-        'encounter__status',
     )
     search_fields = ('comments', )
     readonly_fields = ('encounter', )
