@@ -1454,10 +1454,10 @@ class LoggerEncounterViewSet(viewsets.ModelViewSet):
     latex_name = "latex/loggerencounter.tex"
     queryset = LoggerEncounter.objects.all()
     serializer_class = LoggerEncounterSerializer
-    filter_fields = [
-        "encounter_type", "status", "area", "site", "survey", "source", "source_id",
-        "location_accuracy", "when", "name", "observer", "reporter",
-        "deployment_status", "comments"]
+    filter_fields = ["encounter_type",
+                     "status", "area", "site", "survey", "source", "source_id",
+                     "location_accuracy", "when", "name", "observer", "reporter",
+                     "deployment_status", "comments"]
     search_fields = ("name", "source_id", )
     pagination_class = MyGeoJsonPagination
 
@@ -1486,7 +1486,8 @@ class TagObservationViewSet(viewsets.ModelViewSet):
 
     queryset = TagObservation.objects.all()
     serializer_class = TagObservationEncounterSerializer
-    filter_fields = ["tag_type", "tag_location", "name", "status", "comments"]
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
+                     "tag_type", "tag_location", "name", "status", "comments"]
     search_fields = ("name", "comments", )
     pagination_class = MyGeoJsonPagination
 
@@ -1496,7 +1497,8 @@ class TurtleNestObservationViewSet(viewsets.ModelViewSet):
 
     queryset = TurtleNestObservation.objects.all()
     serializer_class = TurtleNestObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "nest_position", "eggs_laid", "encounter__status"]
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
+                     "nest_position", "eggs_laid", "encounter__status"]
     search_fields = ("comments", )
     pagination_class = MyGeoJsonPagination
 
@@ -1529,7 +1531,8 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
 
     queryset = NestTagObservation.objects.all()
     serializer_class = NestTagObservationEncounterSerializer
-    filter_fields = ["status", "flipper_tag_id", "date_nest_laid", "tag_label", "comments"]
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
+                     "status", "flipper_tag_id", "date_nest_laid", "tag_label", "comments"]
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
@@ -1561,7 +1564,8 @@ class TurtleNestDisturbanceObservationEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = TurtleNestDisturbanceObservation.objects.all()
     serializer_class = TurtleNestDisturbanceObservationEncounterSerializer
-    filter_fields = ["disturbance_cause", "disturbance_cause_confidence", "disturbance_severity", ]
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
+                     "disturbance_cause", "disturbance_cause_confidence", "disturbance_severity", ]
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
