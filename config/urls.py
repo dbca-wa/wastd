@@ -69,6 +69,14 @@ urlpatterns = [
                 properties=('leaflet_title', 'as_html')),
             name='areas-geojson'),
 
+    re_path(r'^sites.geojson$',
+            GeoJSONLayerView.as_view(
+                model=wastd_models.Area,
+                queryset=wastd_models.Area.objects.filter(
+                    area_type=wastd_models.Area.AREATYPE_SITE),
+                properties=('leaflet_title', 'as_html')),
+            name='sites-geojson'),
+
     # Encounter as tiled GeoJSON
     re_path(r'^data/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).geojson$',
             TiledGeoJSONLayerView.as_view(
