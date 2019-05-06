@@ -406,3 +406,31 @@ class AssociatedSpeciesUpdateView(ObservationGroupUpdateView):
 
     model = occ_models.AssociatedSpecies
     form_class = occ_forms.AssociatedSpeciesForm
+
+
+class AnimalObservationCreateView(ObservationGroupCreateView):
+    """Create view for AnimalObservation."""
+
+    model = occ_models.AnimalObservation
+    form_class = occ_forms.AnimalObservationForm
+
+
+class AnimalObservationUpdateView(ObservationGroupUpdateView):
+    """Update view for AnimalObservation."""
+
+    model = occ_models.AnimalObservation
+    form_class = occ_forms.AnimalObservationForm
+
+
+class PhysicalSampleCreateView(ObservationGroupCreateView):
+    """Create view for PhysicalSample."""
+
+    model = occ_models.PhysicalSample
+    form_class = occ_forms.PhysicalSampleForm
+
+
+class PhysicalSampleUpdateView(ObservationGroupUpdateView):
+    """Update view for PhysicalSample."""
+
+    model = occ_models.PhysicalSample
+    form_class = occ_forms.PhysicalSampleForm

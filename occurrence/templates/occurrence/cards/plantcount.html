@@ -3,126 +3,58 @@
 
  <div class="card-body">
 
-    <h6 class="card-title">Survey level</h6>
+    <h6 class="card-title">Plant Count</h6>
     <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      land_manager_present: {{ object.land_manager_present }}
+      <span class="oi oi-eye" aria-hidden="true"></span>
+      Land manager present: {{ object.land_manager_present }}
+      {{ object.count_method }} ({{ object.count_accuracy }}): {{ object.count_subject }}
     </p>
     <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      count_method: {{ object.count_method }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      count_accuracy: {{ object.count_accuracy }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      count_subject: {{ object.count_subject }}
-    </p>
-
-    <h6 class="card-title">Plant Count (Detailed)</h6>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_alive_mature: {{ object.no_alive_mature }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_alive_juvenile: {{ object.no_alive_juvenile }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_alive_seedlings: {{ object.no_alive_seedlings }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_dead_mature: {{ object.no_dead_mature }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_dead_juvenile: {{ object.no_dead_juvenile }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_dead_seedlings: {{ object.no_dead_seedlings }}
-    </p>
-
-    <h6 class="card-title">Plant Count (Simple)</h6>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_alive_simple: {{ object.no_alive_simple }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_dead_simple: {{ object.no_dead_simple }}
+      <div class="row">
+        <span class="col col-3">Mature</span>
+        <span class="col col-3">Juvenile</span>
+        <span class="col col-3">Seedlings</span>
+        <span class="col col-3">Totals</span>
+      </div>
+      <div class="row">
+        <span class="col col-3">{{ object.no_alive_mature }}/{{ object.no_dead_mature }}</span>
+        <span class="col col-3">{{ object.no_alive_juvenile }}/{{ object.no_dead_juvenile }}</span>
+        <span class="col col-3">{{ object.no_alive_seedlings }}/{{ object.no_dead_seedlings }}</span>
+        <span class="col col-3">{{ object.no_alive_simple }}/{{ object.no_dead_simple }}</span>
+      </div>
     </p>
 
     <h6 class="card-title">Quadrats</h6>
     <p class="card-text">
       <span class="oi oi-list" aria-hidden="true"></span>
-      quadrats_present: {{ object.quadrats_present }}
+      Present: {{ object.quadrats_present }},
+      {{ object.no_quadrats_surveyed }} quadrats surveyed,
+      Details attached: {{ object.quadrats_details_attached }}
     </p>
+
     <p class="card-text">
       <span class="oi oi-list" aria-hidden="true"></span>
-      quadrats_details_attached: {{ object.quadrats_details_attached }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      no_quadrats_surveyed: {{ object.no_quadrats_surveyed }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      population_area_estimated_m2: {{ object.population_area_estimated_m2 }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      quadrat_area_individual_m2: {{ object.quadrat_area_individual_m2 }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      quadrat_area_total_m2: {{ object.quadrat_area_total_m2 }}
+      Population area estimated {{ object.population_area_estimated_m2 }} m2,
+      individual quadrat area {{ object.quadrat_area_individual_m2 }} m2,
+      total quadrat area {{ object.quadrat_area_total_m2 }} m2
     </p>
 
     <h6 class="card-title">Flowering</h6>
     <p class="card-text">
       <span class="oi oi-list" aria-hidden="true"></span>
-      flowering_plants_percent: {{ object.flowering_plants_percent }}
+      Flowering {{ object.flowering_plants_percent }} &percent;.
+      Clonal {{ object.clonal_present }},
+      Vegetative {{ object.vegetative_present }},
+      Flowerbuds {{ object.flowerbuds_present }},
+      Flowers {{ object.flowers_present }},
+      Immature fruit {{ object.immature_fruit_present }},
+      Ripe fruit {{ object.ripe_fruit_present }},
+      Dehisced fruit {{ object.dehisced_fruit_present }},
+      Plant condition: {{ object.plant_condition }}
     </p>
     <p class="card-text">
       <span class="oi oi-list" aria-hidden="true"></span>
-      clonal_present: {{ object.clonal_present }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      vegetative_present: {{ object.vegetative_present }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      flowerbuds_present: {{ object.flowerbuds_present }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      flowers_present: {{ object.flowers_present }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      immature_fruit_present: {{ object.immature_fruit_present }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      ripe_fruit_present: {{ object.ripe_fruit_present }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      dehisced_fruit_present: {{ object.dehisced_fruit_present }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      plant_condition: {{ object.plant_condition }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      comments: {{ object.comments }}
+      {{ object.comments }}
     </p>
 
   </div><!-- /.card-body -->

@@ -51,7 +51,7 @@ class FileAttachmentInline(admin.TabularInline):
     extra = 1
     # max_num = 1  # limit max number
     model = occ_models.FileAttachment
-    form = occ_forms.FileAttachmentForm
+    # form = occ_forms.FileAttachmentForm
     classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
 
 
@@ -110,7 +110,7 @@ class HabitatCompositionInline(admin.TabularInline):
     extra = 1
     max_num = 1  # limit max number
     model = occ_models.HabitatComposition
-    form = occ_forms.HabitatCompositionForm
+    # form = occ_forms.HabitatCompositionForm
     classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
 
 
@@ -145,7 +145,7 @@ class AreaAssessmentInline(admin.TabularInline):
     extra = 1
     max_num = 1  # limit max number
     model = occ_models.AreaAssessment
-    form = occ_forms.AreaAssessmentForm
+    # form = occ_forms.AreaAssessmentForm
     classes = ('grp-collapse grp-open',)
 
 
@@ -183,7 +183,7 @@ class HabitatConditionInline(admin.TabularInline):
     extra = 1
     max_num = 1  # limit max number
     model = occ_models.HabitatCondition
-    form = occ_forms.HabitatConditionForm
+    # form = occ_forms.HabitatConditionForm
     classes = ('grp-collapse grp-open',)
 
 
@@ -209,7 +209,7 @@ class FireHistoryInline(admin.TabularInline):
     extra = 1
     # max_num = 1  # limit max number
     model = occ_models.FireHistory
-    form = occ_forms.FireHistoryForm
+    # form = occ_forms.FireHistoryForm
     classes = ('grp-collapse grp-open',)
 
 # -----------------------------------------------------------------------------
@@ -357,7 +357,7 @@ class PlantCountInline(admin.StackedInline):
     extra = 1
     max_num = 1  # limit max number
     model = occ_models.PlantCount
-    form = occ_forms.PlantCountForm
+    # form = occ_forms.PlantCountForm
     classes = ('grp-collapse grp-open',)
 
 
@@ -408,7 +408,183 @@ class AssociatedSpeciesInline(admin.TabularInline):
     extra = 1
     # max_num = 1  # limit max number
     model = occ_models.AssociatedSpecies
-    form = occ_forms.AssociatedSpeciesForm
+    # form = occ_forms.AssociatedSpeciesForm
+    classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
+
+
+# -----------------------------------------------------------------------------
+# AnimalObservation
+#
+@admin.register(occ_models.DetectionMethod)
+class DetectionMethodAdmin(CodeLabelDescriptionAdmin):
+    """Admin for DetectionMethod."""
+
+    pass
+
+
+@admin.register(occ_models.Confidence)
+class ConfidenceAdmin(CodeLabelDescriptionAdmin):
+    """Admin for Confidence."""
+
+    pass
+
+
+@admin.register(occ_models.ReproductiveMaturity)
+class ReproductiveMaturityAdmin(CodeLabelDescriptionAdmin):
+    """Admin for ReproductiveMaturity."""
+
+    pass
+
+
+@admin.register(occ_models.AnimalHealth)
+class AnimalHealthAdmin(CodeLabelDescriptionAdmin):
+    """Admin for AnimalHealth."""
+
+    pass
+
+
+@admin.register(occ_models.CauseOfDeath)
+class CauseOfDeathAdmin(CodeLabelDescriptionAdmin):
+    """Admin for CauseOfDeath."""
+
+    pass
+
+
+@admin.register(occ_models.SecondarySigns)
+class SecondarySignsAdmin(CodeLabelDescriptionAdmin):
+    """Admin for SecondarySigns."""
+
+    pass
+
+
+@admin.register(occ_models.SampleType)
+class SampleTypeAdmin(CodeLabelDescriptionAdmin):
+    """Admin for SampleType."""
+
+    pass
+
+
+@admin.register(occ_models.SampleDestination)
+class SampleDestinationAdmin(CodeLabelDescriptionAdmin):
+    """Admin for SampleDestination."""
+
+    pass
+
+
+@admin.register(occ_models.PermitType)
+class PermitTypeAdmin(CodeLabelDescriptionAdmin):
+    """Admin for PermitType."""
+
+    pass
+
+
+@admin.register(occ_models.AnimalObservation)
+class AnimalObservationAdmin(FSMTransitionMixin, VersionAdmin):
+    """Associated AnimalObservation."""
+
+    list_display = [
+        "encounter",
+        "detection_method",
+        "species_id_confidence",
+        "maturity",
+        "health",
+        "cause_of_death",
+        "distinctive_features",
+        "actions_taken",
+        "actions_required",
+        "no_adult_male",
+        "no_adult_female",
+        "no_adult_unknown",
+        "no_juvenile_male",
+        "no_juvenile_female",
+        "no_juvenile_unknown",
+        "no_dependent_young_male",
+        "no_dependent_young_female",
+        "no_dependent_young_unknown",
+        "observation_details",
+        "secondary_signs_list",
+    ]
+    list_filter = [
+        "detection_method",
+        "species_id_confidence",
+        "maturity",
+        "health",
+        "cause_of_death",
+        "no_adult_male",
+        "no_adult_female",
+        "no_adult_unknown",
+        "no_juvenile_male",
+        "no_juvenile_female",
+        "no_juvenile_unknown",
+        "no_dependent_young_male",
+        "no_dependent_young_female",
+        "no_dependent_young_unknown",
+        "secondary_signs",
+    ]
+    search_fields = [
+        "encounter",
+        "distinctive_features",
+        "actions_taken",
+        "actions_required",
+        "observation_details",
+    ]
+    form = occ_forms.AnimalObservationForm
+    fsm_field = ['status', ]
+    # autocomplete_fields = ['taxon', ]
+
+    def secondary_signs_list(self, obj):
+        """Make M2M secondary_signs readable."""
+        return ", ".join([x.label for x in obj.secondary_signs.all()])
+    secondary_signs_list.short_description = "Secondary Signs"
+
+
+class AnimalObservationInline(admin.StackedInline):
+    """AnimalObservation Inline."""
+
+    extra = 1
+    max_num = 1  # limit max number
+    model = occ_models.AnimalObservation
+    # form = occ_forms.AnimalObservationForm
+    classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
+
+
+@admin.register(occ_models.PhysicalSample)
+class PhysicalSampleAdmin(FSMTransitionMixin, VersionAdmin):
+    """Associated PhysicalSample."""
+
+    list_display = [
+        "encounter",
+        "sample_type",
+        "sample_label",
+        "collector_id",
+        "sample_destination",
+        "permit_type",
+        "permit_id",
+    ]
+    list_filter = [
+        "sample_type",
+        "sample_destination",
+        "permit_type",
+    ]
+    search_fields = [
+        "encounter",
+        "sample_label",
+        "collector_id",
+        "permit_id",
+
+    ]
+    form = occ_forms.PhysicalSampleForm
+    fsm_field = ['status', ]
+    # autocomplete_fields = ['taxon', ]
+
+
+class PhysicalSampleInline(admin.StackedInline):
+    """PhysicalSample Inline."""
+
+    extra = 1
+    # max_num = 1  # limit max number
+    model = occ_models.PhysicalSample
+    # form = occ_forms.PhysicalSampleForm
     classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
 
 
@@ -468,8 +644,6 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
             'fields': ("taxon",)}
          ),
     ) + AreaEncounterAdmin.fieldsets
-    # TFA Uses: FileAtt,          AreaAss, HabCond, Thr, FireHist, VegClass, AnimalObs,  AssSp, Specimen, WildlInc
-    # TFL Uses: FileAtt, HabComp, AreaAss, HabCond, Thr, FireHist,           PlantCount, AssSp, Specimen
     inlines = [
         CustomStateLogInline,
         FileAttachmentInline,
@@ -479,6 +653,8 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
         PlantCountInline,
         VegetationClassificationInline,
         AssociatedSpeciesInline,
+        AnimalObservationInline,
+        PhysicalSampleInline,
     ]
 
 
@@ -501,7 +677,6 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
         'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
         'fields': ("community", )}
     ),) + AreaEncounterAdmin.fieldsets
-    # TEC Uses: FileAtt, HabComp, AreaAss, HabCond, Thr, FireHist, VegClass,             AssSp
     inlines = [
         CustomStateLogInline,
         FileAttachmentInline,
@@ -511,4 +686,5 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
         FireHistoryInline,
         VegetationClassificationInline,
         AssociatedSpeciesInline,
+        PhysicalSampleInline,
     ]
