@@ -1863,6 +1863,50 @@ router.register(r"occ-community-areas", OccurrenceCommunityAreaEncounterPolyView
 router.register(r"occ-community-points", OccurrenceCommunityAreaEncounterPointViewSet,
                 base_name="occurrence_communityarea_points")
 
+
+"""
+AnimalObservation
+"detection_method",
+"species_id_confidence",
+"maturity",
+"health",
+"cause_of_death",
+"distinctive_features",
+"actions_taken",
+"actions_required",
+"no_adult_male",
+"no_adult_female",
+"no_adult_unknown",
+"no_juvenile_male",
+"no_juvenile_female",
+"no_juvenile_unknown",
+"no_dependent_young_male",
+"no_dependent_young_female",
+"no_dependent_young_unknown",
+"observation_details",
+"secondary_signs",
+
+
+PhysicalSample
+"sample_type",
+"sample_label",
+"collector_id",
+"sample_destination",
+"permit_type",
+"permit_id",
+
+DetectionMethod
+Confidence
+ReproductiveMaturity
+AnimalHealth
+CauseOfDeath
+SecondarySigns
+SampleType
+SampleDestination
+PermitType
+"""
+
+
 # Taxonomy: Serializers -------------------------------------------------------------------#
 
 

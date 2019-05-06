@@ -606,3 +606,151 @@ class AssociatedSpeciesForm(forms.ModelForm):
                        css_class="button btn-block")
             )
         )
+
+
+class AnimalObservationForm(forms.ModelForm):
+    """AnimalObservation Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.AnimalObservation
+        fields = (
+            "encounter",
+            "detection_method",
+            "species_id_confidence",
+            "maturity",
+            "health",
+            "cause_of_death",
+            "distinctive_features",
+            "actions_taken",
+            "actions_required",
+            "no_adult_male",
+            "no_adult_female",
+            "no_adult_unknown",
+            "no_juvenile_male",
+            "no_juvenile_female",
+            "no_juvenile_unknown",
+            "no_dependent_young_male",
+            "no_dependent_young_female",
+            "no_dependent_young_unknown",
+            "observation_details",
+            "secondary_signs",
+        )
+        widgets = {
+            "encounter": occ_widgets.AreaEncounterWidget(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(AnimalObservationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "Animal Observation",
+                Div(
+                    Div("detection_method", css_class=HALF),
+                    Div("species_id_confidence", css_class=HALF),
+                    css_class="row"
+                ),
+                Div(
+                    Div("maturity", css_class=THIRDS),
+                    Div("health", css_class=THIRDS),
+                    Div("cause_of_death", css_class=THIRDS),
+                    css_class="row"
+                ),
+                Div(
+                    Div("distinctive_features", css_class=THIRDS),
+                    Div("actions_taken", css_class=THIRDS),
+                    Div("actions_required", css_class=THIRDS),
+                    css_class="row"
+                ),
+                Div(
+                    Div("observation_details", css_class=HALF),
+                    Div("secondary_signs", css_class=HALF),
+                    css_class="row"
+                ),
+            ),
+            Fieldset(
+                "Group Observation",
+                Div(
+                    Div("no_adult_male", css_class=THIRDS),
+                    Div("no_adult_female", css_class=THIRDS),
+                    Div("no_adult_unknown", css_class=THIRDS),
+                    css_class="row"
+                ),
+                Div(
+                    Div("no_juvenile_male", css_class=THIRDS),
+                    Div("no_juvenile_female", css_class=THIRDS),
+                    Div("no_juvenile_unknown", css_class=THIRDS),
+                    css_class="row"
+                ),
+                Div(
+                    Div("no_dependent_young_male", css_class=THIRDS),
+                    Div("no_dependent_young_female", css_class=THIRDS),
+                    Div("no_dependent_young_unknown", css_class=THIRDS),
+                    css_class="row"
+                ),
+            ),
+            ButtonHolder(
+                Submit("submit",
+                       "Submit",
+                       css_class="button btn-block")
+            )
+        )
+
+
+class PhysicalSampleForm(forms.ModelForm):
+    """PhysicalSample Form."""
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.PhysicalSample
+        fields = (
+            "encounter",
+            "sample_type",
+            "sample_label",
+            "collector_id",
+            "sample_destination",
+            "permit_type",
+            "permit_id",
+        )
+        widgets = {
+            "encounter": occ_widgets.AreaEncounterWidget(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """Customise form layout."""
+        super(PhysicalSampleForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Observation made during encounter",
+                "encounter"
+            ),
+            Fieldset(
+                "Physical Sample or Specimen",
+                Div(
+                    Div("sample_type", css_class=THIRDS),
+                    Div("sample_label", css_class=THIRDS),
+                    Div("collector_id", css_class=THIRDS),
+                    css_class="row"
+                ),
+                Div(
+                    Div("sample_destination", css_class=THIRDS),
+                    Div("permit_type", css_class=THIRDS),
+                    Div("permit_id", css_class=THIRDS),
+                    css_class="row"
+                ),
+            ),
+            ButtonHolder(
+                Submit("submit",
+                       "Submit",
+                       css_class="button btn-block")
+            )
+        )

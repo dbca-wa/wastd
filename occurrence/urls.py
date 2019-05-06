@@ -125,4 +125,20 @@ urlpatterns = [
             views.AssociatedSpeciesUpdateView.as_view(),
             name='associatedspecies-update'),
 
+    re_path(r'^(?P<occ_pk>\d+)/animal-observation/report$',
+            views.AnimalObservationCreateView.as_view(),
+            name='animalobservation-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/animal-observation/(?P<obs_pk>\d+)/$',
+            views.AnimalObservationUpdateView.as_view(),
+            name='animalobservation-update'),
+
+    re_path(r'^(?P<occ_pk>\d+)/physical-sample/report$',
+            views.PhysicalSampleCreateView.as_view(),
+            name='physicalsample-create'),
+
+    re_path(r'^(?P<occ_pk>\d+)/physical-sample/(?P<obs_pk>\d+)/$',
+            views.PhysicalSampleUpdateView.as_view(),
+            name='physicalsample-update'),
+
 ]

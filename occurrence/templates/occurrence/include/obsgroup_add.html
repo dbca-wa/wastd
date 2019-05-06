@@ -41,10 +41,25 @@
   <span class="oi oi-plus" aria-hidden="true"></span>
   Report Vegetation Classification
 </a>
-
 <a href="{% url 'occurrence:associatedspecies-create' occ_pk=object.id %}"
   class="btn btn-primary btn-sm text-left"
   title="Report an associated species">
   <span class="oi oi-plus" aria-hidden="true"></span>
   Report Associated Species
 </a>
+{% if not community %}
+<a href="{% url 'occurrence:animalobservation-create' occ_pk=object.id %}"
+  class="btn btn-primary btn-sm text-left"
+  title="Report an associated species">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  Report Animal Observation
+</a>
+{% endif %}
+<a href="{% url 'occurrence:physicalsample-create' occ_pk=object.id %}"
+  class="btn btn-primary btn-sm text-left"
+  title="Report an associated species">
+  <span class="oi oi-plus" aria-hidden="true"></span>
+  Report Physical Sample
+</a>
+
+

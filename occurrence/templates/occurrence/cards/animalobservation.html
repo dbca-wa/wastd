@@ -1,0 +1,56 @@
+{% load occurrence_tags observations bootstrap4 %}
+<div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg qa-{{ object.status }}">
+
+ <div class="card-body">
+
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.detection_method }},
+      species ID confidence {{ object.species_id_confidence }},
+      {{ object }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.maturity }} {{ object.health }} {{ object.cause_of_death }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.distinctive_features }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.actions_taken }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.actions_required }}
+    </p>
+
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      {{ object.observation_details }}
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      Secondary signs: {% for ss in object.secondary_signs %}{{ ss }}{% endfor %}
+    </p>
+
+    <h6 class="card-title">Animal Group Observation</h6>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      Adult: {{ object.no_adult_male }} males, {{ object.no_adult_female }} females, {{ object.no_adult_unknown }} unknown
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      Juvenile: {{ object.no_juvenile_male }} males, {{ object.no_juvenile_female }} females, {{ object.no_juvenile_unknown }} unknown
+    </p>
+    <p class="card-text">
+      <span class="oi oi-list" aria-hidden="true"></span>
+      Dependent young: {{ object.no_dependent_young_male }} males, {{ object.no_dependent_young_female }} females, {{ object.no_dependent_young_unknown }} unknown
+    </p>
+
+  </div><!-- /.card-body -->
+
+  {% include 'occurrence/include/obsgroup_card_footer.html' %}
+
+</div><!-- /.card -->

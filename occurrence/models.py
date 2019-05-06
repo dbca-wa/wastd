@@ -976,6 +976,11 @@ class VegetationClassification(ObservationGroup):
         help_text=_("The first classification level."),
     )
 
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
+        return self.level1
+
 
 class CountAccuracy(CodeLabelDescriptionMixin, models.Model):
     """Accuracy levels."""
@@ -1186,14 +1191,31 @@ class PlantCount(ObservationGroup):
     )
 
     @property
+    def tldr(self):
+        """A text summary of the observation."""
+        return self.count_method
+
+    @property
     def no_alive_total(self):
         """The total number of alive individuals counted."""
-        return (self.no_alive_mature or 0) + (self.no_alive_juvenile or 0) + (self.no_alive_seedlings)
+        return (
+            self.no_alive_mature or 0
+        ) + (
+            self.no_alive_juvenile or 0
+        ) + (
+            self.no_alive_seedlings or 0
+        )
 
     @property
     def no_dead_total(self):
         """The total number of dead individuals counted."""
-        return (self.no_dead_mature or 0) + (self.no_dead_juvenile or 0) + (self.no_dead_seedlings)
+        return (
+            self.no_dead_mature or 0
+        ) + (
+            self.no_dead_juvenile or 0
+        ) + (
+            self.no_dead_seedlings or 0
+        )
 
 
 class AssociatedSpecies(ObservationGroup):
@@ -1219,6 +1241,42 @@ class AssociatedSpecies(ObservationGroup):
 # -----------------------------------------------------------------------------
 # Individual level observations
 #
+class DetectionMethod(CodeLabelDescriptionMixin, models.Model):
+    """The detection method of an Encounter."""
+
+    pass
+
+
+class Confidence(CodeLabelDescriptionMixin, models.Model):
+    """The confidence of the observer about the correctness of a given observation."""
+
+    pass
+
+
+class ReproductiveMaturity(CodeLabelDescriptionMixin, models.Model):
+    """The reproductive maturity of an animal."""
+
+    pass
+
+
+class AnimalHealth(CodeLabelDescriptionMixin, models.Model):
+    """The health of an animal."""
+
+    pass
+
+
+class CauseOfDeath(CodeLabelDescriptionMixin, models.Model):
+    """The cause of death of an animal."""
+
+    pass
+
+
+class SecondarySigns(CodeLabelDescriptionMixin, models.Model):
+    """Secondary signs of an animal."""
+
+    pass
+
+
 class AnimalObservation(ObservationGroup):
     """Observation of an Animal.
 
@@ -1237,50 +1295,256 @@ class AnimalObservation(ObservationGroup):
     # detection method: sighting, trapped, spotlighting, remote camera,
     # remote sensing, oral report, written report, acoustic recorder,
     # fossil, subfossil, capture, release
+    detection_method = models.ForeignKey(
+        DetectionMethod,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Detection Method"),
+        help_text=_("What brought the human observer to the Encounter?"),
+    )
 
     # species id confidence: guess, certain, expert
-    # species identified by (user/name and affiliation)
-    # primary observed animal: dist feature description
+    species_id_confidence = models.ForeignKey(
+        Confidence,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Species ID Confidence"),
+        help_text=_("How correct is the species ID according to the observer?"),
+    )
+
+    # species identified by (user/name and affiliation): expert changes species in TSC
 
     # reproductive state: adult, subadult, juvenile, dependent young
+    maturity = models.ForeignKey(
+        ReproductiveMaturity,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Reproductive Maturity"),
+        help_text=_("Reproductive Maturity of the primary observed animal."),
+    )
+
+    health = models.ForeignKey(
+        AnimalHealth,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Animal Health"),
+        help_text=_("The health status of the primary observed animal."),
+    )
+
+    cause_of_death = models.ForeignKey(
+        CauseOfDeath,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Cause of Death"),
+        help_text=_("The cause of death of the primary observed animal, if applicable."),
+    )
+
+    # primary observed animal: dist feature description
+    distinctive_features = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Distinctive features"),
+        help_text=_("Distinctive features of the primary observed animal. "
+                    "Include injuries if applicable."),
+    )
+
+    actions_taken = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Actions taken"),
+        help_text=_("Any actions taken, if applicable."),
+    )
+
+    actions_required = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Actions required"),
+        help_text=_("Any actions required, if applicable."),
+    )
 
     # no_adult_male
-    # no_adult_female
-    # no_adult_unknown
-    # no_juvenile_male
-    # no_juvenile_female
-    # no_juvenile_unknown
-    # no_dependent_young_male
-    # no_dependent_young_female
-    # no_dependent_young_unknown
+    no_adult_male = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of adult males"),
+        help_text=_("Including the primary observed animal."),
+    )
+    no_adult_female = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of adult females"),
+        help_text=_("Including the primary observed animal."),
+    )
+    no_adult_unknown = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of adult unknown"),
+        help_text=_("Including the primary observed animal."),
+    )
 
-    # sum_adult
-    # sum_juvenile
-    # sum_pouch_young
-    # sum_observed
+    no_juvenile_male = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of juvenile males"),
+        help_text=_("Including the primary observed animal."),
+    )
+    no_juvenile_female = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of juvenile females"),
+        help_text=_("Including the primary observed animal."),
+    )
+    no_juvenile_unknown = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of juvenile unknown"),
+        help_text=_("Including the primary observed animal."),
+    )
+
+    no_dependent_young_male = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of dependent_young males"),
+        help_text=_("Including the primary observed animal."),
+    )
+    no_dependent_young_female = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of dependent_young females"),
+        help_text=_("Including the primary observed animal."),
+    )
+    no_dependent_young_unknown = models.PositiveIntegerField(
+        blank=True, null=True,
+        verbose_name=_("Number of dependent_young unknown"),
+        help_text=_("Including the primary observed animal."),
+    )
 
     # observation details description
+    observation_details = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Observation details"),
+        help_text=_("Any relevant details of the observation."),
+    )
 
     # secondary signs (select multiple): heard, scats, tracks, diggings, nest/mound,
     # natural hollow, artificial hollow, burrow, feathers/fur/hair/skin,
     # bones, egg/eggshell, shell, feeding residue, fauna run, other see comments
+    secondary_signs = models.ManyToManyField(
+        SecondarySigns,
+        blank=True,
+        verbose_name=_("Secondary Signs"),
+        help_text=_("Any observed secondary signs of the animal."),
+    )
+
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
+        return "{0}".format(
+            self.detection_method
+        )
+
+    @property
+    def sum_adult(self):
+        """The sum of all adults encountered."""
+        return (
+            self.no_adult_male or 0
+        ) + (
+            self.no_adult_female or 0
+        ) + (
+            self.no_adult_unknown or 0
+        ) or 0
+
+    @property
+    def sum_juvenile(self):
+        """The sum of all juveniles encountered."""
+        return (
+            self.no_juvenile_male or 0
+        ) + (
+            self.no_juvenile_female or 0
+        ) + (
+            self.no_juvenile_unknown or 0
+        ) or 0
+
+    @property
+    def sum_pouch_young(self):
+        """The sum of all pouch young encountered."""
+        return (
+            self.no_pouch_young_male or 0
+        ) + (
+            self.no_pouch_young_female or 0
+        ) + (
+            self.no_pouch_young_unknown or 0
+        ) or 0
+
+    @property
+    def sum_observed(self):
+        """The sum of all individuals encountered."""
+        return self.sum_adult + self.sum_juvenile + self.sum_pouch_young
+
+
+class SampleType(CodeLabelDescriptionMixin, models.Model):
+    """A type of physical sample or specimen."""
+
+    pass
+
+
+class SampleDestination(CodeLabelDescriptionMixin, models.Model):
+    """The destination of a physical sample or specimen."""
+
+    pass
+
+
+class PermitType(CodeLabelDescriptionMixin, models.Model):
+    """The permit type to take a physical sample or specimen."""
+
     pass
 
 
 class PhysicalSample(ObservationGroup):
     """Physical sample or specimen taken off an organism."""
 
-    # sample type
-    # sample label
-    # destination
-    # collector ID
-    # permit type (AE, DRF)
-    # permit ID
-    pass
+    sample_type = models.ForeignKey(
+        SampleType,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Sample Type"),
+        help_text=_("Add missing values through the data curation portal."),
+    )
+
+    sample_label = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Sample Label"),
+        help_text=_("The label must be unique within the sample type."),
+    )
+
+    collector_id = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Collector ID"),
+        help_text=_("The unique collector ID."),
+    )
+
+    sample_destination = models.ForeignKey(
+        SampleDestination,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Sample Destination"),
+        help_text=_("Add missing values through the data curation portal."),
+    )
+
+    permit_type = models.ForeignKey(
+        PermitType,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Permit Type"),
+        help_text=_("Add missing values through the data curation portal."),
+    )
+
+    permit_id = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Permit ID"),
+        help_text=_("The unique permit ID."),
+    )
+
+    @property
+    def tldr(self):
+        """A text summary of the observation."""
+        return "{0} {1}".format(
+            self.sample_type,
+            self.sample_label
+        )
 
 
 class WildlifeIncident(ObservationGroup):
-    """A Wildlife incident: injury or death."""
+    """A Wildlife incident: injury or death. Currently integrated into AnimalObservation."""
 
     # health
     # cause of death
