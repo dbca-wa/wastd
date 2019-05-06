@@ -3122,7 +3122,7 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         logger.info(msg)
         return RestResponse(content, status=st)
 
-router.register("taxonConservationListing", TaxonConservationListingViewSet)
+router.register("taxon-conservationlisting", TaxonConservationListingViewSet)
 
 
 # ----------------------------------------------------------------------------#
@@ -3228,7 +3228,7 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         return RestResponse(content, status=st)
 
 
-router.register("communityConservationListing", CommunityConservationListingViewSet)
+router.register("community-conservationlisting", CommunityConservationListingViewSet)
 
 
 # ----------------------------------------------------------------------------#
