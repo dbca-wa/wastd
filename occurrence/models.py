@@ -733,6 +733,12 @@ class HabitatComposition(ObservationGroup):
         help_text=_("Add missing drainage types via the data curation portal.")
     )
 
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Habitat Composition"
+        verbose_name_plural = "Habitat Compositions"
+
     def tldr(self):
         """A text summary of the observation."""
         return "Lf {0}, RT {1}, LR {2}%, ST {3}, SC {4}, Dr {5}".format(
@@ -751,7 +757,6 @@ class HabitatComposition(ObservationGroup):
 # -----------------------------------------------------------------------------
 # Survey level observations
 #
-
 class SurveyType(CodeLabelDescriptionMixin, models.Model):
     """The survey type."""
 
@@ -884,6 +889,12 @@ class HabitatCondition(ObservationGroup):
         help_text=_("Add missing soil conditions via the data curation portal.")
     )
 
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Habitat Condition"
+        verbose_name_plural = "Habitat Conditions"
+
     @property
     def tldr(self):
         """A text summary of the observation."""
@@ -975,6 +986,12 @@ class VegetationClassification(ObservationGroup):
         verbose_name=_("Level 4"),
         help_text=_("The first classification level."),
     )
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Vegetation Classification"
+        verbose_name_plural = "Vegetation Classifications"
 
     @property
     def tldr(self):
@@ -1190,6 +1207,12 @@ class PlantCount(ObservationGroup):
         help_text=_("Any further comments on the plant population."),
     )
 
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Plant Count"
+        verbose_name_plural = "Plant Counts"
+
     @property
     def tldr(self):
         """A text summary of the observation."""
@@ -1265,6 +1288,12 @@ class AnimalHealth(CodeLabelDescriptionMixin, models.Model):
     pass
 
 
+class AnimalSex(CodeLabelDescriptionMixin, models.Model):
+    """The sex of an animal."""
+
+    pass
+
+
 class CauseOfDeath(CodeLabelDescriptionMixin, models.Model):
     """The cause of death of an animal."""
 
@@ -1321,6 +1350,14 @@ class AnimalObservation(ObservationGroup):
         blank=True, null=True,
         verbose_name=_("Reproductive Maturity"),
         help_text=_("Reproductive Maturity of the primary observed animal."),
+    )
+
+    sex = models.ForeignKey(
+        AnimalSex,
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        verbose_name=_("Animal Sex"),
+        help_text=_("The sex of the primary observed animal."),
     )
 
     health = models.ForeignKey(
@@ -1425,11 +1462,19 @@ class AnimalObservation(ObservationGroup):
         help_text=_("Any observed secondary signs of the animal."),
     )
 
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Animal Observation"
+        verbose_name_plural = "Animal Observations"
+
     @property
     def tldr(self):
         """A text summary of the observation."""
-        return "{0}".format(
-            self.detection_method
+        return "[{0}] {1} {2}".format(
+            self.detection_method,
+            self.maturity,
+            self.health
         )
 
     @property
@@ -1533,6 +1578,12 @@ class PhysicalSample(ObservationGroup):
         verbose_name=_("Permit ID"),
         help_text=_("The unique permit ID."),
     )
+
+    class Meta:
+        """Class options."""
+
+        verbose_name = "Physical Sample"
+        verbose_name_plural = "Physical Samples"
 
     @property
     def tldr(self):
