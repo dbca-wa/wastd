@@ -86,6 +86,13 @@ class SoilColourAdmin(CodeLabelDescriptionAdmin):
     pass
 
 
+@admin.register(occ_models.Drainage)
+class DrainageAdmin(CodeLabelDescriptionAdmin):
+    """Admin for Soil Drainage."""
+
+    pass
+
+
 @admin.register(occ_models.HabitatComposition)
 class HabitatCompositionAdmin(FSMTransitionMixin, VersionAdmin):
     """HabitatComposition Admin."""
