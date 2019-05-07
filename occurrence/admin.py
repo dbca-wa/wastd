@@ -443,6 +443,13 @@ class AnimalHealthAdmin(CodeLabelDescriptionAdmin):
     pass
 
 
+@admin.register(occ_models.AnimalSex)
+class AnimalSexAdmin(CodeLabelDescriptionAdmin):
+    """Admin for AnimalSex."""
+
+    pass
+
+
 @admin.register(occ_models.CauseOfDeath)
 class CauseOfDeathAdmin(CodeLabelDescriptionAdmin):
     """Admin for CauseOfDeath."""
@@ -591,7 +598,14 @@ class PhysicalSampleInline(admin.StackedInline):
 # -----------------------------------------------------------------------------
 # Main models
 # -----------------------------------------------------------------------------
-# @admin.register(AreaEncounter)
+@admin.register(occ_models.EncounterType)
+class EncounterTypeAdmin(CodeLabelDescriptionAdmin):
+    """Admin for EncounterType."""
+
+    pass
+
+
+# @admin.register(AreaEncounter)  # Base admin for TAE and CAE
 class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmin):
     """Admin for Area."""
 

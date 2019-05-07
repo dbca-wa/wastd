@@ -3757,9 +3757,8 @@ class TurtleNestDisturbanceObservation(Observation):
 
 # TODO add CecaceanMorphometricObservation for cetacean strandings
 
+
 # Logger Observation models --------------------------------------------------#
-
-
 @python_2_unicode_compatible
 class TemperatureLoggerSettings(Observation):
     """Temperature Logger Settings."""
