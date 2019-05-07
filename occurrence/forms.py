@@ -235,8 +235,8 @@ class FileAttachmentForm(forms.ModelForm):
                     Div('confidential', css_class=THIRDS),
                     css_class='row'
                 ),
-                'title'
             ),
+            'title',
             ButtonHolder(
                 Submit("submit",
                        "Submit",
@@ -473,9 +473,6 @@ class PlantCountForm(forms.ModelForm):
                     Div("no_alive_mature", css_class=THIRDS),
                     Div("no_alive_juvenile", css_class=THIRDS),
                     Div("no_alive_seedlings", css_class=THIRDS),
-                    css_class="row"
-                ),
-                Div(
                     Div("no_dead_mature", css_class=THIRDS),
                     Div("no_dead_juvenile", css_class=THIRDS),
                     Div("no_dead_seedlings", css_class=THIRDS),
@@ -681,15 +678,11 @@ class AnimalObservationForm(forms.ModelForm):
                     Div("no_adult_male", css_class=THIRDS),
                     Div("no_adult_female", css_class=THIRDS),
                     Div("no_adult_unknown", css_class=THIRDS),
-                    css_class="row"
-                ),
-                Div(
+
                     Div("no_juvenile_male", css_class=THIRDS),
                     Div("no_juvenile_female", css_class=THIRDS),
                     Div("no_juvenile_unknown", css_class=THIRDS),
-                    css_class="row"
-                ),
-                Div(
+
                     Div("no_dependent_young_male", css_class=THIRDS),
                     Div("no_dependent_young_female", css_class=THIRDS),
                     Div("no_dependent_young_unknown", css_class=THIRDS),
@@ -737,13 +730,13 @@ class PhysicalSampleForm(forms.ModelForm):
                 "Physical Sample or Specimen",
                 Div(
                     Div("sample_type", css_class=THIRDS),
-                    Div("sample_label", css_class=THIRDS),
-                    Div("collector_id", css_class=THIRDS),
+                    Div("sample_destination", css_class=THIRDS),
+                    Div("permit_type", css_class=THIRDS),
                     css_class="row"
                 ),
                 Div(
-                    Div("sample_destination", css_class=THIRDS),
-                    Div("permit_type", css_class=THIRDS),
+                    Div("sample_label", css_class=THIRDS),
+                    Div("collector_id", css_class=THIRDS),
                     Div("permit_id", css_class=THIRDS),
                     css_class="row"
                 ),
