@@ -229,14 +229,18 @@ class FileAttachmentForm(forms.ModelForm):
                 "encounter"
             ),
             Fieldset(
+                "File",
                 Div(
                     Div('attachment', css_class=THIRDS),
                     Div('author', css_class=THIRDS),
                     Div('confidential', css_class=THIRDS),
                     css_class='row'
                 ),
+                Div(
+                    Div('title', css_class="col col-12"),
+                    css_class='row'
+                ),
             ),
-            'title',
             ButtonHolder(
                 Submit("submit",
                        "Submit",
