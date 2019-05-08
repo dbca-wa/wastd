@@ -56,7 +56,7 @@ class FileAttachment(models.Model):
     """A generic file attachment to any model."""
 
     attachment = models.FileField(upload_to=fileattachment_media)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
