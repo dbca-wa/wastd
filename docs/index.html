@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.23.2 documentation</title>
+  <title>TSC 0.23.3 documentation</title>
   
 
   
@@ -423,7 +423,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.23.2 documentation</li>
+      <li>TSC 0.23.3 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -4006,11 +4006,11 @@ on an existing cluster:</p>
 775 (folders) and 664 (files).</li>
 <li>The production web server shall run under the www-data account.</li>
 </ul>
-<p>Create folders, set permissions (files 0644, folders 0755):</p>
+<p>Create folders, set permissions (files 0664, folders 0775):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">staticfiles</span>
 <span class="n">sudo</span> <span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">www</span><span class="o">-</span><span class="n">data</span><span class="p">:</span><span class="n">www</span><span class="o">-</span><span class="n">data</span> <span class="o">.</span>
 <span class="n">find</span> <span class="o">.</span> <span class="o">-</span><span class="nb">type</span> <span class="n">f</span> <span class="o">-</span><span class="n">exec</span> <span class="n">sudo</span> <span class="n">chmod</span> <span class="mi">0664</span> <span class="p">{}</span> \<span class="p">;</span>
-<span class="n">find</span> <span class="o">.</span> <span class="o">-</span><span class="nb">type</span> <span class="n">d</span> <span class="o">-</span><span class="n">exec</span> <span class="n">sudo</span> <span class="n">chmod</span> <span class="mi">0755</span> <span class="p">{}</span> \<span class="p">;</span>
+<span class="n">find</span> <span class="o">.</span> <span class="o">-</span><span class="nb">type</span> <span class="n">d</span> <span class="o">-</span><span class="n">exec</span> <span class="n">sudo</span> <span class="n">chmod</span> <span class="mi">0775</span> <span class="p">{}</span> \<span class="p">;</span>
 <span class="n">sudo</span> <span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
@@ -4035,7 +4035,7 @@ sudo chmod -R +x $WORKON_HOME/wastd/bin/*
 <p>Run <code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">static</span></code> and <code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">go</span></code> to see WAStD running in dev.</p>
 <p>Getting data from PROD via gateway server to DEV:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(wastd)florianm@aws-eco-001:/mnt/projects/wastd$ ./manage.py dumpdata --natural-primary --natural-foreign --indent 4 &gt; data.json
-(wastd)florianm@aws-eco-001:/mnt/projects/wastd$ pg_dump -h localhost -p 5443 -U sdis -Fc wastd_8220 &gt; wastd_8220.dump
+(wastd)florianm@aws-eco-001:/mnt/projects/wastd$ pg_dump -h localhost -p DBPORT -U DBUSER -Fc wastd_8220 &gt; wastd_8220.dump
 (wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr data.json florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm
 (wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr wastd_8220.dump florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm
 (wastd)florianm@aws-eco-001:/mnt/projects/wastd$ rsync -Pavvr wastd/media/ florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd/wastd/media/
@@ -4046,7 +4046,7 @@ sudo chmod -R +x $WORKON_HOME/wastd/bin/*
 (wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr florianm@kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd/wastd/media/ wastd/media/
 (wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ ./manage.py loaddata data/data.json
 # or:
-(wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ pg_restore -h localhost -p 5443 -U sdis -d wastd_8220 &lt; data/wastd_8220.dump
+(wastd) florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ pg_restore -h localhost -p DBPORT -U DBUSER -d wastd_8220 &lt; data/wastd_8220.dump
 </pre></div>
 </div>
 </div>
