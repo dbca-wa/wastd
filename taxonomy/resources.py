@@ -12,12 +12,14 @@ class TaxonResource(resources.ModelResource):
         """Class opts."""
 
         model = tax_models.Taxon
-        # fields = [
-        #     "name_id",
-        #     "taxonomic_name",
-        #     "vernacular_names",
-        #     # more to come
-        # ]
+        fields = [
+            "name_id",
+            "taxonomic_name",
+            "vernacular_names",
+            "field_code",
+            "get_publication_status_display",
+            "current"
+        ]
 
 
 class CommunityResource(resources.ModelResource):

@@ -177,7 +177,7 @@ class AreaEncounter(PolymorphicModel,
     # Encounter type: what brought the observer to the encounter? opportunistic, research, monitoring
     encounter_type = models.ForeignKey(
         EncounterType,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Encounter Type"),
         blank=True, null=True,
         help_text=_("Add missing encounter types via the data curation portal.")
@@ -332,7 +332,7 @@ class AreaEncounter(PolymorphicModel,
 class TaxonAreaEncounter(AreaEncounter):
     """An Encounter in time and space with a Taxon."""
 
-    taxon = models.ForeignKey(Taxon, on_delete=models.CASCADE, related_name="taxon_occurrences")
+    taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, related_name="taxon_occurrences")
 
     class Meta:
         """Class options."""
@@ -384,7 +384,7 @@ class TaxonAreaEncounter(AreaEncounter):
 class CommunityAreaEncounter(AreaEncounter):
     """An Encounter in time and space with a community."""
 
-    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name="community_occurrences")
+    community = models.ForeignKey(Community, on_delete=models.PROTECT, related_name="community_occurrences")
 
     class Meta:
         """Class options."""
@@ -603,7 +603,7 @@ class FileAttachment(ObservationGroup):
 
     author = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name=_("Author"),
         related_name="occurrence_fileattachments",
         blank=True, null=True,
@@ -689,14 +689,14 @@ class HabitatComposition(ObservationGroup):
 
     landform = models.ForeignKey(
         Landform,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Landform"),
         blank=True, null=True,
         help_text=_("The landform."))
 
     rock_type = models.ForeignKey(
         RockType,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Rock type"),
         blank=True, null=True,
         help_text=_("Add missing rock types via the data curation portal."))
@@ -711,7 +711,7 @@ class HabitatComposition(ObservationGroup):
 
     soil_type = models.ForeignKey(
         SoilType,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Soil type"),
         blank=True, null=True,
         help_text=_("Add missing soil types via the data curation portal.")
@@ -719,7 +719,7 @@ class HabitatComposition(ObservationGroup):
 
     soil_colour = models.ForeignKey(
         SoilColour,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Soil colour"),
         blank=True, null=True,
         help_text=_("Add missing soil colours via the data curation portal.")
@@ -727,7 +727,7 @@ class HabitatComposition(ObservationGroup):
 
     drainage = models.ForeignKey(
         Drainage,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Drainage"),
         blank=True, null=True,
         help_text=_("Add missing drainage types via the data curation portal.")
@@ -774,7 +774,7 @@ class AreaAssessment(ObservationGroup):
 
     survey_type = models.ForeignKey(
         SurveyType,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Survey Type"),
         blank=True, null=True,
         help_text=_("Add missing survey types via the data curation portal."),
@@ -782,7 +782,7 @@ class AreaAssessment(ObservationGroup):
 
     survey_method = models.ForeignKey(
         SurveyMethod,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Survey Method"),
         blank=True, null=True,
         help_text=_("Add missing survey methods via the data curation portal.")
@@ -883,7 +883,7 @@ class HabitatCondition(ObservationGroup):
 
     soil_condition = models.ForeignKey(
         SoilCondition,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name=_("Soil condition"),
         blank=True, null=True,
         help_text=_("Add missing soil conditions via the data curation portal.")
@@ -1035,7 +1035,7 @@ class PlantCount(ObservationGroup):
 
     count_method = models.ForeignKey(
         CountMethod,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Plant Count Method"),
         help_text=_("Add missing lookup values via the data curation portal.")
@@ -1043,7 +1043,7 @@ class PlantCount(ObservationGroup):
 
     count_accuracy = models.ForeignKey(
         CountAccuracy,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Plant Count Accuracy"),
         help_text=_("Add missing lookup values via the data curation portal.")
@@ -1051,7 +1051,7 @@ class PlantCount(ObservationGroup):
 
     count_subject = models.ForeignKey(
         CountSubject,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Counted Subject"),
         help_text=_("What was counted?"),
@@ -1195,7 +1195,7 @@ class PlantCount(ObservationGroup):
     # Plant condition
     plant_condition = models.ForeignKey(
         PlantCondition,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Plant condition"),
         help_text=_("What condition were most of the plants in?"),
@@ -1326,7 +1326,7 @@ class AnimalObservation(ObservationGroup):
     # fossil, subfossil, capture, release
     detection_method = models.ForeignKey(
         DetectionMethod,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Detection Method"),
         help_text=_("What brought the human observer to the Encounter?"),
@@ -1335,7 +1335,7 @@ class AnimalObservation(ObservationGroup):
     # species id confidence: guess, certain, expert
     species_id_confidence = models.ForeignKey(
         Confidence,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Species ID Confidence"),
         help_text=_("How correct is the species ID according to the observer?"),
@@ -1346,7 +1346,7 @@ class AnimalObservation(ObservationGroup):
     # reproductive state: adult, subadult, juvenile, dependent young
     maturity = models.ForeignKey(
         ReproductiveMaturity,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Reproductive Maturity"),
         help_text=_("Reproductive Maturity of the primary observed animal."),
@@ -1354,7 +1354,7 @@ class AnimalObservation(ObservationGroup):
 
     sex = models.ForeignKey(
         AnimalSex,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Animal Sex"),
         help_text=_("The sex of the primary observed animal."),
@@ -1362,7 +1362,7 @@ class AnimalObservation(ObservationGroup):
 
     health = models.ForeignKey(
         AnimalHealth,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Animal Health"),
         help_text=_("The health status of the primary observed animal."),
@@ -1370,7 +1370,7 @@ class AnimalObservation(ObservationGroup):
 
     cause_of_death = models.ForeignKey(
         CauseOfDeath,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Cause of Death"),
         help_text=_("The cause of death of the primary observed animal, if applicable."),
@@ -1539,7 +1539,7 @@ class PhysicalSample(ObservationGroup):
 
     sample_type = models.ForeignKey(
         SampleType,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Sample Type"),
         help_text=_("Add missing values through the data curation portal."),
@@ -1559,7 +1559,7 @@ class PhysicalSample(ObservationGroup):
 
     sample_destination = models.ForeignKey(
         SampleDestination,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Sample Destination"),
         help_text=_("Add missing values through the data curation portal."),
@@ -1567,7 +1567,7 @@ class PhysicalSample(ObservationGroup):
 
     permit_type = models.ForeignKey(
         PermitType,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Permit Type"),
         help_text=_("Add missing values through the data curation portal."),

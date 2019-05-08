@@ -47,6 +47,7 @@ class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Taxon
     template_name = "pages/default_list.html"
     resource_class = tax_resources.TaxonResource
+    filter_class = TaxonFilter
     resource_formats = ['csv', 'tsv', 'xls', 'json']
     paginate_by = 12
 
@@ -98,6 +99,7 @@ class CommunityListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView
     model = Community
     template_name = "pages/default_list.html"
     resource_class = tax_resources.CommunityResource
+    filter_class = CommunityFilter
     resource_formats = ['csv', 'tsv', 'xls', 'json']
     paginate_by = 12
 

@@ -1618,14 +1618,14 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     survey = models.ForeignKey(
         Survey,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         null=True, blank=True,
         verbose_name=_("Survey"),
         help_text=_("The survey during which this encounter happened."),)
 
     area = models.ForeignKey(
         Area,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Area"),
         related_name="encounter_area",
@@ -1633,7 +1633,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     site = models.ForeignKey(
         Area,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Surveyed site"),
         related_name="encounter_site",
