@@ -332,7 +332,12 @@ class AreaEncounter(PolymorphicModel,
 class TaxonAreaEncounter(AreaEncounter):
     """An Encounter in time and space with a Taxon."""
 
-    taxon = models.ForeignKey(Taxon, on_delete=models.PROTECT, related_name="taxon_occurrences")
+    taxon = models.ForeignKey(
+        Taxon,
+        on_delete=models.PROTECT,
+        related_name="taxon_occurrences",
+        help_text=_("The taxonomic name of the encountered subject."),
+    )
 
     class Meta:
         """Class options."""

@@ -39,3 +39,28 @@ This test suite is a walk-through of the following occurrence business processes
   from regions or external consultants.
   Run through API example, see OCC ETL workbooks.
 """
+from django.test import TestCase  # noqa
+
+
+class ThreatenedOccurrenceTestCase(TestCase):
+    """Occurences of taxa with related conservation listed taxa should show up as threatened species occurrences.
+
+    Species X is conservation listed.
+    Subspecies Y with parent X is recorded as occurrence Y1.
+
+    Occ Y1 should show up as occurrence of threatened species.
+
+    Genus Z is parent of X and recorded as occurrence Z1.
+    Genus Z is also parent of another unlisted Species A.
+    Z1 should NOT show up as occurrence of threatened species.
+
+    Subspecies Y should show the conservation listing of X.
+    """
+
+    pass
+
+
+class OccurrenceExportTestCase(TestCase):
+    """Occ can be exported to GIS or R including flattened out ObsGroups."""
+
+    pass

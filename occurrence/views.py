@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 # from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
@@ -144,7 +145,9 @@ class TaxonAreaEncounterCreateView(AreaEncounterCreateView):
             initial["taxon"] = Taxon.objects.get(name_id=self.kwargs["name_id"])
         if "area_code" in self.kwargs:
             initial["code"] = self.kwargs["area_code"]
-        initial["encountered_by"] = self.request.user
+        if not self.request.user.is_anonymous:
+            initial["encountered_by"] = self.request.user
+        initial["encountered_on"] = timezone.now()
         return initial
 
 
@@ -169,7 +172,9 @@ class CommunityAreaEncounterCreateView(AreaEncounterCreateView):
             initial["community"] = Community.objects.get(pk=self.kwargs["pk"])
         if "area_code" in self.kwargs:
             initial["code"] = self.kwargs["area_code"]
-        initial["encountered_by"] = self.request.user
+        if not self.request.user.is_anonymous:
+            initial["encountered_by"] = self.request.user
+        initial["encountered_on"] = timezone.now()
         return initial
 
 

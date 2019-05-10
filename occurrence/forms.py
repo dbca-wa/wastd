@@ -66,7 +66,7 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             "taxon": tax_widgets.TaxonWidget(),
             "geom": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
             "point": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
-            "encountered_on": shared_forms.DateTimeInput(),
+            # "encountered_on": shared_forms.DateTimeInput(),
             "encountered_by": usr_widgets.UserWidget(),
         }
 
@@ -144,7 +144,7 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
             "community": tax_widgets.CommunityWidget(),
             "geom": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
             "point": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS),
-            "encountered_on": shared_forms.DateTimeInput(),
+            # "encountered_on": shared_forms.DateTimeInput(),
             "encountered_by": usr_widgets.UserWidget(),
         }
 
