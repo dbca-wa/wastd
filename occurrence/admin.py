@@ -413,9 +413,9 @@ class AssociatedSpeciesInline(admin.TabularInline):
     """Associated Species  Inline."""
 
     extra = 1
-    # max_num = 1  # limit max number
     model = occ_models.AssociatedSpecies
     # form = occ_forms.AssociatedSpeciesForm
+    autocomplete_fields = ['taxon', ]
     classes = ('grp-collapse', 'grp-open', 'wide', 'extrapretty', )
 
 
@@ -634,7 +634,7 @@ class AreaEncounterAdmin(FSMTransitionMixin, ImportExportModelAdmin, VersionAdmi
          ),
         (_('Location'), {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-            'fields': ("point", "geom", "accuracy", "geolocation_capture_method")}
+            'fields': ("geom", "point", "accuracy", "geolocation_capture_method")}
          ),
         (_('Data lineage'), {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -650,7 +650,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
 
     # Change list
     list_display = AreaEncounterAdmin.list_display + ["taxon"]
-    list_filter = AreaEncounterAdmin.list_filter + ["taxon"]
+    # list_filter = AreaEncounterAdmin.list_filter + ["taxon"]
     list_select_related = ["taxon", ]
     show_full_result_count = False
     resource_class = occ_resources.TaxonAreaEncounterResource
@@ -665,6 +665,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
             'fields': ("taxon",)}
          ),
     ) + AreaEncounterAdmin.fieldsets
+
     inlines = [
         CustomStateLogInline,
         FileAttachmentInline,
@@ -675,7 +676,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
         VegetationClassificationInline,
         AssociatedSpeciesInline,
         AnimalObservationInline,
-        PhysicalSampleInline,
+        PhysicalSampleInline
     ]
 
 
@@ -707,5 +708,5 @@ class CommunityAreaAdmin(AreaEncounterAdmin):
         FireHistoryInline,
         VegetationClassificationInline,
         AssociatedSpeciesInline,
-        PhysicalSampleInline,
+        PhysicalSampleInline
     ]
