@@ -2239,25 +2239,12 @@ class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
     # Derived properties
     @property
     def gazettals(self):
-        """Return a dict of ConservationListing labels and admin URLs.
-
-        TODO save as list field on model, populate in pre_save.
-        """
-        return [{'label': x.label_cache,
-                 'url': x.absolute_admin_url,
-                 'is_active': x.is_active}
-                for x in self.conservation_listings.all()]
+        """Return a dict of TaxonConservationListing labels and admin URLs."""
+        from conservation import models as cons_models
+        return cons_models.CommunityConservationListing.objects.filter(community__pk=self.pk)
 
     @property
     def active_gazettals(self):
-        """Return a dict of active ConservationListing labels and admin URLs.
-
-        TODO save as list field on model, populate in pre_save.
-        TODO make active_gazettals a manager method on ConservationListing
-        """
-        from conservation.models import ConservationListing
-        return [{'label': x.label_cache,
-                 'url': x.absolute_admin_url,
-                 'is_active': x.is_active}
-                for x in self.conservation_listings.filter(
-            status=ConservationListing.STATUS_EFFECTIVE)]
+        """Return a dict of active TaxonConservationListing labels and admin URLs."""
+        from conservation import models as cons_models
+        return cons_models.CommunityConservationListing.active.filter(community__pk=self.pk)

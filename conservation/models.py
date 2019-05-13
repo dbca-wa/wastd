@@ -1369,9 +1369,11 @@ class TaxonConservationListing(ConservationListing):
     Transition to "gazetted" shall close any other ConservationListings of same scope.
     """
 
-    taxon = models.ForeignKey(Taxon,
-                              on_delete=models.CASCADE,
-                              related_name="conservation_listings")
+    taxon = models.ForeignKey(
+        Taxon,
+        on_delete=models.CASCADE,
+        related_name="conservation_listings"
+    )
 
     class Meta:
         """Class opts."""
@@ -1445,9 +1447,11 @@ class TaxonConservationListing(ConservationListing):
 class CommunityConservationListing(ConservationListing):
     """The ConservationListing of a ConservationCategory against a Community."""
 
-    community = models.ForeignKey(Community,
-                                  on_delete=models.CASCADE,
-                                  related_name="conservation_listings")
+    community = models.ForeignKey(
+        Community,
+        on_delete=models.CASCADE,
+        related_name="conservation_listings"
+    )
 
     class Meta:
         """Class opts."""
