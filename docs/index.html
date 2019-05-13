@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.23.3 documentation</title>
+  <title>TSC 0.23.5 documentation</title>
   
 
   
@@ -423,7 +423,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.23.3 documentation</li>
+      <li>TSC 0.23.5 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -9305,9 +9305,7 @@ Community is initally populated from TEC through the API, then updated both thro
 <dl class="attribute">
 <dt id="taxonomy.models.Community.active_gazettals">
 <code class="descname">active_gazettals</code><a class="headerlink" href="#taxonomy.models.Community.active_gazettals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a dict of active ConservationListing labels and admin URLs.</p>
-<p>TODO save as list field on model, populate in pre_save.
-TODO make active_gazettals a manager method on ConservationListing</p>
+<dd><p>Return a dict of active TaxonConservationListing labels and admin URLs.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -9410,8 +9408,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="attribute">
 <dt id="taxonomy.models.Community.gazettals">
 <code class="descname">gazettals</code><a class="headerlink" href="#taxonomy.models.Community.gazettals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a dict of ConservationListing labels and admin URLs.</p>
-<p>TODO save as list field on model, populate in pre_save.</p>
+<dd><p>Return a dict of TaxonConservationListing labels and admin URLs.</p>
 </dd></dl>
 
 <dl class="method">
@@ -13145,6 +13142,11 @@ closing just the mutually exclusive ones.</p>
 <dl class="attribute">
 <dt id="conservation.models.ConservationListing.Meta.abstract">
 <code class="descname">abstract</code><em class="property"> = False</em><a class="headerlink" href="#conservation.models.ConservationListing.Meta.abstract" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationListing.Meta.ordering">
+<code class="descname">ordering</code><em class="property"> = ['effective_from']</em><a class="headerlink" href="#conservation.models.ConservationListing.Meta.ordering" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -21375,6 +21377,25 @@ from regions or external consultants.
 Run through API example, see OCC ETL workbooks.</p>
 </li>
 </ul>
+<dl class="class">
+<dt id="occurrence.tests.test_functional.OccurrenceExportTestCase">
+<em class="property">class </em><code class="descclassname">occurrence.tests.test_functional.</code><code class="descname">OccurrenceExportTestCase</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_functional.OccurrenceExportTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Occ can be exported to GIS or R including flattened out ObsGroups.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="occurrence.tests.test_functional.ThreatenedOccurrenceTestCase">
+<em class="property">class </em><code class="descclassname">occurrence.tests.test_functional.</code><code class="descname">ThreatenedOccurrenceTestCase</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.tests.test_functional.ThreatenedOccurrenceTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Occurences of taxa with related conservation listed taxa should show up as threatened species occurrences.</p>
+<p>Species X is conservation listed.
+Subspecies Y with parent X is recorded as occurrence Y1.</p>
+<p>Occ Y1 should show up as occurrence of threatened species.</p>
+<p>Genus Z is parent of X and recorded as occurrence Z1.
+Genus Z is also parent of another unlisted Species A.
+Z1 should NOT show up as occurrence of threatened species.</p>
+<p>Subspecies Y should show the conservation listing of X.</p>
+</dd></dl>
+
 </div>
 <span class="target" id="module-occurrence.tests.test_unit"></span><p>.</p>
 <div class="section" id="occurrence-unit-tests">

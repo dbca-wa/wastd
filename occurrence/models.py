@@ -1505,20 +1505,20 @@ class AnimalObservation(ObservationGroup):
         ) or 0
 
     @property
-    def sum_pouch_young(self):
-        """The sum of all pouch young encountered."""
+    def sum_dependent_young(self):
+        """The sum of all dependent young encountered."""
         return (
-            self.no_pouch_young_male or 0
+            self.no_dependent_young_male or 0
         ) + (
-            self.no_pouch_young_female or 0
+            self.no_dependent_young_female or 0
         ) + (
-            self.no_pouch_young_unknown or 0
+            self.no_dependent_young_unknown or 0
         ) or 0
 
     @property
     def sum_observed(self):
         """The sum of all individuals encountered."""
-        return self.sum_adult + self.sum_juvenile + self.sum_pouch_young
+        return self.sum_adult + self.sum_juvenile + self.sum_dependent_young
 
 
 class SampleType(CodeLabelDescriptionMixin, models.Model):

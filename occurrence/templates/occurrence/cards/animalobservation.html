@@ -1,53 +1,81 @@
 {% load occurrence_tags observations bootstrap4 %}
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg qa-{{ object.status }}">
 
- <div class="card-body">
+  <div class="card-header">
+    <h5 class="card-title">{{ object.detection_method }} of {{ object.health }} {{ object.maturity }}</h5>
+  </div>
+
+  <div class="card-body">
+
 
     <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      {{ object.detection_method }},
-      species ID confidence {{ object.species_id_confidence }},
-      {{ object }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      {{ object.maturity }} {{ object.health }} {{ object.cause_of_death }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      {{ object.distinctive_features }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      {{ object.actions_taken }}
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      {{ object.actions_required }}
+      {% if object.cause_of_death %}&#9760; {{ object.cause_of_death }}<br/>{% endif %}
+      Species ID: {{ object.species_id_confidence }}
     </p>
 
+    {% if object.distinctive_features %}
     <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
+      Distinctive features: {{ object.distinctive_features }}
+    </p>
+    {% endif %}
+
+    {% if object.actions_taken %}
+    <p class="card-text">
+      Actions taken: {{ object.actions_taken }}
+    </p>
+    {% endif %}
+
+    {% if object.actions_required %}
+    <p class="card-text">
+      Actions required: {{ object.actions_taken }}
+    </p>
+    {% endif %}
+
+    {% if object.observation_details %}
+    <p class="card-text">
+      <span class="oi oi-comment-square" aria-hidden="true"></span>
       {{ object.observation_details }}
     </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      Secondary signs: {% for ss in object.secondary_signs %}{{ ss }}{% endfor %}
-    </p>
+    {% endif %}
 
+    {% if object.secondary_signs.all %}
+    <p class="card-text">
+      &#128169; {% for ss in object.secondary_signs.all %} {{ ss }}{% endfor %}
+    </p>
+    {% endif %}
+
+    {% if object.sum_observed > 1 %}
     <h6 class="card-title">Animal Group Observation</h6>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      Adult: {{ object.no_adult_male }} males, {{ object.no_adult_female }} females, {{ object.no_adult_unknown }} unknown
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      Juvenile: {{ object.no_juvenile_male }} males, {{ object.no_juvenile_female }} females, {{ object.no_juvenile_unknown }} unknown
-    </p>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      Dependent young: {{ object.no_dependent_young_male }} males, {{ object.no_dependent_young_female }} females, {{ object.no_dependent_young_unknown }} unknown
-    </p>
+    Total {{ object.sum_observed }}
+    <div class="row">
+      <span class="col col-3"></span>
+      <span class="col col-2">&female;</span>
+      <span class="col col-2">&male;</span>
+      <span class="col col-2">?</span>
+      <span class="col col-3">&Sigma;</span>
+    </div>
+    <div class="row">
+      <span class="col col-3">adlt</span>
+      <span class="col col-2">{{ object.no_adult_female }}</span>
+      <span class="col col-2">{{ object.no_adult_male }}</span>
+      <span class="col col-2">{{ object.no_adult_unknown }}</span>
+      <span class="col col-3">{{ object.sum_adult }}</span>
+    </div>
+    <div class="row">
+      <span class="col col-3">juv</span>
+      <span class="col col-2">{{ object.no_juvenile_female }}</span>
+      <span class="col col-2">{{ object.no_juvenile_male }}</span>
+      <span class="col col-2">{{ object.no_juvenile_unknown }}</span>
+      <span class="col col-3">{{ object.sum_juvenile }}</span>
+    </div>
+    <div class="row">
+      <span class="col col-3">dep</span>
+      <span class="col col-2">{{ object.no_dependent_young_female }}</span>
+      <span class="col col-2">{{ object.no_dependent_young_male }}</span>
+      <span class="col col-2">{{ object.no_dependent_young_unknown }}</span>
+      <span class="col col-3">{{ object.sum_dependent_young }}</span>
+    </div>
+    {% endif %}
 
   </div><!-- /.card-body -->
 
