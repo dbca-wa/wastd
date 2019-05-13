@@ -55,7 +55,8 @@ class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         """Add extra items to context."""
         context = super(TaxonListView, self).get_context_data(**kwargs)
         context["now"] = timezone.now()
-        context["list_filter"] = TaxonFilter(self.request.GET, queryset=self.get_queryset())
+        context["list_filter"] = TaxonFilter(
+            self.request.GET, queryset=self.get_queryset())
         return context
 
     def get_queryset(self):

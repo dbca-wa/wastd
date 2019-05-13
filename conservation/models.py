@@ -1014,6 +1014,7 @@ class ConservationListing(RenderMixin, UrlsMixin, models.Model):
         """Class opts."""
 
         abstract = True
+        ordering = ['effective_from', ]
 
     def __str__(self):
         """The full name."""
