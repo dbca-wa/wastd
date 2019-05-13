@@ -2,7 +2,7 @@
 <div class="card {% if collapse %}{% else %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
 
   <div class="card-header">
-    <h5 class="card-title">
+    <h5 class="card-title{% if object.is_active %} text-danger{% else %} text-muted{% endif %}">
       {{ object.category_cache }} {{ object.criteria_cache }}
       {% if collapse %}
       <small class="float-right">

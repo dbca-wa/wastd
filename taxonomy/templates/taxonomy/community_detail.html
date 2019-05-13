@@ -94,7 +94,7 @@
               {% include 'conservation/include/communityconservationlisting_add.html' with label=False block=False community=object %}
             </span>
             <div class="row">
-              {% for object in object.conservation_listings.all %}
+              {% for object in object.conservation_listings.all|dictsort:'effective_from'|dictsort:'scope' %}
               {% include 'conservation/cards/conservationlisting.html' with collapse=False %}
               {% endfor %}
             </div>
