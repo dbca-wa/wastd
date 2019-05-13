@@ -1,7 +1,7 @@
 {% load occurrence_tags observations bootstrap4 %}
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg qa-{{ object.status }}">
 
-  <img src="{{ object.attachment.url }}" class="card-img-top" alt="">
+  <img src="{{ object.attachment.url }}" class="card-img-top" alt="{{ object.title }}">
 
   <div class="card-body">
 
@@ -18,7 +18,7 @@
     </p>
 
     <p class="card-text">
-      {% if attachment.confidential == True%}
+      {% if attachment.confidential == True %}
       <span class="oi oi-lock-locked" aria-hidden="true"></span>
       Confidential
       {% else %}
