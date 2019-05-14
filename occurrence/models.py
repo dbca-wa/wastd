@@ -99,9 +99,9 @@ class AreaEncounter(PolymorphicModel,
     AREA_TYPE_LOCALITY = 41
 
     AREA_TYPES = (
-        (AREA_TYPE_EPHEMERAL_SITE, "Ephemeral Site"),
-        (AREA_TYPE_PERMANENT_SITE, "Permanent Site"),
-        (AREA_TYPE_PARTIAL_SURVEY, "Partial survey"),
+        (AREA_TYPE_EPHEMERAL_SITE, "Fauna Ephemeral Site"),
+        (AREA_TYPE_PERMANENT_SITE, "Fauna Permanent Site"),
+        (AREA_TYPE_PARTIAL_SURVEY, "Generic Partial survey"),
         (AREA_TYPE_CRITICAL_HABITAT, "Critical Habitat"),
         (AREA_TYPE_TEC_BOUNDARY, "TEC Boundary"),
         (AREA_TYPE_TEC_BUFFER, "TEC Buffer"),
@@ -114,16 +114,16 @@ class AreaEncounter(PolymorphicModel,
     )
 
     COMMUNITY_AREA_TYPES = (
-        (AREA_TYPE_PARTIAL_SURVEY, "Partial survey"),
+        (AREA_TYPE_PARTIAL_SURVEY, "Generic Partial Survey"),
         (AREA_TYPE_TEC_BOUNDARY, "TEC Boundary"),
         (AREA_TYPE_TEC_BUFFER, "TEC Buffer"),
         (AREA_TYPE_TEC_SITE, "TEC Site"),
     )
 
     TAXON_AREA_TYPES = (
-        (AREA_TYPE_EPHEMERAL_SITE, "Ephemeral Site"),
-        (AREA_TYPE_PERMANENT_SITE, "Permanent Site"),
-        (AREA_TYPE_PARTIAL_SURVEY, "Partial survey"),
+        (AREA_TYPE_EPHEMERAL_SITE, "Fauna Ephemeral Site"),
+        (AREA_TYPE_PERMANENT_SITE, "Fauna Permanent Site"),
+        (AREA_TYPE_PARTIAL_SURVEY, "Generic Partial Survey"),
         (AREA_TYPE_FLORA_POPULATION, "Flora Population"),
         (AREA_TYPE_FLORA_SUBPOPULATION, "Flora Subpopulation"),
     )
@@ -131,8 +131,8 @@ class AreaEncounter(PolymorphicModel,
     GEOLOCATION_CAPTURE_METHOD_DEFAULT = 'drawn-online-map-widget'
     GEOLOCATION_CAPTURE_METHOD_CHOICES = (
         (GEOLOCATION_CAPTURE_METHOD_DEFAULT, _("Hand-drawn on online map widget")),
-        ("gps-perimeter-walk", _("GPS perimeter walk")),
         ("gps-point", _("GPS point with text description of location extent")),
+        ("gps-perimeter-walk", _("GPS perimeter walk")),
         ("dgps", _("Differential GPS capture of entire location extent")),
     )
 
@@ -762,12 +762,6 @@ class HabitatComposition(ObservationGroup):
 # -----------------------------------------------------------------------------
 # Survey level observations
 #
-class SurveyType(CodeLabelDescriptionMixin, models.Model):
-    """The survey type."""
-
-    pass
-
-
 class SurveyMethod(CodeLabelDescriptionMixin, models.Model):
     """The survey method."""
 
@@ -776,14 +770,6 @@ class SurveyMethod(CodeLabelDescriptionMixin, models.Model):
 
 class AreaAssessment(ObservationGroup):
     """A description of survey effort at a flora or TEC site."""
-
-    survey_type = models.ForeignKey(
-        SurveyType,
-        on_delete=models.SET_NULL,
-        verbose_name=_("Survey Type"),
-        blank=True, null=True,
-        help_text=_("Add missing survey types via the data curation portal."),
-    )
 
     survey_method = models.ForeignKey(
         SurveyMethod,
@@ -815,7 +801,7 @@ class AreaAssessment(ObservationGroup):
     def tldr(self):
         """A text summary of the observation."""
         return "{0} of {1} m2 in {2} mins".format(
-            self.get_survey_type_display(),
+            self.survey_method,
             self.area_surveyed_m2,
             self.survey_duration_min)
 
@@ -1130,8 +1116,8 @@ class PlantCount(ObservationGroup):
         help_text=_("Are details of quadrat surveys uploaded as File Attachment?"),)
 
     no_quadrats_surveyed = models.PositiveIntegerField(
-        verbose_name=_("Number of Quadrats Surveyed"),
         blank=True, null=True,
+        verbose_name=_("Number of Quadrats Surveyed"),
         help_text=_("Number of quadrats which were surveyed."),
     )
 

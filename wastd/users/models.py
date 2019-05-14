@@ -42,6 +42,11 @@ class User(AbstractUser):
                             blank=True, null=True,
                             max_length=1000,
                             help_text=_("The role of the user."))
+    affiliation = models.TextField(
+        _("Affiliation"),
+        blank=True,
+        help_text=_("The organisational affiliation of the user.")
+    )
     phone = PhoneNumberField(
         verbose_name=_("Phone Number"),
         blank=True, null=True,
@@ -69,7 +74,13 @@ class User(AbstractUser):
     @staticmethod
     def autocomplete_search_fields():
         """Search fields for Grappelli admin skin."""
-        return ("id__iexact", "name__icontains", "role__icontains")
+        return (
+            "id__iexact",
+            "name__icontains",
+            "role__icontains",
+            "aliases__icontains",
+            "affiliation__icontains"
+        )
 
     @property
     def apitoken(self):

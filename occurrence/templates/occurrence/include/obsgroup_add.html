@@ -65,9 +65,9 @@
 </a>
 <!-- Conservation threats and actions -->
 {% if community %}
-{% include 'conservation/include/conservationthreat_add.html' with subject="communities" area=object.code label=True block=False %}
-{% include 'conservation/include/conservationaction_add.html' with subject="communities" area=object.code label=True block=False %}
+{% include 'conservation/include/conservationthreat_add.html' with subject="communities" subject_pk=object.subject.pk area=object.code label=True block=False %}
+{% include 'conservation/include/conservationaction_add.html' with subject="communities" subject_pk=object.subject.pk area=object.code label=True block=False %}
 {% else %}
-{% include 'conservation/include/conservationthreat_add.html' with subject="taxa" area=object.code label=True block=False %}
-{% include 'conservation/include/conservationaction_add.html' with subject="taxa" area=object.code label=True block=False %}
+{% include 'conservation/include/conservationthreat_add.html' with subject="taxa" subject_pk=object.subject.pk area=object.code label=True block=False %}
+{% include 'conservation/include/conservationaction_add.html' with subject="taxa" subject_pk=object.subject.pk area=object.code label=True block=False %}
 {% endif %}

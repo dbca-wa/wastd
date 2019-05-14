@@ -137,7 +137,6 @@ class AreaAssessmentAdmin(FSMTransitionMixin, VersionAdmin):
 
     list_display = [
         "encounter",
-        "survey_type",
         "survey_method",
         "area_surveyed_m2",
         "survey_duration_min",
@@ -671,6 +670,7 @@ class TaxonAreaAdmin(AreaEncounterAdmin):
         FileAttachmentInline,
         HabitatCompositionInline,
         AreaAssessmentInline,
+        HabitatConditionInline,
         FireHistoryInline,
         PlantCountInline,
         VegetationClassificationInline,

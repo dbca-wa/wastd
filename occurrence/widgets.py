@@ -11,6 +11,6 @@ class AreaEncounterWidget(ModelSelect2Widget):
     search_fields = [
         "code__icontains",
         "name__icontains",
-        "area_type",
+        "area_type__label__icontains",
     ]
     attrs = {"size": 80}

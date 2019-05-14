@@ -51,7 +51,16 @@
         {{ object.document }}
       </p>
       {% endif %}
+
       <!-- area code -->
+      {% if object.occurrence_area_code %}
+      <p class="card-text">
+        <span class="oi oi-map"
+          title="Area code" aria-hidden="true"></span>
+        {{ object.occurrence_area_code }}
+      </p>
+      {% endif %}
+
     </h6>
     {% endif %}
 

@@ -47,7 +47,7 @@ class ConservationThreatForm(forms.ModelForm):
             'document': cons_widgets.DocumentWidget(),
             'target_area': LeafletWidget(attrs=LEAFLET_SETTINGS),
             'category': cons_widgets.ConservationThreatCategoryWidget(),
-            "encountered_on": shared_forms.DateTimeInput(),
+            # "encountered_on": shared_forms.DateTimeInput(),
             "encountered_by": usr_widgets.UserWidget(),
         }
 

@@ -47,34 +47,36 @@
     {% if object.sum_observed > 1 %}
     <h6 class="card-title">Animal Group Observation</h6>
     Total {{ object.sum_observed }}
+    <small>
     <div class="row">
       <span class="col col-3"></span>
-      <span class="col col-2">&female;</span>
-      <span class="col col-2">&male;</span>
-      <span class="col col-2">?</span>
-      <span class="col col-3">&Sigma;</span>
+      <span class="col col-2 text-right">&female;</span>
+      <span class="col col-2 text-right">&male;</span>
+      <span class="col col-2 text-right">?</span>
+      <span class="col col-3 text-right">&Sigma;</span>
     </div>
     <div class="row">
       <span class="col col-3">adlt</span>
-      <span class="col col-2">{{ object.no_adult_female }}</span>
-      <span class="col col-2">{{ object.no_adult_male }}</span>
-      <span class="col col-2">{{ object.no_adult_unknown }}</span>
-      <span class="col col-3">{{ object.sum_adult }}</span>
+      <span class="col col-2 text-right">{{ object.no_adult_female|default_if_none:"-" }}</span>
+      <span class="col col-2 text-right">{{ object.no_adult_male|default_if_none:"-" }}</span>
+      <span class="col col-2 text-right">{{ object.no_adult_unknown|default_if_none:"-" }}</span>
+      <span class="col col-3 text-right">{{ object.sum_adult }}</span>
     </div>
     <div class="row">
       <span class="col col-3">juv</span>
-      <span class="col col-2">{{ object.no_juvenile_female }}</span>
-      <span class="col col-2">{{ object.no_juvenile_male }}</span>
-      <span class="col col-2">{{ object.no_juvenile_unknown }}</span>
-      <span class="col col-3">{{ object.sum_juvenile }}</span>
+      <span class="col col-2 text-right">{{ object.no_juvenile_female|default_if_none:"-" }}</span>
+      <span class="col col-2 text-right">{{ object.no_juvenile_male|default_if_none:"-" }}</span>
+      <span class="col col-2 text-right">{{ object.no_juvenile_unknown|default_if_none:"-" }}</span>
+      <span class="col col-3 text-right">{{ object.sum_juvenile }}</span>
     </div>
     <div class="row">
       <span class="col col-3">dep</span>
-      <span class="col col-2">{{ object.no_dependent_young_female }}</span>
-      <span class="col col-2">{{ object.no_dependent_young_male }}</span>
-      <span class="col col-2">{{ object.no_dependent_young_unknown }}</span>
-      <span class="col col-3">{{ object.sum_dependent_young }}</span>
+      <span class="col col-2 text-right">{{ object.no_dependent_young_female|default_if_none:"-" }}</span>
+      <span class="col col-2 text-right">{{ object.no_dependent_young_male|default_if_none:"-" }}</span>
+      <span class="col col-2 text-right">{{ object.no_dependent_young_unknown|default_if_none:"-" }}</span>
+      <span class="col col-3 text-right">{{ object.sum_dependent_young }}</span>
     </div>
+  </small>
     {% endif %}
 
   </div><!-- /.card-body -->

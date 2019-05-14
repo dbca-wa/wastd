@@ -4,7 +4,7 @@
 
 {% block content %}
 {% include 'shared/breadcrumbs.html' %}
-{{ object.as_card|safe }}
+{% include object.card_template %}
 {% endblock %}
 
 {% block css%}{{ block.super }}{% leaflet_css %}{% endblock %}
