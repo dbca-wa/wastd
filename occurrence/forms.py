@@ -96,8 +96,9 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             Fieldset(
                 "Location",
                 Div(
-                    Div("area_type", css_class=HALF),
-                    Div("code", css_class=HALF),
+                    Div("area_type", css_class=THIRDS),
+                    Div("code", css_class=THIRDS),
+                    Div("name", css_class=THIRDS),
                     css_class="row"
                 ),
                 Div(
@@ -174,8 +175,9 @@ class CommunityAreaEncounterForm(AreaEncounterForm):
             Fieldset(
                 "Location",
                 Div(
-                    Div("area_type", css_class=HALF),
-                    Div("code", css_class=HALF),
+                    Div("area_type", css_class=THIRDS),
+                    Div("code", css_class=THIRDS),
+                    Div("name", css_class=THIRDS),
                     css_class="row"
                 ),
                 Div(
@@ -311,7 +313,6 @@ class AreaAssessmentForm(forms.ModelForm):
         model = occ_models.AreaAssessment
         fields = (
             "encounter",
-            "survey_type",
             "survey_method",
             "area_surveyed_m2",
             "survey_duration_min",
@@ -332,10 +333,9 @@ class AreaAssessmentForm(forms.ModelForm):
             Fieldset(
                 "Survey Effort",
                 Div(
-                    Div("survey_type", css_class=QUARTER),
-                    Div("survey_method", css_class=QUARTER),
-                    Div("area_surveyed_m2", css_class=QUARTER),
-                    Div("survey_duration_min", css_class=QUARTER),
+                    Div("survey_method", css_class=THIRDS),
+                    Div("area_surveyed_m2", css_class=THIRDS),
+                    Div("survey_duration_min", css_class=THIRDS),
                     css_class='row'
                 ),
             ),
@@ -522,8 +522,14 @@ class PlantCountForm(forms.ModelForm):
                     Div("dehisced_fruit_present", css_class=QUARTER),
                     css_class="row"
                 ),
-                "plant_condition",
-                "comments",
+            ),
+            Fieldset(
+                "Plant condition",
+                Div(
+                    Div("plant_condition", css_class="col col-12"),
+                    Div("comments", css_class="col col-12"),
+                    css_class="row"
+                ),
             ),
             ButtonHolder(
                 Submit("submit",

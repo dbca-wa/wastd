@@ -1,59 +1,74 @@
 {% load occurrence_tags observations bootstrap4 %}
 <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg qa-{{ object.status }}">
 
+<div class="card-header">
+    <h5 class="card-title">{{ object.count_subject }} {{ object.count_accuracy }} <small>({{ object.count_method }})</small></h5>
+  </div>
+
  <div class="card-body">
 
     <h6 class="card-title">Plant Count</h6>
     <p class="card-text">
-      <span class="oi oi-eye" aria-hidden="true"></span>
-      Land manager present: {{ object.land_manager_present }}
-      {{ object.count_method }} ({{ object.count_accuracy }}): {{ object.count_subject }}
+      <span class="oi oi-person" aria-hidden="true"></span>
+      Land manager {% if not object.land_manager_present %}not {% endif %}present.
     </p>
     <p class="card-text">
-      <div class="row">
-        <span class="col col-3">Mature</span>
-        <span class="col col-3">Juvenile</span>
-        <span class="col col-3">Seedlings</span>
-        <span class="col col-3">Totals</span>
+      <small>
+      <div class="row justify-content-end">
+        <span class="col col-3"></span>
+        <span class="col col-2  text-right">Mat</span>
+        <span class="col col-2  text-right">Juv</span>
+        <span class="col col-2  text-right">Sdl</span>
+        <span class="col col-3  text-right">&Sigma;</span>
       </div>
       <div class="row">
-        <span class="col col-3">{{ object.no_alive_mature }}/{{ object.no_dead_mature }}</span>
-        <span class="col col-3">{{ object.no_alive_juvenile }}/{{ object.no_dead_juvenile }}</span>
-        <span class="col col-3">{{ object.no_alive_seedlings }}/{{ object.no_dead_seedlings }}</span>
-        <span class="col col-3">{{ object.no_alive_simple }}/{{ object.no_dead_simple }}</span>
+        <span class="col col-3 text-right">Alive</span>
+        <span class="col col-2 text-right">{{ object.no_alive_mature|default_if_none:"-" }}</span>
+        <span class="col col-2 text-right">{{ object.no_alive_juvenile|default_if_none:"-" }}</span>
+        <span class="col col-2 text-right">{{ object.no_alive_seedlings|default_if_none:"-" }}</span>
+        <span class="col col-3 text-right">{{ object.no_alive_total }}</span>
       </div>
+    <div class="row">
+        <span class="col col-3 text-right">Dead</span>
+        <span class="col col-2 text-right">{{ object.no_dead_mature|default_if_none:"-" }}</span>
+        <span class="col col-2 text-right">{{ object.no_dead_juvenile|default_if_none:"-" }}</span>
+        <span class="col col-2 text-right">{{ object.no_dead_seedlings|default_if_none:"-" }}</span>
+        <span class="col col-3 text-right">{{ object.no_dead_total }}</span>
+      </div>
+    </small>
+        <!-- <span class="col col-3">{{ object.no_alive_simple|default_if_none:"-" }}/{{ object.no_dead_simple|default_if_none:"-" }}</span> -->
     </p>
 
+    {% if object.quadrats_present %}
     <h6 class="card-title">Quadrats</h6>
     <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      Present: {{ object.quadrats_present }},
-      {{ object.no_quadrats_surveyed }} quadrats surveyed,
-      Details attached: {{ object.quadrats_details_attached }}
+      {{ object.no_quadrats_surveyed|default_if_none:"No" }} quadrats surveyed.
+      {% if object.quadrats_details_attached %}Details attached{% endif %}.
+      Popn area estimated {{ object.population_area_estimated_m2 }} m<sup>2</sup>.
+      Individual quadrat area {{ object.quadrat_area_individual_m2 }} m<sup>2</sup>.
+      Total quadrat area {{ object.quadrat_area_total_m2 }} m<sup>2</sup>.
     </p>
+    {% endif %}
 
+    <h6 class="card-title">Reproduction</h6>
     <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      Population area estimated {{ object.population_area_estimated_m2 }} m2,
-      individual quadrat area {{ object.quadrat_area_individual_m2 }} m2,
-      total quadrat area {{ object.quadrat_area_total_m2 }} m2
-    </p>
+      {% if object.flowering_plants_percent %}
+      Flowering: {{ object.flowering_plants_percent }}%.
+      {% endif %}
 
-    <h6 class="card-title">Flowering</h6>
-    <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
-      Flowering {{ object.flowering_plants_percent }} &percent;.
-      Clonal {{ object.clonal_present }},
-      Vegetative {{ object.vegetative_present }},
-      Flowerbuds {{ object.flowerbuds_present }},
-      Flowers {{ object.flowers_present }},
-      Immature fruit {{ object.immature_fruit_present }},
-      Ripe fruit {{ object.ripe_fruit_present }},
-      Dehisced fruit {{ object.dehisced_fruit_present }},
-      Plant condition: {{ object.plant_condition }}
+      Present:
+      {% if object.clonal_present %} Clonal{% endif %}
+      {% if object.vegetative_present %} Vegetative{% endif %}
+      {% if object.flowerbuds_present %} Flowerbuds{% endif %}
+      {% if object.flowers_present %} Flowers{% endif %}
+      {% if object.immature_fruit_present %} Immature fruit{% endif %}
+      {% if object.ripe_fruit_present %} Ripe fruit{% endif %}
+      {% if object.dehisced_fruit_present %} Dehisced fruit{% endif %}.
+
+      {% if object.plant_condition %}Plant condition: {{ object.plant_condition }}{% endif %}
     </p>
     <p class="card-text">
-      <span class="oi oi-list" aria-hidden="true"></span>
+      <span class="oi oi-comment-square" aria-hidden="true"></span>
       {{ object.comments }}
     </p>
 

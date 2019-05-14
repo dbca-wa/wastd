@@ -7,6 +7,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     password = factory.PostGenerationMethodCall('set_password', 'password')
     nickname = 'test nickname'
     aliases = 'alias, alias, alias'
+    affiliation = 'Some Organisation'
 
     class Meta:
         model = 'users.User'
