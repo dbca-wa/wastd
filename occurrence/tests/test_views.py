@@ -193,6 +193,8 @@ class CommunityAreaEncounterTests(TestCase):
             completely_degraded_percent=67,
         )
 
+        # TODO: animalobservation, physicalsample, plantcount
+
         self.client.force_login(self.user)
 
     def test_cae_absolute_admin_url_loads(self):

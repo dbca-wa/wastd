@@ -279,6 +279,8 @@ class AreaEncounter(PolymorphicModel,
         """The point, derived from the polygon."""
         if self.geom:
             return self.geom.centroid
+        elif self.point:
+            return self.point
         else:
             return None
 
@@ -437,17 +439,26 @@ class CommunityAreaEncounter(AreaEncounter):
 @receiver(pre_save, sender=CommunityAreaEncounter)
 def area_caches(sender, instance, *args, **kwargs):
     """AreaEncounter: Cache expensive lookups."""
+    if instance.code:
+        instance.code = slugify(instance.code)
+
+    if not instance.code and instance.name:
+        instance.code = slugify(instance.name)
+
+    if instance.code and not instance.name:
+        instance.name = instance.code.title().replace('-', ' ')
+
+    if instance.geom and not instance.point:
+        instance.point = instance.derived_point
+
+    instance.northern_extent = instance.derived_northern_extent
+    instance.label = instance.__str__()[0:1000]
+
     if instance.pk:
         logger.info("[areaencounter_caches] Updating cache fields.")
-        instance.label = instance.__str__()[0:1000]
-        if not instance.point:
-            instance.point = instance.derived_point
-        instance.northern_extent = instance.derived_northern_extent
         instance.as_html = instance.derived_html
     else:
         logger.info("[area_caches] New Area, re-save to populate caches.")
-    if instance.code:
-        instance.code = slugify(instance.code)
 
 
 # Observation models ---------------------------------------------------------#

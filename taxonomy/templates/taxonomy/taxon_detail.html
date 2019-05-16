@@ -102,7 +102,6 @@
       {% endfor %}
       </p>
 
-
   </div><!-- /.col#taxon-detail-main -->
 
   <div class="col-12 col-md-6 col-lg-4" id="taxon-occ">
@@ -246,6 +245,13 @@
                   {% include 'occurrence/include/taxonareaencounter_list_link.html' with label=False block=False btn=True %}
                   {% include 'occurrence/include/taxonareaencounter_add_link.html' with label=False block=False btn=True %}
                 </small>
+
+                <small class="float-right">
+                  <button class="btn btn-sm btn-warning mr-2" type="button" id="toggle-occ-detail">
+                    Toggle occurrence details
+                  </button>
+                </small>
+
               </h3>
 
               <div class="row">
@@ -310,83 +316,57 @@
 {% include 'shared/map.js' %}
 {% compress js %} {# # pragma: no cover #}
 <script type="text/javascript">
+
+$("#toggle-occ-detail").click(function() {$(".occ-detail").toggle();});
+
 function map_init(map, options) {
-    {% include 'shared/styles.js' %}
-    /* Data loading */
-    var eoo = L.geoJson(
-        {{ object|geojsonfeature:"canonical_name,taxonomic_name:eoo"|safe }},
-        {style: pointstyle, onEachFeature: oef_eoo}
-    );
-    eoo.addTo(map);
-    map.fitBounds(eoo.getBounds());
+  {% include 'shared/styles.js' %}
+  /* Data loading */
+  var eoo = L.geoJson(
+      {{ object|geojsonfeature:"canonical_name,taxonomic_name:eoo"|safe }},
+      {style: pointstyle, onEachFeature: oef_eoo}
+  );
+  eoo.addTo(map);
+  map.fitBounds(eoo.getBounds());
 
-    L.geoJson(
-        {{ object.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
-        {style: polystyle_red, onEachFeature: oef_rel}
-    ).addTo(map);
+  L.geoJson(
+      {{ object.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
+      {style: polystyle_red, onEachFeature: oef_rel}
+  ).addTo(map);
 
-    var taxon_points = L.geoJson(
-        {{ object.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
-        {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_rel}
-    );
+  var taxon_points = L.geoJson(
+      {{ object.taxon_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+      {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_rel}
+  );
 
-    var taxon_cluster_markers = L.markerClusterGroup();
-    taxon_cluster_markers.addLayer(taxon_points);
-    map.addLayer(taxon_cluster_markers);
+  var taxon_cluster_markers = L.markerClusterGroup();
+  taxon_cluster_markers.addLayer(taxon_points);
+  map.addLayer(taxon_cluster_markers);
 
-    // var markers = L.markerClusterGroup();
-    // var gj_markers = L.geoJson(
-    //     {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
-    //     // {clipTiles: true, unique: getUnique},
-    //     {style: pointstyle, pointToLayer: ptl, onEachFeature: oef});
-    // markers.addLayer(gj_markers);
-    // map.addLayer(markers);
+  /*
+   * BioSys Occurrences. Helpers see styles.js
+   */
+  fetch(
+    "{{ settings.BIOSYS_TSC_URL|safe }}{{ object.name_id }}",
+    {credentials: "include", headers: hdr}
+  ).then(
+    function (response) {return response.json();}
+  ).then(
+    function(json) {
+      var point_markers = L.geoJson(geoJSONfc(json),
+        {pointToLayer: ptlBioSys, onEachFeature: oefBioSys});
+      // console.log(geoJSONfc(json));
+      // var cluster_markers = L.markerClusterGroup();
+      taxon_cluster_markers.addLayer(point_markers);
+      // map.addLayer(cluster_markers);
+    }
+  );
 
-    /*
-     * Option 2: GeoJSON view
-     * The quick and dirty way to dump all (whoa) data into one layer
-     * https://github.com/makinacorpus/django-geojson#geojson-layer-view
-     * We'll use this method to load area polygons.
-     */
-    // $.getJSON("{% url 'areas-geojson' %}", function (data) {
-    //     L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
-    // });
+  $(".zoom-map").click(function() {
+    map.flyTo([this.dataset.lat, this.dataset.lon], 13, {animate: true});
+  });
 
-    /*
-     * Option 3: Tiled GeoJSON      ...because we can, baby
-     * Most performant solution
-     * https://github.com/glenrobertson/leaflet-tilelayer-geojson/
-     * TODO filters or clustering
-     * getUnique returns grouping variable (using feature.id disables grouping)
-     * ptl overrides default marker with AwesomeMarker
-     * oef binds popup to marker
-     */
-    // var geojsonTileLayer = new L.TileLayer.GeoJSON(
-    //     'data/{z}/{x}/{y}.geojson',
-    //     {clipTiles: true, unique: getUnique},
-    //     {style: pointstyle, pointToLayer: ptl, onEachFeature: oef}
-    // ).addTo(map);
-
-    /*
-     * BioSys Occurrences. Helpers see styles.js
-     */
-    // using Fetch API
-    fetch(
-      "{{ settings.BIOSYS_TSC_URL|safe }}{{ object.name_id }}",
-      {credentials: "include", headers: hdr}
-    ).then(
-      function (response) {return response.json();}
-    ).then(
-      function(json) {
-        var point_markers = L.geoJson(geoJSONfc(json),
-          {pointToLayer: ptlBioSys, onEachFeature: oefBioSys});
-        // console.log(geoJSONfc(json));
-        // var cluster_markers = L.markerClusterGroup();
-        taxon_cluster_markers.addLayer(point_markers);
-        // map.addLayer(cluster_markers);
-      }
-    );
-}
+};
 </script>
 {% endcompress %}
 {% endblock %}

@@ -57,7 +57,7 @@ function ptl(feature, latlng) {
 
 /* Actions taken on each feature: title, popup, info preview */
 function oef (feature, layer) {
-    layer.bindTooltip(feature.properties.leaflet_title);
+    layer.bindTooltip(feature.properties.label);
     layer.bindPopup(feature.properties.as_html);
     // layer.on({mouseover: highlightFeature, click: resetHighlight});
 }
@@ -70,8 +70,7 @@ function oef_eoo (feature, layer) {
 
 /* Actions taken on each feature: title, popup, info preview */
 function oef_rel (feature, layer) {
-  layer.bindTooltip('<strong><span class="oi oi-calendar" aria-hidden="true">' +
-    feature.properties.encountered_on + '</strong><br/>');
+  layer.bindTooltip(feature.properties.label);
   layer.bindPopup(feature.properties.as_html);
 }
 

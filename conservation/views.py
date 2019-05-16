@@ -357,6 +357,10 @@ class ConservationThreatCreateView(
             initial["document_id"] = self.request.GET["document_id"]
         if "occurrence_area_code" in self.request.GET:
             initial["occurrence_area_code"] = self.request.GET["occurrence_area_code"]
+        if "encountered_on" in self.request.GET:
+            initial["encountered_on"] = self.request.GET["encountered_on"]
+        if "encountered_by" in self.request.GET:
+            initial["encountered_by"] = self.request.GET["encountered_by"]
         return initial
 
 

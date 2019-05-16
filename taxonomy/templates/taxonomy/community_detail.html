@@ -175,6 +175,12 @@
                   {% include 'occurrence/include/communityareaencounter_list_link.html' with label=False block=False btn=True %}
                   {% include 'occurrence/include/communityareaencounter_add_link.html' with btn=True block=False %}
                 </small>
+
+                <small class="float-right">
+                  <button class="btn btn-sm btn-warning mr-2" type="button" id="toggle-occ-detail">
+                    Toggle occurrence details
+                  </button>
+                </small>
               </h3>
 
               <div class="row">
@@ -239,30 +245,39 @@
 {% include 'shared/map.js' %}
 {% compress js %} {# # pragma: no cover #}
 <script type="text/javascript">
+
+$("#toggle-occ-detail").click(function() {$(".occ-detail").toggle();});
+
 function map_init(map, options) {
-    {% include 'shared/styles.js' %}
+  {% include 'shared/styles.js' %}
 
-    /* Data loading */
-    var eoo = L.geoJson(
-        {{ object|geojsonfeature:"code,name:eoo"|safe }},
-        {style: polystyle, onEachFeature: oef_eoo}
-    );
-    eoo.addTo(map);
-    map.fitBounds(eoo.getBounds());
+  /* Data loading */
+  var eoo = L.geoJson(
+      {{ object|geojsonfeature:"code,name:eoo"|safe }},
+      {style: polystyle, onEachFeature: oef_eoo}
+  );
+  eoo.addTo(map);
+  map.fitBounds(eoo.getBounds());
 
-    /* CAE poly */
-    L.geoJson(
-        {{ object.community_occurrences.all|slice:":10000"|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
-        {style: polystyle_red, onEachFeature: oef}
-    ).addTo(map);
+  /* CAE poly */
+  L.geoJson(
+      {{ object.community_occurrences.all|slice:":10000"|geojsonfeature:"label,as_html,encountered_on:geom"|safe }},
+      {style: polystyle_red, onEachFeature: oef}
+  ).addTo(map);
 
-    /* CAE point */
-    var markers = L.markerClusterGroup();
-    var gj_markers = L.geoJson(
-        {{ object.community_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
-        {style: pointstyle, pointToLayer: ptl, onEachFeature: oef});
-    markers.addLayer(gj_markers);
-    map.addLayer(markers);
+  /* CAE point */
+  var markers = L.markerClusterGroup();
+  var gj_markers = L.geoJson(
+      {{ object.community_occurrences.all|geojsonfeature:"label,as_html,encountered_on:point"|safe }},
+      {style: pointstyle, pointToLayer: ptl, onEachFeature: oef});
+  markers.addLayer(gj_markers);
+  map.addLayer(markers);
+
+  $(".zoom-map").click(function() {
+    map.flyTo([this.dataset.lat, this.dataset.lon], 13, {animate: true});
+  });
+
+
 }
 </script>
 {% endcompress %}

@@ -54,6 +54,14 @@ function map_init(map, options) {
         L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
     });
 
+    // fetch(
+    //   "{% url 'areas-geojson' %}"
+    // ).then(
+    //   function(response){return response.json();}
+    // ).then(
+    //   function(data){L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);}
+    // )
+
     /*
      * Option 3: Tiled GeoJSON      ...because we can, baby
      * Most performant solution

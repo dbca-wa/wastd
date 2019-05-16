@@ -96,9 +96,9 @@ class TaxonAreaEncounterForm(AreaEncounterForm):
             Fieldset(
                 "Location",
                 Div(
-                    Div("area_type", css_class=THIRDS),
-                    Div("code", css_class=THIRDS),
-                    Div("name", css_class=THIRDS),
+                    Div("area_type", css_class=HALF),
+                    # Div("code", css_class=THIRDS),
+                    Div("name", css_class=HALF),
                     css_class="row"
                 ),
                 Div(
@@ -447,7 +447,55 @@ class PlantCountForm(forms.ModelForm):
         """Class options."""
 
         model = occ_models.PlantCount
-        exclude = []
+        fields = [
+            "encounter",
+            "land_manager_present",
+            "count_method",
+            "count_accuracy",
+            "count_subject",
+            # Plant Count (Detailed)
+            "no_alive_mature",
+            "no_alive_juvenile",
+            "no_alive_seedlings",
+            "no_dead_mature",
+            "no_dead_juvenile",
+            "no_dead_seedlings",
+            # Plant Count (Simple)
+            "no_alive_simple",
+            "no_dead_simple",
+            # Quadrats
+            "population_area_estimated_m2",
+            "quadrats_present",
+            "quadrats_details_attached",
+            "no_quadrats_surveyed",
+            "quadrat_area_individual_m2",
+            "quadrat_area_total_m2",
+            # Flowering
+            "flowering_plants_percent",
+            "clonal_present",
+            "vegetative_present",
+            "flowerbuds_present",
+            "flowers_present",
+            "immature_fruit_present",
+            "ripe_fruit_present",
+            "dehisced_fruit_present",
+            "plant_condition",
+            "comments",
+
+            "count_method",
+            "count_accuracy",
+            "quadrats_present",
+            "quadrats_details_attached",
+            "flowering_plants_percent",
+            "clonal_present",
+            "vegetative_present",
+            "flowerbuds_present",
+            "flowers_present",
+            "immature_fruit_present",
+            "ripe_fruit_present",
+            "dehisced_fruit_present",
+            "plant_condition",
+        ]
         widgets = {
             "encounter": occ_widgets.AreaEncounterWidget(),
         }
