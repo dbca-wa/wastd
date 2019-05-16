@@ -226,7 +226,9 @@ class ObservationAuditMixin(models.Model):
         on_delete=models.PROTECT,
         verbose_name=_("Encountered by"),
         blank=True, null=True,
-        help_text=_("The person who experienced the original encounter."))
+        help_text=_("The person who experienced the original encounter. "
+                    "DBCA staff have to visit this site to create a new profile. "
+                    "Add User profiles for external people through the data curation portal."))
 
     class Meta:
         """Class opts."""

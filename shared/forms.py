@@ -14,4 +14,4 @@ class DateTimeInput(forms.DateInput):
     """Bog standard datetime input."""
 
     input_type = 'datetime-local'
-    format = '%Y-%m-%d %H:%M'
+    format = '%Y-%m-%d %H:%i'

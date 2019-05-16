@@ -1682,11 +1682,26 @@ class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.TaxonAreaEncounter
-        fields = ("taxon",
-                  "id", "code", "label", "name", "description", "as_html",
-                  "source", "source_id", "status",
-                  "encountered_on",  "encountered_by",
-                  "area_type",  "accuracy", "northern_extent", "point")
+        fields = (
+            "taxon",
+            "id",
+            "code",
+            "label",
+            "name",
+            "description",
+            "as_html",
+            "source",
+            "source_id",
+            "status",
+            "encounter_type",
+            "encountered_on",
+            "encountered_by",
+            "area_type",
+            "geolocation_capture_method",
+            "accuracy",
+            "northern_extent",
+            "point"
+        )
         id_field = "id"
         geo_field = "geom"
 
@@ -1701,11 +1716,26 @@ class OccurrenceTaxonAreaEncounterPointSerializer(GeoFeatureModelSerializer):
         """Opts."""
 
         model = occ_models.TaxonAreaEncounter
-        fields = ("taxon",
-                  "id", "code", "label", "name", "description", "as_html",
-                  "source", "source_id", "status",
-                  "encountered_on",  "encountered_by",
-                  "area_type",  "accuracy", "northern_extent", )
+        fields = (
+            "taxon",
+            "id",
+            "code",
+            "label",
+            "name",
+            "description",
+            "as_html",
+            "source",
+            "source_id",
+            "status",
+            "encounter_type",
+            "encountered_on",
+            "encountered_by",
+            "area_type",
+            "geolocation_capture_method",
+            "accuracy",
+            "northern_extent",
+            "point"
+        )
         id_field = "id"
         geo_field = "point"
 
@@ -1727,13 +1757,16 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
             "northern_extent": ["exact", "gt", "lt"],
             "source": ["exact", "in"],
             "source_id": ["exact", "in"],
+            "encounter_type": ["exact", "in"],
         }
 
 
 class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertQualityControlViewSet):
     """TaxonEncounter polygon view set."""
 
-    queryset = occ_models.TaxonAreaEncounter.objects.all()
+    queryset = occ_models.TaxonAreaEncounter.objects.all().prefetch_related(
+        "taxon",
+    )
     serializer_class = OccurrenceTaxonAreaEncounterPolySerializer
     filter_class = OccurrenceTaxonAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
@@ -1832,7 +1865,9 @@ class OccurrenceCommunityAreaEncounterFilter(filters.FilterSet):
 class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertQualityControlViewSet):
     """Occurrence CommunityAreaEncounter view set."""
 
-    queryset = occ_models.CommunityAreaEncounter.objects.all()
+    queryset = occ_models.CommunityAreaEncounter.objects.all().prefetch_related(
+        "community",
+    )
     serializer_class = OccurrenceCommunityAreaEncounterPolySerializer
     filter_class = OccurrenceCommunityAreaEncounterFilter
     pagination_class = MyGeoJsonPagination

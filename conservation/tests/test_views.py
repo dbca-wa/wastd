@@ -94,6 +94,8 @@ class ConservationThreatViewTests(TestCase):
         response = self.client.get(self.object.list_url())
         self.assertEqual(response.status_code, 200)
 
+        # test filter by one and many admin_areas
+
     def test_create_url_loads(self):
         """Test conservationaction-create loads."""
         response = self.client.get(self.object.create_url())
@@ -179,6 +181,8 @@ class ConservationActionViewTests(TestCase):
         """Test conservationaction-list loads."""
         response = self.client.get(self.object.list_url())
         self.assertEqual(response.status_code, 200)
+
+        # test filter by one and many admin_areas
 
     def test_create_url_loads(self):
         """Test conservationaction-create loads."""
@@ -482,6 +486,8 @@ class DocumentViewTests(TestCase):
         """Test conservationaction-list."""
         response = self.client.get(self.object.list_url())
         self.assertEqual(response.status_code, 200)
+
+        # test filter by one and many admin_areas
 
     def test_create_url_loads(self):
         """Test conservationaction-create."""

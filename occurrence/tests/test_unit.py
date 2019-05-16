@@ -139,7 +139,7 @@ class CommunityAreaEncounterTests(TestCase):
 
         self.cae = occ_models.CommunityAreaEncounter.objects.create(
             community=self.com0,
-            code="testcode",
+            code="testcode1",
             encountered_on=timezone.now(),
             encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)
@@ -153,6 +153,15 @@ class CommunityAreaEncounterTests(TestCase):
             point=GEOSGeometry('POINT (115.1 -32.1)', srid=4326)
         )
         self.cae1.save()
+
+        # self.cae2 = occ_models.CommunityAreaEncounter.objects.create(
+        #     community=self.com0,
+        #     code="testcode2",
+        #     encountered_on=timezone.now(),
+        #     encountered_by=self.user,
+        #     geom=GEOSGeometry('POLYGON ((110 -35) (110 -10) (135 -10) (135 -35) (110 -35))', srid=4326)
+        # )
+        # self.cae2.save()
 
         self.asssp1 = occ_models.AssociatedSpecies.objects.create(
             encounter=self.cae,
@@ -224,13 +233,16 @@ class CommunityAreaEncounterTests(TestCase):
         self.assertEqual(self.cae.longitude, 115)
 
     def test_derived_point(self):
-        """Test that the derived point is either the centroid of geom or None."""
+        """Test that the derived point is either the centroid of geom, the point, or None."""
         self.assertIsNone(self.cae.geom)
-        self.assertIsNone(self.cae.derived_point)
-        # TODO test with CAE/TAE/AE with geom not none
+        self.assertTrue(self.cae.point is not None)
+        self.assertEqual(self.cae.point, self.cae.derived_point)
+
+        # self.assertTrue(self.cae2.geom is not None)
+        # self.assertEqual(self.cae2.geom.centroid, self.cae2.derived_point)
 
     def derived_northern_extent(self):
-        """Test that the derived point is either the centroid of geom or None."""
+        """Test that the derived point is either the centroid of geom, point.y, or None."""
         self.assertIsNone(self.cae.geom)
         self.assertIsNone(self.cae.derived_northern_extent)
         self.assertIsNone(self.ae.areaencounter_ptr.geom)
@@ -402,6 +414,12 @@ class TaxonAreaEncounterTests(TestCase):
     def test_subject(self):
         """Test subject."""
         self.assertEqual(self.tae.subject, self.tae.taxon)
+
+    def test_derived_point(self):
+        """Test that the derived point is either the centroid of geom or None."""
+        self.assertIsNone(self.tae.geom)
+        self.assertTrue(self.tae.point is not None)
+        self.assertEqual(self.tae.point, self.tae.derived_point)
 
     def test_get_nearby_encounters(self):
         """Test nearby encounters picks up encounters within specified range."""
