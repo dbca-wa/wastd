@@ -16,6 +16,7 @@ from occurrence.models import CommunityAreaEncounter, TaxonAreaEncounter
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
+from taxonomy import filters as tax_filters
 from taxonomy.models import Taxon  # Crossreference, Vernacular,
 from taxonomy.models import (
     Community,

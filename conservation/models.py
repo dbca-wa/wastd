@@ -8,6 +8,7 @@ from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 # from dateutil import tz
 import logging
+import uuid
 
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -914,7 +915,7 @@ class ConservationListing(RenderMixin, UrlsMixin, models.Model):
 
     source_id = models.CharField(
         max_length=1000,
-        blank=True, null=True,
+        default=uuid.uuid1(),
         verbose_name=_("Source ID"),
         help_text=_("The ID of the record in the original source, if available."), )
 
@@ -1316,7 +1317,7 @@ class ConservationListing(RenderMixin, UrlsMixin, models.Model):
         conditions=[can_mark_delisted],
         # permission='conservation.can_mark_delisted'
     )
-    def mark_delisted(self, by=None):
+    def mark_delisted(self):
         """Mark a conservation listing as de-listed.
 
         This can either happen if a new conservation listing is gazetted,
@@ -1440,11 +1441,10 @@ class TaxonConservationListing(ConservationListing):
                     "ConservationListings as de-listed.")
         # TODO fsm_log_by request.user if coming from request
         [x.mark_delisted() for x in
-         self.taxon.taxon_conservationlisting.filter(
+         self.taxon.conservation_listings.filter(
             scope=self.scope,
             status=ConservationListing.STATUS_EFFECTIVE
         ).exclude(pk=self.pk)]
-        # TODO: set fsm_log_by
 
 
 @python_2_unicode_compatible
@@ -1517,7 +1517,7 @@ class CommunityConservationListing(ConservationListing):
         logger.info("[Community ConservationListing] De-list previous "
                     "ConservationListings in same scope.")
         [x.mark_delisted() for x in
-         self.community.community_conservationlisting.filter(
+         self.community.conservation_listings.filter(
             scope=self.scope,
             status=ConservationListing.STATUS_EFFECTIVE
         ).exclude(pk=self.pk)]

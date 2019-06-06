@@ -1,12 +1,10 @@
-<!-- conservation/cards/conservationthreat.html -->
+<!-- conservation/cards/conservationlisting.html -->
 <div class="card {% if collapse %}{% else %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
 
   <div class="card-header">
     <h5 class="card-title{% if object.is_active %} text-danger{% else %} text-muted{% endif %}">
       {{ object.category_cache }} {{ object.criteria_cache }}
-      {% if collapse %}
       <small class="float-right">
-        <!-- Edit details -->
         {% if request.user.is_staff %}
         <a href="{{ object.absolute_admin_url }}"
             class="text-success"
@@ -15,8 +13,11 @@
         </a>
         {% endif %}
       </small>
-      {% endif %}
     </h5>
+
+  </div>
+
+  <div class="card-body">
     <h6 class="card-subtitle">
       <span class="badge badge-warning" title="Legislative scope">
             {{ object.get_scope_display }}
@@ -66,23 +67,6 @@
           </span>
     </p>
   </div>
-
-  <!-- <div class="card-body">
-  </div> -->
-  <!-- /.card-body -->
-
-  {% if collapse %}{% else %}
-  {% if request.user.is_staff %}
-  <div class="card-footer">
-    <div class="row">
-      <div class="col-12">
-        {% include 'shared/details_update_admin.html' with btn=True label=True %}
-      </div>
-    </div>
-    <!-- /Conservation threat update -->
-  </div><!-- /.card-footer -->
-  {% endif %}
-  {% endif %}
 
 </div><!-- /.card -->
 <!-- conservation/cards/conservationthreat.html -->

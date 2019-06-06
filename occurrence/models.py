@@ -249,6 +249,7 @@ class AreaEncounter(PolymorphicModel,
         ordering = ["-northern_extent", "name"]
         verbose_name = "Area Encounter"
         verbose_name_plural = "Area Encounters"
+        index_together = [["northern_extent", "name"], ]
 
     def __str__(self):
         """The unicode representation."""
