@@ -72,6 +72,7 @@
   <!-- /.card-body -->
 
   {% if collapse %}{% else %}
+  {% if request.user.is_staff %}
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
@@ -80,6 +81,7 @@
     </div>
     <!-- /Conservation threat update -->
   </div><!-- /.card-footer -->
+  {% endif %}
   {% endif %}
 
 </div><!-- /.card -->

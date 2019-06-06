@@ -378,7 +378,7 @@ class ConservationActionCreateView(
         TODO create different urls.
         """
         initial = super(ConservationActionCreateView, self).get_initial()
-        initial["encountered_on"] = timezone.now()
+        initial["encountered_on"] = timezone.now()  # TODO format correctly https://github.com/dbca-wa/wastd/issues/184
         if self.request.user:
             initial["encountered_by"] = self.request.user
         if "taxa" in self.request.GET:

@@ -915,11 +915,13 @@ class FireHistory(ObservationGroup):
     """Evidence of past fire date and intensity."""
 
     HMLN_DEFAULT = "NA"
+    HMLN_NONE = "no"
     HMLN_LOW = "low"
     HMLN_MEDIUM = "medium"
     HMLN_HIGH = "high"
     HMLN_CHOICES = (
         (HMLN_DEFAULT, "NA"),
+        (HMLN_NONE, "No evidence of fire"),
         (HMLN_LOW, "Low"),
         (HMLN_MEDIUM, "Medium"),
         (HMLN_HIGH, "High"),

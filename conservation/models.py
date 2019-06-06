@@ -645,10 +645,12 @@ class ConservationList(models.Model):
 class ConservationCategory(models.Model):
     """A Conservation Category like CR, EN, VU."""
 
+    LEVEL_EXTINCT = "extinct"
     LEVEL_THREATENED = "threatened"
     LEVEL_PRIORITY = "priority"
     LEVEL_OTHER = "other"
     LEVEL_CHOICES = (
+        (LEVEL_EXTINCT, "Extinct"),
         (LEVEL_THREATENED, "Threatened"),
         (LEVEL_PRIORITY, "Priority"),
         (LEVEL_OTHER, "Other"),
@@ -657,6 +659,7 @@ class ConservationCategory(models.Model):
     SHORTCODE_OTHER = "O"
     SHORTCODE_EXTINCT = "X"
     SHORTCODE_THREATENED = "T"
+    SHORTCODE_SPECIALLY_PROTECTED = "SP"
     SHORTCODE_P1 = "1"
     SHORTCODE_P2 = "2"
     SHORTCODE_P3 = "3"
@@ -664,12 +667,13 @@ class ConservationCategory(models.Model):
     SHORTCODE_P5 = "5"
     SHORTCODE_CHOICES = (
         (SHORTCODE_OTHER, "Other"),
-        (SHORTCODE_EXTINCT, "Presumed extinct"),
+        (SHORTCODE_EXTINCT, "Extinct"),
         (SHORTCODE_THREATENED, "Threatened"),
+        (SHORTCODE_SPECIALLY_PROTECTED, "Specially Protected"),
         (SHORTCODE_P1, "Priority 1"),
         (SHORTCODE_P2, "Priority 2"),
-        (SHORTCODE_P3, "Priority 2"),
-        (SHORTCODE_P4, "Priority 3"),
+        (SHORTCODE_P3, "Priority 3"),
+        (SHORTCODE_P4, "Priority 4"),
         (SHORTCODE_P5, "Priority 5"),
     )
 
@@ -1398,7 +1402,7 @@ class TaxonConservationListing(ConservationListing):
 
     def update_url(self):
         """Update through subject."""
-        return self.taxon.absolute_admin_url
+        return self.absolute_admin_url
 
     def get_absolute_url(self):
         """Detail url."""
@@ -1476,7 +1480,7 @@ class CommunityConservationListing(ConservationListing):
 
     def update_url(self):
         """Update through subject."""
-        return self.community.absolute_admin_url
+        return self.absolute_admin_url
 
     def get_absolute_url(self):
         """Detail url."""
