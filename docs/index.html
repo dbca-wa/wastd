@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.25
+                0.1
               </div>
             
           
@@ -364,7 +364,7 @@
 <li class="toctree-l3"><a class="reference internal" href="index.html#module-wastd.users.admin"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.users.admin</span></code> Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#module-wastd.users.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.users.views</span></code> Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#wastd-observations-app"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations</span></code> app</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#wastd-observations-views-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-wastd.observations.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code> Module</a></li>
 </ul>
 </li>
 </ul>
@@ -19890,8 +19890,256 @@ The following sections document the remaining modules for completeness’ sake.<
 <h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations</span></code> app<a class="headerlink" href="#wastd-observations-app" title="Permalink to this headline">¶</a></h4>
 <p>Remaining modules of the observations package are documented here.</p>
 </div>
-<div class="section" id="wastd-observations-views-module">
-<h4><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code> Module<a class="headerlink" href="#wastd-observations-views-module" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="module-wastd.observations.views">
+<span id="wastd-observations-views-module"></span><h4><a class="reference internal" href="#module-wastd.observations.views" title="wastd.observations.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code></a> Module<a class="headerlink" href="#module-wastd.observations.views" title="Permalink to this headline">¶</a></h4>
+<p>Views for WAStD.</p>
+<dl class="class">
+<dt id="wastd.observations.views.AnimalEncounterTable">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.views.</code><code class="sig-name descname">AnimalEncounterTable</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">order_by=None</em>, <em class="sig-param">orderable=None</em>, <em class="sig-param">empty_text=None</em>, <em class="sig-param">exclude=None</em>, <em class="sig-param">attrs=None</em>, <em class="sig-param">row_attrs=None</em>, <em class="sig-param">pinned_row_attrs=None</em>, <em class="sig-param">sequence=None</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">order_by_field=None</em>, <em class="sig-param">page_field=None</em>, <em class="sig-param">per_page_field=None</em>, <em class="sig-param">template_name=None</em>, <em class="sig-param">default=None</em>, <em class="sig-param">request=None</em>, <em class="sig-param">show_header=None</em>, <em class="sig-param">show_footer=True</em>, <em class="sig-param">extra_columns=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django_tables2.tables.Table</span></code></p>
+<p>A data table for AnimalEncounters.</p>
+<dl class="class">
+<dt id="wastd.observations.views.AnimalEncounterTable.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Model opts.</p>
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTable.Meta.attrs">
+<code class="sig-name descname">attrs</code><em class="property"> = {'class': 'table table-hover table-inverse table-sm'}</em><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable.Meta.attrs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTable.Meta.exclude">
+<code class="sig-name descname">exclude</code><em class="property"> = ['as_html', 'as_latex', 'polymorphic_ctype', 'encounter_ptr']</em><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTable.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.models.AnimalEncounter" title="wastd.observations.models.AnimalEncounter"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.AnimalEncounter</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTable.base_columns">
+<code class="sig-name descname">base_columns</code><em class="property"> = {'activity': &lt;django_tables2.columns.base.Column object&gt;, 'area': &lt;django_tables2.columns.base.Column object&gt;, 'behaviour': &lt;django_tables2.columns.base.Column object&gt;, 'cause_of_death': &lt;django_tables2.columns.base.Column object&gt;, 'cause_of_death_confidence': &lt;django_tables2.columns.base.Column object&gt;, 'checked_for_flipper_tags': &lt;django_tables2.columns.base.Column object&gt;, 'checked_for_injuries': &lt;django_tables2.columns.base.Column object&gt;, 'comments': &lt;django_tables2.columns.base.Column object&gt;, 'encounter_type': &lt;django_tables2.columns.base.Column object&gt;, 'habitat': &lt;django_tables2.columns.base.Column object&gt;, 'health': &lt;django_tables2.columns.base.Column object&gt;, 'id': &lt;django_tables2.columns.base.Column object&gt;, 'laparoscopy': &lt;django_tables2.columns.booleancolumn.BooleanColumn object&gt;, 'location_accuracy': &lt;django_tables2.columns.base.Column object&gt;, 'maturity': &lt;django_tables2.columns.base.Column object&gt;, 'name': &lt;django_tables2.columns.base.Column object&gt;, 'nesting_event': &lt;django_tables2.columns.base.Column object&gt;, 'observer': &lt;django_tables2.columns.base.Column object&gt;, 'reporter': &lt;django_tables2.columns.base.Column object&gt;, 'scanned_for_pit_tags': &lt;django_tables2.columns.base.Column object&gt;, 'sex': &lt;django_tables2.columns.base.Column object&gt;, 'site': &lt;django_tables2.columns.base.Column object&gt;, 'source': &lt;django_tables2.columns.base.Column object&gt;, 'source_id': &lt;django_tables2.columns.base.Column object&gt;, 'species': &lt;django_tables2.columns.base.Column object&gt;, 'status': &lt;django_tables2.columns.base.Column object&gt;, 'survey': &lt;django_tables2.columns.base.Column object&gt;, 'taxon': &lt;django_tables2.columns.base.Column object&gt;, 'when': &lt;django_tables2.columns.datetimecolumn.DateTimeColumn object&gt;, 'where': &lt;django_tables2.columns.base.Column object&gt;}</em><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable.base_columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.views.AnimalEncounterTableView">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.views.</code><code class="sig-name descname">AnimalEncounterTableView</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTableView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.views.EncounterTableView" title="wastd.observations.views.EncounterTableView"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.views.EncounterTableView</span></code></a></p>
+<p>Filtered paginated TableView for AninmalEncounter.</p>
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTableView.filter_class">
+<code class="sig-name descname">filter_class</code><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTableView.filter_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.filters.AnimalEncounterFilter</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTableView.formhelper_class">
+<code class="sig-name descname">formhelper_class</code><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTableView.formhelper_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.forms.AnimalEncounterListFormHelper</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTableView.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTableView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.models.AnimalEncounter" title="wastd.observations.models.AnimalEncounter"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.AnimalEncounter</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTableView.paginate_by">
+<code class="sig-name descname">paginate_by</code><em class="property"> = 5</em><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTableView.paginate_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTableView.table_class">
+<code class="sig-name descname">table_class</code><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTableView.table_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.views.AnimalEncounterTable" title="wastd.observations.views.AnimalEncounterTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnimalEncounterTable</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.AnimalEncounterTableView.template">
+<code class="sig-name descname">template</code><em class="property"> = 'observations/encounter.html'</em><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTableView.template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.views.EncounterTable">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.views.</code><code class="sig-name descname">EncounterTable</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">order_by=None</em>, <em class="sig-param">orderable=None</em>, <em class="sig-param">empty_text=None</em>, <em class="sig-param">exclude=None</em>, <em class="sig-param">attrs=None</em>, <em class="sig-param">row_attrs=None</em>, <em class="sig-param">pinned_row_attrs=None</em>, <em class="sig-param">sequence=None</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">order_by_field=None</em>, <em class="sig-param">page_field=None</em>, <em class="sig-param">per_page_field=None</em>, <em class="sig-param">template_name=None</em>, <em class="sig-param">default=None</em>, <em class="sig-param">request=None</em>, <em class="sig-param">show_header=None</em>, <em class="sig-param">show_footer=True</em>, <em class="sig-param">extra_columns=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.EncounterTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django_tables2.tables.Table</span></code></p>
+<p>A data table for Encounters.</p>
+<dl class="class">
+<dt id="wastd.observations.views.EncounterTable.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#wastd.observations.views.EncounterTable.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Model opts.</p>
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTable.Meta.attrs">
+<code class="sig-name descname">attrs</code><em class="property"> = {'class': 'table table-hover table-inverse table-sm'}</em><a class="headerlink" href="#wastd.observations.views.EncounterTable.Meta.attrs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTable.Meta.exclude">
+<code class="sig-name descname">exclude</code><em class="property"> = ['as_html', 'as_latex', 'polymorphic_ctype', 'encounter_ptr']</em><a class="headerlink" href="#wastd.observations.views.EncounterTable.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTable.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.views.EncounterTable.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.models.Encounter" title="wastd.observations.models.Encounter"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.Encounter</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTable.base_columns">
+<code class="sig-name descname">base_columns</code><em class="property"> = {'area': &lt;django_tables2.columns.base.Column object&gt;, 'comments': &lt;django_tables2.columns.base.Column object&gt;, 'encounter_type': &lt;django_tables2.columns.base.Column object&gt;, 'id': &lt;django_tables2.columns.base.Column object&gt;, 'location_accuracy': &lt;django_tables2.columns.base.Column object&gt;, 'name': &lt;django_tables2.columns.base.Column object&gt;, 'observer': &lt;django_tables2.columns.base.Column object&gt;, 'reporter': &lt;django_tables2.columns.base.Column object&gt;, 'site': &lt;django_tables2.columns.base.Column object&gt;, 'source': &lt;django_tables2.columns.base.Column object&gt;, 'source_id': &lt;django_tables2.columns.base.Column object&gt;, 'status': &lt;django_tables2.columns.base.Column object&gt;, 'survey': &lt;django_tables2.columns.base.Column object&gt;, 'when': &lt;django_tables2.columns.datetimecolumn.DateTimeColumn object&gt;, 'where': &lt;django_tables2.columns.base.Column object&gt;}</em><a class="headerlink" href="#wastd.observations.views.EncounterTable.base_columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.views.EncounterTableView">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.views.</code><code class="sig-name descname">EncounterTableView</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.EncounterTableView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.views.PagedFilteredTableView" title="wastd.observations.views.PagedFilteredTableView"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.views.PagedFilteredTableView</span></code></a></p>
+<p>Filtered paginated TableView for Encounter.</p>
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTableView.filter_class">
+<code class="sig-name descname">filter_class</code><a class="headerlink" href="#wastd.observations.views.EncounterTableView.filter_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.filters.EncounterFilter</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTableView.formhelper_class">
+<code class="sig-name descname">formhelper_class</code><a class="headerlink" href="#wastd.observations.views.EncounterTableView.formhelper_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.forms.EncounterListFormHelper</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTableView.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.views.EncounterTableView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.models.Encounter" title="wastd.observations.models.Encounter"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.Encounter</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTableView.paginate_by">
+<code class="sig-name descname">paginate_by</code><em class="property"> = 5</em><a class="headerlink" href="#wastd.observations.views.EncounterTableView.paginate_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.EncounterTableView.table_class">
+<code class="sig-name descname">table_class</code><a class="headerlink" href="#wastd.observations.views.EncounterTableView.table_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.views.EncounterTable" title="wastd.observations.views.EncounterTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">EncounterTable</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.views.HomeView">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.views.</code><code class="sig-name descname">HomeView</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.HomeView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.list.ListView</span></code></p>
+<p>HomeView.</p>
+<dl class="method">
+<dt id="wastd.observations.views.HomeView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.HomeView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.views.HomeView.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.HomeView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queryset.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.HomeView.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.views.HomeView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.models.AnimalEncounter" title="wastd.observations.models.AnimalEncounter"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.AnimalEncounter</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.HomeView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'pages/map.html'</em><a class="headerlink" href="#wastd.observations.views.HomeView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.views.PagedFilteredTableView">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.views.</code><code class="sig-name descname">PagedFilteredTableView</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django_tables2.views.SingleTableView</span></code></p>
+<p>Generic class for paged, filtered SingleTableView.</p>
+<p>Inherit from this class and set the class level attributes (<code class="docutils literal notranslate"><span class="pre">model</span></code> etc.).</p>
+<p>Source:
+<a class="reference external" href="http://kuttler.eu/post/using-django-tables2-filters-crispy-forms-together/">http://kuttler.eu/post/using-django-tables2-filters-crispy-forms-together/</a></p>
+<dl class="attribute">
+<dt id="wastd.observations.views.PagedFilteredTableView.context_filter_name">
+<code class="sig-name descname">context_filter_name</code><em class="property"> = 'filter'</em><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.context_filter_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.PagedFilteredTableView.filter_class">
+<code class="sig-name descname">filter_class</code><em class="property"> = None</em><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.filter_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.PagedFilteredTableView.formhelper_class">
+<code class="sig-name descname">formhelper_class</code><em class="property"> = None</em><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.formhelper_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.views.PagedFilteredTableView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the specified filter class to context.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.views.PagedFilteredTableView.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the queryset through the specified filter class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.views.PagedFilteredTableView.get_table">
+<code class="sig-name descname">get_table</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.get_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paginate the table as per paginate_by and request parameters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.PagedFilteredTableView.model">
+<code class="sig-name descname">model</code><em class="property"> = None</em><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.PagedFilteredTableView.paginate_by">
+<code class="sig-name descname">paginate_by</code><em class="property"> = 10</em><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.paginate_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.views.PagedFilteredTableView.table_class">
+<code class="sig-name descname">table_class</code><em class="property"> = None</em><a class="headerlink" href="#wastd.observations.views.PagedFilteredTableView.table_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wastd.observations.views.import_odka_view">
+<code class="sig-prename descclassname">wastd.observations.views.</code><code class="sig-name descname">import_odka_view</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.import_odka_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import all available ODK-Aggregate forms.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wastd.observations.views.update_names_view">
+<code class="sig-prename descclassname">wastd.observations.views.</code><code class="sig-name descname">update_names_view</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.views.update_names_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import all available ODK-Aggregate forms.</p>
+</dd></dl>
+
 </div>
 </div>
 </div>

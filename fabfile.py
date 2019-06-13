@@ -5,6 +5,12 @@ Convenience wrapper for often used operations.
 """
 from fabric.api import env, local  # settings, cd, run
 from fabric.colors import green, yellow  # red
+import confy
+from confy import env as confyenv
+try:
+    confy.read_environment_file(".env")
+except:
+    pass
 
 # from fabric.contrib.files import exists, upload_template
 
@@ -93,4 +99,22 @@ def test():
 
 def doc():
     """Compile docs, draw data models and transitions."""
-    local("mkdir -p docs_source && cd docs_source && make clean && make singlehtml && cd ..")
+    local("mkdir -p docs_source/_static && cd docs_source && make clean && make singlehtml && cd ..")
+
+def dbuild():
+    """Build Docker image."""
+    ver = confyenv("WASTD_RELEASE", default="0.1.0")
+    print(yellow("Building docker images with tag latest and {0}...".format(ver)))
+    local("docker build -t dbcawa/wastd -t dbcawa/wastd:{0} .".format(ver))
+
+def dpush():
+    """Push Docker image to Dockerhub. Requires `docker login`."""
+    print(yellow("Pushing docker images to DockerHub..."))
+    local("docker push dbcawa/wastd")
+
+def docker():
+    """Build and push docker images."""
+    dbuild()
+    dpush()
+    ver = confyenv("WASTD_RELEASE", default="0.1.0")
+    print(green("Updated Docker images are available on DockerHub as dbcawa/wastd:{0}".format(ver)))
