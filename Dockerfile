@@ -23,6 +23,5 @@ FROM python_libs_wastd
 COPY . .
 RUN python manage.py collectstatic --clear --noinput -l
 EXPOSE 8080
-HEALTHCHECK --interval=1m --timeout=20s --start-period=10s --retries=3 \
-  CMD ["wget", "-q", "-O", "-", "http://localhost:8220/healthcheck/"]
+HEALTHCHECK --interval=1m --timeout=20s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8220/healthcheck/"]
 CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini"]
