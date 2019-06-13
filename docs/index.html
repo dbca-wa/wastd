@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.25.0 documentation</title>
+  <title>TSC 0.25.6 documentation</title>
   
 
   
@@ -428,7 +428,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.25.0 documentation</li>
+      <li>TSC 0.25.6 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -3986,7 +3986,7 @@ pg_restore -h localhost -U wastd -d wastd_uat &lt; /tmp/wastd.dump</p>
 <div class="section" id="workloads-prod-uat">
 <h4>Workloads prod/uat<a class="headerlink" href="#workloads-prod-uat" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>Images dbcawa/wastd:0.24.1 (highest named tag for prod) dbcawa/wastd:latest (latest for uat)</p></li>
+<li><p>Images dbcawa/wastd:0.25.0 (or highest named tag for prod) dbcawa/wastd:latest (latest for uat)</p></li>
 <li><p>Env vars:</p></li>
 </ul>
 <dl class="simple">
@@ -4005,6 +4005,11 @@ ODKA_PW=”PASSWORD”</p>
 <li><p>Scaling policy: <code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">new,</span> <span class="pre">then</span> <span class="pre">stop</span> <span class="pre">old</span></code></p></li>
 <li><p>Volumes: media-prod and media-uat, persistent storage claim, 500 GiB, mount point <code class="docutils literal notranslate"><span class="pre">/usr/src/app/media</span></code></p></li>
 </ul>
+<p>Once workloads are running, copy media files into the storage volume from the app container’s shell:</p>
+<dl class="simple">
+<dt>::</dt><dd><p><a class="reference external" href="mailto:root&#37;&#52;&#48;prod-SOMEHASH">root<span>&#64;</span>prod-SOMEHASH</a>:/usr/src/app# rsync -Pavvr <a class="reference external" href="mailto:USER&#37;&#52;&#48;aws-eco-001&#46;lan&#46;fyi">USER<span>&#64;</span>aws-eco-001<span>&#46;</span>lan<span>&#46;</span>fyi</a>:/home/CORPORATEICT/USER/tsc/media/ media/</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="deployment">

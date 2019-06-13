@@ -61,6 +61,7 @@ django-background-tasks==1.2.0
 Fabric3==1.14.post1
 honcho
 gunicorn==19.9.0
+uwsgi
 
 # Email backends for Mailgun, Postmark, SendGrid and more
 # -------------------------------------------------------

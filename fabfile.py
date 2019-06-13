@@ -117,4 +117,6 @@ def docker():
     dbuild()
     dpush()
     ver = confyenv("WASTD_RELEASE", default="0.1.0")
-    print(green("Updated Docker images are available on DockerHub as dbcawa/wastd:{0}".format(ver)))
+    print(green(
+        "Updated Docker images are available on DockerHub "
+        "as dbcawa/wastd:latest and dbcawa/wastd:{0}".format(ver)))

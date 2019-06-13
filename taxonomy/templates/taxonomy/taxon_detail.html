@@ -5,14 +5,12 @@
 {% block extrastyle %}
 {% leaflet_css %}
 {% include 'shared/map.css' %}
-{% compress css %} {# # pragma: no cover #}
 <style>
 .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
   width: 350px; /* narrower popup */
   padding: -10px;  /* fix close button position */
 }
 </style>
-{% endcompress %}
 {% endblock %}
 
 {% block content %}
@@ -164,7 +162,7 @@
               {% include 'conservation/include/taxonconservationlisting_add.html' with label=False block=False taxon=object %}
             </span>
             <div class="row">
-              {% for object in object.conservation_listings.all|dictsort:'effective_from'|dictsort:'scope' %}
+              {% for object in object.conservation_listings.all|dictsortreversed:'status'|dictsort:'scope' %}
               {% include 'conservation/cards/conservationlisting.html' with collapse=False %}
               {% endfor %}
             </div>
@@ -314,7 +312,6 @@
 {{ block.super }}
 {% leaflet_js %}
 {% include 'shared/map.js' %}
-{% compress js %} {# # pragma: no cover #}
 <script type="text/javascript">
 
 $("#toggle-occ-detail").click(function() {$(".occ-detail").toggle();});
@@ -368,5 +365,4 @@ function map_init(map, options) {
 
 };
 </script>
-{% endcompress %}
 {% endblock %}

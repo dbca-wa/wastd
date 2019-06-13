@@ -37,7 +37,7 @@ Workload db
 
 Workloads prod/uat
 ------------------
-* Images dbcawa/wastd:0.24.1 (highest named tag for prod) dbcawa/wastd:latest (latest for uat)
+* Images dbcawa/wastd:0.25.0 (or highest named tag for prod) dbcawa/wastd:latest (latest for uat)
 * Env vars:
 
 ::
@@ -53,6 +53,11 @@ Workloads prod/uat
 * Health check: both readiness and liveness check: ``HTTP request returns a successful status (2xx or 3xx)``
 * Scaling policy: ``start new, then stop old``
 * Volumes: media-prod and media-uat, persistent storage claim, 500 GiB, mount point ``/usr/src/app/media``
+
+Once workloads are running, copy media files into the storage volume from the app container's shell:
+
+::
+  root@prod-SOMEHASH:/usr/src/app# rsync -Pavvr USER@aws-eco-001.lan.fyi:/home/CORPORATEICT/USER/tsc/media/ media/
 
 Deployment
 ==========
