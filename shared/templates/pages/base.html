@@ -1,4 +1,5 @@
-{% load staticfiles i18n compress leaflet_tags observations bootstrap4 %}
+{% load staticfiles i18n leaflet_tags observations bootstrap4 %}
+{# load compress #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,11 +18,11 @@
     {% bootstrap_css %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css"
     integrity="sha256-JDBcnYeV19J14isGd3EtnsCQK05d8PczJ5+fvEvBJvI=" crossorigin="anonymous" />
-    {% compress css %}
+    {# compress css #}
     {% leaflet_css %}
     <link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/project.css' %}">
-    {% endcompress %}
+    {# endcompress #}
     {% endblock %}
     {% block extrastyle %}{% endblock extrastyle %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
@@ -60,7 +61,7 @@
       ga('create', 'UA-45890579-4', 'auto');
       ga('send', 'pageview');
     </script>
-    {% compress js %}{% endcompress %}
+    {# compress js #}{# endcompress #}
     {% endblock javascript %}
     {% block extrajs %}{% endblock extrajs %}
   </body>

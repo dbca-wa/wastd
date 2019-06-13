@@ -85,3 +85,6 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
 
 # Staticfiles storage
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+# http://whitenoise.evans.io/en/stable/django.html#whitenoise-makes-my-tests-run-slow
+WHITENOISE_AUTOREFRESH=True

@@ -1,11 +1,10 @@
 {% extends "pages/base.html" %}
-{% load compress leaflet_tags geojson_tags taxonomy_tags %}
+{% load leaflet_tags geojson_tags taxonomy_tags %}
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
 {% leaflet_css %}
 {% include 'shared/map.css' %}
-{% compress css %} {# # pragma: no cover #}
 <style>
 .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
   width: 350px; /* narrower popup */
@@ -13,7 +12,6 @@
 }
 .leaflet-tooltip { width: 200px; word-wrap: break-word; }
 </style>
-{% endcompress %}
 {% endblock %}
 
 {% block content %}
@@ -114,7 +112,6 @@
 {{ block.super }}
 {% leaflet_js %}
 {% include 'shared/map.js' %}
-{% compress js %} {# pragma: no cover #}
 <script type="text/javascript">
 $( "#toggle-qa-new" ).click(function() {
     $( ".qa-new" ).toggle();
@@ -142,5 +139,4 @@ function map_init(map, options) {
     {% endif %}
 }
 </script>
-{% endcompress %}
 {% endblock %}

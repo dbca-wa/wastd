@@ -318,16 +318,18 @@ STATIC_ROOT = str(ROOT_DIR('staticfiles'))
 if not os.path.exists(STATIC_ROOT):
     os.mkdir(STATIC_ROOT)
 
+# http://whitenoise.evans.io/en/stable/django.html#WHITENOISE_ROOT
+WHITENOISE_ROOT = STATIC_ROOT
+
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
-
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = (
     str(APPS_DIR.path('static')),
 )
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 
@@ -352,9 +354,13 @@ MEDIA_URL = '/media/'
 
 # django-compressor
 # ------------------------------------------------------------------------------
-INSTALLED_APPS += ("compressor", )
-COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_URL = STATIC_URL
+# INSTALLED_APPS += ("compressor", )
+# COMPRESS_ROOT = STATIC_ROOT
+# COMPRESS_URL = STATIC_URL
+
+# http://whitenoise.evans.io/en/stable/django.html#django-compressor
+# https://django-compressor.readthedocs.io/en/latest/usage/#offline-compression
+# COMPRESS_OFFLINE=True
 
 
 # URL Configuration

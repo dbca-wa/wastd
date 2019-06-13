@@ -71,9 +71,7 @@ class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         DO NOT use taxon_filter.qs in template:
         https://github.com/django-mptt/django-mptt/issues/632
         """
-        queryset = Taxon.objects.order_by(
-            "-rank",
-        ).prefetch_related(
+        queryset = Taxon.objects.prefetch_related(
             "paraphyletic_groups",
             "conservation_listings",
             "conservationthreat_set",

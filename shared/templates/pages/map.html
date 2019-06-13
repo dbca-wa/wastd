@@ -1,5 +1,5 @@
 {% extends "pages/base.html" %}
-{% load staticfiles compress leaflet_tags geojson_tags %}
+{% load staticfiles leaflet_tags geojson_tags %}
 
 {% block map %}
 <div id="map">
@@ -8,7 +8,6 @@
 {% endblock %}
 
 {% block extrastyle %}
-{% compress css %} {# # pragma: no cover #}
 {% leaflet_css %}
 {% include 'shared/map.css' %}
 <style>
@@ -21,7 +20,6 @@
   word-wrap: break-word;
 }
 </style>
-{% endcompress %}
 {% endblock %}
 
 {% block javascript%}
@@ -29,7 +27,6 @@
 <script src="//use.fontawesome.com/f8f5501a45.js"></script>
 {% leaflet_js %}
 {% include 'shared/map.js' %}
-{% compress js %} {# # pragma: no cover #}
 <script type="text/javascript">
 function map_init(map, options) {
     {% include 'shared/styles.js' %}
@@ -78,5 +75,4 @@ function map_init(map, options) {
     // ).addTo(map);
 }
 </script>
-{% endcompress %}
 {% endblock %}
