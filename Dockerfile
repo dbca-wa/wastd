@@ -1,4 +1,4 @@
-FROM python:3.7.0-stretch
+FROM python:3.7.0-stretch as builder_base
 LABEL maintainer=Florian.Mayer@dbca.wa.gov.au
 LABEL description="Python 3.7.0-stretch plus Latex, GDAL and LDAP."
 
@@ -14,11 +14,15 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && dpkg -i pandoc-2.7-1-amd64.deb \
   && rm pandoc-2.7-1-amd64.deb
 
+FROM builder_base as python_libs_wastd
 WORKDIR /usr/src/app
 COPY requirements/ ./requirements/
 RUN pip install --no-cache-dir -r requirements/dev.txt
+
+FROM python_libs_wastd
 COPY . .
 RUN python manage.py collectstatic --clear --noinput -l
-CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini"]
+EXPOSE 8080
 HEALTHCHECK --interval=1m --timeout=20s --start-period=10s --retries=3 \
   CMD ["wget", "-q", "-O", "-", "http://localhost:8220/healthcheck/"]
+CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini"]

@@ -4,6 +4,55 @@ Application maintainers
 This chapter addresses the maintainers of WAStD, who are in charge of the DevOps
 side - development and operations.
 
+Migration to Kubernetes
+=======================
+
+* Spin up a VM and install [Rancher](https://rancher.com/products/rancher/).
+* Create a cluster, e.g. ``az-docker``.
+* Create a project, e.g. ``eco`` with RAM limits.
+* Create a namespace, e.g. ``tsc`` with memory limit 4092 MiB, container default mem limt 1024 MiB (these values might be too high).
+* In namespace tsc, we will create workloads for db (housing PROD and UAT) and app (PROD and UAT separately).
+
+Workload db
+-----------
+* Image ``mdillon/postgis:11``.
+* Volumes: add new persistent storage claim (20 GiB), mount point ``/var/lib/postgresql/data``.
+* Deploy, open shell in running container and execute:
+
+::
+  apt upgrade && apt install -y openssh-client rsync
+  rsync USER@HOST:/path/to/wastd.dump /tmp/
+  psql -h localhost -U postgres
+
+  # in psql shell
+  create role wastd superuser login;
+  alter role wastd password "SOME_PASSWORD";
+  create database wastd_prod with owner wastd;
+  create database wastd_uat with owner wastd;
+  \q
+
+  pg_restore -h localhost -U wastd -d wastd_prod < /tmp/wastd.dump
+  pg_restore -h localhost -U wastd -d wastd_uat < /tmp/wastd.dump
+
+
+Workloads prod/uat
+------------------
+* Images dbcawa/wastd:0.24.1 (highest named tag for prod) dbcawa/wastd:latest (latest for uat)
+* Env vars:
+
+::
+  DATABASE_URL="postgis://wastd:PASSWORD@db/wastd_prod" # or _uat
+  SITE_URL="https://tsc.dbca.wa.gov.au" # or tsc-uat
+  SECRET_KEY=...
+  PYPANDOC_PANDOC=/usr/bin/pandoc
+  ODKA_URL="https://dpaw-data.appspot.com"                                                            
+  ODKA_UN="USERNAME"                                                                                  
+  ODKA_PW="PASSWORD"  
+
+* Port mapping: 8080 to random > start, let rancher choose free port > set chosen port permanently
+* Health check: both readiness and liveness check: ``HTTP request returns a successful status (2xx or 3xx)``
+* Scaling policy: ``start new, then stop old``
+* Volumes: media-prod and media-uat, persistent storage claim, 500 GiB, mount point ``/usr/src/app/media``
 
 Deployment
 ==========

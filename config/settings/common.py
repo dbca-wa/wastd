@@ -156,24 +156,34 @@ MIGRATION_MODULES = {
 # CACHES
 # ------------------------------------------------------------------------------
 
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             'IGNORE_EXCEPTIONS': True,
+#         }
+#     },
+#     "select2": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 1),
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }
+
+
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            'IGNORE_EXCEPTIONS': True,
-        }
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        'LOCATION': 'django_cache_table'
     },
     "select2": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 1),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
-
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        'LOCATION': 'select2_cache_table'
+    }}
 SELECT2_CACHE_BACKEND = "select2"
 
 # Data upload request size
@@ -202,9 +212,7 @@ DEBUG_TOOLBAR_CONFIG = {
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
-FIXTURE_DIRS = (
-    str(APPS_DIR.path('fixtures')),
-)
+FIXTURE_DIRS = (str(APPS_DIR.path('fixtures')),)
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -222,9 +230,7 @@ SENTRY_ADMINS = ("Florian.Mayer@dbca.wa.gov.au",)
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = (
-    ("Florian Mayer", 'Florian.Mayer@dpaw.wa.gov.au'),
-)
+ADMINS = (("Florian Mayer", 'Florian.Mayer@dpaw.wa.gov.au'),)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
@@ -243,13 +249,14 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'Australia/Perth'
-# DATE_FORMAT = "Y-m-d"
-# DATE_INPUT_FORMATS = [
-#     '%Y-%m-%d',      # '2006-10-25'
-#     '%Y-%m-%dZ',     # '2006-10-25Z' from WACensus via KMI GeoServer
-#     '%m/%d/%Y',      # '10/25/2006'
-#     '%m/%d/%y',
-# ]      # '10/25/06'
+DATE_FORMAT = '%d-%m-%Y'
+DATE_INPUT_FORMATS = [
+    '%Y-%m-%d',      # '2006-10-25'
+    '%Y/%m/%d',      # '2006/10/25'
+    '%Y-%m-%dZ',     # '2006-10-25Z' from WACensus via KMI GeoServer
+    '%d-%m-%Y',      # '25-10-2006'
+    '%d/%m/%Y',      # '25/10/2006'
+]      
 
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
@@ -619,7 +626,7 @@ SILKY_PYTHON_PROFILER_BINARY = True
 # Data
 # ------------------------------------------------------------------------------
 # Local cache of downloaded ODK data
-DATA_ROOT = str(ROOT_DIR('data'))
+DATA_ROOT = os.path.join(MEDIA_ROOT, 'data')
 if not os.path.exists(DATA_ROOT):
     os.mkdir(DATA_ROOT)
 
