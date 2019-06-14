@@ -5,10 +5,16 @@
       {{ object.encountered_on|date:'d M Y H:i' }}
       {{ object.get_encounter_type_display }}
       <span class="float-right">
-          <span class="oi oi-map-marker zoom-map text-warning"
+        <a href="{{ object.get_absolute_url }}"
+          class="mr-2 text-primary"
+          title="View {{ object }}.">
+          <span class="oi oi-eye" aria-hidden="true"></span>
+        </a>
+        <span class="oi oi-map-marker zoom-map text-warning"
           data-lon="{{ object.longitude }}" data-lat="{{ object.latitude }}"
           title="Show on map" aria-hidden="true"></span>
       </span>
+
     </h6>
   </div>
   <div class="occ-detail">
