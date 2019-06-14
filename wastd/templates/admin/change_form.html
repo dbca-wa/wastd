@@ -3,8 +3,7 @@
 
 {% block stylesheets %}
 {{ block.super }}
-{% leaflet_css %}
-{% include 'shared/map.css' %}
+{% include 'shared/leaflet_css.html' %}
 
 <!-- Fix missing favicon -->
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
@@ -12,6 +11,5 @@
 
 {% block extrahead %}
 {{ block.super }}
-{% leaflet_js %}
-{% include 'shared/map.js' %}
+{% include 'shared/leaflet_js.html' %}
 {% endblock %}

@@ -120,13 +120,15 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='c4)!ho4t^lsy0ozrnlqamjso@^n-ookiq
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE_CLASSES = (
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
 )
 
 MIDDLEWARE_CLASSES_LAST = (
@@ -145,6 +147,9 @@ if DEBUG:
 MIDDLEWARE_CLASSES += MIDDLEWARE_CLASSES_LAST
 
 MIDDLEWARE = MIDDLEWARE_CLASSES
+
+CACHE_MIDDLEWARE_ALIAS = "default"
+CACHE_MIDDLEWARE_SECONDS = 60
 
 # MIGRATIONS CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -492,6 +497,8 @@ LEAFLET_CONFIG = {
     'SCALE': 'metric',
     'MINIMAP': False,
     # 'FORCE_IMAGE_PATH': True,
+    # To take advantage of browser caching, the assets below are included separately
+    # through templates shared/leaflet_{css, js}.html with SRI tags.
     'PLUGINS': {
         'forms': {'auto-include': True},
         'markers': {
@@ -641,7 +648,7 @@ if not os.path.exists(DATA_ROOT):
 LOG_ROOT = str(ROOT_DIR('logs'))
 if not os.path.exists(LOG_ROOT):
     os.mkdir(LOG_ROOT)
-    
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

@@ -1,4 +1,0 @@
-<style>
-/* Force leaflet controls underneath header (z 1000), footer (z 900), and above leaflet tiles (z 400)*/
-.leaflet-top {z-index:800;}
-</style>

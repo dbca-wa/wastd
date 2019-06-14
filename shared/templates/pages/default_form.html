@@ -1,5 +1,5 @@
 {% extends "pages/base.html" %}
-{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags crispy_forms_tags bootstrap4  %}
+{% load staticfiles crispy_forms_tags bootstrap4  %}
 
 {% block content %}
 {% include 'shared/breadcrumbs.html' %}
@@ -28,12 +28,9 @@
 {% endblock %}
 
 {% block extrastyle %}
-{# leaflet_css #}
 {{ form.media.css }}
 {% endblock %}
 
 {% block extrajs %}
-{# leaflet_js #}
 {{ form.media.js }}
-{% include 'shared/map.js' %}
 {% endblock extrajs %}

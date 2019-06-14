@@ -9,6 +9,7 @@ from django.contrib.admin import site
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, re_path, path
 from django.views import defaults as default_views
+from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
@@ -27,8 +28,8 @@ from wastd.observations import views as wastd_views
 actions.add_to_site(site)
 
 urlpatterns = [
-    re_path(r'^$', TemplateView.as_view(template_name='pages/index.html'), name='home'),
-    re_path(r'^map/$', wastd_views.HomeView.as_view(), name='map'),
+    re_path(r'^$', cache_page(60*60*24)(TemplateView.as_view(template_name='pages/index.html')), name='home'),
+    re_path(r'^map/$', cache_page(60*60)(wastd_views.HomeView.as_view()), name='map'),
     re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/healthcheck.html'), name='healthcheck'),
 
     re_path(settings.ADMIN_URL, admin.site.urls),
