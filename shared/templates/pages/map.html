@@ -8,8 +8,6 @@
 {% endblock %}
 
 {% block extrastyle %}
-{# leaflet_css #}
-{% include 'shared/map.css' %}
 <style>
 .leaflet-popup, .leaflet-popup-content-wrapper {
   width: 540px !important;
@@ -25,8 +23,6 @@
 {% block javascript%}
 {{ block.super }}
 <script src="//use.fontawesome.com/f8f5501a45.js"></script>
-{# leaflet_js #}
-{% include 'shared/map.js' %}
 <script type="text/javascript">
 function map_init(map, options) {
     {% include 'shared/styles.js' %}

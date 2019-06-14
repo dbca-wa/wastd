@@ -1,5 +1,4 @@
 {% load staticfiles i18n leaflet_tags observations bootstrap4 %}
-{# load compress #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,17 +16,16 @@
     {% block css %}
     {% bootstrap_css %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css"
-    integrity="sha256-JDBcnYeV19J14isGd3EtnsCQK05d8PczJ5+fvEvBJvI=" crossorigin="anonymous" />
-    {% leaflet_css %}
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" 
-    integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous" />-->
-     {# compress css #}
-    <link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.css' %}">
+      integrity="sha256-JDBcnYeV19J14isGd3EtnsCQK05d8PczJ5+fvEvBJvI=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic.min.css" 
+      integrity="sha256-CfN2r6i/dqkUHVRqpBzO3w21SnIWalwGfj5ScBPVzmI=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" 
+      integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous" />
     <link rel="stylesheet" href="{% static 'css/project.css' %}">
-    {# endcompress #}
-    {% endblock %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
-    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    {% include 'shared/leaflet_css.html' %}
+    {% endblock %}
     {% block extrastyle %}{% endblock extrastyle %}
   </head>
 
@@ -56,9 +54,9 @@
     {% bootstrap_javascript %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js" 
     integrity="sha256-tW5LzEC7QjhG0CiAvxlseMTs2qJS7u3DRPauDjFJ3zo=" crossorigin="anonymous"></script>
-    <!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" 
-    integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script> -->
-    {% leaflet_js %}
+
+    <!-- Link to CDN for leaflet assets rather than bundling {# leaflet_js #} -->
+    {% include 'shared/leaflet_js.html' %}
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -67,7 +65,6 @@
       ga('create', 'UA-45890579-4', 'auto');
       ga('send', 'pageview');
     </script>
-    {# compress js #}{# endcompress #}
     {% endblock javascript %}
     {% block extrajs %}{% endblock extrajs %}
   </body>
