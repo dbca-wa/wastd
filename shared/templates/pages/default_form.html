@@ -28,12 +28,12 @@
 {% endblock %}
 
 {% block extrastyle %}
-{% leaflet_css %}
+{# leaflet_css #}
 {{ form.media.css }}
 {% endblock %}
 
 {% block extrajs %}
-{% leaflet_js %}
+{# leaflet_js #}
 {{ form.media.js }}
 {% include 'shared/map.js' %}
 {% endblock extrajs %}

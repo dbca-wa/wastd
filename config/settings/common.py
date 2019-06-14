@@ -324,13 +324,11 @@ WHITENOISE_ROOT = STATIC_ROOT
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
-STATICFILES_DIRS = (
-    str(APPS_DIR.path('static')),
-)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = (str(APPS_DIR.path('static')),)
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
@@ -355,8 +353,8 @@ MEDIA_URL = '/media/'
 # django-compressor
 # ------------------------------------------------------------------------------
 # INSTALLED_APPS += ("compressor", )
-# COMPRESS_ROOT = STATIC_ROOT
-# COMPRESS_URL = STATIC_URL
+COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_URL = STATIC_URL
 
 # http://whitenoise.evans.io/en/stable/django.html#django-compressor
 # https://django-compressor.readthedocs.io/en/latest/usage/#offline-compression
@@ -401,12 +399,8 @@ AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
 # SESSION_CACHE_ALIAS = "default"
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
-
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = "^admin/"
-
-
-# Your common stuff: Below this line define 3rd party library settings
 
 # API: django-restframework
 # ------------------------------------------------------------------------------
@@ -647,6 +641,7 @@ if not os.path.exists(DATA_ROOT):
 LOG_ROOT = str(ROOT_DIR('logs'))
 if not os.path.exists(LOG_ROOT):
     os.mkdir(LOG_ROOT)
+    
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
