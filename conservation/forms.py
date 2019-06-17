@@ -82,7 +82,7 @@ class ConservationThreatForm(forms.ModelForm):
                 Div(Div('cause', css_class="col col-12"), css_class='row'),
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit('submit', 'Submit', css_class='button white col-12')
             )
         )
 
@@ -144,7 +144,7 @@ class ConservationActionForm(forms.ModelForm):
                 ),
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit('submit', 'Submit', css_class='button white btn-block')
             )
         )
 
@@ -185,7 +185,7 @@ class ConservationActivityForm(forms.ModelForm):
                 # 'attachments'
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit('submit', 'Submit', css_class='button white btn-block')
             )
         )
 
@@ -310,7 +310,7 @@ class TaxonConservationListingForm(forms.ModelForm):
                 "comments",
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit('submit', 'Submit', css_class='button white btn-block')
             )
         )
 
@@ -434,7 +434,7 @@ class CommunityConservationListingForm(forms.ModelForm):
                 "comments",
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit('submit', 'Submit', css_class='button white col-12')
             )
         )
 
@@ -481,7 +481,7 @@ class DocumentForm(forms.ModelForm):
                 ),
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit('submit', 'Submit', css_class='button white col-12')
             )
         )
 
