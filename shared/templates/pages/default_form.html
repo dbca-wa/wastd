@@ -6,22 +6,35 @@
 <div class="container">
   <div class="row">
     <div class="col col-12 mb-3">
+      <div class="card card-lg shadow-lg">
 
+      <div class="card-body">
       <!-- The main form -->
+      <div class="mb-3"><!-- Margin after submit button -->
       {% crispy form form.helper %}
+      </div>
 
       <!-- One formset, optional -->
       {% if formset %}
+      <div class="card card-lg shadow-lg">
+      <div class="card-body">
       {% crispy formset formset_helper %}
+      </div><!-- .card-body -->
+      </div><!-- .card -->
       {% endif %}
 
       <!-- Many formsets, optional -->
       {% if formset_list %}
       {% for fs in formset_list  %}
+      <div class="card card-lg shadow-lg">
+      <div class="card-body">
       {% crispy formset formset_helper %}
+      </div><!-- .card-body -->
+      </div><!-- .card -->
       {% endfor %}
       {% endif %}
-
+      </div><!-- .card-body -->
+      </div><!-- .card -->
     </div><!-- .col -->
   </div><!-- .row -->
 </div> --><!-- .container
