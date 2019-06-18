@@ -174,7 +174,7 @@ class TaxonDetailView(DetailViewBreadcrumbMixin, DetailView):
             Breadcrumb(_('Home'), reverse('home')),
             Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
             Breadcrumb(
-                "Phylogeny of {0}".format(self.object.canonical_name),
+                "Classification of {0}".format(self.object.canonical_name),
                 '{0}?name_id={1}'.format(reverse('taxonomy:taxon-list'), self.object.name_id)
             ),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url())

@@ -18,86 +18,136 @@
 
   <!-- Taxon details -->
   <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
+    <div class="card card-lg detailarea m-0">
+      <div class="card-header">
+        <!-- Name ID -->
+        <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
+          <a class="text-white" target="_blank" rel="nofollow"
+          href="https://florabase.dpaw.wa.gov.au/browse/profile/{{ object.name_id }}"
+          title="Search FloraBase for this NameID">
+          {{ object.name_id }}
+          </a>
+        </span>
 
-      <!-- Name ID -->
-      <span class="badge badge-primary" title="WACensus Name ID: {{object.name_id}}">
-        <a class="text-white" target="_blank" rel="nofollow"
-        href="https://florabase.dpaw.wa.gov.au/browse/profile/{{ object.name_id }}"
-        title="Search FloraBase for this NameID">
-        {{ object.name_id }}
-        </a>
-      </span>
+        <!-- Rank -->
+        <span class="badge badge-primary" title="Taxonomic rank: {{ object.get_rank_display }}">
+          {{ object.get_rank_display }}
+        </span>
 
-      <!-- Rank -->
-      <span class="badge badge-primary" title="Taxonomic rank: {{ object.get_rank_display }}">
-        {{ object.get_rank_display }}
-      </span>
+        {% include "taxonomy/include/taxonomic_status.html" %}
 
-      {% include "taxonomy/include/taxonomic_status.html" %}
+        <!-- Publication status -->
+        {% if object.publication_status < 2 %}
+        <span class="badge badge-secondary">
+          {{ object.get_publication_status_display }}
+        </span>
+        {% endif %}
 
-      <!-- Publication status -->
-      {% if object.publication_status < 2 %}
-      <span class="badge badge-secondary">
-        {{ object.get_publication_status_display }}
-      </span>
-      {% endif %}
+        <!-- Leaf nodes are terminal taxa -->
+        {% if object.is_leaf_node %}
+        <span class="badge badge-success">
+          <span class="oi oi-media-stop" title="Terminal Taxon" aria-hidden="true"></span>
+        </span>
+        {% endif %}
 
-      <!-- Leaf nodes are terminal taxa -->
-      {% if object.is_leaf_node %}
-      <span class="badge badge-success">
-        <span class="oi oi-media-stop" title="Terminal Taxon" aria-hidden="true"></span>
-      </span>
-      {% endif %}
+        <small class="float-right">
+          {% include 'taxonomy/include/taxon_change.html' with label=False block=False %}
+        </small>
 
-      <h1 class="display-4">
-        {{ object.canonical_name }}
-      </h1>
-      <small class="float-right">
-        {% include 'taxonomy/include/taxon_change.html' with label=False block=False %}
-      </small>
+        <h1 class="display-4">
+          {{ object.canonical_name }}
+        </h1>
+        
+        <!-- Author -->
+        {% if object.author %}
+          <p class="lead">
+          <span class="oi oi-person" title="Author" aria-hidden="true"></span>
+          {{ object.author }}
+          </p>
+        {% endif %}
+      </div>
 
-      <!-- Author -->
-      {% if object.author %}
+      <div class="card-body">
         <p class="lead">
-        <span class="oi oi-person" title="Author" aria-hidden="true"></span>
-        {{ object.author }}
+          {% include "taxonomy/include/vernaculars.html" %}
         </p>
-      {% endif %}
 
-      <p class="lead">
-        {% include "taxonomy/include/vernaculars.html" %}
-      </p>
+        <p>
+        {% for xref in object.supercedes.all %}
+        <a href="{% url 'taxonomy:taxon-detail' name_id=xref.predecessor.name_id %}"
+          class="badge badge-secondary" title="View predecessor">
+          {{ xref.predecessor }}
+        </a> superceded as {{ xref.get_reason_display }}<br />
+        {% endfor %}
 
-      <p>
-      {% for xref in object.supercedes.all %}
-      <a href="{% url 'taxonomy:taxon-detail' name_id=xref.predecessor.name_id %}"
-        class="badge badge-secondary" title="View predecessor">
-        {{ xref.predecessor }}
-      </a> superceded as {{ xref.get_reason_display }}<br />
-      {% endfor %}
+        {% for xref in object.precedes.all %}
+        <a
+          href="{% if xref.successor %}{% url 'taxonomy:taxon-detail' name_id=xref.successor.name_id %}{% endif %}"
+          class="badge badge-secondary" title="View successor">
+          {{ xref.successor }}
+        </a>
+        supercedes this {{ xref.get_reason_display }}<br />
+        {% endfor %}
+        </p>
 
-      {% for xref in object.precedes.all %}
-      <a
-        href="{% if xref.successor %}{% url 'taxonomy:taxon-detail' name_id=xref.successor.name_id %}{% endif %}"
-        class="badge badge-secondary" title="View successor">
-        {{ xref.successor }}
-      </a>
-      supercedes this {{ xref.get_reason_display }}<br />
-      {% endfor %}
-      </p>
+        <p class="card-text">
+        {% drilldown_tree_for_node object as taxon_phylogeny %}
+        {% drilldown_tree_for_node object as drilldown %}
+        {% for node,structure in drilldown|tree_info %}
+        {% if node == object %}
+        <strong><span class="card-text">{{ node.get_rank_display }} {{ node.taxonomic_name }}</span></strong><br/>
+        {% else %}
+        <a href="{{ node.get_absolute_url }}">{{ node.get_rank_display }} {{ node.taxonomic_name }}</a><br/>
+        {% endif %}
+        {% endfor %}
+        </p>
+      </div>
 
-      <p>
-      {% drilldown_tree_for_node object as taxon_phylogeny %}
-      {% drilldown_tree_for_node object as drilldown %}
-      {% for node,structure in drilldown|tree_info %}
-      {% if node == object %}
-      <strong>{{ node.get_rank_display }} {{ node.taxonomic_name }}</strong><br/>
-      {% else %}
-      <a href="{{ node.get_absolute_url }}">{{ node.get_rank_display }} {{ node.taxonomic_name }}</a><br/>
-      {% endif %}
-      {% endfor %}
-      </p>
+    <div class="card-footer">
 
+      <ul class="nav nav-pills" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="pills-listings-tab" data-toggle="tab" href="#pills-listings" role="tab"
+          aria-controls="pills-listings" aria-selected="true">
+            Conservation Listings
+            <span class="badge badge-light">{{ object.conservation_listings.count }}</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-threats-tab" data-toggle="tab" href="#pills-threats" role="tab"
+          aria-controls="pills-threats" aria-selected="false">
+          Conservation Threats
+          <span class="badge badge-light">{{ object.conservationthreat_set.count }}</span>
+        </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-consactions-tab" data-toggle="tab" href="#pills-consactions" role="tab"
+          aria-controls="pills-consactions" aria-selected="false">
+          Conservation Actions
+          <span class="badge badge-light">{{ object.conservationaction_set.count }}</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-documents-tab" data-toggle="tab" href="#pills-documents" role="tab"
+          aria-controls="pills-documents" aria-selected="false">
+          Documents
+          <span class="badge badge-light">{{ object.document_set.count }}</span>
+        </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-occ-tab" data-toggle="tab" href="#pills-occ" role="tab" aria-controls="pills-occ"
+          aria-selected="false">
+          Occurrences
+          <span class="badge badge-light">{{ occurrence_total }}</span>
+        </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-actions-tab" data-toggle="tab" href="#pills-actions" role="tab"
+          aria-controls="pills-actions" aria-selected="false">Actions</a>
+        </li>
+      </ul>
+    </div><!-- /.card-footer -->
+  </div><!-- /.card -->
   </div><!-- /.col#taxon-detail-main -->
 
   <div class="col-12 col-md-6 col-lg-4" id="taxon-occ">
@@ -108,49 +158,8 @@
 
 </div><!-- /.row -->
 
-<div class="row" id="cons-row">
+<div class="row mt-2" id="details-row">
   <div class="col-12">
-    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" id="pills-listings-tab" data-toggle="pill" href="#pills-listings" role="tab"
-        aria-controls="pills-listings" aria-selected="true">
-          Conservation Listings
-          <span class="badge badge-light">{{ object.conservation_listings.count }}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-threats-tab" data-toggle="pill" href="#pills-threats" role="tab"
-        aria-controls="pills-threats" aria-selected="false">
-        Conservation Threats
-        <span class="badge badge-light">{{ object.conservationthreat_set.count }}</span>
-      </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-consactions-tab" data-toggle="pill" href="#pills-consactions" role="tab"
-        aria-controls="pills-consactions" aria-selected="false">
-        Conservation Actions
-        <span class="badge badge-light">{{ object.conservationaction_set.count }}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-documents-tab" data-toggle="pill" href="#pills-documents" role="tab"
-        aria-controls="pills-documents" aria-selected="false">
-        Documents
-        <span class="badge badge-light">{{ object.document_set.count }}</span>
-      </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-occ-tab" data-toggle="pill" href="#pills-occ" role="tab" aria-controls="pills-occ"
-        aria-selected="false">
-        Occurrences
-        <span class="badge badge-light">{{ occurrence_total }}</span>
-      </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-actions-tab" data-toggle="pill" href="#pills-actions" role="tab"
-        aria-controls="pills-actions" aria-selected="false">Actions</a>
-      </li>
-    </ul>
     <div class="tab-content" id="pills-tabContent">
       <div class="tab-pane fade show active" id="pills-listings" role="tabpanel"
       aria-labelledby="pills-listings-tab">
@@ -306,8 +315,7 @@
 
 {% endblock %}
 
-{% block javascript%}
-{{ block.super }}
+{% block extrajs %}
 <script type="text/javascript">
 
 $("#toggle-occ-detail").click(function() {$(".occ-detail").toggle();});
