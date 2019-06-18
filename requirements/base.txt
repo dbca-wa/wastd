@@ -98,7 +98,7 @@ django-map-widgets==0.1.9
 
 # Logging
 # ------------------------------------------------
-sentry-sdk==0.7.3
+sentry-sdk==0.9.0
 raven==6.10.0
 
 # Models

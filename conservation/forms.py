@@ -144,7 +144,7 @@ class ConservationActionForm(forms.ModelForm):
                 ),
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white btn-block')
+                Submit('submit', 'Submit', css_class='button white col-12')
             )
         )
 

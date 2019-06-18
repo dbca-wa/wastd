@@ -54,7 +54,7 @@ body{
 #mapholder {height:100%; width: 100%;}
 #searchmapholder {width: 100% auto; height: 18rem;}
 #searchmap {height:100%; width: auto;}
-#detailmap {width: auto; min-height:500px;}
+.detailarea, #detailmap {width: auto; min-height:550px;}
 #map, #wastdmap {
   height: calc(100vh - 72px); /* Viewport minus navbar */
   position: relative;

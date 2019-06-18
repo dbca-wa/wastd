@@ -13,74 +13,82 @@
 
 {% block content %}
 {% include 'shared/breadcrumbs.html' %}
+
 <div class="row">
 
   <!-- Community details -->
-  <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="taxon-detail-main">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="com-detail-main">
+    <div class="card card-lg detailarea m-0">
+      <div class="card-header">
+        <small class="float-right">
+          {% include "shared/details_update_admin.html" with label=False hide_detail=True %}
+        </small>
+        <h1 class="display-4">
+          {{ object.code}}
+        </h1>
+      </div>
 
-      <h1 class="display-4">
-        {{ object.code}}
-      </h1>
-      <small class="float-right">
-        {% include "shared/details_update_admin.html" with label=False hide_detail=True %}
-      </small>
+      <div class="card-body">
+        <h3 class="card-subtitle mb-2 text-muted">
+          {{ object.name }}
+        </h3>
+      </div>
 
-      <h3 class="card-subtitle mb-2 text-muted">
-        {{ object.name }}
-      </h3>
+      <div class="card-footer">
+        <ul class="nav nav-pills" id="pills-tab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="pills-listings-tab" data-toggle="pill" href="#pills-listings" role="tab"
+            aria-controls="pills-listings" aria-selected="true">
+              Conservation Listings
+              <span class="badge badge-light">{{ object.conservation_listings.count }}</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-threats-tab" data-toggle="pill" href="#pills-threats" role="tab"
+            aria-controls="pills-threats" aria-selected="false">
+            Conservation Threats
+            <span class="badge badge-light">{{ object.conservationthreat_set.count }}</span>
+          </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-consactions-tab" data-toggle="pill" href="#pills-consactions" role="tab"
+            aria-controls="pills-consactions" aria-selected="false">
+            Conservation Actions
+            <span class="badge badge-light">{{ object.conservationaction_set.count }}</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-documents-tab" data-toggle="pill" href="#pills-documents" role="tab"
+            aria-controls="pills-documents" aria-selected="false">
+            Documents
+            <span class="badge badge-light">{{ object.document_set.count }}</span>
+          </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-occ-tab" data-toggle="pill" href="#pills-occ" role="tab" aria-controls="pills-occ"
+            aria-selected="false">
+            Occurrences
+            <span class="badge badge-light">{{ occurrence_total }}</span>
+          </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-actions-tab" data-toggle="pill" href="#pills-actions" role="tab"
+            aria-controls="pills-actions" aria-selected="false">Actions</a>
+          </li>
+        </ul>
+      </div><!-- /.card-footer -->
+    </div><!-- /.card -->
+  </div><!-- /.col#com-detail-main -->
 
-  </div><!-- /.col#taxon-detail-main -->
-
-  <div class="col-12 col-md-6 col-lg-4" id="taxon-detail-map">
+  <div class="col-12 col-md-6 col-lg-4" id="com-detail-map">
     <div id="detailmap">
       {% leaflet_map "detailmap" callback="window.map_init" %}
     </div>
-  </div><!-- /.col#taxon-detail-map -->
+  </div><!-- /.col#com-detail-map -->
 </div><!-- /.row -->
 
-<div class="row" id="cons-row">
+<div class="row mt-2" id="cons-row">
   <div class="col-12">
-    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" id="pills-listings-tab" data-toggle="pill" href="#pills-listings" role="tab"
-        aria-controls="pills-listings" aria-selected="true">
-          Conservation Listings
-          <span class="badge badge-light">{{ object.conservation_listings.count }}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-threats-tab" data-toggle="pill" href="#pills-threats" role="tab"
-        aria-controls="pills-threats" aria-selected="false">
-        Conservation Threats
-        <span class="badge badge-light">{{ object.conservationthreat_set.count }}</span>
-      </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-consactions-tab" data-toggle="pill" href="#pills-consactions" role="tab"
-        aria-controls="pills-consactions" aria-selected="false">
-        Conservation Actions
-        <span class="badge badge-light">{{ object.conservationaction_set.count }}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-documents-tab" data-toggle="pill" href="#pills-documents" role="tab"
-        aria-controls="pills-documents" aria-selected="false">
-        Documents
-        <span class="badge badge-light">{{ object.document_set.count }}</span>
-      </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-occ-tab" data-toggle="pill" href="#pills-occ" role="tab" aria-controls="pills-occ"
-        aria-selected="false">
-        Occurrences
-        <span class="badge badge-light">{{ occurrence_total }}</span>
-      </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="pills-actions-tab" data-toggle="pill" href="#pills-actions" role="tab"
-        aria-controls="pills-actions" aria-selected="false">Actions</a>
-      </li>
-    </ul>
     <div class="tab-content" id="pills-tabContent">
       <div class="tab-pane fade show active" id="pills-listings" role="tabpanel"
       aria-labelledby="pills-listings-tab">

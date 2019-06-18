@@ -1,9 +1,9 @@
 {% extends "rest_framework/base.html" %}
 {% load i18n static %}
 
-{% block style %}
-{{ block.super }}
-<link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.css' %}">
+{% block extrastyle %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" 
+      integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous" />
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 {% endblock %}
 {% block title %}{{ settings.SITE_TITLE }} API{% endblock %}
