@@ -15,3 +15,4 @@ node_modules/
 .gitignore
 .pylintrc
 hoit
+wastd/static/offline/

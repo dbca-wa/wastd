@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.25.9 documentation</title>
+  <title>TSC 0.26.4 documentation</title>
   
 
   
@@ -428,7 +428,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.25.9 documentation</li>
+      <li>TSC 0.26.4 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -450,6 +450,7 @@
 <a class="reference external image-reference" href="https://github.com/pydanny/cookiecutter-django/"><img alt="Built with Cookiecutter Django" src="https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg" /></a>
 <a class="reference external image-reference" href="https://circleci.com/gh/dbca-wa/wastd"><img alt="Test status" src="https://circleci.com/gh/dbca-wa/wastd.svg?style=svg" /></a>
 <a class="reference external image-reference" href="https://coveralls.io/github/dbca-wa/wastd?branch=master"><img alt="Test coverage" src="https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master" /></a>
+<a class="reference external image-reference" href="https://opensource.org/licenses/MIT"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a>
 </div>
 <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
@@ -3990,7 +3991,7 @@ pg_restore -h localhost -U wastd -d wastd_uat &lt; /tmp/wastd.dump</p>
 <li><p>Env vars:</p></li>
 </ul>
 <dl class="simple">
-<dt>::</dt><dd><p>DATABASE_URL=”postgis://wastd:PASSWORD&#64;db/wastd_prod” # or _uat
+<dt>::</dt><dd><p>DATABASE_URL=”postgis://wastd:PASSWORD&#64;db/wastd_prod” # or wastd_uat
 SITE_URL=”https://tsc.dbca.wa.gov.au” # or tsc-uat
 SECRET_KEY=…
 PYPANDOC_PANDOC=/usr/bin/pandoc
@@ -4054,7 +4055,7 @@ on an existing cluster:</p>
 <p>Install dependencies:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">workon</span> <span class="n">wastd</span>
 <span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">florianm</span><span class="o">/</span><span class="n">wastd</span><span class="o">.</span><span class="n">git</span> <span class="o">.</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">Fabric</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">Fabric3</span>
 <span class="n">fab</span> <span class="n">pip</span>
 <span class="n">cp</span> <span class="n">env</span><span class="o">.</span><span class="n">example</span> <span class="o">.</span><span class="n">env</span>
 </pre></div>

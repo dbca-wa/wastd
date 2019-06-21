@@ -722,14 +722,14 @@ class ConservationCategory(models.Model):
         choices=LEVEL_CHOICES,
         default=LEVEL_OTHER,
         verbose_name=_("Conservation level"),
-        help_text=_("The general conservation status, threatened, prority, or other."),
+        help_text=_("The general conservation status, threatened, priority, or other."),
     )
     short_code = models.CharField(
         max_length=500,
         choices=SHORTCODE_CHOICES,
         default=SHORTCODE_OTHER,
         verbose_name=_("Conservation short code"),
-        help_text=_("The general conservation status, threatened, prority, or other."),
+        help_text=_("The general conservation status, threatened, priority, or other."),
     )
 
     class Meta:
@@ -742,7 +742,7 @@ class ConservationCategory(models.Model):
 
     def __str__(self):
         """The full name."""
-        return "[{0}] {1}".format(self.conservation_list.code, self.code)
+        return "{0} ({1})".format(self.level, self.code)
 
     # -------------------------------------------------------------------------
     # URLs
@@ -798,7 +798,7 @@ class ConservationCriterion(models.Model):
 
     def __str__(self):
         """The full name."""
-        return "[{0}] {1}".format(self.conservation_list.code, self.code)
+        return self.code
 
     # -------------------------------------------------------------------------
     # URLs

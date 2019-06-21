@@ -9,25 +9,36 @@
   <meta name="description" content="Threatened Species and Communities Information System">
   <meta name="author" content="Department of Biodiversity, Conservation and Attractions WA">
   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <!--[if lt IE 9]><script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     {% block css %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css"
-      integrity="sha256-JDBcnYeV19J14isGd3EtnsCQK05d8PczJ5+fvEvBJvI=" crossorigin="anonymous" />
+    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+    <link rel="stylesheet" href="{% static 'offline/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'offline/bootstrap-datepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'offline/open-iconic.min.css' %}">
+    <link rel="stylesheet" href="{% static 'offline/open-iconic-bootstrap.min.css' %}">
+    {% else %}{# Serve third party libraries from CDN - production mode #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" 
+      integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" 
+      integrity="sha256-siyOpF/pBWUPgIcQi17TLBkjvNgNQArcmwJB8YvkAgg=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic.min.css" 
       integrity="sha256-CfN2r6i/dqkUHVRqpBzO3w21SnIWalwGfj5ScBPVzmI=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" 
       integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="{% static 'css/project.css' %}">
+    {% endif %}
     {% include 'shared/leaflet_css.html' %}
+    <link rel="stylesheet" href="{% static 'css/project.css' %}">
     {% endblock %}
+    
     {% block extrastyle %}{% endblock extrastyle %}
+    
+    <!-- Some widgets need JQuery to be loaded early -->
+    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+    <script src="{% static 'offline/jquery.min.js' %}"></script>
+    {% else %}{# Serve third party libraries from CDN - production mode #}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    {% endif %}
   </head>
 
   <body>
@@ -40,25 +51,35 @@
     </div>
 
     {% block javascript %}
+    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+    <link rel="stylesheet" href="{% static 'offline/tether.min.js' %}">
+    <link rel="stylesheet" href="{% static 'offline/moment-with-locales.min.js' %}">
+    <link rel="stylesheet" href="{% static 'offline/popper.min.js' %}">
+    <link rel="stylesheet" href="{% static 'offline/bootstrap.min.js' %}">
+    <!-- <link rel="stylesheet" href="{% static 'offline/bootstrap.bundle.min.js' %}"> -->
+    <link rel="stylesheet" href="{% static 'offline/bootstrap-datepicker.min.js' %}">
+    {% else %}{# Serve third party libraries from CDN - production mode #}
     <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js"
       integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" 
       integrity="sha256-AdQN98MVZs44Eq2yTwtoKufhnU+uZ7v2kXnD5vqzZVo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
-      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
-      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js" 
-      integrity="sha256-tW5LzEC7QjhG0CiAvxlseMTs2qJS7u3DRPauDjFJ3zo=" crossorigin="anonymous"></script>
-    {% include 'shared/leaflet_js.html' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/esm/popper.min.js" 
+      integrity="sha256-3Iu0zFU6cPS92RSC3Pe4DBwjIV/9XKyzYTqKZzly6A8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" 
+      integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js" 
+    integrity="sha256-fzFFyH01cBVPYzl16KT40wqjhgPtq6FFUB6ckN2+GGw=" crossorigin="anonymous"></script> -->  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" 
+      integrity="sha256-bqVeqGdJ7h/lYPq6xrPv/YGzMEb6dNxlfiTUHSgRCp8=" crossorigin="anonymous"></script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-45890579-4', 'auto');
-      ga('send', 'pageview');
+      ga('create', 'UA-45890579-4', 'auto'); ga('send', 'pageview');
     </script>
+    {% endif %}
+    {% include 'shared/leaflet_js.html' %}
     {% endblock javascript %}
     {% block extrajs %}{% endblock extrajs %}
   </body>

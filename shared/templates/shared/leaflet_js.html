@@ -1,10 +1,24 @@
 {% load staticfiles %}
 <!-- This file loads JS assets for Leaflet and its plugins as per settings.LEAFLET_CONFIG from CDN -->
-<!-- https://github.com/makinacorpus/django-leaflet/blob/master/leaflet/templates/leaflet/js.html -->
+{% if settings.OFFLINE %}
+<!-- <script src="{% static 'offline/jquery.min.js' %}" type="text/javascript"></script> -->
+<script src="{% static 'offline/leaflet.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/proj4.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/proj4leaflet.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/leaflet.draw.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/leaflet.awesome-markers.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/leaflet.label.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/Control.Geocoder.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/Control.FullScreen.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/leaflet.markercluster.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/TileLayer.GeoJSON.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'offline/leaflet-providers.min.js' %}" type="text/javascript"></script>
+{% else %}
     
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
+<!-- https://github.com/makinacorpus/django-leaflet/blob/master/leaflet/templates/leaflet/js.html -->
 <!-- Leaflet 1.3.1 as used by django-leaflet -->
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js" 
   integrity="sha256-CNm+7c26DTTCGRQkM9vp7aP85kHFMqs9MhPEuytF+fQ=" crossorigin="anonymous"></script> -->
@@ -12,12 +26,6 @@
 <!-- Leaflet 1.5.1 latest stable -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" 
   integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
-
-
-<!-- Various imcludes from https://github.com/makinacorpus/django-leaflet/blob/master/leaflet/templates/leaflet/js.html -->
-<script src="{% static 'leaflet/leaflet.forms.js' %}" type="text/javascript"></script>
-<script src="{% static 'leaflet/leaflet.extras.js' %}" type="text/javascript"></script>
-
 
 <!-- Leaflet plugins -->
 <!-- https://cdnjs.com/libraries/proj4js -->
@@ -44,8 +52,8 @@
   integrity="sha256-Stk1bo/8vj3p8NX3wtwWGeAQxSvL4DWGIE2tLLRzAFA=" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet.fullscreen -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.5.0/Control.FullScreen.min.js" 
-  integrity="sha256-xx4Jb7gEFK2NQOhC8bqGLaIpszZnqVZAAv0WPJHKqiI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.5.1/Control.FullScreen.min.js" 
+  integrity="sha256-1EgFzhCy7+u8Ju2guUij0GIo5WNWtR0WjeS4W6VmpH0=" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet.markercluster -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js" 
@@ -58,13 +66,19 @@
 <!-- https://cdnjs.com/libraries/leaflet-providers -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.8.0/leaflet-providers.min.js" 
   integrity="sha256-5oc3Ox+lXzhE5v6ZRXbBHnTfeHaiyqUi+dyfl9zpo+Q=" crossorigin="anonymous"></script>
+{% endif %}
+
+
+<!-- Various imcludes from https://github.com/makinacorpus/django-leaflet/blob/master/leaflet/templates/leaflet/js.html -->
+<script src="{% static 'leaflet/leaflet.forms.js' %}" type="text/javascript"></script>
+<script src="{% static 'leaflet/leaflet.extras.js' %}" type="text/javascript"></script>
 
 
 <script type="text/javascript">
 /* From django-leaflet */
 {% include "leaflet/_leaflet_draw_i18n.js" %}
 L.Control.ResetView.TITLE = "Reset view";
-L.Control.ResetView.ICON = "url({% static "leaflet/images/reset-view.png" %})";
+L.Control.ResetView.ICON = "url({% static 'leaflet/images/reset-view.png' %})";
 // L.Icon.Default.imagePath = "{% static "leaflet/images" %}/";
 
 

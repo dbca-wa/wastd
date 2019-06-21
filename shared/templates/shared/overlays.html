@@ -1,5 +1,10 @@
 /* Transparent overlay layers */
 var lc = map.layerscontrol;
+
+/* lc.addOverlay(L.tileLayer.wms('https://spatial-beta.ala.org.au/geoserver/ALA/wms',
+ *   {layers: 'ALA:aus2', format: 'image/png', transparent: true}), 'Australia');
+ */
+
 var kmi_wms = 'https://kmi.dbca.wa.gov.au/geoserver/cddp/wms';
 var wmsoptions = function(lyr){return {layers: lyr, format: 'image/png', transparent: true}}
 lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:townsite_poly')), 'WA Townsites');
@@ -20,10 +25,6 @@ lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_flora')), 'Th
 lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:tec_sites_buffered')), 'Threatened Communities');
 lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:scientific_study_sites')), 'Scientific Study Sites');
 lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('dpaw:pilbara_fuelage')), 'Pilbara Fuel Age');
-
-/* lc.addOverlay(L.tileLayer.wms('https://spatial-beta.ala.org.au/geoserver/ALA/wms',
-    {layers: 'ALA:aus2', format: 'image/png', transparent: true}), 'Australia');
-*/
 
 $.getJSON("{% url 'sites-geojson' %}", function (data) {
   lc.addOverlay(L.geoJson(data, {style: polystyle, onEachFeature: oef}), "TSC Sites")

@@ -71,25 +71,41 @@ class TaxonListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         DO NOT use taxon_filter.qs in template:
         https://github.com/django-mptt/django-mptt/issues/632
         """
-        queryset = Taxon.objects.prefetch_related(
-            "paraphyletic_groups",
-            "conservation_listings",
-            "conservationthreat_set",
-            "conservationaction_set",
-            "document_set",
-        )
+        queryset = Taxon.objects.all()
 
         # name_id is mutually exclusive to other parameters
         if self.request.GET.get("name_id"):
             try:
                 return queryset.filter(
                     name_id=self.request.GET.get("name_id")
-                ).get().get_family()
+                ).get(
+                ).get_family(
+                ).prefetch_related(
+                    "paraphyletic_groups",
+                    "conservation_listings",
+                    "conservationthreat_set",
+                    "conservationaction_set",
+                    "document_set",
+                )
             except ObjectDoesNotExist:
                 messages.warning(self.request, "This Name ID does not exist.")
-                return queryset
+                return queryset.prefetch_related(
+                    "paraphyletic_groups",
+                    "conservation_listings",
+                    "conservationthreat_set",
+                    "conservationaction_set",
+                    "document_set",
+                )
 
-        return TaxonFilter(self.request.GET, queryset=queryset).qs
+        return TaxonFilter(
+            self.request.GET, queryset=queryset
+            ).qs.prefetch_related(
+                "paraphyletic_groups",
+                "conservation_listings",
+                "conservationthreat_set",
+                "conservationaction_set",
+                "document_set",
+            )
 
 
 class CommunityListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
@@ -114,13 +130,15 @@ class CommunityListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView
 
     def get_queryset(self):
         """Queryset."""
-        queryset = Community.objects.all().prefetch_related(
+        queryset = Community.objects.all()
+        filtered = CommunityFilter(self.request.GET, queryset=queryset).qs
+        prefetched = filtered.prefetch_related(
             "conservation_listings",
             "conservationthreat_set",
             "conservationaction_set",
             "document_set",
         )
-        return CommunityFilter(self.request.GET, queryset=queryset).qs
+        return prefetched
 
 
 # ---------------------------------------------------------------------------#

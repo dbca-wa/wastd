@@ -20,9 +20,12 @@
 </style>
 {% endblock %}
 
-{% block javascript%}
-{{ block.super }}
-<script src="//use.fontawesome.com/f8f5501a45.js"></script>
+{% block extrajs %}
+    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+    <script src="{% static 'offline/f8f5501a45.js' %}"></script>
+    {% else %}{# Serve third party libraries from CDN - production mode #}
+    <script src="//use.fontawesome.com/f8f5501a45.js"></script>
+    {% endif %}
 <script type="text/javascript">
 function map_init(map, options) {
     {% include 'shared/styles.js' %}
