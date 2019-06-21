@@ -7,6 +7,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   -o Acquire::Retries=10 --no-install-recommends \
     texlive lmodern libmagic-dev libproj-dev gdal-bin \
     python-dev libsasl2-dev libldap2-dev python-enchant \
+    memcached libmemcached-tools \
     postgresql-client openssh-client rsync \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \

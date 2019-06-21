@@ -161,24 +161,36 @@ MIGRATION_MODULES = {
 # CACHES
 # ------------------------------------------------------------------------------
 
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://redis:6379'), 0),
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             'IGNORE_EXCEPTIONS': True,
+#         }
+#     },
+#     "select2": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://redis:6379'), 1),
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             'IGNORE_EXCEPTIONS': True,
+#         }
+#     }
+# }
+
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://redis:6379'), 0),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            'IGNORE_EXCEPTIONS': True,
-        }
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
     },
-    "select2": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://redis:6379'), 1),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            'IGNORE_EXCEPTIONS': True,
-        }
+     'select2': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
     }
 }
+
 
 
 # CACHES = {
