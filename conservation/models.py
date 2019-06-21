@@ -742,7 +742,7 @@ class ConservationCategory(models.Model):
 
     def __str__(self):
         """The full name."""
-        return "{0} ({1})".format(self.level, self.code)
+        return "{0} ({1})".format(self.get_level_display(), self.code)
 
     # -------------------------------------------------------------------------
     # URLs
