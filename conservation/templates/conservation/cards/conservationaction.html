@@ -93,12 +93,8 @@
             {% if act.completion_date%}{{ act.completion_date|date:"D d M Y" }}{% else %}ongoing{% endif %}
             {% if collapse %}
             <span class="float-right">
-              <span class="oi oi-dollar" title="Expenditure" aria-hidden="true"></span>
-              {{ act.expenditure }}
               <a href="{{ act.update_url }}">
                 <span class="oi oi-pencil" aria-hidden="true"></span>
-                <!-- <span class="oi oi-task" aria-hidden="true"></span>
-                Edit -->
               </a>
             </span>
             {% endif %}
@@ -111,6 +107,10 @@
             {% if act.implementation_notes %}
             {{ act.implementation_notes }}
             {% endif %}
+          </p>
+          <p class="card-text">
+            <span class="oi oi-dollar" title="Expenditure" aria-hidden="true"></span>
+            {{ act.expenditure }}
           </p>
         </div>
 

@@ -20,7 +20,7 @@ Workload db
 * Deploy, open shell in running container and execute:
 
 ::
-  apt upgrade && apt install -y openssh-client rsync
+  apt update && apt install -y openssh-client rsync
   rsync USER@HOST:/path/to/wastd.dump /tmp/
   psql -h localhost -U postgres
 
@@ -41,7 +41,7 @@ Workloads prod/uat
 * Env vars:
 
 ::
-  DATABASE_URL="postgis://wastd:PASSWORD@db/wastd_prod" # or _uat
+  DATABASE_URL="postgis://wastd:PASSWORD@db/wastd_prod" # or wastd_uat
   SITE_URL="https://tsc.dbca.wa.gov.au" # or tsc-uat
   SECRET_KEY=...
   PYPANDOC_PANDOC=/usr/bin/pandoc
@@ -102,7 +102,7 @@ Install dependencies::
 
     workon wastd
     git clone git@github.com:florianm/wastd.git .
-    pip install Fabric
+    pip install Fabric3
     fab pip
     cp env.example .env
 

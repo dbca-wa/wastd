@@ -28,6 +28,7 @@ APPS_DIR = ROOT_DIR.path('wastd')
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env('DJANGO_DEBUG', default=False)
+OFFLINE = env('OFFLINE', default=False)
 PROFILING = env('DJANGO_PROFILING', default=False)
 
 ANIMALS_PK = env("ANIMALS_PK", default=20)
@@ -86,7 +87,7 @@ THIRD_PARTY_APPS = (
 
     'gunicorn',                     # Web server
     # 'test_utils',                    # Testing - fails on BS install
-    'raven.contrib.django.raven_compat',  # Sentry logging Raven client
+    # 'raven.contrib.django.raven_compat',  # Sentry logging Raven client
 )
 
 # Apps specific for this project go here.
@@ -120,9 +121,9 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='c4)!ho4t^lsy0ozrnlqamjso@^n-ookiq
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE_CLASSES = (
-    # 'django.middleware.cache.UpdateCacheMiddleware',
+    #'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
+    #'django.middleware.cache.FetchFromCacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -136,13 +137,12 @@ MIDDLEWARE_CLASSES_LAST = (
     'dpaw_utils.middleware.SSOLoginMiddleware',
 )
 
-DEBUG_MIDDLEWARE_CLASSES = (
-    # 'silk.middleware.SilkyMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += DEBUG_MIDDLEWARE_CLASSES
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+
+if PROFILING:
+    MIDDLEWARE_CLASSES += ('silk.middleware.SilkyMiddleware',)
 
 MIDDLEWARE_CLASSES += MIDDLEWARE_CLASSES_LAST
 
@@ -584,13 +584,21 @@ LEAFLET_CONFIG = {
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
     ],
     'OVERLAYS': [
-        # ('State Map Base 250K', 'https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', {'attribution': '&copy; IGN', 'layers': 'cddp:state_map_base',  # noqa
-        #     'format': 'image/png',
-        #     'transparent': 'true', }),
+        # ('State Map Base 250K', 'https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', 
+        # {'attribution': '&copy; IGN', 'layers': 'cddp:state_map_base', 'format': 'image/png', 'transparent': 'true', }),
     ]
 
 }
-
+# https://stackoverflow.com/questions/43608919/html-offline-map-with-local-tiles-via-leaflet
+if OFFLINE:
+    LEAFLET_CONFIG['TILES'] = [
+        ('Place Names', 
+        env("OSM_TILESERVER", default="//127.0.0.1:32768") + '/styles/osm-bright/{z}/{x}/{y}.png', 
+        {'attribution': 'OpenMapTiles', 'maxZoom': 16, }),
+        ('Aerial Image',
+         '//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+         {'attribution': 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'}),  # noqa
+    ]
 
 # Synctool
 SYNCTOOL_API_TOKEN = env('SYNCTOOL_API_TOKEN', default='TOKEN')
@@ -744,9 +752,8 @@ LOGGING = {
 
 # Error reporting
 if env('SENTRY_DSN', False):
-    RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
+    # RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
     sentry_sdk.init(env('SENTRY_DSN'), integrations=[DjangoIntegration()])
-
 
 SETTINGS_EXPORT = [
     'SITE_NAME',
@@ -756,5 +763,6 @@ SETTINGS_EXPORT = [
     'BIOSYS_UN',
     'BIOSYS_PW',
     'ANIMALS_PK',
-    'PLANTS_PK'
+    'PLANTS_PK',
+    'OFFLINE'
 ]

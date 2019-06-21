@@ -111,7 +111,7 @@ class ConservationActionCategoryAdmin(VersionAdmin):
     model = cons_models.ConservationActionCategory
     form = s2form(cons_models.ConservationActionCategory, attrs=S2ATTRS)
     prepopulated_fields = {"code": ("label",)}
-    list_display = ("code", "label", "description", )
+    list_display = ("code", "label", "description",)
     search_fields = ("code", "label", "description")
     save_on_top = True
 
@@ -176,7 +176,7 @@ class ConservationActionAdmin(ImportExportModelAdmin, VersionAdmin):
         }),
         ("Implementation", {
             "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
-            "fields": ("implementation_notes", "completion_date", "expenditure")
+            "fields": ("implementation_notes", "completion_date",)
         }),
 
     )

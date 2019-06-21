@@ -104,7 +104,7 @@ class ConservationActionForm(forms.ModelForm):
             "instructions",
             "implementation_notes",
             "completion_date",
-            "expenditure",
+            # "expenditure",
             # "attachments"
         )
         widgets = {

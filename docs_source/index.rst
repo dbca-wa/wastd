@@ -11,10 +11,13 @@ WAStD - WA Sea Turtle Data / TSC - Threatened Species and Communities
 .. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
+.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+     :target: https://opensource.org/licenses/MIT
+     :alt: MIT License
 
 .. "WA STD - now you've got it, too"
 
-.. "Strandings are red, tagged ones are blue, nests are green and tracks are there, too"
+.. "Strandings are red, tags are blue, nests are green and tracks are there, too"
 
 ========
 Overview

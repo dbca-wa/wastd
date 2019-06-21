@@ -1,6 +1,5 @@
 # Django
 # ------------------------------------------------
-# >=1.11.9,<2.0
 django==2.2.2
 django-extensions==2.1.9
 
@@ -15,7 +14,6 @@ django-extensions==2.1.9
 # Admin
 # ------------------------------------------------
 django-adminactions==1.6.0
-# -e git+https://github.com/saxix/django-adminactions.git@florianm-develop#egg=django-adminactions
 
 # https://github.com/sehmaschine/django-grappelli/issues/884
 #django-grappelli
@@ -24,7 +22,7 @@ django-adminactions==1.6.0
 
 # API
 # ------------------------------------------------
-djangorestframework==3.9.1
+djangorestframework==3.9.4
 djangorestframework-gis==0.14
 djangorestframework-csv
 djangorestframework-yaml
@@ -41,12 +39,12 @@ django-rest-swagger
 coreapi==2.3.3
 coreapi-cli
 pypandoc
-graphene-django==2.2.0
-xmltodict==0.11.0
+graphene-django==2.3.0
+xmltodict==0.12.0
 
 # Auth
 # ------------------------------------------------
-django-allauth==0.38.0
+django-allauth==0.39.1
 git+git://github.com/dbca-wa/dpaw-utils@minimal
 
 
@@ -90,11 +88,11 @@ sphinx_rtd_theme
 django-braces==1.13.0
 django-crispy-forms==1.7.2
 django-floppyforms==1.7.0
-django-easy-select2==1.5.5
-django_select2==6.3.1
-django-bootstrap4
+django-easy-select2==1.5.6
+django_select2==7.0.5
+django-bootstrap4==0.0.8
 django-ajax-selects
-django-map-widgets==0.1.9
+django-map-widgets==0.2.2
 
 # Logging
 # ------------------------------------------------
@@ -123,17 +121,17 @@ django-export-download==0.2.3
 
 # Images
 # ------------------------------------------------
-Pillow==5.4.1
+Pillow==6.0.0
 
 
 # Python-PostgreSQL Database Adapter
 # ------------------------------------------------
-psycopg2-binary==2.7.7
+psycopg2-binary==2.8.3
 
 # Unicode slugification
 # ------------------------------------------------
 unicode-slugify==0.1.3
-django-autoslug==1.9.3
+django-autoslug==1.9.4
 
 
 # Time zones support
@@ -160,10 +158,10 @@ git+git://github.com/makinacorpus/django-leaflet@master
 # Static and Media Storage
 # ------------------------------------------------
 whitenoise==4.1.2
-django_compressor==2.2
-boto==2.47.0
+django_compressor==2.3
+boto==2.49.0
 django-storages-redux==1.3.3
-dj-static
+dj-static==0.0.6
 
 
 # Profiling

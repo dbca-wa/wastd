@@ -120,3 +120,16 @@ def docker():
     print(green(
         "Updated Docker images are available on DockerHub "
         "as dbcawa/wastd:latest and dbcawa/wastd:{0}".format(ver)))
+
+def tag():
+    """Tag code with WASTD_RELEASE and push to GitHub."""
+    ver = confyenv("WASTD_RELEASE", default="0.1.0")
+    local("git tag -a {0} -m 'Version {0}'".format(ver))
+    local("git push origin {0}".format(ver))
+    print(green("Code tagged as {0} and pushed to GitHub.".format(ver)))
+
+def release():
+    """Make release: doc, tag, docker."""
+    doc()
+    tag()
+    docker()
