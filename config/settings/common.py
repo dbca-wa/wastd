@@ -413,7 +413,8 @@ AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
 
 # Session management
 # http://niwinz.github.io/django-redis/latest/#_configure_as_cache_backend
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"  # use Redis
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 SESSION_CACHE_ALIAS = "default"
 # SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
