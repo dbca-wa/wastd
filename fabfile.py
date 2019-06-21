@@ -105,6 +105,7 @@ def dbuild():
     """Build Docker image."""
     ver = confyenv("WASTD_RELEASE", default="0.1.0")
     print(yellow("Building docker images with tag latest and {0}...".format(ver)))
+    local("rm logs/wastd.log && touch logs/wastd.log")
     local("docker build -t dbcawa/wastd -t dbcawa/wastd:{0} .".format(ver))
 
 def dpush():
