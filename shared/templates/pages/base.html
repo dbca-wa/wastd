@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{% static 'offline/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'offline/open-iconic.min.css' %}">
     <link rel="stylesheet" href="{% static 'offline/open-iconic-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'offline/open-iconic-bootstrap-grid.min.css' %}">
+    <link rel="stylesheet" href="{% static 'offline/open-iconic-bootstrap-reboot.min.css' %}">
     {% else %}{# Serve third party libraries from CDN - production mode #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" 
       integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous" />
@@ -51,13 +53,13 @@
     </div>
 
     {% block javascript %}
-    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
-    <link rel="stylesheet" href="{% static 'offline/tether.min.js' %}">
-    <link rel="stylesheet" href="{% static 'offline/moment-with-locales.min.js' %}">
-    <link rel="stylesheet" href="{% static 'offline/popper.min.js' %}">
-    <link rel="stylesheet" href="{% static 'offline/bootstrap.min.js' %}">
-    <!-- <link rel="stylesheet" href="{% static 'offline/bootstrap.bundle.min.js' %}"> -->
-    <link rel="stylesheet" href="{% static 'offline/bootstrap-datepicker.min.js' %}">
+    {% if settings.OFFLINE %}{# Serve third party libraries locally - offline demo mode #}
+    <script src="{% static 'offline/tether.min.js' %}"></script>
+    <script src="{% static 'offline/moment-with-locales.min.js' %}"></script>
+    <script src="{% static 'offline/popper.min.js' %}"></script>
+    <script src="{% static 'offline/bootstrap.min.js' %}"></script>
+    <script src="{% static 'offline/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'offline/bootstrap-datepicker.min.js' %}"></script>
     {% else %}{# Serve third party libraries from CDN - production mode #}
     <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js"
       integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
