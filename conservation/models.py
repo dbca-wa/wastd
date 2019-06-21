@@ -647,18 +647,23 @@ class ConservationCategory(models.Model):
     """A Conservation Category like CR, EN, VU."""
 
     LEVEL_EXTINCT = "extinct"
+    LEVEL_COLLAPSED = "collapsed"
     LEVEL_THREATENED = "threatened"
     LEVEL_PRIORITY = "priority"
     LEVEL_OTHER = "other"
+    LEVEL_SPECIALLY_PROTECTED = "specially-protected"
     LEVEL_CHOICES = (
         (LEVEL_EXTINCT, "Extinct"),
+        (LEVEL_COLLAPSED, "Collapsed"),
         (LEVEL_THREATENED, "Threatened"),
         (LEVEL_PRIORITY, "Priority"),
+        (LEVEL_SPECIALLY_PROTECTED, "Specially Protected"),
         (LEVEL_OTHER, "Other"),
     )
 
     SHORTCODE_OTHER = "O"
     SHORTCODE_EXTINCT = "X"
+    SHORTCODE_COLLAPSED = "CO"
     SHORTCODE_THREATENED = "T"
     SHORTCODE_SPECIALLY_PROTECTED = "SP"
     SHORTCODE_P1 = "1"
@@ -669,6 +674,7 @@ class ConservationCategory(models.Model):
     SHORTCODE_CHOICES = (
         (SHORTCODE_OTHER, "Other"),
         (SHORTCODE_EXTINCT, "Extinct"),
+        (SHORTCODE_THREATENED, "Collapsed"),
         (SHORTCODE_THREATENED, "Threatened"),
         (SHORTCODE_SPECIALLY_PROTECTED, "Specially Protected"),
         (SHORTCODE_P1, "Priority 1"),
@@ -721,15 +727,16 @@ class ConservationCategory(models.Model):
         max_length=500,
         choices=LEVEL_CHOICES,
         default=LEVEL_OTHER,
-        verbose_name=_("Conservation level"),
-        help_text=_("The general conservation status, threatened, priority, or other."),
+        verbose_name=_("Filter group"),
+        help_text=_("A convenience grouping of several conservation levels"
+                    " for efficient filtering of records in TSC."),
     )
     short_code = models.CharField(
         max_length=500,
         choices=SHORTCODE_CHOICES,
         default=SHORTCODE_OTHER,
-        verbose_name=_("Conservation short code"),
-        help_text=_("The general conservation status, threatened, priority, or other."),
+        verbose_name=_("FloraBase Code"),
+        help_text=_("A conservation code exported to FloraBase"),
     )
 
     class Meta:
