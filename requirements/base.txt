@@ -144,8 +144,8 @@ django-settings-export
 
 # Redis support
 # ------------------------------------------------
-# django-redis==4.10.0
-# redis==3.1.0
+django-redis==4.10.0
+redis==3.2.1
 
 
 # Map
