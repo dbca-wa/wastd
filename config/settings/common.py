@@ -183,15 +183,13 @@ MIGRATION_MODULES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': env('MEMCACHED_URL', default='127.0.0.1:11211'),
     },
      'select2': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': env('MEMCACHED_URL', default='127.0.0.1:11211'),
     }
 }
-
-
 
 # CACHES = {
 #     "default": {
@@ -201,7 +199,8 @@ CACHES = {
 #     "select2": {
 #         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
 #         'LOCATION': 'select2_cache_table'
-#     }}
+#     }
+# }
 
 SELECT2_CACHE_BACKEND = "select2"
 
