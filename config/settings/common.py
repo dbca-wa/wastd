@@ -161,34 +161,36 @@ MIGRATION_MODULES = {
 # CACHES
 # ------------------------------------------------------------------------------
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#             'IGNORE_EXCEPTIONS': True,
-#         }
-#     },
-#     "select2": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://127.0.0.1:6379'), 1),
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     }
-# }
-
-
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        'LOCATION': 'django_cache_table'
+        "BACKEND": "django_redis.cache.RedisCache",
+        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://redis:6379'), 0),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            'IGNORE_EXCEPTIONS': True,
+        }
     },
     "select2": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        'LOCATION': 'select2_cache_table'
-    }}
+        "BACKEND": "django_redis.cache.RedisCache",
+        'LOCATION': '{0}/{1}'.format(env('REDIS_URL', default='redis://redis:6379'), 1),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            'IGNORE_EXCEPTIONS': True,
+        }
+    }
+}
+
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+#         'LOCATION': 'django_cache_table'
+#     },
+#     "select2": {
+#         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+#         'LOCATION': 'select2_cache_table'
+#     }}
+
 SELECT2_CACHE_BACKEND = "select2"
 
 # Data upload request size
@@ -400,9 +402,9 @@ AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
 
 # Session management
 # http://niwinz.github.io/django-redis/latest/#_configure_as_cache_backend
-# SESSION_ENGINE = "django.contrib.sessions.backends.cache"  # use Redis
-# SESSION_CACHE_ALIAS = "default"
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"  # use Redis
+SESSION_CACHE_ALIAS = "default"
+# SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = "^admin/"
