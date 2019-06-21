@@ -96,3 +96,6 @@ body{
     column-count: 8;
   }
 }*/
+
+/* Leaflet mapwidget raw textarea width */
+.django-leaflet-raw-textarea {width: 100%;}
