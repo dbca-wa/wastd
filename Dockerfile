@@ -8,7 +8,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     texlive lmodern libmagic-dev libproj-dev gdal-bin \
     python-dev libsasl2-dev libldap2-dev python-enchant \
     memcached libmemcached-tools \
-    postgresql-client openssh-client rsync \
+    postgresql postgresql-client openssh-client rsync \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && wget https://github.com/jgm/pandoc/releases/download/2.7/pandoc-2.7-1-amd64.deb \

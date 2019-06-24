@@ -2011,7 +2011,7 @@ def taxon_pre_save(sender, instance, *args, **kwargs):
         instance.canonical_name = instance.build_canonical_name
         instance.taxonomic_name = instance.build_taxonomic_name
     except:
-        logger.info("[taxon_pre_save] Failed to build canonical/taxonomic name, skipping.")
+        logger.info("[taxon_pre_save] New Taxon, re-save to build canonical/taxonomic name.")
     instance.vernacular_name = instance.build_vernacular_name
     instance.vernacular_names = instance.build_vernacular_names
 

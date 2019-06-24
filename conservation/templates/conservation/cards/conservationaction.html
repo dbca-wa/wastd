@@ -136,6 +136,7 @@
     <div class="row">
       <div class="col-12">
         {% include 'shared/details_update_admin.html' with btn=True label=True %}
+        {% include 'conservation/include/conservationactivity_add.html' with action_pk=object.pk label=True block=False %}
       </div>
     </div>
     <!-- /Conservation threat update -->
