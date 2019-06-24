@@ -523,13 +523,7 @@ def make_crossreference(hbv_xref_obj, reason_dict):
 #     return
 
 
-def update_taxon():
-    """Update Taxon from local copy of WACensus data.
-
-    See also
-    http://django-mptt.readthedocs.io/en/latest/mptt.managers.html#mptt.managers.TreeManager.disable_mptt_updates
-
-    """
+def make_all_kingdoms():
     # Thing
     # logger.info("[update_taxon] Creating/updating thing...")
     # thing, created = Taxon.objects.update_or_create(
@@ -547,7 +541,9 @@ def update_taxon():
     kingdoms = [tax_models.Taxon.objects.update_or_create(
         name_id=x.name_id, defaults=dict(name=x.name, rank=tax_models.Taxon.RANK_KINGDOM, current=True, parent=domain))
         for x in tax_models.HbvName.objects.filter(rank_name='Kingdom')]
+    return kingdoms
 
+def make_all_families():
     # Divisions, Classes, Orders, Families
     logger.info("[update_taxon] Creating/updating divisions, classes, orders, families...")
     # ORM kung-fu to get Kingdom ID:Taxon lookup dict
@@ -559,50 +555,82 @@ def update_taxon():
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             families = [make_family(x, KINGDOM_ID_TAXA, CUR, PUB) for x in tax_models.HbvFamily.objects.all()]
+    return families
 
+
+def make_all_genera():
     # Genera
     logger.info("[update_taxon] Creating/updating genera...")
+    CUR = {'N': False, 'Y': True}
+    PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             genera = [make_genus(x, CUR, PUB) for x in tax_models.HbvGenus.objects.all()]
+    return genera
 
-    # Species
+
+def make_all_species():
     logger.info("[update_taxon] Creating/updating species...")
+    CUR = {'N': False, 'Y': True}
+    PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             species = [make_species(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Species")]
+    return species
 
+
+def make_all_subspecies():
     # Subspecies
     logger.info("[update_taxon] Creating/updating subspecies...")
+    CUR = {'N': False, 'Y': True}
+    PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             subspecies = [make_subspecies(x, CUR, PUB)
                           for x in tax_models.HbvSpecies.objects.filter(rank_name="Subspecies")]
+    return subspecies
 
+
+def make_all_varieties():
     # Varieties
     logger.info("[update_taxon] Creating/updating varieties...")
+    CUR = {'N': False, 'Y': True}
+    PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             varieties = [make_variety(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Variety")]
+    return varieties
 
+
+def make_all_forms():
     # Forms
     logger.info("[update_taxon] Creating/updating forms...")
+    CUR = {'N': False, 'Y': True}
+    PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             forms = [make_form(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Form")]
+    return forms
 
+def make_all_vernaculars():
     # Vernaculars
     logger.info("[update_taxon] Updating Vernacular Names...")
     LANG = {"ENGLISH": 0, "INDIGENOUS": 1}
     vernaculars = [make_vernacular(x, LANG) for x in tax_models.HbvVernacular.objects.all()]
     logger.info("[update_taxon] Updated {0} Vernacular Names.".format(tax_models.Vernacular.objects.count()))
+    return vernaculars
 
+
+def make_all_crossreferences():
     # Crossreferences
     logger.info("[update_taxon] Updating Crossreferences...")
     REASONS = {"MIS": 0, "TSY": 1, "NSY": 2, "EXC": 3, "CON": 4, "FOR": 5, "OGV": 6, "ERR": 7, "ISY": 8}
     crossreferences = [make_crossreference(x, REASONS) for x in tax_models.HbvXref.objects.filter(active="Y")]
     logger.info("[update_taxon] Updated {0} Crossreferences.".format(tax_models.Crossreference.objects.count()))
+    return crossreferences
 
+
+def make_all_paraphyletic_groups():
     # Paraphyletic Groups
     logger.info("[update_taxon] Updating Paraphyletic Groups from WACensus...")
     # A dict name_id:pk of Taxon. No need to fetch the actual objects.
@@ -641,10 +669,32 @@ def update_taxon():
         )
     )
 
+
+def rebuild_mptt_tree():
     # Rebuild MPTT tree
     logger.info("[update_taxon] Rebuilding taxonomic tree - this could take a while.")
     tax_models.Taxon.objects.rebuild()
     logger.info("[update_taxon] Taxonomic tree rebuilt.")
+
+
+def update_taxon():
+    """Update Taxon from local copy of WACensus data.
+
+    See also
+    http://django-mptt.readthedocs.io/en/latest/mptt.managers.html#mptt.managers.TreeManager.disable_mptt_updates
+
+    """
+    kingdoms = make_all_kingdoms()
+    families = make_all_families()
+    genera = make_all_genera()
+    species = make_all_species()
+    subspecies = make_all_subspecies()
+    varieties = make_all_varieties()
+    forms = make_all_forms()
+    vernaculars = make_all_vernaculars()
+    crossreferences = make_all_crossreferences()
+    make_all_paraphyletic_groups()
+    rebuild_mptt_tree()
 
     # Say bye
     msg = ("[update_taxon] Updated {0} kingdoms, {1} families "
