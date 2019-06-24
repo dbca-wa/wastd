@@ -166,7 +166,7 @@
          <div class="row">
           <div class="col col-12">
             <span class="float-right">
-              {% include 'conservation/include/taxonconservationlisting_add.html' with label=False block=False taxon=object %}
+              {% include 'conservation/include/taxonconservationlisting_add.html' with subject_pk=object.pk label=False block=False taxon=object %}
             </span>
             <div class="row">
               {% for object in object.conservation_listings.all|dictsortreversed:'status'|dictsort:'scope' %}
@@ -181,7 +181,7 @@
         <div class="row">
           <div class="col col-12">
             <span class="float-right">
-              {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=False block=False %}
+              {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" subject_pk=object.pk label=False block=False %}
             </span>
             <div class="row">
               {% for object in object.conservationthreat_set.all %}
@@ -196,7 +196,7 @@
         <div class="row">
           <div class="col col-12">
             <span class="float-right">
-              {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=False block=False %}
+              {% include 'conservation/include/conservationaction_add.html' with subject="taxa" subject_pk=object.pk label=False block=False %}
             </span>
             <div class="row">
               {% for object in object.conservationaction_set.all %}
@@ -211,7 +211,7 @@
         <div class="row">
           <div class="col col-12">
             <span class="float-right">
-              {% include 'conservation/include/document_add.html' with subject="taxa" label=False block=False %}
+              {% include 'conservation/include/document_add.html' with subject="taxa" subject_pk=object.pk label=False block=False %}
             </span>
             <div class="row">
               {% for object in object.document_set.all %}
@@ -226,11 +226,11 @@
         <div class="row">
           <div class="col col-12">
             {% include 'taxonomy/include/taxon_change.html' with label=True block=False %}
-            {% include 'conservation/include/taxonconservationlisting_add.html' with label=True block=False taxon=object %}
-            {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" label=True block=False %}
-            {% include 'conservation/include/conservationaction_add.html' with subject="taxa" label=True block=False %}
-            {% include 'conservation/include/document_add.html' with subject="taxa" label=True block=False %}
-            {% include 'occurrence/include/taxonareaencounter_add_link.html' with label=True block=False btn=True %}
+            {% include 'conservation/include/taxonconservationlisting_add.html' with subject_pk=object.pk label=True block=False taxon=object %}
+            {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" subject_pk=object.pk label=True block=False %}
+            {% include 'conservation/include/conservationaction_add.html' with subject="taxa" subject_pk=object.pk label=True block=False %}
+            {% include 'conservation/include/document_add.html' with subject="taxa" subject_pk=object.pk label=True block=False %}
+            {% include 'occurrence/include/taxonareaencounter_add_link.html' with subject_pk=object.pk label=True block=False btn=True %}
           </div>
         </div>
       </div>
@@ -271,9 +271,9 @@
                       <div class="row">
                         <div class="col-12">
                           <small>
-                            {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" area=site.grouper label=False block=False %}
-                            {% include 'conservation/include/conservationaction_add.html' with subject="taxa" area=site.grouper label=False block=False %}
-                            {% include 'occurrence/include/taxonareaencounter_add_link.html' with label=False block=False btn=True area_code=site.grouper %}
+                            {% include 'conservation/include/conservationthreat_add.html' with subject="taxa" subject_pk=object.pk area=site.grouper label=False block=False %}
+                            {% include 'conservation/include/conservationaction_add.html' with subject="taxa" subject_pk=object.pk area=site.grouper label=False block=False %}
+                            {% include 'occurrence/include/taxonareaencounter_add_link.html' with label=False subject_pk=object.pk block=False btn=True area_code=site.grouper %}
                           </small>
                         </div>
                       </div>

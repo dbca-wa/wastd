@@ -1,5 +1,5 @@
 {% if request.user.is_staff %}
-<a href="{% url 'admin:conservation_communityconservationlisting_add' %}{% if community %}?community={{ object.pk }}{% endif %}"
+<a href="{% url 'admin:conservation_communityconservationlisting_add' %}{% if subject_pk %}?community={{ subject_pk }}{% endif %}"
   class="btn btn-success btn-sm{% if block %} btn-block{% endif%} text-left"
   title="Propose a new community conservation listing through the data curation portal"
   target="_">
@@ -8,7 +8,7 @@
   {% if label %}Propose conservation listing{% endif %}
 </a>
 {% endif %}
-<a href="{% url 'conservation:communityconservationlisting-create' %}{% if community %}?community={{ community.pk }}{% endif %}"
+<a href="{% url 'conservation:communityconservationlisting-create' %}{% if subject_pk %}?community={{ subject_pk }}{% endif %}"
   class="btn btn-primary btn-sm{% if block %} btn-block{% endif%} text-left"
   title="Propose a new community conservation listing">
   <span class="oi oi-plus" aria-hidden="true"></span>

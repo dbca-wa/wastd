@@ -1,5 +1,5 @@
 {% if request.user.is_staff %}
-<a href="{% url 'admin:conservation_document_add' %}?{{ subject }}={{ object.pk }}"
+<a href="{% url 'admin:conservation_document_add' %}?{% if subject_pk %}{{ subject }}={{ subject_pk }}{% endif %}"
     title="Because you have DBCA Curator privileges, you may attach a new document."
     role="button"
     class="btn btn-success btn-sm{% if block %} btn-block{% endif%} text-left"
@@ -9,7 +9,7 @@
   {% if label %}Attach new conservation document{% endif %}
 </a>
 {% endif %}
-<a href="{% url 'conservation:document-create' %}?{{ subject }}={{ object.pk }}"
+<a href="{% url 'conservation:document-create' %}?{% if subject_pk %}{{ subject }}={{ subject_pk }}{% endif %}"
     title="Attach a new document."
     role="button"
     class="btn btn-primary btn-sm{% if block %} btn-block{% endif%} text-left">

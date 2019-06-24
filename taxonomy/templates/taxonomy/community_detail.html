@@ -95,7 +95,7 @@
          <div class="row">
           <div class="col col-12">
             <span class="float-right">
-              {% include 'conservation/include/communityconservationlisting_add.html' with label=False block=False community=object %}
+              {% include 'conservation/include/communityconservationlisting_add.html' with subject_pk=object.pk label=False block=False community=object %}
             </span>
             <div class="row">
               {% for object in object.conservation_listings.all|dictsortreversed:'status'|dictsort:'scope' %}
@@ -110,7 +110,7 @@
         <div class="row">
           <div class="col col-12">
             <span class="float-right">
-              {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=False block=False %}
+              {% include 'conservation/include/conservationthreat_add.html' with subject="communities" subject_pk=object.pk label=False block=False %}
             </span>
             <div class="row">
               {% for object in object.conservationthreat_set.all %}
@@ -125,7 +125,7 @@
         <div class="row">
           <div class="col col-12">
             <span class="float-right">
-              {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=False block=False %}
+              {% include 'conservation/include/conservationaction_add.html' with subject="communities" subject_pk=object.pk label=False block=False %}
             </span>
             <div class="row">
               {% for object in object.conservationaction_set.all %}
@@ -140,7 +140,7 @@
         <div class="row">
           <div class="col col-12">
             <span class="float-right">
-              {% include 'conservation/include/document_add.html' with subject="communities" label=False block=False %}
+              {% include 'conservation/include/document_add.html' with subject="communities" subject_pk=object.pk label=False block=False %}
             </span>
             <div class="row">
               {% for object in object.document_set.all %}
@@ -155,11 +155,11 @@
         <div class="row">
           <div class="col col-12">
             {% include 'taxonomy/include/community_change.html' with label=True block=False %}
-            {% include 'conservation/include/communityconservationlisting_add.html' with label=True block=False community=object %}
-            {% include 'conservation/include/conservationthreat_add.html' with subject="communities" label=True block=False %}
-            {% include 'conservation/include/conservationaction_add.html' with subject="communities" label=True block=False %}
-            {% include 'conservation/include/document_add.html' with subject="communities" label=True block=False %}
-            {% include 'occurrence/include/communityareaencounter_add_link.html' with label=True block=False btn=True %}
+            {% include 'conservation/include/communityconservationlisting_add.html' with subject_pk=object.pk label=True block=False community=object %}
+            {% include 'conservation/include/conservationthreat_add.html' with subject="communities" subject_pk=object.pk label=True block=False %}
+            {% include 'conservation/include/conservationaction_add.html' with subject="communities" subject_pk=object.pk label=True block=False %}
+            {% include 'conservation/include/document_add.html' with subject="communities" subject_pk=object.pk label=True block=False %}
+            {% include 'occurrence/include/communityareaencounter_add_link.html' with subject_pk=object.pk label=True block=False btn=True %}
           </div>
         </div>
       </div>
@@ -177,7 +177,7 @@
                 {% endif %}
                 <small class="float-right">
                   {% include 'occurrence/include/communityareaencounter_list_link.html' with label=False block=False btn=True %}
-                  {% include 'occurrence/include/communityareaencounter_add_link.html' with btn=True block=False %}
+                  {% include 'occurrence/include/communityareaencounter_add_link.html' with subject_pk=object.pk btn=True block=False %}
                 </small>
 
                 <small class="float-right">
@@ -199,9 +199,9 @@
                       <div class="row">
                         <div class="col-12">
                           <small>
-                            {% include 'conservation/include/conservationthreat_add.html' with subject="communities" area=site.grouper block=False %}
-                            {% include 'conservation/include/conservationaction_add.html' with subject="communities" area=site.grouper block=False %}
-                            {% include 'occurrence/include/communityareaencounter_add_link.html' with area_code=site.grouper block=False btn=True %}
+                            {% include 'conservation/include/conservationthreat_add.html' with subject="communities" subject_pk=object.pk area=site.grouper block=False %}
+                            {% include 'conservation/include/conservationaction_add.html' with subject="communities" subject_pk=object.pk area=site.grouper block=False %}
+                            {% include 'occurrence/include/communityareaencounter_add_link.html' with subject_pk=object.pk area_code=site.grouper block=False btn=True %}
                           </small>
                         </div>
                       </div>

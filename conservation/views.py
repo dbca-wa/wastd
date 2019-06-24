@@ -198,7 +198,6 @@ class DocumentDetailView(DetailViewBreadcrumbMixin, DetailView):
         ).prefetch_related(
             "communities",
             "taxa",
-
         ).first()
         if not obj:
             raise Http404
@@ -405,6 +404,7 @@ class ConservationActivityCreateView(
         initial = super(ConservationActivityCreateView, self).get_initial()
         if "pk" in self.kwargs:
             initial["conservation_action"] = cons_models.ConservationAction.objects.get(pk=self.kwargs["pk"])
+        initial["completion_date"] = timezone.now()
         return initial
 
     def get_breadcrumbs(self, request, obj=None, add=False):

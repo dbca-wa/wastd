@@ -765,9 +765,14 @@ LOGGING = {
 }
 
 # Error reporting
+WASTD_RELEASE = env("WASTD_RELEASE", default="master")
 if env('SENTRY_DSN', False):
     # RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
-    sentry_sdk.init(env('SENTRY_DSN'), integrations=[DjangoIntegration()])
+    sentry_sdk.init(
+            env('SENTRY_DSN'), 
+            integrations=[DjangoIntegration(),],
+            release="wastd@{0}".format(WASTD_RELEASE)
+    )
 
 SETTINGS_EXPORT = [
     'SITE_NAME',
@@ -778,5 +783,6 @@ SETTINGS_EXPORT = [
     'BIOSYS_PW',
     'ANIMALS_PK',
     'PLANTS_PK',
-    'OFFLINE'
+    'OFFLINE',
+    'WASTD_RELEASE'
 ]

@@ -555,6 +555,7 @@ def make_all_families():
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             families = [make_family(x, KINGDOM_ID_TAXA, CUR, PUB) for x in tax_models.HbvFamily.objects.all()]
+            logger.info("[update_taxon] Updating MPTT.")
     return families
 
 
@@ -566,6 +567,7 @@ def make_all_genera():
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             genera = [make_genus(x, CUR, PUB) for x in tax_models.HbvGenus.objects.all()]
+            ogger.info("[update_taxon] Updating MPTT.")
     return genera
 
 
@@ -576,6 +578,7 @@ def make_all_species():
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             species = [make_species(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Species")]
+            logger.info("[update_taxon] Updating MPTT.")
     return species
 
 
@@ -588,6 +591,7 @@ def make_all_subspecies():
         with tax_models.Taxon.objects.delay_mptt_updates():
             subspecies = [make_subspecies(x, CUR, PUB)
                           for x in tax_models.HbvSpecies.objects.filter(rank_name="Subspecies")]
+            logger.info("[update_taxon] Updating MPTT.")
     return subspecies
 
 
@@ -599,6 +603,7 @@ def make_all_varieties():
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             varieties = [make_variety(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Variety")]
+            logger.info("[update_taxon] Updating MPTT.")
     return varieties
 
 
@@ -610,6 +615,7 @@ def make_all_forms():
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             forms = [make_form(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Form")]
+            logger.info("[update_taxon] Updating MPTT.")
     return forms
 
 def make_all_vernaculars():
