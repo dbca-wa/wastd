@@ -170,7 +170,7 @@ class HbvVernacularAdmin(VersionAdmin, admin.ModelAdmin):
         "ogc_fid",
         "md5_rowhash")
     list_filter = ("language", "lang_pref", "preferred",)
-    search_fields = ("name", "vernacular", "source", )
+    search_fields = ("name", "vernacular", "source", "ogc_fid", "name_id",)
 
 
 @admin.register(HbvXref)

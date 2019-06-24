@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.27.4 documentation</title>
+  <title>TSC 0.28.0 documentation</title>
   
 
   
@@ -428,7 +428,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.27.4 documentation</li>
+      <li>TSC 0.28.0 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -12690,7 +12690,12 @@ object the first time, the query is executed.</p>
 
 <dl class="attribute">
 <dt id="conservation.models.ConservationCategory.LEVEL_CHOICES">
-<code class="sig-name descname">LEVEL_CHOICES</code><em class="property"> = (('extinct', 'Extinct'), ('threatened', 'Threatened'), ('priority', 'Priority'), ('other', 'Other'))</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_CHOICES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">LEVEL_CHOICES</code><em class="property"> = (('extinct', 'Extinct'), ('collapsed', 'Collapsed'), ('threatened', 'Threatened'), ('priority', 'Priority'), ('specially-protected', 'Specially Protected'), ('other', 'Other'))</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_CHOICES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationCategory.LEVEL_COLLAPSED">
+<code class="sig-name descname">LEVEL_COLLAPSED</code><em class="property"> = 'collapsed'</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_COLLAPSED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -12709,6 +12714,11 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="conservation.models.ConservationCategory.LEVEL_SPECIALLY_PROTECTED">
+<code class="sig-name descname">LEVEL_SPECIALLY_PROTECTED</code><em class="property"> = 'specially-protected'</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_SPECIALLY_PROTECTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="conservation.models.ConservationCategory.LEVEL_THREATENED">
 <code class="sig-name descname">LEVEL_THREATENED</code><em class="property"> = 'threatened'</em><a class="headerlink" href="#conservation.models.ConservationCategory.LEVEL_THREATENED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -12721,7 +12731,12 @@ object the first time, the query is executed.</p>
 
 <dl class="attribute">
 <dt id="conservation.models.ConservationCategory.SHORTCODE_CHOICES">
-<code class="sig-name descname">SHORTCODE_CHOICES</code><em class="property"> = (('O', 'Other'), ('X', 'Extinct'), ('T', 'Threatened'), ('SP', 'Specially Protected'), ('1', 'Priority 1'), ('2', 'Priority 2'), ('3', 'Priority 3'), ('4', 'Priority 4'), ('5', 'Priority 5'))</em><a class="headerlink" href="#conservation.models.ConservationCategory.SHORTCODE_CHOICES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">SHORTCODE_CHOICES</code><em class="property"> = (('O', 'Other'), ('X', 'Extinct'), ('T', 'Collapsed'), ('T', 'Threatened'), ('SP', 'Specially Protected'), ('1', 'Priority 1'), ('2', 'Priority 2'), ('3', 'Priority 3'), ('4', 'Priority 4'), ('5', 'Priority 5'))</em><a class="headerlink" href="#conservation.models.ConservationCategory.SHORTCODE_CHOICES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="conservation.models.ConservationCategory.SHORTCODE_COLLAPSED">
+<code class="sig-name descname">SHORTCODE_COLLAPSED</code><em class="property"> = 'CO'</em><a class="headerlink" href="#conservation.models.ConservationCategory.SHORTCODE_COLLAPSED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
