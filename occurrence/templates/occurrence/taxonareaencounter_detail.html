@@ -1,5 +1,5 @@
 {% extends "pages/base.html" %}
-{% load leaflet_tags geojson_tags taxonomy_tags %}
+{% load leaflet_tags geojson_tags taxonomy_tags staticfiles %}
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
@@ -96,8 +96,16 @@
 </div><!-- .row#row-occ-extra -->
 {% endblock content %}
 
-{% block javascript%}
-{{ block.super }}
+{% block extrajs %}
+
+    <!-- Some widgets need JQuery to be loaded early -->
+    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+    <script src="{% static 'offline/jquery.min.js' %}"></script>
+    {% else %}{# Serve third party libraries from CDN - production mode #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    {% endif %}
+
 <script type="text/javascript">
 $( "#toggle-qa-new" ).click(function() {
     $( ".qa-new" ).toggle();
