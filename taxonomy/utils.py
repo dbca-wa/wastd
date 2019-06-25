@@ -567,7 +567,7 @@ def make_all_genera():
     with transaction.atomic():
         with tax_models.Taxon.objects.delay_mptt_updates():
             genera = [make_genus(x, CUR, PUB) for x in tax_models.HbvGenus.objects.all()]
-            ogger.info("[update_taxon] Updating MPTT.")
+            logger.info("[update_taxon] Updating MPTT.")
     return genera
 
 
