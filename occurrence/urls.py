@@ -3,10 +3,22 @@
 from django.urls import re_path
 
 from . import views
+# from . import wms_config
 
 app_name = 'occurrence'
 
 urlpatterns = [
+
+    # # This creates a WMS endpoint
+    # re_path(r'^wms/$', 
+    #     wms_config.OccWmsView.as_view(), 
+    #     name='occ_wms'),
+
+    # # This creates a TMS endpoint
+    # re_path(r'^tile/(?P<layers>[^/]+)/(?P<z>[0-9]+)/(?P<x>[0-9]+)/(?P<y>[0-9]+)(?P<format>\.jpg|\.png)$',
+    #     wms_config.MyWmsView.as_view(), 
+    #     name='occ_tms'),
+
     # ------------------------------------------------------------------------#
     # Species: TaxonAreaEncounter
     re_path(r'^species/$',
