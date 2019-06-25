@@ -86,6 +86,7 @@ THIRD_PARTY_APPS = (
     'import_export',                # data import/export
 
     'gunicorn',                     # Web server
+    # 'wms',                          # WMS server - fails on broken mapscript
     # 'test_utils',                    # Testing - fails on BS install
     # 'raven.contrib.django.raven_compat',  # Sentry logging Raven client
 )
