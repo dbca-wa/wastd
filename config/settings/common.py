@@ -705,63 +705,63 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': str(ROOT_DIR.path('logs', 'wastd.log')),
-            'formatter': 'verbose',
-            'maxBytes': 16777216
-        },
+        # 'file': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': str(ROOT_DIR.path('logs', 'wastd.log')),
+        #     'formatter': 'verbose',
+        #     'maxBytes': 16777216
+        # },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'level': 'INFO',
             'propagate': True
         },
         'django.security.DisallowedHost': {
             'level': 'INFO',
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'propagate': True
         },
         'django': {
             'level': 'INFO',
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'propagate': True
         },
         "background_task": {
             'level': 'INFO',
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'propagate': True,
         },
         "silk": {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'sentry'],
             'propagate': True,
         },
         'shared': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'propagate': True,
         },
         'wastd': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'propagate': True,
         },
         'taxonomy': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'propagate': True,
         },
         'conservation': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'propagate': True,
         },
         'occurrence': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file', 'sentry'],
+            'handlers': ['console', 'sentry'],
             'propagate': True,
         },
     }
