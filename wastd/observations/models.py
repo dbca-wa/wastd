@@ -1641,6 +1641,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     source = models.CharField(
         max_length=300,
+        db_index=True,
         verbose_name=_("Data Source"),
         default=SOURCE_DEFAULT,
         choices=SOURCE_CHOICES,
@@ -1655,6 +1656,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
                     "to regenerate this ID."), )
 
     status = FSMField(
+        db_index=True,
         default=STATUS_NEW,
         choices=STATUS_CHOICES,
         verbose_name=_("QA Status"))
@@ -1665,6 +1667,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         help_text=_("The observation location as point in WGS84"))
 
     when = models.DateTimeField(
+        db_index=True,
         verbose_name=_("Observed on"),
         help_text=_("The observation datetime, shown as local time "
                     "(no daylight savings), stored as UTC."))
