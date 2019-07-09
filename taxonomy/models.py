@@ -48,6 +48,7 @@ class HbvSupra(models.Model):
         max_length=1000,
         unique=True,
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("HBV Suprafamily Group Code"),
         help_text=_("A short code."),
     )
@@ -162,6 +163,9 @@ class HbvGroup(models.Model):
         """Class options."""
 
         ordering = ["class_id", "rank_name", "name", ]
+        index_together = [
+            ["class_id", "rank_name", "name", ]
+        ]
         verbose_name = "HBV Suprafamily Group Membership"
         verbose_name_plural = "HBV Suprafamily Group Memberships"
         # get_latest_by = "added_on"
@@ -376,6 +380,9 @@ class HbvFamily(models.Model):
         """Class options."""
 
         ordering = ["kingdom_name", "division_name", "class_name", "order_name", "family_name", ]
+        index_together = [
+            ["kingdom_name", "division_name", "class_name", "order_name", "family_name", ],
+        ]
         verbose_name = "HBV Family"
         verbose_name_plural = "HBV Families"
         # get_latest_by = "added_on"
@@ -536,6 +543,9 @@ class HbvGenus(models.Model):
         """Class options."""
 
         ordering = ["kingdom_id", "family_nid", "genusid", ]
+        index_together = [
+            ["kingdom_id", "family_nid", "genusid", ],
+        ]
         verbose_name = "HBV Genus"
         verbose_name_plural = "HBV Genera"
         # get_latest_by = "added_on"
@@ -843,6 +853,9 @@ class HbvSpecies(models.Model):
         """Class options."""
 
         ordering = ["kingdom_id", "genus", "species"]
+        index_together = [
+            ["kingdom_id", "genus", "species"],
+        ]
         verbose_name = "HBV Species"
         verbose_name_plural = "HBV Species"
         # get_latest_by = "added_on"
@@ -1217,6 +1230,9 @@ class HbvName(models.Model):
         """Class options."""
 
         ordering = ["kingdom_id", "family_nid", "name_id"]
+        index_together = [
+            ["kingdom_id", "family_nid", "name_id"],
+        ]
         verbose_name = "HBV Name"
         verbose_name_plural = "HBV Names"
         # get_latest_by = "added_on"
@@ -1435,6 +1451,7 @@ class HbvXref(models.Model):
     )
 
     authorised_on = models.CharField(
+        db_index = True,
         max_length=100,
         blank=True, null=True,
         verbose_name=_("WACensus authorised on"),
@@ -1791,6 +1808,10 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
 
         order_insertion_by = ["name_id"]
         ordering = ['-rank', 'current']
+        index_together = [
+            ['rank', 'current'],
+        ]
+
 
     class Meta:
         """Class options."""
@@ -2190,6 +2211,7 @@ class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
 
     code = models.CharField(
         max_length=1000,
+        db_index=True,
         unique=True,
         blank=True, null=True,
         verbose_name=_("Community code"),
