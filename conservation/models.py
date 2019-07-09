@@ -249,6 +249,7 @@ class ConservationThreat(RenderMixin, UrlsMixin, ObservationAuditMixin, models.M
         ordering = ["category", "cause", ]
         index_together = [
             ["document", "occurrence_area_code"],
+            ["category", "cause", ],
         ]
 
     def __str__(self):
@@ -800,6 +801,9 @@ class ConservationCriterion(models.Model):
 
         unique_together = ("conservation_list", "code")
         ordering = ["conservation_list", "rank"]
+        index_together = [
+            ["conservation_list", "rank"],
+        ]
         verbose_name = "Conservation Criterion"
         verbose_name_plural = "Conservation Criteria"
 
@@ -961,12 +965,14 @@ class ConservationListing(RenderMixin, UrlsMixin, models.Model):
     # Approval milestones
     proposed_on = models.DateTimeField(
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("Proposed on"),
         help_text=_("The date and time this Conservation Listing was proposed on."),
     )
 
     effective_from = models.DateTimeField(
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("Effective from"),
         help_text=_("The date printed on the Departmental ConservationListing notice "
                     "containing this Conservation Listing."),
@@ -1647,36 +1653,42 @@ class Document(RenderMixin, UrlsMixin, models.Model):
 
     effective_from = models.DateTimeField(
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("Effective from"),
         help_text=_("The date and time from which this document is effective from."),
     )
 
     effective_to = models.DateTimeField(
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("Effective to"),
         help_text=_("The date and time to which this document is effective to."),
     )
 
     effective_from_commonwealth = models.DateTimeField(
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("Adopted by Commonwealth on"),
         help_text=_("The date and time from which this document was adopted by the Commonwealth."),
     )
 
     effective_to_commonwealth = models.DateTimeField(
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("Retired by Commonwealth on"),
         help_text=_("The date and time on which this document was retired by the Commonwealth."),
     )
 
     review_due = models.DateTimeField(
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("Review due date"),
         help_text=_("The date and time this Document should be reviewed."),
     )
 
     last_reviewed_on = models.DateTimeField(
         blank=True, null=True,
+        db_index=True,
         verbose_name=_("Last reviewed on"),
         help_text=_("The date and time this Conservation Listing was last reviewed."),
     )
@@ -1709,6 +1721,9 @@ class Document(RenderMixin, UrlsMixin, models.Model):
         """Class opts."""
 
         ordering = ["document_type", "title"]
+        index_together = [
+            ["document_type", "title"],
+        ]
         verbose_name = "Document"
         verbose_name_plural = "Documents"
 

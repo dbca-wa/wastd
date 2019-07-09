@@ -1730,6 +1730,9 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
         ordering = ["when", "where"]
         unique_together = ("source", "source_id")
+        index_together = [
+            ["when", "where"],
+        ]
         verbose_name = "Encounter"
         verbose_name_plural = "Encounters"
         get_latest_by = "when"
@@ -2334,8 +2337,6 @@ class AnimalEncounter(Encounter):
 
     class Meta:
         """Class options."""
-
-        ordering = ["when", "where"]
         verbose_name = "Animal Encounter"
         verbose_name_plural = "Animal Encounters"
         get_latest_by = "when"
@@ -2493,8 +2494,6 @@ class TurtleNestEncounter(Encounter):
 
     class Meta:
         """Class options."""
-
-        ordering = ["when", "where"]
         verbose_name = "Turtle Nest Encounter"
         verbose_name_plural = "Turtle Nest Encounters"
         get_latest_by = "when"
@@ -2570,8 +2569,6 @@ class LineTransectEncounter(Encounter):
 
     class Meta:
         """Class options."""
-
-        ordering = ["when", "where"]
         verbose_name = "Line Transect Encounter"
         verbose_name_plural = "Line Transect Encounters"
         get_latest_by = "when"
@@ -2680,8 +2677,6 @@ class LoggerEncounter(Encounter):
 
     class Meta:
         """Class options."""
-
-        ordering = ["when", "where"]
         verbose_name = "Logger Encounter"
         verbose_name_plural = "Logger Encounters"
         get_latest_by = "when"
