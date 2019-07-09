@@ -18,7 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 FROM builder_base as python_libs_wastd
 WORKDIR /usr/src/app
 COPY requirements/ ./requirements/
-RUN pip install --no-cache-dir -r requirements/dev.txt
+RUN pip install --no-cache-dir -r requirements/base.txt
 
 FROM python_libs_wastd
 COPY . .
