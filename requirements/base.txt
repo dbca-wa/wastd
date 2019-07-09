@@ -1,6 +1,6 @@
 # Django
 # ------------------------------------------------
-django==2.2.2
+django==2.2.3
 django-extensions==2.1.9
 
 # breaking django-1.10:
@@ -170,6 +170,25 @@ django-storages-redux==1.3.3
 dj-static==0.0.6
 
 
-# Profiling
+# Profiling and Debug
 # ------------------------------------------------
 django-silk
+django-debug-toolbar
+ipdb
+
+# Testing
+# ------------------------------------------------
+# see https://github.com/davedash/django-fixture-magic/issues/59 - use master
+# django-fixture-magic==0.1.3
+-e git+https://github.com/davedash/django-fixture-magic.git@master#egg=django_fixture_magic
+coveralls
+coverage
+django-coverage-plugin
+django-test-plus
+factory_boy
+pytest
+pytest-django
+pytest-sugar
+model_mommy
+# mommy_spatial_generators
+-e git+https://github.com/sigma-geosistemas/mommy_spatial_generators.git#egg=mommy_spatial_generators

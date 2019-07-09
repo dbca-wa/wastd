@@ -45,4 +45,11 @@
 {% block javascript %}
 {{ block.super }}
 {{ list_filter.form.media.js }}
+    <!-- Some widgets need JQuery to be loaded early -->
+    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+    <script src="{% static 'offline/jquery.min.js' %}"></script>
+    {% else %}{# Serve third party libraries from CDN - production mode #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    {% endif %}
 {% endblock %}
