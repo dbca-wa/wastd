@@ -11,14 +11,14 @@
   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
     <!--[if lt IE 9]><script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     {% block css %}
-    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+    {% if settings.OFFLINE %}
     <link rel="stylesheet" href="{% static 'offline/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'offline/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'offline/open-iconic.min.css' %}">
     <link rel="stylesheet" href="{% static 'offline/open-iconic-bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'offline/open-iconic-bootstrap-grid.min.css' %}">
     <link rel="stylesheet" href="{% static 'offline/open-iconic-bootstrap-reboot.min.css' %}">
-    {% else %}{# Serve third party libraries from CDN - production mode #}
+    {% else %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" 
       integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" 
@@ -35,9 +35,9 @@
     {% block extrastyle %}{% endblock extrastyle %}
     
     <!-- Some widgets need JQuery to be loaded early -->
-    {% if settings.OFFLINE %}{# BYO assets #}
+    {% if settings.OFFLINE %}
     <script src="{% static 'offline/jquery.min.js' %}"></script>
-    {% else %}{# CDN assets #}
+    {% else %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     {% endif %}
@@ -53,14 +53,14 @@
     </div>
 
     {% block javascript %}
-    {% if settings.OFFLINE %}{# BYO assets #}
+    {% if settings.OFFLINE %}
     <script src="{% static 'offline/tether.min.js' %}"></script>
     <script src="{% static 'offline/moment-with-locales.min.js' %}"></script>
     <script src="{% static 'offline/popper.min.js' %}"></script>
     <script src="{% static 'offline/bootstrap.min.js' %}"></script>
     <script src="{% static 'offline/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'offline/bootstrap-datepicker.min.js' %}"></script>
-    {% else %}{# CDN assets #}
+    {% else %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js"
       integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" 
