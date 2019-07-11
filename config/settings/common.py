@@ -103,15 +103,15 @@ LOCAL_APPS = (
 )
 
 DEBUG_APPS = ('debug_toolbar',)
-# PROFILING_APPS = ('silk', )
+PROFILING_APPS = ('silk', )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 if DEBUG:
     INSTALLED_APPS += DEBUG_APPS
-# if PROFILING:
-#     INSTALLED_APPS += PROFILING_APPS
+if PROFILING:
+    INSTALLED_APPS += PROFILING_APPS
 
 
 # SECRET CONFIGURATION
@@ -520,32 +520,32 @@ LEAFLET_CONFIG = {
     'PLUGINS': {
         'forms': {'auto-include': True},
         'markers': {
-            'css': 'css/leaflet.awesome-markers.css',
-            'js': 'js/leaflet.awesome-markers.min.js',
+            # 'css': 'css/leaflet.awesome-markers.css',
+            # 'js': 'js/leaflet.awesome-markers.min.js',
             'auto-include': True
         },
         'label': {
-            'css': 'css/leaflet.label.css',
-            'js': 'js/leaflet.label.js',
+            # 'css': 'css/leaflet.label.css',
+            # 'js': 'js/leaflet.label.js',
             'auto-include': True
         },
         'geocoder': {
-            'css': 'css/Control.Geocoder.css',
-            'js': 'js/Control.Geocoder.min.js',
+            # 'css': 'css/Control.Geocoder.css',
+            # 'js': 'js/Control.Geocoder.min.js',
             'auto-include': True
         },
         'fullscreen': {
-            'css': 'css/Control.FullScreen.css',
-            'js': 'js/Control.FullScreen.min.js',
+            # 'css': 'css/Control.FullScreen.css',
+            # 'js': 'js/Control.FullScreen.min.js',
             'auto-include': True
         },
         'markercluster': {
-            'css': ['css/MarkerCluster.css', 'css/MarkerCluster.Default.css'],
-            'js': 'js/leaflet.markercluster.js',
+            # 'css': ['css/MarkerCluster.css', 'css/MarkerCluster.Default.css'],
+            # 'js': 'js/leaflet.markercluster.js',
             'auto-include': True
         },
         'tilelayer': {
-            'js': 'js/TileLayer.GeoJSON.min.js',
+            # 'js': 'js/TileLayer.GeoJSON.min.js',
             'auto-include': True
         },
     },
