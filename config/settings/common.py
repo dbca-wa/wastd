@@ -151,7 +151,7 @@ MIDDLEWARE_CLASSES += MIDDLEWARE_CLASSES_LAST
 MIDDLEWARE = MIDDLEWARE_CLASSES
 
 CACHE_MIDDLEWARE_ALIAS = "default"
-CACHE_MIDDLEWARE_SECONDS = 60
+CACHE_MIDDLEWARE_SECONDS = 600
 
 # MIGRATIONS CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -182,27 +182,27 @@ MIGRATION_MODULES = {
 #     }
 # }
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': env('MEMCACHED_URL', default='127.0.0.1:11211'),
-    },
-     'select2': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': env('MEMCACHED_URL', default='127.0.0.1:11211'),
-    }
-}
-
 # CACHES = {
-#     "default": {
-#         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-#         'LOCATION': 'django_cache_table'
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#         'LOCATION': env('MEMCACHED_URL', default='127.0.0.1:11211'),
 #     },
-#     "select2": {
-#         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-#         'LOCATION': 'select2_cache_table'
+#      'select2': {
+#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#         'LOCATION': env('MEMCACHED_URL', default='127.0.0.1:11211'),
 #     }
 # }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        'LOCATION': 'django_cache_table'
+    },
+    "select2": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        'LOCATION': 'select2_cache_table'
+    }
+}
 
 SELECT2_CACHE_BACKEND = "select2"
 
