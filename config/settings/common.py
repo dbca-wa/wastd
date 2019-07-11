@@ -33,6 +33,7 @@ PROFILING = env('DJANGO_PROFILING', default=False)
 
 ANIMALS_PK = env("ANIMALS_PK", default=20)
 PLANTS_PK = env("PLANTS_PK", default=21)
+INTERNAL_IPS = env("INTERNAL_IPS", default='localhost, 127.0.0.1, ::1'.split(','))
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -102,16 +103,15 @@ LOCAL_APPS = (
 )
 
 DEBUG_APPS = ('debug_toolbar',)
-PROFILING_APPS = ('silk', )
+# PROFILING_APPS = ('silk', )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 if DEBUG:
     INSTALLED_APPS += DEBUG_APPS
-    INTERNAL_IPS = ['*']
-if PROFILING:
-    INSTALLED_APPS += PROFILING_APPS
+# if PROFILING:
+#     INSTALLED_APPS += PROFILING_APPS
 
 
 # SECRET CONFIGURATION

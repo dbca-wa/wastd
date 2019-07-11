@@ -115,5 +115,5 @@ if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [re_path(r'^__debug__/', include(debug_toolbar.urls)), ]
 
-if settings.PROFILING:
-    urlpatterns += [re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')), ]
+# if settings.PROFILING:
+#     urlpatterns += [re_path(r'^performance/', include(('silk.urls', 'silk'), namespace='silk')), ]
