@@ -2561,13 +2561,13 @@ class TaxonSerializer(serializers.ModelSerializer):
             "vernacular_names",
             "canonical_name",
             "taxonomic_name",
-            "is_currently_listed",
-            "conservation_code_state",
-            "conservation_list_state",
-            "conservation_category_state",
-            "conservation_categories_state",
-            "conservation_criteria_state",
-            "conservation_category_national",
+            # "is_currently_listed",
+            # "conservation_code_state",
+            # "conservation_list_state",
+            # "conservation_category_state",
+            # "conservation_categories_state",
+            # "conservation_criteria_state",
+            # "conservation_category_national",
         )
 
 
@@ -2621,21 +2621,14 @@ class TaxonViewSet(BatchUpsertViewSet):
     See HBV Names for details and usage examples.
     """
 
-    queryset = Taxon.objects.all()
-    # prefetch_related(
-    # # "paraphyletic_groups",
-    #     Prefetch("conservation_listings",
-    #              queryset=TaxonConservationListing.objects.filter(
-    #                  scope=ConservationListing.SCOPE_WESTERN_AUSTRALIA,
-    #                  status=ConservationListing.STATUS_EFFECTIVE),
-    #              to_attr="conservation_listings_active_wa"
-    #              ),
-    # Prefetch("conservation_listings__scope",),
-    # Prefetch("conservation_listings__status",),
-    # "conservationthreat_set",
-    # "conservationaction_set",
-    # "document_set",
-    # )
+    queryset = Taxon.objects.prefetch_related(
+    # "paraphyletic_groups",
+    # Prefetch("conservation_listings",
+    #     queryset=TaxonConservationListing.objects.select_related("taxon")),
+    "conservationthreat_set",
+    "conservationaction_set",
+    "document_set",
+    )
     serializer_class = TaxonSerializer
     pagination_class = CustomLimitOffsetPagination  # if no geofeaturemodel serializer
     filter_class = TaxonFilter
