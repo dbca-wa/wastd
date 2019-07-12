@@ -690,6 +690,7 @@ def update_taxon():
     http://django-mptt.readthedocs.io/en/latest/mptt.managers.html#mptt.managers.TreeManager.disable_mptt_updates
 
     """
+    rebuild_mptt_tree() # repair MPTT tree before bulk update/creates
     kingdoms = make_all_kingdoms()
     families = make_all_families()
     genera = make_all_genera()

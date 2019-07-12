@@ -657,9 +657,9 @@ class ConservationCategory(models.Model):
         (LEVEL_EXTINCT, "Extinct"),
         (LEVEL_COLLAPSED, "Collapsed"),
         (LEVEL_THREATENED, "Threatened"),
-        (LEVEL_PRIORITY, "Priority"),
         (LEVEL_SPECIALLY_PROTECTED, "Specially Protected"),
         (LEVEL_OTHER, "Other"),
+        (LEVEL_PRIORITY, "Priority"),
     )
 
     SHORTCODE_OTHER = "O"
@@ -673,11 +673,11 @@ class ConservationCategory(models.Model):
     SHORTCODE_P4 = "4"
     SHORTCODE_P5 = "5"
     SHORTCODE_CHOICES = (
-        (SHORTCODE_OTHER, "Other"),
         (SHORTCODE_EXTINCT, "Extinct"),
-        (SHORTCODE_THREATENED, "Collapsed"),
+        (SHORTCODE_COLLAPSED, "Collapsed"),
         (SHORTCODE_THREATENED, "Threatened"),
         (SHORTCODE_SPECIALLY_PROTECTED, "Specially Protected"),
+        (SHORTCODE_OTHER, "Other"),
         (SHORTCODE_P1, "Priority 1"),
         (SHORTCODE_P2, "Priority 2"),
         (SHORTCODE_P3, "Priority 3"),
@@ -726,6 +726,7 @@ class ConservationCategory(models.Model):
 
     level = models.CharField(
         max_length=500,
+        db_index=True,
         choices=LEVEL_CHOICES,
         default=LEVEL_OTHER,
         verbose_name=_("Filter group"),
@@ -734,6 +735,7 @@ class ConservationCategory(models.Model):
     )
     short_code = models.CharField(
         max_length=500,
+        db_index=True,
         choices=SHORTCODE_CHOICES,
         default=SHORTCODE_OTHER,
         verbose_name=_("FloraBase Code"),

@@ -214,9 +214,29 @@ class ConservationActionInline(admin.TabularInline):
 
 
 @admin.register(cons_models.ConservationCategory)
-class ConservationCategoryAdmin(FSMTransitionMixin, VersionAdmin):
+class ConservationCategoryAdmin(VersionAdmin):
     """Admin for ConservationCategory."""
 
+    list_display = [
+        "code", 
+        "label", 
+        "level", 
+        "short_code", 
+        "description", 
+        "conservation_list", 
+        "rank"
+    ]
+    list_filter = [
+        "level", 
+        "short_code", 
+        "conservation_list",
+        "conservation_list__scope_wa",
+        "conservation_list__scope_cmw",
+        "conservation_list__scope_intl",
+        "conservation_list__scope_species",
+        "conservation_list__scope_communities",
+        "conservation_list__approval_level",
+    ]
     search_fields = [
         "conservation_list__code__icontains",
         "code__icontains",
@@ -226,9 +246,24 @@ class ConservationCategoryAdmin(FSMTransitionMixin, VersionAdmin):
 
 
 @admin.register(cons_models.ConservationCriterion)
-class ConservationCriterionAdmin(FSMTransitionMixin, VersionAdmin):
+class ConservationCriterionAdmin(VersionAdmin):
     """Admin for ConservationCriterion."""
-
+    list_display = [
+        "code", 
+        "label", 
+        "description", 
+        "conservation_list", 
+        "rank"
+    ]
+    list_filter = [
+        "conservation_list",
+        "conservation_list__scope_wa",
+        "conservation_list__scope_cmw",
+        "conservation_list__scope_intl",
+        "conservation_list__scope_species",
+        "conservation_list__scope_communities",
+        "conservation_list__approval_level",
+    ]
     search_fields = [
         "conservation_list__code__icontains",
         "code__icontains",
