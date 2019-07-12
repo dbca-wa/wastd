@@ -157,6 +157,7 @@ class AreaEncounter(PolymorphicModel,
 
     name = models.CharField(
         blank=True, null=True,
+        db_index=True,
         max_length=1000,
         verbose_name=_("Area name"),
         help_text=_("A human-readable name for the observed area."),
@@ -177,6 +178,7 @@ class AreaEncounter(PolymorphicModel,
     # Encounter type: what brought the observer to the encounter? opportunistic, research, monitoring
     encounter_type = models.ForeignKey(
         EncounterType,
+        db_index=True,
         on_delete=models.SET_NULL,
         verbose_name=_("Encounter Type"),
         blank=True, null=True,
@@ -186,6 +188,7 @@ class AreaEncounter(PolymorphicModel,
     # Geolocation ------------------------------------------------------------#
     area_type = models.PositiveIntegerField(
         verbose_name=_("Area type"),
+        db_index=True,
         default=AREA_TYPE_EPHEMERAL_SITE,
         choices=AREA_TYPES,
         help_text=_(
@@ -225,6 +228,7 @@ class AreaEncounter(PolymorphicModel,
     northern_extent = models.FloatField(
         verbose_name=_("Northernmost latitude"),
         editable=False,
+        db_index=True,
         blank=True, null=True,
         help_text=_("The northernmost latitude is derived from location "
                     "polygon or point and serves to sort areas."),)
@@ -246,7 +250,7 @@ class AreaEncounter(PolymorphicModel,
     class Meta:
         """Class options."""
 
-        ordering = ["-northern_extent", "name"]
+        # ordering = ["-northern_extent", "name"]
         verbose_name = "Area Encounter"
         verbose_name_plural = "Area Encounters"
         index_together = [["northern_extent", "name"], ]
