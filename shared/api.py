@@ -111,40 +111,26 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         return (unique_fields, data)
 
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance.
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model.
 
-        The ViewSet must have a method ``split_data`` returning a dict
-        of the unique, mandatory fields to get_or_create,
-        and a dict of the other optional values to update.
+        The UID fields are hard-coded here, as it seems impossible to 
+        programmatically filter (with an ``__in``) clause using ``uid_fields``.
 
-        Return RestResponse(content, status)
+        Overwrite this method in your queryset if your uid_fields are not 
+        "source" and "source_id".
+
+        A better way is show in Django admin filters:
+        https://github.com/django/django/blob/master/django/contrib/admin/filters.py
         """
-        unique_data, update_data = self.split_data(data)
-
-        # Early exit 1: None value in unique data
-        if None in unique_data.values():
-            msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
-                str(update_data), str(unique_data))
-            logger.warning(msg)
-            content = {"msg": msg}
-            return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-        logger.debug('[API][create_one] Received '
-                     '{0} with unique fields {1}'.format(
-                         self.model._meta.verbose_name, str(unique_data)))
-
-        # Without the QA status deciding whether to update existing data:
-        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        obj.refresh_from_db()
-        obj.save()  # to update cached fields
-
-        verb = "Created" if created else "Updated"
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
-        content = {"id": obj.id, "msg": msg}
-        logger.info(msg)
-        return RestResponse(content, status=st)
+        qs = model.objects.filter(
+            source__in=list(set([x["source"] for x in new_records])), 
+            source_id__in=list(set([x["source_id"] for x in new_records]))
+        )
+        if issubclass(model, QualityControlMixin):
+            return qs.values("pk", "source", "source_id", "status")
+        else:
+            return qs.values("pk", "source", "source_id")
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -159,77 +145,108 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         * Dict of object_id and message if one record
         * List of one-record dicts if several records
         """
+
+        # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
-            res = self.create_one(request.data).__dict__
-            return RestResponse(res, status=status.HTTP_200_OK)
-        elif type(request.data) == list and self.uid_fields[0] in request.data[0]:
+            # res = self.create_one(request.data).__dict__                    
+            unique_data, update_data = self.split_data(data)
+
+            # Early exit 1: None value in unique data
+            if None in unique_data.values():
+                msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
+                    str(update_data), str(unique_data))
+                logger.warning(msg)
+                content = {"msg": msg}
+                return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+            logger.debug('[API][create_one] Received '
+                         '{0} with unique fields {1}'.format(
+                             self.model._meta.verbose_name, str(unique_data)))
+            
+            # Early exit 2: retain locally changed data (status not NEW)
+            if (issubclass(self.model, QualityControlMixin) and 
+                not created and 
+                obj.status != QualityControlMixin.STATUS_NEW):
+                msg = ('[API][create_one] Not overwriting locally changed data '
+                       'with QA status: {0}'.format(obj.get_status_display()))
+                logger.info(msg)
+                content = {"msg": msg}
+                return RestResponse(content, status=status.HTTP_200_OK)
+            else:
+                # Continue on happy trail: update if new or existing but unchanged
+                self.model.objects.filter(**unique_data).update(**update_data)
+
+                # logger.debug('[API][create_one] Updating cached fields...')
+                # obj = self.model.objects.get(**unique_data)
+                obj.refresh_from_db()
+                obj.save()
+                # logger.debug('[API][create_one] Object caches updated: {0}'.format(obj.__str__()))
+
+            verb = "Created" if created else "Updated"
+            st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+            msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
+            content = {"id": obj.id, "msg": msg}
+            logger.info(msg)
+            return RestResponse(content, status=st)
+
+        # Create many --------------------------------------------------------#
+        elif (type(request.data) == list and 
+              self.uid_fields[0] in request.data[0]):
             logger.info('[API][create] found batch of {0} records,'
                         ' creating/updating...'.format(len(request.data)))
-            res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
-            return RestResponse(res, status=status.HTTP_200_OK)
+
+            # The slow way:
+            # res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
+
+            # A new hope: bulk update/create 
+            # https://github.com/dbca-wa/wastd/issues/205
+
+            # Existing vs new
+            new_records = request.data
+            existing_records = self.fetch_existing_records(new_records, self.model)
+
+            # Having QA status or not decides what to update or retain
+            if issubclass(self.model, QualityControlMixin):
+                # Bucket "retain": existing_objects with status > STATUS_NEW
+                to_retain = [t for t in existing_records if t["status"] > QualityControlMixin.STATUS_NEW]
+                # TODO Log PKs (debug) or total number (info) of skipped records
+                logger.info("[API][create] Skipping {0} unchanged records".format(len(to_retain)))
+                logger.debug("[API][create] Skipping unchanged records: {0}".format(str(to_retain)))
+
+                # With QA: update if existing but unchanged (QA status "NEW")                
+                to_update = [t for t in existing_records if t["status"] == QualityControlMixin.STATUS_NEW]
+            else:
+                # Without QA: update if existing
+                to_update = existing_records
+                
+            # Bucket "bulk_update": List of new_records where uid_fields match existing_objects
+            records_to_update = [d for d in new_records if (d['source'], d['source_id']) in to_update]
+
+            # Bucket "bulk_create": List of new records without match in existing records
+            records_to_create = [d for d in new_records if (d['source'], d['source_id']) not in to_update]
+
+            # Hammertime
+            if records_to_update:
+                updated = self.model.objects.bulk_update(
+                    [self.model(**x) for x in records_to_update], 
+                    records_to_update[0].keys()
+                )
+            if records_to_create:
+                created = self.model.objects.bulk_create(
+                    [self.model(**x) for x in records_to_create]
+                )
+
+            # Save all to re-run pre-save
+            # TODO
+            return RestResponse([to_retain, to_update, to_create], status=status.HTTP_200_OK)
+
+        # Create none --------------------------------------------------------#
         else:
             msg = ("[API][BatchUpsertViewSet] unknown data format:"
                    "{0}".format(str(request.data)))
             logger.warning(msg)
             return RestResponse({"msg": msg}, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-
-class BatchUpsertQualityControlViewSet(BatchUpsertViewSet):
-    """A BatchUpsert ViewSet for models with QualityControlMixin.
-
-    Override split_data for nested serializers, e.g. TaxonAreaEncounters.taxon.
-    """
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance.
-
-        The ViewSet must have a method ``split_data`` returning a dict
-        of the unique, mandatory fields to get_or_create,
-        and a dict of the other optional values to update.
-
-        Return RestResponse(content, status)
-        """
-        unique_data, update_data = self.split_data(data)
-
-        # Early exit 1: None value in unique data
-        if None in unique_data.values():
-            msg = '[API][create_one] Skipping invalid data: {0}'.format(str(data))
-            logger.warning(msg)
-            content = {"msg": msg}
-            return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-        logger.debug('[API][create_one] Received {0} with unique fields {1}'.format(
-            self.model._meta.verbose_name, str(unique_data)))
-
-        # Without the QA status deciding whether to update existing data:
-        # obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        # Since we need to inspect existing records' QA status: get or create with defaults
-        obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
-        verb = "Created" if created else "Updated"
-
-        # Early exit 2: retain locally changed data (status not NEW)
-        if (not created and obj.status != QualityControlMixin.STATUS_NEW):
-            msg = ('[API][create_one] Not overwriting locally changed data '
-                   'with QA status: {0}'.format(obj.get_status_display()))
-            logger.info(msg)
-            content = {"msg": msg}
-            return RestResponse(content, status=status.HTTP_200_OK)
-        else:
-            # Continue on happy trail: update if new or existing but unchanged
-            self.model.objects.filter(**unique_data).update(**update_data)
-
-            # logger.debug('[API][create_one] Updating cached fields...')
-            # obj = self.model.objects.get(**unique_data)
-            obj.refresh_from_db()
-            obj.save()
-            # logger.debug('[API][create_one] Object caches updated: {0}'.format(obj.__str__()))
-
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
-        content = {"id": obj.id, "msg": msg}
-        logger.info(msg)
-        return RestResponse(content, status=st)
 
 
 class FastBatchUpsertViewSet(BatchUpsertViewSet):

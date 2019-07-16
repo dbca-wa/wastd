@@ -78,7 +78,6 @@ from taxonomy.models import (
 )
 from shared.api import (  # noqa
     CustomCSVRenderer,
-    BatchUpsertQualityControlViewSet,
     BatchUpsertViewSet,
     FastBatchUpsertViewSet,
     CustomLimitOffsetPagination,
@@ -1633,7 +1632,7 @@ class OccurrenceAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceAreaPolyViewSet(BatchUpsertQualityControlViewSet):
+class OccurrenceAreaPolyViewSet(BatchUpsertViewSet):
     """Occurrence Area view set."""
 
     queryset = occ_models.AreaEncounter.objects.all()
@@ -1644,7 +1643,7 @@ class OccurrenceAreaPolyViewSet(BatchUpsertQualityControlViewSet):
     uid_fields = ("source", "source_id")
 
 
-class OccurrenceAreaPointViewSet(BatchUpsertQualityControlViewSet):
+class OccurrenceAreaPointViewSet(BatchUpsertViewSet):
     """Occurrence Area view set."""
 
     queryset = occ_models.AreaEncounter.objects.all()
@@ -1761,7 +1760,7 @@ class OccurrenceTaxonAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertQualityControlViewSet):
+class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
     """TaxonEncounter polygon view set."""
 
     queryset = occ_models.TaxonAreaEncounter.objects.all().prefetch_related(
@@ -1862,7 +1861,7 @@ class OccurrenceCommunityAreaEncounterFilter(filters.FilterSet):
         }
 
 
-class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertQualityControlViewSet):
+class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
     """Occurrence CommunityAreaEncounter view set."""
 
     queryset = occ_models.CommunityAreaEncounter.objects.all().prefetch_related(
@@ -2550,6 +2549,7 @@ class TaxonSerializer(serializers.ModelSerializer):
         model = Taxon
         # geo_field = "eoo"
         fields = (
+            "pk",
             "name_id",
             "name",
             "rank",
@@ -2579,6 +2579,7 @@ class FastTaxonSerializer(serializers.ModelSerializer):
 
         model = Taxon
         fields = (
+            "pk",
             "name_id",
             "taxonomic_name",
             "vernacular_names",
@@ -2638,12 +2639,13 @@ class TaxonViewSet(BatchUpsertViewSet):
 router.register("taxon", TaxonViewSet, base_name="taxon_full")
 
 
-class FastTaxonViewSet(FastBatchUpsertViewSet):
+class FastTaxonViewSet(BatchUpsertViewSet):
     """Fast View set for Taxon."""
 
     queryset = Taxon.objects.all()
     serializer_class = FastTaxonSerializer
     filter_class = TaxonFilter
+    pagination_class = CustomLimitOffsetPagination
 
 router.register("taxon-fast", FastTaxonViewSet, base_name="taxon_fast")
 
@@ -3296,7 +3298,7 @@ class DocumentFilter(filters.FilterSet):
         }
 
 
-class DocumentViewSet(BatchUpsertQualityControlViewSet):
+class DocumentViewSet(BatchUpsertViewSet):
     """View set for Document."""
 
     queryset = Document.objects.all()
