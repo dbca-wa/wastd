@@ -1772,12 +1772,12 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
     model = occ_models.TaxonAreaEncounter
     uid_fields = ("source", "source_id")
 
-    def split_data(self, data):
-        """Custom split data: resolve taxon."""
-        unique_fields, update_data = super(OccurrenceTaxonAreaEncounterPolyViewSet, self).split_data(data)
-        update_data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
-        update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
-        return (unique_fields, update_data)
+    # def split_data(self, data):
+    #     """Custom split data: resolve taxon."""
+    #     unique_fields, update_data = super(OccurrenceTaxonAreaEncounterPolyViewSet, self).split_data(data)
+    #     # update_data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+    #     # update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
+    #     return (unique_fields, update_data)
 
 
 class OccurrenceTaxonAreaEncounterPointViewSet(OccurrenceTaxonAreaEncounterPolyViewSet):

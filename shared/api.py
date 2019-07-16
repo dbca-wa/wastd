@@ -3,6 +3,8 @@
 import logging
 from collections import OrderedDict
 
+from django.db import transaction
+
 from rest_framework import pagination, status, viewsets  # , serializers, routers
 from rest_framework.response import Response as RestResponse
 from rest_framework_csv.renderers import CSVRenderer
@@ -132,6 +134,41 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         else:
             return qs.values("pk", "source", "source_id")
 
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance.
+
+        The ViewSet must have a method ``split_data`` returning a dict
+        of the unique, mandatory fields to get_or_create,
+        and a dict of the other optional values to update.
+
+        Return RestResponse(content, status)
+        """
+        unique_data, update_data = self.split_data(data)
+
+        # Early exit 1: None value in unique data
+        if None in unique_data.values():
+            msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
+                str(update_data), str(unique_data))
+            logger.warning(msg)
+            content = {"msg": msg}
+            return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        logger.debug('[API][create_one] Received '
+                     '{0} with unique fields {1}'.format(
+                         self.model._meta.verbose_name, str(unique_data)))
+
+        # Without the QA status deciding whether to update existing data:
+        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
+        obj.refresh_from_db()
+        obj.save()  # to update cached fields
+
+        verb = "Created" if created else "Updated"
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
+        content = {"id": obj.id, "msg": msg}
+        logger.info(msg)
+        return RestResponse(content, status=st)
+
     def create(self, request):
         """POST: Create or update one or many model instances.
 
@@ -149,46 +186,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
-            # res = self.create_one(request.data).__dict__                    
-            unique_data, update_data = self.split_data(data)
-
-            # Early exit 1: None value in unique data
-            if None in unique_data.values():
-                msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
-                    str(update_data), str(unique_data))
-                logger.warning(msg)
-                content = {"msg": msg}
-                return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-            logger.debug('[API][create_one] Received '
-                         '{0} with unique fields {1}'.format(
-                             self.model._meta.verbose_name, str(unique_data)))
-            
-            # Early exit 2: retain locally changed data (status not NEW)
-            if (issubclass(self.model, QualityControlMixin) and 
-                not created and 
-                obj.status != QualityControlMixin.STATUS_NEW):
-                msg = ('[API][create_one] Not overwriting locally changed data '
-                       'with QA status: {0}'.format(obj.get_status_display()))
-                logger.info(msg)
-                content = {"msg": msg}
-                return RestResponse(content, status=status.HTTP_200_OK)
-            else:
-                # Continue on happy trail: update if new or existing but unchanged
-                self.model.objects.filter(**unique_data).update(**update_data)
-
-                # logger.debug('[API][create_one] Updating cached fields...')
-                # obj = self.model.objects.get(**unique_data)
-                obj.refresh_from_db()
-                obj.save()
-                # logger.debug('[API][create_one] Object caches updated: {0}'.format(obj.__str__()))
-
-            verb = "Created" if created else "Updated"
-            st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-            msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
-            content = {"id": obj.id, "msg": msg}
-            logger.info(msg)
-            return RestResponse(content, status=st)
+            res = self.create_one(request.data).__dict__         
+            return RestResponse(res, status=st)
 
         # Create many --------------------------------------------------------#
         elif (type(request.data) == list and 
@@ -227,19 +226,16 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             records_to_create = [d for d in new_records if (d['source'], d['source_id']) not in to_update]
 
             # Hammertime
-            if records_to_update:
-                updated = self.model.objects.bulk_update(
-                    [self.model(**x) for x in records_to_update], 
-                    records_to_update[0].keys()
-                )
-            if records_to_create:
-                created = self.model.objects.bulk_create(
-                    [self.model(**x) for x in records_to_create]
-                )
+            with transaction.atomic():
+                if records_to_update:
+                    # updated = self.model.objects.bulk_update(
+                    #     [self.model(**x) for x in records_to_update], records_to_update[0].keys())
+                    updated = [self.create_one(x) for x in records_to_update]
+                if records_to_create:
+                    # created = self.model.objects.bulk_create([self.model(**x) for x in records_to_create])
+                    created = [self.create_one(x) for x in records_to_create]
 
-            # Save all to re-run pre-save
-            # TODO
-            return RestResponse([to_retain, to_update, to_create], status=status.HTTP_200_OK)
+            return RestResponse([to_retain, updated, created], status=status.HTTP_200_OK)
 
         # Create none --------------------------------------------------------#
         else:
