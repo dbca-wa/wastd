@@ -157,8 +157,22 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                      '{0} with unique fields {1}'.format(
                          self.model._meta.verbose_name, str(unique_data)))
 
-        # Without the QA status deciding whether to update existing data:
-        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
+
+        obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
+        verb = "Created" if created else "Updated"
+
+        # Early exit 2: retain locally changed data (status not NEW)
+        if (not created and obj.status != QualityControlMixin.STATUS_NEW):
+            msg = ('[API][create_one] Not overwriting locally changed data '
+                   'with QA status: {0}'.format(obj.get_status_display()))
+            logger.info(msg)
+            content = {"msg": msg}
+            return RestResponse(content, status=status.HTTP_200_OK)
+
+        else:
+            # Continue on happy trail: update if new or existing but unchanged
+            self.model.objects.filter(**unique_data).update(**update_data)
+
         obj.refresh_from_db()
         obj.save()  # to update cached fields
 
@@ -210,8 +224,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                 # Bucket "retain": existing_objects with status > STATUS_NEW
                 to_retain = [t for t in existing_records if t["status"] > QualityControlMixin.STATUS_NEW]
                 # TODO Log PKs (debug) or total number (info) of skipped records
-                logger.info("[API][create] Skipping {0} unchanged records".format(len(to_retain)))
-                logger.debug("[API][create] Skipping unchanged records: {0}".format(str(to_retain)))
+                logger.info("[API][create] Skipping {0} locally changed records".format(len(to_retain)))
+                logger.debug("[API][create] Skipping locally changed records: {0}".format(str(to_retain)))
 
                 # With QA: update if existing but unchanged (QA status "NEW")                
                 to_update = [t for t in existing_records if t["status"] == QualityControlMixin.STATUS_NEW]
@@ -225,17 +239,39 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             # Bucket "bulk_create": List of new records without match in existing records
             records_to_create = [d for d in new_records if (d['source'], d['source_id']) not in to_update]
 
+            updated = []
+            created = []
+
             # Hammertime
             with transaction.atomic():
                 if records_to_update:
                     # updated = self.model.objects.bulk_update(
                     #     [self.model(**x) for x in records_to_update], records_to_update[0].keys())
-                    updated = [self.create_one(x) for x in records_to_update]
+                    # updated = [self.create_one(x) for x in records_to_update]
+                    for data in records_to_update:
+                        unique_data, update_data = self.split_data(data)
+                        self.model.objects.filter(**unique_data).update(**update_data)
+
+                        # to update cached fields
+                        obj.refresh_from_db()
+                        obj.save()  
+
                 if records_to_create:
                     # created = self.model.objects.bulk_create([self.model(**x) for x in records_to_create])
-                    created = [self.create_one(x) for x in records_to_create]
+                    # created = [self.create_one(x) for x in records_to_create]
+                    for data in records_to_create:
+                        unique_data, update_data = self.split_data(data)
+                        obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
 
-            return RestResponse([to_retain, updated, created], status=status.HTTP_200_OK)
+                        # to update cached fields
+                        obj.refresh_from_db()
+                        obj.save()  
+
+            msg = "Retained {0}, updated {1}, created {2} records.".format(
+                len(to_retain), len(records_to_update), len(records_to_create)
+            )
+
+            return RestResponse(msg, status=status.HTTP_200_OK)
 
         # Create none --------------------------------------------------------#
         else:
