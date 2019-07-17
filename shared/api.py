@@ -217,9 +217,12 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
             # Existing vs new
             new_records = request.data
+            logger.info("[API][create] Fetching existing records...")
             existing_records = self.fetch_existing_records(new_records, self.model)
+            logger.info("[API][create] Done fetching existing records.")
 
             # Having QA status or not decides what to update or retain
+            logger.info("[API][create] Sorting records into retain/update/create...")
             if issubclass(self.model, QualityControlMixin):
                 # Bucket "retain": existing_objects with status > STATUS_NEW
                 to_retain = [t for t in existing_records if t["status"] > QualityControlMixin.STATUS_NEW]
@@ -238,6 +241,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
             # Bucket "bulk_create": List of new records without match in existing records
             records_to_create = [d for d in new_records if (d['source'], d['source_id']) not in to_update]
+            logger.info("[API][create] Done sorting records.")
 
             updated = []
             created = []
@@ -245,6 +249,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             # Hammertime
             with transaction.atomic():
                 if records_to_update:
+                    logger.info("[API][create] Updating records...")
                     # updated = self.model.objects.bulk_update(
                     #     [self.model(**x) for x in records_to_update], records_to_update[0].keys())
                     # updated = [self.create_one(x) for x in records_to_update]
@@ -257,6 +262,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                         obj.save()  
 
                 if records_to_create:
+                    logger.info("[API][create] Creating records...")
                     # created = self.model.objects.bulk_create([self.model(**x) for x in records_to_create])
                     # created = [self.create_one(x) for x in records_to_create]
                     for data in records_to_create:
@@ -267,9 +273,11 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                         obj.refresh_from_db()
                         obj.save()  
 
+            logger.info("[API][create] Finished.")
             msg = "Retained {0}, updated {1}, created {2} records.".format(
                 len(to_retain), len(records_to_update), len(records_to_create)
             )
+            logger.info(msg)
 
             return RestResponse(msg, status=status.HTTP_200_OK)
 
