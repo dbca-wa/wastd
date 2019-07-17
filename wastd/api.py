@@ -1777,6 +1777,7 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
         unique_fields, update_data = super(OccurrenceTaxonAreaEncounterPolyViewSet, self).split_data(data)
         update_data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
         update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
+        update_data["encounter_type"] = occ_models.EncounterType.objects.get(pk=data["encounter_type"])
         return (unique_fields, update_data)
 
 
@@ -1882,6 +1883,7 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
         except Exception as e:
             logger.error("Exception {0}: community {1} not known,".format(e, data["community"]))
         update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
+        update_data["encounter_type"] = occ_models.EncounterType.objects.get(pk=data["encounter_type"])
         return (unique_fields, update_data)
 
 
@@ -2636,16 +2638,21 @@ class TaxonViewSet(BatchUpsertViewSet):
     model = Taxon
     uid_fields = ("name_id", )
 
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
+        return model.objects.filter(
+            name_id__in=list(set([x["name_id"] for x in new_records]))
+        ).values("pk", "name_id")
+
+
 router.register("taxon", TaxonViewSet, base_name="taxon_full")
 
 
-class FastTaxonViewSet(BatchUpsertViewSet):
+class FastTaxonViewSet(TaxonViewSet):
     """Fast View set for Taxon."""
 
-    queryset = Taxon.objects.all()
     serializer_class = FastTaxonSerializer
-    filter_class = TaxonFilter
-    pagination_class = CustomLimitOffsetPagination
+
 
 router.register("taxon-fast", FastTaxonViewSet, base_name="taxon_fast")
 
@@ -2699,6 +2706,13 @@ class VernacularViewSet(BatchUpsertViewSet):
     filter_class = VernacularFilter
     model = Vernacular
     uid_fields = ("ogc_fid", )
+
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
+        return model.objects.filter(
+            ogc_fid__in=list(set([x["ogc_fid"] for x in new_records]))
+        ).values("pk", "ogc_fid")
+
 
 router.register("vernacular", VernacularViewSet)
 
@@ -2760,6 +2774,13 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
     model = Crossreference
     uid_fields = ("xref_id", )
 
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
+        return model.objects.filter(
+            xref_id__in=list(set([x["xref_id"] for x in new_records]))
+        ).values("pk", "xref_id")
+
+ 
 router.register("crossreference", CrossreferenceViewSet)
 
 
@@ -2818,6 +2839,13 @@ class CommunityViewSet(BatchUpsertViewSet):
     pagination_class = MyGeoJsonPagination
     model = Community
     uid_fields = ("code",)
+
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
+        return model.objects.filter(
+            code__in=list(set([x["code"] for x in new_records]))
+        ).values("pk", "code")
+
 
 router.register("community", CommunityViewSet)
 
@@ -2907,6 +2935,14 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
         """Custom unique fields."""
         return {"conservation_list": data["conservation_list"],
                 "code": data["code"]}
+
+
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
+        return model.objects.filter(
+            conservation_list__in=list(set([x["conservation_list"] for x in new_records])),
+            code__in=list(set([x["code"] for x in new_records]))
+        ).values("pk", "code", "conservation_list")                
 
 
 router.register("conservationcriterion", ConservationCriterionViewSet)
