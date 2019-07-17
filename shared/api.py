@@ -237,10 +237,10 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                 to_update = existing_records
                 
             # Bucket "bulk_update": List of new_records where uid_fields match existing_objects
-            records_to_update = [d for d in new_records if (d['source'], d['source_id']) in to_update]
+            records_to_update = [d for d in new_records if (**[d[x] for x in self.unique_fields]) in to_update]
 
             # Bucket "bulk_create": List of new records without match in existing records
-            records_to_create = [d for d in new_records if (d['source'], d['source_id']) not in to_update]
+            records_to_create = [d for d in new_records if (**[d[x] for x in self.unique_fields]) not in to_update]
             logger.info("[API][create] Done sorting records.")
 
             updated = []
