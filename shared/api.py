@@ -235,6 +235,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             else:
                 # Without QA: update if existing
                 to_update = existing_records
+                to_retain = []
                 
             # Bucket "bulk_update": List of new_records where uid_fields match existing_objects
             records_to_update = [d for d in new_records if ([d[x] for x in self.uid_fields]) in to_update]
@@ -242,9 +243,6 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             # Bucket "bulk_create": List of new records without match in existing records
             records_to_create = [d for d in new_records if ([d[x] for x in self.uid_fields]) not in to_update]
             logger.info("[API][create] Done sorting records.")
-
-            updated = []
-            created = []
 
             # Hammertime
             with transaction.atomic():
