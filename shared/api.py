@@ -94,7 +94,17 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
     renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (CustomCSVRenderer, )
     model = None
-    uid_fields = ()
+    uid_fields = ("source", "source_id", )
+
+    def resolve_fks(self, data):
+        """Resolve FKs from PK to object. 
+
+        Override in viewset inheriting from BatchUpsertViewSet.
+        """
+        # data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+        # data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
+        # data["encounter_type"] = occ_models.EncounterType.objects.get(pk=data["encounter_type"])
+        return data
 
     def split_data(self, data):
         """Split data into unique fields and remaining data.
@@ -104,6 +114,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         Unique fields and CSRF middleware token are removed from data.
         """
+        data = self.resolve_fks(data)
         unique_fields = {x: data[x] for x in self.uid_fields}
         [data.pop(x) for x in self.uid_fields if x in data]
         if 'csrfmiddlewaretoken' in data:
@@ -237,17 +248,30 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                 to_update = existing_records
                 to_retain = []
                 
+            # Only UID fields of new records (request.data)
+            # new_records_uid_only = [{rec[uid_field] for uid_field in self.uid_fields} for rec in new_records]
+            
+            existing_records_uid_only = [{rec[uid_field] for uid_field in self.uid_fields} for rec in existing_records]
+
             # Bucket "bulk_update": List of new_records where uid_fields match existing_objects
-            records_to_update = [d for d in new_records if ([d[x] for x in self.uid_fields]) in to_update]
+            records_to_update = [new_record for new_record in new_records 
+                                 if {new_record[uid_field] for uid_field in self.uid_fields} 
+                                 in existing_records_uid_only]
 
             # Bucket "bulk_create": List of new records without match in existing records
-            records_to_create = [d for d in new_records if ([d[x] for x in self.uid_fields]) not in to_update]
-            logger.info("[API][create] Done sorting records.")
+            records_to_create = [new_record for new_record in new_records 
+                                 if {new_record[uid_field] for uid_field in self.uid_fields} 
+                                 not in existing_records_uid_only]
+            logger.info("[API][create] Done sorting records: {0} to retain, {1} to update, {2} to create.".format(
+                len(to_retain), len(records_to_update), len(records_to_create)
+                )
+            )
 
             # Hammertime
             with transaction.atomic():
                 if records_to_update:
                     logger.info("[API][create] Updating records...")
+                    # logger.debug("[API][create] Updating records: {0}".format(str(records_to_update)))
                     # updated = self.model.objects.bulk_update(
                     #     [self.model(**x) for x in records_to_update], records_to_update[0].keys())
                     # updated = [self.create_one(x) for x in records_to_update]
@@ -256,16 +280,24 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                         self.model.objects.filter(**unique_data).update(**update_data)
 
                         # to update cached fields
-                        obj.refresh_from_db()
-                        obj.save()  
+                        # self.model.objects.filter(**unique_data).refresh_from_db()
+                        # self.model.objects.filter(**unique_data).save()  
 
                 if records_to_create:
                     logger.info("[API][create] Creating records...")
-                    # created = self.model.objects.bulk_create([self.model(**x) for x in records_to_create])
+                    # logger.debug("[API][create] Creating records: {0}".format(str(records_to_create)))
+                    # Nice but doesn't work with multi table inherited models (TAE, CAE):
+                    # created = self.model.objects.bulk_create([self.model(**self.resolve_fks(x)) for x in records_to_create])
+
+                    # Slow:
                     # created = [self.create_one(x) for x in records_to_create]
+
+                    # Mildly less slow but still not batch:
                     for data in records_to_create:
                         unique_data, update_data = self.split_data(data)
                         obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
+                        # obj = self.model.objects.create(**data)
+                        logger.info("[API][create] Creating record with unique fields {0}, update fields {1}, created: {2}".format(str(unique_data), str(update_data), created))
 
                         # to update cached fields
                         obj.refresh_from_db()
@@ -291,3 +323,35 @@ class FastBatchUpsertViewSet(BatchUpsertViewSet):
     """Viewset with LO pagination and page size 10."""
 
     pagination_class = FastLimitOffsetPagination
+
+
+
+class NameIDBatchUpsertViewSet(BatchUpsertViewSet):
+    """A BatchUpsert ViewSet for uid fields "name_id"."""
+
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, and **uid_fields values from a model."""
+
+        qs = model.objects.filter(
+            name_id__in=list(set([x["name_id"] for x in new_records]))
+        )
+        if issubclass(model, QualityControlMixin):
+            return qs.values("pk", "name_id", "status")
+        else:
+            return qs.values("pk", "name_id", )
+
+
+class OgcFidBatchUpsertViewSet(BatchUpsertViewSet):
+    """A BatchUpsert ViewSet for uid fields "ogc_fid"."""
+
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
+
+        qs = model.objects.filter(
+            ogc_fid__in=list(set([x["ogc_fid"] for x in new_records]))
+        )
+
+        if issubclass(model, QualityControlMixin):
+            return qs.values("pk", "ogc_fid", "status")
+        else:
+            return qs.values("pk", "ogc_fid", )

@@ -59,7 +59,7 @@ from conservation.models import (  # noqa
     ConservationCriterion,
     ConservationList,
     Document,
-    TaxonConservationListing
+    TaxonConservationListing,
 )
 from taxonomy.models import (
     Community,
@@ -74,14 +74,18 @@ from taxonomy.models import (
     HbvVernacular,
     HbvXref,
     Taxon,
-    Vernacular
+    Vernacular,
 )
 from shared.api import (  # noqa
     CustomCSVRenderer,
     BatchUpsertViewSet,
+    NameIDBatchUpsertViewSet,
+    OgcFidBatchUpsertViewSet,
     FastBatchUpsertViewSet,
     CustomLimitOffsetPagination,
-    MyGeoJsonPagination)
+    MyGeoJsonPagination,
+    )
+from shared.models import QualityControlMixin
 from occurrence import models as occ_models
 from wastd.observations.models import Observation  # LineTransectEncounter
 from wastd.observations.models import Survey  # SiteVisit,
@@ -105,7 +109,7 @@ from wastd.observations.models import (
     TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation,
     TurtleNestEncounter,
-    TurtleNestObservation
+    TurtleNestObservation,
 )
 from wastd.users.models import User
 
@@ -1772,13 +1776,12 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
     model = occ_models.TaxonAreaEncounter
     uid_fields = ("source", "source_id")
 
-    def split_data(self, data):
-        """Custom split data: resolve taxon."""
-        unique_fields, update_data = super(OccurrenceTaxonAreaEncounterPolyViewSet, self).split_data(data)
-        update_data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
-        update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
-        update_data["encounter_type"] = occ_models.EncounterType.objects.get(pk=data["encounter_type"])
-        return (unique_fields, update_data)
+    def resolve_fks(self, data):
+        """Resolve FKs from PK to object."""
+        data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+        data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
+        data["encounter_type"] = occ_models.EncounterType.objects.get(pk=data["encounter_type"])
+        return data
 
 
 class OccurrenceTaxonAreaEncounterPointViewSet(OccurrenceTaxonAreaEncounterPolyViewSet):
@@ -1874,17 +1877,16 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
     model = occ_models.CommunityAreaEncounter
     uid_fields = ("source", "source_id")
 
-    def split_data(self, data):
-        """Custom split data: resolve community."""
-        unique_fields, update_data = super(
-            OccurrenceCommunityAreaEncounterPolyViewSet, self).split_data(data)
+    def resolve_fks(self, data):
+        """Resolve FKs from PK to object."""
         try:
             update_data["community"] = Community.objects.get(code=data["community"])
         except Exception as e:
             logger.error("Exception {0}: community {1} not known,".format(e, data["community"]))
         update_data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
         update_data["encounter_type"] = occ_models.EncounterType.objects.get(pk=data["encounter_type"])
-        return (unique_fields, update_data)
+        return data
+
 
 
 class OccurrenceCommunityAreaEncounterPointViewSet(OccurrenceCommunityAreaEncounterPolyViewSet):
@@ -2308,7 +2310,7 @@ class HbvParentFilter(filters.FilterSet):
 
 
 # Taxonomy: Viewsets ---------------------------------------------------------#
-class HbvNameViewSet(BatchUpsertViewSet):
+class HbvNameViewSet(NameIDBatchUpsertViewSet):
     """View set for HbvName.
 
     # Custom features
@@ -2402,11 +2404,23 @@ class HbvSupraViewSet(BatchUpsertViewSet):
     model = HbvSupra
     uid_fields = ("supra_code", )
 
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
+
+        qs = model.objects.filter(
+            supra_code__in=list(set([x["supra_code"] for x in new_records]))
+        )
+        
+        # if issubclass(model, QualityControlMixin):
+        #     return qs.values("pk", "supra_code", "status")
+        # else:
+        return qs.values("pk", "supra_code", )
+
 
 router.register("supra", HbvSupraViewSet)
 
 
-class HbvGroupViewSet(BatchUpsertViewSet):
+class HbvGroupViewSet(NameIDBatchUpsertViewSet):
     """View set for HbvGroup.See HBV Names for details and usage examples."""
 
     queryset = HbvGroup.objects.all()
@@ -2418,7 +2432,7 @@ class HbvGroupViewSet(BatchUpsertViewSet):
 router.register("groups", HbvGroupViewSet)
 
 
-class HbvFamilyViewSet(BatchUpsertViewSet):
+class HbvFamilyViewSet(NameIDBatchUpsertViewSet):
     """View set for HbvFamily. See HBV Names for details and usage examples."""
 
     queryset = HbvFamily.objects.all()
@@ -2430,7 +2444,7 @@ class HbvFamilyViewSet(BatchUpsertViewSet):
 router.register("families", HbvFamilyViewSet)
 
 
-class HbvGenusViewSet(BatchUpsertViewSet):
+class HbvGenusViewSet(NameIDBatchUpsertViewSet):
     """View set for HbvGenus. See HBV Names for details and usage examples."""
 
     queryset = HbvGenus.objects.all()
@@ -2442,7 +2456,7 @@ class HbvGenusViewSet(BatchUpsertViewSet):
 router.register("genera", HbvGenusViewSet)
 
 
-class HbvSpeciesViewSet(BatchUpsertViewSet):
+class HbvSpeciesViewSet(NameIDBatchUpsertViewSet):
     """View set for HbvSpecies. See HBV Names for details and usage examples."""
 
     queryset = HbvSpecies.objects.all()
@@ -2451,10 +2465,11 @@ class HbvSpeciesViewSet(BatchUpsertViewSet):
     model = HbvSpecies
     uid_fields = ("name_id",)
 
+
 router.register("species", HbvSpeciesViewSet)
 
 
-class HbvVernacularViewSet(BatchUpsertViewSet):
+class HbvVernacularViewSet(OgcFidBatchUpsertViewSet):
     """View set for HbvVernacular. See HBV Names for details and usage examples."""
 
     queryset = HbvVernacular.objects.all()
@@ -2463,34 +2478,34 @@ class HbvVernacularViewSet(BatchUpsertViewSet):
     model = HbvVernacular
     uid_fields = ("ogc_fid", )
 
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance.
+    # def create_one(self, data):
+    #     """POST: Create or update exactly one model instance.
 
-        Return RestResponse(data, status)
-        """
-        unique_data, update_data = self.split_data(data)
+    #     Return RestResponse(data, status)
+    #     """
+    #     unique_data, update_data = self.split_data(data)
 
-        if None in unique_data.values() or data["name_id"] is None:
-            logger.warning("[API][create_one] Skipping invalid data: {0}".format(str(data)))
-            return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
+    #     if data["name_id"] is None:
+    #         logger.warning("[API][create_one] Skipping invalid data with missing name_id: {0}".format(str(data)))
+    #         return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
-        logger.debug(
-            "[API][create_one] Creating/updating with unique fields {0}, data {1}".format(
-                str(unique_data), str(update_data)))
-        try:
-            obj, created = self.model.objects.get_or_create(**unique_data)
-            verb = "created" if created else "updated"
-            self.model.objects.filter(**unique_data).update(**update_data)
-            obj.save()  # to update caches
-            # if created:
-            logger.info("[API][create_one] {0} {1}: {2}".format(
-                verb, self.model._meta.verbose_name, str(unique_data)))
-            # else:
-            # logger.info("[API][create_one] {0} {1} ({2}): {3}".format(
-            # verb, self.model._meta.verbose_name, obj.pk, obj))
-            return RestResponse(data, status=status.HTTP_200_OK)
-        except:
-            logger.warning("[API][create_one] Failed with {0}".format(str(data)))
+    #     logger.debug(
+    #         "[API][create_one] Creating/updating with unique fields {0}, data {1}".format(
+    #             str(unique_data), str(update_data)))
+    #     try:
+    #         obj, created = self.model.objects.get_or_create(**unique_data)
+    #         verb = "created" if created else "updated"
+    #         self.model.objects.filter(**unique_data).update(**update_data)
+    #         obj.save()  # to update caches
+    #         # if created:
+    #         logger.info("[API][create_one] {0} {1}: {2}".format(
+    #             verb, self.model._meta.verbose_name, str(unique_data)))
+    #         # else:
+    #         # logger.info("[API][create_one] {0} {1} ({2}): {3}".format(
+    #         # verb, self.model._meta.verbose_name, obj.pk, obj))
+    #         return RestResponse(data, status=status.HTTP_200_OK)
+    #     except:
+    #         logger.warning("[API][create_one] Failed with {0}".format(str(data)))
 
 router.register("vernaculars", HbvVernacularViewSet)
 
@@ -2504,10 +2519,16 @@ class HbvXrefViewSet(BatchUpsertViewSet):
     model = HbvXref
     uid_fields = ("xref_id",)
 
+    def fetch_existing_records(self, new_records, model):
+        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
+        return model.objects.filter(
+            xref_id__in=list(set([x["xref_id"] for x in new_records]))
+        ).values("pk", "xref_id")    
+
 router.register("xrefs", HbvXrefViewSet)
 
 
-class HbvParentViewSet(BatchUpsertViewSet):
+class HbvParentViewSet(OgcFidBatchUpsertViewSet):
     """View set for HbvParent. See HBV Names for details and usage examples."""
 
     queryset = HbvParent.objects.all()
@@ -2515,6 +2536,7 @@ class HbvParentViewSet(BatchUpsertViewSet):
     filter_class = HbvParentFilter
     model = HbvParent
     uid_fields = ("ogc_fid", )
+
 
 router.register("parents", HbvParentViewSet)
 
@@ -2618,7 +2640,7 @@ class TaxonFilter(filters.FilterSet):
         }
 
 
-class TaxonViewSet(BatchUpsertViewSet):
+class TaxonViewSet(NameIDBatchUpsertViewSet):
     """View set for Taxon.
 
     See HBV Names for details and usage examples.
@@ -2637,12 +2659,6 @@ class TaxonViewSet(BatchUpsertViewSet):
     filter_class = TaxonFilter
     model = Taxon
     uid_fields = ("name_id", )
-
-    def fetch_existing_records(self, new_records, model):
-        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
-        return model.objects.filter(
-            name_id__in=list(set([x["name_id"] for x in new_records]))
-        ).values("pk", "name_id")
 
 
 router.register("taxon", TaxonViewSet, base_name="taxon_full")
@@ -2694,7 +2710,7 @@ class VernacularFilter(filters.FilterSet):
         }
 
 
-class VernacularViewSet(BatchUpsertViewSet):
+class VernacularViewSet(OgcFidBatchUpsertViewSet):
     """View set for Vernacular.
 
     See HBV Names for details and usage examples.
@@ -2706,12 +2722,6 @@ class VernacularViewSet(BatchUpsertViewSet):
     filter_class = VernacularFilter
     model = Vernacular
     uid_fields = ("ogc_fid", )
-
-    def fetch_existing_records(self, new_records, model):
-        """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
-        return model.objects.filter(
-            ogc_fid__in=list(set([x["ogc_fid"] for x in new_records]))
-        ).values("pk", "ogc_fid")
 
 
 router.register("vernacular", VernacularViewSet)
@@ -3134,15 +3144,13 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
     uid_fields = ("source", "source_id")
     model = TaxonConservationListing
 
-    def split_data(self, data):
-        """Custom split data: resolve taxon."""
-        unique_fields, update_data = super(TaxonConservationListingViewSet, self).split_data(data)
+    def resolve_fks(self, data):
+        """Resolve FKs from PK to object."""
         try:
             update_data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
         except Exception as e:
             logger.error("Exception {0}: taxon {1} not known,".format(e, data["taxon"]))
-        # update_data["category"] = [data["category"], ]
-        return (unique_fields, update_data)
+        return data
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance.
@@ -3187,6 +3195,36 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         content = {"id": obj.id, "msg": msg}
         logger.info(msg)
         return RestResponse(content, status=st)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be a dict or a list of dicts.
+
+        Return RestResponse(result, status)
+
+        result:
+
+        * Warning message if invalid data (status 406 not acceptable)
+        * Dict of object_id and message if one record
+        * List of one-record dicts if several records
+        """
+
+        # Create one ---------------------------------------------------------#
+        if self.uid_fields[0] in request.data:
+            logger.info('[API][create] found one record, creating/updating...')
+            res = self.create_one(request.data).__dict__         
+            return RestResponse(res, status=st)
+
+        # Create many --------------------------------------------------------#
+        elif (type(request.data) == list and 
+              self.uid_fields[0] in request.data[0]):
+            logger.info('[API][create] found batch of {0} records,'
+                        ' creating/updating...'.format(len(request.data)))
+
+            # The slow way:
+            # res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
+        return RestResponse([], status=status.HTTP_200_OK)
 
 router.register("taxon-conservationlisting", TaxonConservationListingViewSet)
 
@@ -3239,15 +3277,13 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
     uid_fields = ("source", "source_id")
     model = CommunityConservationListing
 
-    def split_data(self, data):
-        """Custom split data: resolve community."""
-        unique_fields, update_data = super(CommunityConservationListingViewSet, self).split_data(data)
+    def resolve_fks(self, data):
+        """Resolve FKs from PK to object."""
         try:
             update_data["community"] = Community.objects.get(code=data["community"])
         except Exception as e:
             logger.error("Exception {0}: community {1} not known,".format(e, data["community"]))
-        # update_data["category"] = [data["category"], ]
-        return (unique_fields, update_data)
+        return data
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance.
@@ -3293,6 +3329,35 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         logger.info(msg)
         return RestResponse(content, status=st)
 
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be a dict or a list of dicts.
+
+        Return RestResponse(result, status)
+
+        result:
+
+        * Warning message if invalid data (status 406 not acceptable)
+        * Dict of object_id and message if one record
+        * List of one-record dicts if several records
+        """
+
+        # Create one ---------------------------------------------------------#
+        if self.uid_fields[0] in request.data:
+            logger.info('[API][create] found one record, creating/updating...')
+            res = self.create_one(request.data).__dict__         
+            return RestResponse(res, status=st)
+
+        # Create many --------------------------------------------------------#
+        elif (type(request.data) == list and 
+              self.uid_fields[0] in request.data[0]):
+            logger.info('[API][create] found batch of {0} records,'
+                        ' creating/updating...'.format(len(request.data)))
+
+            # The slow way:
+            # res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
+        return RestResponse([], status=status.HTTP_200_OK)
 
 router.register("community-conservationlisting", CommunityConservationListingViewSet)
 
