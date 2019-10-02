@@ -752,7 +752,9 @@ class ConservationCategory(models.Model):
 
     def __str__(self):
         """The full name."""
-        return "{0} ({1})".format(self.get_level_display(), self.code)
+        return "[{0}] {1} ({2})".format(
+            self.conservation_list, self.get_level_display(), self.code
+        )
 
     # -------------------------------------------------------------------------
     # URLs
@@ -811,7 +813,7 @@ class ConservationCriterion(models.Model):
 
     def __str__(self):
         """The full name."""
-        return self.code
+        return "[{0}] {1}".format(self.conservation_list, self.code)
 
     # -------------------------------------------------------------------------
     # URLs

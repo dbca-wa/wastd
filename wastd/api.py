@@ -33,6 +33,7 @@ This API is built using:
 
 
 import logging
+import itertools
 
 import rest_framework_filters as filters
 # from django.db import models as django_models
@@ -86,6 +87,7 @@ from shared.api import (  # noqa
     MyGeoJsonPagination,
     )
 from shared.models import QualityControlMixin
+from shared.utils import force_as_list
 from occurrence import models as occ_models
 from wastd.observations.models import Observation  # LineTransectEncounter
 from wastd.observations.models import Survey  # SiteVisit,
@@ -3147,7 +3149,7 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
     def resolve_fks(self, data):
         """Resolve FKs from PK to object."""
         try:
-            update_data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+            data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
         except Exception as e:
             logger.error("Exception {0}: taxon {1} not known,".format(e, data["taxon"]))
         return data
@@ -3164,10 +3166,13 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         unique_data, update_data = self.split_data(data)
 
         # Pop category and criterion out update_data
-        cat_ids = update_data.pop("category")
-        categories = [ConservationCategory.objects.get(id=x) for x in [cat_ids, ]]
-        crit_ids = update_data.pop("criteria")
-        criteria = [ConservationCriterion.objects.get(id=x) for x in [crit_ids, ]]
+        cat_ids = force_as_list(update_data.pop("category"))
+        logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
+        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids]
+
+        crit_ids = force_as_list(update_data.pop("criteria"))
+        logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
+        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids]
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
@@ -3183,7 +3188,7 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 
         # Without the QA status deciding whether to update existing data:
         obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        obj.category.set(categories)
+        obj.category.set(categories) # TODO: must do individually or can do as list?
         obj.criteria.set(criteria)
         obj.save()  # better save() than sorry
         obj.refresh_from_db()
@@ -3223,7 +3228,7 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
                         ' creating/updating...'.format(len(request.data)))
 
             # The slow way:
-            # res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
+            res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
         return RestResponse([], status=status.HTTP_200_OK)
 
 router.register("taxon-conservationlisting", TaxonConservationListingViewSet)
@@ -3297,10 +3302,12 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         unique_data, update_data = self.split_data(data)
 
         # Pop category and criterion out update_data
-        cat_ids = update_data.pop("category")
-        categories = [ConservationCategory.objects.get(id=x) for x in [cat_ids, ]]
-        crit_ids = update_data.pop("criteria")
-        criteria = [ConservationCriterion.objects.get(id=x) for x in [crit_ids, ]]
+        cat_ids = force_as_list(update_data.pop("category"))
+        logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
+        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids]
+        crit_ids = force_as_list(update_data.pop("criteria"))
+        logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
+        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids]
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
@@ -3356,7 +3363,7 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
                         ' creating/updating...'.format(len(request.data)))
 
             # The slow way:
-            # res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
+            res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
         return RestResponse([], status=status.HTTP_200_OK)
 
 router.register("community-conservationlisting", CommunityConservationListingViewSet)
