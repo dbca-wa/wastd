@@ -260,7 +260,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    pagination_class = pagination.LimitOffsetPagination
     uid_field = "username"
     model = User
 
@@ -1483,7 +1482,7 @@ class MediaAttachmentViewSet(viewsets.ModelViewSet):
 
     queryset = MediaAttachment.objects.all()
     serializer_class = MediaAttachmentSerializer
-    pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
 
 
 class TagObservationViewSet(viewsets.ModelViewSet):
@@ -2390,7 +2389,6 @@ class HbvNameViewSet(NameIDBatchUpsertViewSet):
     queryset = HbvName.objects.all()
     serializer_class = HbvNameSerializer
     filter_class = HbvNameFilter
-    pagination_class = pagination.LimitOffsetPagination
     model = HbvName
     uid_fields = ("name_id",)
 
@@ -2657,7 +2655,7 @@ class TaxonViewSet(NameIDBatchUpsertViewSet):
     "document_set",
     )
     serializer_class = TaxonSerializer
-    pagination_class = CustomLimitOffsetPagination  # if no geofeaturemodel serializer
+    # pagination_class = CustomLimitOffsetPagination  # if no geofeaturemodel serializer
     filter_class = TaxonFilter
     model = Taxon
     uid_fields = ("name_id", )
@@ -2847,8 +2845,6 @@ class CommunityViewSet(BatchUpsertViewSet):
     )
     serializer_class = CommunitySerializer
     filter_class = CommunityFilter
-    # pagination_class = CustomLimitOffsetPagination
-    pagination_class = MyGeoJsonPagination
     model = Community
     uid_fields = ("code",)
 
@@ -2899,7 +2895,6 @@ class ConservationCategoryViewSet(viewsets.ModelViewSet):
     queryset = ConservationCategory.objects.all()
     serializer_class = ConservationCategorySerializer
     filter_class = ConservationCategoryFilter
-    pagination_class = pagination.LimitOffsetPagination
 
 
 router.register("conservationcategory", ConservationCategoryViewSet)
@@ -2939,7 +2934,6 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
     queryset = ConservationCriterion.objects.all()
     serializer_class = ConservationCriterionSerializer
     filter_class = ConservationCriterionFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_fields = ("code", )
     model = ConservationCriterion
 
@@ -3031,7 +3025,7 @@ class ConservationListViewSet(viewsets.ModelViewSet):
     queryset = ConservationList.objects.all()
     serializer_class = ConservationListSerializer
     filter_class = ConservationListFilter
-    pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
     uid_field = "code"
     uid_fields = ("code", )
     model = ConservationList
@@ -3142,7 +3136,6 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
     queryset = TaxonConservationListing.objects.all().select_related("taxon")
     serializer_class = TaxonConservationListingSerializer
     filter_class = TaxonConservationListingFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_fields = ("source", "source_id")
     model = TaxonConservationListing
 
@@ -3282,7 +3275,6 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
     queryset = CommunityConservationListing.objects.all().select_related("community")
     serializer_class = CommunityConservationListingSerializer
     filter_class = CommunityConservationListingFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_fields = ("source", "source_id")
     model = CommunityConservationListing
 
@@ -3416,7 +3408,6 @@ class DocumentViewSet(BatchUpsertViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
     filter_class = DocumentFilter
-    pagination_class = pagination.LimitOffsetPagination
     uid_fields = ("source", "source_id")
     model = Document
 
