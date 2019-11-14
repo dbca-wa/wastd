@@ -3168,11 +3168,11 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         # Pop category and criterion out update_data
         cat_ids = force_as_list(update_data.pop("category"))
         logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
-        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids]
+        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
 
         crit_ids = force_as_list(update_data.pop("criteria"))
         logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
-        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids]
+        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
@@ -3241,7 +3241,11 @@ class CommunityConservationListingSerializer(serializers.ModelSerializer):
     """Serializer for CommunityConservationListing."""
 
     # community = FastTaxonSerializer(many=False)
-    community = serializers.SlugRelatedField(queryset=Community.objects.all(), slug_field="code")
+    community = serializers.SlugRelatedField(
+        queryset=Community.objects.all(), 
+        slug_field="code",
+        style={"base_template": "input.html"}
+    )
 
     class Meta:
         """Opts."""
@@ -3285,9 +3289,9 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
     def resolve_fks(self, data):
         """Resolve FKs from PK to object."""
         try:
-            update_data["community"] = Community.objects.get(code=data["community"])
+            data["community"] = Community.objects.get(code=data["community"])
         except Exception as e:
-            logger.error("Exception {0}: community {1} not known,".format(e, data["community"]))
+            logger.error("Exception '{0}': community '{1}' not known.".format(e, data["community"]))
         return data
 
     def create_one(self, data):
@@ -3304,10 +3308,10 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         # Pop category and criterion out update_data
         cat_ids = force_as_list(update_data.pop("category"))
         logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
-        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids]
+        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
         crit_ids = force_as_list(update_data.pop("criteria"))
         logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
-        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids]
+        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
