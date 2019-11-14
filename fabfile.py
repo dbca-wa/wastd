@@ -57,11 +57,15 @@ def shell():
     """Open a shell_plus."""
     local('python manage.py shell_plus')
 
+def rundev():
+    """Runserver with dev settings."""
+    local('python manage.py runserver --settings=config.settings.local 0.0.0.0:8220')
+
 
 def go():
     """Run the app with development settings and runserver."""
     static()
-    local('python manage.py runserver --settings=config.settings.local 0.0.0.0:8220')
+    rundev()
 
 
 def pro():
