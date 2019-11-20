@@ -2585,6 +2585,7 @@ class TaxonSerializer(serializers.ModelSerializer):
             "vernacular_names",
             "canonical_name",
             "taxonomic_name",
+            "paraphyletic_groups"
             # "is_currently_listed",
             # "conservation_code_state",
             # "conservation_list_state",
@@ -2626,13 +2627,14 @@ class TaxonFilter(filters.FilterSet):
         fields = {
             "name_id": ["exact", ],
             "name": ["icontains", ],
-            "rank": ["icontains", "in", ],
+            "rank": ["icontains", "in", "gt", "gte", "lt", "lte"],
             # "parent": ["exact", ],  # performance bomb
             "publication_status": ["isnull", ],
             "current": ["isnull", ],
             "author": ["icontains", ],
             "canonical_name": ["icontains", ],
             "taxonomic_name": ["icontains", ],
+            "paraphyletic_groups": ["icontains", ], 
             # "vernacular_name": ["icontains", ],
             "vernacular_names": ["icontains", ],
             # "eoo" requires polygon filter,
@@ -2643,7 +2645,15 @@ class TaxonFilter(filters.FilterSet):
 class TaxonViewSet(NameIDBatchUpsertViewSet):
     """View set for Taxon.
 
-    See HBV Names for details and usage examples.
+    Examples:
+
+    * [Animals](/api/1/taxon/?paraphyletic_groups__icontains=20)
+    * [Plants sensu latu](/api/1/taxon/?paraphyletic_groups__icontains=21)
+    * [Only current taxa](/api/1/taxon/?current=true)
+    * [Only non-current taxa](/api/1/taxon/?current=false)
+    * [Vernacular names contains "woylie" (case insensitive)](/api/1/taxon/?vernacular_names__icontains=woylie) - same works with name, author, can/tax name
+    * [NameID exact match](/api/1/taxon/?name_id=25452)
+    * [Taxonomic rank Species or lower](/api/1/taxon/?rank__gt=190) - see [Ranks](https://github.com/dbca-wa/wastd/blob/master/taxonomy/models.py#L1613)
     """
 
     queryset = Taxon.objects.prefetch_related(
@@ -2655,7 +2665,6 @@ class TaxonViewSet(NameIDBatchUpsertViewSet):
     "document_set",
     )
     serializer_class = TaxonSerializer
-    # pagination_class = CustomLimitOffsetPagination  # if no geofeaturemodel serializer
     filter_class = TaxonFilter
     model = Taxon
     uid_fields = ("name_id", )
@@ -2886,7 +2895,7 @@ class ConservationCategoryFilter(filters.FilterSet):
         }
 
 
-class ConservationCategoryViewSet(viewsets.ModelViewSet):
+class ConservationCategoryViewSet(BatchUpsertViewSet):
     """View set for ConservationCategory.
 
     Not using BatchUpsertViewSet.
