@@ -77,6 +77,9 @@ from taxonomy.models import (
     Taxon,
     Vernacular,
 )
+
+from taxonomy.filters import TaxonFilter as djangofilter_TaxonFilter
+
 from shared.api import (  # noqa
     CustomCSVRenderer,
     BatchUpsertViewSet,
@@ -2606,6 +2609,7 @@ class FastTaxonSerializer(serializers.ModelSerializer):
         fields = (
             "pk",
             "name_id",
+            "canonical_name",
             "taxonomic_name",
             "vernacular_names",
         )
@@ -2750,7 +2754,7 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
 
         model = Crossreference
         fields = (
-            "xref_id",
+            "xref_id",        
             "predecessor",
             "successor",
             "reason",
@@ -2764,19 +2768,27 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
 class CrossreferenceFilter(filters.FilterSet):
     """Crossreference filter."""
 
+    predecessor = filters.RelatedFilter(TaxonFilter, field_name="predecessor", queryset=Taxon.objects.all())
+    successor = filters.RelatedFilter(TaxonFilter, field_name="successor", queryset=Taxon.objects.all())
+    # filter_overrides = {
+    #     models.DateTimeField: {
+    #         'filter_class': filters.IsoDateTimeFilter
+    #     },
+    # }
+    # authorised_on_gte = filters.DateTimeFilter(name="authorised_on", lookup_expr='gte')
+
     class Meta:
         """Class opts."""
 
         model = Crossreference
         fields = {
-            "xref_id": "__all__",
-            # "predecessor": "__all__",
-            # "successor": "__all__",
-            "reason": "__all__",
-            "authorised_by": "__all__",
-            "authorised_on": "__all__",
-            "effective_to": "__all__",
-            "comments": "__all__",
+            "xref_id": ["exact", ],
+            "reason": ["exact", ],
+            "authorised_by": ["exact", ],
+            "authorised_on": ["exact", "year__gte", "gt", "gte", "lt", "lte"],
+            # "authorised_on_gte": "__all__",
+            "effective_to": ["exact", "year__gte", "gt", "gte", "lt", "lte"],
+            "comments": ["icontains", ],
         }
 
 
@@ -2784,12 +2796,38 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
     """View set for Crossreference.
 
     See HBV Names for details and usage examples.
-    All filters are available on all fields.
+
+    ### Tracing newer names for a Name ID
+    See also https://github.com/dbca-wa/wastd/issues/227
+
+    The data shown here are sufficient for the use case, but a convenience method would be faster and, well,  more convenient.
+
+    * [Newer names for Name ID 43353](/api/1/crossreference/?predecessor__name_id=43353) > successor is 43360
+    * [Newer names for Name ID 43360](/api/1/crossreference/?predecessor__name_id=43360) > results are [], reached newest name
+
+    ### Tracing older names for a Name ID
+
+    * [Older names for Name ID 43360](/api/1/crossreference/?successor__name_id=43360) > predecessor is 43353
+    * [Older names for Name ID 43353](/api/1/crossreference/?successor__name_id=43353) > results are [], reached oldest name
+
+    ### Crossreferences with reason for taxonomic name change:
+
+    * [Reason 0: Misapplied name](/?reason=0)
+    * [Reason 1: Taxonomic synonym](/?reason=1)
+    * [Reason 2: Nomenclatural synonym](/?reason=2)
+    * [Reason 3: Excluded name](/?reason=3)
+    * [Reason 4: Concept change](/?reason=4)
+    * [Reason 5: Formal description](/?reason=5)
+    * [Reason 6: Orthographic variant](/?reason=6)
+    * [Reason 7: Name in error](/?reason=7)
+    * [Reason 8: Informal Synonym](/?reason=8)
+
     """
 
     queryset = Crossreference.objects.all()
     serializer_class = CrossreferenceSerializer
     filter_class = CrossreferenceFilter
+    pagination_class = pagination.LimitOffsetPagination
     model = Crossreference
     uid_fields = ("xref_id", )
 
