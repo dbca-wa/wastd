@@ -3460,3 +3460,27 @@ class DocumentViewSet(BatchUpsertViewSet):
 
 
 router.register("document", DocumentViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# Occurrence lookups
+#
+class LandformSerializer(serializers.ModelSerializer):
+    """Serializer for Landform: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.Landform
+        fields = "__all__"
+
+class LandformViewSet(BatchUpsertViewSet):
+    """View set for Landform."""
+
+    queryset = occ_models.Landform.objects.all()
+    serializer_class = LandformSerializer
+    uid_fields = ("pk",)
+    model = occ_models.Landform
+
+
+router.register("landform", LandformViewSet)
