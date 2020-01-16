@@ -588,6 +588,12 @@ NEST_DAMAGE_CHOICES = (
     ("other", "(O)ther identifiable (see comments)"),
     ("test", "Training or test record"),
 )
+
+TIME_ESTIMATE_CHOICES = (    
+    ("same-night", "Sometime that night"),
+    ("plusminus-2h", "Plusminus 2h of estimate"),
+    ("plusminus-30m", "Correct to the hour")
+)
 # End lookups ----------------------------------------------------------------#
 
 
@@ -3596,7 +3602,8 @@ class TurtleNestObservation(Observation):
             (self.no_undeveloped_eggs or 0) +
             (self.no_unhatched_eggs or 0) +
             (self.no_unhatched_term or 0) +
-            (self.no_depredated_eggs or 0))
+            (self.no_depredated_eggs or 0)
+        )
 
     @property
     def hatching_success(self):
@@ -3690,70 +3697,153 @@ class TurtleNestDisturbanceObservation(Observation):
 
 # @python_2_unicode_compatible
 # class TurtleHatchlingEmergenceObservation(Observation):
-    """Turtle hatchling emergence observation.
+#     """Turtle hatchling emergence observation.
 
-    Hatchling emergence observations can include:
+#     Hatchling emergence observations can include:
 
-    * Emergence time (if seen directly),
-    * Fan angles of hatchling tracks forming a fan from nest to sea,
-    * Emergence climate
-    * Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)
-    * Light sources known and present (if yes: LightSourceObservation).
+#     * Emergence time (if seen directly),
+#     * Fan angles of hatchling tracks forming a fan from nest to sea,
+#     * Emergence climate
+#     * Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)
+#     * Light sources known and present (if yes: LightSourceObservation).
 
-    # TON 0.54+
-    "fan_angles": {
-        "photo_hatchling_tracks_seawards": "1546836969404.jpg",
-        "photo_hatchling_tracks_relief": null,
-        "bearing_to_water_manual": "98.0000000000",
-        "leftmost_track_manual": "58.0000000000",
-        "rightmost_track_manual": "122.0000000000",
-        "no_tracks_main_group": "7",
-        "no_tracks_main_group_min": "7",
-        "no_tracks_main_group_max": "7",
-        "outlier_tracks_present": "present",
-        "hatchling_path_to_sea": "clear",
-        "path_to_sea_comments": null,
-        "hatchling_emergence_time_known": "yes",
-        "cloud_cover_at_emergence_known": "yes",
-        "light_sources_present": "present"
-      },
-      "outlier_track": {
-        "outlier_track_photo": "1546837474680.jpg",
-        "outlier_track_bearing_manual": "180.0000000000",
-        "outlier_group_size": "1",
-        "outlier_track_comment": null
-      },
-      "hatchling_emergence_time_group": {
-        "hatchling_emergence_time": "2019-01-06T23:07:00.000Z",
-        "hatchling_emergence_time_source": "plusminus-2h"
-      },
-      "emergence_climate": {
-        "cloud_cover_at_emergence": "3"
-      },
-      "light_source": [
-        {
-          "light_source_photo": null,
-          "light_bearing_manual": "50.0000000000",
-          "light_source_type": "artificial",
-          "light_source_description": "Oil rig#5"
-        },
-        {
-          "light_source_photo": null,
-          "light_bearing_manual": "190.0000000000",
-          "light_source_type": "natural",
-          "light_source_description": "Moon"
-        }
-      ],
-      "other_light_sources": {
-        "other_light_sources_present": "na"
-      }
-    """
-    # pass
+#     # TON 0.54+
+#     "fan_angles": {
+#         "photo_hatchling_tracks_seawards": "1546836969404.jpg",
+#         "photo_hatchling_tracks_relief": null,
+#         "bearing_to_water_manual": "98.0000000000",
+#         "leftmost_track_manual": "58.0000000000",
+#         "rightmost_track_manual": "122.0000000000",
+#         "no_tracks_main_group": "7",
+#         "no_tracks_main_group_min": "7",
+#         "no_tracks_main_group_max": "7",
+#         "outlier_tracks_present": "present",
+#         "hatchling_path_to_sea": "clear",
+#         "path_to_sea_comments": null,
+#         "hatchling_emergence_time_known": "yes",
+#         "cloud_cover_at_emergence_known": "yes",
+#         "light_sources_present": "present"
+#       },
+#       "outlier_track": {
+#         "outlier_track_photo": "1546837474680.jpg",
+#         "outlier_track_bearing_manual": "180.0000000000",
+#         "outlier_group_size": "1",
+#         "outlier_track_comment": null
+#       },
+#       "hatchling_emergence_time_group": {
+#         "hatchling_emergence_time": "2019-01-06T23:07:00.000Z",
+#         "hatchling_emergence_time_source": "plusminus-2h"
+#       },
+#       "emergence_climate": {
+#         "cloud_cover_at_emergence": "3"
+#       },
+#       "light_source": [
+#         {
+#           "light_source_photo": null,
+#           "light_bearing_manual": "50.0000000000",
+#           "light_source_type": "artificial",
+#           "light_source_description": "Oil rig#5"
+#         },
+#         {
+#           "light_source_photo": null,
+#           "light_bearing_manual": "190.0000000000",
+#           "light_source_type": "natural",
+#           "light_source_description": "Moon"
+#         }
+#       ],
+#       "other_light_sources": {
+#         "other_light_sources_present": "na"
+#       }
+#     """
+#     # photo_hatchling_tracks_seawards # media
+#     # photo_hatchling_tracks_relief # media
+#     bearing_to_water_manual = models.FloatField(
+#         verbose_name=_(""),
+#         blank=True, null=True,
+#         help_text=_("."),)
 
-# LightSourceObservation
-# TurtleHatchlingEmergenceOutlierObservation
+#     leftmost_track_manual = models.FloatField(
+#         verbose_name=_(""),
+#         blank=True, null=True,
+#         help_text=_("."),)
 
-# TODO add CecaceanMorphometricObservation for cetacean strandings
+#     rightmost_track_manual = models.FloatField(
+#         verbose_name=_(""),
+#         blank=True, null=True,
+#         help_text=_("."),)
+
+#     no_tracks_main_group = models.PositiveIntegerField(
+#         verbose_name=_(""),
+#         blank=True, null=True,
+#         help_text=_("."),)
+
+#     no_tracks_main_group_min = models.PositiveIntegerField(
+#         verbose_name=_(""),
+#         blank=True, null=True,
+#         help_text=_("."),)
+
+#     no_tracks_main_group_max = models.PositiveIntegerField(
+#         verbose_name=_(""),
+#         blank=True, null=True,
+#         help_text=_("."),)
+
+#     outlier_tracks_present models.CharField(
+#         max_length=300,
+#         verbose_name=_(""),
+#         choices=OBSERVATION_CHOICES,
+#         default=NA_VALUE,
+#         help_text=_("."),)
+    
+#     hatchling_path_to_sea
+
+#     path_to_sea_comments = models.TextField(
+#         verbose_name=_("Comments"),
+#         blank=True, null=True,
+#         help_text=_("Any other comments or notes."),)
+
+#     hatchling_emergence_time_known
+#     cloud_cover_at_emergence_known
+#     light_sources_present
+#     other_light_sources_present
+
+#     hatchling_emergence_time
+#     hatchling_emergence_time_source # TIME_ESTIMATE_CHOICES
+    
+#     cloud_cover_at_emergence
+
+
+# @python_2_unicode_compatible
+# class LightSourceObservation(Observation):
+#     """
+#     Dict of one or list of many
+#     {
+#       "light_source_photo": null,
+#       "light_bearing_manual": "50.0000000000",
+#       "light_source_type": "artificial"  "natural" CHOICES
+#       "light_source_description": "Oil rig#5"
+#     }
+#     """
+#     light_bearing_manual
+#     light_source_type
+#     light_source_description
+
+# @python_2_unicode_compatible
+# class TurtleHatchlingEmergenceOutlierObservation(Observation):
+#     """
+#     Dict of one or list of many
+#     "outlier_track": {
+#     "outlier_track_photo": "1546837474680.jpg",
+#     "outlier_track_bearing_manual": "180.0000000000",
+#     "outlier_group_size": "1",
+#     "outlier_track_comment": null
+#     }
+#     """
+#     # outlier_track_photo # media
+#     outlier_track_bearing_manual
+#     outlier_group_size
+#     outlier_track_comment
+
+# TODO add CetaceanMorphometricObservation for cetacean strandings
 
 
 # Logger Observation models --------------------------------------------------#
