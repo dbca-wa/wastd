@@ -4046,7 +4046,7 @@ def handle_odka_fanangles(enc, media, data):
     import os; path = os.path.join(settings.MEDIA_ROOT, "odka"); from wastd.observations.utils import *
     fa=[import_odka_tt044(x) for x in downloaded_data("test_fanangles", path)]
     """
-    if "fan_angles" in data and data["fan_angles"]:
+    if "fan_angles" in data and data["fan_angles"] and data["nest"]["fan_angles_measured"] == "yes":
 
         for obs in listify(data["fan_angles"]):
 
@@ -4068,7 +4068,7 @@ def handle_odka_fanangles(enc, media, data):
                 no_tracks_main_group = int_or_none(obs["no_tracks_main_group"]), 
                 no_tracks_main_group_min = int_or_none(obs["no_tracks_main_group_min"]),
                 no_tracks_main_group_max = int_or_none(obs["no_tracks_main_group_max"]), 
-                outlier_tracks_present = str_or_na(obs["outlier_tracks_present"]),
+                outlier_tracks_present = str_or_na(obs.get("outlier_tracks_present", "na")),
                 path_to_sea_comments = "{0} {1}".format(
                     obs["hatchling_path_to_sea"], obs["path_to_sea_comments"]),
                 hatchling_emergence_time_known = str_or_na(obs["hatchling_emergence_time_known"]),
@@ -4102,7 +4102,7 @@ def handle_odka_fanangles(enc, media, data):
         logger.info("  [handle_odka_fanangle] found no TurtleHatchlingEmergenceObservation")
 
     # outliers
-    if "outlier_track" in data and data["outlier_track"]:
+    if "outlier_track" in data and data["outlier_track"] and data["nest"]["fan_angles_measured"] == "yes":
         for obs in listify(data["outlier_track"]):
             # "outlier_track": {
             #     "outlier_track_photo": "1546837474680.jpg",
@@ -4136,7 +4136,7 @@ def handle_odka_fanangles(enc, media, data):
                     enc, media, obs["outlier_track_photo"], title="Photo {0}".format(e.__str__()))
 
     # light sources
-    if "light_source" in data and data["light_source"]:
+    if "light_source" in data and data["light_source"] and data["nest"]["fan_angles_measured"] == "yes":
         for obs in listify(data["light_source"]):
             # "light_source": [
             #     {
