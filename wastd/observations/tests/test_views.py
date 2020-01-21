@@ -38,7 +38,11 @@ from wastd.observations.models import (  # noqa
     TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation,
     TurtleNestEncounter,
-    TurtleNestObservation
+    TurtleNestObservation,
+    PathToSea,
+    TurtleHatchlingEmergenceObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
+    LightSourceObservation
 )
 
 

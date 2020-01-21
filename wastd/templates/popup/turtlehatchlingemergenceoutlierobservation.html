@@ -1,0 +1,14 @@
+{% load observations %}
+{% with original as o %}
+<div class="row">
+    <i class="fa fa-fw fa-bar-chart"></i>
+    Bearing {{ o.outlier_track_bearing_manual }}
+
+    Fan {{ o.leftmost_track_manual }} - {{ o.rightmost_track_manual }}
+
+    Tracks {{ o.outlier_group_size }}
+
+    Comment {{ o.outlier_track_comment }}
+</div>
+{% endwith %}
+

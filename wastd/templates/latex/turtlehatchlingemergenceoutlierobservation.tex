@@ -1,0 +1,8 @@
+{% load observations rest_framework_latex %}
+{% with original as o %}
+\paragraph{Hatchling emergence track outlier}
+    Bearing {{ o.outlier_track_bearing_manual }}\\
+    Fan {{ o.leftmost_track_manual }} - {{ o.rightmost_track_manual }}\\
+    Tracks {{ o.outlier_group_size }}\\
+    Comment {{ o.outlier_track_comment }}\\
+{% endwith %}

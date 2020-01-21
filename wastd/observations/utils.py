@@ -32,6 +32,28 @@ from wastd.observations.models import *
 logger = logging.getLogger(__name__)
 
 
+def int_or_none(string):
+    """Return the string as Integer or return None."""
+    try:
+        return int(string)
+    except:
+        return None
+
+def float_or_none(string):
+    """Return the string as Integer or return None."""
+    try:
+        return float(string)
+    except:
+        return None
+
+def str_or_na(string):
+    """Return the string or "na". """
+    try:
+        return string
+    except:
+        return "na"
+
+
 def set_site(sites, encounter):
     """Set the site for an Encounter from a list of sites."""
     encounter.site = sites.filter(geom__contains=encounter.where).first() or None
@@ -3742,6 +3764,421 @@ def handle_odka_turtledamageobs(enc, media, data):
     return None
 
 
+def handle_odka_fanangles(enc, media, data):
+    """Handle empty, one, or multiple fan angles.
+
+    TurtleHatchlingEmergenceObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
+    LightSourceObservation
+
+    Arguments:
+
+        enc An AnimalEncounter
+        media A dict of photo filename:url
+        data A "data" dict from ODK "Marine Wildlife Incident 0.1" or higher, can contain
+
+        # TT0.44
+        "hatchling_emergence_time_group": {
+            "hatchling_emergence_time": null
+          },
+        "fan_angles_manual": {
+            "bearing_to_water_manual": "6",
+            "rightmost_track_manual": null,
+            "leftmost_track_manual": null
+          },
+        "fan_angles": {
+            "no_tracks_main_group": "1",
+            "device_compass_present": "no",
+            "light_sources_present": "na",
+            "rightmost_track_auto": null,
+            "hatchling_emergence_time_known": "no",
+            "bearing_to_water_auto": null,
+            "leftmost_track_auto": null,
+            "outlier_tracks_present": "no"
+          },
+
+        "outlier_track": [
+            {
+              "track_bearing_auto": null,
+              "track_bearing_manual": "347"
+            },
+            {
+              "track_bearing_auto": null,
+              "track_bearing_manual": "21"
+            }
+          ],
+
+        # TT0.45
+        "fan_angles_manual": {
+           "bearing_to_water_manual": null,
+           "rightmost_track_manual": null,
+           "leftmost_track_manual": null
+         },
+         "fan_angles": {
+           "no_tracks_main_group": "35",
+           "device_compass_present": "yes",
+           "light_sources_present": "no",
+           "rightmost_track_auto": "296.2910000000",
+           "hatchling_emergence_time_known": "no",
+           "bearing_to_water_auto": "296.7820000000",
+           "leftmost_track_auto": "296.6340000000",
+           "outlier_tracks_present": "yes"
+         },
+         "outlier_track": {
+           "track_bearing_auto": "296.9590000000",
+           "track_bearing_manual": null
+         },
+
+        # TT0.46
+        "fan_angles": {
+            "no_tracks_main_group": "8",
+            "device_compass_present": "no",
+            "light_sources_present": "no",
+            "rightmost_track_auto": null,
+            "hatchling_emergence_time_known": "no",
+            "bearing_to_water_auto": null,
+            "leftmost_track_auto": null,
+            "outlier_tracks_present": "yes"
+          },
+
+        # TT0.47
+        "fan_angles": {
+            "leftmost_track_auto": null,
+            "rightmost_track_auto": null,
+            "bearing_to_water_auto": null,
+            "device_compass_present": "no",
+            "no_tracks_main_group": "25",
+            "outlier_tracks_present": "no",
+            "light_sources_present": "no",
+            "hatchling_emergence_time_known": "no"
+          },
+          "fan_angles_manual": {
+            "leftmost_track_manual": "307",
+            "rightmost_track_manual": "29",
+            "bearing_to_water_manual": "342"
+          },
+          "hatchling_emergence_time_group": {
+            "hatchling_emergence_time": null,
+            "hatchling_emergence_time_source": null
+          },
+
+        # # TT0.51
+        "fan_angles": {
+            "photo_hatchling_tracks_seawards": "1517444725383.jpg",
+            "photo_hatchling_tracks_relief": "1517444761289.jpg",
+            "bearing_to_water_manual": "255.0000000000",
+            "leftmost_track_manual": "190.0000000000",
+            "rightmost_track_manual": "251.0000000000",
+            "no_tracks_main_group": "12",
+            "no_tracks_main_group_min": "12",
+            "no_tracks_main_group_max": "13",
+            "outlier_tracks_present": "present",
+            "hatchling_path_to_sea": "uneven-ground",
+            "path_to_sea_comments": "Climbing out of goanna diggings",
+            "hatchling_emergence_time_known": "no",
+            "cloud_cover_at_emergence_known": "no",
+            "light_sources_present": "present"
+          },
+          "hatchling_emergence_time_group": {
+            "hatchling_emergence_time": null,
+            "hatchling_emergence_time_source": null
+          },
+          "emergence_climate": {
+            "cloud_cover_at_emergence": null
+          },
+          "light_source": {
+            "light_source_photo": "1517444993845.jpg",
+            "light_bearing_manual": "164.0000000000",
+            "light_source_type": "artificial",
+            "light_source_description": "Industry"
+          },
+          "other_light_sources": {
+            "other_light_sources_present": "na"
+          },
+          "outlier_track": {
+            "outlier_track_photo": "1517445093780.jpg",
+            "outlier_track_bearing_manual": "135.0000000000",
+            "outlier_group_size": "1",
+            "outlier_track_comment": null
+          },
+
+
+        # Track or Treat 0.53
+        "fan_angles": {
+            "photo_hatchling_tracks_seawards": "1542579937330.jpg",
+            "photo_hatchling_tracks_relief": null,
+            "bearing_to_water_manual": "9.0000000000",
+            "leftmost_track_manual": "308.0000000000",
+            "rightmost_track_manual": "59.0000000000",
+            "no_tracks_main_group": "26",
+            "no_tracks_main_group_min": "26",
+            "no_tracks_main_group_max": "26",
+            "outlier_tracks_present": "present",
+            "hatchling_path_to_sea": "natural-obstacles",
+            "path_to_sea_comments": null,
+            "hatchling_emergence_time_known": "no",
+            "cloud_cover_at_emergence_known": "no",
+            "light_sources_present": "absent"
+          },
+          "outlier_track": {
+            "outlier_track_photo": "1542579974334.jpg",
+            "outlier_track_bearing_manual": "1.0000000000",
+            "outlier_group_size": "1",
+            "outlier_track_comment": null
+          },
+          "hatchling_emergence_time_group": {
+            "hatchling_emergence_time": null,
+            "hatchling_emergence_time_source": null
+          },
+          "emergence_climate": {
+            "cloud_cover_at_emergence": null
+          },
+
+        # ToN 0.54
+        "fan_angles": {
+            "photo_hatchling_tracks_seawards": "1547327246933.jpg",
+            "photo_hatchling_tracks_relief": "1547327279086.jpg",
+            "bearing_to_water_manual": "150.0000000000",
+            "leftmost_track_manual": "29.0000000000",
+            "rightmost_track_manual": "253.0000000000",
+            "no_tracks_main_group": "28",
+            "no_tracks_main_group_min": "26",
+            "no_tracks_main_group_max": "35",
+            "outlier_tracks_present": "present",
+            "hatchling_path_to_sea": "clear uneven-ground",
+            "path_to_sea_comments": "Small grass shrub directly Infront of nest blocking path to sea",
+            "hatchling_emergence_time_known": "no",
+            "cloud_cover_at_emergence_known": "no",
+            "light_sources_present": "present"
+          },
+          "outlier_track": [
+            {
+              "outlier_track_photo": "1547327400073.jpg",
+              "outlier_track_bearing_manual": "341.0000000000",
+              "outlier_group_size": "1",
+              "outlier_track_comment": "Eventually did a U turn and went to sea"
+            },
+            {
+              "outlier_track_photo": "1547327445466.jpg",
+              "outlier_track_bearing_manual": "343.0000000000",
+              "outlier_group_size": "1",
+              "outlier_track_comment": "Did a U turn and went to sea after about 6m"
+            }
+          ],
+          "hatchling_emergence_time_group": {
+            "hatchling_emergence_time": null,
+            "hatchling_emergence_time_source": null
+          },
+          "emergence_climate": {
+            "cloud_cover_at_emergence": null
+          },
+          "light_source": [
+            {
+              "light_source_photo": "1547327464990.jpg",
+              "light_bearing_manual": "190.0000000000",
+              "light_source_type": "artificial",
+              "light_source_description": "Wheatstone flame and lights"
+            },
+            {
+              "light_source_photo": "1547327498461.jpg",
+              "light_bearing_manual": "236.0000000000",
+              "light_source_type": "artificial",
+              "light_source_description": "Chevron jetty lease"
+            }
+          ],
+
+
+        # ToN 0.54 
+        "fan_angles": {
+            "photo_hatchling_tracks_seawards": "1547734428418.jpg",
+            "photo_hatchling_tracks_relief": "1547734482953.jpg",
+            "bearing_to_water_manual": "144.0000000000",
+            "leftmost_track_manual": "88.0000000000",
+            "rightmost_track_manual": "214.0000000000",
+            "no_tracks_main_group": "33",
+            "no_tracks_main_group_min": "30",
+            "no_tracks_main_group_max": "36",
+            "outlier_tracks_present": "absent",
+            "hatchling_path_to_sea": "clear",
+            "path_to_sea_comments": null,
+            "hatchling_emergence_time_known": "yes",
+            "cloud_cover_at_emergence_known": "no",
+            "light_sources_present": "present"
+          },
+          "hatchling_emergence_time_group": {
+            "hatchling_emergence_time": "2019-01-17T13:00:00.000Z",
+            "hatchling_emergence_time_source": "plusminus-30m"
+          },
+          "emergence_climate": {
+            "cloud_cover_at_emergence": null
+          },
+          "light_source": [
+            {
+              "light_source_photo": "1547734326084.jpg",
+              "light_bearing_manual": "259.0000000000",
+              "light_source_type": "artificial",
+              "light_source_description": "Chevron jetty lease rig"
+            },
+            {
+              "light_source_photo": "1547734360345.jpg",
+              "light_bearing_manual": "338.0000000000",
+              "light_source_type": "natural",
+              "light_source_description": "Moon"
+            },
+            {
+              "light_source_photo": "1547734544043.jpg",
+              "light_bearing_manual": "180.0000000000",
+              "light_source_type": "artificial",
+              "light_source_description": "Wheatstone"
+            }
+          ],
+
+
+        # outlier_track > outlier_track_photo
+        # light_source light_source_photo
+    
+
+    Returns:
+
+        None
+
+    Examples:
+    import os; path = os.path.join(settings.MEDIA_ROOT, "odka"); from wastd.observations.utils import *
+    fa=[import_odka_tt044(x) for x in downloaded_data("test_fanangles", path)]
+    """
+    if "fan_angles" in data and data["fan_angles"]:
+
+        for obs in listify(data["fan_angles"]):
+
+            # Build data dict for update
+            new_data = dict(
+                encounter_id = enc.id,
+                bearing_to_water_degrees = float_or_none(
+                    obs.get("bearing_to_water_manual", None) or 
+                    obs.get("bearing_to_water_auto", None)
+                ),
+                bearing_leftmost_track_degrees = float_or_none(
+                    obs.get("leftmost_track_manual", None) or 
+                    obs.get("leftmost_track_auto", None)
+                ),
+                bearing_rightmost_track_degrees = float_or_none(
+                    obs.get("rightmost_track_manual", None) or 
+                    obs.get("rightmost_track_auto", None)
+                ),
+                no_tracks_main_group = int_or_none(obs["no_tracks_main_group"]), 
+                no_tracks_main_group_min = int_or_none(obs["no_tracks_main_group_min"]),
+                no_tracks_main_group_max = int_or_none(obs["no_tracks_main_group_max"]), 
+                outlier_tracks_present = str_or_na(obs["outlier_tracks_present"]),
+                path_to_sea_comments = "{0} {1}".format(
+                    obs["hatchling_path_to_sea"], obs["path_to_sea_comments"]),
+                hatchling_emergence_time_known = str_or_na(obs["hatchling_emergence_time_known"]),
+                light_sources_present = str_or_na(obs["light_sources_present"]),
+                hatchling_emergence_time = int_or_none(data["hatchling_emergence_time_group"]["hatchling_emergence_time"]),
+                hatchling_emergence_time_accuracy = str_or_na(data["hatchling_emergence_time_group"]["hatchling_emergence_time_source"]),
+                cloud_cover_at_emergence = int_or_none(data["emergence_climate"]["cloud_cover_at_emergence"]),
+            )
+
+            criteria = new_data
+            target = TurtleHatchlingEmergenceObservation.objects.filter(**criteria)
+            if target.exists():
+                e = target.update(**new_data)
+                e = TurtleHatchlingEmergenceObservation.objects.get(**criteria)
+                logger.info("  [handle_odka_fanangle] Updated existing {0}...".format(e.__str__()))
+
+            else:
+                e = TurtleHatchlingEmergenceObservation.objects.create(**new_data)
+                logger.info("  [handle_odka_fanangle] Created new {0}...".format(e.__str__()))
+
+            # Handle photos
+            if obs["photo_hatchling_tracks_seawards"]:
+                handle_media_attachment_odka(
+                    enc, media, obs["photo_hatchling_tracks_seawards"], title="Photo {0}".format(e.__str__()))
+
+            
+            if obs["photo_hatchling_tracks_relief"]:
+                handle_media_attachment_odka(
+                    enc, media, obs["photo_hatchling_tracks_relief"], title="Photo {0}".format(e.__str__()))
+    else:
+        logger.info("  [handle_odka_fanangle] found no TurtleHatchlingEmergenceObservation")
+
+    # outliers
+    if "outlier_track" in data and data["outlier_track"]:
+        for obs in listify(data["outlier_track"]):
+            # "outlier_track": {
+            #     "outlier_track_photo": "1546837474680.jpg",
+            #     "outlier_track_bearing_manual": "180.0000000000",
+            #     "outlier_group_size": "1",
+            #     "outlier_track_comment": null
+            #  },
+            new_data = dict(
+                    encounter_id = enc.id,
+                    bearing_outlier_track_degrees = float_or_none(
+                        obs.get("outlier_track_bearing_manual", None) or 
+                        obs.get("track_bearing_manual", None) or 
+                        obs.get("track_bearing_auto", None)
+                    ),
+                    outlier_group_size = int_or_none(obs["outlier_group_size"]),
+                    outlier_track_comment = obs["outlier_track_comment"],
+                )
+            criteria = new_data
+            target = TurtleHatchlingEmergenceOutlierObservation.objects.filter(**criteria)
+            if target.exists():
+                e = target.update(**new_data)
+                e = TurtleHatchlingEmergenceOutlierObservation.objects.get(**criteria)
+                logger.info("  [handle_odka_fanangle_outlier] Updated existing {0}...".format(e.__str__()))
+
+            else:
+                e = TurtleHatchlingEmergenceOutlierObservation.objects.create(**new_data)
+                logger.info("  [handle_odka_fanangle_outlier] Created new {0}...".format(e.__str__()))
+
+            if obs["outlier_track_photo"]:
+                handle_media_attachment_odka(
+                    enc, media, obs["outlier_track_photo"], title="Photo {0}".format(e.__str__()))
+
+    # light sources
+    if "light_source" in data and data["light_source"]:
+        for obs in listify(data["light_source"]):
+            # "light_source": [
+            #     {
+            #       "light_source_photo": null,
+            #       "light_bearing_manual": "50.0000000000",
+            #       "light_source_type": "artificial",
+            #       "light_source_description": "Oil rig#5"
+            #     },
+            #     {
+            #       "light_source_photo": null,
+            #       "light_bearing_manual": "190.0000000000",
+            #       "light_source_type": "natural",
+            #       "light_source_description": "Moon"
+            #     }
+            # ]
+            new_data = dict(
+                    encounter_id = enc.id,
+                    bearing_light_degrees = float_or_none(
+                        obs.get("light_bearing_manual", None) or 
+                        obs.get("light_bearing_auto", None) 
+                    ),
+                    light_source_type = obs["light_source_type"],
+                    light_source_description = obs["light_source_description"],
+                )
+            criteria = new_data
+            target = LightSourceObservation.objects.filter(**criteria)
+            if target.exists():
+                e = target.update(**new_data)
+                e = LightSourceObservation.objects.get(**criteria)
+                logger.info("  [handle_odka_fanangle_lightsource] Updated existing {0}...".format(e.__str__()))
+
+            else:
+                e = LightSourceObservation.objects.create(**new_data)
+                logger.info("  [handle_odka_fanangle_lightsource] Created new {0}...".format(e.__str__()))
+
+
+
+
+    return None
+
+
+
 # ---------------------------------------------------------------------------#
 # Site Visit Start 0.1-0.2
 #
@@ -4495,144 +4932,7 @@ def import_odka_tt044(r):
         handle_odka_nesttagobservation(enc, media, data)
         handle_odka_turtlenestobservation(enc, media, data)
         handle_odka_hatchlingmorphometricobservation(enc, media, data)
-        # handle_odka_fanangles(enc, media, data)
-
-        if "photo_hatchling_tracks_seawards" in data["fan_angles"]:
-            handle_media_attachment_odka(
-                enc, media,
-                data["fan_angles"]["photo_hatchling_tracks_seawards"],
-                title="Hatchling tracks seawards")
-        if "photo_hatchling_tracks_relief" in data["fan_angles"]:
-            handle_media_attachment_odka(
-                enc, media,
-                data["fan_angles"]["photo_hatchling_tracks_relief"],
-                title="Hatchling tracks relief")
-
-        # TT0.44
-        # "hatchling_emergence_time_group": {
-        #     "hatchling_emergence_time": null
-        #   },
-        # "fan_angles_manual": {
-        #     "bearing_to_water_manual": "6",
-        #     "rightmost_track_manual": null,
-        #     "leftmost_track_manual": null
-        #   },
-        # "fan_angles": {
-        #     "no_tracks_main_group": "1",
-        #     "device_compass_present": "no",
-        #     "light_sources_present": "na",
-        #     "rightmost_track_auto": null,
-        #     "hatchling_emergence_time_known": "no",
-        #     "bearing_to_water_auto": null,
-        #     "leftmost_track_auto": null,
-        #     "outlier_tracks_present": "no"
-        #   },
-
-        # "outlier_track": [
-        #     {
-        #       "track_bearing_auto": null,
-        #       "track_bearing_manual": "347"
-        #     },
-        #     {
-        #       "track_bearing_auto": null,
-        #       "track_bearing_manual": "21"
-        #     }
-        #   ],
-
-        # TT0.45
-        # "fan_angles_manual": {
-        #    "bearing_to_water_manual": null,
-        #    "rightmost_track_manual": null,
-        #    "leftmost_track_manual": null
-        #  },
-        #  "fan_angles": {
-        #    "no_tracks_main_group": "35",
-        #    "device_compass_present": "yes",
-        #    "light_sources_present": "no",
-        #    "rightmost_track_auto": "296.2910000000",
-        #    "hatchling_emergence_time_known": "no",
-        #    "bearing_to_water_auto": "296.7820000000",
-        #    "leftmost_track_auto": "296.6340000000",
-        #    "outlier_tracks_present": "yes"
-        #  },
-        #  "outlier_track": {
-        #    "track_bearing_auto": "296.9590000000",
-        #    "track_bearing_manual": null
-        #  },
-
-        # TT0.46
-        # "fan_angles": {
-        #     "no_tracks_main_group": "8",
-        #     "device_compass_present": "no",
-        #     "light_sources_present": "no",
-        #     "rightmost_track_auto": null,
-        #     "hatchling_emergence_time_known": "no",
-        #     "bearing_to_water_auto": null,
-        #     "leftmost_track_auto": null,
-        #     "outlier_tracks_present": "yes"
-        #   },
-
-        # TT0.47
-        # "fan_angles": {
-        #     "leftmost_track_auto": null,
-        #     "rightmost_track_auto": null,
-        #     "bearing_to_water_auto": null,
-        #     "device_compass_present": "no",
-        #     "no_tracks_main_group": "25",
-        #     "outlier_tracks_present": "no",
-        #     "light_sources_present": "no",
-        #     "hatchling_emergence_time_known": "no"
-        #   },
-        #   "fan_angles_manual": {
-        #     "leftmost_track_manual": "307",
-        #     "rightmost_track_manual": "29",
-        #     "bearing_to_water_manual": "342"
-        #   },
-        #   "hatchling_emergence_time_group": {
-        #     "hatchling_emergence_time": null,
-        #     "hatchling_emergence_time_source": null
-        #   },
-
-        # # TT0.51
-        # "fan_angles": {
-        #     "photo_hatchling_tracks_seawards": "1517444725383.jpg",
-        #     "photo_hatchling_tracks_relief": "1517444761289.jpg",
-        #     "bearing_to_water_manual": "255.0000000000",
-        #     "leftmost_track_manual": "190.0000000000",
-        #     "rightmost_track_manual": "251.0000000000",
-        #     "no_tracks_main_group": "12",
-        #     "no_tracks_main_group_min": "12",
-        #     "no_tracks_main_group_max": "13",
-        #     "outlier_tracks_present": "present",
-        #     "hatchling_path_to_sea": "uneven-ground",
-        #     "path_to_sea_comments": "Climbing out of goanna diggings",
-        #     "hatchling_emergence_time_known": "no",
-        #     "cloud_cover_at_emergence_known": "no",
-        #     "light_sources_present": "present"
-        #   },
-        #   "hatchling_emergence_time_group": {
-        #     "hatchling_emergence_time": null,
-        #     "hatchling_emergence_time_source": null
-        #   },
-        #   "emergence_climate": {
-        #     "cloud_cover_at_emergence": null
-        #   },
-        #   "light_source": {
-        #     "light_source_photo": "1517444993845.jpg",
-        #     "light_bearing_manual": "164.0000000000",
-        #     "light_source_type": "artificial",
-        #     "light_source_description": "Industry"
-        #   },
-        #   "other_light_sources": {
-        #     "other_light_sources_present": "na"
-        #   },
-        #   "outlier_track": {
-        #     "outlier_track_photo": "1517445093780.jpg",
-        #     "outlier_track_bearing_manual": "135.0000000000",
-        #     "outlier_group_size": "1",
-        #     "outlier_track_comment": null
-        #   },
-
+        handle_odka_fanangles(enc, media, data)
         enc.save()
 
     logger.info("Done: {0}\n".format(enc))
@@ -5064,8 +5364,9 @@ def import_all_odka(path="."):
     Example usage on shell_plus:
 
     import sys; reload(sys); sys.setdefaultencoding('UTF8');
-    path="data/odka"; from wastd.observations.utils import *
-    save_all_odka(path="data/odka")
+    import os; path = os.path.join(settings.MEDIA_ROOT, "odka") 
+    from wastd.observations.utils import *
+    save_all_odka(path=path)
     enc = import_all_odka(path="data/odka")
 
     TODO: disable deprecated forms after adding fan angles etc to import
@@ -5095,6 +5396,7 @@ def import_all_odka(path="."):
         tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)],
         tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)],
         tt55=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-55_1548318718", path)],
+        
 
         sve01=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-1_1490756971", path)],
         sve02=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-2_1510716716", path)],

@@ -41,7 +41,11 @@ from wastd.observations.models import (
     TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation,
     TurtleNestEncounter,
-    TurtleNestObservation
+    TurtleNestObservation,
+    PathToSea,
+    TurtleHatchlingEmergenceObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
+    LightSourceObservation
 )
 
 from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS
@@ -152,6 +156,30 @@ class TurtleNestDisturbanceObservationInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
+class TurtleHatchlingEmergenceObservationInline(admin.TabularInline):
+    """Admin for TurtleHatchlingEmergenceObservation."""
+
+    extra = 0
+    model = TurtleHatchlingEmergenceObservation
+    classes = ('grp-collapse grp-open',)
+
+
+class TurtleHatchlingEmergenceOutlierObservationInline(admin.TabularInline):
+    """Admin for TurtleHatchlingEmergenceOutlierObservation."""
+
+    extra = 0
+    model = TurtleHatchlingEmergenceOutlierObservation
+    classes = ('grp-collapse grp-open',)
+
+
+class LightSourceObservationObservationInline(admin.TabularInline):
+    """Admin for LightSourceObservation."""
+
+    extra = 0
+    model = LightSourceObservation
+    classes = ('grp-collapse grp-open',)
+
+
 class TemperatureLoggerSettingsInline(admin.TabularInline):
     """Admin for TemperatureLoggerSettings."""
 
@@ -176,16 +204,94 @@ class TemperatureLoggerDeploymentInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
-@admin.register(TagObservation)
-class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
-    """Admin for TagObservation."""
+class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
+    """Admin mixin for Observation models."""
 
     save_on_top = True
-    # date_hierarchy = 'datetime'
-    list_display = ('datetime', 'latitude', 'longitude',
+    date_hierarchy = 'encounter__when'
+    LIST_FIRST = (
+        'pk', 
+        'area', 
+        'site', 
+        'latitude', 
+        'longitude',  
+        'date',
+    )
+    LIST_LAST = (
+        'encounter_link', 
+        'status', 
+        'comments'
+    )
+    LIST_FILTER = (
+        'encounter__area',
+        'encounter__site',
+        'encounter__status',
+        'encounter__encounter_type',
+    )
+    search_fields = ('comments', )
+    readonly_fields = ('encounter', )
+
+    area = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+    site = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=Area,
+            search_fields=["name__icontains", ]
+        )
+    )
+
+    def area(self, obj):
+        """Make data source readable."""
+        return obj.encounter.area
+    area.short_description = 'Area'
+
+    def site(self, obj):
+        """Make data source readable."""
+        return obj.encounter.site
+    site.short_description = 'Site'
+
+    def status(self, obj):
+        """Make health status human readable."""
+        return obj.encounter.get_status_display()
+    status.short_description = 'Status'
+
+    def latitude(self, obj):
+        """Make data source readable."""
+        return obj.encounter.latitude
+    latitude.short_description = 'Latitude'
+
+    def longitude(self, obj):
+        """Make data source readable."""
+        return obj.encounter.longitude
+    longitude.short_description = 'Longitude'
+
+    def date(self, obj):
+        """Make data source readable."""
+        return obj.encounter.when
+    date.short_description = 'Date'
+
+    def encounter_link(self, obj):
+        """A link to the encounter."""
+        return mark_safe(
+            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
+                                           obj.encounter.__str__()))
+    encounter_link.short_description = 'Encounter'
+    encounter_link.allow_tags = True
+
+
+
+@admin.register(TagObservation)
+class TagObservationAdmin(ObservationAdminMixin):
+    """Admin for TagObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
                     'type_display', 'name', 'tag_location_display',
-                    'status_display', 'encounter_link', 'comments')
-    list_filter = ('tag_type', 'tag_location', 'status')
+                    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + ('tag_type', 'tag_location',)
     search_fields = ('name', 'comments')
     # autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
     handler = forms.ChoiceField(
@@ -219,251 +325,61 @@ class TagObservationAdmin(VersionAdmin, admin.ModelAdmin):
         return obj.get_tag_location_display()
     tag_location_display.short_description = 'Tag Location'
 
-    def status_display(self, obj):
-        """Make health status human readable."""
-        return obj.get_status_display()
-    status_display.short_description = 'Status'
-
     def animal_name(self, obj):
         """Animal name."""
         return obj.encounter.name
     animal_name.short_description = 'Animal Name'
 
-    def encounter_link(self, obj):
-        """A link to the encounter."""
-        return mark_safe(
-            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
-                                           obj.encounter.__str__()))
-    encounter_link.short_description = 'Encounter'
-    encounter_link.allow_tags = True
-
 
 @admin.register(NestTagObservation)
-class NestTagObservationAdmin(VersionAdmin, admin.ModelAdmin):
+class NestTagObservationAdmin(ObservationAdminMixin):
     """Admin for NestTagObservation."""
 
-    save_on_top = True
-    date_hierarchy = 'encounter__when'
-    list_display = (
-        'pk', 'area', 'site',
-        'latitude', 'longitude',  'date',
+    list_display = ObservationAdminMixin.LIST_FIRST + (
         'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
-        'encounter_link',
-        'status', 'comments')
-    list_filter = ('encounter__area', 'encounter__site', 'flipper_tag_id', 'tag_label', 'encounter__status')
+        ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + ('flipper_tag_id', 'tag_label',)
     search_fields = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
-    readonly_fields = ('encounter', )
-    area = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    site = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-
-    def area(self, obj):
-        """Make data source readable."""
-        return obj.encounter.area
-    area.short_description = 'Area'
-
-    def site(self, obj):
-        """Make data source readable."""
-        return obj.encounter.site
-    site.short_description = 'Site'
 
     def tag_name(self, obj):
         """Nest tag name."""
         return obj.name
     tag_name.short_description = 'Nest Tag ID'
 
-    def status(self, obj):
-        """Make health status human readable."""
-        return obj.encounter.get_status_display()
-    status.short_description = 'Status'
-
-    def latitude(self, obj):
-        """Make data source readable."""
-        return obj.encounter.latitude
-    latitude.short_description = 'Latitude'
-
-    def longitude(self, obj):
-        """Make data source readable."""
-        return obj.encounter.longitude
-    longitude.short_description = 'Longitude'
-
-    def date(self, obj):
-        """Make data source readable."""
-        return obj.encounter.when
-    date.short_description = 'Date'
-
-    def encounter_link(self, obj):
-        """A link to the encounter."""
-        return mark_safe(
-            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
-                                           obj.encounter.__str__()))
-    encounter_link.short_description = 'Encounter'
-    encounter_link.allow_tags = True
-
 
 @admin.register(TurtleNestObservation)
-class TurtleNestObservationAdmin(VersionAdmin, admin.ModelAdmin):
+class TurtleNestObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleNestObservation."""
 
-    save_on_top = True
-    date_hierarchy = 'encounter__when'
-    list_display = (
-        'pk', 'area', 'site',
-        'latitude', 'longitude',  'date',
+    list_display = ObservationAdminMixin.LIST_FIRST + (
         'nest_position', 'eggs_laid', 'egg_count',
         'hatching_success', 'emergence_success',
         'no_egg_shells', 'no_live_hatchlings_neck_of_nest', 'no_live_hatchlings',
         'no_dead_hatchlings', 'no_undeveloped_eggs',
         'no_unhatched_eggs', 'no_unhatched_term', 'no_depredated_eggs',
         'nest_depth_top', 'nest_depth_bottom',
-        # 'sand_temp', 'air_temp', 'water_temp', 'egg_temp', 'comments',
-        'encounter_link',
-        'status', 'comments')
-    list_filter = ('encounter__area', 'encounter__site', 'nest_position', 'eggs_laid', 'encounter__status')
-    search_fields = ('comments', )
-    readonly_fields = ('encounter', )
-    area = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    site = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-
-    def area(self, obj):
-        """Make data source readable."""
-        return obj.encounter.area
-    area.short_description = 'Area'
-
-    def site(self, obj):
-        """Make data source readable."""
-        return obj.encounter.site
-    site.short_description = 'Site'
-
-    def tag_name(self, obj):
-        """Nest tag name."""
-        return obj.name
-    tag_name.short_description = 'Nest Tag ID'
-
-    def status(self, obj):
-        """Make health status human readable."""
-        return obj.encounter.get_status_display()
-    status.short_description = 'Status'
-
-    def latitude(self, obj):
-        """Make data source readable."""
-        return obj.encounter.latitude
-    latitude.short_description = 'Latitude'
-
-    def longitude(self, obj):
-        """Make data source readable."""
-        return obj.encounter.longitude
-    longitude.short_description = 'Longitude'
-
-    def date(self, obj):
-        """Make data source readable."""
-        return obj.encounter.when
-    date.short_description = 'Date'
-
-    def encounter_link(self, obj):
-        """A link to the encounter."""
-        return mark_safe(
-            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
-                                           obj.encounter.__str__()))
-    encounter_link.short_description = 'Encounter'
-    encounter_link.allow_tags = True
+        ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + ('nest_position', 'eggs_laid',)
 
 
 @admin.register(TurtleNestDisturbanceObservation)
-class TurtleNestDisturbanceObservationAdmin(VersionAdmin, admin.ModelAdmin):
+# class TurtleNestDisturbanceObservationAdmin(VersionAdmin, admin.ModelAdmin):
+class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleNestDisturbanceObservation."""
 
-    save_on_top = True
-    date_hierarchy = 'encounter__when'
-    list_display = (
-        'pk', 'area', 'site', 'latitude', 'longitude',  'date',
-        'disturbance_cause', 'disturbance_cause_confidence', 'disturbance_severity', 'comments',
-        'encounter_link', 'status', 'comments')
-    list_filter = (
-        'encounter__area',
-        'encounter__site',
-        'disturbance_cause',
-        'encounter__status',
-        'encounter__encounter_type',
+    # save_on_top = True
+    # date_hierarchy = 'encounter__when'
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        'disturbance_cause', 
+        'disturbance_cause_confidence', 
+        'disturbance_severity', 
+        'comments',
+        ) + ObservationAdminMixin.LIST_LAST
+        
+    list_filter = ObservationAdminMixin.LIST_FILTER + (
         'disturbance_cause_confidence',
         'disturbance_severity',
     )
-    search_fields = ('comments', )
-    readonly_fields = ('encounter', )
-    area = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-    site = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=Area,
-            search_fields=["name__icontains", ]
-        )
-    )
-
-    def area(self, obj):
-        """Make data source readable."""
-        return obj.encounter.area
-    area.short_description = 'Area'
-
-    def site(self, obj):
-        """Make data source readable."""
-        return obj.encounter.site
-    site.short_description = 'Site'
-
-    def tag_name(self, obj):
-        """Nest tag name."""
-        return obj.name
-    tag_name.short_description = 'Nest Tag ID'
-
-    def status(self, obj):
-        """Make health status human readable."""
-        return obj.encounter.get_status_display()
-    status.short_description = 'Status'
-
-    def latitude(self, obj):
-        """Make data source readable."""
-        return obj.encounter.latitude
-    latitude.short_description = 'Latitude'
-
-    def longitude(self, obj):
-        """Make data source readable."""
-        return obj.encounter.longitude
-    longitude.short_description = 'Longitude'
-
-    def date(self, obj):
-        """Make data source readable."""
-        return obj.encounter.when
-    date.short_description = 'Date'
-
-    def encounter_link(self, obj):
-        """A link to the encounter."""
-        return mark_safe(
-            '<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url,
-                                           obj.encounter.__str__()))
-    encounter_link.short_description = 'Encounter'
-    encounter_link.allow_tags = True
 
 
 class FieldMediaAttachmentInline(admin.TabularInline):
@@ -555,7 +471,9 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     date_hierarchy = 'when'
     # Filters for change_list
     list_filter = (
-        'area', 'site', 'status', 'observer', 'reporter',
+        'area', 'site', 'status', 
+        # 'observer', 'reporter',
+
         'location_accuracy', 'encounter_type', 'source')  # 'survey',
 
     # Columns for change_list, allow re-use and inserting fields
@@ -648,6 +566,9 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
         HatchlingMorphometricObservationInline,
+        TurtleHatchlingEmergenceObservationInline,
+        TurtleHatchlingEmergenceOutlierObservationInline,
+        LightSourceObservationObservationInline,
         CustomStateLogInline
     ]
 
@@ -772,6 +693,9 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
         HatchlingMorphometricObservationInline,
+        TurtleHatchlingEmergenceObservationInline,
+        TurtleHatchlingEmergenceOutlierObservationInline,
+        LightSourceObservationObservationInline,
         CustomStateLogInline
     ]
 

@@ -355,3 +355,8 @@ class OgcFidBatchUpsertViewSet(BatchUpsertViewSet):
             return qs.values("pk", "ogc_fid", "status")
         else:
             return qs.values("pk", "ogc_fid", )
+
+class AreaEncounterObsBatchUpsertViewSet(BatchUpsertViewSet):
+    """A viewset to upsert Observations linked to an AreaEncounter."""
+
+    pass

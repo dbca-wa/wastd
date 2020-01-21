@@ -115,6 +115,9 @@ from wastd.observations.models import (
     TurtleNestDisturbanceTallyObservation,
     TurtleNestEncounter,
     TurtleNestObservation,
+    TurtleHatchlingEmergenceObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
+    LightSourceObservation
 )
 from wastd.users.models import User
 
@@ -542,6 +545,15 @@ class ObservationSerializer(serializers.ModelSerializer):
         if isinstance(obj, DugongMorphometricObservation):
             return DugongMorphometricObservationSerializer(
                 obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TurtleHatchlingEmergenceObservation):
+            return TurtleHatchlingEmergenceObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, TurtleHatchlingEmergenceOutlierObservation):
+            return TurtleHatchlingEmergenceOutlierObservationSerializer(
+                obj, context=self.context).to_representation(obj)
+        if isinstance(obj, LightSourceObservation):
+            return LightSourceObservationerializer(
+                obj, context=self.context).to_representation(obj)
 
         return super(ObservationSerializer, self).to_representation(obj)
 
@@ -585,7 +597,7 @@ class TurtleMorphometricObservationSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = TurtleMorphometricObservation
-        fields = ("observation_name", "as_latex",
+        fields = ("observation_name", #"as_latex",
                   "curved_carapace_length_mm", "curved_carapace_length_accuracy",
                   "straight_carapace_length_mm", "straight_carapace_length_accuracy",
                   "curved_carapace_width_mm", "curved_carapace_width_accuracy",
@@ -733,22 +745,6 @@ class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
                   "distance_to_vegetation_mm", )
 
 
-class NestTagObservationSerializer(serializers.ModelSerializer):
-    """NestTagObservationSerializer."""
-
-    # as_latex = serializers.ReadOnlyField()
-
-    class Meta:
-        """Class options."""
-
-        model = NestTagObservation
-        fields = ("observation_name",  # "as_latex", #
-                  "status",
-                  "flipper_tag_id",
-                  "date_nest_laid",
-                  "tag_label",
-                  "comments",
-                  )
 
 
 class HatchlingMorphometricObservationSerializer(serializers.ModelSerializer):
@@ -1046,30 +1042,6 @@ class TagObservationEncounterSerializer(GeoFeatureModelSerializer):
         fields = ("encounter", "observation_name", "tag_type", "name",
                   "tag_location", "status", "comments", )
 
-
-class TurtleNestObservationEncounterSerializer(GeoFeatureModelSerializer):
-    """TurtleNestObservation serializer including encounter for standalone viewset."""
-
-    encounter = FastEncounterSerializer(many=False, read_only=True)
-    point = GeometryField()
-
-    class Meta:
-        """Class options."""
-
-        model = TurtleNestObservation
-        geo_field = "point"
-        fields = (
-            "encounter", "observation_name",
-
-            "latitude", "longitude",
-            "nest_position", "eggs_laid", "egg_count",
-            "hatching_success", "emergence_success",
-            "no_egg_shells", "no_live_hatchlings_neck_of_nest", "no_live_hatchlings",
-            "no_dead_hatchlings", "no_undeveloped_eggs",
-            "no_unhatched_eggs", "no_unhatched_term", "no_depredated_eggs",
-            "nest_depth_top", "nest_depth_bottom",
-            "sand_temp", "air_temp", "water_temp", "egg_temp", "comments",
-        )
 
 
 class EncounterFilter(filters.FilterSet):
@@ -1499,6 +1471,32 @@ class TagObservationViewSet(viewsets.ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
+# ----------------------------------------------------------------------------#
+# TurtleNestObservation
+# ----------------------------------------------------------------------------#
+class TurtleNestObservationEncounterSerializer(GeoFeatureModelSerializer):
+    """TurtleNestObservation serializer including encounter for standalone viewset."""
+
+    encounter = FastEncounterSerializer(many=False, read_only=True)
+    point = GeometryField()
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleNestObservation
+        geo_field = "point"
+        fields = (
+            "encounter", "observation_name", "latitude", "longitude",
+            "nest_position", "eggs_laid", "egg_count",
+            "hatching_success", "emergence_success",
+            "no_egg_shells", "no_live_hatchlings_neck_of_nest", "no_live_hatchlings",
+            "no_dead_hatchlings", "no_undeveloped_eggs",
+            "no_unhatched_eggs", "no_unhatched_term", "no_depredated_eggs",
+            "nest_depth_top", "nest_depth_bottom",
+            "sand_temp", "air_temp", "water_temp", "egg_temp", "comments",
+        )
+
+
 class TurtleNestObservationViewSet(viewsets.ModelViewSet):
     """TagObservation view set."""
 
@@ -1511,7 +1509,26 @@ class TurtleNestObservationViewSet(viewsets.ModelViewSet):
 
 
 # ----------------------------------------------------------------------------#
-# Tagged nests with Encounters
+# NestTagObservation
+# ----------------------------------------------------------------------------#
+class NestTagObservationSerializer(serializers.ModelSerializer):
+    """NestTagObservationSerializer."""
+
+    # as_latex = serializers.ReadOnlyField()
+
+    class Meta:
+        """Class options."""
+
+        model = NestTagObservation
+        fields = ("observation_name",  # "as_latex", #
+                  "status",
+                  "flipper_tag_id",
+                  "date_nest_laid",
+                  "tag_label",
+                  "comments",
+                  )
+
+
 class NestTagObservationEncounterSerializer(GeoFeatureModelSerializer):
     """NestTagObservationSerializer with encounter."""
 
@@ -1543,9 +1560,10 @@ class NestTagObservationViewSet(viewsets.ModelViewSet):
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
-router.register(r"nesttag-observations", NestTagObservationViewSet)
 
-
+# ----------------------------------------------------------------------------#
+# TurtleNestDisturbanceObservation
+# ----------------------------------------------------------------------------#
 class TurtleNestDisturbanceObservationEncounterSerializer(GeoFeatureModelSerializer):
     """TurtleNestDisturbanceObservation serializer with encounter."""
 
@@ -1576,20 +1594,147 @@ class TurtleNestDisturbanceObservationEncounterViewSet(viewsets.ModelViewSet):
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
+
+
+# ----------------------------------------------------------------------------#
+# TurtleHatchlingEmergenceObservation
+# ----------------------------------------------------------------------------#
+class TurtleHatchlingEmergenceObservationEncounterSerializer(GeoFeatureModelSerializer):
+    """TurtleHatchlingEmergenceObservation serializer including encounter for standalone viewset."""
+    encounter = FastEncounterSerializer(many=False, read_only=True)
+    point = GeometryField()
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleHatchlingEmergenceObservation
+        geo_field = "point"
+        fields = (
+            # From Encounter:
+            "encounter", 
+            "observation_name", 
+            "latitude", 
+            "longitude",
+            # From model:
+            "bearing_to_water_degrees",
+            "bearing_leftmost_track_degrees",
+            "bearing_rightmost_track_degrees",
+            "no_tracks_main_group",
+            "no_tracks_main_group_min",
+            "no_tracks_main_group_max",
+            "outlier_tracks_present",
+            "path_to_sea_comments",
+            "hatchling_emergence_time_known",
+            "light_sources_present",
+            "hatchling_emergence_time",
+            "hatchling_emergence_time_accuracy",
+            "cloud_cover_at_emergence",
+        )
+
+class TurtleHatchlingEmergenceObservationEncounterViewSet(viewsets.ModelViewSet):
+    """TurtleHatchlingEmergenceObservation view set."""
+
+    queryset = TurtleHatchlingEmergenceObservation.objects.all()
+    serializer_class = TurtleHatchlingEmergenceObservationEncounterSerializer
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",]
+    # pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
+
+
+# ----------------------------------------------------------------------------#
+# TurtleHatchlingEmergenceOutlierObservation
+# ----------------------------------------------------------------------------#
+class TurtleHatchlingEmergenceOutlierObservationEncounterSerializer(GeoFeatureModelSerializer):
+    """TurtleHatchlingEmergenceOutlierObservation serializer including encounter for standalone viewset."""
+    encounter = FastEncounterSerializer(many=False, read_only=True)
+    point = GeometryField()
+
+    class Meta:
+        """Class options."""
+
+        model = TurtleHatchlingEmergenceOutlierObservation
+        geo_field = "point"
+        fields = (
+            # From Encounter:
+            "encounter", 
+            "observation_name", 
+            "latitude", 
+            "longitude",
+            # From model:
+            "bearing_outlier_track_degrees", 
+            "outlier_group_size", 
+            "outlier_track_comment",
+            
+        )
+
+class TurtleHatchlingEmergenceOutlierObservationEncounterViewSet(viewsets.ModelViewSet):
+    """TurtleHatchlingEmergenceOutlierObservation view set."""
+
+    queryset = TurtleHatchlingEmergenceOutlierObservation.objects.all()
+    serializer_class = TurtleHatchlingEmergenceOutlierObservationEncounterSerializer
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",]
+    # pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
+
+
+# ----------------------------------------------------------------------------#
+# LightSourceObservation
+# ----------------------------------------------------------------------------#
+class LightSourceObservationEncounterSerializer(GeoFeatureModelSerializer):
+    """LightSource serializer including encounter for standalone viewset."""
+    encounter = FastEncounterSerializer(many=False, read_only=True)
+    point = GeometryField()
+
+    class Meta:
+        """Class options."""
+
+        model = LightSourceObservation
+        geo_field = "point"
+        fields = (
+            # From Encounter:
+            "encounter", 
+            "observation_name", 
+            "latitude", 
+            "longitude",
+            # From model:
+            "bearing_light_degrees", 
+            "light_source_type", 
+            "light_source_description", 
+        )
+
+class LightSourceObservationEncounterViewSet(viewsets.ModelViewSet):
+    """LightSourceObservation view set."""
+
+    queryset = LightSourceObservation.objects.all()
+    serializer_class = LightSourceObservationEncounterSerializer
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",]
+    # pagination_class = pagination.LimitOffsetPagination
+    pagination_class = MyGeoJsonPagination
+
+
 # ----------------------------------------------------------------------------#
 
+# Encounters
 router.register(r"encounters", EncounterViewSet)
 router.register(r"animal-encounters", AnimalEncounterViewSet)
 router.register(r"turtle-nest-encounters", TurtleNestEncounterViewSet)
 router.register(r"logger-encounters", LoggerEncounterViewSet)
+
+# Observations
 router.register(r"observations", ObservationViewSet)
 router.register(r"media-attachments", MediaAttachmentViewSet)
 router.register(r"tag-observations", TagObservationViewSet)
-router.register(r"disturbance-observations", TurtleNestDisturbanceObservationEncounterViewSet)
+
+router.register(r"turtle-nest-tag-observations", NestTagObservationViewSet)
+router.register(r"turtle-nest-disturbance-observations", TurtleNestDisturbanceObservationEncounterViewSet)
 router.register(r"turtle-nest-excavations", TurtleNestObservationViewSet)
+router.register(r"turtle-nest-hatchling-emergences", TurtleHatchlingEmergenceObservationEncounterViewSet)
+router.register(r"turtle-nest-hatchling-emergence-outliers", TurtleHatchlingEmergenceOutlierObservationEncounterViewSet)
+router.register(r"turtle-nest-hatchling-emergence-light-sources", LightSourceObservationEncounterViewSet)
 
-# Area -------------------------------------------------------------------#
-
+# ----------------------------------------------------------------------------#
+# occurrence.models.AreaEncounter
+# ----------------------------------------------------------------------------#
 
 class OccurrenceAreaEncounterPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence AreaEncounter."""
@@ -1661,9 +1806,9 @@ class OccurrenceAreaPointViewSet(BatchUpsertViewSet):
     model = occ_models.AreaEncounter
     uid_fields = ("source", "source_id")
 
-# Without base_name, the last registered viewset overrides the other area viewsets
-router.register(r"occ-areas", OccurrenceAreaPolyViewSet, base_name="occurrence_area_polys")
-router.register(r"occ-area-points", OccurrenceAreaPointViewSet, base_name="occurrence_area_points")
+# Without basename, the last registered viewset overrides the other area viewsets
+router.register(r"occ-areas", OccurrenceAreaPolyViewSet, basename="occurrence_area_polys")
+router.register(r"occ-area-points", OccurrenceAreaPointViewSet, basename="occurrence_area_points")
 
 
 # TaxonArea -------------------------------------------------------------------#
@@ -1794,9 +1939,9 @@ class OccurrenceTaxonAreaEncounterPointViewSet(OccurrenceTaxonAreaEncounterPolyV
     serializer_class = OccurrenceTaxonAreaEncounterPointSerializer
 
 
-# Without base_name, the last registered viewset overrides the other area viewsets
-router.register(r"occ-taxon-areas", OccurrenceTaxonAreaEncounterPolyViewSet, base_name="occurrence_taxonarea_polys")
-router.register(r"occ-taxon-points", OccurrenceTaxonAreaEncounterPointViewSet, base_name="occurrence_taxonarea_points")
+# Without basename, the last registered viewset overrides the other area viewsets
+router.register(r"occ-taxon-areas", OccurrenceTaxonAreaEncounterPolyViewSet, basename="occurrence_taxonarea_polys")
+router.register(r"occ-taxon-points", OccurrenceTaxonAreaEncounterPointViewSet, basename="occurrence_taxonarea_points")
 
 
 # CommunityArea -------------------------------------------------------------------#
@@ -1899,11 +2044,11 @@ class OccurrenceCommunityAreaEncounterPointViewSet(OccurrenceCommunityAreaEncoun
     serializer_class = OccurrenceCommunityAreaEncounterPointSerializer
 
 
-# Without base_name, the last registered viewset overrides the other area viewsets
+# Without basename, the last registered viewset overrides the other area viewsets
 router.register(r"occ-community-areas", OccurrenceCommunityAreaEncounterPolyViewSet,
-                base_name="occurrence_communityarea_polys")
+                basename="occurrence_communityarea_polys")
 router.register(r"occ-community-points", OccurrenceCommunityAreaEncounterPointViewSet,
-                base_name="occurrence_communityarea_points")
+                basename="occurrence_communityarea_points")
 
 
 """
@@ -2674,7 +2819,7 @@ class TaxonViewSet(NameIDBatchUpsertViewSet):
     uid_fields = ("name_id", )
 
 
-router.register("taxon", TaxonViewSet, base_name="taxon_full")
+router.register("taxon", TaxonViewSet, basename="taxon_full")
 
 
 class FastTaxonViewSet(TaxonViewSet):
@@ -2683,7 +2828,7 @@ class FastTaxonViewSet(TaxonViewSet):
     serializer_class = FastTaxonSerializer
 
 
-router.register("taxon-fast", FastTaxonViewSet, base_name="taxon_fast")
+router.register("taxon-fast", FastTaxonViewSet, basename="taxon_fast")
 
 
 # ----------------------------------------------------------------------------#
@@ -3737,29 +3882,6 @@ class PlantConditionViewSet(BatchUpsertViewSet):
 
 router.register("lookup-plantcondition", PlantConditionViewSet)
 
-# ----------------------------------------------------------------------------#
-# PlantCount
-#
-class PlantCountSerializer(serializers.ModelSerializer):
-    """Serializer for PlantCount: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.PlantCount
-        fields = "__all__"
-
-
-class PlantCountViewSet(BatchUpsertViewSet):
-    """View set for PlantCount."""
-
-    queryset = occ_models.PlantCount.objects.all()
-    serializer_class = PlantCountSerializer
-    uid_fields = ("pk",)
-    model = occ_models.PlantCount
-
-
-router.register("lookup-plantcount", PlantCountViewSet)
 
 # ----------------------------------------------------------------------------#
 # DetectionMethod
@@ -4000,3 +4122,42 @@ class PermitTypeViewSet(BatchUpsertViewSet):
 
 router.register("lookup-permittype", PermitTypeViewSet)
 
+# ----------------------------------------------------------------------------#
+# ObsGroup models
+# ----------------------------------------------------------------------------#
+
+# ----------------------------------------------------------------------------#
+# PlantCount
+#
+class PlantCountSerializer(serializers.ModelSerializer):
+    """Serializer for PlantCount: pk, code, label, description."""
+
+    count_method = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='code'
+    )
+
+    source_id = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='code'
+    )
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.PlantCount
+        fields = "__all__"
+
+
+class PlantCountViewSet(BatchUpsertViewSet):
+    """View set for PlantCount."""
+
+    queryset = occ_models.PlantCount.objects.all()
+    serializer_class = PlantCountSerializer
+    uid_fields = ("pk",)
+    model = occ_models.PlantCount
+
+
+router.register("obs-plantcount", PlantCountViewSet)
