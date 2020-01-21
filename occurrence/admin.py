@@ -256,6 +256,8 @@ class PlantCountAdmin(FSMTransitionMixin, VersionAdmin):
     """PlantCount Admin."""
 
     list_display = [
+        "pk",
+        "encounter",
         "land_manager_present",
         "count_method",
         "count_accuracy",

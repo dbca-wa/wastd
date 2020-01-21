@@ -589,7 +589,8 @@ NEST_DAMAGE_CHOICES = (
     ("test", "Training or test record"),
 )
 
-TIME_ESTIMATE_CHOICES = (    
+TIME_ESTIMATE_CHOICES = (
+    (NA_VALUE, "NA"),    
     ("same-night", "Sometime that night"),
     ("plusminus-2h", "Plusminus 2h of estimate"),
     ("plusminus-30m", "Correct to the hour")
@@ -1301,6 +1302,13 @@ class Survey(QualityControl, geo_models.Model):
             "Additional field workers, apart from the reporter,"
             " who assisted with data collection."))
 
+    label = models.CharField(
+        blank=True, null=True,
+        max_length=500,
+        verbose_name=_("Label"),
+        help_text=_("A human-readable, self-explanatory label."),
+    )
+
     class Meta:
         """Class options."""
 
@@ -1308,7 +1316,11 @@ class Survey(QualityControl, geo_models.Model):
         unique_together = ("source", "source_id")
 
     def __str__(self):
-        """The unicode representation."""
+        """The unicode representation is cached in field ``label`` and updated pre-save."""
+        return self.label or str(self.pk)
+
+    @property
+    def make_label(self):
         return "Survey {0} of {1} from {2} to {3}".format(
             self.pk,
             "unknown site" if not self.site else self.site.name,
@@ -1416,6 +1428,7 @@ def survey_pre_save(sender, instance, buffer_mins=30, *args, **kwargs):
                    "No encounters found.").format(et, instance.end_time, buffer_mins)
         instance.end_comments = msg
         logger.info(msg)
+    instance.label = instance.make_label
 
 
 @receiver(post_save, sender=Survey)
@@ -3695,153 +3708,275 @@ class TurtleNestDisturbanceObservation(Observation):
             self.disturbance_cause, self.disturbance_severity)
 
 
-# @python_2_unicode_compatible
-# class TurtleHatchlingEmergenceObservation(Observation):
-#     """Turtle hatchling emergence observation.
+class PathToSea(models.Model):
+    """A Mixin providing code, label and description."""
 
-#     Hatchling emergence observations can include:
+    code = models.SlugField(
+        max_length=500,
+        unique=True,
+        verbose_name=_("Code"),
+        help_text=_("A unique, url-safe code."),
+    )
 
-#     * Emergence time (if seen directly),
-#     * Fan angles of hatchling tracks forming a fan from nest to sea,
-#     * Emergence climate
-#     * Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)
-#     * Light sources known and present (if yes: LightSourceObservation).
+    label = models.CharField(
+        blank=True, null=True,
+        max_length=500,
+        verbose_name=_("Label"),
+        help_text=_("A human-readable, self-explanatory label."),
+    )
 
-#     # TON 0.54+
-#     "fan_angles": {
-#         "photo_hatchling_tracks_seawards": "1546836969404.jpg",
-#         "photo_hatchling_tracks_relief": null,
-#         "bearing_to_water_manual": "98.0000000000",
-#         "leftmost_track_manual": "58.0000000000",
-#         "rightmost_track_manual": "122.0000000000",
-#         "no_tracks_main_group": "7",
-#         "no_tracks_main_group_min": "7",
-#         "no_tracks_main_group_max": "7",
-#         "outlier_tracks_present": "present",
-#         "hatchling_path_to_sea": "clear",
-#         "path_to_sea_comments": null,
-#         "hatchling_emergence_time_known": "yes",
-#         "cloud_cover_at_emergence_known": "yes",
-#         "light_sources_present": "present"
-#       },
-#       "outlier_track": {
-#         "outlier_track_photo": "1546837474680.jpg",
-#         "outlier_track_bearing_manual": "180.0000000000",
-#         "outlier_group_size": "1",
-#         "outlier_track_comment": null
-#       },
-#       "hatchling_emergence_time_group": {
-#         "hatchling_emergence_time": "2019-01-06T23:07:00.000Z",
-#         "hatchling_emergence_time_source": "plusminus-2h"
-#       },
-#       "emergence_climate": {
-#         "cloud_cover_at_emergence": "3"
-#       },
-#       "light_source": [
-#         {
-#           "light_source_photo": null,
-#           "light_bearing_manual": "50.0000000000",
-#           "light_source_type": "artificial",
-#           "light_source_description": "Oil rig#5"
-#         },
-#         {
-#           "light_source_photo": null,
-#           "light_bearing_manual": "190.0000000000",
-#           "light_source_type": "natural",
-#           "light_source_description": "Moon"
-#         }
-#       ],
-#       "other_light_sources": {
-#         "other_light_sources_present": "na"
-#       }
-#     """
-#     # photo_hatchling_tracks_seawards # media
-#     # photo_hatchling_tracks_relief # media
-#     bearing_to_water_manual = models.FloatField(
-#         verbose_name=_(""),
-#         blank=True, null=True,
-#         help_text=_("."),)
+    description = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Description"),
+        help_text=_("A comprehensive description."),
+    )
 
-#     leftmost_track_manual = models.FloatField(
-#         verbose_name=_(""),
-#         blank=True, null=True,
-#         help_text=_("."),)
+    class Meta:
+        """Class opts."""
 
-#     rightmost_track_manual = models.FloatField(
-#         verbose_name=_(""),
-#         blank=True, null=True,
-#         help_text=_("."),)
+        # abstract = True
+        ordering = ["code", ]
 
-#     no_tracks_main_group = models.PositiveIntegerField(
-#         verbose_name=_(""),
-#         blank=True, null=True,
-#         help_text=_("."),)
+    def __str__(self):
+        """The full name."""
+        return self.label
 
-#     no_tracks_main_group_min = models.PositiveIntegerField(
-#         verbose_name=_(""),
-#         blank=True, null=True,
-#         help_text=_("."),)
 
-#     no_tracks_main_group_max = models.PositiveIntegerField(
-#         verbose_name=_(""),
-#         blank=True, null=True,
-#         help_text=_("."),)
 
-#     outlier_tracks_present models.CharField(
-#         max_length=300,
-#         verbose_name=_(""),
-#         choices=OBSERVATION_CHOICES,
-#         default=NA_VALUE,
-#         help_text=_("."),)
+@python_2_unicode_compatible
+class TurtleHatchlingEmergenceObservation(Observation):
+    """Turtle hatchling emergence observation.
+
+    Hatchling emergence observations can include:
+
+    * Emergence time (if seen directly),
+    * Fan angles of hatchling tracks forming a fan from nest to sea,
+    * Emergence climate
+    * Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)
+    * Light sources known and present (if yes: LightSourceObservation).
+
+    # TON 0.54+
+    "fan_angles": {
+        "photo_hatchling_tracks_seawards": "1546836969404.jpg",
+        "photo_hatchling_tracks_relief": null,
+        "bearing_to_water_manual": "98.0000000000",
+        "leftmost_track_manual": "58.0000000000",
+        "rightmost_track_manual": "122.0000000000",
+        "no_tracks_main_group": "7",
+        "no_tracks_main_group_min": "7",
+        "no_tracks_main_group_max": "7",
+        "outlier_tracks_present": "present",
+        "hatchling_path_to_sea": "clear",
+        "path_to_sea_comments": null,
+        "hatchling_emergence_time_known": "yes",
+        "cloud_cover_at_emergence_known": "yes",
+        "light_sources_present": "present"
+      },
+      "outlier_track": {
+        "outlier_track_photo": "1546837474680.jpg",
+        "outlier_track_bearing_manual": "180.0000000000",
+        "outlier_group_size": "1",
+        "outlier_track_comment": null
+      },
+      "hatchling_emergence_time_group": {
+        "hatchling_emergence_time": "2019-01-06T23:07:00.000Z",
+        "hatchling_emergence_time_source": "plusminus-2h"
+      },
+      "emergence_climate": {
+        "cloud_cover_at_emergence": "3"
+      },
+      "light_source": [
+        {
+          "light_source_photo": null,
+          "light_bearing_manual": "50.0000000000",
+          "light_source_type": "artificial",
+          "light_source_description": "Oil rig#5"
+        },
+        {
+          "light_source_photo": null,
+          "light_bearing_manual": "190.0000000000",
+          "light_source_type": "natural",
+          "light_source_description": "Moon"
+        }
+      ],
+      "other_light_sources": {
+        "other_light_sources_present": "na"
+      }
+    """
+    # photo_hatchling_tracks_seawards # media
+    # photo_hatchling_tracks_relief # media
+    bearing_to_water_degrees = models.FloatField(
+        verbose_name=_("Bearing to water"),
+        blank=True, null=True,
+        help_text=_("Bearing captured with handheld compass."),)
+
+    bearing_leftmost_track_degrees = models.FloatField(
+        verbose_name=_("Leftmost track bearing of main fan"),
+        blank=True, null=True,
+        help_text=_("Excluding outlier tracks, 5m from nest or at HWM. Bearing captured with handheld compass."),)
+
+    bearing_rightmost_track_degrees = models.FloatField(
+        verbose_name=_("Rightmost track bearing of main fan"),
+        blank=True, null=True,
+        help_text=_("Excluding outlier tracks, 5m from nest or at HWM. Bearing captured with handheld compass."),)
+
+    no_tracks_main_group = models.PositiveIntegerField(
+        verbose_name=_("Number of tracks in main fan"),
+        blank=True, null=True,
+        help_text=_("Exact count or best estimate."),)
+
+    no_tracks_main_group_min = models.PositiveIntegerField(
+        verbose_name=_("Min number of tracks in main fan"),
+        blank=True, null=True,
+        help_text=_("Lowest estimate."),)
+
+    no_tracks_main_group_max = models.PositiveIntegerField(
+        verbose_name=_("Max number of tracks in main fan"),
+        blank=True, null=True,
+        help_text=_("Highest estimate."),)
+
+    outlier_tracks_present = models.CharField(
+        max_length=300,
+        verbose_name=_("Outlier tracks present"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
     
-#     hatchling_path_to_sea
+    hatchling_path_to_sea = models.ManyToManyField(
+        PathToSea,
+        blank=True,
+        related_name="path_to_sea")
 
-#     path_to_sea_comments = models.TextField(
-#         verbose_name=_("Comments"),
-#         blank=True, null=True,
-#         help_text=_("Any other comments or notes."),)
+    path_to_sea_comments = models.TextField(
+        verbose_name=_("Hatchling path to sea comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
 
-#     hatchling_emergence_time_known
-#     cloud_cover_at_emergence_known
-#     light_sources_present
-#     other_light_sources_present
+    hatchling_emergence_time_known = models.CharField(
+        max_length=300,
+        verbose_name=_("Hatchling emergence time known"),
+        choices=((NA_VALUE, "NA"), ("yes", "Yes"), ("no", "No"),),
+        default=NA_VALUE,
+        help_text=_("."),) # yes no
 
-#     hatchling_emergence_time
-#     hatchling_emergence_time_source # TIME_ESTIMATE_CHOICES
-    
-#     cloud_cover_at_emergence
+    cloud_cover_at_emergence_known  = models.CharField(
+        max_length=300,
+        verbose_name=_("Cloud cover at emergence known"),
+        choices=((NA_VALUE, "NA"), ("yes", "Yes"), ("no", "No"),),
+        default=NA_VALUE,
+        help_text=_("."),)
+
+    light_sources_present = models.CharField(
+        max_length=300,
+        verbose_name=_("Light sources present during emergence"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_(""),)
+    # other_light_sources_present
+
+    hatchling_emergence_time = models.DateTimeField(
+        verbose_name=_("Hatchling emergence time"),
+        blank=True, null=True,
+        help_text=_("The estimated time of hatchling emergence, stored as UTC and "
+                    "shown in local time."), )
+
+    hatchling_emergence_time_accuracy = models.CharField(
+        max_length=300,
+        blank=True, null=True,
+        verbose_name=_("Hatchling emergence time estimate accuracy"),
+        choices=TIME_ESTIMATE_CHOICES,
+        default=NA_VALUE,
+        help_text=_("."),)
+
+    cloud_cover_at_emergence = models.PositiveIntegerField(
+        verbose_name=_("Cloud cover at emergence"),
+        blank=True, null=True,
+        help_text=_("If known, in eights."),)
+
+    def __str__(self):
+        """The full name."""
+        return "Fan {0} ({1}-{2}) tracks ({3}-{4} deg); water {5} deg".format(
+            self.no_tracks_main_group,
+            self.no_tracks_main_group_min,
+            self.no_tracks_main_group_max,
+            self.bearing_leftmost_track_degrees,
+            self.bearing_rightmost_track_degrees,
+            self.bearing_to_water_degrees
+        )
 
 
-# @python_2_unicode_compatible
-# class LightSourceObservation(Observation):
-#     """
-#     Dict of one or list of many
-#     {
-#       "light_source_photo": null,
-#       "light_bearing_manual": "50.0000000000",
-#       "light_source_type": "artificial"  "natural" CHOICES
-#       "light_source_description": "Oil rig#5"
-#     }
-#     """
-#     light_bearing_manual
-#     light_source_type
-#     light_source_description
+@python_2_unicode_compatible
+class LightSourceObservation(Observation):
+    """
+    Dict of one or list of many 
+    {
+      "light_source_photo": null,
+      "light_bearing_manual": "50.0000000000",
+      "light_source_type": "artificial"  "natural" CHOICES
+      "light_source_description": "Oil rig#5"
+    }
+    """
+    bearing_light_degrees = models.FloatField(
+        verbose_name=_("Bearing"),
+        blank=True, null=True,
+        help_text=_("Bearing captured with handheld compass."),)
 
-# @python_2_unicode_compatible
-# class TurtleHatchlingEmergenceOutlierObservation(Observation):
-#     """
-#     Dict of one or list of many
-#     "outlier_track": {
-#     "outlier_track_photo": "1546837474680.jpg",
-#     "outlier_track_bearing_manual": "180.0000000000",
-#     "outlier_group_size": "1",
-#     "outlier_track_comment": null
-#     }
-#     """
-#     # outlier_track_photo # media
-#     outlier_track_bearing_manual
-#     outlier_group_size
-#     outlier_track_comment
+    light_source_type = models.CharField(
+        max_length=300,
+        verbose_name=_("Light source type"),
+        choices=((NA_VALUE, "NA"), ("natural", "Natural"), ("artificial", "Artificial"),),
+        default=NA_VALUE,
+        help_text=_("."),)
+
+    light_source_description = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
+
+
+    def __str__(self):
+        """The full name."""
+        return "Light Source {0} at {1} deg: {2}".format(
+            self.get_light_source_type_display(),
+            self.bearing_light_degrees,
+            self.light_source_description or "",
+        )
+
+
+@python_2_unicode_compatible
+class TurtleHatchlingEmergenceOutlierObservation(Observation):
+    """
+    Dict of one or list of many
+    "outlier_track": {
+    "outlier_track_photo": "1546837474680.jpg",
+    "outlier_track_bearing_manual": "180.0000000000",
+    "outlier_group_size": "1",
+    "outlier_track_comment": null
+    }
+    """
+    # outlier_track_photo # media
+    bearing_outlier_track_degrees = models.FloatField(
+        verbose_name=_("Bearing"),
+        blank=True, null=True,
+        help_text=_("Aim at track 5m from nest or high water mark. Bearing captured with handheld compass."),)
+
+    outlier_group_size= models.PositiveIntegerField(
+        verbose_name=_("Number of tracks in outlier group"),
+        blank=True, null=True,
+        help_text=_(""),)
+
+    outlier_track_comment = models.TextField(
+        verbose_name=_("Comments"),
+        blank=True, null=True,
+        help_text=_("Any other comments or notes."),)
+
+    def __str__(self):
+        """The full name."""
+        return "Outlier: {0} tracks at {1} deg. {2}".format(
+            self.outlier_group_size,
+            self.bearing_outlier_track_degrees,
+            self.outlier_track_comment or "",
+        )
 
 # TODO add CetaceanMorphometricObservation for cetacean strandings
 

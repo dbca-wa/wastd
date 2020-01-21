@@ -1,0 +1,11 @@
+{% load observations rest_framework_latex %}
+{% with original as o %}
+\paragraph{Hatchling emergence tracks fan}
+	Water {{ o.bearing_to_water_manual }}\\
+    Fan {{ o.leftmost_track_manual }} - {{ o.rightmost_track_manual }}\\
+    Tracks {{ o.no_tracks_main_group }} ({{ o.no_tracks_main_group_min }}..{{ o.no_tracks_main_group_max }})\\
+    Emerged {{ o.hatchling_emergence_time }} ({{ o.get_hatchling_emergence_time_source_display }})\\
+    {% if o.cloud_cover_at_emergence %}
+    Cloud cover {{ o.cloud_cover_at_emergence }}/8
+    {% endif %}
+{% endwith %}
