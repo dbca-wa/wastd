@@ -3863,18 +3863,18 @@ def handle_odka_fanangles(enc, media, data):
           },
 
         # # TT0.51
-        "fan_angles": {
-            "photo_hatchling_tracks_seawards": "1517444725383.jpg",
-            "photo_hatchling_tracks_relief": "1517444761289.jpg",
-            "bearing_to_water_manual": "255.0000000000",
-            "leftmost_track_manual": "190.0000000000",
-            "rightmost_track_manual": "251.0000000000",
-            "no_tracks_main_group": "12",
-            "no_tracks_main_group_min": "12",
-            "no_tracks_main_group_max": "13",
+          "fan_angles": {
+            "photo_hatchling_tracks_seawards": "1517438465952.jpg",
+            "photo_hatchling_tracks_relief": "1517438498603.jpg",
+            "bearing_to_water_manual": "148.0000000000",
+            "leftmost_track_manual": "164.0000000000",
+            "rightmost_track_manual": "192.0000000000",
+            "no_tracks_main_group": "9",
+            "no_tracks_main_group_min": "9",
+            "no_tracks_main_group_max": "9",
             "outlier_tracks_present": "present",
-            "hatchling_path_to_sea": "uneven-ground",
-            "path_to_sea_comments": "Climbing out of goanna diggings",
+            "hatchling_path_to_sea": "clear",
+            "path_to_sea_comments": null,
             "hatchling_emergence_time_known": "no",
             "cloud_cover_at_emergence_known": "no",
             "light_sources_present": "present"
@@ -3886,21 +3886,37 @@ def handle_odka_fanangles(enc, media, data):
           "emergence_climate": {
             "cloud_cover_at_emergence": null
           },
-          "light_source": {
-            "light_source_photo": "1517444993845.jpg",
-            "light_bearing_manual": "164.0000000000",
-            "light_source_type": "artificial",
-            "light_source_description": "Industry"
-          },
+          "light_source": [
+            {
+              "light_source_photo": null,
+              "light_bearing_manual": "178.0000000000",
+              "light_source_type": "artificial",
+              "light_source_description": "W"
+            },
+            {
+              "light_source_photo": null,
+              "light_bearing_manual": "156.0000000000",
+              "light_source_type": "artificial",
+              "light_source_description": "O"
+            }
+          ],
           "other_light_sources": {
             "other_light_sources_present": "na"
           },
-          "outlier_track": {
-            "outlier_track_photo": "1517445093780.jpg",
-            "outlier_track_bearing_manual": "135.0000000000",
-            "outlier_group_size": "1",
-            "outlier_track_comment": null
-          },
+          "outlier_track": [
+            {
+              "outlier_track_photo": null,
+              "outlier_track_bearing_manual": "112.0000000000",
+              "outlier_group_size": "1",
+              "outlier_track_comment": null
+            },
+            {
+              "outlier_track_photo": null,
+              "outlier_track_bearing_manual": "142.0000000000",
+              "outlier_group_size": "2",
+              "outlier_track_comment": null
+            }
+          ],
 
 
         # Track or Treat 0.53
@@ -4044,9 +4060,12 @@ def handle_odka_fanangles(enc, media, data):
 
     Examples:
     import os; path = os.path.join(settings.MEDIA_ROOT, "odka"); from wastd.observations.utils import *
-    fa=[import_odka_tt044(x) for x in downloaded_data("test_fanangles", path)]
+    fa=[import_odka_tt044(x) for x in downloaded_data("test_fanangles", path)] 
+    tt51=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-51_1517196378", path)]  # 39 fans
+    tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)]  # 695 fans
+    tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)] # 336 fans
     """
-    if "fan_angles" in data and data["fan_angles"] and data["nest"]["fan_angles_measured"] == "yes":
+    if data["nest"]["fan_angles_measured"] == "yes":
 
         for obs in listify(data["fan_angles"]):
 
@@ -4100,6 +4119,7 @@ def handle_odka_fanangles(enc, media, data):
                     enc, media, obs["photo_hatchling_tracks_relief"], title="Photo {0}".format(e.__str__()))
     else:
         logger.info("  [handle_odka_fanangle] found no TurtleHatchlingEmergenceObservation")
+        logger.info(str(data))
 
     # outliers
     if "outlier_track" in data and data["outlier_track"] and data["nest"]["fan_angles_measured"] == "yes":
@@ -4935,6 +4955,10 @@ def import_odka_tt044(r):
         handle_odka_fanangles(enc, media, data)
         enc.save()
 
+    # bonus round for fan angles imported post QA (proofread records won't update)
+    handle_odka_fanangles(enc, media, data)
+    enc.save()
+
     logger.info("Done: {0}\n".format(enc))
     return enc
 
@@ -5339,8 +5363,7 @@ def import_odka_mwi05(r):
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_top"], title="Turtle head top")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_front"], title="Turtle head front")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_side"], title="Turtle head side")
-        handle_media_attachment_odka(
-            enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
+        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
 
         handle_odka_tagsobs(enc, media, data)
         handle_odka_managementaction(enc, media, data)
@@ -5396,7 +5419,6 @@ def import_all_odka(path="."):
         tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)],
         tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)],
         tt55=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-55_1548318718", path)],
-        
 
         sve01=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-1_1490756971", path)],
         sve02=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-2_1510716716", path)],
