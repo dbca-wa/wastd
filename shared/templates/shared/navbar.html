@@ -293,18 +293,28 @@
                 <span class="oi oi-book" aria-hidden="true"></span>
                 <span class="align-left">Data Analysts' Manual</span>
               </a>
-              <a class="dropdown-item" href="/api/1/" title="API" target="_blank">
+              <a class="dropdown-item" href="{% url 'gql-api' %}"
+                  title="GraphQL API" target="_blank" rel="noreferrer">
+                 <span class="oi oi-terminal" aria-hidden="true"></span>
+                 <span class="align-left">GraphQL API (internal)</span>
+              </a>
+              <a class="dropdown-item" href="https://hasura-tsc.dbca.wa.gov.au/"
+                  title="GraphQL API (Hasura) for admin users" target="_blank" rel="noreferrer">
+                 <span class="oi oi-terminal" aria-hidden="true"></span>
+                 <span class="align-left">GraphQL API (admin)</span>
+              </a>
+              <a class="dropdown-item" href="/api/1/" title="API" target="_blank" rel="noreferrer">
                <span class="oi oi-terminal" aria-hidden="true"></span>
-               <span class="align-left">API</span>
+               <span class="align-left">RESTful API</span>
              </a>
              <a class="dropdown-item" href="{% url 'api-docs' %}"
                 title="API docs (Swagger)" target="_blank" rel="noreferrer">
                <span class="oi oi-book align-left" aria-hidden="true"></span>
-               <span class="align-left">API Docs (Swagger)</span>
+               <span class="align-left">RESTful API Docs (Swagger)</span>
              </a>
              <a class="dropdown-item" href="/api/1/docs" title="API docs (DRF)" target="_blank" rel="noreferrer">
                <span class="oi oi-book align-left" aria-hidden="true"></span>
-               <span class="align-left">API Docs (DRF)</span>
+               <span class="align-left">RESTful API Docs (DRF)</span>
              </a>
              {% if request.user.is_authenticated %}
              <a class="dropdown-item"
@@ -326,12 +336,6 @@
                 </a>
               -->
             </div>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="{% url 'gql-api' %}"
-                title="GraphQL API" target="_blank" rel="noreferrer">
-               <span class="oi oi-script align-left" aria-hidden="true"></span>
-               <span class="align-left">GraphQL API</span>
-             </a>
           </li>
 
           {% if request.user.is_staff %}

@@ -58,6 +58,17 @@ class Query(object):
     def resolve_all_communities(self, info, **kwargs):
         return tax_models.Community.objects.all()
 
+    def resolve_taxon(self, info, **kwargs):
+        id = kwargs.get('id')
+        name_id = kwargs.get('nameId')
+
+        if id is not None:
+            return tax_models.Taxon.objects.get(pk=id)
+
+        if name_id is not None:
+            return tax_models.Taxon.objects.get(name_id=name_id)
+
+        return None
 
     def resolve_all_taxa(self, info, **kwargs):
         return tax_models.Taxon.objects.all()
