@@ -4955,9 +4955,10 @@ def import_odka_tt044(r):
         handle_odka_fanangles(enc, media, data)
         enc.save()
 
-    # bonus round for fan angles imported post QA (proofread records won't update)
-    handle_odka_fanangles(enc, media, data)
-    enc.save()
+    # # bonus round for fan angles imported post QA (proofread records won't update)
+    # # ran once and disabled again, kept as reminder to circumvent QA-skip logic for new supplementary data
+    # handle_odka_fanangles(enc, media, data)
+    # enc.save()
 
     logger.info("Done: {0}\n".format(enc))
     return enc

@@ -28,6 +28,7 @@ djangorestframework-csv
 djangorestframework-yaml
 djangorestframework-jsonp
 djangorestframework-filters==1.0.0.dev0
+django-rest-polymorphic
 drf-proxy-pagination
 django-url-filter
 #dynamic-rest
@@ -39,7 +40,9 @@ django-rest-swagger
 coreapi==2.3.3
 coreapi-cli
 pypandoc
-graphene-django==2.8.0
+graphene-django
+django-graphql-extensions
+django-graphql-geojson
 xmltodict==0.12.0
 
 # Auth

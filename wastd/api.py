@@ -20,6 +20,7 @@ This API is built using:
 * djangorestframework-csv
 * `djangorestframework-yaml <http://www.django-rest-framework.org/api-guide/renderers/#yaml>`_ (TODO support geo field)
 * djangorestframework-jsonp
+* django-rest-polymorphic <https://github.com/apirobot/django-rest-polymorphic>
 * django-url-filter
 * dynamic-rest (not used)
 * rest-framework-latex
@@ -34,9 +35,11 @@ This API is built using:
 
 import logging
 import itertools
+import urllib
 
 import rest_framework_filters as filters
 # from django.db import models as django_models
+from django.apps import apps
 from django.template import Context, Template
 from django.db.models import Prefetch  # noqa
 
@@ -52,6 +55,7 @@ from rest_framework.response import Response as RestResponse
 from rest_framework_gis.fields import GeometryField
 from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from rest_polymorphic.serializers import PolymorphicSerializer
 
 from conservation.models import (  # noqa
     ConservationListing,
@@ -2094,6 +2098,811 @@ PermitType
 """
 
 
+# ----------------------------------------------------------------------------#
+# Occurrence lookups
+# ----------------------------------------------------------------------------#
+
+
+# ----------------------------------------------------------------------------#
+# Landform
+#
+class LandformSerializer(serializers.ModelSerializer):
+    """Serializer for Landform: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.Landform
+        fields = "__all__"
+
+
+class LandformViewSet(BatchUpsertViewSet):
+    """View set for Landform."""
+
+    queryset = occ_models.Landform.objects.all()
+    serializer_class = LandformSerializer
+    uid_fields = ("pk",)
+    model = occ_models.Landform
+
+
+router.register("lookup-landform", LandformViewSet)
+
+# ----------------------------------------------------------------------------#
+# RockType
+#
+class RockTypeSerializer(serializers.ModelSerializer):
+    """Serializer for RockType: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.RockType
+        fields = "__all__"
+
+
+class RockTypeViewSet(BatchUpsertViewSet):
+    """View set for RockType."""
+
+    queryset = occ_models.RockType.objects.all()
+    serializer_class = RockTypeSerializer
+    uid_fields = ("pk",)
+    model = occ_models.RockType
+
+
+router.register("lookup-rocktype", RockTypeViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# SoilType
+#
+class SoilTypeSerializer(serializers.ModelSerializer):
+    """Serializer for SoilType: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.SoilType
+        fields = "__all__"
+
+
+class SoilTypeViewSet(BatchUpsertViewSet):
+    """View set for SoilType."""
+
+    queryset = occ_models.SoilType.objects.all()
+    serializer_class = SoilTypeSerializer
+    uid_fields = ("pk",)
+    model = occ_models.SoilType
+
+
+router.register("lookup-soiltype", SoilTypeViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# SoilColour
+#
+class SoilColourSerializer(serializers.ModelSerializer):
+    """Serializer for SoilColour: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.SoilColour
+        fields = "__all__"
+
+
+class SoilColourViewSet(BatchUpsertViewSet):
+    """View set for SoilColour."""
+
+    queryset = occ_models.SoilColour.objects.all()
+    serializer_class = SoilColourSerializer
+    uid_fields = ("pk",)
+    model = occ_models.SoilColour
+
+
+router.register("lookup-soilcolour", SoilColourViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# Drainage
+#
+class DrainageSerializer(serializers.ModelSerializer):
+    """Serializer for Drainage: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.Drainage
+        fields = "__all__"
+
+
+class DrainageViewSet(BatchUpsertViewSet):
+    """View set for Drainage."""
+
+    queryset = occ_models.Drainage.objects.all()
+    serializer_class = DrainageSerializer
+    uid_fields = ("pk",)
+    model = occ_models.Drainage
+
+
+router.register("lookup-drainage", DrainageViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# SurveyMethod
+#
+class SurveyMethodSerializer(serializers.ModelSerializer):
+    """Serializer for SurveyMethod: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.SurveyMethod
+        fields = "__all__"
+
+
+class SurveyMethodViewSet(BatchUpsertViewSet):
+    """View set for SurveyMethod."""
+
+    queryset = occ_models.SurveyMethod.objects.all()
+    serializer_class = SurveyMethodSerializer
+    uid_fields = ("pk",)
+    model = occ_models.SurveyMethod
+
+
+router.register("lookup-surveymethod", SurveyMethodViewSet)
+
+# ----------------------------------------------------------------------------#
+# SoilCondition
+# 
+class SoilConditionSerializer(serializers.ModelSerializer):
+    """Serializer for SoilCondition: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.SoilCondition
+        fields = "__all__"
+
+
+class SoilConditionViewSet(BatchUpsertViewSet):
+    """View set for SoilCondition."""
+
+    queryset = occ_models.SoilCondition.objects.all()
+    serializer_class = SoilConditionSerializer
+    uid_fields = ("pk",)
+    model = occ_models.SoilCondition
+
+
+router.register("lookup-soilcondition", SoilConditionViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# CountAccuracy
+#
+class CountAccuracySerializer(serializers.ModelSerializer):
+    """Serializer for CountAccuracy: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.CountAccuracy
+        fields = "__all__"
+
+
+class CountAccuracyViewSet(BatchUpsertViewSet):
+    """View set for CountAccuracy."""
+
+    queryset = occ_models.CountAccuracy.objects.all()
+    serializer_class = CountAccuracySerializer
+    uid_fields = ("pk",)
+    model = occ_models.CountAccuracy
+
+
+router.register("lookup-countaccuracy", CountAccuracyViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# CountMethod
+#
+class CountMethodSerializer(serializers.ModelSerializer):
+    """Serializer for CountMethod: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.CountMethod
+        fields = "__all__"
+
+
+class CountMethodViewSet(BatchUpsertViewSet):
+    """View set for CountMethod."""
+
+    queryset = occ_models.CountMethod.objects.all()
+    serializer_class = CountMethodSerializer
+    uid_fields = ("pk",)
+    model = occ_models.CountMethod
+
+
+router.register("lookup-countmethod", CountMethodViewSet)
+
+# ----------------------------------------------------------------------------#
+# CountSubject
+#
+class CountSubjectSerializer(serializers.ModelSerializer):
+    """Serializer for CountSubject: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.CountSubject
+        fields = "__all__"
+
+
+class CountSubjectViewSet(BatchUpsertViewSet):
+    """View set for CountSubject."""
+
+    queryset = occ_models.CountSubject.objects.all()
+    serializer_class = CountSubjectSerializer
+    uid_fields = ("pk",)
+    model = occ_models.CountSubject
+
+
+router.register("lookup-countsubject", CountSubjectViewSet)
+
+# ----------------------------------------------------------------------------#
+# PlantCondition
+#
+class PlantConditionSerializer(serializers.ModelSerializer):
+    """Serializer for PlantCondition: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.PlantCondition
+        fields = "__all__"
+
+
+class PlantConditionViewSet(BatchUpsertViewSet):
+    """View set for PlantCondition."""
+
+    queryset = occ_models.PlantCondition.objects.all()
+    serializer_class = PlantConditionSerializer
+    uid_fields = ("pk",)
+    model = occ_models.PlantCondition
+
+
+router.register("lookup-plantcondition", PlantConditionViewSet)
+
+
+# ----------------------------------------------------------------------------#
+# DetectionMethod
+#
+class DetectionMethodSerializer(serializers.ModelSerializer):
+    """Serializer for DetectionMethod: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.DetectionMethod
+        fields = "__all__"
+
+
+class DetectionMethodViewSet(BatchUpsertViewSet):
+    """View set for DetectionMethod."""
+
+    queryset = occ_models.DetectionMethod.objects.all()
+    serializer_class = DetectionMethodSerializer
+    uid_fields = ("pk",)
+    model = occ_models.DetectionMethod
+
+
+router.register("lookup-detectionmethod", DetectionMethodViewSet)
+
+# ----------------------------------------------------------------------------#
+# Confidence
+#
+class ConfidenceSerializer(serializers.ModelSerializer):
+    """Serializer for Confidence: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.Confidence
+        fields = "__all__"
+
+
+class ConfidenceViewSet(BatchUpsertViewSet):
+    """View set for Confidence."""
+
+    queryset = occ_models.Confidence.objects.all()
+    serializer_class = ConfidenceSerializer
+    uid_fields = ("pk",)
+    model = occ_models.Confidence
+
+
+router.register("lookup-confidence", ConfidenceViewSet)
+
+# ----------------------------------------------------------------------------#
+# ReproductiveMaturity
+#
+class ReproductiveMaturitySerializer(serializers.ModelSerializer):
+    """Serializer for ReproductiveMaturity: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.ReproductiveMaturity
+        fields = "__all__"
+
+
+class ReproductiveMaturityViewSet(BatchUpsertViewSet):
+    """View set for ReproductiveMaturity."""
+
+    queryset = occ_models.ReproductiveMaturity.objects.all()
+    serializer_class = ReproductiveMaturitySerializer
+    uid_fields = ("pk",)
+    model = occ_models.ReproductiveMaturity
+
+
+router.register("lookup-reproductivematurity", ReproductiveMaturityViewSet)
+
+# ----------------------------------------------------------------------------#
+# AnimalHealth
+#
+class AnimalHealthSerializer(serializers.ModelSerializer):
+    """Serializer for AnimalHealth: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.AnimalHealth
+        fields = "__all__"
+
+
+class AnimalHealthViewSet(BatchUpsertViewSet):
+    """View set for Drainage."""
+
+    queryset = occ_models.AnimalHealth.objects.all()
+    serializer_class = AnimalHealthSerializer
+    uid_fields = ("pk",)
+    model = occ_models.AnimalHealth
+
+
+router.register("lookup-animalhealth", AnimalHealthViewSet)
+
+# ----------------------------------------------------------------------------#
+# AnimalSex
+#
+class AnimalSexSerializer(serializers.ModelSerializer):
+    """Serializer for AnimalSex: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.AnimalSex
+        fields = "__all__"
+
+
+class AnimalSexViewSet(BatchUpsertViewSet):
+    """View set for Drainage."""
+
+    queryset = occ_models.AnimalSex.objects.all()
+    serializer_class = AnimalSexSerializer
+    uid_fields = ("pk",)
+    model = occ_models.AnimalSex
+
+
+router.register("lookup-animalsex", AnimalSexViewSet)
+
+# ----------------------------------------------------------------------------#
+# CauseOfDeath
+#
+class CauseOfDeathSerializer(serializers.ModelSerializer):
+    """Serializer for CauseOfDeath: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.CauseOfDeath
+        fields = "__all__"
+
+
+class CauseOfDeathViewSet(BatchUpsertViewSet):
+    """View set for CauseOfDeath."""
+
+    queryset = occ_models.CauseOfDeath.objects.all()
+    serializer_class = CauseOfDeathSerializer
+    uid_fields = ("pk",)
+    model = occ_models.CauseOfDeath
+
+
+router.register("lookup-causeofdeath", CauseOfDeathViewSet)
+
+# ----------------------------------------------------------------------------#
+# SecondarySigns
+#
+class SecondarySignsSerializer(serializers.ModelSerializer):
+    """Serializer for SecondarySigns: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.SecondarySigns
+        fields = "__all__"
+
+
+class SecondarySignsViewSet(BatchUpsertViewSet):
+    """View set for SecondarySigns."""
+
+    queryset = occ_models.SecondarySigns.objects.all()
+    serializer_class = SecondarySignsSerializer
+    uid_fields = ("pk",)
+    model = occ_models.SecondarySigns
+
+
+router.register("lookup-secondarysigns", SecondarySignsViewSet)
+
+# ----------------------------------------------------------------------------#
+# SampleType
+#
+class SampleTypeSerializer(serializers.ModelSerializer):
+    """Serializer for SampleType: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.SampleType
+        fields = "__all__"
+
+
+class SampleTypeViewSet(BatchUpsertViewSet):
+    """View set for SampleType."""
+
+    queryset = occ_models.SampleType.objects.all()
+    serializer_class = SampleTypeSerializer
+    uid_fields = ("pk",)
+    model = occ_models.SampleType
+
+
+router.register("lookup-sampletype", SampleTypeViewSet)
+
+# ----------------------------------------------------------------------------#
+# SampleDestination
+#
+class SampleDestinationSerializer(serializers.ModelSerializer):
+    """Serializer for SampleDestination: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.SampleDestination
+        fields = "__all__"
+
+
+class SampleDestinationViewSet(BatchUpsertViewSet):
+    """View set for SampleDestination."""
+
+    queryset = occ_models.SampleDestination.objects.all()
+    serializer_class = SampleDestinationSerializer
+    uid_fields = ("pk",)
+    model = occ_models.SampleDestination
+
+
+router.register("lookup-sampledestination", SampleDestinationViewSet)
+
+# ----------------------------------------------------------------------------#
+# PermitType
+class PermitTypeSerializer(serializers.ModelSerializer):
+    """Serializer for PermitType: pk, code, label, description."""
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.PermitType
+        fields = "__all__"
+
+
+class PermitTypeViewSet(BatchUpsertViewSet):
+    """View set for PermitType."""
+
+    queryset = occ_models.PermitType.objects.all()
+    serializer_class = PermitTypeSerializer
+    uid_fields = ("pk",)
+    model = occ_models.PermitType
+
+
+router.register("lookup-permittype", PermitTypeViewSet)
+
+# ----------------------------------------------------------------------------#
+# ObservationGroup models
+# ----------------------------------------------------------------------------#
+
+# ----------------------------------------------------------------------------#
+# FileAttachment
+#
+class FileAttachmentSerializer(serializers.ModelSerializer):
+    """Serializer for FileAttachment."""
+
+    
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+    
+    class Meta:
+        """Opts."""
+
+        model = occ_models.FileAttachment
+        fields = "__all__"
+
+
+# ----------------------------------------------------------------------------#
+# HabitatComposition
+#
+class HabitatCompositionSerializer(serializers.ModelSerializer):
+    """Serializer for HabitatComposition."""
+
+    
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+    
+    class Meta:
+        """Opts."""
+
+        model = occ_models.HabitatComposition
+        fields = "__all__"
+
+
+# ----------------------------------------------------------------------------#
+# HabitatComposition
+#
+class HabitatConditionSerializer(serializers.ModelSerializer):
+    """Serializer for HabitatCondition."""
+
+    
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+    
+    class Meta:
+        """Opts."""
+
+        model = occ_models.HabitatCondition
+        fields = "__all__"
+
+
+
+# ----------------------------------------------------------------------------#
+# AreaAssessment
+#
+class AreaAssessmentSerializer(serializers.ModelSerializer):
+    """Serializer for AreaAssessment."""
+
+    
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+    
+    class Meta:
+        """Opts."""
+
+        model = occ_models.AreaAssessment
+        fields = "__all__"
+
+
+
+# ----------------------------------------------------------------------------#
+# FireHistory
+#
+class FireHistorySerializer(serializers.ModelSerializer):
+    """Serializer for FireHistory."""
+
+    
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+    
+    class Meta:
+        """Opts."""
+
+        model = occ_models.FireHistory
+        fields = "__all__"
+
+
+# ----------------------------------------------------------------------------#
+# VegetationClassification
+#
+class VegetationClassificationSerializer(serializers.ModelSerializer):
+    """Serializer for VegetationClassification."""
+
+    
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+    
+    class Meta:
+        """Opts."""
+
+        model = occ_models.VegetationClassification
+        fields = "__all__"
+
+
+
+# ----------------------------------------------------------------------------#
+# PlantCount
+#
+class PlantCountSerializer(serializers.ModelSerializer):
+    """Serializer for PlantCount."""
+
+    count_method = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='code'
+    )
+
+    count_accuracy = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='code'
+    )
+
+    
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+    
+    class Meta:
+        """Opts."""
+
+        model = occ_models.PlantCount
+        fields = "__all__"
+
+
+# ----------------------------------------------------------------------------#
+# AssociatedSpecies
+#
+class AssociatedSpeciesSerializer(serializers.ModelSerializer):
+    """Serializer for AssociatedSpecies."""
+
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.AssociatedSpecies
+        fields = "__all__"
+
+
+# ----------------------------------------------------------------------------#
+# PhysicalSample
+#
+class PhysicalSampleSerializer(serializers.ModelSerializer):
+    """Serializer for PhysicalSample."""
+
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+
+    class Meta:
+        """Opts."""
+
+        model = occ_models.PhysicalSample
+        fields = "__all__"
+
+
+
+# ----------------------------------------------------------------------------#
+# ObservationGroup
+#
+class ObservationGroupSerializer(serializers.ModelSerializer):
+    """The ObservationGroup serializer resolves its polymorphic subclasses.
+
+    ObservationGroups have polymorphic subclasses.
+    A plain DRF serializer would simply return the shared ObservationGroup 
+    fields, but not the individual fields partial to its subclasses.
+
+    Overriding the `to_representation` method, this serializer tests the
+    object to display for its real instance, and calls the `to_representation`
+    from the subclasses serializer.
+
+    `Credits <http://stackoverflow.com/a/19976203/2813717>`_
+    `Author <http://stackoverflow.com/users/1514427/michael-van-de-waeter>`_
+    """
+
+    # as_latex = serializers.ReadOnlyField()
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = occ_models.ObservationGroup
+        fields = "__all__"
+
+
+class ObservationGroupPolymorphicSerializer(PolymorphicSerializer):
+    """Polymorphic seralizer for ObservationGroup.
+
+    https://github.com/apirobot/django-rest-polymorphic
+    https://django-polymorphic.readthedocs.io/en/stable/third-party.html#django-rest-framework-support
+    """
+    model_serializer_mapping = {
+        occ_models.ObservationGroup: ObservationGroupSerializer,
+        occ_models.FireHistory: FireHistorySerializer,
+        occ_models.FileAttachment: FileAttachmentSerializer,
+        occ_models.PlantCount: PlantCountSerializer,
+        occ_models.AssociatedSpecies: AssociatedSpeciesSerializer,
+        occ_models.VegetationClassification: VegetationClassificationSerializer,
+        occ_models.HabitatCondition: HabitatConditionSerializer,
+        occ_models.AreaAssessment: AreaAssessmentSerializer,
+        occ_models.HabitatComposition: HabitatCompositionSerializer
+    }
+    resource_type_field_name = 'obstype'
+
+
+class ObservationGroupViewSet(viewsets.ModelViewSet):
+    """ObservationGroup models.
+    
+    Filter the Observations to a specific type with the parameter `obstype`:
+
+    * [FileAttachment](/api/1/occ-observation/?obstype=FileAttachment)
+    * [AreaAssessment](/api/1/occ-observation/?obstype=AreaAssessment)
+    * [HabitatComposition](/api/1/occ-observation/?obstype=HabitatComposition)
+    * [HabitatCondition](/api/1/occ-observation/?obstype=HabitatCondition) 
+    * [VegetationClassification](/api/1/occ-observation/?obstype=VegetationClassification)
+    * [FireHistory](/api/1/occ-observation/?obstype=FireHistory)
+    * [PlantCount](/api/1/occ-observation/?obstype=PlantCount) 
+    * [AssociatedSpecies](/api/1/occ-observation/?obstype=AssociatedSpecies)
+    """
+    queryset = occ_models.ObservationGroup.objects.all()
+    serializer_class = ObservationGroupPolymorphicSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = occ_models.ObservationGroup.objects.all()
+        obstype = self.request.query_params.get('obstype', None)
+        if obstype is not None:
+            m = apps.get_model("occurrence", obstype)
+            queryset = occ_models.ObservationGroup.objects.instance_of(m).all()
+        return queryset
+
+    def create(self, request):
+        """POST: Create or update one model instance.
+
+        request.data must be a dict including source (int) and source ID (chr).
+
+        Return RestResponse(result, status)
+
+        result:
+
+        * Warning message if invalid data (status 406 not acceptable)
+        * Dict of object_id and message if one record
+        * List of one-record dicts if several records
+        """
+        logger.info("Not implemented!")
+        obsmodel_name = "ObservationGroup"
+        
+        # Infer ObservationGroup model from obstype
+        obstype = request.data.get('obstype', None)
+        try:
+            obsmodel = apps.get_model("occurrence", obstype)
+        except:
+            msg = "Model name {0} not found".format(obstype)
+            return RestResponse(msg, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get AreaEncounter from source, source_id
+        source = request.data.get('source', None)
+        source_id = request.data.get('source_id', None)
+        try:
+            enc = occ_models.AreaEncounter.objects.get(source=source, source_id=source_id)
+        except:
+            msg = "AreaEncounter not found for source {0}, source_id {1}".format(source, source_id)
+            return RestResponse(msg, status=status.HTTP_400_BAD_REQUEST)
+
+
+        if obsmodel:
+            observation_name = obsmodel
+            
+            # create obsmodel with encounter=enc
+
+        msg = "Create {0} for encounter {1} from data {2}".format(
+            obsmodel_name, 
+            enc.pk, 
+            request.data
+        )
+        return RestResponse(msg, status=status.HTTP_200_OK)
+
+
+
+router.register("occ-observation", ObservationGroupViewSet)
+
+
 # Taxonomy: Serializers -------------------------------------------------------------------#
 
 
@@ -3607,557 +4416,3 @@ class DocumentViewSet(BatchUpsertViewSet):
 router.register("document", DocumentViewSet)
 
 
-# ----------------------------------------------------------------------------#
-# Occurrence lookups
-# ----------------------------------------------------------------------------#
-
-
-# ----------------------------------------------------------------------------#
-# Landform
-#
-class LandformSerializer(serializers.ModelSerializer):
-    """Serializer for Landform: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.Landform
-        fields = "__all__"
-
-
-class LandformViewSet(BatchUpsertViewSet):
-    """View set for Landform."""
-
-    queryset = occ_models.Landform.objects.all()
-    serializer_class = LandformSerializer
-    uid_fields = ("pk",)
-    model = occ_models.Landform
-
-
-router.register("lookup-landform", LandformViewSet)
-
-# ----------------------------------------------------------------------------#
-# RockType
-#
-class RockTypeSerializer(serializers.ModelSerializer):
-    """Serializer for RockType: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.RockType
-        fields = "__all__"
-
-
-class RockTypeViewSet(BatchUpsertViewSet):
-    """View set for RockType."""
-
-    queryset = occ_models.RockType.objects.all()
-    serializer_class = RockTypeSerializer
-    uid_fields = ("pk",)
-    model = occ_models.RockType
-
-
-router.register("lookup-rocktype", RockTypeViewSet)
-
-
-# ----------------------------------------------------------------------------#
-# SoilType
-#
-class SoilTypeSerializer(serializers.ModelSerializer):
-    """Serializer for SoilType: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.SoilType
-        fields = "__all__"
-
-
-class SoilTypeViewSet(BatchUpsertViewSet):
-    """View set for SoilType."""
-
-    queryset = occ_models.SoilType.objects.all()
-    serializer_class = SoilTypeSerializer
-    uid_fields = ("pk",)
-    model = occ_models.SoilType
-
-
-router.register("lookup-soiltype", SoilTypeViewSet)
-
-
-# ----------------------------------------------------------------------------#
-# SoilColour
-#
-class SoilColourSerializer(serializers.ModelSerializer):
-    """Serializer for SoilColour: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.SoilColour
-        fields = "__all__"
-
-
-class SoilColourViewSet(BatchUpsertViewSet):
-    """View set for SoilColour."""
-
-    queryset = occ_models.SoilColour.objects.all()
-    serializer_class = SoilColourSerializer
-    uid_fields = ("pk",)
-    model = occ_models.SoilColour
-
-
-router.register("lookup-soilcolour", SoilColourViewSet)
-
-
-# ----------------------------------------------------------------------------#
-# Drainage
-#
-class DrainageSerializer(serializers.ModelSerializer):
-    """Serializer for Drainage: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.Drainage
-        fields = "__all__"
-
-
-class DrainageViewSet(BatchUpsertViewSet):
-    """View set for Drainage."""
-
-    queryset = occ_models.Drainage.objects.all()
-    serializer_class = DrainageSerializer
-    uid_fields = ("pk",)
-    model = occ_models.Drainage
-
-
-router.register("lookup-drainage", DrainageViewSet)
-
-
-# ----------------------------------------------------------------------------#
-# SurveyMethod
-#
-class SurveyMethodSerializer(serializers.ModelSerializer):
-    """Serializer for SurveyMethod: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.SurveyMethod
-        fields = "__all__"
-
-
-class SurveyMethodViewSet(BatchUpsertViewSet):
-    """View set for SurveyMethod."""
-
-    queryset = occ_models.SurveyMethod.objects.all()
-    serializer_class = SurveyMethodSerializer
-    uid_fields = ("pk",)
-    model = occ_models.SurveyMethod
-
-
-router.register("lookup-surveymethod", SurveyMethodViewSet)
-
-# ----------------------------------------------------------------------------#
-# SoilCondition
-# 
-class SoilConditionSerializer(serializers.ModelSerializer):
-    """Serializer for SoilCondition: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.SoilCondition
-        fields = "__all__"
-
-
-class SoilConditionViewSet(BatchUpsertViewSet):
-    """View set for SoilCondition."""
-
-    queryset = occ_models.SoilCondition.objects.all()
-    serializer_class = SoilConditionSerializer
-    uid_fields = ("pk",)
-    model = occ_models.SoilCondition
-
-
-router.register("lookup-soilcondition", SoilConditionViewSet)
-
-
-# ----------------------------------------------------------------------------#
-# CountAccuracy
-#
-class CountAccuracySerializer(serializers.ModelSerializer):
-    """Serializer for CountAccuracy: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.CountAccuracy
-        fields = "__all__"
-
-
-class CountAccuracyViewSet(BatchUpsertViewSet):
-    """View set for CountAccuracy."""
-
-    queryset = occ_models.CountAccuracy.objects.all()
-    serializer_class = CountAccuracySerializer
-    uid_fields = ("pk",)
-    model = occ_models.CountAccuracy
-
-
-router.register("lookup-countaccuracy", CountAccuracyViewSet)
-
-
-# ----------------------------------------------------------------------------#
-# CountMethod
-#
-class CountMethodSerializer(serializers.ModelSerializer):
-    """Serializer for CountMethod: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.CountMethod
-        fields = "__all__"
-
-
-class CountMethodViewSet(BatchUpsertViewSet):
-    """View set for CountMethod."""
-
-    queryset = occ_models.CountMethod.objects.all()
-    serializer_class = CountMethodSerializer
-    uid_fields = ("pk",)
-    model = occ_models.CountMethod
-
-
-router.register("lookup-countmethod", CountMethodViewSet)
-
-# ----------------------------------------------------------------------------#
-# CountSubject
-#
-class CountSubjectSerializer(serializers.ModelSerializer):
-    """Serializer for CountSubject: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.CountSubject
-        fields = "__all__"
-
-
-class CountSubjectViewSet(BatchUpsertViewSet):
-    """View set for CountSubject."""
-
-    queryset = occ_models.CountSubject.objects.all()
-    serializer_class = CountSubjectSerializer
-    uid_fields = ("pk",)
-    model = occ_models.CountSubject
-
-
-router.register("lookup-countsubject", CountSubjectViewSet)
-
-# ----------------------------------------------------------------------------#
-# PlantCondition
-#
-class PlantConditionSerializer(serializers.ModelSerializer):
-    """Serializer for PlantCondition: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.PlantCondition
-        fields = "__all__"
-
-
-class PlantConditionViewSet(BatchUpsertViewSet):
-    """View set for PlantCondition."""
-
-    queryset = occ_models.PlantCondition.objects.all()
-    serializer_class = PlantConditionSerializer
-    uid_fields = ("pk",)
-    model = occ_models.PlantCondition
-
-
-router.register("lookup-plantcondition", PlantConditionViewSet)
-
-
-# ----------------------------------------------------------------------------#
-# DetectionMethod
-#
-class DetectionMethodSerializer(serializers.ModelSerializer):
-    """Serializer for DetectionMethod: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.DetectionMethod
-        fields = "__all__"
-
-
-class DetectionMethodViewSet(BatchUpsertViewSet):
-    """View set for DetectionMethod."""
-
-    queryset = occ_models.DetectionMethod.objects.all()
-    serializer_class = DetectionMethodSerializer
-    uid_fields = ("pk",)
-    model = occ_models.DetectionMethod
-
-
-router.register("lookup-detectionmethod", DetectionMethodViewSet)
-
-# ----------------------------------------------------------------------------#
-# Confidence
-#
-class ConfidenceSerializer(serializers.ModelSerializer):
-    """Serializer for Confidence: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.Confidence
-        fields = "__all__"
-
-
-class ConfidenceViewSet(BatchUpsertViewSet):
-    """View set for Confidence."""
-
-    queryset = occ_models.Confidence.objects.all()
-    serializer_class = ConfidenceSerializer
-    uid_fields = ("pk",)
-    model = occ_models.Confidence
-
-
-router.register("lookup-confidence", ConfidenceViewSet)
-
-# ----------------------------------------------------------------------------#
-# ReproductiveMaturity
-#
-class ReproductiveMaturitySerializer(serializers.ModelSerializer):
-    """Serializer for ReproductiveMaturity: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.ReproductiveMaturity
-        fields = "__all__"
-
-
-class ReproductiveMaturityViewSet(BatchUpsertViewSet):
-    """View set for ReproductiveMaturity."""
-
-    queryset = occ_models.ReproductiveMaturity.objects.all()
-    serializer_class = ReproductiveMaturitySerializer
-    uid_fields = ("pk",)
-    model = occ_models.ReproductiveMaturity
-
-
-router.register("lookup-reproductivematurity", ReproductiveMaturityViewSet)
-
-# ----------------------------------------------------------------------------#
-# AnimalHealth
-#
-class AnimalHealthSerializer(serializers.ModelSerializer):
-    """Serializer for AnimalHealth: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.AnimalHealth
-        fields = "__all__"
-
-
-class AnimalHealthViewSet(BatchUpsertViewSet):
-    """View set for Drainage."""
-
-    queryset = occ_models.AnimalHealth.objects.all()
-    serializer_class = AnimalHealthSerializer
-    uid_fields = ("pk",)
-    model = occ_models.AnimalHealth
-
-
-router.register("lookup-animalhealth", AnimalHealthViewSet)
-
-# ----------------------------------------------------------------------------#
-# AnimalSex
-#
-class AnimalSexSerializer(serializers.ModelSerializer):
-    """Serializer for AnimalSex: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.AnimalSex
-        fields = "__all__"
-
-
-class AnimalSexViewSet(BatchUpsertViewSet):
-    """View set for Drainage."""
-
-    queryset = occ_models.AnimalSex.objects.all()
-    serializer_class = AnimalSexSerializer
-    uid_fields = ("pk",)
-    model = occ_models.AnimalSex
-
-
-router.register("lookup-animalsex", AnimalSexViewSet)
-
-# ----------------------------------------------------------------------------#
-# CauseOfDeath
-#
-class CauseOfDeathSerializer(serializers.ModelSerializer):
-    """Serializer for CauseOfDeath: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.CauseOfDeath
-        fields = "__all__"
-
-
-class CauseOfDeathViewSet(BatchUpsertViewSet):
-    """View set for CauseOfDeath."""
-
-    queryset = occ_models.CauseOfDeath.objects.all()
-    serializer_class = CauseOfDeathSerializer
-    uid_fields = ("pk",)
-    model = occ_models.CauseOfDeath
-
-
-router.register("lookup-causeofdeath", CauseOfDeathViewSet)
-
-# ----------------------------------------------------------------------------#
-# SecondarySigns
-#
-class SecondarySignsSerializer(serializers.ModelSerializer):
-    """Serializer for SecondarySigns: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.SecondarySigns
-        fields = "__all__"
-
-
-class SecondarySignsViewSet(BatchUpsertViewSet):
-    """View set for SecondarySigns."""
-
-    queryset = occ_models.SecondarySigns.objects.all()
-    serializer_class = SecondarySignsSerializer
-    uid_fields = ("pk",)
-    model = occ_models.SecondarySigns
-
-
-router.register("lookup-secondarysigns", SecondarySignsViewSet)
-
-# ----------------------------------------------------------------------------#
-# SampleType
-#
-class SampleTypeSerializer(serializers.ModelSerializer):
-    """Serializer for SampleType: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.SampleType
-        fields = "__all__"
-
-
-class SampleTypeViewSet(BatchUpsertViewSet):
-    """View set for SampleType."""
-
-    queryset = occ_models.SampleType.objects.all()
-    serializer_class = SampleTypeSerializer
-    uid_fields = ("pk",)
-    model = occ_models.SampleType
-
-
-router.register("lookup-sampletype", SampleTypeViewSet)
-
-# ----------------------------------------------------------------------------#
-# SampleDestination
-#
-class SampleDestinationSerializer(serializers.ModelSerializer):
-    """Serializer for SampleDestination: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.SampleDestination
-        fields = "__all__"
-
-
-class SampleDestinationViewSet(BatchUpsertViewSet):
-    """View set for SampleDestination."""
-
-    queryset = occ_models.SampleDestination.objects.all()
-    serializer_class = SampleDestinationSerializer
-    uid_fields = ("pk",)
-    model = occ_models.SampleDestination
-
-
-router.register("lookup-sampledestination", SampleDestinationViewSet)
-
-# ----------------------------------------------------------------------------#
-# PermitType
-class PermitTypeSerializer(serializers.ModelSerializer):
-    """Serializer for PermitType: pk, code, label, description."""
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.PermitType
-        fields = "__all__"
-
-
-class PermitTypeViewSet(BatchUpsertViewSet):
-    """View set for PermitType."""
-
-    queryset = occ_models.PermitType.objects.all()
-    serializer_class = PermitTypeSerializer
-    uid_fields = ("pk",)
-    model = occ_models.PermitType
-
-
-router.register("lookup-permittype", PermitTypeViewSet)
-
-# ----------------------------------------------------------------------------#
-# ObsGroup models
-# ----------------------------------------------------------------------------#
-
-# ----------------------------------------------------------------------------#
-# PlantCount
-#
-class PlantCountSerializer(serializers.ModelSerializer):
-    """Serializer for PlantCount: pk, code, label, description."""
-
-    count_method = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='code'
-    )
-
-    source_id = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='code'
-    )
-
-    class Meta:
-        """Opts."""
-
-        model = occ_models.PlantCount
-        fields = "__all__"
-
-
-class PlantCountViewSet(BatchUpsertViewSet):
-    """View set for PlantCount."""
-
-    queryset = occ_models.PlantCount.objects.all()
-    serializer_class = PlantCountSerializer
-    uid_fields = ("pk",)
-    model = occ_models.PlantCount
-
-
-router.register("obs-plantcount", PlantCountViewSet)
