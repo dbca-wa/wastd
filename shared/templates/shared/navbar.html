@@ -326,6 +326,12 @@
                 </a>
               -->
             </div>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'gql-api' %}"
+                title="GraphQL API" target="_blank" rel="noreferrer">
+               <span class="oi oi-script align-left" aria-hidden="true"></span>
+               <span class="align-left">GraphQL API</span>
+             </a>
           </li>
 
           {% if request.user.is_staff %}

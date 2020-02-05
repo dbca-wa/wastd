@@ -630,7 +630,7 @@ GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY', default="not-set")
 
 # Graphene-django
 GRAPHENE = {
-    'SCHEMA': 'wastd.schema.schema'
+    'SCHEMA': 'api.schema'
 }
 
 
