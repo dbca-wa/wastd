@@ -18,11 +18,11 @@
         "current": true,
         "eoo": null,
         "lft": 1,
-        "rght": 65122,
-        "tree_id": 3,
+        "rght": 65392,
+        "tree_id": 1,
         "level": 0,
         "paraphyletic_groups": [
-            22
+            21
         ]
     }
 },
@@ -44,95 +44,118 @@
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 64468,
-        "rght": 65121,
-        "tree_id": 3,
+        "lft": 64732,
+        "rght": 65391,
+        "tree_id": 1,
         "level": 1,
         "paraphyletic_groups": [
-            22
+            21
         ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 41197,
+    "pk": 40653,
     "fields": {
-        "name_id": 48912,
+        "name_id": 49087,
         "parent": 7,
         "supra_group": "ALGA",
         "rank": 90,
-        "name": "Lessoniaceae",
-        "canonical_name": "Lessoniaceae",
-        "taxonomic_name": "Lessoniaceae (Setch. & N.L.Gardner)",
+        "name": "Sarcinochrysidaceae",
+        "canonical_name": "Sarcinochrysidaceae",
+        "taxonomic_name": "Sarcinochrysidaceae (Gayral & Billard)",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
-        "author": "Setch. & N.L.Gardner",
+        "author": "Gayral & Billard",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 65113,
-        "rght": 65120,
-        "tree_id": 3,
+        "lft": 65385,
+        "rght": 65390,
+        "tree_id": 1,
         "level": 2,
         "paraphyletic_groups": [
-            22
+            1,
+            21
         ]
     }
 },
 {
-    "model": "taxonomy.taxon",
-    "pk": 4279,
+    "model": "taxonomy.hbvsupra",
+    "pk": 21,
     "fields": {
-        "name_id": 26177,
-        "parent": 41197,
+        "ogc_fid": null,
+        "supra_code": "PLANTS",
+        "supra_name": "Plants sensu latu",
+        "updated_on": null,
+        "md5_rowhash": null
+    }
+},
+{
+    "model": "taxonomy.hbvsupra",
+    "pk": 1,
+    "fields": {
+        "ogc_fid": 0,
+        "supra_code": "ALGA",
+        "supra_name": "Alga",
+        "updated_on": "2004-12-09Z",
+        "md5_rowhash": "ac75154fd5c5b9237d20d833bfe0a506"
+    }
+},
+{
+    "model": "taxonomy.taxon",
+    "pk": 40655,
+    "fields": {
+        "name_id": 49086,
+        "parent": 40653,
         "supra_group": null,
         "rank": 130,
-        "name": "Ecklonia",
-        "canonical_name": "Ecklonia",
-        "taxonomic_name": "Ecklonia (Hornemann)",
+        "name": "Chrysonephos",
+        "canonical_name": "Chrysonephos",
+        "taxonomic_name": "Chrysonephos (W.R.Taylor)",
         "vernacular_name": "",
         "field_code": null,
         "vernacular_names": "",
-        "author": "Hornemann",
+        "author": "W.R.Taylor",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 65114,
-        "rght": 65119,
-        "tree_id": 3,
+        "lft": 65386,
+        "rght": 65389,
+        "tree_id": 1,
         "level": 3,
         "paraphyletic_groups": [
             1,
-            22
+            21
         ]
     }
 },
 {
     "model": "taxonomy.taxon",
-    "pk": 27503,
+    "pk": 40676,
     "fields": {
-        "name_id": 26805,
-        "parent": 4279,
+        "name_id": 49088,
+        "parent": 40655,
         "supra_group": null,
         "rank": 190,
-        "name": "radiata",
-        "canonical_name": "Ecklonia radiata",
-        "taxonomic_name": "Ecklonia radiata ((C.Agardh) J.Agardh)",
+        "name": "lewisii",
+        "canonical_name": "Chrysonephos lewisii",
+        "taxonomic_name": "Chrysonephos lewisii (W.R.Taylor W.R.Taylor)",
         "vernacular_name": "",
-        "field_code": "ECKRAD",
+        "field_code": "CHRLEW",
         "vernacular_names": "",
-        "author": "(C.Agardh) J.Agardh",
+        "author": "W.R.Taylor W.R.Taylor",
         "publication_status": 2,
         "current": true,
         "eoo": null,
-        "lft": 65117,
-        "rght": 65118,
-        "tree_id": 3,
+        "lft": 65387,
+        "rght": 65388,
+        "tree_id": 1,
         "level": 4,
         "paraphyletic_groups": [
             1,
-            22
+            21
         ]
     }
 }

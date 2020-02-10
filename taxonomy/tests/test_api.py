@@ -24,10 +24,16 @@ This suite tests the following use cases:
 """
 from __future__ import unicode_literals
 
+import json
 # from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.contrib.auth import get_user_model  # noqa
 from django.test import TestCase
 from django.template import Context, Template  # noqa
 from django.template.loader import get_template  # noqa
+from rest_framework.test import APIRequestFactory, force_authenticate
+from rest_framework.test import APIClient
+from rest_framework.authtoken.models import Token
 
 # from model_mommy import mommy
 from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
@@ -98,6 +104,28 @@ class TaxonAPITests(TestCase):
     and occurrence data to downstream services.
     """
 
+    fixtures = ['taxonomy/fixtures/test_taxonomy.json', ]
+
+    def setUp(self):
+        """Set up Taxon API tests."""
+        self.user = get_user_model().objects.filter(is_superuser=True).first()
+        if not self.user:
+            self.user = get_user_model().objects.create_superuser(
+                username="superuser",
+                email="super@gmail.com",
+                password="test")
+        self.user.save()
+
+        # Use data from text fixtures over constants from settings
+        self.animal_pk = tax_models.HbvSupra.objects.get(supra_code="ANIMALS").pk
+        self.plant_pk = tax_models.HbvSupra.objects.get(supra_code="PLANTS").pk
+
+        self.client = APIClient()
+        # Option 1: use Token authentication
+        # self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.user.auth_token.key)
+        # Option 2: bypass authentication
+        self.client.force_authenticate(user=self.user)
+
     def list_taxon(self):
         """Test the list and filter of taxon API endpoints for both full and partial field sets.
 
@@ -106,7 +134,64 @@ class TaxonAPITests(TestCase):
         * Provide a list of taxonomic names to external services.
         * Provide full detail or cut down, fast subsets.
         """
-        pass
+        
+        taxon_list = self.client.get("/api/1/taxon/")
+        self.assertEqual(taxon_list.status_code, 200)
+        # taxon list is a featurecollection
+        self.assertTrue("type" in taxon_list.data)
+        self.assertTrue("features" in taxon_list.data)
+        self.assertTrue(taxon_list.data["type"], "FeatureCollection")
+
+    def test_taxon_list_filters_animals(self):
+        """Test that the taxon list can be filtered to only animals.
+
+        The request ``/api/1/taxon/?paraphyletic_groups=20`` returns only animal taxa:
+
+        * Each taxon must contain paraphyletic group settings.ANIMALS_PK (e.g. 20).
+        * No taxon must contain paraphyletic group settings.PLANTS_PK (e.g. 21).
+        """
+        animal_list = self.client.get("/api/1/taxon/?paraphyletic_groups={0}".format(self.animal_pk))
+        
+        # Smoke test
+        self.assertEqual(animal_list.status_code, 200)
+        
+        # Each taxon must contain paraphyletic group settings.ANIMALS_PK
+        self.assertEqual(
+            set([self.animal_pk in x["paraphyletic_groups"] for x in animal_list.data["features"]]), 
+            {True}
+        )
+        # No taxon must contain paraphyletic group settings.PLANTS_PK
+        self.assertEqual(
+            set([self.plant_pk in x["paraphyletic_groups"] for x in animal_list.data["features"]]), 
+            {False}
+        )
+
+    def test_taxon_list_filters_plants(self):
+        """Test that the taxon list can be filtered to only plants (sensu latu).
+
+
+        The request ``/api/1/taxon/?paraphyletic_groups=21`` returns only plant taxa (sensu latu):
+
+        * Each taxon must contain paraphyletic group settings.PLANTS_PK (e.g. 21).
+        * No taxon must contain paraphyletic group settings.ANIMALS_PK (e.g. 20).
+        """
+        plant_list = self.client.get("/api/1/taxon/?paraphyletic_groups={0}".format(self.plant_pk))
+
+        # Smoke test
+        self.assertEqual(plant_list.status_code, 200)
+        
+        # No taxon must contain paraphyletic group settings.ANIMALS_PK
+        self.assertEqual(
+            set([self.animal_pk in x["paraphyletic_groups"] for x in plant_list.data["features"]]), 
+            {False}
+        )
+        
+        # Each taxon must contain paraphyletic group settings.PLANTS_PK
+        self.assertEqual(
+            set([self.plant_pk in x["paraphyletic_groups"] for x in plant_list.data["features"]]), 
+            {True}
+        )
+
 
     def test_taxon_with_conservation_status(self):
         """Test publishing the conservation status of taxa to other services e.g. WACensus.

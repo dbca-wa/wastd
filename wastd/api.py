@@ -3620,7 +3620,7 @@ class TaxonFilter(filters.FilterSet):
             "author": ["icontains", ],
             "canonical_name": ["icontains", ],
             "taxonomic_name": ["icontains", ],
-            "paraphyletic_groups": ["icontains", "exact", ], 
+            "paraphyletic_groups": ["exact", ], 
             # "vernacular_name": ["icontains", ],
             "vernacular_names": ["icontains", ],
             # "eoo" requires polygon filter,
@@ -3633,8 +3633,8 @@ class TaxonViewSet(NameIDBatchUpsertViewSet):
 
     Examples:
 
-    * [Animals](/api/1/taxon/?paraphyletic_groups__icontains=20)
-    * [Plants sensu latu](/api/1/taxon/?paraphyletic_groups__icontains=21)
+    * [Animals](/api/1/taxon/?paraphyletic_groups=20)
+    * [Plants sensu latu](/api/1/taxon/?paraphyletic_groups=21)
     * [Only current taxa](/api/1/taxon/?current=true)
     * [Only non-current taxa](/api/1/taxon/?current=false)
     * [Vernacular names contains "woylie" (case insensitive)](/api/1/taxon/?vernacular_names__icontains=woylie) - same works with name, author, can/tax name
