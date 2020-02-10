@@ -129,8 +129,8 @@ def create_test_fixtures():  # pragma: no cover
         f.readlines()
     with open("taxonomy/fixtures/test_users.json", 'w+') as f:
         call_command('dump_object', 'users.User', 1, 4,
-                     get_user_model().objects.get(username="amym").pk,
-                     get_user_model().objects.get(username="georginaa").pk,
+                     get_user_model().objects.get(username="AmyM").pk,
+                     get_user_model().objects.get(username="MelanieSmith").pk,
                      stdout=f)
         f.readlines()
     with open("taxonomy/fixtures/test_communities.json", 'w+') as f:
