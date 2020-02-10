@@ -43,6 +43,7 @@ from django.apps import apps
 from django.template import Context, Template
 from django.db.models import Prefetch  # noqa
 
+import django_filters as df
 from django_filters import rest_framework as rf_filters
 from django_filters.widgets import BooleanWidget  # noqa
 from django_filters.filters import (  # noqa
@@ -2840,6 +2841,8 @@ class ObservationGroupViewSet(viewsets.ModelViewSet):
     queryset = occ_models.ObservationGroup.objects.all()
     serializer_class = ObservationGroupPolymorphicSerializer
 
+    uid_fields = ("source", "source_id", )
+
     def get_queryset(self):
         """
         Optionally restricts the returned purchases to a given user,
@@ -2851,6 +2854,16 @@ class ObservationGroupViewSet(viewsets.ModelViewSet):
             m = apps.get_model("occurrence", obstype)
             queryset = occ_models.ObservationGroup.objects.instance_of(m).all()
         return queryset
+
+    def create_one(self, data):
+        """Create one instance."""
+        unique_fields = {x: data[x] for x in self.uid_fields}
+        [data.pop(x) for x in self.uid_fields if x in data]
+        if 'csrfmiddlewaretoken' in data:
+            data.pop('csrfmiddlewaretoken')
+
+        # TODO
+        obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
 
     def create(self, request):
         """POST: Create or update one model instance.
@@ -2865,7 +2878,6 @@ class ObservationGroupViewSet(viewsets.ModelViewSet):
         * Dict of object_id and message if one record
         * List of one-record dicts if several records
         """
-        logger.info("Not implemented!")
         obsmodel_name = "ObservationGroup"
         
         # Infer ObservationGroup model from obstype
@@ -2896,6 +2908,26 @@ class ObservationGroupViewSet(viewsets.ModelViewSet):
             enc.pk, 
             request.data
         )
+
+        # Create one ---------------------------------------------------------#
+        if self.uid_fields[0] in request.data:
+            logger.info('[API][create] found one record, creating/updating...')
+            res = self.create_one(request.data).__dict__         
+            return RestResponse(res, status=st)
+
+        # Create many --------------------------------------------------------#
+        elif (type(request.data) == list and 
+              self.uid_fields[0] in request.data[0]):
+            logger.info('[API][create] found batch of {0} records,'
+                        ' creating/updating...'.format(len(request.data)))
+
+            # The slow way:
+            # res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
+
+        else:
+            msg = "[API][create] invalid data, uid fields not found."
+            return RestResponse(msg, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         return RestResponse(msg, status=status.HTTP_200_OK)
 
 
@@ -3572,11 +3604,7 @@ class FastTaxonSerializer(serializers.ModelSerializer):
 class TaxonFilter(filters.FilterSet):
     """Taxon filter."""
 
-    # is_currently_listed = BooleanFilter(
-    #     label="Is conservation significant",
-    #     widget=BooleanWidget()
-    # )
-    # TODO needs method
+    current = rf_filters.BooleanFilter(field_name="current")
 
     class Meta:
         """Class opts."""
@@ -3588,15 +3616,15 @@ class TaxonFilter(filters.FilterSet):
             "rank": ["icontains", "in", "gt", "gte", "lt", "lte"],
             # "parent": ["exact", ],  # performance bomb
             "publication_status": ["isnull", ],
-            "current": ["isnull", ],
+            # current: provided through field
             "author": ["icontains", ],
             "canonical_name": ["icontains", ],
             "taxonomic_name": ["icontains", ],
-            "paraphyletic_groups": ["icontains", ], 
+            "paraphyletic_groups": ["icontains", "exact", ], 
             # "vernacular_name": ["icontains", ],
             "vernacular_names": ["icontains", ],
             # "eoo" requires polygon filter,
-            # "is_currently_listed": ["isnull", ],
+
         }
 
 
