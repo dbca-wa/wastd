@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TSC 0.32.1 documentation</title>
+  <title>TSC 0.35.5 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1
+                0.35
               </div>
             
           
@@ -428,7 +428,7 @@
     
       <li><a href="index.html#document-index">Docs</a> &raquo;</li>
         
-      <li>TSC 0.32.1 documentation</li>
+      <li>TSC 0.35.5 documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -5455,17 +5455,17 @@ Revoking curation flags data for requiring changes by an expert.</p>
 
 <dl class="method">
 <dt id="wastd.observations.models.Encounter.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Encounter.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Encounter.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.models.Encounter.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Encounter.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Encounter.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.models.Encounter.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Encounter.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Encounter.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -6276,6 +6276,88 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="wastd.observations.models.LightSourceObservation">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.models.</code><code class="sig-name descname">LightSourceObservation</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.LightSourceObservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.models.Observation" title="wastd.observations.models.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.Observation</span></code></a></p>
+<p>Dict of one or list of many 
+{</p>
+<blockquote>
+<div><p>“light_source_photo”: null,
+“light_bearing_manual”: “50.0000000000”,
+“light_source_type”: “artificial”  “natural” CHOICES
+“light_source_description”: “Oil rig#5”</p>
+</div></blockquote>
+<p>}</p>
+<dl class="exception">
+<dt id="wastd.observations.models.LightSourceObservation.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="wastd.observations.models.LightSourceObservation.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.LightSourceObservation.bearing_light_degrees">
+<code class="sig-name descname">bearing_light_degrees</code><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.bearing_light_degrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.models.LightSourceObservation.get_light_source_type_display">
+<code class="sig-name descname">get_light_source_type_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.CharField: light_source_type&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.get_light_source_type_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.LightSourceObservation.light_source_description">
+<code class="sig-name descname">light_source_description</code><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.light_source_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.LightSourceObservation.light_source_type">
+<code class="sig-name descname">light_source_type</code><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.light_source_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.LightSourceObservation.observation_ptr">
+<code class="sig-name descname">observation_ptr</code><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.observation_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.LightSourceObservation.observation_ptr_id">
+<code class="sig-name descname">observation_ptr_id</code><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.observation_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.LightSourceObservation.polymorphic_primary_key_name">
+<code class="sig-name descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.LightSourceObservation.polymorphic_super_sub_accessors_replaced">
+<code class="sig-name descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#wastd.observations.models.LightSourceObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="wastd.observations.models.LineTransectEncounter">
 <em class="property">class </em><code class="sig-prename descclassname">wastd.observations.models.</code><code class="sig-name descname">LineTransectEncounter</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.LineTransectEncounter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wastd.observations.models.Encounter" title="wastd.observations.models.Encounter"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.Encounter</span></code></a></p>
@@ -6886,6 +6968,19 @@ object the first time, the query is executed.</p>
 <dd><p>The encounter’s latitude.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="wastd.observations.models.Observation.lightsourceobservation">
+<code class="sig-name descname">lightsourceobservation</code><a class="headerlink" href="#wastd.observations.models.Observation.lightsourceobservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wastd.observations.models.Observation.longitude">
 <em class="property">property </em><code class="sig-name descname">longitude</code><a class="headerlink" href="#wastd.observations.models.Observation.longitude" title="Permalink to this definition">¶</a></dt>
@@ -7037,6 +7132,32 @@ relation.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="wastd.observations.models.Observation.turtlehatchlingemergenceobservation">
+<code class="sig-name descname">turtlehatchlingemergenceobservation</code><a class="headerlink" href="#wastd.observations.models.Observation.turtlehatchlingemergenceobservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.Observation.turtlehatchlingemergenceoutlierobservation">
+<code class="sig-name descname">turtlehatchlingemergenceoutlierobservation</code><a class="headerlink" href="#wastd.observations.models.Observation.turtlehatchlingemergenceoutlierobservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="wastd.observations.models.Observation.turtlemorphometricobservation">
 <code class="sig-name descname">turtlemorphometricobservation</code><a class="headerlink" href="#wastd.observations.models.Observation.turtlemorphometricobservation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the reverse side of a one-to-one
@@ -7091,6 +7212,74 @@ relation.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="wastd.observations.models.PathToSea">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.models.</code><code class="sig-name descname">PathToSea</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.PathToSea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>A Mixin providing code, label and description.</p>
+<dl class="exception">
+<dt id="wastd.observations.models.PathToSea.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#wastd.observations.models.PathToSea.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="wastd.observations.models.PathToSea.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#wastd.observations.models.PathToSea.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.PathToSea.code">
+<code class="sig-name descname">code</code><a class="headerlink" href="#wastd.observations.models.PathToSea.code" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.PathToSea.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#wastd.observations.models.PathToSea.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.PathToSea.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#wastd.observations.models.PathToSea.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.PathToSea.label">
+<code class="sig-name descname">label</code><a class="headerlink" href="#wastd.observations.models.PathToSea.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.PathToSea.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#wastd.observations.models.PathToSea.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.PathToSea.path_to_sea">
+<code class="sig-name descname">path_to_sea</code><a class="headerlink" href="#wastd.observations.models.PathToSea.path_to_sea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="wastd.observations.models.QualityControl">
 <em class="property">class </em><code class="sig-prename descclassname">wastd.observations.models.</code><code class="sig-name descname">QualityControl</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.QualityControl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
@@ -7098,7 +7287,7 @@ relation.</p>
 <dl class="class">
 <dt id="wastd.observations.models.QualityControl.Meta">
 <em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#wastd.observations.models.QualityControl.Meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class opts.</p>
 <dl class="attribute">
 <dt id="wastd.observations.models.QualityControl.Meta.abstract">
@@ -7198,17 +7387,17 @@ Revoking curation flags data for requiring changes by an expert.</p>
 
 <dl class="method">
 <dt id="wastd.observations.models.QualityControl.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.QualityControl.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.QualityControl.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.models.QualityControl.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.QualityControl.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.QualityControl.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.models.QualityControl.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.QualityControl.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.QualityControl.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -7542,27 +7731,22 @@ object the first time, the query is executed.</p>
 
 <dl class="method">
 <dt id="wastd.observations.models.Survey.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Survey.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Survey.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.models.Survey.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Survey.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Survey.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.models.Survey.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Survey.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Survey.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.models.Survey.get_source_display">
 <code class="sig-name descname">get_source_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.CharField: source&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Survey.get_source_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.models.Survey.get_status_display">
-<code class="sig-name descname">get_status_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.Survey.get_status_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7571,6 +7755,18 @@ object the first time, the query is executed.</p>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.Survey.label">
+<code class="sig-name descname">label</code><a class="headerlink" href="#wastd.observations.models.Survey.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.models.Survey.make_label">
+<em class="property">property </em><code class="sig-name descname">make_label</code><a class="headerlink" href="#wastd.observations.models.Survey.make_label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="wastd.observations.models.Survey.objects">
@@ -8420,6 +8616,341 @@ object the first time, the query is executed.</p>
 <dl class="attribute">
 <dt id="wastd.observations.models.TurtleDamageObservation.polymorphic_super_sub_accessors_replaced">
 <code class="sig-name descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#wastd.observations.models.TurtleDamageObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.models.</code><code class="sig-name descname">TurtleHatchlingEmergenceObservation</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.models.Observation" title="wastd.observations.models.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.Observation</span></code></a></p>
+<p>Turtle hatchling emergence observation.</p>
+<p>Hatchling emergence observations can include:</p>
+<ul class="simple">
+<li><p>Emergence time (if seen directly),</p></li>
+<li><p>Fan angles of hatchling tracks forming a fan from nest to sea,</p></li>
+<li><p>Emergence climate</p></li>
+<li><p>Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)</p></li>
+<li><p>Light sources known and present (if yes: LightSourceObservation).</p></li>
+</ul>
+<p># TON 0.54+
+“fan_angles”: {</p>
+<blockquote>
+<div><blockquote>
+<div><p>“photo_hatchling_tracks_seawards”: “1546836969404.jpg”,
+“photo_hatchling_tracks_relief”: null,
+“bearing_to_water_manual”: “98.0000000000”,
+“leftmost_track_manual”: “58.0000000000”,
+“rightmost_track_manual”: “122.0000000000”,
+“no_tracks_main_group”: “7”,
+“no_tracks_main_group_min”: “7”,
+“no_tracks_main_group_max”: “7”,
+“outlier_tracks_present”: “present”,
+“hatchling_path_to_sea”: “clear”,
+“path_to_sea_comments”: null,
+“hatchling_emergence_time_known”: “yes”,
+“cloud_cover_at_emergence_known”: “yes”,
+“light_sources_present”: “present”</p>
+</div></blockquote>
+<p>},
+“outlier_track”: {</p>
+<blockquote>
+<div><p>“outlier_track_photo”: “1546837474680.jpg”,
+“outlier_track_bearing_manual”: “180.0000000000”,
+“outlier_group_size”: “1”,
+“outlier_track_comment”: null</p>
+</div></blockquote>
+<p>},
+“hatchling_emergence_time_group”: {</p>
+<blockquote>
+<div><p>“hatchling_emergence_time”: “2019-01-06T23:07:00.000Z”,
+“hatchling_emergence_time_source”: “plusminus-2h”</p>
+</div></blockquote>
+<p>},
+“emergence_climate”: {</p>
+<blockquote>
+<div><p>“cloud_cover_at_emergence”: “3”</p>
+</div></blockquote>
+<p>},
+“light_source”: [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“light_source_photo”: null,
+“light_bearing_manual”: “50.0000000000”,
+“light_source_type”: “artificial”,
+“light_source_description”: “Oil rig#5”</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“light_source_photo”: null,
+“light_bearing_manual”: “190.0000000000”,
+“light_source_type”: “natural”,
+“light_source_description”: “Moon”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>],
+“other_light_sources”: {</p>
+<blockquote>
+<div><p>“other_light_sources_present”: “na”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<dl class="exception">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.bearing_leftmost_track_degrees">
+<code class="sig-name descname">bearing_leftmost_track_degrees</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.bearing_leftmost_track_degrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.bearing_rightmost_track_degrees">
+<code class="sig-name descname">bearing_rightmost_track_degrees</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.bearing_rightmost_track_degrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.bearing_to_water_degrees">
+<code class="sig-name descname">bearing_to_water_degrees</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.bearing_to_water_degrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.cloud_cover_at_emergence">
+<code class="sig-name descname">cloud_cover_at_emergence</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.cloud_cover_at_emergence" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.cloud_cover_at_emergence_known">
+<code class="sig-name descname">cloud_cover_at_emergence_known</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.cloud_cover_at_emergence_known" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.get_cloud_cover_at_emergence_known_display">
+<code class="sig-name descname">get_cloud_cover_at_emergence_known_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.CharField: cloud_cover_at_emergence_known&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.get_cloud_cover_at_emergence_known_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.get_hatchling_emergence_time_accuracy_display">
+<code class="sig-name descname">get_hatchling_emergence_time_accuracy_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.CharField: hatchling_emergence_time_accuracy&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.get_hatchling_emergence_time_accuracy_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.get_hatchling_emergence_time_known_display">
+<code class="sig-name descname">get_hatchling_emergence_time_known_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.CharField: hatchling_emergence_time_known&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.get_hatchling_emergence_time_known_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.get_light_sources_present_display">
+<code class="sig-name descname">get_light_sources_present_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.CharField: light_sources_present&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.get_light_sources_present_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.get_outlier_tracks_present_display">
+<code class="sig-name descname">get_outlier_tracks_present_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.CharField: outlier_tracks_present&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.get_outlier_tracks_present_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_emergence_time">
+<code class="sig-name descname">hatchling_emergence_time</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_emergence_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_emergence_time_accuracy">
+<code class="sig-name descname">hatchling_emergence_time_accuracy</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_emergence_time_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_emergence_time_known">
+<code class="sig-name descname">hatchling_emergence_time_known</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_emergence_time_known" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_path_to_sea">
+<code class="sig-name descname">hatchling_path_to_sea</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_path_to_sea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.light_sources_present">
+<code class="sig-name descname">light_sources_present</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.light_sources_present" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.no_tracks_main_group">
+<code class="sig-name descname">no_tracks_main_group</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.no_tracks_main_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.no_tracks_main_group_max">
+<code class="sig-name descname">no_tracks_main_group_max</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.no_tracks_main_group_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.no_tracks_main_group_min">
+<code class="sig-name descname">no_tracks_main_group_min</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.no_tracks_main_group_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.observation_ptr">
+<code class="sig-name descname">observation_ptr</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.observation_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.observation_ptr_id">
+<code class="sig-name descname">observation_ptr_id</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.observation_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.outlier_tracks_present">
+<code class="sig-name descname">outlier_tracks_present</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.outlier_tracks_present" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.path_to_sea_comments">
+<code class="sig-name descname">path_to_sea_comments</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.path_to_sea_comments" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.polymorphic_primary_key_name">
+<code class="sig-name descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceObservation.polymorphic_super_sub_accessors_replaced">
+<code class="sig-name descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.models.</code><code class="sig-name descname">TurtleHatchlingEmergenceOutlierObservation</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.models.Observation" title="wastd.observations.models.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.Observation</span></code></a></p>
+<p>Dict of one or list of many
+“outlier_track”: {
+“outlier_track_photo”: “1546837474680.jpg”,
+“outlier_track_bearing_manual”: “180.0000000000”,
+“outlier_group_size”: “1”,
+“outlier_track_comment”: null
+}</p>
+<dl class="exception">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.bearing_outlier_track_degrees">
+<code class="sig-name descname">bearing_outlier_track_degrees</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.bearing_outlier_track_degrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.observation_ptr">
+<code class="sig-name descname">observation_ptr</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.observation_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.observation_ptr_id">
+<code class="sig-name descname">observation_ptr_id</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.observation_ptr_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.outlier_group_size">
+<code class="sig-name descname">outlier_group_size</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.outlier_group_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.outlier_track_comment">
+<code class="sig-name descname">outlier_track_comment</code><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.outlier_track_comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.polymorphic_primary_key_name">
+<code class="sig-name descname">polymorphic_primary_key_name</code><em class="property"> = 'id'</em><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.polymorphic_primary_key_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.polymorphic_super_sub_accessors_replaced">
+<code class="sig-name descname">polymorphic_super_sub_accessors_replaced</code><em class="property"> = False</em><a class="headerlink" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation.polymorphic_super_sub_accessors_replaced" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -9474,11 +10005,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <em class="property">property </em><code class="sig-name descname">gazettals</code><a class="headerlink" href="#taxonomy.models.Community.gazettals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a dict of TaxonConservationListing labels and admin URLs.</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="taxonomy.models.Community.get_source_display">
-<code class="sig-name descname">get_source_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.PositiveIntegerField: source&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.models.Community.get_source_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="taxonomy.models.Community.id">
@@ -12206,32 +12732,17 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="method">
 <dt id="conservation.models.CommunityConservationListing.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="conservation.models.CommunityConservationListing.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="conservation.models.CommunityConservationListing.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="conservation.models.CommunityConservationListing.get_scope_display">
-<code class="sig-name descname">get_scope_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.PositiveIntegerField: scope&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_scope_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="conservation.models.CommunityConservationListing.get_source_display">
-<code class="sig-name descname">get_source_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.PositiveIntegerField: source&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_source_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="conservation.models.CommunityConservationListing.get_status_display">
-<code class="sig-name descname">get_status_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_status_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.CommunityConservationListing.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -13227,7 +13738,7 @@ closing just the mutually exclusive ones.</p>
 <dl class="class">
 <dt id="conservation.models.ConservationListing.Meta">
 <em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#conservation.models.ConservationListing.Meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class opts.</p>
 <dl class="attribute">
 <dt id="conservation.models.ConservationListing.Meta.abstract">
@@ -13520,17 +14031,17 @@ object the first time, the query is executed.</p>
 
 <dl class="method">
 <dt id="conservation.models.ConservationListing.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationListing.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationListing.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="conservation.models.ConservationListing.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationListing.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationListing.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="conservation.models.ConservationListing.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationListing.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.ConservationListing.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -14351,17 +14862,17 @@ object the first time, the query is executed.</p>
 
 <dl class="method">
 <dt id="conservation.models.Document.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.Document.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.Document.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="conservation.models.Document.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.Document.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.Document.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="conservation.models.Document.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.Document.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.Document.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -14766,32 +15277,17 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="method">
 <dt id="conservation.models.TaxonConservationListing.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="conservation.models.TaxonConservationListing.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="conservation.models.TaxonConservationListing.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="conservation.models.TaxonConservationListing.get_scope_display">
-<code class="sig-name descname">get_scope_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.PositiveIntegerField: scope&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_scope_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="conservation.models.TaxonConservationListing.get_source_display">
-<code class="sig-name descname">get_source_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.PositiveIntegerField: source&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_source_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="conservation.models.TaxonConservationListing.get_status_display">
-<code class="sig-name descname">get_status_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_status_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMIntegerField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#conservation.models.TaxonConservationListing.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -15633,7 +16129,7 @@ object the first time, the query is executed.</p>
 
 <dl class="method">
 <dt id="occurrence.models.AreaEncounter.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -15643,12 +16139,12 @@ object the first time, the query is executed.</p>
 
 <dl class="method">
 <dt id="occurrence.models.AreaEncounter.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="occurrence.models.AreaEncounter.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -15665,16 +16161,6 @@ object the first time, the query is executed.</p>
 <p>Returns:
 A queryset of nearby AreaEncounters.</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="occurrence.models.AreaEncounter.get_source_display">
-<code class="sig-name descname">get_source_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.PositiveIntegerField: source&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_source_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="occurrence.models.AreaEncounter.get_status_display">
-<code class="sig-name descname">get_status_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.AreaEncounter.get_status_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="method">
 <dt id="occurrence.models.AreaEncounter.html_template">
@@ -16993,22 +17479,17 @@ relation.</p>
 
 <dl class="method">
 <dt id="occurrence.models.ObservationGroup.get_all_status_transitions">
-<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ObservationGroup.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_all_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ObservationGroup.get_all_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="occurrence.models.ObservationGroup.get_available_status_transitions">
-<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ObservationGroup.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ObservationGroup.get_available_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="occurrence.models.ObservationGroup.get_available_user_status_transitions">
-<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ObservationGroup.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="occurrence.models.ObservationGroup.get_status_display">
-<code class="sig-name descname">get_status_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ObservationGroup.get_status_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_user_status_transitions</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">*</em>, <em class="sig-param">field=&lt;django_fsm.FSMField: status&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#occurrence.models.ObservationGroup.get_available_user_status_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -18430,7 +18911,7 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.AnimalEncounterAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ('area', 'site', 'status', 'observer', 'reporter', 'location_accuracy', 'encounter_type', 'source', 'taxon', 'species', 'health', 'cause_of_death', 'cause_of_death_confidence', 'maturity', 'sex', 'habitat', 'nesting_event', 'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags')</em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_filter</code><em class="property"> = ('area', 'site', 'status', 'location_accuracy', 'encounter_type', 'source', 'taxon', 'species', 'health', 'cause_of_death', 'cause_of_death_confidence', 'maturity', 'sex', 'habitat', 'nesting_event', 'checked_for_injuries', 'scanned_for_pit_tags', 'checked_for_flipper_tags')</em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -18617,7 +19098,7 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.EncounterAdmin.inlines">
-<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'wastd.observations.admin.MediaAttachmentInline'&gt;, &lt;class 'wastd.observations.admin.TagObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleDamageObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleMorphometricObservationInline'&gt;, &lt;class 'wastd.observations.admin.TrackTallyObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestDisturbanceTallyObservationInline'&gt;, &lt;class 'wastd.observations.admin.ManagementActionInline'&gt;, &lt;class 'wastd.observations.admin.NestTagObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestDisturbanceObservationInline'&gt;, &lt;class 'wastd.observations.admin.HatchlingMorphometricObservationInline'&gt;, &lt;class 'shared.admin.CustomStateLogInline'&gt;]</em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.inlines" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'wastd.observations.admin.MediaAttachmentInline'&gt;, &lt;class 'wastd.observations.admin.TagObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleDamageObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleMorphometricObservationInline'&gt;, &lt;class 'wastd.observations.admin.TrackTallyObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestDisturbanceTallyObservationInline'&gt;, &lt;class 'wastd.observations.admin.ManagementActionInline'&gt;, &lt;class 'wastd.observations.admin.NestTagObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestDisturbanceObservationInline'&gt;, &lt;class 'wastd.observations.admin.HatchlingMorphometricObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleHatchlingEmergenceObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline'&gt;, &lt;class 'wastd.observations.admin.LightSourceObservationObservationInline'&gt;, &lt;class 'shared.admin.CustomStateLogInline'&gt;]</em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.inlines" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -18633,7 +19114,7 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.EncounterAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ('area', 'site', 'status', 'observer', 'reporter', 'location_accuracy', 'encounter_type', 'source')</em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_filter</code><em class="property"> = ('area', 'site', 'status', 'location_accuracy', 'encounter_type', 'source')</em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -18744,6 +19225,34 @@ curators add and update data.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="wastd.observations.admin.LightSourceObservationObservationInline">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">LightSourceObservationObservationInline</code><span class="sig-paren">(</span><em class="sig-param">parent_model</em>, <em class="sig-param">admin_site</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.LightSourceObservationObservationInline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.TabularInline</span></code></p>
+<p>Admin for LightSourceObservation.</p>
+<dl class="attribute">
+<dt id="wastd.observations.admin.LightSourceObservationObservationInline.classes">
+<code class="sig-name descname">classes</code><em class="property"> = ('grp-collapse grp-open',)</em><a class="headerlink" href="#wastd.observations.admin.LightSourceObservationObservationInline.classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.LightSourceObservationObservationInline.extra">
+<code class="sig-name descname">extra</code><em class="property"> = 0</em><a class="headerlink" href="#wastd.observations.admin.LightSourceObservationObservationInline.extra" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.LightSourceObservationObservationInline.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#wastd.observations.admin.LightSourceObservationObservationInline.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.LightSourceObservationObservationInline.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.admin.LightSourceObservationObservationInline.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.models.LightSourceObservation" title="wastd.observations.models.LightSourceObservation"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.LightSourceObservation</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="wastd.observations.admin.LineTransectEncounterAdmin">
 <em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">LineTransectEncounterAdmin</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.LineTransectEncounterAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wastd.observations.admin.EncounterAdmin" title="wastd.observations.admin.EncounterAdmin"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.admin.EncounterAdmin</span></code></a></p>
@@ -18815,7 +19324,7 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.LoggerEncounterAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ('area', 'site', 'status', 'observer', 'reporter', 'location_accuracy', 'encounter_type', 'source', 'logger_type', 'deployment_status')</em><a class="headerlink" href="#wastd.observations.admin.LoggerEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_filter</code><em class="property"> = ('area', 'site', 'status', 'location_accuracy', 'encounter_type', 'source', 'logger_type', 'deployment_status')</em><a class="headerlink" href="#wastd.observations.admin.LoggerEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -18905,37 +19414,8 @@ curators add and update data.</p>
 <dl class="class">
 <dt id="wastd.observations.admin.NestTagObservationAdmin">
 <em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">NestTagObservationAdmin</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">reversion.admin.VersionAdmin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.admin.ObservationAdminMixin" title="wastd.observations.admin.ObservationAdminMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.admin.ObservationAdminMixin</span></code></a></p>
 <p>Admin for NestTagObservation.</p>
-<dl class="method">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.area">
-<code class="sig-name descname">area</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.date">
-<code class="sig-name descname">date</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.date_hierarchy">
-<code class="sig-name descname">date_hierarchy</code><em class="property"> = 'encounter__when'</em><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.encounter_link">
-<code class="sig-name descname">encounter_link</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.encounter_link" title="Permalink to this definition">¶</a></dt>
-<dd><p>A link to the encounter.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.latitude">
-<code class="sig-name descname">latitude</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.latitude" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
 <dl class="attribute">
 <dt id="wastd.observations.admin.NestTagObservationAdmin.list_display">
 <code class="sig-name descname">list_display</code><em class="property"> = ('pk', 'area', 'site', 'latitude', 'longitude', 'date', 'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label', 'encounter_link', 'status', 'comments')</em><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.list_display" title="Permalink to this definition">¶</a></dt>
@@ -18943,14 +19423,8 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.NestTagObservationAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ('encounter__area', 'encounter__site', 'flipper_tag_id', 'tag_label', 'encounter__status')</em><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_filter</code><em class="property"> = ('encounter__area', 'encounter__site', 'encounter__status', 'encounter__encounter_type', 'flipper_tag_id', 'tag_label')</em><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.longitude">
-<code class="sig-name descname">longitude</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.longitude" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.admin.NestTagObservationAdmin.media">
@@ -18958,31 +19432,9 @@ curators add and update data.</p>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.readonly_fields">
-<code class="sig-name descname">readonly_fields</code><em class="property"> = ('encounter',)</em><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.readonly_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.save_on_top">
-<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="wastd.observations.admin.NestTagObservationAdmin.search_fields">
 <code class="sig-name descname">search_fields</code><em class="property"> = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')</em><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.site">
-<code class="sig-name descname">site</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.site" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.NestTagObservationAdmin.status">
-<code class="sig-name descname">status</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.NestTagObservationAdmin.status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make health status human readable.</p>
-</dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.admin.NestTagObservationAdmin.tag_name">
@@ -19016,6 +19468,95 @@ curators add and update data.</p>
 <dt id="wastd.observations.admin.NestTagObservationInline.model">
 <code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.admin.NestTagObservationInline.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#wastd.observations.models.NestTagObservation" title="wastd.observations.models.NestTagObservation"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.NestTagObservation</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.admin.ObservationAdminMixin">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">ObservationAdminMixin</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">reversion.admin.VersionAdmin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<p>Admin mixin for Observation models.</p>
+<dl class="attribute">
+<dt id="wastd.observations.admin.ObservationAdminMixin.LIST_FILTER">
+<code class="sig-name descname">LIST_FILTER</code><em class="property"> = ('encounter__area', 'encounter__site', 'encounter__status', 'encounter__encounter_type')</em><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.LIST_FILTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.ObservationAdminMixin.LIST_FIRST">
+<code class="sig-name descname">LIST_FIRST</code><em class="property"> = ('pk', 'area', 'site', 'latitude', 'longitude', 'date')</em><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.LIST_FIRST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.ObservationAdminMixin.LIST_LAST">
+<code class="sig-name descname">LIST_LAST</code><em class="property"> = ('encounter_link', 'status', 'comments')</em><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.LIST_LAST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.ObservationAdminMixin.area">
+<code class="sig-name descname">area</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make data source readable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.ObservationAdminMixin.date">
+<code class="sig-name descname">date</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make data source readable.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.ObservationAdminMixin.date_hierarchy">
+<code class="sig-name descname">date_hierarchy</code><em class="property"> = 'encounter__when'</em><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.ObservationAdminMixin.encounter_link">
+<code class="sig-name descname">encounter_link</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.encounter_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>A link to the encounter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.ObservationAdminMixin.latitude">
+<code class="sig-name descname">latitude</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.latitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make data source readable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.ObservationAdminMixin.longitude">
+<code class="sig-name descname">longitude</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.longitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make data source readable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.ObservationAdminMixin.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.ObservationAdminMixin.readonly_fields">
+<code class="sig-name descname">readonly_fields</code><em class="property"> = ('encounter',)</em><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.readonly_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.ObservationAdminMixin.save_on_top">
+<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.save_on_top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.ObservationAdminMixin.search_fields">
+<code class="sig-name descname">search_fields</code><em class="property"> = ('comments',)</em><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.search_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.ObservationAdminMixin.site">
+<code class="sig-name descname">site</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.site" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make data source readable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.ObservationAdminMixin.status">
+<code class="sig-name descname">status</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make health status human readable.</p>
 </dd></dl>
 
 </dd></dl>
@@ -19086,18 +19627,12 @@ curators add and update data.</p>
 <dl class="class">
 <dt id="wastd.observations.admin.TagObservationAdmin">
 <em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">TagObservationAdmin</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">reversion.admin.VersionAdmin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.admin.ObservationAdminMixin" title="wastd.observations.admin.ObservationAdminMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.admin.ObservationAdminMixin</span></code></a></p>
 <p>Admin for TagObservation.</p>
 <dl class="method">
 <dt id="wastd.observations.admin.TagObservationAdmin.animal_name">
 <code class="sig-name descname">animal_name</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.animal_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Animal name.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TagObservationAdmin.encounter_link">
-<code class="sig-name descname">encounter_link</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.encounter_link" title="Permalink to this definition">¶</a></dt>
-<dd><p>A link to the encounter.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -19107,12 +19642,12 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.TagObservationAdmin.list_display">
-<code class="sig-name descname">list_display</code><em class="property"> = ('datetime', 'latitude', 'longitude', 'type_display', 'name', 'tag_location_display', 'status_display', 'encounter_link', 'comments')</em><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_display</code><em class="property"> = ('pk', 'area', 'site', 'latitude', 'longitude', 'date', 'type_display', 'name', 'tag_location_display', 'encounter_link', 'status', 'comments')</em><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.TagObservationAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ('tag_type', 'tag_location', 'status')</em><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_filter</code><em class="property"> = ('encounter__area', 'encounter__site', 'encounter__status', 'encounter__encounter_type', 'tag_type', 'tag_location')</em><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -19126,20 +19661,9 @@ curators add and update data.</p>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="wastd.observations.admin.TagObservationAdmin.save_on_top">
-<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="wastd.observations.admin.TagObservationAdmin.search_fields">
 <code class="sig-name descname">search_fields</code><em class="property"> = ('name', 'comments')</em><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TagObservationAdmin.status_display">
-<code class="sig-name descname">status_display</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TagObservationAdmin.status_display" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make health status human readable.</p>
-</dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.admin.TagObservationAdmin.tag_location_display">
@@ -19296,6 +19820,62 @@ curators add and update data.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceObservationInline">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">TurtleHatchlingEmergenceObservationInline</code><span class="sig-paren">(</span><em class="sig-param">parent_model</em>, <em class="sig-param">admin_site</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceObservationInline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.TabularInline</span></code></p>
+<p>Admin for TurtleHatchlingEmergenceObservation.</p>
+<dl class="attribute">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceObservationInline.classes">
+<code class="sig-name descname">classes</code><em class="property"> = ('grp-collapse grp-open',)</em><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceObservationInline.classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceObservationInline.extra">
+<code class="sig-name descname">extra</code><em class="property"> = 0</em><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceObservationInline.extra" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceObservationInline.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceObservationInline.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceObservationInline.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceObservationInline.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.models.TurtleHatchlingEmergenceObservation" title="wastd.observations.models.TurtleHatchlingEmergenceObservation"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.TurtleHatchlingEmergenceObservation</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline">
+<em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">TurtleHatchlingEmergenceOutlierObservationInline</code><span class="sig-paren">(</span><em class="sig-param">parent_model</em>, <em class="sig-param">admin_site</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.TabularInline</span></code></p>
+<p>Admin for TurtleHatchlingEmergenceOutlierObservation.</p>
+<dl class="attribute">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline.classes">
+<code class="sig-name descname">classes</code><em class="property"> = ('grp-collapse grp-open',)</em><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline.classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline.extra">
+<code class="sig-name descname">extra</code><em class="property"> = 0</em><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline.extra" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation" title="wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="wastd.observations.admin.TurtleMorphometricObservationInline">
 <em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">TurtleMorphometricObservationInline</code><span class="sig-paren">(</span><em class="sig-param">parent_model</em>, <em class="sig-param">admin_site</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleMorphometricObservationInline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.StackedInline</span></code></p>
@@ -19326,37 +19906,8 @@ curators add and update data.</p>
 <dl class="class">
 <dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin">
 <em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">TurtleNestDisturbanceObservationAdmin</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">reversion.admin.VersionAdmin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.admin.ObservationAdminMixin" title="wastd.observations.admin.ObservationAdminMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.admin.ObservationAdminMixin</span></code></a></p>
 <p>Admin for TurtleNestDisturbanceObservation.</p>
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.area">
-<code class="sig-name descname">area</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.date">
-<code class="sig-name descname">date</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.date_hierarchy">
-<code class="sig-name descname">date_hierarchy</code><em class="property"> = 'encounter__when'</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.encounter_link">
-<code class="sig-name descname">encounter_link</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.encounter_link" title="Permalink to this definition">¶</a></dt>
-<dd><p>A link to the encounter.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.latitude">
-<code class="sig-name descname">latitude</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.latitude" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
 <dl class="attribute">
 <dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.list_display">
 <code class="sig-name descname">list_display</code><em class="property"> = ('pk', 'area', 'site', 'latitude', 'longitude', 'date', 'disturbance_cause', 'disturbance_cause_confidence', 'disturbance_severity', 'comments', 'encounter_link', 'status', 'comments')</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.list_display" title="Permalink to this definition">¶</a></dt>
@@ -19364,52 +19915,13 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ('encounter__area', 'encounter__site', 'disturbance_cause', 'encounter__status', 'encounter__encounter_type', 'disturbance_cause_confidence', 'disturbance_severity')</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_filter</code><em class="property"> = ('encounter__area', 'encounter__site', 'encounter__status', 'encounter__encounter_type', 'disturbance_cause_confidence', 'disturbance_severity')</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.longitude">
-<code class="sig-name descname">longitude</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.longitude" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.media">
 <em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.readonly_fields">
-<code class="sig-name descname">readonly_fields</code><em class="property"> = ('encounter',)</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.readonly_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.save_on_top">
-<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.search_fields">
-<code class="sig-name descname">search_fields</code><em class="property"> = ('comments',)</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.site">
-<code class="sig-name descname">site</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.site" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.status">
-<code class="sig-name descname">status</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make health status human readable.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.tag_name">
-<code class="sig-name descname">tag_name</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestDisturbanceObservationAdmin.tag_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Nest tag name.</p>
-</dd></dl>
 
 </dd></dl>
 
@@ -19499,7 +20011,7 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.TurtleNestEncounterAdmin.inlines">
-<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'wastd.observations.admin.MediaAttachmentInline'&gt;, &lt;class 'wastd.observations.admin.NestTagObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestDisturbanceObservationInline'&gt;, &lt;class 'wastd.observations.admin.HatchlingMorphometricObservationInline'&gt;, &lt;class 'shared.admin.CustomStateLogInline'&gt;]</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestEncounterAdmin.inlines" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'wastd.observations.admin.MediaAttachmentInline'&gt;, &lt;class 'wastd.observations.admin.NestTagObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleNestDisturbanceObservationInline'&gt;, &lt;class 'wastd.observations.admin.HatchlingMorphometricObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleHatchlingEmergenceObservationInline'&gt;, &lt;class 'wastd.observations.admin.TurtleHatchlingEmergenceOutlierObservationInline'&gt;, &lt;class 'wastd.observations.admin.LightSourceObservationObservationInline'&gt;, &lt;class 'shared.admin.CustomStateLogInline'&gt;]</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestEncounterAdmin.inlines" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -19509,7 +20021,7 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.TurtleNestEncounterAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ('area', 'site', 'status', 'observer', 'reporter', 'location_accuracy', 'encounter_type', 'source', 'nest_age', 'nest_type', 'species', 'habitat', 'disturbance')</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_filter</code><em class="property"> = ('area', 'site', 'status', 'location_accuracy', 'encounter_type', 'source', 'nest_age', 'nest_type', 'species', 'habitat', 'disturbance')</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -19533,37 +20045,8 @@ curators add and update data.</p>
 <dl class="class">
 <dt id="wastd.observations.admin.TurtleNestObservationAdmin">
 <em class="property">class </em><code class="sig-prename descclassname">wastd.observations.admin.</code><code class="sig-name descname">TurtleNestObservationAdmin</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">reversion.admin.VersionAdmin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#wastd.observations.admin.ObservationAdminMixin" title="wastd.observations.admin.ObservationAdminMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.admin.ObservationAdminMixin</span></code></a></p>
 <p>Admin for TurtleNestObservation.</p>
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.area">
-<code class="sig-name descname">area</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.date">
-<code class="sig-name descname">date</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.date_hierarchy">
-<code class="sig-name descname">date_hierarchy</code><em class="property"> = 'encounter__when'</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.encounter_link">
-<code class="sig-name descname">encounter_link</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.encounter_link" title="Permalink to this definition">¶</a></dt>
-<dd><p>A link to the encounter.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.latitude">
-<code class="sig-name descname">latitude</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.latitude" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
 <dl class="attribute">
 <dt id="wastd.observations.admin.TurtleNestObservationAdmin.list_display">
 <code class="sig-name descname">list_display</code><em class="property"> = ('pk', 'area', 'site', 'latitude', 'longitude', 'date', 'nest_position', 'eggs_laid', 'egg_count', 'hatching_success', 'emergence_success', 'no_egg_shells', 'no_live_hatchlings_neck_of_nest', 'no_live_hatchlings', 'no_dead_hatchlings', 'no_undeveloped_eggs', 'no_unhatched_eggs', 'no_unhatched_term', 'no_depredated_eggs', 'nest_depth_top', 'nest_depth_bottom', 'encounter_link', 'status', 'comments')</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.list_display" title="Permalink to this definition">¶</a></dt>
@@ -19571,52 +20054,13 @@ curators add and update data.</p>
 
 <dl class="attribute">
 <dt id="wastd.observations.admin.TurtleNestObservationAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ('encounter__area', 'encounter__site', 'nest_position', 'eggs_laid', 'encounter__status')</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_filter</code><em class="property"> = ('encounter__area', 'encounter__site', 'encounter__status', 'encounter__encounter_type', 'nest_position', 'eggs_laid')</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.longitude">
-<code class="sig-name descname">longitude</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.longitude" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
 
 <dl class="method">
 <dt id="wastd.observations.admin.TurtleNestObservationAdmin.media">
 <em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.readonly_fields">
-<code class="sig-name descname">readonly_fields</code><em class="property"> = ('encounter',)</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.readonly_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.save_on_top">
-<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.search_fields">
-<code class="sig-name descname">search_fields</code><em class="property"> = ('comments',)</em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.site">
-<code class="sig-name descname">site</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.site" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make data source readable.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.status">
-<code class="sig-name descname">status</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make health status human readable.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wastd.observations.admin.TurtleNestObservationAdmin.tag_name">
-<code class="sig-name descname">tag_name</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.tag_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Nest tag name.</p>
-</dd></dl>
 
 </dd></dl>
 
@@ -19922,7 +20366,7 @@ The following sections document the remaining modules for completeness’ sake.<
 <dl class="class">
 <dt id="wastd.observations.views.AnimalEncounterTable.Meta">
 <em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable.Meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Model opts.</p>
 <dl class="attribute">
 <dt id="wastd.observations.views.AnimalEncounterTable.Meta.attrs">
@@ -19998,7 +20442,7 @@ The following sections document the remaining modules for completeness’ sake.<
 <dl class="class">
 <dt id="wastd.observations.views.EncounterTable.Meta">
 <em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#wastd.observations.views.EncounterTable.Meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Model opts.</p>
 <dl class="attribute">
 <dt id="wastd.observations.views.EncounterTable.Meta.attrs">
@@ -20331,6 +20775,11 @@ as a local JSON fixture for the purpose of testing.</p>
 Temporary taxonomic names could be created in TSC, but this is expected to happen through the admin.</p>
 <p>The Taxon API is expected to serve taxonomic names together with their associated conservation
 and occurrence data to downstream services.</p>
+<dl class="attribute">
+<dt id="taxonomy.tests.test_api.TaxonAPITests.fixtures">
+<code class="sig-name descname">fixtures</code><em class="property"> = ['taxonomy/fixtures/test_taxonomy.json']</em><a class="headerlink" href="#taxonomy.tests.test_api.TaxonAPITests.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="taxonomy.tests.test_api.TaxonAPITests.list_taxon">
 <code class="sig-name descname">list_taxon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_api.TaxonAPITests.list_taxon" title="Permalink to this definition">¶</a></dt>
@@ -20339,6 +20788,34 @@ and occurrence data to downstream services.</p>
 <ul class="simple">
 <li><p>Provide a list of taxonomic names to external services.</p></li>
 <li><p>Provide full detail or cut down, fast subsets.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_api.TaxonAPITests.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_api.TaxonAPITests.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up Taxon API tests.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_api.TaxonAPITests.test_taxon_list_filters_animals">
+<code class="sig-name descname">test_taxon_list_filters_animals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_api.TaxonAPITests.test_taxon_list_filters_animals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the taxon list can be filtered to only animals.</p>
+<p>The request <code class="docutils literal notranslate"><span class="pre">/api/1/taxon/?paraphyletic_groups=20</span></code> returns only animal taxa:</p>
+<ul class="simple">
+<li><p>Each taxon must contain paraphyletic group settings.ANIMALS_PK (e.g. 20).</p></li>
+<li><p>No taxon must contain paraphyletic group settings.PLANTS_PK (e.g. 21).</p></li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="taxonomy.tests.test_api.TaxonAPITests.test_taxon_list_filters_plants">
+<code class="sig-name descname">test_taxon_list_filters_plants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taxonomy.tests.test_api.TaxonAPITests.test_taxon_list_filters_plants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the taxon list can be filtered to only plants (sensu latu).</p>
+<p>The request <code class="docutils literal notranslate"><span class="pre">/api/1/taxon/?paraphyletic_groups=21</span></code> returns only plant taxa (sensu latu):</p>
+<ul class="simple">
+<li><p>Each taxon must contain paraphyletic group settings.PLANTS_PK (e.g. 21).</p></li>
+<li><p>No taxon must contain paraphyletic group settings.ANIMALS_PK (e.g. 20).</p></li>
 </ul>
 </dd></dl>
 
