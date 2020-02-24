@@ -77,13 +77,13 @@ def pro():
 def wsgi():
     """Serve with uwsgi."""
     static()
-    local('honcho run uwsgi --http 0.0.0.0:8220 --wsgi-file config/wsgi.py')
+    local('uwsgi --http 0.0.0.0:8220 --wsgi-file config/wsgi.py')
 
 
 def ulous():
     """Serve fabulously with green unicorn."""
     static()
-    local('honcho run gunicorn config.wsgi --config config/gunicorn.ini')
+    local('gunicorn config.wsgi --config config/gunicorn.ini')
 
 
 def pep():
@@ -97,7 +97,7 @@ def test():
     local('coverage run --source="." manage.py test'
           ' --settings=config.settings.test --keepdb -v 2'  # --noinput to drop db
           ' && coverage report -m', shell='/bin/bash')
-    local('honcho run coveralls')
+    local('coveralls')
     print(green("Completed running tests."))
 
 
