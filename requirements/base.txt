@@ -1,7 +1,7 @@
 # Django
 # ------------------------------------------------
-django==2.2.9
-django-extensions==2.2.6
+django==2.2.10
+django-extensions==2.2.8
 
 # breaking django-1.10:
 # https://github.com/django-polymorphic/django-polymorphic/issues/225 - fixed
@@ -16,24 +16,23 @@ django-extensions==2.2.6
 django-adminactions==1.8.1
 
 # https://github.com/sehmaschine/django-grappelli/issues/884
-#django-grappelli
--e git+https://github.com/sehmaschine/django-grappelli@master#egg=django-grappelli
+#-e git+https://github.com/sehmaschine/django-grappelli@master#egg=django-grappelli
+django-grappelli==2.14.1
 
 
 # API
 # ------------------------------------------------
 djangorestframework==3.11.0
 djangorestframework-gis==0.15
-djangorestframework-csv
-djangorestframework-yaml
-djangorestframework-jsonp
+djangorestframework-csv==2.1.0
+djangorestframework-yaml==1.0.3
+djangorestframework-jsonp==1.0.2
 djangorestframework-filters==1.0.0.dev0
-django-rest-polymorphic
-drf-proxy-pagination
-django-url-filter
+django-rest-polymorphic==0.1.8
+drf-proxy-pagination==0.2.0
+django-url-filter==0.3.15
 #dynamic-rest
-rest-framework-latex
-# -e git+https://github.com/florianm/rest-framework-latex.git#egg=rest-framework-latex
+rest-framework-latex==0.1.0
 markdown
 django-filter==2.2.0
 django-rest-swagger
@@ -58,11 +57,9 @@ django-background-tasks==1.2.5
 
 # DevOps
 # ------------------------------------------------
-#Fabric==2.2.1
 Fabric3==1.14.post1
-honcho
 gunicorn==20.0.4
-uwsgi
+uwsgi==2.0.18
 
 # Cache
 # ------------------------------------------------
@@ -70,20 +67,20 @@ python-memcached
 
 # Configuration
 # ------------------------------------------------
-django-confy
+django-confy==1.0.4
 django-environ==0.4.5
-unipath
+unipath==1.1
 
 
 # Data processing
 # ------------------------------------------------
-pandas
+pandas==1.0.1
 
 # Docs
 # ------------------------------------------------
 Sphinx>=1.6.1
-pydot
-sphinx_rtd_theme
+pydot==1.4.1
+sphinx_rtd_theme==0.4.3
 
 
 # Email backends for Mailgun, Postmark, SendGrid
@@ -98,7 +95,7 @@ django-floppyforms==1.8.0
 django-easy-select2==1.5.6
 django_select2==7.0.5
 django-bootstrap4==1.1.1
-django-ajax-selects
+django-ajax-selects==1.9.1
 django-map-widgets==0.2.2
 
 # Logging
@@ -116,7 +113,7 @@ django-fsm-log==1.6.2
 django-fsm-admin==1.2.4
 django-extra-fields==2.0.2
 django-synctool
-phonenumbers
+phonenumbers==8.11.4
 django-phonenumber-field==4.0.0
 django-mptt==0.10.0
 
@@ -147,7 +144,7 @@ pytz
 
 # Templates
 # ------------------------------------------------
-django-settings-export
+django-settings-export==1.2.1
 
 # Redis support
 # ------------------------------------------------
@@ -158,10 +155,10 @@ django-redis==4.11.0
 # Map
 # ------------------------------------------------
 django-geojson==2.12.0
-#django-leaflet==0.24.0
-git+git://github.com/makinacorpus/django-leaflet@master
-django-wms
-django-raster
+django-leaflet==0.27.0.dev0
+# git+git://github.com/makinacorpus/django-leaflet@master
+django-wms==0.1.12
+django-raster==0.7
 
 
 # Static and Media Storage
