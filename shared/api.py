@@ -297,7 +297,11 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                         unique_data, update_data = self.split_data(data)
                         obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
                         # obj = self.model.objects.create(**data)
-                        logger.info("[API][create] Creating record with unique fields {0}, update fields {1}, created: {2}".format(str(unique_data), str(update_data), created))
+                        logger.info("[API][create] Creating record with unique fields "
+                                    "{0}, update fields {1}, created: {2}".format(
+                                        str(unique_data), str(update_data), created
+                                    )
+                        )
 
                         # to update cached fields
                         obj.refresh_from_db()

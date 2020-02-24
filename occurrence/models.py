@@ -1557,7 +1557,7 @@ class PhysicalSample(ObservationGroup):
     sample_label = models.TextField(
         blank=True, null=True,
         verbose_name=_("Sample Label"),
-        help_text=_("The label must be unique within the sample type."),
+        help_text=_("The label should be unique within the sample type."),
     )
 
     collector_id = models.TextField(
