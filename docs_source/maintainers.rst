@@ -19,7 +19,7 @@ Workload db
 * Volumes: add new persistent storage claim (20 GiB), mount point ``/var/lib/postgresql/data``.
 * Deploy, open shell in running container and execute:
 
-::
+  ::
   apt update && apt install -y openssh-client rsync
   rsync USER@HOST:/path/to/wastd.dump /tmp/
   psql -h localhost -U postgres
@@ -38,9 +38,8 @@ Workload db
 Workloads prod/uat
 ------------------
 * Images dbcawa/wastd:0.25.0 (or highest named tag for prod) dbcawa/wastd:latest (latest for uat)
-* Env vars:
+* Env vars::
 
-::
   DATABASE_URL="postgis://wastd:PASSWORD@db/wastd_prod" # or wastd_uat
   SITE_URL="https://tsc.dbca.wa.gov.au" # or tsc-uat
   SECRET_KEY=...
@@ -56,11 +55,11 @@ Workloads prod/uat
 
 Once workloads are running, copy media files into the storage volume from the app container's shell:
 
-::
+  ::
   root@prod-SOMEHASH:/usr/src/app# rsync -Pavvr USER@aws-eco-001.lan.fyi:/home/CORPORATEICT/USER/tsc/media/ media/
 
-Deployment
-==========
+Local development environment
+=============================
 
 This section describes deployment in development (local) and production
 environments (UAT, PROD).
@@ -69,7 +68,7 @@ Virtualenv
 ----------
 Install virtualenv::
 
-    sudo pip install virtualenvwrapper
+    sudo pip3 install virtualenvwrapper
 
 Set virtualenv paths by adding these lines to your ~/.bashrc::
 
@@ -79,7 +78,14 @@ Set virtualenv paths by adding these lines to your ~/.bashrc::
     export PIP_VIRTUALENV_BASE=WORKON_HOME
 
 Activate the virtualenv::
-    mkproject wastd
+
+    mkproject -p /usr/bin/python3 wastd
+
+
+vim ~/.venv/wastd/.project
+/home/florian/projects/wastd
+
+
 
 Database
 --------
@@ -101,8 +107,8 @@ Code
 Install dependencies::
 
     workon wastd
-    git clone git@github.com:florianm/wastd.git .
-    pip install Fabric3
+    git clone git@github.com:dbca-wa/wastd.git .
+    pip install Fabric3 django-confy
     fab pip
     cp env.example .env
 

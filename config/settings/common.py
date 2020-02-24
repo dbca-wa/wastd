@@ -122,7 +122,7 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='c4)!ho4t^lsy0ozrnlqamjso@^n-ookiq
 
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_FIRST = (
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
@@ -134,21 +134,19 @@ MIDDLEWARE_CLASSES = (
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
 )
 
-MIDDLEWARE_CLASSES_LAST = (
+MIDDLEWARE_LAST = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'dpaw_utils.middleware.SSOLoginMiddleware',
+    'dbca_utils.middleware.SSOLoginMiddleware',
 )
 
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    MIDDLEWARE_FIRST += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
 if PROFILING:
-    MIDDLEWARE_CLASSES += ('silk.middleware.SilkyMiddleware',)
+    MIDDLEWARE_FIRST += ('silk.middleware.SilkyMiddleware',)
 
-MIDDLEWARE_CLASSES += MIDDLEWARE_CLASSES_LAST
-
-MIDDLEWARE = MIDDLEWARE_CLASSES
+MIDDLEWARE = MIDDLEWARE_FIRST + MIDDLEWARE_LAST
 
 CACHE_MIDDLEWARE_ALIAS = "default"
 CACHE_MIDDLEWARE_SECONDS = 600

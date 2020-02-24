@@ -48,7 +48,7 @@ xmltodict==0.12.0
 # Auth
 # ------------------------------------------------
 django-allauth==0.41.0
-git+git://github.com/dbca-wa/dpaw-utils@minimal
+dbca-utils==1.1.1
 
 
 # Background tasks
