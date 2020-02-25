@@ -108,7 +108,7 @@ from occurrence.models import (
     AreaAssessment,
     HabitatComposition,
     PhysicalSample,
-    # AnimalObservation
+    AnimalObservation
     )
 from wastd.observations.models import Observation  # LineTransectEncounter
 from wastd.observations.models import Survey  # SiteVisit,
@@ -2937,6 +2937,38 @@ class AssociatedSpeciesSerializer(serializers.ModelSerializer):
 
 
 # ----------------------------------------------------------------------------#
+# AnimalObservation
+#
+class AnimalObservationSerializer(serializers.ModelSerializer):
+    """Serializer for AnimalObservation."""
+
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+
+# secondary_signs - m2m
+
+
+    # sample_type = serializers.SlugRelatedField(
+    #     queryset=occ_models.SampleType.objects.all(), slug_field="code")
+    # sample_destination = serializers.SlugRelatedField(
+    #     queryset=occ_models.SampleDestination.objects.all(), slug_field="code")
+    # permit_type = serializers.SlugRelatedField(
+    #     queryset=occ_models.PermitType.objects.all(), slug_field='code')
+    # TODO
+    # detection_method
+    # species_id_confidence
+    # maturity
+    # sex
+    # health
+    # cause_of_death
+
+    class Meta:
+        """Opts."""
+
+        model = AnimalObservation
+        fields = "__all__"
+
+
+# ----------------------------------------------------------------------------#
 # PhysicalSample
 #
 class PhysicalSampleSerializer(serializers.ModelSerializer):
@@ -2953,8 +2985,18 @@ class PhysicalSampleSerializer(serializers.ModelSerializer):
     class Meta:
         """Opts."""
 
-        model = occ_models.PhysicalSample
+        model = PhysicalSample
         fields = "__all__"
+
+
+    def create(self, validated_data):
+        validated_data["encounter"] = occ_models.AreaEncounter.objects.get(
+            source = int(self.initial_data["source"]), 
+            source_id = str(self.initial_data["source_id"]))
+        logger.info("PhysicalSampleSerializer.create after enc with data {0}".format(validated_data))
+        return self.Meta.model.objects.create(**validated_data)
+
+
 
 
 
@@ -2982,7 +3024,7 @@ class ObservationGroupSerializer(serializers.ModelSerializer):
     class Meta:
         """Class options."""
 
-        model = occ_models.ObservationGroup
+        model = ObservationGroup
         fields = "__all__"
 
 
@@ -3003,10 +3045,9 @@ class ObservationGroupPolymorphicSerializer(PolymorphicSerializer):
         AreaAssessment: AreaAssessmentSerializer,
         HabitatComposition: HabitatCompositionSerializer,
         PhysicalSample: PhysicalSampleSerializer,
-        # AnimalObservation: AnimalObservationSerializer
+        AnimalObservation: AnimalObservationSerializer
     }
     resource_type_field_name = 'obstype'
-
 
 
 class ObservationGroupViewSet(viewsets.ModelViewSet):
@@ -3026,121 +3067,6 @@ class ObservationGroupViewSet(viewsets.ModelViewSet):
     """
     queryset = occ_models.ObservationGroup.objects.all()
     serializer_class = ObservationGroupPolymorphicSerializer
-
-    uid_fields = ("source", "source_id", )
-
-    def get_queryset(self):
-        """
-        Optionally restricts the returned purchases to a given user,
-        by filtering against a `username` query parameter in the URL.
-        """
-        queryset = occ_models.ObservationGroup.objects.all()
-        obstype = self.request.query_params.get('obstype', None)
-        if obstype is not None:
-            m = apps.get_model("occurrence", obstype)
-            queryset = occ_models.ObservationGroup.objects.instance_of(m).all()
-        return queryset
-
-    def create_one(self, data):
-        """Create one instance.
-        # unique_fields = {x: data[x] for x in self.uid_fields}
-        # [data.pop(x) for x in self.uid_fields if x in data]
-        # 
-
-        TODO
-        Know when to reject:
-        QA levels new, proofread, curated, ...
-        Proofread or higher could mean local data changed = not the same as **data
-        If data comes from TSC data migration, no data will change locally.
-
-        """
-
-        obsmodel_name = "ObservationGroup"
-        logger.info("[API][ObservationGroupViewSet][create_one]  got data:\n{0}".format(data))
-        
-        if 'csrfmiddlewaretoken' in data:
-            data.pop('csrfmiddlewaretoken')
-        
-        # Get AreaEncounter from source, source_id
-        source = data.pop('source', None)
-        source_id = data.pop('source_id', None)
-        try:
-            enc = occ_models.AreaEncounter.objects.get(source=source, source_id=source_id)
-            data["encounter"] = enc
-        except:
-            msg = "AreaEncounter not found for source {0}, source_id {1}".format(source, source_id)
-            logger.warning(msg)
-            return RestResponse(msg, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-        # find serializer for given model
-        # create new model through seralizer
-        real_serializer = self.serializer_class._get_serializer_from_resource_type(data["obstype"])
-        logger.info(real_serializer)
-
-        obj = real_serializer.create(data)
-        obj.save()
-
-        # obsmodel_name = obsmodel._meta.model_name
-        # obj, created = obsmodel.objects.get_or_create(**data)
-        # verb = "Created" if created else "Updated"
-        # st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        # msg = "{0} {1} for Encounter {2} from data {3}".format(
-        #     verb,
-        #     obsmodel_name, 
-        #     enc.pk, 
-        #     data
-        # )
-
-        msg = "[API][ObservationGroupViewSet][create_one] Created {0}".format(obj)
-        logger.info(msg)
-        return RestResponse(msg, status=st)
-
-
-    def create(self, request):
-        """POST: Create or update one or several model instances.
-
-        request.data must be a dict including source (int) and source ID (chr).
-
-        Return RestResponse(result, status)
-
-        result:
-
-        * Warning message if invalid data (status 406 not acceptable)
-        * Dict of object_id and message if one record
-        * List of one-record dicts if several records
-        """
-
-        msg = "[API][ObservationGroupViewSet][create]  got data:\n{0}".format(request.data)
-        logger.debug(msg)
-
-        # Create one ---------------------------------------------------------#
-        if self.uid_fields[0] in request.data:
-            msg = '[API][create] found one record, creating/updating...'
-            logger.info(msg)
-            
-            res = self.create_one(request.data).__dict__         
-            return RestResponse(res, status=st)
-
-        # Create many --------------------------------------------------------#
-        elif (type(request.data) == list and 
-              self.uid_fields[0] in request.data[0]):
-            msg = ('[API][create] found batch of {0} records,'
-                   ' creating/updating...').format(len(request.data))
-            logger.info(msg)
-            # Patch: just update first record
-            res = self.create_one(request.data[0]).__dict__ 
-            # The slow way:
-            # res = [getattr(self.create_one(request.data), "__dict__", None) for data in request.data]
-            # TODO: how many RestResponses in res are 200 vs 201 vs 400, logger.info
-
-        else:
-            msg = "[API][create] invalid data, uid fields not found."
-            return RestResponse(msg, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-        logger.info(msg)
-        return RestResponse(msg, status=status.HTTP_200_OK)
 
 
 router.register("occ-observation", ObservationGroupViewSet)
