@@ -51,3 +51,10 @@ from wastd.observations.models import (  # noqa
 # SVE > SiteVisitEnd
 # SVS > Survey
 # Users
+
+enc = AreaEncounter.objects.last()
+enc.source
+enc.source_id
+# curl  -H 'Authorization: Token XXX' -d "source=10&source_id=85464&permit_type=kermit&sample_type=blood-sample&sample_destination=department&sample_label=test&obstype=PhysicalSample" http://localhost:8220/api/1/occ-observation/
+
+
