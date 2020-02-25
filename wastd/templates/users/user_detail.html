@@ -49,15 +49,15 @@
       <!-- API auth -->
       <div class="row">
         <div class="col-12">
-          <h2>Accessing the data</h2>
-          <p>You can access all data through the API using your API token:
-              <strong>{{ request.user.apitoken }}</strong>.
-          </p>
+          <h2>Accessing data from R</h2>
+          <p>Add to your ~/.Renviron:</p>
+          <pre>
+WASTDR_API_URL="{{ request.scheme }}://{{ request.get_host }}/api/1/"
+WASTDR_API_TOKEN="Token {{ request.user.apitoken }}"
+          </pre>
+          <p>See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.</p>
 
-          <h3>Code example in R</h3>
-          See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.
-
-          <h3>Code example in Python</h3>
+          <h2>Accessing data from Python</h2>
           <pre>
 import requests
 url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
@@ -66,7 +66,7 @@ j = requests.get(url + "?format=json", headers=headers).json()
 d = requests.get(url + "?format=csv", headers=headers).content
           </pre>
 
-          <h3>Code example on the command line</h3>
+          <h2>Accessing data from the command line</h2>
           <pre>
 curl {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/?format=json -H 'Authorization: Token {{ request.user.apitoken }}'
           </pre>
