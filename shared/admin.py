@@ -36,6 +36,7 @@ class CustomStateLogInline(StateLogInline):
     """Custom StateLogInline."""
 
     classes = ('grp-collapse', 'grp-closed', 'wide', 'extrapretty', )
+    sortable_field_name = "timestamp"
 
 
 class CodeLabelDescriptionAdmin(VersionAdmin):

@@ -12617,7 +12617,7 @@
     "pk": 4,
     "fields": {
         "password": "pbkdf2_sha256$150000$oNYZv8rLb0Jk$vgqsnoRBEoaa18NIf9HyBEXJ16hLp5z+EuLTSnqB4tg=",
-        "last_login": "2020-02-10T06:12:56.475Z",
+        "last_login": "2020-02-25T03:48:29.531Z",
         "is_superuser": true,
         "username": "FlorianM",
         "first_name": "Florian",
