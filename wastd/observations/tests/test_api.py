@@ -56,7 +56,7 @@ from wastd.observations.models import (  # noqa
 # TSC: AreaEncounter (Taxon/CommunityAE) > ObsGroup (polymorphic)
 # enc = AreaEncounter.objects.last() # for source and source_id
 # {'source': 10, 'source_id': '94654', 'sample_type': 'blood-sample', 'sample_destination': '', 'sample_label': '[]', 'obstype': 'PhysicalSample'}
-# Get Auto token from profile
-# curl  -H 'Authorization: Token XXX' -d "source=10&source_id=85464&permit_type=kermit&sample_type=blood-sample&sample_destination=department&sample_label=test&obstype=PhysicalSample" http://localhost:8220/api/1/occ-observation/
+# Get Auth token from profile
+# curl  -H 'Authorization: Token XXX' -d "format=json&source=10&source_id=85464&permit_type=kermit&sample_type=blood-sample&sample_destination=department&sample_label=test&obstype=PhysicalSample" http://localhost:8220/api/1/occ-observation/
 
 
