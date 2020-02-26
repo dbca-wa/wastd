@@ -2839,7 +2839,7 @@ class ObservationGroupSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # FileAttachment
 #
-class FileAttachmentSerializer(serializers.ModelSerializer):
+class FileAttachmentSerializer(ObservationGroupSerializer):
     """Serializer for FileAttachment."""
 
     
@@ -2855,7 +2855,7 @@ class FileAttachmentSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # HabitatComposition
 #
-class HabitatCompositionSerializer(serializers.ModelSerializer):
+class HabitatCompositionSerializer(ObservationGroupSerializer):
     """Serializer for HabitatComposition."""
 
     
@@ -2871,7 +2871,7 @@ class HabitatCompositionSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # HabitatComposition
 #
-class HabitatConditionSerializer(serializers.ModelSerializer):
+class HabitatConditionSerializer(ObservationGroupSerializer):
     """Serializer for HabitatCondition."""
 
     
@@ -2888,7 +2888,7 @@ class HabitatConditionSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # AreaAssessment
 #
-class AreaAssessmentSerializer(serializers.ModelSerializer):
+class AreaAssessmentSerializer(ObservationGroupSerializer):
     """Serializer for AreaAssessment."""
 
     
@@ -2905,7 +2905,7 @@ class AreaAssessmentSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # FireHistory
 #
-class FireHistorySerializer(serializers.ModelSerializer):
+class FireHistorySerializer(ObservationGroupSerializer):
     """Serializer for FireHistory."""
 
     
@@ -2921,7 +2921,7 @@ class FireHistorySerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # VegetationClassification
 #
-class VegetationClassificationSerializer(serializers.ModelSerializer):
+class VegetationClassificationSerializer(ObservationGroupSerializer):
     """Serializer for VegetationClassification."""
 
     
@@ -2938,7 +2938,7 @@ class VegetationClassificationSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # PlantCount
 #
-class PlantCountSerializer(serializers.ModelSerializer):
+class PlantCountSerializer(ObservationGroupSerializer):
     """Serializer for PlantCount."""
 
     count_method = serializers.SlugRelatedField(
@@ -2965,7 +2965,7 @@ class PlantCountSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # AssociatedSpecies
 #
-class AssociatedSpeciesSerializer(serializers.ModelSerializer):
+class AssociatedSpeciesSerializer(ObservationGroupSerializer):
     """Serializer for AssociatedSpecies."""
 
     encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
@@ -2980,7 +2980,7 @@ class AssociatedSpeciesSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # AnimalObservation
 #
-class AnimalObservationSerializer(serializers.ModelSerializer):
+class AnimalObservationSerializer(ObservationGroupSerializer):
     """Serializer for AnimalObservation."""
 
     encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
