@@ -2795,6 +2795,47 @@ router.register("lookup-permittype", PermitTypeViewSet)
 # ObservationGroup models
 # ----------------------------------------------------------------------------#
 
+
+# ----------------------------------------------------------------------------#
+# ObservationGroup
+#
+class ObservationGroupSerializer(serializers.ModelSerializer):
+    """The ObservationGroup serializer resolves its polymorphic subclasses.
+
+    ObservationGroups have polymorphic subclasses.
+    A plain DRF serializer would simply return the shared ObservationGroup 
+    fields, but not the individual fields partial to its subclasses.
+
+    Overriding the `to_representation` method, this serializer tests the
+    object to display for its real instance, and calls the `to_representation`
+    from the subclasses serializer.
+
+    `Credits <http://stackoverflow.com/a/19976203/2813717>`_
+    `Author <http://stackoverflow.com/users/1514427/michael-van-de-waeter>`_
+    """
+
+    # as_latex = serializers.ReadOnlyField()
+    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
+
+    class Meta:
+        """Class options."""
+
+        model = ObservationGroup
+        fields = "__all__"
+
+
+
+    def create(self, validated_data):
+        """Create one new object, resolve AreaEncounter from source and source_id."""
+        validated_data["encounter"] = occ_models.AreaEncounter.objects.get(
+            source = int(self.initial_data["source"]), 
+            source_id = str(self.initial_data["source_id"]))
+        logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
+        return self.Meta.model.objects.create(**validated_data)
+        
+
+
+
 # ----------------------------------------------------------------------------#
 # FileAttachment
 #
@@ -2971,7 +3012,7 @@ class AnimalObservationSerializer(serializers.ModelSerializer):
 # ----------------------------------------------------------------------------#
 # PhysicalSample
 #
-class PhysicalSampleSerializer(serializers.ModelSerializer):
+class PhysicalSampleSerializer(ObservationGroupSerializer):
     """Serializer for PhysicalSample."""
 
     encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
@@ -2989,45 +3030,9 @@ class PhysicalSampleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-    def create(self, validated_data):
-        validated_data["encounter"] = occ_models.AreaEncounter.objects.get(
-            source = int(self.initial_data["source"]), 
-            source_id = str(self.initial_data["source_id"]))
-        logger.info("PhysicalSampleSerializer.create after enc with data {0}".format(validated_data))
-        return self.Meta.model.objects.create(**validated_data)
-
-
-
-
-
 # ----------------------------------------------------------------------------#
-# ObservationGroup
+# ObservationGroup PolymorphicSerializer routes viewset to serializers
 #
-class ObservationGroupSerializer(serializers.ModelSerializer):
-    """The ObservationGroup serializer resolves its polymorphic subclasses.
-
-    ObservationGroups have polymorphic subclasses.
-    A plain DRF serializer would simply return the shared ObservationGroup 
-    fields, but not the individual fields partial to its subclasses.
-
-    Overriding the `to_representation` method, this serializer tests the
-    object to display for its real instance, and calls the `to_representation`
-    from the subclasses serializer.
-
-    `Credits <http://stackoverflow.com/a/19976203/2813717>`_
-    `Author <http://stackoverflow.com/users/1514427/michael-van-de-waeter>`_
-    """
-
-    # as_latex = serializers.ReadOnlyField()
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-
-    class Meta:
-        """Class options."""
-
-        model = ObservationGroup
-        fields = "__all__"
-
-
 class ObservationGroupPolymorphicSerializer(PolymorphicSerializer):
     """Polymorphic seralizer for ObservationGroup.
 
@@ -3050,6 +3055,13 @@ class ObservationGroupPolymorphicSerializer(PolymorphicSerializer):
     resource_type_field_name = 'obstype'
 
 
+# ----------------------------------------------------------------------------#
+# ObservationGroup ViewSet
+#
+
+from django.apps import apps
+
+
 class ObservationGroupViewSet(viewsets.ModelViewSet):
     """ObservationGroup models.
     
@@ -3065,11 +3077,26 @@ class ObservationGroupViewSet(viewsets.ModelViewSet):
     * [AssociatedSpecies](/api/1/occ-observation/?obstype=AssociatedSpecies)
     * [PhysicalSample](/api/1/occ-observation/?obstype=PhysicalSample)
     """
-    queryset = occ_models.ObservationGroup.objects.all()
     serializer_class = ObservationGroupPolymorphicSerializer
 
+    class Meta:
+        model = occ_models.ObservationGroup
 
-router.register("occ-observation", ObservationGroupViewSet)
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases for
+        the user as determined by the username portion of the URL.
+        """
+        model_name = self.request.query_params.get('obstype', None)
+        if model_name is not None:
+            return apps.get_model("occurrence", model_name).objects.all()
+        else:
+            return occ_models.ObservationGroup.objects.all()
+
+
+router.register("occ-observation", ObservationGroupViewSet, 
+    basename="occurrence_observation_group")
 
 # Taxonomy: Serializers -------------------------------------------------------------------#
 
