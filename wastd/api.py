@@ -34,8 +34,6 @@ This API is built using:
 
 
 import logging
-import itertools
-import urllib
 
 import rest_framework_filters as filters
 # from django.db import models as django_models
@@ -43,7 +41,7 @@ from django.apps import apps
 from django.template import Context, Template
 from django.db.models import Prefetch  # noqa
 
-import django_filters as df
+# import django_filters as df
 from django_filters import rest_framework as rf_filters
 from django_filters.widgets import BooleanWidget  # noqa
 from django_filters.filters import (  # noqa
@@ -83,7 +81,7 @@ from taxonomy.models import (
     Vernacular,
 )
 
-from taxonomy.filters import TaxonFilter as djangofilter_TaxonFilter
+# from taxonomy.filters import TaxonFilter as djangofilter_TaxonFilter
 
 from shared.api import (  # noqa
     CustomCSVRenderer,
@@ -94,7 +92,7 @@ from shared.api import (  # noqa
     CustomLimitOffsetPagination,
     MyGeoJsonPagination,
     )
-from shared.models import QualityControlMixin
+# from shared.models import QualityControlMixin
 from shared.utils import force_as_list
 from occurrence import models as occ_models
 from occurrence.models import (
@@ -2956,6 +2954,29 @@ class AnimalObservationSerializer(ObservationGroupSerializer):
         model = AnimalObservation
         fields = "__all__"
 
+    def to_internal_value(self, data):
+        """Override to_internal_value and check the value of the optional `secondary_signs` key.
+        This key value might be present in a couple of different ways, which all need to be handled:
+            - /api/path/?secondary_signs=eggs
+            - /api/path/?secondary_signs=eggs,fur
+            - /api/path/?secondary_signs=eggs&secondary_signs=fur
+
+        We also need to convert comma-separated strings into a list of PKs for the equivalent
+        SecondarySign objects, for the purposes of setting M2M relationships.
+
+        References:
+            - https://www.django-rest-framework.org/api-guide/serializers/#read-write-baseserializer-classes
+            - https://stackoverflow.com/questions/31281938/overriding-django-rest-framework-serializer-is-valid-method
+        """
+        data_update = dict(data)
+        if 'secondary_signs' in data_update:
+            if len(data_update['secondary_signs']) == 1:  # I.e. ['eggs,fur'] instead of ['eggs', 'fur']
+                data_update['secondary_signs'] = data_update['secondary_signs'][0].split(',')
+            # Change secondary_signs from a comma-separated list of strings into a list of PKs.
+            data_update['secondary_signs'] = [occ_models.SecondarySigns.objects.get(code=i).pk for i in data_update['secondary_signs']]
+            return super(AnimalObservationSerializer, self).to_internal_value(data_update)
+        return super(AnimalObservationSerializer, self).to_internal_value(data)
+
     def create(self, validated_data):
         """Create new object, resolve AreaEncounter from source and source_id."""
         validated_data["encounter"] = occ_models.AreaEncounter.objects.get(
@@ -2963,6 +2984,7 @@ class AnimalObservationSerializer(ObservationGroupSerializer):
             source_id=str(self.initial_data["source_id"]))
         # Pop the secondary_signs list out of validated data so that we can use set() after creating the new object
         # because we can't make the M2M link before the object exists.
+        # At this point, it should be a list of PKs.
         secondary_signs = validated_data.pop('secondary_signs')
         logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
         obj = self.Meta.model.objects.create(**validated_data)
