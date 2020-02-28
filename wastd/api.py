@@ -2914,9 +2914,9 @@ class PlantCountSerializer(ObservationGroupSerializer):
     """Serializer for PlantCount."""
 
     count_method = serializers.SlugRelatedField(
-        queryset=occ_models.CountMethod.objects.all(), slug_field='code')
+        queryset=occ_models.CountMethod.objects.all(), slug_field='code', required = False)
     count_accuracy = serializers.SlugRelatedField(
-        queryset=occ_models.CountAccuracy.objects.all(), slug_field='code')
+        queryset=occ_models.CountAccuracy.objects.all(), slug_field='code', required = False)
 
     class Meta:
         """Opts."""
@@ -2995,11 +2995,11 @@ class PhysicalSampleSerializer(ObservationGroupSerializer):
     """Serializer for PhysicalSample."""
 
     sample_type = serializers.SlugRelatedField(
-        queryset=occ_models.SampleType.objects.all(), slug_field="code")
+        queryset=occ_models.SampleType.objects.all(), slug_field="code", required = False, allow_null = True)
     sample_destination = serializers.SlugRelatedField(
-        queryset=occ_models.SampleDestination.objects.all(), slug_field="code")
+        queryset=occ_models.SampleDestination.objects.all(), slug_field="code", required = False, allow_null = True)
     permit_type = serializers.SlugRelatedField(
-        queryset=occ_models.PermitType.objects.all(), slug_field='code')
+        queryset=occ_models.PermitType.objects.all(), slug_field='code', required = False, allow_null = True)
 
     class Meta:
         """Opts."""
@@ -3032,14 +3032,16 @@ class ObservationGroupPolymorphicSerializer(PolymorphicSerializer):
     }
     resource_type_field_name = 'obstype'
 
+    def to_internal_value(self, data):
+        """Gate checks for data sanity."""
+        logger.info("[API][ObservationGroupPolymorphicSerializer] called with data {0}".format(data))
+        # import ipdb; ipdb.set_trace()
+        return super(ObservationGroupPolymorphicSerializer, self).to_internal_value(data)
+
 
 # ----------------------------------------------------------------------------#
 # ObservationGroup ViewSet
 #
-
-from django.apps import apps
-
-
 class ObservationGroupViewSet(viewsets.ModelViewSet):
     """ObservationGroup models.
 
@@ -3063,10 +3065,7 @@ class ObservationGroupViewSet(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
-        """
-        This view should return a list of all the purchases for
-        the user as determined by the username portion of the URL.
-        """
+        """Filter queryset to the model specified by request parameter "obstype"."""
         model_name = self.request.query_params.get('obstype', None)
         if model_name is not None:
             return apps.get_model("occurrence", model_name).objects.all()
