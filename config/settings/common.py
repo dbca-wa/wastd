@@ -149,7 +149,7 @@ if PROFILING:
 MIDDLEWARE = MIDDLEWARE_FIRST + MIDDLEWARE_LAST
 
 CACHE_MIDDLEWARE_ALIAS = "default"
-CACHE_MIDDLEWARE_SECONDS = 600
+CACHE_MIDDLEWARE_SECONDS = 60
 
 # MIGRATIONS CONFIGURATION
 # ------------------------------------------------------------------------------
