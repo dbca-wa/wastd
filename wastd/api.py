@@ -603,9 +603,6 @@ class ManagementActionSerializer(serializers.ModelSerializer):
                   "management_actions", "comments", )
 
 
-
-
-
 class TurtleDamageObservationSerializer(serializers.ModelSerializer):
     """TurtleDamageObservation serializer."""
 
@@ -688,7 +685,6 @@ class TemperatureLoggerDeploymentSerializer(serializers.ModelSerializer):
                   "distance_to_marker2_mm",
                   "habitat",
                   "distance_to_vegetation_mm", )
-
 
 
 class DugongMorphometricObservationSerializer(serializers.ModelSerializer):
@@ -2826,7 +2822,7 @@ class ObservationGroupSerializer(serializers.ModelSerializer):
         validated_data["encounter"] = occ_models.AreaEncounter.objects.get(
             source=int(self.initial_data["source"]),
             source_id=str(self.initial_data["source_id"]))
-        logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
+        #logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
         return self.Meta.model.objects.create(**validated_data)
 
 
@@ -2985,10 +2981,11 @@ class AnimalObservationSerializer(ObservationGroupSerializer):
         # Pop the secondary_signs list out of validated data so that we can use set() after creating the new object
         # because we can't make the M2M link before the object exists.
         # At this point, it should be a list of PKs.
-        secondary_signs = validated_data.pop('secondary_signs')
-        logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
+        secondary_signs = validated_data.pop('secondary_signs') if 'secondary_signs' in validated_data else []
+        #logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
         obj = self.Meta.model.objects.create(**validated_data)
-        obj.secondary_signs.add(*secondary_signs)
+        if secondary_signs:
+            obj.secondary_signs.add(*secondary_signs)
         return obj
 
 # ----------------------------------------------------------------------------#
