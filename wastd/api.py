@@ -2985,10 +2985,11 @@ class AnimalObservationSerializer(ObservationGroupSerializer):
         # Pop the secondary_signs list out of validated data so that we can use set() after creating the new object
         # because we can't make the M2M link before the object exists.
         # At this point, it should be a list of PKs.
-        secondary_signs = validated_data.pop('secondary_signs')
+        secondary_signs = validated_data.pop('secondary_signs') if 'secondary_signs' in validated_data else []
         logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
         obj = self.Meta.model.objects.create(**validated_data)
-        obj.secondary_signs.add(*secondary_signs)
+        if secondary_signs:
+            obj.secondary_signs.add(*secondary_signs)
         return obj
 
 # ----------------------------------------------------------------------------#
