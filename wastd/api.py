@@ -34,8 +34,6 @@ This API is built using:
 
 
 import logging
-import itertools
-import urllib
 
 import rest_framework_filters as filters
 # from django.db import models as django_models
@@ -43,7 +41,7 @@ from django.apps import apps
 from django.template import Context, Template
 from django.db.models import Prefetch  # noqa
 
-import django_filters as df
+# import django_filters as df
 from django_filters import rest_framework as rf_filters
 from django_filters.widgets import BooleanWidget  # noqa
 from django_filters.filters import (  # noqa
@@ -83,7 +81,7 @@ from taxonomy.models import (
     Vernacular,
 )
 
-from taxonomy.filters import TaxonFilter as djangofilter_TaxonFilter
+# from taxonomy.filters import TaxonFilter as djangofilter_TaxonFilter
 
 from shared.api import (  # noqa
     CustomCSVRenderer,
@@ -94,7 +92,7 @@ from shared.api import (  # noqa
     CustomLimitOffsetPagination,
     MyGeoJsonPagination,
     )
-from shared.models import QualityControlMixin
+# from shared.models import QualityControlMixin
 from shared.utils import force_as_list
 from occurrence import models as occ_models
 from occurrence.models import (
@@ -1393,7 +1391,7 @@ class TagObservationSerializer(serializers.ModelSerializer):
                   "tag_type", "name", "tag_location",
                   "status", "comments", )
 
-        
+
 class TagObservationEncounterSerializer(GeoFeatureModelSerializer):
     """TagObservation serializer including encounter for standalone viewset."""
 
@@ -1471,7 +1469,7 @@ class TurtleMorphometricObservationEncounterSerializer(GeoFeatureModelSerializer
                   "maximum_head_length_mm", "maximum_head_length_accuracy",
                   "body_depth_mm", "body_depth_accuracy",
                   "body_weight_g", "body_weight_accuracy",
-                  "handler", "recorder", 
+                  "handler", "recorder",
         )
 
 
@@ -1680,9 +1678,9 @@ class HatchlingMorphometricObservationEncounterSerializer(GeoFeatureModelSeriali
         geo_field = "point"
         fields = (
             # From Encounter:
-            "encounter", 
-            "observation_name", 
-            "latitude", 
+            "encounter",
+            "observation_name",
+            "latitude",
             "longitude",
             # From model:
             "straight_carapace_length_mm",
@@ -1739,9 +1737,9 @@ class TurtleHatchlingEmergenceObservationEncounterSerializer(GeoFeatureModelSeri
         geo_field = "point"
         fields = (
             # From Encounter:
-            "encounter", 
-            "observation_name", 
-            "latitude", 
+            "encounter",
+            "observation_name",
+            "latitude",
             "longitude",
             # From model:
             "bearing_to_water_degrees",
@@ -1779,10 +1777,10 @@ class TurtleHatchlingEmergenceOutlierObservationSerializer(serializers.ModelSeri
         """Class options."""
 
         model = TurtleHatchlingEmergenceOutlierObservation
-        
+
         fields = (
-            "bearing_outlier_track_degrees", 
-            "outlier_group_size", 
+            "bearing_outlier_track_degrees",
+            "outlier_group_size",
             "outlier_track_comment",
         )
 
@@ -1799,15 +1797,15 @@ class TurtleHatchlingEmergenceOutlierObservationEncounterSerializer(GeoFeatureMo
         geo_field = "point"
         fields = (
             # From Encounter:
-            "encounter", 
-            "observation_name", 
-            "latitude", 
+            "encounter",
+            "observation_name",
+            "latitude",
             "longitude",
             # From model:
-            "bearing_outlier_track_degrees", 
-            "outlier_group_size", 
+            "bearing_outlier_track_degrees",
+            "outlier_group_size",
             "outlier_track_comment",
-            
+
         )
 
 class TurtleHatchlingEmergenceOutlierObservationEncounterViewSet(viewsets.ModelViewSet):
@@ -1831,9 +1829,9 @@ class LightSourceObservationSerializer(serializers.ModelSerializer):
 
         model = LightSourceObservation
         fields = (
-            "bearing_light_degrees", 
-            "light_source_type", 
-            "light_source_description", 
+            "bearing_light_degrees",
+            "light_source_type",
+            "light_source_description",
         )
 
 
@@ -1849,14 +1847,14 @@ class LightSourceObservationEncounterSerializer(GeoFeatureModelSerializer):
         geo_field = "point"
         fields = (
             # From Encounter:
-            "encounter", 
-            "observation_name", 
-            "latitude", 
+            "encounter",
+            "observation_name",
+            "latitude",
             "longitude",
             # From model:
-            "bearing_light_degrees", 
-            "light_source_type", 
-            "light_source_description", 
+            "bearing_light_degrees",
+            "light_source_type",
+            "light_source_description",
         )
 
 
@@ -1872,14 +1870,14 @@ class LightSourceObservationEncounterSerializer(GeoFeatureModelSerializer):
         geo_field = "point"
         fields = (
             # From Encounter:
-            "encounter", 
-            "observation_name", 
-            "latitude", 
+            "encounter",
+            "observation_name",
+            "latitude",
             "longitude",
             # From model:
-            "bearing_light_degrees", 
-            "light_source_type", 
-            "light_source_description", 
+            "bearing_light_degrees",
+            "light_source_type",
+            "light_source_description",
         )
 
 class LightSourceObservationEncounterViewSet(viewsets.ModelViewSet):
@@ -2431,7 +2429,7 @@ router.register("lookup-surveymethod", SurveyMethodViewSet)
 
 # ----------------------------------------------------------------------------#
 # SoilCondition
-# 
+#
 class SoilConditionSerializer(serializers.ModelSerializer):
     """Serializer for SoilCondition: pk, code, label, description."""
 
@@ -2803,7 +2801,7 @@ class ObservationGroupSerializer(serializers.ModelSerializer):
     """The ObservationGroup serializer resolves its polymorphic subclasses.
 
     ObservationGroups have polymorphic subclasses.
-    A plain DRF serializer would simply return the shared ObservationGroup 
+    A plain DRF serializer would simply return the shared ObservationGroup
     fields, but not the individual fields partial to its subclasses.
 
     Overriding the `to_representation` method, this serializer tests the
@@ -2823,17 +2821,13 @@ class ObservationGroupSerializer(serializers.ModelSerializer):
         model = ObservationGroup
         fields = "__all__"
 
-
-
     def create(self, validated_data):
         """Create one new object, resolve AreaEncounter from source and source_id."""
         validated_data["encounter"] = occ_models.AreaEncounter.objects.get(
-            source = int(self.initial_data["source"]), 
-            source_id = str(self.initial_data["source_id"]))
+            source=int(self.initial_data["source"]),
+            source_id=str(self.initial_data["source_id"]))
         logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
         return self.Meta.model.objects.create(**validated_data)
-        
-
 
 
 # ----------------------------------------------------------------------------#
@@ -2842,9 +2836,6 @@ class ObservationGroupSerializer(serializers.ModelSerializer):
 class FileAttachmentSerializer(ObservationGroupSerializer):
     """Serializer for FileAttachment."""
 
-    
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-    
     class Meta:
         """Opts."""
 
@@ -2858,9 +2849,6 @@ class FileAttachmentSerializer(ObservationGroupSerializer):
 class HabitatCompositionSerializer(ObservationGroupSerializer):
     """Serializer for HabitatComposition."""
 
-    
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-    
     class Meta:
         """Opts."""
 
@@ -2869,14 +2857,11 @@ class HabitatCompositionSerializer(ObservationGroupSerializer):
 
 
 # ----------------------------------------------------------------------------#
-# HabitatComposition
+# HabitatCondition
 #
 class HabitatConditionSerializer(ObservationGroupSerializer):
     """Serializer for HabitatCondition."""
 
-    
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-    
     class Meta:
         """Opts."""
 
@@ -2891,9 +2876,6 @@ class HabitatConditionSerializer(ObservationGroupSerializer):
 class AreaAssessmentSerializer(ObservationGroupSerializer):
     """Serializer for AreaAssessment."""
 
-    
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-    
     class Meta:
         """Opts."""
 
@@ -2908,9 +2890,6 @@ class AreaAssessmentSerializer(ObservationGroupSerializer):
 class FireHistorySerializer(ObservationGroupSerializer):
     """Serializer for FireHistory."""
 
-    
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-    
     class Meta:
         """Opts."""
 
@@ -2924,9 +2903,6 @@ class FireHistorySerializer(ObservationGroupSerializer):
 class VegetationClassificationSerializer(ObservationGroupSerializer):
     """Serializer for VegetationClassification."""
 
-    
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-    
     class Meta:
         """Opts."""
 
@@ -2942,19 +2918,10 @@ class PlantCountSerializer(ObservationGroupSerializer):
     """Serializer for PlantCount."""
 
     count_method = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='code'
-    )
-
+        queryset=occ_models.CountMethod.objects.all(), slug_field='code')
     count_accuracy = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='code'
-    )
-    
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-    
+        queryset=occ_models.CountAccuracy.objects.all(), slug_field='code')
+
     class Meta:
         """Opts."""
 
@@ -2967,8 +2934,6 @@ class PlantCountSerializer(ObservationGroupSerializer):
 #
 class AssociatedSpeciesSerializer(ObservationGroupSerializer):
     """Serializer for AssociatedSpecies."""
-
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
 
     class Meta:
         """Opts."""
@@ -2983,31 +2948,48 @@ class AssociatedSpeciesSerializer(ObservationGroupSerializer):
 class AnimalObservationSerializer(ObservationGroupSerializer):
     """Serializer for AnimalObservation."""
 
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
-
-# secondary_signs - m2m
-
-
-    # sample_type = serializers.SlugRelatedField(
-    #     queryset=occ_models.SampleType.objects.all(), slug_field="code")
-    # sample_destination = serializers.SlugRelatedField(
-    #     queryset=occ_models.SampleDestination.objects.all(), slug_field="code")
-    # permit_type = serializers.SlugRelatedField(
-    #     queryset=occ_models.PermitType.objects.all(), slug_field='code')
-    # TODO
-    # detection_method
-    # species_id_confidence
-    # maturity
-    # sex
-    # health
-    # cause_of_death
-
     class Meta:
         """Opts."""
 
         model = AnimalObservation
         fields = "__all__"
 
+    def to_internal_value(self, data):
+        """Override to_internal_value and check the value of the optional `secondary_signs` key.
+        This key value might be present in a couple of different ways, which all need to be handled:
+            - /api/path/?secondary_signs=eggs
+            - /api/path/?secondary_signs=eggs,fur
+            - /api/path/?secondary_signs=eggs&secondary_signs=fur
+
+        We also need to convert comma-separated strings into a list of PKs for the equivalent
+        SecondarySign objects, for the purposes of setting M2M relationships.
+
+        References:
+            - https://www.django-rest-framework.org/api-guide/serializers/#read-write-baseserializer-classes
+            - https://stackoverflow.com/questions/31281938/overriding-django-rest-framework-serializer-is-valid-method
+        """
+        data_update = dict(data)
+        if 'secondary_signs' in data_update:
+            if len(data_update['secondary_signs']) == 1:  # I.e. ['eggs,fur'] instead of ['eggs', 'fur']
+                data_update['secondary_signs'] = data_update['secondary_signs'][0].split(',')
+            # Change secondary_signs from a comma-separated list of strings into a list of PKs.
+            data_update['secondary_signs'] = [occ_models.SecondarySigns.objects.get(code=i).pk for i in data_update['secondary_signs']]
+            return super(AnimalObservationSerializer, self).to_internal_value(data_update)
+        return super(AnimalObservationSerializer, self).to_internal_value(data)
+
+    def create(self, validated_data):
+        """Create new object, resolve AreaEncounter from source and source_id."""
+        validated_data["encounter"] = occ_models.AreaEncounter.objects.get(
+            source=int(self.initial_data["source"]),
+            source_id=str(self.initial_data["source_id"]))
+        # Pop the secondary_signs list out of validated data so that we can use set() after creating the new object
+        # because we can't make the M2M link before the object exists.
+        # At this point, it should be a list of PKs.
+        secondary_signs = validated_data.pop('secondary_signs')
+        logger.info("{0}Serializer.create after enc with data {1}".format(self.Meta.model, validated_data))
+        obj = self.Meta.model.objects.create(**validated_data)
+        obj.secondary_signs.add(*secondary_signs)
+        return obj
 
 # ----------------------------------------------------------------------------#
 # PhysicalSample
@@ -3015,7 +2997,6 @@ class AnimalObservationSerializer(ObservationGroupSerializer):
 class PhysicalSampleSerializer(ObservationGroupSerializer):
     """Serializer for PhysicalSample."""
 
-    encounter = OccurrenceAreaEncounterPointSerializer(read_only=True)
     sample_type = serializers.SlugRelatedField(
         queryset=occ_models.SampleType.objects.all(), slug_field="code")
     sample_destination = serializers.SlugRelatedField(
@@ -3064,18 +3045,19 @@ from django.apps import apps
 
 class ObservationGroupViewSet(viewsets.ModelViewSet):
     """ObservationGroup models.
-    
+
     Filter the Observations to a specific type with the parameter `obstype`:
 
     * [FileAttachment](/api/1/occ-observation/?obstype=FileAttachment)
     * [AreaAssessment](/api/1/occ-observation/?obstype=AreaAssessment)
     * [HabitatComposition](/api/1/occ-observation/?obstype=HabitatComposition)
-    * [HabitatCondition](/api/1/occ-observation/?obstype=HabitatCondition) 
+    * [HabitatCondition](/api/1/occ-observation/?obstype=HabitatCondition)
     * [VegetationClassification](/api/1/occ-observation/?obstype=VegetationClassification)
     * [FireHistory](/api/1/occ-observation/?obstype=FireHistory)
-    * [PlantCount](/api/1/occ-observation/?obstype=PlantCount) 
+    * [PlantCount](/api/1/occ-observation/?obstype=PlantCount)
     * [AssociatedSpecies](/api/1/occ-observation/?obstype=AssociatedSpecies)
     * [PhysicalSample](/api/1/occ-observation/?obstype=PhysicalSample)
+    * [AnimalObservation](/api/1/occ-observation/?obstype=AnimalObservation)
     """
     serializer_class = ObservationGroupPolymorphicSerializer
 
@@ -3095,7 +3077,7 @@ class ObservationGroupViewSet(viewsets.ModelViewSet):
             return occ_models.ObservationGroup.objects.all()
 
 
-router.register("occ-observation", ObservationGroupViewSet, 
+router.register("occ-observation", ObservationGroupViewSet,
     basename="occurrence_observation_group")
 
 # Taxonomy: Serializers -------------------------------------------------------------------#
@@ -3562,7 +3544,7 @@ class HbvSupraViewSet(BatchUpsertViewSet):
         qs = model.objects.filter(
             supra_code__in=list(set([x["supra_code"] for x in new_records]))
         )
-        
+
         # if issubclass(model, QualityControlMixin):
         #     return qs.values("pk", "supra_code", "status")
         # else:
@@ -3675,7 +3657,7 @@ class HbvXrefViewSet(BatchUpsertViewSet):
         """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
         return model.objects.filter(
             xref_id__in=list(set([x["xref_id"] for x in new_records]))
-        ).values("pk", "xref_id")    
+        ).values("pk", "xref_id")
 
 router.register("xrefs", HbvXrefViewSet)
 
@@ -3783,7 +3765,7 @@ class TaxonFilter(filters.FilterSet):
             "author": ["icontains", ],
             "canonical_name": ["icontains", ],
             "taxonomic_name": ["icontains", ],
-            "paraphyletic_groups": ["exact", ], 
+            "paraphyletic_groups": ["exact", ],
             # "vernacular_name": ["icontains", ],
             "vernacular_names": ["icontains", ],
             # "eoo" requires polygon filter,
@@ -3899,7 +3881,7 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
 
         model = Crossreference
         fields = (
-            "xref_id",        
+            "xref_id",
             "predecessor",
             "successor",
             "reason",
@@ -3982,7 +3964,7 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
             xref_id__in=list(set([x["xref_id"] for x in new_records]))
         ).values("pk", "xref_id")
 
- 
+
 router.register("crossreference", CrossreferenceViewSet)
 
 
@@ -4140,7 +4122,7 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
         return model.objects.filter(
             conservation_list__in=list(set([x["conservation_list"] for x in new_records])),
             code__in=list(set([x["code"] for x in new_records]))
-        ).values("pk", "code", "conservation_list")                
+        ).values("pk", "code", "conservation_list")
 
 
 router.register("conservationcriterion", ConservationCriterionViewSet)
@@ -4403,11 +4385,11 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
-            res = self.create_one(request.data).__dict__         
+            res = self.create_one(request.data).__dict__
             return RestResponse(res, status=st)
 
         # Create many --------------------------------------------------------#
-        elif (type(request.data) == list and 
+        elif (type(request.data) == list and
               self.uid_fields[0] in request.data[0]):
             logger.info('[API][create] found batch of {0} records,'
                         ' creating/updating...'.format(len(request.data)))
@@ -4427,7 +4409,7 @@ class CommunityConservationListingSerializer(serializers.ModelSerializer):
 
     # community = FastTaxonSerializer(many=False)
     community = serializers.SlugRelatedField(
-        queryset=Community.objects.all(), 
+        queryset=Community.objects.all(),
         slug_field="code",
         style={"base_template": "input.html"}
     )
@@ -4541,11 +4523,11 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
-            res = self.create_one(request.data).__dict__         
+            res = self.create_one(request.data).__dict__
             return RestResponse(res, status=st)
 
         # Create many --------------------------------------------------------#
-        elif (type(request.data) == list and 
+        elif (type(request.data) == list and
               self.uid_fields[0] in request.data[0]):
             logger.info('[API][create] found batch of {0} records,'
                         ' creating/updating...'.format(len(request.data)))

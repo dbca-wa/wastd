@@ -59,4 +59,12 @@ from wastd.observations.models import (  # noqa
 # Get Auth token from profile
 # curl  -H 'Authorization: Token XXX' -d "format=json&source=10&source_id=85464&permit_type=kermit&sample_type=blood-sample&sample_destination=department&sample_label=test&obstype=PhysicalSample" http://localhost:8220/api/1/occ-observation/
 
+# curl -X POST -H "Authorization: Token XXX" "http://localhost:8220/api/1/occ-observation/?format=json" -d "obstype=AssociatedSpecies&source=10&source_id=85464&taxon=26599"
 
+# curl -X POST -H "Authorization: Token XXX" "http://localhost:8220/api/1/occ-observation/?format=json" -d "obstype=AssociatedSpecies&source=10&source_id=85464&taxon=26599"
+
+# M2M:
+# curl -X POST -H "Authorization: Token XXX" "http://localhost:8211/api/1/occ-observation/?format=json" -d "obstype=AnimalObservation&source=10&source_id=85464&secondary_signs=7&secondary_signs=13"
+
+# File attachments:
+# curl -X POST -H "Authorization: Token XXX" "http://localhost:8211/api/1/occ-observation/?format=json" -F "obstype=FileAttachment" -F "source=10" -F "source_id=85464" -F "attachment=@/path/to/file"
