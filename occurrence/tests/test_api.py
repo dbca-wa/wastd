@@ -1,13 +1,15 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from io import BytesIO
 import json
 # from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
+from unittest import skip
 
 from occurrence.models import (
     AreaEncounter, ObservationGroup, HabitatComposition, PlantCount, CountMethod, CountAccuracy,
-    AnimalObservation, SecondarySigns,
+    AnimalObservation, SecondarySigns, FileAttachment,
 )
 
 User = get_user_model()
@@ -52,7 +54,6 @@ class ObservationGroupSerializerTests(TestCase):
         """Test the occurrence_observation_group API POST endpoint
         """
         resp = self.client.post(self.url, {
-            'format': 'json',
             'obstype': 'HabitatComposition',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
@@ -72,7 +73,6 @@ class ObservationGroupSerializerTests(TestCase):
         # The PlantCount API endpoint requires count_method and count_accuracy as valid slug values.
         # Bad request:
         resp = self.client.post(self.url, {
-            'format': 'json',
             'obstype': 'PlantCount',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
@@ -82,7 +82,6 @@ class ObservationGroupSerializerTests(TestCase):
         count_accuracy = CountAccuracy.objects.create(code='estimate', label='Estimate')
         # Good request:
         resp = self.client.post(self.url, {
-            'format': 'json',
             'obstype': 'PlantCount',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
@@ -99,19 +98,17 @@ class ObservationGroupSerializerTests(TestCase):
         """Test the AnimalObservation POST endpoint behaves correctly
         """
         # If secondary_signs values are passed into the endpoint, they need to be parseable as valid slugs.
-        ss1 = SecondarySigns.objects.create(code='fur', label='Fur')
+        SecondarySigns.objects.create(code='fur', label='Fur')
         resp = self.client.post(self.url, data={
-            'format': 'json',
             'obstype': 'AnimalObservation',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
             'secondary_signs': ('fur',),
         })
         self.assertEqual(resp.status_code, 201)
-        ss2 = SecondarySigns.objects.create(code='eggs', label='Eggs')
+        SecondarySigns.objects.create(code='eggs', label='Eggs')
         # Parse >1 secondary_signs value.
         resp = self.client.post(self.url, data={
-            'format': 'json',
             'obstype': 'AnimalObservation',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
@@ -120,9 +117,22 @@ class ObservationGroupSerializerTests(TestCase):
         self.assertEqual(resp.status_code, 201)
         # Confirm that secondary_signs is optional.
         resp = self.client.post(self.url, {
-            'format': 'json',
             'obstype': 'AnimalObservation',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
+        })
+        self.assertEqual(resp.status_code, 201)
+
+    @skip("Can't make file uploads work with djangorestframework :(")
+    def test_occ_observation_post_fileattachment(self):
+        """Test the FileAttachment POST endpoint behaves correctly
+        """
+        testfile = BytesIO(b'some test binary data')
+        testfile.name = 'test.txt'
+        resp = self.client.post(self.url, {
+            'obstype': 'FileAttachment',
+            'source': self.ae.source,
+            'source_id': self.ae.source_id,
+            'attachment': testfile,
         })
         self.assertEqual(resp.status_code, 201)
