@@ -51,18 +51,17 @@ class ObservationGroupSerializerTests(TestCase):
         self.assertFalse('ObservationGroup' in [i['obstype'] for i in data['results']])
 
     def test_occ_observation_post(self):
-        """Test the occurrence_observation_group API POST endpoint
+        """Test the occurrence_observation_group API POST endpoint for object types not requiring special cases
         """
-        resp = self.client.post(self.url, {
-            'obstype': 'HabitatComposition',
-            'source': self.ae.source,
-            'source_id': self.ae.source_id,
-        })
-        self.assertEqual(resp.status_code, 201)
-        resp = self.client.get(self.url, {'format': 'json', 'obstype': 'HabitatComposition'})
-        data = json.loads(resp.content)
-        # Response should return two HabitatComposition objects.
-        self.assertEqual(data['count'], 2)
+        models = [
+            'HabitatComposition', 'HabitatCondition', 'AreaAssessment', 'FireHistory', 'VegetationClassification']
+        for model in models:
+            resp = self.client.post(self.url, {
+                'obstype': model,
+                'source': self.ae.source,
+                'source_id': self.ae.source_id,
+            })
+            self.assertEqual(resp.status_code, 201)
 
     def test_occ_observation_post_plantcount(self):
         """Test the PlantCount POST endpoint behaves correctly
