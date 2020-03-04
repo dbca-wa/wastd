@@ -30,12 +30,15 @@ This API is built using:
 * coreapi
 * coreapi-cli (complementary CLI for coreapi)
 """
+# from django.shortcuts import render
 import logging
 
 import rest_framework_filters as filters
+# from django.db import models as django_models
 from django.template import Context, Template
 from django.db.models import Prefetch  # noqa
 
+# import django_filters as df
 from django_filters import rest_framework as rf_filters
 from django_filters.widgets import BooleanWidget  # noqa
 from django_filters.filters import (  # noqa
@@ -48,7 +51,6 @@ from rest_framework.response import Response as RestResponse
 from rest_framework_gis.fields import GeometryField
 from rest_framework_gis.filters import InBBoxFilter  # , GeometryFilter
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-# from rest_polymorphic.serializers import PolymorphicSerializer
 
 from conservation.models import (  # noqa
     ConservationListing,
@@ -1867,10 +1869,6 @@ router.register(r"turtle-nest-hatchling-emergences", TurtleHatchlingEmergenceObs
 router.register(r"turtle-nest-hatchling-emergence-outliers", TurtleHatchlingEmergenceOutlierObservationEncounterViewSet)
 router.register(r"turtle-nest-hatchling-emergence-light-sources", LightSourceObservationEncounterViewSet)
 
-# ----------------------------------------------------------------------------#
-# occurrence.models.AreaEncounter
-# ----------------------------------------------------------------------------#
-
 
 # Taxonomy: Serializers -------------------------------------------------------------------#
 
@@ -3183,7 +3181,7 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
             res = self.create_one(request.data).__dict__
-            return RestResponse(res, status=status.HTTP_200_OK)
+            return RestResponse(res, status=status.HTTP_201_CREATED)
 
         # Create many --------------------------------------------------------#
         elif (isinstance(request.data, list) and
@@ -3322,7 +3320,7 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
             res = self.create_one(request.data).__dict__
-            return RestResponse(res, status=status.HTTP_200_OK)
+            return RestResponse(res, status=status.HTTP_201_CREATED)
 
         # Create many --------------------------------------------------------#
         elif (isinstance(request.data, list) and
