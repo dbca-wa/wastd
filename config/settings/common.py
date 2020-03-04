@@ -466,10 +466,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'HTML_SELECT_CUTOFF': 100,
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
-    'TEST_REQUEST_RENDERER_CLASSES': [
-        'rest_framework.renderers.MultiPartRenderer',
-        'rest_framework.renderers.JSONRenderer',
-    ],
 }
 
 # PROXY_PAGINATION_PARAM = 'pager'
