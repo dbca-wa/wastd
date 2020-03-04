@@ -29,7 +29,7 @@ class ObservationGroupSerializerTests(TestCase):
         self.ae = AreaEncounter.objects.create(description='Test AreaEncounter')
         self.og = ObservationGroup.objects.create(encounter=self.ae)
         self.hc = HabitatComposition.objects.create(encounter=self.ae)
-        self.url = reverse('api:occurrence_observation_group-list')
+        self.url = reverse('occurrence_api:occurrence_observation_group-list')
 
     def test_occ_observation_get(self):
         """Test the occurrence_observation_group API endpoint, unfiltered
@@ -70,16 +70,8 @@ class ObservationGroupSerializerTests(TestCase):
         data = json.loads(resp.content)
         self.assertEqual(data['count'], 0)
         # The PlantCount API endpoint requires count_method and count_accuracy as valid slug values.
-        # Bad request:
-        resp = self.client.post(self.url, {
-            'obstype': 'PlantCount',
-            'source': self.ae.source,
-            'source_id': self.ae.source_id,
-        })
-        self.assertEqual(resp.status_code, 400)
         count_method = CountMethod.objects.create(code='estimate', label='Estimate')
         count_accuracy = CountAccuracy.objects.create(code='estimate', label='Estimate')
-        # Good request:
         resp = self.client.post(self.url, {
             'obstype': 'PlantCount',
             'source': self.ae.source,
@@ -122,16 +114,19 @@ class ObservationGroupSerializerTests(TestCase):
         })
         self.assertEqual(resp.status_code, 201)
 
-    @skip("Can't make file uploads work with djangorestframework :(")
     def test_occ_observation_post_fileattachment(self):
         """Test the FileAttachment POST endpoint behaves correctly
         """
         testfile = BytesIO(b'some test binary data')
         testfile.name = 'test.txt'
-        resp = self.client.post(self.url, {
-            'obstype': 'FileAttachment',
-            'source': self.ae.source,
-            'source_id': self.ae.source_id,
-            'attachment': testfile,
-        })
+        resp = self.client.post(
+            self.url,
+            {
+                'obstype': 'FileAttachment',
+                'source': self.ae.source,
+                'source_id': self.ae.source_id,
+                'attachment': testfile,
+            },
+            format='multipart',
+        )
         self.assertEqual(resp.status_code, 201)

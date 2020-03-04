@@ -275,7 +275,7 @@ DATE_INPUT_FORMATS = [
     '%Y-%m-%dZ',     # '2006-10-25Z' from WACensus via KMI GeoServer
     '%d-%m-%Y',      # '25-10-2006'
     '%d/%m/%Y',      # '25/10/2006'
-]      
+]
 
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
@@ -447,9 +447,12 @@ REST_FRAMEWORK = {
         'rest_framework_yaml.renderers.YAMLRenderer',
         'rest_framework_latex.renderers.LatexRenderer',
     ),
-    # 'DEFAULT_PARSER_CLASSES': (
-    # 'rest_framework_yaml.parsers.YAMLParser',
-    # ),
+    'DEFAULT_PARSER_CLASSES': [
+        # 'rest_framework_yaml.parsers.YAMLParser',
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    ],
     'DEFAULT_FILTER_BACKENDS': (
         # 'django_filters.rest_framework.DjangoFilterBackend',
         # 'rest_framework_gis.filters.InBBoxFilter',
@@ -462,8 +465,7 @@ REST_FRAMEWORK = {
 
     'PAGE_SIZE': 100,
     'HTML_SELECT_CUTOFF': 100,
-
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 # PROXY_PAGINATION_PARAM = 'pager'
@@ -603,7 +605,7 @@ LEAFLET_CONFIG = {
           'tilematrixset': 'GoogleMapsCompatible_Level'}),
     ],
     'OVERLAYS': [
-        # ('State Map Base 250K', 'https://kmi.dbca.wa.gov.au/geoserver/cddp/wms', 
+        # ('State Map Base 250K', 'https://kmi.dbca.wa.gov.au/geoserver/cddp/wms',
         # {'attribution': '&copy; IGN', 'layers': 'cddp:state_map_base', 'format': 'image/png', 'transparent': 'true', }),
     ]
 
@@ -611,8 +613,8 @@ LEAFLET_CONFIG = {
 # https://stackoverflow.com/questions/43608919/html-offline-map-with-local-tiles-via-leaflet
 if OFFLINE:
     LEAFLET_CONFIG['TILES'] = [
-        ('Place Names', 
-        env("OSM_TILESERVER", default="//127.0.0.1:32768") + '/styles/osm-bright/{z}/{x}/{y}.png', 
+        ('Place Names',
+        env("OSM_TILESERVER", default="//127.0.0.1:32768") + '/styles/osm-bright/{z}/{x}/{y}.png',
         {'attribution': 'OpenMapTiles', 'maxZoom': 16, }),
         ('Aerial Image',
          '//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -774,7 +776,7 @@ WASTD_RELEASE = env("WASTD_RELEASE", default="master")
 if env('SENTRY_DSN', False):
     # RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
     sentry_sdk.init(
-            env('SENTRY_DSN'), 
+            env('SENTRY_DSN'),
             integrations=[DjangoIntegration(),],
             release="wastd@{0}".format(WASTD_RELEASE)
     )

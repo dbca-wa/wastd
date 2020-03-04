@@ -10,7 +10,6 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, re_path, path
 from django.views import defaults as default_views
 from django.views.decorators.cache import cache_page
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
@@ -22,6 +21,7 @@ from rest_framework.documentation import include_docs_urls
 from graphene_django.views import GraphQLView
 
 from occurrence.models import CommunityAreaEncounter
+from occurrence.api import router as occurrence_router
 from wastd.api import router as wastd_router
 from wastd.observations import models as wastd_models
 from wastd.observations import views as wastd_views
@@ -32,8 +32,8 @@ from api.schema import schema
 actions.add_to_site(site)
 
 urlpatterns = [
-    re_path(r'^$', cache_page(60*60*24)(TemplateView.as_view(template_name='pages/index.html')), name='home'),
-    re_path(r'^map/$', cache_page(60*60)(wastd_views.HomeView.as_view()), name='map'),
+    re_path(r'^$', cache_page(60 * 60 * 24)(TemplateView.as_view(template_name='pages/index.html')), name='home'),
+    re_path(r'^map/$', cache_page(60 * 60)(wastd_views.HomeView.as_view()), name='map'),
     re_path(r'^healthcheck/$', TemplateView.as_view(template_name='pages/healthcheck.html'), name='healthcheck'),
 
     re_path(settings.ADMIN_URL, admin.site.urls),
@@ -57,6 +57,7 @@ urlpatterns = [
     re_path(r'^api/1/swagger/$', wastd_views.schema_view, name="api-docs"),
     re_path(r'^api/1/docs/', include_docs_urls(title='API')),
     re_path(r'^api/1/', include((wastd_router.urls, 'api'), namespace="api")),
+    re_path(r'^api/1/', include((occurrence_router.urls, 'occurrence'), namespace='occurrence_api')),
     re_path(r'^api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
     re_path(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 
