@@ -2817,8 +2817,22 @@ class ObservationGroupSerializer(serializers.ModelSerializer):
         model = ObservationGroup
         fields = "__all__"
 
+    def validate(self, data):
+        """Raise ValidateError on missing AreaEncounter(source, source_id)."""
+        if not occ_models.AreaEncounter.objects.filter(
+            source=int(self.initial_data["source"]),
+            source_id=str(self.initial_data["source_id"])
+            ).exists():
+            raise serializers.ValidationError(
+                "AreaEncounter with source {0} and source_id {1}"
+                " does not exist, skipping.".format(
+                    int(self.initial_data["source"]),
+                    str(self.initial_data["source_id"])))
+        return data
+
     def create(self, validated_data):
         """Create one new object, resolve AreaEncounter from source and source_id."""
+
         validated_data["encounter"] = occ_models.AreaEncounter.objects.get(
             source=int(self.initial_data["source"]),
             source_id=str(self.initial_data["source_id"]))
