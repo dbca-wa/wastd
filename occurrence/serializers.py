@@ -1,9 +1,9 @@
-from rest_framework.serializers import SlugRelatedField, ModelSerializer
+from rest_framework.serializers import SlugRelatedField, ModelSerializer, ValidationError
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from rest_polymorphic.serializers import PolymorphicSerializer
 
 from taxonomy.models import Community, Taxon
-from .models import (
+from occurrence.models import (
     AreaEncounter,
     TaxonAreaEncounter,
     CommunityAreaEncounter,
@@ -314,6 +314,17 @@ class ObservationGroupSerializer(ModelSerializer):
     class Meta:
         model = ObservationGroup
         fields = "__all__"
+
+    def validate(self, data):
+        """Raise ValidateError on missing AreaEncounter(source, source_id).
+        """
+        if not AreaEncounter.objects.filter(source=int(self.initial_data["source"]), source_id=str(self.initial_data["source_id"])).exists():
+            raise ValidationError(
+                "AreaEncounter with source {0} and source_id {1}"
+                " does not exist, skipping.".format(
+                    int(self.initial_data["source"]),
+                    str(self.initial_data["source_id"])))
+        return data
 
     def create(self, validated_data):
         """Create one new object, resolve AreaEncounter from source and source_id.
