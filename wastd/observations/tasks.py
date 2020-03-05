@@ -8,12 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 from sentry_sdk import capture_message
 
-from wastd.observations.utils import (
-    allocate_animal_names,
-    import_all_odka,
-    reconstruct_missing_surveys,
-    save_all_odka
-)
+from wastd.observations import utils
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +19,7 @@ def update_names():
     msg = "[wastd.observations.tasks.update_names] Start updating names..."
     logger.info(msg)
     capture_message(msg, level="info")
-    surveys, names, loggers = allocate_animal_names()
+    surveys, names, loggers = utils.allocate_animal_names()
     msg = ("[wastd.observations.tasks.update_names] {0} surveys reconstructed, "
            "{1} animal names reconstructed, {2} logger names set. "
            "Task successfully finished.".format(
@@ -36,14 +31,28 @@ def update_names():
 @background(queue="admin-tasks", schedule=timezone.now())
 def import_odka():
     """Download and import new ODKA submissions."""
-    capture_message("[wastd.observations.tasks.import_odka] Starting ODKA import.", level="warning")
+    capture_message(
+        "[wastd.observations.tasks.import_odka] Starting ODKA import.", 
+        level="warning"
+    )
     path = os.path.join(settings.MEDIA_ROOT, "odka")
     os.makedirs(path, exist_ok=True)
-    save_all_odka(path=path)
-    capture_message("[wastd.observations.tasks.import_odka] ODKA submissions downloaded.", level="info")
-    import_all_odka(path=path)
-    capture_message("[wastd.observations.tasks.import_odka] ODKA submissions imported.", level="info")
-    reconstruct_missing_surveys()
+    
+    utils.save_all_odka(path=path)
+    capture_message(
+        "[wastd.observations.tasks.import_odka] ODKA submissions downloaded.", 
+        level="info"
+    )
+    
+    utils.import_all_odka(path=path)
+    capture_message(
+        "[wastd.observations.tasks.import_odka] ODKA submissions imported.", 
+        level="info"
+    )
+    
+    utils.reconstruct_missing_surveys()
     capture_message(
         "[wastd.observations.tasks.import_odka] "
-        "ODKA surveys reconstructed, task successfully finished.", level="warning")
+        "ODKA surveys reconstructed, task successfully finished.", 
+        level="warning"
+    )
