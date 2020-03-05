@@ -79,7 +79,8 @@ class OccurrenceTaxonAreaEncounterPolyInlineSerializer(GeoFeatureModelSerializer
 class OccurrenceTaxonAreaEncounterPolySerializer(GeoFeatureModelSerializer):
     """Serializer for Occurrence TaxonAreaEncounter.
     """
-    taxon = SlugRelatedField(queryset=Taxon.objects.all(), slug_field="name_id")
+    taxon = SlugRelatedField(
+        queryset=Taxon.objects.all(), slug_field="name_id")
 
     class Meta:
         model = TaxonAreaEncounter
@@ -126,7 +127,8 @@ class OccurrenceCommunityAreaEncounterPolyInlineSerializer(GeoFeatureModelSerial
 
 class OccurrenceCommunityAreaEncounterPolySerializer(GeoFeatureModelSerializer):
 
-    community = SlugRelatedField(queryset=Community.objects.all(), slug_field="code")
+    community = SlugRelatedField(
+        queryset=Community.objects.all(), slug_field="code")
 
     class Meta:
         model = CommunityAreaEncounter
@@ -140,7 +142,8 @@ class OccurrenceCommunityAreaEncounterPolySerializer(GeoFeatureModelSerializer):
 
 
 class OccurrenceCommunityAreaEncounterPointSerializer(OccurrenceCommunityAreaEncounterPolySerializer):
-    community = SlugRelatedField(queryset=Community.objects.all(), slug_field="code")
+    community = SlugRelatedField(
+        queryset=Community.objects.all(), slug_field="code")
 
     class Meta(OccurrenceCommunityAreaEncounterPolySerializer.Meta):
         geo_field = "point"
@@ -379,8 +382,10 @@ class VegetationClassificationSerializer(ObservationGroupSerializer):
 
 class PlantCountSerializer(ObservationGroupSerializer):
 
-    count_method = SlugRelatedField(queryset=CountMethod.objects.all(), slug_field='code', required=False)
-    count_accuracy = SlugRelatedField(queryset=CountAccuracy.objects.all(), slug_field='code', required=False)
+    count_method = SlugRelatedField(
+        queryset=CountMethod.objects.all(), slug_field='code', required=False)
+    count_accuracy = SlugRelatedField(
+        queryset=CountAccuracy.objects.all(), slug_field='code', required=False)
 
     class Meta:
         model = PlantCount
@@ -416,9 +421,12 @@ class AnimalObservationSerializer(ObservationGroupSerializer):
         """
         data_update = dict(data)
         if 'secondary_signs' in data_update:
-            if len(data_update['secondary_signs']) == 1:  # I.e. ['eggs,fur'] instead of ['eggs', 'fur']
-                data_update['secondary_signs'] = data_update['secondary_signs'][0].split(',')
-            # Change secondary_signs from a comma-separated list of strings into a list of PKs.
+            # I.e. ['eggs,fur'] instead of ['eggs', 'fur']
+            if len(data_update['secondary_signs']) == 1:
+                data_update['secondary_signs'] = data_update[
+                    'secondary_signs'][0].split(',')
+            # Change secondary_signs from a comma-separated list of strings
+            # into a list of PKs.
             data_update['secondary_signs'] = [
                 SecondarySigns.objects.get(
                     code=i).pk for i in data_update['secondary_signs']]
@@ -434,7 +442,8 @@ class AnimalObservationSerializer(ObservationGroupSerializer):
         # Pop the secondary_signs list out of validated data so that we can use set() after creating the new object
         # because we can't make the M2M link before the object exists.
         # At this point, it should be a list of PKs.
-        secondary_signs = validated_data.pop('secondary_signs') if 'secondary_signs' in validated_data else []
+        secondary_signs = validated_data.pop(
+            'secondary_signs') if 'secondary_signs' in validated_data else []
         obj = self.Meta.model.objects.create(**validated_data)
         if secondary_signs:
             obj.secondary_signs.add(*secondary_signs)
