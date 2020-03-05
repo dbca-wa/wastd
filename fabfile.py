@@ -32,8 +32,8 @@ def pip():
 def static():
     """Link static files."""
     local("find -L staticfiles/ -type l -delete")
-    local("python manage.py collectstatic --noinput -l "
-          "|| python manage.py collectstatic --clear --noinput -l")
+    local("python manage.py collectstatic -v 0 --noinput -l "
+          "|| python manage.py collectstatic -v 0 --clear --noinput -l")
 
 
 def migrate():

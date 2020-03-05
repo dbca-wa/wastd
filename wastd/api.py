@@ -245,7 +245,8 @@ class UserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = ("pk", "username", "name", "nickname", "aliases", "role", "email", "phone", )
+        fields = ("pk", "username", "name", "nickname",
+                  "aliases", "role", "email", "phone", )
 
 
 class FastUserSerializer(serializers.ModelSerializer):
@@ -272,13 +273,15 @@ class UserViewSet(viewsets.ModelViewSet):
         from wastd.observations.utils import lowersnake
         un = lowersnake(data["name"])
 
-        obj, created = self.model.objects.get_or_create(username=un, defaults=data)
+        obj, created = self.model.objects.get_or_create(
+            username=un, defaults=data)
         if not created:
             self.model.objects.filter(username=un).update(**data)
 
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = "[API][UserViewSet][create_one] {0} {1}".format(verb, obj.__str__())
+        msg = "[API][UserViewSet][create_one] {0} {1}".format(
+            verb, obj.__str__())
         content = {"id": obj.id, "msg": msg}
         logger.info(msg)
 
@@ -460,7 +463,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
     filter_class = SurveyFilter
-    # pagination_class = pagination.LimitOffsetPagination # provides results$features
+    # pagination_class = pagination.LimitOffsetPagination # provides
+    # results$features
     pagination_class = MyGeoJsonPagination  # provides top level features
 
 
@@ -1152,10 +1156,10 @@ class TurtleNestEncounterFilter(filters.FilterSet):
             "species": ["iexact", "icontains"],
             "habitat": ["iexact", "icontains"],
             "disturbance": ["iexact", "icontains"],
-            'nest_tagged': ["iexact", "icontains"], 
-            'logger_found': ["iexact", "icontains"], 
-            'eggs_counted': ["iexact", "icontains"], 
-            'hatchlings_measured': ["iexact", "icontains"], 
+            'nest_tagged': ["iexact", "icontains"],
+            'logger_found': ["iexact", "icontains"],
+            'eggs_counted': ["iexact", "icontains"],
+            'hatchlings_measured': ["iexact", "icontains"],
             'fan_angles_measured': ["iexact", "icontains"],
             "comments": ["icontains"],
         }
@@ -1696,7 +1700,8 @@ class HatchlingMorphometricObservationEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = HatchlingMorphometricObservation.objects.all()
     serializer_class = HatchlingMorphometricObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = ["encounter__area",
+                     "encounter__site", "encounter__encounter_type", ]
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
@@ -1767,7 +1772,8 @@ class TurtleHatchlingEmergenceObservationEncounterViewSet(viewsets.ModelViewSet)
 
     queryset = TurtleHatchlingEmergenceObservation.objects.all()
     serializer_class = TurtleHatchlingEmergenceObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = ["encounter__area",
+                     "encounter__site", "encounter__encounter_type", ]
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
@@ -1819,7 +1825,8 @@ class TurtleHatchlingEmergenceOutlierObservationEncounterViewSet(viewsets.ModelV
 
     queryset = TurtleHatchlingEmergenceOutlierObservation.objects.all()
     serializer_class = TurtleHatchlingEmergenceOutlierObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = ["encounter__area",
+                     "encounter__site", "encounter__encounter_type", ]
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
@@ -1869,7 +1876,8 @@ class LightSourceObservationEncounterViewSet(viewsets.ModelViewSet):
 
     queryset = LightSourceObservation.objects.all()
     serializer_class = LightSourceObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = ["encounter__area",
+                     "encounter__site", "encounter__encounter_type", ]
     # pagination_class = pagination.LimitOffsetPagination
     pagination_class = MyGeoJsonPagination
 
@@ -1890,15 +1898,21 @@ router.register(r"tag-observations", TagObservationViewSet)
 router.register(r"turtle-morphometrics", TurtleMorphometricObservationViewSet)
 
 router.register(r"turtle-nest-tag-observations", NestTagObservationViewSet)
-router.register(r"turtle-nest-disturbance-observations", TurtleNestDisturbanceObservationEncounterViewSet)
+router.register(r"turtle-nest-disturbance-observations",
+                TurtleNestDisturbanceObservationEncounterViewSet)
 router.register(r"turtle-nest-excavations", TurtleNestObservationViewSet)
-router.register(r"turtle-nest-hatchling-morphometrics", HatchlingMorphometricObservationEncounterViewSet)
-router.register(r"turtle-nest-hatchling-emergences", TurtleHatchlingEmergenceObservationEncounterViewSet)
-router.register(r"turtle-nest-hatchling-emergence-outliers", TurtleHatchlingEmergenceOutlierObservationEncounterViewSet)
-router.register(r"turtle-nest-hatchling-emergence-light-sources", LightSourceObservationEncounterViewSet)
+router.register(r"turtle-nest-hatchling-morphometrics",
+                HatchlingMorphometricObservationEncounterViewSet)
+router.register(r"turtle-nest-hatchling-emergences",
+                TurtleHatchlingEmergenceObservationEncounterViewSet)
+router.register(r"turtle-nest-hatchling-emergence-outliers",
+                TurtleHatchlingEmergenceOutlierObservationEncounterViewSet)
+router.register(r"turtle-nest-hatchling-emergence-light-sources",
+                LightSourceObservationEncounterViewSet)
 
 
-# Taxonomy: Serializers -------------------------------------------------------------------#
+# Taxonomy: Serializers
+# -------------------------------------------------------------------#
 
 
 class HbvNameSerializer(serializers.ModelSerializer):
@@ -1990,7 +2004,8 @@ class HbvParentSerializer(serializers.ModelSerializer):
         model = HbvParent
         fields = "__all__"
 
-# Taxonomy: Filters -------------------------------------------------------------------#
+# Taxonomy: Filters
+# -------------------------------------------------------------------#
 
 
 class HbvNameFilter(filters.FilterSet):
@@ -2515,7 +2530,8 @@ class TaxonSerializer(serializers.ModelSerializer):
     436     | T             | WCA_1991  | EN    | EN        | B1+2c
     """
 
-    # taxon_occurrences = OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True) # yeah nah
+    # taxon_occurrences =
+    # OccurrenceTaxonAreaEncounterPolyInlineSerializer(many=True) # yeah nah
 
     # is_currently_listed = serializers.ReadOnlyField()
     # conservation_code_state = serializers.ReadOnlyField()           # consv_code
@@ -2719,8 +2735,10 @@ class CrossreferenceSerializer(serializers.ModelSerializer):
 class CrossreferenceFilter(filters.FilterSet):
     """Crossreference filter."""
 
-    predecessor = filters.RelatedFilter(TaxonFilter, field_name="predecessor", queryset=Taxon.objects.all())
-    successor = filters.RelatedFilter(TaxonFilter, field_name="successor", queryset=Taxon.objects.all())
+    predecessor = filters.RelatedFilter(
+        TaxonFilter, field_name="predecessor", queryset=Taxon.objects.all())
+    successor = filters.RelatedFilter(
+        TaxonFilter, field_name="successor", queryset=Taxon.objects.all())
     # filter_overrides = {
     #     models.DateTimeField: {
     #         'filter_class': filters.IsoDateTimeFilter
@@ -2943,7 +2961,8 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
     def fetch_existing_records(self, new_records, model):
         """Fetch pk, (status if QC mixin), and **uid_fields values from a model."""
         return model.objects.filter(
-            conservation_list__in=list(set([x["conservation_list"] for x in new_records])),
+            conservation_list__in=list(
+                set([x["conservation_list"] for x in new_records])),
             code__in=list(set([x["code"] for x in new_records]))
         ).values("pk", "code", "conservation_list")
 
@@ -2957,8 +2976,10 @@ router.register("conservationcriterion", ConservationCriterionViewSet)
 class ConservationListSerializer(serializers.ModelSerializer):
     """Serializer for ConservationList."""
 
-    conservationcategory_set = ConservationCategorySerializer(many=True, write_only=False)
-    conservationcriterion_set = ConservationCriterionSerializer(many=True, write_only=False)
+    conservationcategory_set = ConservationCategorySerializer(
+        many=True, write_only=False)
+    conservationcriterion_set = ConservationCriterionSerializer(
+        many=True, write_only=False)
 
     def create(self, validated_data):
         """Custom create with nested ConsCat serializer."""
@@ -2970,10 +2991,12 @@ class ConservationListSerializer(serializers.ModelSerializer):
 
         for cat in cat_data:
             cat["conservation_list_id"] = conservation_list.pk
-            ConservationCategory.objects.update_or_create(code=cat["code"], defaults=cat)
+            ConservationCategory.objects.update_or_create(
+                code=cat["code"], defaults=cat)
         for crit in crit_data:
             crit["conservation_list_id"] = conservation_list.pk
-            ConservationCriterion.objects.update_or_create(code=crit["code"], defaults=crit)
+            ConservationCriterion.objects.update_or_create(
+                code=crit["code"], defaults=crit)
 
         return conservation_list
 
@@ -3043,15 +3066,19 @@ class ConservationListViewSet(viewsets.ModelViewSet):
         conservation_list, created = ConservationList.objects.update_or_create(
             code=data["code"], defaults=data)
         for cat in cat_data:
-            logger.debug("[ConsList viewset] Found one cons cat: {0}".format(cat))
+            logger.debug(
+                "[ConsList viewset] Found one cons cat: {0}".format(cat))
             cat.pop("conservation_list")
             cat["conservation_list_id"] = conservation_list.pk
-            ConservationCategory.objects.update_or_create(code=cat["code"], defaults=cat)
+            ConservationCategory.objects.update_or_create(
+                code=cat["code"], defaults=cat)
         for crit in crit_data:
-            logger.debug("[ConsList viewset] Found one cons crit: {0}".format(crit))
+            logger.debug(
+                "[ConsList viewset] Found one cons crit: {0}".format(crit))
             crit.pop("conservation_list")
             crit["conservation_list_id"] = conservation_list.pk
-            ConservationCriterion.objects.update_or_create(code=crit["code"], defaults=crit)
+            ConservationCriterion.objects.update_or_create(
+                code=crit["code"], defaults=crit)
 
         return RestResponse(data, status=status.HTTP_200_OK)
 
@@ -3141,7 +3168,8 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         try:
             data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
         except Exception as e:
-            logger.error("Exception {0}: taxon {1} not known,".format(e, data["taxon"]))
+            logger.error(
+                "Exception {0}: taxon {1} not known,".format(e, data["taxon"]))
         return data
 
     def create_one(self, data):
@@ -3158,11 +3186,13 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         # Pop category and criterion out update_data
         cat_ids = force_as_list(update_data.pop("category"))
         logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
-        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
+        categories = [ConservationCategory.objects.get(
+            id=x) for x in cat_ids if x != 'NA']
 
         crit_ids = force_as_list(update_data.pop("criteria"))
         logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
-        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
+        criteria = [ConservationCriterion.objects.get(
+            id=x) for x in crit_ids if x != 'NA']
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
@@ -3177,8 +3207,10 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
                          self.model._meta.verbose_name, str(unique_data)))
 
         # Without the QA status deciding whether to update existing data:
-        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        obj.category.set(categories)  # TODO: must do individually or can do as list?
+        obj, created = self.model.objects.update_or_create(
+            defaults=update_data, **unique_data)
+        # TODO: must do individually or can do as list?
+        obj.category.set(categories)
         obj.criteria.set(criteria)
         obj.save()  # better save() than sorry
         obj.refresh_from_db()
@@ -3218,7 +3250,8 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
                         ' creating/updating...'.format(len(request.data)))
 
             # The slow way:
-            res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
+            res = [getattr(self.create_one(data), "__dict__", None)
+                   for data in request.data]
         return RestResponse([], status=status.HTTP_200_OK)
 
 
@@ -3281,7 +3314,8 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         try:
             data["community"] = Community.objects.get(code=data["community"])
         except Exception as e:
-            logger.error("Exception '{0}': community '{1}' not known.".format(e, data["community"]))
+            logger.error("Exception '{0}': community '{1}' not known.".format(
+                e, data["community"]))
         return data
 
     def create_one(self, data):
@@ -3298,10 +3332,12 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         # Pop category and criterion out update_data
         cat_ids = force_as_list(update_data.pop("category"))
         logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
-        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
+        categories = [ConservationCategory.objects.get(
+            id=x) for x in cat_ids if x != 'NA']
         crit_ids = force_as_list(update_data.pop("criteria"))
         logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
-        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
+        criteria = [ConservationCriterion.objects.get(
+            id=x) for x in crit_ids if x != 'NA']
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
@@ -3316,7 +3352,8 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
                          self.model._meta.verbose_name, str(unique_data)))
 
         # Without the QA status deciding whether to update existing data:
-        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
+        obj, created = self.model.objects.update_or_create(
+            defaults=update_data, **unique_data)
         obj.category.set(categories)
         obj.criteria.set(criteria)
         obj.save()  # better save() than sorry
@@ -3357,11 +3394,13 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
                         ' creating/updating...'.format(len(request.data)))
 
             # The slow way:
-            res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
+            res = [getattr(self.create_one(data), "__dict__", None)
+                   for data in request.data]
         return RestResponse([], status=status.HTTP_200_OK)
 
 
-router.register("community-conservationlisting", CommunityConservationListingViewSet)
+router.register("community-conservationlisting",
+                CommunityConservationListingViewSet)
 
 
 # ----------------------------------------------------------------------------#
