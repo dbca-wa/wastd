@@ -2505,11 +2505,42 @@ class TurtleNestEncounter(Encounter):
         choices=OBSERVATION_CHOICES,
         default=NA_VALUE,
         help_text=_("Is there evidence of predation or other disturbance?"),)
-    #
-    # comments = models.TextField(
-    #     verbose_name=_("Comments"),
-    #     blank=True, null=True,
-    #     help_text=_("Comments"), )
+
+    nest_tagged = models.CharField(
+        max_length=300,
+        verbose_name=_("Nest tag present"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Was a nest tag applied, re-sighted, or otherwise encountered?"),)
+
+    logger_found = models.CharField(
+        max_length=300,
+        verbose_name=_("Logger present"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Was a data logger deployed, retrieved, or otherwise encountered?"),)
+
+    eggs_counted = models.CharField(
+        max_length=300,
+        verbose_name=_("Nest excavated and eggs counted"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Was the nest excavated and were turtle eggs counted?"),)
+
+    hatchlings_measured = models.CharField(
+        max_length=300,
+        verbose_name=_("Hatchlings measured"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Were turtle hatchlings encountered and their morphometrics measured?"),)
+
+    fan_angles_measured = models.CharField(
+        max_length=300,
+        verbose_name=_("Hatchling emergence recorded"),
+        choices=OBSERVATION_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Were hatchling emergence track fan angles recorded?"),)
+
 
     class Meta:
         """Class options."""
