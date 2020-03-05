@@ -105,5 +105,7 @@ from wastd.observations.models import (  # noqa
 
 
 # TurtleNestEncounter
-[{"source": "odk", "source_id": "uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb", "reporter": 4, "observer": 4, "comments": "Device ID 2856338745efba86",
-    "where": "POINT (114.052963333333 -21.8359983333333)", "location_accuracy": "gps", "when": "2020-02-22 22:36:26", "nest_age": "fresh", "nest_type": "false-crawl", "species": "chelonia-mydas"}]
+# [{"source": "odk", "source_id": "uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb", "reporter": 4, "observer": 4, "comments": "Device ID 2856338745efba86",
+#     "where": "POINT (114.052963333333 -21.8359983333333)", "location_accuracy": "gps", "when": "2020-02-22 22:36:26", "nest_age": "fresh", "nest_type": "false-crawl", "species": "chelonia-mydas"}]
+
+# Florian to add expected test data for Ash
