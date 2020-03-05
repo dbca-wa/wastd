@@ -532,8 +532,6 @@ def update_consaction_caches(sender, instance, *args, **kwargs):
     instance.conservation_action.save()
 
 
-# -----------------------------------------------------------------------------
-# Conservation lists
 @python_2_unicode_compatible
 class ConservationList(models.Model):
     """A Conservation List like BCA, EPBC, RedList."""
@@ -1040,7 +1038,7 @@ class ConservationListing(RenderMixin, UrlsMixin, models.Model):
 
     def __str__(self):
         """The full name."""
-        return unicode(self.pk)
+        return self.pk
 
     # -------------------------------------------------------------------------
     # URLs
