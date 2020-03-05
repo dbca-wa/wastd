@@ -676,14 +676,20 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
     ) + EncounterAdmin.LAST_COLS
     list_select_related = True
     list_filter = EncounterAdmin.list_filter + (
-        'nest_age', 'nest_type', 'species', 'habitat', 'disturbance')
+        'nest_age', 'nest_type', 'species', 'habitat', 
+        'disturbance', 'nest_tagged', 'logger_found', 
+        'eggs_counted', 'hatchlings_measured', 'fan_angles_measured',
+)
     fieldsets = EncounterAdmin.fieldsets + (
         ('Nest',
             {
                 'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
                 'fields': (
-                    'nest_age', 'nest_type', 'species',
-                    'habitat', 'disturbance', 'comments')
+                    'nest_age', 'nest_type', 'species', 'habitat', 
+                    'disturbance', 
+                    # 'nest_tagged', 'logger_found', 'eggs_counted', 
+                    # 'hatchlings_measured', 'fan_angles_measured', 
+                    'comments')
             }
          ),
     )

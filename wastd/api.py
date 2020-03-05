@@ -868,6 +868,29 @@ class FastEncounterSerializer(GeoFeatureModelSerializer):
         id_field = "source_id"
 
 
+class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
+    """Encounter serializer with pk, source, source_id, where, when, status.
+
+    Use this serializer to retrieve a filtered set of Encounter ``source_id``
+    values to split data imports into create / update / skip.
+
+    @see https://github.com/dbca-wa/wastd/issues/253
+    """
+
+    class Meta:
+        """Class options.
+
+        The non-standard name `where` is declared as the geo field for the
+        GeoJSON serializer"s benefit.
+        """
+
+        model = Encounter
+        name = "encounter"
+        fields = ("pk", "where", "when", "status", "source", "source_id", )
+        geo_field = "where"
+        id_field = "source_id"
+
+
 class AnimalEncounterSerializer(EncounterSerializer):
     """AnimalEncounter serializer."""
 
@@ -1113,23 +1136,28 @@ class TurtleNestEncounterFilter(filters.FilterSet):
         model = TurtleNestEncounter
         fields = {
             "area": "__all__",
-            "encounter_type": "__all__",
-            "status": "__all__",
+            "encounter_type": ["iexact", "icontains"],
+            "status": ["iexact", "icontains"],
             "site": "__all__",
             "survey": "__all__",
-            "source": "__all__",
+            "source": ["iexact", "icontains"],
             "source_id": "__all__",
             "location_accuracy": "__all__",
             "when": "__all__",
             "name": "__all__",
             "observer": "__all__",
             "reporter": "__all__",
-            "nest_age": "__all__",
-            "nest_type": "__all__",
-            "species": "__all__",
-            "habitat": "__all__",
-            "disturbance": "__all__",
-            "comments": "__all__",
+            "nest_age": ["iexact", "icontains"],
+            "nest_type": ["iexact", "icontains"],
+            "species": ["iexact", "icontains"],
+            "habitat": ["iexact", "icontains"],
+            "disturbance": ["iexact", "icontains"],
+            'nest_tagged': ["iexact", "icontains"], 
+            'logger_found': ["iexact", "icontains"], 
+            'eggs_counted': ["iexact", "icontains"], 
+            'hatchlings_measured': ["iexact", "icontains"], 
+            'fan_angles_measured': ["iexact", "icontains"],
+            "comments": ["icontains"],
         }
 
 
@@ -1225,29 +1253,29 @@ class AnimalEncounterFilter(filters.FilterSet):
 
         model = AnimalEncounter
         fields = {
-            "encounter_type": "__all__",
-            "status": "__all__",
+            "encounter_type": ["iexact", "icontains"],
+            "status": ["iexact", "icontains"],
             "area": "__all__",
             "site": "__all__",
             "survey": "__all__",
-            "source": "__all__",
+            "source": ["iexact", "icontains"],
             "source_id": "__all__",
-            "location_accuracy": "__all__",
+            "location_accuracy": ["iexact", "icontains"],
             "when": "__all__",
             "name": "__all__",
             "observer": "__all__",
             "reporter": "__all__",
-            "taxon": "__all__",
-            "species": "__all__",
-            "health": "__all__",
-            "sex": "__all__",
-            "maturity": "__all__",
-            "habitat": "__all__",
-            "checked_for_injuries": "__all__",
-            "scanned_for_pit_tags": "__all__",
-            "checked_for_flipper_tags": "__all__",
-            "cause_of_death": "__all__",
-            "cause_of_death_confidence": "__all__",
+            "taxon": ["iexact", "icontains"],
+            "species": ["iexact", "icontains"],
+            "health": ["iexact", "icontains"],
+            "sex": ["iexact", "icontains"],
+            "maturity": ["iexact", "icontains"],
+            "habitat": ["iexact", "icontains"],
+            "checked_for_injuries": ["iexact", "icontains"],
+            "scanned_for_pit_tags": ["iexact", "icontains"],
+            "checked_for_flipper_tags": ["iexact", "icontains"],
+            "cause_of_death": ["iexact", "icontains"],
+            "cause_of_death_confidence": ["iexact", "icontains"],
         }
 
 
