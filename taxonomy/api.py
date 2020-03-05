@@ -9,8 +9,6 @@ from shared.api import (
     OgcFidBatchUpsertViewSet,
 )
 from taxonomy.models import (
-    Community,
-    Crossreference,
     HbvFamily,
     HbvGenus,
     HbvGroup,
@@ -22,6 +20,8 @@ from taxonomy.models import (
     HbvXref,
     Taxon,
     Vernacular,
+    Crossreference,
+    Community,
 )
 from taxonomy import serializers
 
@@ -32,8 +32,6 @@ class HbvNameFilter(FilterSet):
     """HbvName filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvName
         fields = {
             "rank_name": "__all__",
@@ -95,8 +93,6 @@ class HbvSupraFilter(FilterSet):
     """HbvSupra filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvSupra
         fields = {
             "ogc_fid": "__all__",
@@ -111,8 +107,6 @@ class HbvGroupFilter(FilterSet):
     """HbvGroup filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvGroup
         fields = {
             "ogc_fid": "__all__",
@@ -130,8 +124,6 @@ class HbvFamilyFilter(FilterSet):
     """HbvFamily filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvFamily
         fields = {
             "ogc_fid": "__all__",
@@ -166,8 +158,6 @@ class HbvGenusFilter(FilterSet):
     """HbvGenus filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvGenus
         fields = {
             "ogc_fid": "__all__",
@@ -195,8 +185,6 @@ class HbvSpeciesFilter(FilterSet):
     """HbvSpecies filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvSpecies
         fields = {
             "ogc_fid": "__all__",
@@ -238,8 +226,6 @@ class HbvVernacularFilter(FilterSet):
     """HbvVernacular filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvVernacular
         fields = {
             "ogc_fid": "__all__",
@@ -260,8 +246,6 @@ class HbvXrefFilter(FilterSet):
     """HbvXref filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvXref
         fields = {
             "ogc_fid": "__all__",
@@ -283,8 +267,6 @@ class HbvParentFilter(FilterSet):
     """HbvParent filter."""
 
     class Meta:
-        """Class opts."""
-
         model = HbvParent
         fields = {
             "ogc_fid": "__all__",
@@ -467,35 +449,6 @@ class HbvVernacularViewSet(OgcFidBatchUpsertViewSet):
     filter_class = HbvVernacularFilter
     model = HbvVernacular
     uid_fields = ("ogc_fid", )
-
-    # def create_one(self, data):
-    #     """POST: Create or update exactly one model instance.
-
-    #     Return RestResponse(data, status)
-    #     """
-    #     unique_data, update_data = self.split_data(data)
-
-    #     if data["name_id"] is None:
-    #         logger.warning("[API][create_one] Skipping invalid data with missing name_id: {0}".format(str(data)))
-    #         return RestResponse(data, status=status.HTTP_400_BAD_REQUEST)
-
-    #     logger.debug(
-    #         "[API][create_one] Creating/updating with unique fields {0}, data {1}".format(
-    #             str(unique_data), str(update_data)))
-    #     try:
-    #         obj, created = self.model.objects.get_or_create(**unique_data)
-    #         verb = "created" if created else "updated"
-    #         self.model.objects.filter(**unique_data).update(**update_data)
-    #         obj.save()  # to update caches
-    #         # if created:
-    #         logger.info("[API][create_one] {0} {1}: {2}".format(
-    #             verb, self.model._meta.verbose_name, str(unique_data)))
-    #         # else:
-    #         # logger.info("[API][create_one] {0} {1} ({2}): {3}".format(
-    #         # verb, self.model._meta.verbose_name, obj.pk, obj))
-    #         return RestResponse(data, status=status.HTTP_200_OK)
-    #     except:
-    #         logger.warning("[API][create_one] Failed with {0}".format(str(data)))
 
 
 router.register("vernaculars", HbvVernacularViewSet)

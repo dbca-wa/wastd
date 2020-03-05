@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-""".
-
+"""
 Taxonomy API tests
 ^^^^^^^^^^^^^^^^^^
 The API is the beer tap for data. This test suite makes sure the beer is fresh and cold.
@@ -22,23 +20,28 @@ This suite tests the following use cases:
 * Communities: An `external script <https://github.com/dbca-wa/scarab-scripts/blob/master/data_etl_tec.Rmd>`_
   loads a list of communities through the community API endpoint.
 """
-from __future__ import unicode_literals
-
-import json
-# from django.contrib.auth import get_user_model
-from django.conf import settings
-from django.contrib.auth import get_user_model  # noqa
+from django.contrib.auth import get_user_model
 from django.test import TestCase
-from django.template import Context, Template  # noqa
-from django.template.loader import get_template  # noqa
-from rest_framework.test import APIRequestFactory, force_authenticate
+from django.urls import reverse
 from rest_framework.test import APIClient
-from rest_framework.authtoken.models import Token
 
-# from model_mommy import mommy
-from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
+from taxonomy.models import (
+    HbvName,
+    HbvSupra,
+    HbvGroup,
+    HbvFamily,
+    HbvGenus,
+    HbvSpecies,
+    HbvVernacular,
+    HbvXref,
+    HbvParent,
+    Taxon,
+    Vernacular,
+    Crossreference,
+    Community,
+)
 
-from taxonomy import models as tax_models  # noqa
+User = get_user_model()
 
 
 class HbvAPITests(TestCase):
@@ -55,7 +58,76 @@ class HbvAPITests(TestCase):
         Data from the KMI GeoServer's views of WACensus data views is saved
         as a local JSON fixture for the purpose of testing.
         """
-        pass
+        self.client = APIClient()
+        self.user = User.objects.create_superuser('testuser', 'testuser@test.com', 'pass')
+        self.client.login(username='testuser', password='pass')
+        self.hbvname = HbvName.objects.create(name_id=0, name='Name')
+        self.hbvsupra = HbvSupra.objects.create(supra_code='plants', supra_name='Plants')
+        self.hbvgroup = HbvGroup.objects.create(name_id=0, name='Slime moulds')
+        self.hbvfamily = HbvFamily.objects.create(name_id=0, family_name='Familyaecae')
+        self.hbvgenus = HbvGenus.objects.create(name_id=0, genus='Genus')
+        self.hbvspecies = HbvSpecies.objects.create(name_id=0, species='species')
+        self.hbvvernacular = HbvVernacular.objects.create(ogc_fid=0, name_id=0, vernacular='Billy-bumbler')
+        self.hbvxref = HbvXref.objects.create(xref_id=0)
+        self.hbvparent = HbvParent.objects.create(name_id=0, class_id='AAA')
+        self.taxon = Taxon.objects.create(name_id=0, name='Test taxon')
+        self.vernacular = Vernacular.objects.create(ogc_fid=0, taxon=self.taxon, name='Spotted gum')
+        self.crossreference = Crossreference.objects.create(xref_id=0, predecessor=self.taxon)
+        self.community = Community.objects.create(code='Test community')
+
+    def test_get_list_endpoints(self):
+        for i in ['name', 'supra', 'group', 'family', 'genus', 'species', 'vernacular', 'xref', 'parent']:
+            url = reverse('taxonomy_api:hbv{}-list'.format(i))
+            resp = self.client.get(url, {'format': 'json'})
+            self.assertEqual(resp.status_code, 200)
+        for i in ['taxon_full', 'taxon_fast', 'vernacular', 'crossreference', 'community']:
+            url = reverse('taxonomy_api:{}-list'.format(i))
+            resp = self.client.get(url, {'format': 'json'})
+            self.assertEqual(resp.status_code, 200)
+
+    def test_get_detail_endpoints(self):
+        url = reverse('taxonomy_api:hbvname-detail', kwargs={'pk': self.hbvname.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:hbvsupra-detail', kwargs={'pk': self.hbvsupra.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:hbvgroup-detail', kwargs={'pk': self.hbvgroup.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:hbvfamily-detail', kwargs={'pk': self.hbvfamily.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:hbvgenus-detail', kwargs={'pk': self.hbvgenus.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:hbvspecies-detail', kwargs={'pk': self.hbvspecies.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:hbvvernacular-detail', kwargs={'pk': self.hbvvernacular.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:hbvxref-detail', kwargs={'pk': self.hbvxref.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:hbvparent-detail', kwargs={'pk': self.hbvparent.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:taxon_full-detail', kwargs={'pk': self.taxon.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:taxon_fast-detail', kwargs={'pk': self.taxon.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:vernacular-detail', kwargs={'pk': self.vernacular.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:crossreference-detail', kwargs={'pk': self.crossreference.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('taxonomy_api:community-detail', kwargs={'pk': self.community.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
 
     def create_hbv_models(self):
         """Test the API create views of Hbv* models.
@@ -68,7 +140,7 @@ class HbvAPITests(TestCase):
         """
         pass
 
-    def list_and_filter_hbv_models(self):
+    def filter_hbv_models(self):
         """Test the API list views and filters of Hbv* staging models.
 
         Applications:
@@ -77,10 +149,6 @@ class HbvAPITests(TestCase):
         * Filter the list of Hbv* staging models to identify problematic records.
         * Filter the list of Hbv* models to find specific records.
         """
-        pass
-
-    def view_hbv_models(self):
-        """Test the API detail views of Hbv* staging models."""
         pass
 
     def update_hbv_models(self):
@@ -117,8 +185,8 @@ class TaxonAPITests(TestCase):
         self.user.save()
 
         # Use data from text fixtures over constants from settings
-        self.animal_pk = tax_models.HbvSupra.objects.get(supra_code="ANIMALS").pk
-        self.plant_pk = tax_models.HbvSupra.objects.get(supra_code="PLANTS").pk
+        self.animal_pk = HbvSupra.objects.get(supra_code="ANIMALS").pk
+        self.plant_pk = HbvSupra.objects.get(supra_code="PLANTS").pk
 
         self.client = APIClient()
         # Option 1: use Token authentication
@@ -134,7 +202,7 @@ class TaxonAPITests(TestCase):
         * Provide a list of taxonomic names to external services.
         * Provide full detail or cut down, fast subsets.
         """
-        
+
         taxon_list = self.client.get("/api/1/taxon/")
         self.assertEqual(taxon_list.status_code, 200)
         # taxon list is a featurecollection
@@ -151,18 +219,18 @@ class TaxonAPITests(TestCase):
         * No taxon must contain paraphyletic group settings.PLANTS_PK (e.g. 21).
         """
         animal_list = self.client.get("/api/1/taxon/?paraphyletic_groups={0}".format(self.animal_pk))
-        
+
         # Smoke test
         self.assertEqual(animal_list.status_code, 200)
-        
+
         # Each taxon must contain paraphyletic group settings.ANIMALS_PK
         self.assertEqual(
-            set([self.animal_pk in x["paraphyletic_groups"] for x in animal_list.data["features"]]), 
+            set([self.animal_pk in x["paraphyletic_groups"] for x in animal_list.data["features"]]),
             {True}
         )
         # No taxon must contain paraphyletic group settings.PLANTS_PK
         self.assertEqual(
-            set([self.plant_pk in x["paraphyletic_groups"] for x in animal_list.data["features"]]), 
+            set([self.plant_pk in x["paraphyletic_groups"] for x in animal_list.data["features"]]),
             {False}
         )
 
@@ -179,19 +247,18 @@ class TaxonAPITests(TestCase):
 
         # Smoke test
         self.assertEqual(plant_list.status_code, 200)
-        
+
         # No taxon must contain paraphyletic group settings.ANIMALS_PK
         self.assertEqual(
-            set([self.animal_pk in x["paraphyletic_groups"] for x in plant_list.data["features"]]), 
+            set([self.animal_pk in x["paraphyletic_groups"] for x in plant_list.data["features"]]),
             {False}
         )
-        
+
         # Each taxon must contain paraphyletic group settings.PLANTS_PK
         self.assertEqual(
-            set([self.plant_pk in x["paraphyletic_groups"] for x in plant_list.data["features"]]), 
+            set([self.plant_pk in x["paraphyletic_groups"] for x in plant_list.data["features"]]),
             {True}
         )
-
 
     def test_taxon_with_conservation_status(self):
         """Test publishing the conservation status of taxa to other services e.g. WACensus.
