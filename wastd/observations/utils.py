@@ -2501,8 +2501,11 @@ def make_mapping():
         "disturbance": yes_no,
         "nesting": yes_no,
 
-        "overwrite": [t.source_id for t in Encounter.objects.filter(
-            source="odk", status=Encounter.STATUS_NEW)]
+        "overwrite": [t["source_id"] for t in 
+        Encounter.objects.filter(
+            source="odk", 
+            status=Encounter.STATUS_NEW
+        ).values('source_id')]
     }
 
 
