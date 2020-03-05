@@ -20,6 +20,7 @@ from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
 from graphene_django.views import GraphQLView
 
+from conservation.api import router as conservation_router
 from occurrence.models import CommunityAreaEncounter
 from occurrence.api import router as occurrence_router
 from wastd.api import router as wastd_router
@@ -57,6 +58,7 @@ urlpatterns = [
     re_path(r'^api/1/swagger/$', wastd_views.schema_view, name="api-docs"),
     re_path(r'^api/1/docs/', include_docs_urls(title='API')),
     re_path(r'^api/1/', include((wastd_router.urls, 'api'), namespace="api")),
+    re_path(r'^api/1/', include((conservation_router.urls, 'conservation'), namespace='conservation_api')),
     re_path(r'^api/1/', include((occurrence_router.urls, 'occurrence'), namespace='occurrence_api')),
     re_path(r'^api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
     re_path(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),

@@ -1040,7 +1040,7 @@ class ConservationListing(RenderMixin, UrlsMixin, models.Model):
 
     def __str__(self):
         """The full name."""
-        return unicode(self.pk)
+        return self.pk
 
     # -------------------------------------------------------------------------
     # URLs
