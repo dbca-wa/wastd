@@ -14,3 +14,17 @@ body{
     background-size: cover;
     /*font-family: 'Open Sans',Arial,Helvetica,Sans-Serif;*/
 }
+
+#grp-context-navigation {background: #eeeeee50;}
+#grp-breadcrumbs > ul > li > a {color: black;}
+.grp-changelist-results {background: none !important;} 
+.grp-module {border: none; background: none;}
+.grp-pagination > ul > li > a {
+    color: black;
+    background-image: linear-gradient(#eeeeee,#e0e0e0);
+}
+.grp-pagination > ul > li > span.this-page {
+    color: black;
+    font-size: 1.2em;
+    background-image: linear-gradient(#eeeeee,#e0e0e0);
+}
