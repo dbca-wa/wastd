@@ -1,5 +1,4 @@
 from django.apps import apps
-from rest_framework.routers import DefaultRouter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_filters import FilterSet
 
@@ -37,8 +36,6 @@ from occurrence.models import (
     ObservationGroup,
 )
 
-router = DefaultRouter()
-
 
 class OccurrenceAreaEncounterFilter(FilterSet):
     """Occurrence AreaEncounter filter.
@@ -71,11 +68,6 @@ class OccurrenceAreaPolyViewSet(BatchUpsertViewSet):
 class OccurrenceAreaPointViewSet(OccurrenceAreaPolyViewSet):
     """Occurrence Area Point view set."""
     serializer_class = serializers.OccurrenceAreaEncounterPointSerializer
-
-
-# Without basename, the last registered viewset overrides the other area viewsets
-router.register(r"occ-areas", OccurrenceAreaPolyViewSet, basename="occurrence_area_polys")
-router.register(r"occ-area-points", OccurrenceAreaPointViewSet, basename="occurrence_area_points")
 
 
 class OccurrenceTaxonAreaEncounterFilter(FilterSet):
@@ -119,11 +111,6 @@ class OccurrenceTaxonAreaEncounterPointViewSet(OccurrenceTaxonAreaEncounterPolyV
     """TaxonEncounter point view set.
     """
     serializer_class = serializers.OccurrenceTaxonAreaEncounterPointSerializer
-
-
-# Without basename, the last registered viewset overrides the other area viewsets
-router.register(r"occ-taxon-areas", OccurrenceTaxonAreaEncounterPolyViewSet, basename="occurrence_taxonarea_polys")
-router.register(r"occ-taxon-points", OccurrenceTaxonAreaEncounterPointViewSet, basename="occurrence_taxonarea_points")
 
 
 class OccurrenceCommunityAreaEncounterFilter(FilterSet):
@@ -171,11 +158,6 @@ class OccurrenceCommunityAreaEncounterPointViewSet(OccurrenceCommunityAreaEncoun
     serializer_class = serializers.OccurrenceCommunityAreaEncounterPointSerializer
 
 
-# Without basename, the last registered viewset overrides the other area viewsets
-router.register(r"occ-community-areas", OccurrenceCommunityAreaEncounterPolyViewSet, basename="occurrence_communityarea_polys")
-router.register(r"occ-community-points", OccurrenceCommunityAreaEncounterPointViewSet, basename="occurrence_communityarea_points")
-
-
 class LandformViewSet(BatchUpsertViewSet):
     """View set for Landform.
     """
@@ -183,9 +165,6 @@ class LandformViewSet(BatchUpsertViewSet):
     queryset = Landform.objects.all()
     serializer_class = serializers.LandformSerializer
     uid_fields = ("pk",)
-
-
-router.register("lookup-landform", LandformViewSet)
 
 
 class RockTypeViewSet(BatchUpsertViewSet):
@@ -197,9 +176,6 @@ class RockTypeViewSet(BatchUpsertViewSet):
     model = RockType
 
 
-router.register("lookup-rocktype", RockTypeViewSet)
-
-
 class SoilTypeViewSet(BatchUpsertViewSet):
     """View set for SoilType."""
 
@@ -207,9 +183,6 @@ class SoilTypeViewSet(BatchUpsertViewSet):
     serializer_class = serializers.SoilTypeSerializer
     uid_fields = ("pk",)
     model = SoilType
-
-
-router.register("lookup-soiltype", SoilTypeViewSet)
 
 
 class SoilColourViewSet(BatchUpsertViewSet):
@@ -221,9 +194,6 @@ class SoilColourViewSet(BatchUpsertViewSet):
     model = SoilColour
 
 
-router.register("lookup-soilcolour", SoilColourViewSet)
-
-
 class DrainageViewSet(BatchUpsertViewSet):
     """View set for Drainage."""
 
@@ -231,9 +201,6 @@ class DrainageViewSet(BatchUpsertViewSet):
     serializer_class = serializers.DrainageSerializer
     uid_fields = ("pk",)
     model = Drainage
-
-
-router.register("lookup-drainage", DrainageViewSet)
 
 
 class SurveyMethodViewSet(BatchUpsertViewSet):
@@ -245,9 +212,6 @@ class SurveyMethodViewSet(BatchUpsertViewSet):
     model = SurveyMethod
 
 
-router.register("lookup-surveymethod", SurveyMethodViewSet)
-
-
 class SoilConditionViewSet(BatchUpsertViewSet):
     """View set for SoilCondition."""
 
@@ -255,9 +219,6 @@ class SoilConditionViewSet(BatchUpsertViewSet):
     serializer_class = serializers.SoilConditionSerializer
     uid_fields = ("pk",)
     model = SoilCondition
-
-
-router.register("lookup-soilcondition", SoilConditionViewSet)
 
 
 class CountAccuracyViewSet(BatchUpsertViewSet):
@@ -269,9 +230,6 @@ class CountAccuracyViewSet(BatchUpsertViewSet):
     model = CountAccuracy
 
 
-router.register("lookup-countaccuracy", CountAccuracyViewSet)
-
-
 class CountMethodViewSet(BatchUpsertViewSet):
     """View set for CountMethod."""
 
@@ -279,9 +237,6 @@ class CountMethodViewSet(BatchUpsertViewSet):
     serializer_class = serializers.CountMethodSerializer
     uid_fields = ("pk",)
     model = CountMethod
-
-
-router.register("lookup-countmethod", CountMethodViewSet)
 
 
 class CountSubjectViewSet(BatchUpsertViewSet):
@@ -293,9 +248,6 @@ class CountSubjectViewSet(BatchUpsertViewSet):
     model = CountSubject
 
 
-router.register("lookup-countsubject", CountSubjectViewSet)
-
-
 class PlantConditionViewSet(BatchUpsertViewSet):
     """View set for PlantCondition."""
 
@@ -303,9 +255,6 @@ class PlantConditionViewSet(BatchUpsertViewSet):
     serializer_class = serializers.PlantConditionSerializer
     uid_fields = ("pk",)
     model = PlantCondition
-
-
-router.register("lookup-plantcondition", PlantConditionViewSet)
 
 
 class DetectionMethodViewSet(BatchUpsertViewSet):
@@ -317,9 +266,6 @@ class DetectionMethodViewSet(BatchUpsertViewSet):
     model = DetectionMethod
 
 
-router.register("lookup-detectionmethod", DetectionMethodViewSet)
-
-
 class ConfidenceViewSet(BatchUpsertViewSet):
     """View set for Confidence."""
 
@@ -327,9 +273,6 @@ class ConfidenceViewSet(BatchUpsertViewSet):
     serializer_class = serializers.ConfidenceSerializer
     uid_fields = ("pk",)
     model = Confidence
-
-
-router.register("lookup-confidence", ConfidenceViewSet)
 
 
 class ReproductiveMaturityViewSet(BatchUpsertViewSet):
@@ -341,9 +284,6 @@ class ReproductiveMaturityViewSet(BatchUpsertViewSet):
     model = ReproductiveMaturity
 
 
-router.register("lookup-reproductivematurity", ReproductiveMaturityViewSet)
-
-
 class AnimalHealthViewSet(BatchUpsertViewSet):
     """View set for Drainage."""
 
@@ -351,9 +291,6 @@ class AnimalHealthViewSet(BatchUpsertViewSet):
     serializer_class = serializers.AnimalHealthSerializer
     uid_fields = ("pk",)
     model = AnimalHealth
-
-
-router.register("lookup-animalhealth", AnimalHealthViewSet)
 
 
 class AnimalSexViewSet(BatchUpsertViewSet):
@@ -365,9 +302,6 @@ class AnimalSexViewSet(BatchUpsertViewSet):
     model = AnimalSex
 
 
-router.register("lookup-animalsex", AnimalSexViewSet)
-
-
 class CauseOfDeathViewSet(BatchUpsertViewSet):
     """View set for CauseOfDeath."""
 
@@ -375,9 +309,6 @@ class CauseOfDeathViewSet(BatchUpsertViewSet):
     serializer_class = serializers.CauseOfDeathSerializer
     uid_fields = ("pk",)
     model = CauseOfDeath
-
-
-router.register("lookup-causeofdeath", CauseOfDeathViewSet)
 
 
 class SecondarySignsViewSet(BatchUpsertViewSet):
@@ -389,9 +320,6 @@ class SecondarySignsViewSet(BatchUpsertViewSet):
     model = SecondarySigns
 
 
-router.register("lookup-secondarysigns", SecondarySignsViewSet)
-
-
 class SampleTypeViewSet(BatchUpsertViewSet):
     """View set for SampleType."""
 
@@ -399,9 +327,6 @@ class SampleTypeViewSet(BatchUpsertViewSet):
     serializer_class = serializers.SampleTypeSerializer
     uid_fields = ("pk",)
     model = SampleType
-
-
-router.register("lookup-sampletype", SampleTypeViewSet)
 
 
 class SampleDestinationViewSet(BatchUpsertViewSet):
@@ -413,9 +338,6 @@ class SampleDestinationViewSet(BatchUpsertViewSet):
     model = SampleDestination
 
 
-router.register("lookup-sampledestination", SampleDestinationViewSet)
-
-
 class PermitTypeViewSet(BatchUpsertViewSet):
     """View set for PermitType."""
 
@@ -423,9 +345,6 @@ class PermitTypeViewSet(BatchUpsertViewSet):
     serializer_class = serializers.PermitTypeSerializer
     uid_fields = ("pk",)
     model = PermitType
-
-
-router.register("lookup-permittype", PermitTypeViewSet)
 
 
 class ObservationGroupViewSet(ModelViewSet):
@@ -456,6 +375,3 @@ class ObservationGroupViewSet(ModelViewSet):
             return apps.get_model("occurrence", model_name).objects.all()
         else:
             return ObservationGroup.objects.all()
-
-
-router.register("occ-observation", ObservationGroupViewSet, basename="occurrence_observation_group")

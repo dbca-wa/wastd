@@ -55,23 +55,23 @@ class ObservationGroupSerializerTests(TestCase):
             'taxonconservationlisting',
             'communityconservationlisting',
         ]:
-            url = reverse('conservation_api:{}-list'.format(i))
+            url = reverse('api:{}-list'.format(i))
             resp = self.client.get(url, {'format': 'json'})
             self.assertEqual(resp.status_code, 200)
 
     def test_get_detail_endpoints(self):
-        url = reverse('conservation_api:conservationlist-detail', kwargs={'pk': self.clist.pk})
+        url = reverse('api:conservationlist-detail', kwargs={'pk': self.clist.pk})
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)
-        url = reverse('conservation_api:conservationcategory-detail', kwargs={'pk': self.ccategory.pk})
+        url = reverse('api:conservationcategory-detail', kwargs={'pk': self.ccategory.pk})
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)
-        url = reverse('conservation_api:conservationcriterion-detail', kwargs={'pk': self.ccriterion.pk})
+        url = reverse('api:conservationcriterion-detail', kwargs={'pk': self.ccriterion.pk})
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)
-        url = reverse('conservation_api:taxonconservationlisting-detail', kwargs={'pk': self.taxon_listing.pk})
+        url = reverse('api:taxonconservationlisting-detail', kwargs={'pk': self.taxon_listing.pk})
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)
-        url = reverse('conservation_api:communityconservationlisting-detail', kwargs={'pk': self.ccl.pk})
+        url = reverse('api:communityconservationlisting-detail', kwargs={'pk': self.ccl.pk})
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)

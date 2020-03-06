@@ -1,7 +1,6 @@
 from django_filters.rest_framework import BooleanFilter
 from rest_framework_filters import FilterSet, RelatedFilter
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.routers import DefaultRouter
 
 from shared.api import (
     BatchUpsertViewSet,
@@ -24,8 +23,6 @@ from taxonomy.models import (
     Community,
 )
 from taxonomy import serializers
-
-router = DefaultRouter()
 
 
 class HbvNameFilter(FilterSet):
@@ -361,9 +358,6 @@ class HbvNameViewSet(NameIDBatchUpsertViewSet):
     uid_fields = ("name_id",)
 
 
-router.register("names", HbvNameViewSet)
-
-
 class HbvSupraViewSet(BatchUpsertViewSet):
     """View set for HbvSupra. See HBV Names for details and usage examples."""
 
@@ -386,9 +380,6 @@ class HbvSupraViewSet(BatchUpsertViewSet):
         return qs.values("pk", "supra_code", )
 
 
-router.register("supra", HbvSupraViewSet)
-
-
 class HbvGroupViewSet(NameIDBatchUpsertViewSet):
     """View set for HbvGroup.See HBV Names for details and usage examples."""
 
@@ -397,9 +388,6 @@ class HbvGroupViewSet(NameIDBatchUpsertViewSet):
     filterset_class = HbvGroupFilter
     model = HbvGroup
     uid_fields = ("name_id",)
-
-
-router.register("groups", HbvGroupViewSet)
 
 
 class HbvFamilyViewSet(NameIDBatchUpsertViewSet):
@@ -412,9 +400,6 @@ class HbvFamilyViewSet(NameIDBatchUpsertViewSet):
     uid_fields = ("name_id",)
 
 
-router.register("families", HbvFamilyViewSet)
-
-
 class HbvGenusViewSet(NameIDBatchUpsertViewSet):
     """View set for HbvGenus. See HBV Names for details and usage examples."""
 
@@ -423,9 +408,6 @@ class HbvGenusViewSet(NameIDBatchUpsertViewSet):
     filterset_class = HbvGenusFilter
     model = HbvGenus
     uid_fields = ("name_id",)
-
-
-router.register("genera", HbvGenusViewSet)
 
 
 class HbvSpeciesViewSet(NameIDBatchUpsertViewSet):
@@ -438,9 +420,6 @@ class HbvSpeciesViewSet(NameIDBatchUpsertViewSet):
     uid_fields = ("name_id",)
 
 
-router.register("species", HbvSpeciesViewSet)
-
-
 class HbvVernacularViewSet(OgcFidBatchUpsertViewSet):
     """View set for HbvVernacular. See HBV Names for details and usage examples."""
 
@@ -449,9 +428,6 @@ class HbvVernacularViewSet(OgcFidBatchUpsertViewSet):
     filterset_class = HbvVernacularFilter
     model = HbvVernacular
     uid_fields = ("ogc_fid", )
-
-
-router.register("vernaculars", HbvVernacularViewSet)
 
 
 class HbvXrefViewSet(BatchUpsertViewSet):
@@ -470,9 +446,6 @@ class HbvXrefViewSet(BatchUpsertViewSet):
         ).values("pk", "xref_id")
 
 
-router.register("xrefs", HbvXrefViewSet)
-
-
 class HbvParentViewSet(OgcFidBatchUpsertViewSet):
     """View set for HbvParent. See HBV Names for details and usage examples."""
 
@@ -481,9 +454,6 @@ class HbvParentViewSet(OgcFidBatchUpsertViewSet):
     filterset_class = HbvParentFilter
     model = HbvParent
     uid_fields = ("ogc_fid", )
-
-
-router.register("parents", HbvParentViewSet)
 
 
 class TaxonFilter(FilterSet):
@@ -541,16 +511,10 @@ class TaxonViewSet(NameIDBatchUpsertViewSet):
     uid_fields = ("name_id", )
 
 
-router.register("taxon", TaxonViewSet, basename="taxon_full")
-
-
 class FastTaxonViewSet(TaxonViewSet):
     """Fast View set for Taxon."""
 
     serializer_class = serializers.FastTaxonSerializer
-
-
-router.register("taxon-fast", FastTaxonViewSet, basename="taxon_fast")
 
 
 class VernacularFilter(FilterSet):
@@ -581,9 +545,6 @@ class VernacularViewSet(OgcFidBatchUpsertViewSet):
     filterset_class = VernacularFilter
     model = Vernacular
     uid_fields = ("ogc_fid", )
-
-
-router.register("vernacular", VernacularViewSet)
 
 
 class CrossreferenceFilter(FilterSet):
@@ -659,9 +620,6 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
         ).values("pk", "xref_id")
 
 
-router.register("crossreference", CrossreferenceViewSet)
-
-
 class CommunityFilter(FilterSet):
     """Community filter."""
 
@@ -699,6 +657,3 @@ class CommunityViewSet(BatchUpsertViewSet):
         return model.objects.filter(
             code__in=list(set([x["code"] for x in new_records]))
         ).values("pk", "code")
-
-
-router.register("community", CommunityViewSet)

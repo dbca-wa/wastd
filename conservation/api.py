@@ -1,7 +1,6 @@
 import logging
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.routers import DefaultRouter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_filters import FilterSet
 
@@ -26,7 +25,6 @@ from conservation.serializers import (
 from taxonomy.models import Community, Taxon
 
 logger = logging.getLogger(__name__)
-router = DefaultRouter()
 
 
 class CommunityConservationListingFilter(FilterSet):
@@ -143,9 +141,6 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         return Response([], status=status.HTTP_200_OK)
 
 
-router.register("community-conservationlisting", CommunityConservationListingViewSet)
-
-
 class ConservationCategoryFilter(FilterSet):
     """ConservationCategory filter."""
 
@@ -170,9 +165,6 @@ class ConservationCategoryViewSet(BatchUpsertViewSet):
     queryset = ConservationCategory.objects.all()
     serializer_class = ConservationCategorySerializer
     filterset_class = ConservationCategoryFilter
-
-
-router.register("conservationcategory", ConservationCategoryViewSet)
 
 
 class ConservationCriterionFilter(FilterSet):
@@ -207,9 +199,6 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
             conservation_list__in=list(set([x["conservation_list"] for x in new_records])),
             code__in=list(set([x["code"] for x in new_records]))
         ).values("pk", "code", "conservation_list")
-
-
-router.register("conservationcriterion", ConservationCriterionViewSet)
 
 
 class ConservationListFilter(FilterSet):
@@ -289,9 +278,6 @@ class ConservationListViewSet(ModelViewSet):
             return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-router.register("conservationlist", ConservationListViewSet)
-
-
 class DocumentFilter(FilterSet):
 
     class Meta:
@@ -316,9 +302,6 @@ class DocumentViewSet(BatchUpsertViewSet):
     serializer_class = DocumentSerializer
     filterset_class = DocumentFilter
     uid_fields = ("source", "source_id")
-
-
-router.register("document", DocumentViewSet)
 
 
 # ----------------------------------------------------------------------------#
@@ -445,6 +428,3 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
             # The slow way:
             res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
         return Response([], status=status.HTTP_200_OK)
-
-
-router.register("taxon-conservationlisting", TaxonConservationListingViewSet)

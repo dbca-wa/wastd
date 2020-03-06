@@ -1,5 +1,4 @@
 from django_filters.rest_framework import DateFilter
-from rest_framework.routers import DefaultRouter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_filters import FilterSet
 
@@ -29,8 +28,6 @@ try:
 except BaseException:
     # Docker image build migrate falls over this import
     pass
-
-router = DefaultRouter()
 
 
 class AreaFilter(FilterSet):
@@ -70,9 +67,6 @@ class AreaViewSet(ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
-router.register(r"area", AreaViewSet)
-
-
 class SurveyFilter(FilterSet):
     """Survey Filter. All filter methods available on all fields except location and team.
 
@@ -109,9 +103,6 @@ class SurveyViewSet(ModelViewSet):
     serializer_class = serializers.SurveySerializer
     filter_class = SurveyFilter
     pagination_class = MyGeoJsonPagination  # provides top level features
-
-
-router.register("surveys", SurveyViewSet)
 
 
 class EncounterFilter(FilterSet):
@@ -251,13 +242,13 @@ class EncounterViewSet(ModelViewSet):
     # location_accuracy
 
     * [/api/1/encounters/?location_accuracy=10](/api/1/encounters/?location_accuracy=10) (captured via GPS)
-    * [/api/1/encounters/?location_accuracy=10](/api/1/encounters/?location_accuracy=10) (captured as site name)
+    * [/api/1/encounters/?location_accuracy=1000](/api/1/encounters/?location_accuracy=1000) (captured as site name)
     * [/api/1/encounters/?location_accuracy=10000](/api/1/encounters/?location_accuracy=10000) (rough guess)
 
     # observer and reporter
 
     * [/api/1/encounters/?observer=100](/api/1/encounters/?observer=100) Observer with ID 100
-    * [/api/1/encounters/?observer=100](/api/1/encounters/?reporter=100) Reporter with ID 100
+    * [/api/1/encounters/?reporter=100](/api/1/encounters/?reporter=100) Reporter with ID 100
     """
 
     latex_name = "latex/encounter.tex"
@@ -583,20 +574,3 @@ class LightSourceObservationEncounterViewSet(ModelViewSet):
     serializer_class = serializers.LightSourceObservationEncounterSerializer
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
     pagination_class = MyGeoJsonPagination
-
-
-router.register(r"encounters", EncounterViewSet)
-router.register(r"animal-encounters", AnimalEncounterViewSet)
-router.register(r"turtle-nest-encounters", TurtleNestEncounterViewSet)
-router.register(r"logger-encounters", LoggerEncounterViewSet)
-router.register(r"observations", ObservationViewSet)
-router.register(r"media-attachments", MediaAttachmentViewSet)
-router.register(r"tag-observations", TagObservationViewSet)
-router.register(r"turtle-morphometrics", TurtleMorphometricObservationViewSet)
-router.register(r"turtle-nest-tag-observations", NestTagObservationViewSet)
-router.register(r"turtle-nest-disturbance-observations", TurtleNestDisturbanceObservationEncounterViewSet)
-router.register(r"turtle-nest-excavations", TurtleNestObservationViewSet)
-router.register(r"turtle-nest-hatchling-morphometrics", HatchlingMorphometricObservationEncounterViewSet)
-router.register(r"turtle-nest-hatchling-emergences", TurtleHatchlingEmergenceObservationEncounterViewSet)
-router.register(r"turtle-nest-hatchling-emergence-outliers", TurtleHatchlingEmergenceOutlierObservationEncounterViewSet)
-router.register(r"turtle-nest-hatchling-emergence-light-sources", LightSourceObservationEncounterViewSet)

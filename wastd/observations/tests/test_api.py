@@ -123,17 +123,17 @@ class ObservationSerializerTests(TestCase):
         self.client.login(username='testuser', password='pass')
 
     def test_get_list_endpoints(self):
-        url = reverse('observations_api:encounter-list')
+        url = reverse('api:encounter-list')
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)
-        url = reverse('observations_api:turtlenestencounter-list')
+        url = reverse('api:turtlenestencounter-list')
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)
 
     def test_post_encounter(self):
         """Test the POST endpoint for Encounter
         """
-        url = reverse('observations_api:encounter-list')
+        url = reverse('api:encounter-list')
         resp = self.client.post(
             url,
             {
@@ -150,7 +150,7 @@ class ObservationSerializerTests(TestCase):
     def test_post_turtlenestencounter(self):
         """Test the POST endpoint for TurtleNestEncounter
         """
-        url = reverse('observations_api:turtlenestencounter-list')
+        url = reverse('api:turtlenestencounter-list')
         resp = self.client.post(
             url,
             {
