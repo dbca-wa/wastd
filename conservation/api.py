@@ -55,7 +55,7 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
     model = CommunityConservationListing
     queryset = CommunityConservationListing.objects.all().select_related("community")
     serializer_class = CommunityConservationListingSerializer
-    filter_class = CommunityConservationListingFilter
+    filterset_class = CommunityConservationListingFilter
     uid_fields = ("source", "source_id")
 
     def resolve_fks(self, data):
@@ -169,7 +169,7 @@ class ConservationCategoryViewSet(BatchUpsertViewSet):
 
     queryset = ConservationCategory.objects.all()
     serializer_class = ConservationCategorySerializer
-    filter_class = ConservationCategoryFilter
+    filterset_class = ConservationCategoryFilter
 
 
 router.register("conservationcategory", ConservationCategoryViewSet)
@@ -193,7 +193,7 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
     model = ConservationCriterion
     queryset = ConservationCriterion.objects.all()
     serializer_class = ConservationCriterionSerializer
-    filter_class = ConservationCriterionFilter
+    filterset_class = ConservationCriterionFilter
     uid_fields = ("code", )
 
     def build_unique_fields(self, data):
@@ -235,7 +235,7 @@ class ConservationListViewSet(ModelViewSet):
     model = ConservationList
     queryset = ConservationList.objects.all()
     serializer_class = ConservationListSerializer
-    filter_class = ConservationListFilter
+    filterset_class = ConservationListFilter
     pagination_class = MyGeoJsonPagination
     uid_field = "code"
     uid_fields = ("code", )
@@ -314,7 +314,7 @@ class DocumentViewSet(BatchUpsertViewSet):
     model = Document
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
-    filter_class = DocumentFilter
+    filterset_class = DocumentFilter
     uid_fields = ("source", "source_id")
 
 
@@ -357,7 +357,7 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 
     queryset = TaxonConservationListing.objects.all().select_related("taxon")
     serializer_class = TaxonConservationListingSerializer
-    filter_class = TaxonConservationListingFilter
+    filterset_class = TaxonConservationListingFilter
     uid_fields = ("source", "source_id")
     model = TaxonConservationListing
 
