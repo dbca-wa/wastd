@@ -590,7 +590,7 @@ NEST_DAMAGE_CHOICES = (
 )
 
 TIME_ESTIMATE_CHOICES = (
-    (NA_VALUE, "NA"),    
+    (NA_VALUE, "NA"),
     ("same-night", "Sometime that night"),
     ("plusminus-2h", "Plusminus 2h of estimate"),
     ("plusminus-30m", "Correct to the hour")
@@ -1936,7 +1936,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
             return [enc.name
                     for enc in self.related_encounters
                     if enc.is_new_capture][0]
-        except:
+        except BaseException:
             return None
 
     def set_name_in_related_encounters(self, name):
@@ -2080,7 +2080,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
                 self.observation_set.instance_of(
                     MediaAttachment).filter(
                         mediaattachment__media_type="photograph"))
-        except:
+        except BaseException:
             return None
 
     # FSM transitions --------------------------------------------------------#
@@ -2541,7 +2541,6 @@ class TurtleNestEncounter(Encounter):
         default=NA_VALUE,
         help_text=_("Were hatchling emergence track fan angles recorded?"),)
 
-
     class Meta:
         """Class options."""
         verbose_name = "Turtle Nest Encounter"
@@ -2890,7 +2889,7 @@ class MediaAttachment(Observation):
         """The path to attached file."""
         try:
             fpath = force_text(self.attachment.file)
-        except:
+        except BaseException:
             fpath = None
         return fpath
 
@@ -3773,7 +3772,6 @@ class PathToSea(models.Model):
         return self.label
 
 
-
 @python_2_unicode_compatible
 class TurtleHatchlingEmergenceObservation(Observation):
     """Turtle hatchling emergence observation.
@@ -3872,7 +3870,7 @@ class TurtleHatchlingEmergenceObservation(Observation):
         choices=OBSERVATION_CHOICES,
         default=NA_VALUE,
         help_text=_(""),)
-    
+
     hatchling_path_to_sea = models.ManyToManyField(
         PathToSea,
         blank=True,
@@ -3888,9 +3886,9 @@ class TurtleHatchlingEmergenceObservation(Observation):
         verbose_name=_("Hatchling emergence time known"),
         choices=((NA_VALUE, "NA"), ("yes", "Yes"), ("no", "No"),),
         default=NA_VALUE,
-        help_text=_("."),) # yes no
+        help_text=_("."),)  # yes no
 
-    cloud_cover_at_emergence_known  = models.CharField(
+    cloud_cover_at_emergence_known = models.CharField(
         max_length=300,
         verbose_name=_("Cloud cover at emergence known"),
         choices=((NA_VALUE, "NA"), ("yes", "Yes"), ("no", "No"),),
@@ -3939,7 +3937,7 @@ class TurtleHatchlingEmergenceObservation(Observation):
 @python_2_unicode_compatible
 class LightSourceObservation(Observation):
     """
-    Dict of one or list of many 
+    Dict of one or list of many
     {
       "light_source_photo": null,
       "light_bearing_manual": "50.0000000000",
@@ -3963,7 +3961,6 @@ class LightSourceObservation(Observation):
         verbose_name=_("Comments"),
         blank=True, null=True,
         help_text=_("Any other comments or notes."),)
-
 
     def __str__(self):
         """The full name."""
@@ -3991,7 +3988,7 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
         blank=True, null=True,
         help_text=_("Aim at track 5m from nest or high water mark. Bearing captured with handheld compass."),)
 
-    outlier_group_size= models.PositiveIntegerField(
+    outlier_group_size = models.PositiveIntegerField(
         verbose_name=_("Number of tracks in outlier group"),
         blank=True, null=True,
         help_text=_(""),)
