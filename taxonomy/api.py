@@ -356,7 +356,7 @@ class HbvNameViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvName.objects.all()
     serializer_class = serializers.HbvNameSerializer
-    filter_class = HbvNameFilter
+    filterset_class = HbvNameFilter
     model = HbvName
     uid_fields = ("name_id",)
 
@@ -369,7 +369,7 @@ class HbvSupraViewSet(BatchUpsertViewSet):
 
     queryset = HbvSupra.objects.all()
     serializer_class = serializers.HbvSupraSerializer
-    filter_class = HbvSupraFilter
+    filterset_class = HbvSupraFilter
     model = HbvSupra
     uid_fields = ("supra_code", )
 
@@ -394,7 +394,7 @@ class HbvGroupViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvGroup.objects.all()
     serializer_class = serializers.HbvGroupSerializer
-    filter_class = HbvGroupFilter
+    filterset_class = HbvGroupFilter
     model = HbvGroup
     uid_fields = ("name_id",)
 
@@ -407,7 +407,7 @@ class HbvFamilyViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvFamily.objects.all()
     serializer_class = serializers.HbvFamilySerializer
-    filter_class = HbvFamilyFilter
+    filterset_class = HbvFamilyFilter
     model = HbvFamily
     uid_fields = ("name_id",)
 
@@ -420,7 +420,7 @@ class HbvGenusViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvGenus.objects.all()
     serializer_class = serializers.HbvGenusSerializer
-    filter_class = HbvGenusFilter
+    filterset_class = HbvGenusFilter
     model = HbvGenus
     uid_fields = ("name_id",)
 
@@ -433,7 +433,7 @@ class HbvSpeciesViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvSpecies.objects.all()
     serializer_class = serializers.HbvSpeciesSerializer
-    filter_class = HbvSpeciesFilter
+    filterset_class = HbvSpeciesFilter
     model = HbvSpecies
     uid_fields = ("name_id",)
 
@@ -446,7 +446,7 @@ class HbvVernacularViewSet(OgcFidBatchUpsertViewSet):
 
     queryset = HbvVernacular.objects.all()
     serializer_class = serializers.HbvVernacularSerializer
-    filter_class = HbvVernacularFilter
+    filterset_class = HbvVernacularFilter
     model = HbvVernacular
     uid_fields = ("ogc_fid", )
 
@@ -459,7 +459,7 @@ class HbvXrefViewSet(BatchUpsertViewSet):
 
     queryset = HbvXref.objects.all()
     serializer_class = serializers.HbvXrefSerializer
-    filter_class = HbvXrefFilter
+    filterset_class = HbvXrefFilter
     model = HbvXref
     uid_fields = ("xref_id",)
 
@@ -478,7 +478,7 @@ class HbvParentViewSet(OgcFidBatchUpsertViewSet):
 
     queryset = HbvParent.objects.all()
     serializer_class = serializers.HbvParentSerializer
-    filter_class = HbvParentFilter
+    filterset_class = HbvParentFilter
     model = HbvParent
     uid_fields = ("ogc_fid", )
 
@@ -536,7 +536,7 @@ class TaxonViewSet(NameIDBatchUpsertViewSet):
         "document_set",
     )
     serializer_class = serializers.TaxonSerializer
-    filter_class = TaxonFilter
+    filterset_class = TaxonFilter
     model = Taxon
     uid_fields = ("name_id", )
 
@@ -578,7 +578,7 @@ class VernacularViewSet(OgcFidBatchUpsertViewSet):
 
     queryset = Vernacular.objects.all()
     serializer_class = serializers.VernacularSerializer
-    filter_class = VernacularFilter
+    filterset_class = VernacularFilter
     model = Vernacular
     uid_fields = ("ogc_fid", )
 
@@ -647,7 +647,7 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
 
     queryset = Crossreference.objects.all()
     serializer_class = serializers.CrossreferenceSerializer
-    filter_class = CrossreferenceFilter
+    filterset_class = CrossreferenceFilter
     pagination_class = LimitOffsetPagination
     model = Crossreference
     uid_fields = ("xref_id", )
@@ -690,7 +690,7 @@ class CommunityViewSet(BatchUpsertViewSet):
         # "document_set",
     )
     serializer_class = serializers.CommunitySerializer
-    filter_class = CommunityFilter
+    filterset_class = CommunityFilter
     model = Community
     uid_fields = ("code",)
 
