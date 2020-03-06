@@ -19,7 +19,6 @@ django-adminactions==1.8.1
 #-e git+https://github.com/sehmaschine/django-grappelli@master#egg=django-grappelli
 django-grappelli==2.14.1
 
-
 # API
 # ------------------------------------------------
 djangorestframework==3.11.0

@@ -57,23 +57,37 @@ from wastd.observations.models import (  # noqa
 # enc = AreaEncounter.objects.last() # for source and source_id
 # {'source': 10, 'source_id': '94654', 'sample_type': 'blood-sample', 'sample_destination': '', 'sample_label': '[]', 'obstype': 'PhysicalSample'}
 # Get Auth token from profile
-# curl  -H 'Authorization: Token XXX' -d "format=json&source=10&source_id=85464&permit_type=kermit&sample_type=blood-sample&sample_destination=department&sample_label=test&obstype=PhysicalSample" http://localhost:8220/api/1/occ-observation/
+# curl  -H 'Authorization: Token XXX' -d
+# "format=json&source=10&source_id=85464&permit_type=kermit&sample_type=blood-sample&sample_destination=department&sample_label=test&obstype=PhysicalSample"
+# http://localhost:8220/api/1/occ-observation/
 
-# curl -X POST -H "Authorization: Token XXX" "http://localhost:8220/api/1/occ-observation/?format=json" -d "obstype=AssociatedSpecies&source=10&source_id=85464&taxon=26599"
+# curl -X POST -H "Authorization: Token XXX"
+# "http://localhost:8220/api/1/occ-observation/?format=json" -d
+# "obstype=AssociatedSpecies&source=10&source_id=85464&taxon=26599"
 
-# curl -X POST -H "Authorization: Token XXX" "http://localhost:8220/api/1/occ-observation/?format=json" -d "obstype=AssociatedSpecies&source=10&source_id=85464&taxon=26599"
+# curl -X POST -H "Authorization: Token XXX"
+# "http://localhost:8220/api/1/occ-observation/?format=json" -d
+# "obstype=AssociatedSpecies&source=10&source_id=85464&taxon=26599"
 
 # M2M:
-# curl -X POST -H "Authorization: Token XXX" "http://localhost:8211/api/1/occ-observation/?format=json" -d "obstype=AnimalObservation&source=10&source_id=85464&secondary_signs=7&secondary_signs=13"
+# curl -X POST -H "Authorization: Token XXX"
+# "http://localhost:8211/api/1/occ-observation/?format=json" -d
+# "obstype=AnimalObservation&source=10&source_id=85464&secondary_signs=7&secondary_signs=13"
 
 # File attachments:
-# curl -X POST -H "Authorization: Token XXX" "http://localhost:8211/api/1/occ-observation/?format=json" -F "obstype=FileAttachment" -F "source=10" -F "source_id=85464" -F "attachment=@/path/to/file"
+# curl -X POST -H "Authorization: Token XXX"
+# "http://localhost:8211/api/1/occ-observation/?format=json" -F
+# "obstype=FileAttachment" -F "source=10" -F "source_id=85464" -F
+# "attachment=@/path/to/file"
 
 
 # TODO test that occ-observation request parameter filter obsgroup works
 # create three separate ObsGroup models, e.g. one each of PhysicalSample, AssociatedSpecies, AnimalObservation.
 # Test http://localhost:8220/api/1/occ-observation/ returns all three existing ObsGroup models
-# Test http://localhost:8220/api/1/occ-observation/?obstype=AssociatedSpecies returns only obstype AssociatedSpecies - repeat for other two ObsGroup models
+# Test
+# http://localhost:8220/api/1/occ-observation/?obstype=AssociatedSpecies
+# returns only obstype AssociatedSpecies - repeat for other two ObsGroup
+# models
 
 # TODO test that ObsGroup Serializers allow empty/missing/NA in R = None in Python non-required fields
 # e.g. permit_type is NA in R, arrives as None in Python
@@ -90,4 +104,8 @@ from wastd.observations.models import (  # noqa
 # [WARNING] "POST /api/1/occ-observation/ HTTP/1.1" 400 47
 
 
+# TurtleNestEncounter
+# [{"source": "odk", "source_id": "uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb", "reporter": 4, "observer": 4, "comments": "Device ID 2856338745efba86",
+#     "where": "POINT (114.052963333333 -21.8359983333333)", "location_accuracy": "gps", "when": "2020-02-22 22:36:26", "nest_age": "fresh", "nest_type": "false-crawl", "species": "chelonia-mydas"}]
 
+# Florian to add expected test data for Ash
