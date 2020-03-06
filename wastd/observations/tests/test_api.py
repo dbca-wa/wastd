@@ -1,17 +1,11 @@
-# -*- coding: utf-8 -*-
-"""wastd.observations API test suite."""
-from __future__ import unicode_literals
-
-from django.utils import timezone  # noqa
-
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import Point
 from django.test import TestCase
-from django.urls import reverse  # noqa
-from model_mommy import mommy  # noqa
-from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
+from django.urls import reverse
+from django.utils import timezone
+from rest_framework.test import APIClient
 
-from wastd.observations.models import (  # noqa
+from wastd.observations.models import (
     NA,
     TAXON_CHOICES_DEFAULT,
     AnimalEncounter,
@@ -44,6 +38,7 @@ from wastd.observations.models import (  # noqa
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation
 )
+User = get_user_model()
 
 # Create an AnimalEncounter from MWI 0.6 data
 # Create a TurtleNestEncounter from Track or Nest 1.0 (with TNdist, HatchlingEm, HEoutlier, LightSource, TurtleNestEnc eggs, HatchlingMorph)
@@ -105,7 +100,69 @@ from wastd.observations.models import (  # noqa
 
 
 # TurtleNestEncounter
-# [{"source": "odk", "source_id": "uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb", "reporter": 4, "observer": 4, "comments": "Device ID 2856338745efba86",
-#     "where": "POINT (114.052963333333 -21.8359983333333)", "location_accuracy": "gps", "when": "2020-02-22 22:36:26", "nest_age": "fresh", "nest_type": "false-crawl", "species": "chelonia-mydas"}]
+# [{"source": "odk",
+#   "source_id": "uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb",
+#   "reporter": 4,
+#   "observer": 4,
+#   "comments": "Device ID 2856338745efba86",
+#   "where": "POINT (114.052963333333 -21.8359983333333)",
+#   "location_accuracy": 10,
+#   "when": "2020-02-22 22:36:26",
+#   "nest_age": "fresh",
+#   "nest_type": "false-crawl",
+#   "species": "chelonia-mydas"}]
 
 # Florian to add expected test data for Ash
+
+
+class ObservationSerializerTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        # TODO: test user/group permissions properly
+        self.user = User.objects.create_superuser('testuser', 'testuser@test.com', 'pass')
+        self.client.login(username='testuser', password='pass')
+
+    def test_get_list_endpoints(self):
+        url = reverse('observations_api:encounter-list')
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('observations_api:turtlenestencounter-list')
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post_encounter(self):
+        """Test the POST endpoint for Encounter
+        """
+        url = reverse('observations_api:encounter-list')
+        resp = self.client.post(
+            url,
+            {
+                'source': 'odk',
+                'source_id': "uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb",
+                "where": "POINT (114.0 -21.0)",
+                "when": "2020-01-01 12:00:00",
+                "reporter": self.user.pk,
+                "observer": self.user.pk,
+            }
+        )
+        self.assertEqual(resp.status_code, 201)
+
+    def test_post_turtlenestencounter(self):
+        """Test the POST endpoint for TurtleNestEncounter
+        """
+        url = reverse('observations_api:turtlenestencounter-list')
+        resp = self.client.post(
+            url,
+            {
+                'source': 'odk',
+                'source_id': "uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb",
+                "where": "POINT (114.0 -21.0)",
+                "when": "2020-01-01 12:00:00",
+                "reporter": self.user.pk,
+                "observer": self.user.pk,
+                "nest_age": "fresh",
+                "nest_type": "false-crawl",
+                "species": "chelonia-mydas",
+            }
+        )
+        self.assertEqual(resp.status_code, 201)

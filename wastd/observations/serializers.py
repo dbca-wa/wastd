@@ -286,23 +286,6 @@ class EncounterSerializer(GeoFeatureModelSerializer):
       require customisations to handle data thrown at them.
     """
 
-    observation_set = ObservationSerializer(many=True, read_only=False)
-    observer = FastUserSerializer(many=False, read_only=True)
-    reporter = FastUserSerializer(many=False, read_only=True)
-    area = FastAreaSerializer(many=False, read_only=True)
-    site = FastAreaSerializer(many=False, read_only=True)
-    survey = FastSurveySerializer(many=False, read_only=True)
-    # observer = StringRelatedField(read_only=True)
-    # reporter = StringRelatedField(read_only=True)
-    # where = PointField(required=True)   ## THIS BREAKS GEOJSON OUTPUT
-    leaflet_title = ReadOnlyField()
-    latitude = ReadOnlyField()
-    longitude = ReadOnlyField()
-    crs = ReadOnlyField()
-    absolute_admin_url = ReadOnlyField()
-    photographs = MediaAttachmentSerializer(many=True, read_only=False)
-    tx_logs = ReadOnlyField()
-
     class Meta:
         """The non-standard name `where` is declared as the geo field for the
         GeoJSON serializer's benefit.
@@ -315,64 +298,11 @@ class EncounterSerializer(GeoFeatureModelSerializer):
                   "status", "source", "source_id", "encounter_type",
                   "leaflet_title", "latitude", "longitude", "crs",
                   "absolute_admin_url", "photographs", "tx_logs",
-                  #  "as_html", "as_latex",
-                  "observation_set", )
+                  # "as_html", "as_latex",
+                  # "observation_set",
+                  )
         geo_field = "where"
         id_field = "source_id"
-
-    # def create(self, validated_data):
-    #     """Make EncounterSerializer writeable: create
-    #
-    #     POST a set of records, or PUT one record
-    #
-    #     behaviour:
-    #
-    #     * If Encounter exists as NEW, update
-    #     * If Encounter exists as PROOFREAD, CURATED or PUBLISHED, skip and warn
-    #     * If Encounter does not exists, create
-    #
-    #     The actual child model is looked up by "observation_name".
-    #     """
-    #     print("EncounterSerializer.save() called".format())
-    #     # Keep observation_set in the fridge, make Encounter first
-    #     obs_data = validated_data.pop("observation_set")
-
-        # Extract Users from encounter: observer, reporter
-        # o = validated_data.pop("observer")
-        # observer, observer_created = User.objects.get_or_create(
-        #     username=o["username"], email=o["email"])
-        # print("observer {0} created {1}".format(observer, observer_created))
-        #
-        # o = validated_data.pop("reporter")
-        # reporter, reporter_created = User.objects.get_or_create(
-        #     username=o["username"], email=o["email"])
-
-        # src = validated_data["source"]
-        # srcid = validated_data["source_id"]
-        #
-        # if Encounter.objects.filter(source=src, source_id=srcid).exists():
-        #     print("Encounter exists: {0}-{1}".format(src, srcid))
-        #     encounter = Encounter.objects.get(source=src, source_id=srcid)
-        #     if encounter.status == Encounter.STATUS_NEW:
-        #         print("Encounter not proofread/curated, updating...")
-        #         encounter.update(**validated_data)
-        #         encounter.save()
-        #     else:
-        #         print("Encounter already changed, skipping.")
-        # else:
-        #     print("No Encounter with source/source_id found, creating new...")
-        #     encounter = Encounter.objects.create(**validated_data)
-        #     # encounter.reporter = reporter
-        #     # encounter.observer = observer
-        #     encounter.save()
-        #
-        #     for obs in obs_data:
-        #         childmodel_name = obs.pop("observation_name")
-        #         childmodel = getattr(Observation,
-        #                              childmodel_name).related.related_model
-        #         childmodel.objects.create(encounter=encounter, **obs)
-        #
-        # return encounter
 
 
 class FastEncounterSerializer(GeoFeatureModelSerializer):
@@ -491,7 +421,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   "nest_age", "nest_type", "species", "habitat", "disturbance",
                   "comments",
                   "absolute_admin_url", "photographs", "tx_logs",
-                  "observation_set",
+                  # "observation_set",
                   )
         geo_field = "where"
 
