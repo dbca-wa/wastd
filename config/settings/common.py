@@ -46,6 +46,7 @@ DJANGO_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'grappelli.dashboard',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.postgres',
@@ -766,6 +767,11 @@ LOGGING = {
         },
     }
 }
+
+
+# Grappelli admin
+GRAPPELLI_INDEX_DASHBOARD = 'shared.dashboard.AdminDashboard'
+# GRAPPELLI_ADMIN_TITLE = "Data Curation Portal"
 
 # Error reporting
 WASTD_RELEASE = env("WASTD_RELEASE", default="master")

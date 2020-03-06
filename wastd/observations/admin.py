@@ -210,16 +210,16 @@ class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
     save_on_top = True
     date_hierarchy = 'encounter__when'
     LIST_FIRST = (
-        'pk', 
-        'area', 
-        'site', 
-        'latitude', 
-        'longitude',  
+        'pk',
+        'area',
+        'site',
+        'latitude',
+        'longitude',
         'date',
     )
     LIST_LAST = (
-        'encounter_link', 
-        'status', 
+        'encounter_link',
+        'status',
         'comments'
     )
     LIST_FILTER = (
@@ -283,15 +283,15 @@ class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
     encounter_link.allow_tags = True
 
 
-
 @admin.register(TagObservation)
 class TagObservationAdmin(ObservationAdminMixin):
     """Admin for TagObservation."""
 
     list_display = ObservationAdminMixin.LIST_FIRST + (
-                    'type_display', 'name', 'tag_location_display',
-                    ) + ObservationAdminMixin.LIST_LAST
-    list_filter = ObservationAdminMixin.LIST_FILTER + ('tag_type', 'tag_location',)
+        'type_display', 'name', 'tag_location_display',
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ('tag_type', 'tag_location',)
     search_fields = ('name', 'comments')
     # autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
     handler = forms.ChoiceField(
@@ -337,9 +337,11 @@ class NestTagObservationAdmin(ObservationAdminMixin):
 
     list_display = ObservationAdminMixin.LIST_FIRST + (
         'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
-        ) + ObservationAdminMixin.LIST_LAST
-    list_filter = ObservationAdminMixin.LIST_FILTER + ('flipper_tag_id', 'tag_label',)
-    search_fields = ('flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ('flipper_tag_id', 'tag_label',)
+    search_fields = ('flipper_tag_id', 'date_nest_laid',
+                     'tag_label', 'comments')
 
     def tag_name(self, obj):
         """Nest tag name."""
@@ -358,8 +360,9 @@ class TurtleNestObservationAdmin(ObservationAdminMixin):
         'no_dead_hatchlings', 'no_undeveloped_eggs',
         'no_unhatched_eggs', 'no_unhatched_term', 'no_depredated_eggs',
         'nest_depth_top', 'nest_depth_bottom',
-        ) + ObservationAdminMixin.LIST_LAST
-    list_filter = ObservationAdminMixin.LIST_FILTER + ('nest_position', 'eggs_laid',)
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ('nest_position', 'eggs_laid',)
 
 
 @admin.register(TurtleNestDisturbanceObservation)
@@ -370,12 +373,12 @@ class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
     # save_on_top = True
     # date_hierarchy = 'encounter__when'
     list_display = ObservationAdminMixin.LIST_FIRST + (
-        'disturbance_cause', 
-        'disturbance_cause_confidence', 
-        'disturbance_severity', 
+        'disturbance_cause',
+        'disturbance_cause_confidence',
+        'disturbance_severity',
         'comments',
-        ) + ObservationAdminMixin.LIST_LAST
-        
+    ) + ObservationAdminMixin.LIST_LAST
+
     list_filter = ObservationAdminMixin.LIST_FILTER + (
         'disturbance_cause_confidence',
         'disturbance_severity',
@@ -471,7 +474,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     date_hierarchy = 'when'
     # Filters for change_list
     list_filter = (
-        'area', 'site', 'status', 
+        'area', 'site', 'status',
         # 'observer', 'reporter',
 
         'location_accuracy', 'encounter_type', 'source')  # 'survey',
@@ -547,8 +550,14 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         ('Encounter',
             {
                 'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-                'fields': ('area', 'site', 'survey', 'where', 'location_accuracy',
-                           'when', 'observer', 'reporter', 'source', 'source_id', )
+                'fields': (
+                    'area', 'site', 'survey',
+                    'where', 
+                    'location_accuracy',
+                    'when', 
+                    'observer', 'reporter',
+                    'source', 'source_id',
+                )
             }
          ),
     )
@@ -676,20 +685,19 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
     ) + EncounterAdmin.LAST_COLS
     list_select_related = True
     list_filter = EncounterAdmin.list_filter + (
-        'nest_age', 'nest_type', 'species', 'habitat', 
-        'disturbance', 'nest_tagged', 'logger_found', 
+        'nest_age', 'nest_type', 'species', 'habitat',
+        'disturbance', 'nest_tagged', 'logger_found',
         'eggs_counted', 'hatchlings_measured', 'fan_angles_measured',
-)
+    )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Nest',
             {
                 'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
                 'fields': (
-                    'nest_age', 'nest_type', 'species', 'habitat', 
-                    'disturbance', 
-                    # 'nest_tagged', 'logger_found', 'eggs_counted', 
-                    # 'hatchlings_measured', 'fan_angles_measured', 
-                    'comments')
+                    'nest_age', 'nest_type', 'species', 'habitat',
+                    'disturbance', 'nest_tagged', 'logger_found', 'eggs_counted',
+                    'hatchlings_measured', 'fan_angles_measured', 'comments'
+                )
             }
          ),
     )
@@ -754,7 +762,8 @@ class LoggerEncounterAdmin(EncounterAdmin):
         'logger_id', 'comments',
     ) + EncounterAdmin.LAST_COLS
     list_select_related = ('area', 'site', 'survey', )
-    list_filter = EncounterAdmin.list_filter + ('logger_type', 'deployment_status',)
+    list_filter = EncounterAdmin.list_filter + \
+        ('logger_type', 'deployment_status',)
     search_fields = ('logger_id', 'source_id')
     fieldsets = EncounterAdmin.fieldsets + (
         ('Logger',

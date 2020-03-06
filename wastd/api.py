@@ -128,7 +128,8 @@ class UserSerializer(serializers.ModelSerializer):
         """Class options."""
 
         model = User
-        fields = ("pk", "username", "name", "nickname", "aliases", "role", "email", "phone", )
+        fields = ("pk", "username", "name", "nickname",
+                  "aliases", "role", "email", "phone", )
 
 
 class FastUserSerializer(serializers.ModelSerializer):
@@ -155,13 +156,15 @@ class UserViewSet(viewsets.ModelViewSet):
         from wastd.observations.utils import lowersnake
         un = lowersnake(data["name"])
 
-        obj, created = self.model.objects.get_or_create(username=un, defaults=data)
+        obj, created = self.model.objects.get_or_create(
+            username=un, defaults=data)
         if not created:
             self.model.objects.filter(username=un).update(**data)
 
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = "[API][UserViewSet][create_one] {0} {1}".format(verb, obj.__str__())
+        msg = "[API][UserViewSet][create_one] {0} {1}".format(
+            verb, obj.__str__())
         content = {"id": obj.id, "msg": msg}
         logger.info(msg)
 
