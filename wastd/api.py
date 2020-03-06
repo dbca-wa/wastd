@@ -32,14 +32,13 @@ This API is built using:
 """
 import logging
 from django.template import Context, Template
-from rest_framework import routers, serializers, status, viewsets
+from rest_framework import serializers, status, viewsets
 from rest_framework.response import Response as RestResponse
 from rest_framework_gis.filters import InBBoxFilter
 
 from wastd.users.models import User
 
 logger = logging.getLogger(__name__)
-router = routers.DefaultRouter()
 
 
 class InBBoxHTMLMixin:
@@ -187,6 +186,3 @@ class UserViewSet(viewsets.ModelViewSet):
             return RestResponse(request.data, status=status.HTTP_200_OK)
         else:
             return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
-
-
-router.register(r"users", UserViewSet)

@@ -20,12 +20,8 @@ from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
 from graphene_django.views import GraphQLView
 
-from conservation.api import router as conservation_router
 from occurrence.models import CommunityAreaEncounter
-from occurrence.api import router as occurrence_router
-from taxonomy.api import router as taxonomy_router
-from wastd.api import router as wastd_router
-from wastd.observations.api import router as observations_router
+from wastd.router import router
 from wastd.observations import models as wastd_models
 from wastd.observations import views as wastd_views
 
@@ -59,11 +55,7 @@ urlpatterns = [
     # API
     re_path(r'^api/1/swagger/$', wastd_views.schema_view, name="api-docs"),
     re_path(r'^api/1/docs/', include_docs_urls(title='API')),
-    re_path(r'^api/1/', include((wastd_router.urls, 'api'), namespace="api")),
-    re_path(r'^api/1/', include((conservation_router.urls, 'conservation'), namespace='conservation_api')),
-    re_path(r'^api/1/', include((observations_router.urls, 'observations'), namespace='observations_api')),
-    re_path(r'^api/1/', include((occurrence_router.urls, 'occurrence'), namespace='occurrence_api')),
-    re_path(r'^api/1/', include((taxonomy_router.urls, 'taxonomy'), namespace='taxonomy_api')),
+    re_path(r'^api/1/', include((router.urls, 'api'), namespace="api")),
     re_path(r'^api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
     re_path(r'^api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 

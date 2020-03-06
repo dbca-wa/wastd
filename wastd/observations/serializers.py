@@ -420,7 +420,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
                   "when", "name",
                   "nest_age", "nest_type", "species", "habitat", "disturbance",
                   "comments",
-                  "absolute_admin_url", "photographs", "tx_logs",
+                  "absolute_admin_url",
                   # "observation_set",
                   )
         geo_field = "where"
@@ -437,7 +437,7 @@ class LoggerEncounterSerializer(EncounterSerializer):
                   "when", "name",
                   "deployment_status", "comments",
                   "comments",
-                  "absolute_admin_url", "photographs", "tx_logs",
+                  "absolute_admin_url",
                   "observation_set", )
         geo_field = "where"
 

@@ -29,7 +29,7 @@ class ObservationGroupSerializerTests(TestCase):
         self.ae = AreaEncounter.objects.create(description='Test AreaEncounter')
         self.og = ObservationGroup.objects.create(encounter=self.ae)
         self.hc = HabitatComposition.objects.create(encounter=self.ae)
-        self.url = reverse('occurrence_api:occurrence_observation_group-list')
+        self.url = reverse('api:occurrence_observation_group-list')
 
     def test_occ_observation_get(self):
         """Test the occurrence_observation_group API endpoint, unfiltered
