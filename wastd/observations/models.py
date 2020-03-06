@@ -40,7 +40,7 @@ from django.dispatch import receiver
 from django.template import loader
 # from django.contrib.gis.db.models.query import GeoQuerySet
 from django.urls import reverse
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django_fsm import FSMField, transition
@@ -800,7 +800,6 @@ class QualityControl(models.Model):
 
 
 # Spatial models -------------------------------------------------------------#
-@python_2_unicode_compatible
 class Area(geo_models.Model):
     """An area with a polygonal extent.
 
@@ -967,7 +966,6 @@ class Area(geo_models.Model):
                             kwargs={'pk': self.pk, 'format': format})
 
 
-@python_2_unicode_compatible
 class SiteVisitStartEnd(geo_models.Model):
     """A start or end point to a site visit."""
 
@@ -1010,7 +1008,6 @@ class SiteVisitStartEnd(geo_models.Model):
             self.datetime.isoformat())
 
 
-@python_2_unicode_compatible
 class Expedition(PolymorphicModel, geo_models.Model):
     """An endeavour of a team to a location within a defined time range."""
 
@@ -1060,7 +1057,6 @@ class Expedition(PolymorphicModel, geo_models.Model):
             finished_on__lte=self.finished_on)
 
 
-@python_2_unicode_compatible
 class SiteVisit(Expedition):
     """A visit to one site by a team of field workers collecting data."""
 
@@ -1130,7 +1126,6 @@ class SiteVisit(Expedition):
         pass
 
 
-@python_2_unicode_compatible
 class FieldMediaAttachment(models.Model):
     """A media attachment to an Expedition or Survey."""
 
@@ -1177,7 +1172,6 @@ class FieldMediaAttachment(models.Model):
         return force_text(self.attachment.file)
 
 
-@python_2_unicode_compatible
 class Survey(QualityControl, geo_models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
@@ -1437,7 +1431,6 @@ def survey_post_save(sender, instance, *args, **kwargs):
     claim_encounters(instance)
 
 
-@python_2_unicode_compatible
 class SurveyEnd(geo_models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
@@ -1540,7 +1533,6 @@ def delete_observations(sender, instance, **kwargs):
 
 
 # Encounter models -----------------------------------------------------------#
-@python_2_unicode_compatible
 class Encounter(PolymorphicModel, geo_models.Model):
     """The base Encounter class.
 
@@ -2232,7 +2224,6 @@ class Encounter(PolymorphicModel, geo_models.Model):
         return
 
 
-@python_2_unicode_compatible
 class AnimalEncounter(Encounter):
     """The encounter of an animal of a species.
 
@@ -2454,7 +2445,6 @@ class AnimalEncounter(Encounter):
         return (has_new_tagobs and not has_old_tagobs)
 
 
-@python_2_unicode_compatible
 class TurtleNestEncounter(Encounter):
     """The encounter of turtle nest during its life cycle.
 
@@ -2591,7 +2581,6 @@ class TurtleNestEncounter(Encounter):
         return slugify.slugify("-".join(nameparts))
 
 
-@python_2_unicode_compatible
 class LineTransectEncounter(Encounter):
     """Encounter with a line transect.
 
@@ -2664,7 +2653,6 @@ class LineTransectEncounter(Encounter):
         return slugify.slugify("-".join(nameparts))
 
 
-@python_2_unicode_compatible
 class LoggerEncounter(Encounter):
     """The encounter of an electronic logger during its life cycle.
 
@@ -2776,7 +2764,6 @@ class LoggerEncounter(Encounter):
 
 
 # Observation models ---------------------------------------------------------#
-@python_2_unicode_compatible
 class Observation(PolymorphicModel, models.Model):
     """The Observation base class for encounter observations.
 
@@ -2846,7 +2833,6 @@ class Observation(PolymorphicModel, models.Model):
         return self.encounter.when or ''
 
 
-@python_2_unicode_compatible
 class MediaAttachment(Observation):
     """A media attachment to an Encounter."""
 
@@ -2894,7 +2880,6 @@ class MediaAttachment(Observation):
         return fpath
 
 
-@python_2_unicode_compatible
 class TagObservation(Observation):
     """An Observation of an identifying tag on an observed entity.
 
@@ -3036,7 +3021,6 @@ class TagObservation(Observation):
         return "{0}?q={1}".format(cl, urllib.parse.quote_plus(self.name))
 
 
-@python_2_unicode_compatible
 class NestTagObservation(Observation):
     """Turtle Nest Tag Observation.
 
@@ -3126,7 +3110,6 @@ def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
         instance.encounter.save(update_fields=['name', ])
 
 
-@python_2_unicode_compatible
 class ManagementAction(Observation):
     """
     Management actions following an AnimalEncounter.
@@ -3150,7 +3133,6 @@ class ManagementAction(Observation):
             self.pk, self.encounter.__str__())
 
 
-@python_2_unicode_compatible
 class TurtleMorphometricObservation(Observation):
     """Morphometric measurements of a turtle."""
 
@@ -3303,7 +3285,6 @@ class TurtleMorphometricObservation(Observation):
             self.encounter.pk)
 
 
-@python_2_unicode_compatible
 class HatchlingMorphometricObservation(Observation):
     """Morphometric measurements of a hatchling at a TurtleNestEncounter."""
 
@@ -3334,7 +3315,6 @@ class HatchlingMorphometricObservation(Observation):
         )
 
 
-@python_2_unicode_compatible
 class DugongMorphometricObservation(Observation):
     """Morphometric measurements of a Dugong at an AnimalEncounter."""
 
@@ -3372,7 +3352,6 @@ class DugongMorphometricObservation(Observation):
         )
 
 
-@python_2_unicode_compatible
 class TurtleDamageObservation(Observation):
     """Observation of turtle damages or injuries."""
 
@@ -3410,7 +3389,6 @@ class TurtleDamageObservation(Observation):
             self.get_damage_type_display(), )
 
 
-@python_2_unicode_compatible
 class TrackTallyObservation(Observation):
     """Observation of turtle track tallies and signs of predation."""
 
@@ -3446,7 +3424,6 @@ class TrackTallyObservation(Observation):
         return t1.format(self.tally, self.nest_age, self.nest_type, self.species)
 
 
-@python_2_unicode_compatible
 class TurtleNestDisturbanceTallyObservation(Observation):
     """Observation of turtle track tallies and signs of predation."""
 
@@ -3487,7 +3464,6 @@ class TurtleNestDisturbanceTallyObservation(Observation):
                          self.disturbance_cause, self.no_tracks_encountered)
 
 
-@python_2_unicode_compatible
 class TurtleNestObservation(Observation):
     """Turtle nest observations.
 
@@ -3684,7 +3660,6 @@ class TurtleNestObservation(Observation):
             ) / self.egg_count_calculated, 2)
 
 
-@python_2_unicode_compatible
 class TurtleNestDisturbanceObservation(Observation):
     """Turtle nest disturbance observations.
 
@@ -3772,7 +3747,6 @@ class PathToSea(models.Model):
         return self.label
 
 
-@python_2_unicode_compatible
 class TurtleHatchlingEmergenceObservation(Observation):
     """Turtle hatchling emergence observation.
 
@@ -3934,7 +3908,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
         )
 
 
-@python_2_unicode_compatible
 class LightSourceObservation(Observation):
     """
     Dict of one or list of many
@@ -3971,7 +3944,6 @@ class LightSourceObservation(Observation):
         )
 
 
-@python_2_unicode_compatible
 class TurtleHatchlingEmergenceOutlierObservation(Observation):
     """
     Dict of one or list of many
@@ -4010,7 +3982,6 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
 
 
 # Logger Observation models --------------------------------------------------#
-@python_2_unicode_compatible
 class TemperatureLoggerSettings(Observation):
     """Temperature Logger Settings."""
 
@@ -4039,7 +4010,6 @@ class TemperatureLoggerSettings(Observation):
             self.recording_start, self.logging_interval)
 
 
-@python_2_unicode_compatible
 class DispatchRecord(Observation):
     """A record of dispatching the subject of the encounter."""
 
@@ -4061,7 +4031,6 @@ class DispatchRecord(Observation):
         return u"Sent on {0} to {1}".format(self.encounter.when, self.sent_to)
 
 
-@python_2_unicode_compatible
 class TemperatureLoggerDeployment(Observation):
     """A record of deploying a temperature logger."""
 
