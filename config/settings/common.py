@@ -458,11 +458,7 @@ REST_FRAMEWORK = {
         # 'rest_framework_gis.filters.InBBoxFilter',
         'rest_framework_filters.backends.RestFrameworkFilterBackend',
     ),
-
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework_gis.pagination.GeoJsonPagination',
-    # 'DEFAULT_PAGINATION_CLASS': 'proxy_pagination.ProxyPagination',
-
     'PAGE_SIZE': 100,
     'HTML_SELECT_CUTOFF': 100,
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
