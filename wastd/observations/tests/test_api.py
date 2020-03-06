@@ -1,43 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
-from django.utils import timezone
 from rest_framework.test import APIClient
 
-from wastd.observations.models import (
-    NA,
-    TAXON_CHOICES_DEFAULT,
-    AnimalEncounter,
-    Area,
-    DispatchRecord,
-    DugongMorphometricObservation,
-    Encounter,
-    Expedition,
-    FieldMediaAttachment,
-    HatchlingMorphometricObservation,
-    LineTransectEncounter,
-    LoggerEncounter,
-    ManagementAction,
-    MediaAttachment,
-    NestTagObservation,
-    SiteVisit,
-    Survey,
-    TagObservation,
-    TemperatureLoggerDeployment,
-    TemperatureLoggerSettings,
-    TrackTallyObservation,
-    TurtleDamageObservation,
-    TurtleMorphometricObservation,
-    TurtleNestDisturbanceObservation,
-    TurtleNestDisturbanceTallyObservation,
-    TurtleNestEncounter,
-    TurtleNestObservation,
-    PathToSea,
-    TurtleHatchlingEmergenceObservation,
-    TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation
-)
 User = get_user_model()
 
 # Create an AnimalEncounter from MWI 0.6 data
