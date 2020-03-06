@@ -35,7 +35,6 @@ import logging
 import rest_framework_filters as filters
 from django.template import Context, Template
 
-# import django_filters as df
 from django_filters import rest_framework as rf_filters
 from rest_framework import routers, serializers, status, viewsets
 from rest_framework.response import Response as RestResponse
@@ -44,9 +43,9 @@ from rest_framework_gis.filters import InBBoxFilter
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from shared.api import MyGeoJsonPagination
-from wastd.observations.models import Observation  # LineTransectEncounter
-from wastd.observations.models import Survey  # SiteVisit,
 from wastd.observations.models import (
+    Observation,
+    Survey,
     AnimalEncounter,
     Area,
     DispatchRecord,
@@ -72,14 +71,8 @@ from wastd.observations.models import (
     LightSourceObservation
 )
 from wastd.users.models import User
-
-# from rest_framework.renderers import BrowsableAPIRenderer
-# from rest_framework_latex import renderers
-# from dynamic_rest import serializers as ds, viewsets as dv
-# from drf_extra_fields.geo_fields import PointField
-# from rest_framework_gis.pagination import GeoJsonPagination
-# from rest_framework_gis.filterset import GeoFilterSet
 # from wastd.observations.filters import AreaFilter, LocationListFilter, EncounterFilter
+
 try:
     from wastd.observations.utils import symlink_resources
 except BaseException:
@@ -87,19 +80,6 @@ except BaseException:
     pass
 
 logger = logging.getLogger(__name__)
-
-# def symlink_resources(a,b,c):
-#     pass
-
-# from django.conf import settings
-
-# from synctool.routing import Route as SynctoolRoute
-# # Synctools
-# # http://django-synctool.readthedocs.io/
-# sync_route = SynctoolRoute()
-# @sync_route.app("users", "users")
-# @sync_route.app("observations", "observations")
-
 router = routers.DefaultRouter()
 
 
