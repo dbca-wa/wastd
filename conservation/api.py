@@ -1,7 +1,6 @@
 import logging
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.routers import DefaultRouter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_filters import FilterSet
 
@@ -26,7 +25,6 @@ from conservation.serializers import (
 from taxonomy.models import Community, Taxon
 
 logger = logging.getLogger(__name__)
-router = DefaultRouter()
 
 
 class CommunityConservationListingFilter(FilterSet):
@@ -55,7 +53,7 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
     model = CommunityConservationListing
     queryset = CommunityConservationListing.objects.all().select_related("community")
     serializer_class = CommunityConservationListingSerializer
-    filter_class = CommunityConservationListingFilter
+    filterset_class = CommunityConservationListingFilter
     uid_fields = ("source", "source_id")
 
     def resolve_fks(self, data):
@@ -143,9 +141,6 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         return Response([], status=status.HTTP_200_OK)
 
 
-router.register("community-conservationlisting", CommunityConservationListingViewSet)
-
-
 class ConservationCategoryFilter(FilterSet):
     """ConservationCategory filter."""
 
@@ -169,10 +164,7 @@ class ConservationCategoryViewSet(BatchUpsertViewSet):
 
     queryset = ConservationCategory.objects.all()
     serializer_class = ConservationCategorySerializer
-    filter_class = ConservationCategoryFilter
-
-
-router.register("conservationcategory", ConservationCategoryViewSet)
+    filterset_class = ConservationCategoryFilter
 
 
 class ConservationCriterionFilter(FilterSet):
@@ -193,7 +185,7 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
     model = ConservationCriterion
     queryset = ConservationCriterion.objects.all()
     serializer_class = ConservationCriterionSerializer
-    filter_class = ConservationCriterionFilter
+    filterset_class = ConservationCriterionFilter
     uid_fields = ("code", )
 
     def build_unique_fields(self, data):
@@ -207,9 +199,6 @@ class ConservationCriterionViewSet(BatchUpsertViewSet):
             conservation_list__in=list(set([x["conservation_list"] for x in new_records])),
             code__in=list(set([x["code"] for x in new_records]))
         ).values("pk", "code", "conservation_list")
-
-
-router.register("conservationcriterion", ConservationCriterionViewSet)
 
 
 class ConservationListFilter(FilterSet):
@@ -235,7 +224,7 @@ class ConservationListViewSet(ModelViewSet):
     model = ConservationList
     queryset = ConservationList.objects.all()
     serializer_class = ConservationListSerializer
-    filter_class = ConservationListFilter
+    filterset_class = ConservationListFilter
     pagination_class = MyGeoJsonPagination
     uid_field = "code"
     uid_fields = ("code", )
@@ -289,9 +278,6 @@ class ConservationListViewSet(ModelViewSet):
             return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-router.register("conservationlist", ConservationListViewSet)
-
-
 class DocumentFilter(FilterSet):
 
     class Meta:
@@ -314,11 +300,8 @@ class DocumentViewSet(BatchUpsertViewSet):
     model = Document
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
-    filter_class = DocumentFilter
+    filterset_class = DocumentFilter
     uid_fields = ("source", "source_id")
-
-
-router.register("document", DocumentViewSet)
 
 
 # ----------------------------------------------------------------------------#
@@ -357,7 +340,7 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 
     queryset = TaxonConservationListing.objects.all().select_related("taxon")
     serializer_class = TaxonConservationListingSerializer
-    filter_class = TaxonConservationListingFilter
+    filterset_class = TaxonConservationListingFilter
     uid_fields = ("source", "source_id")
     model = TaxonConservationListing
 
@@ -445,6 +428,3 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
             # The slow way:
             res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
         return Response([], status=status.HTTP_200_OK)
-
-
-router.register("taxon-conservationlisting", TaxonConservationListingViewSet)

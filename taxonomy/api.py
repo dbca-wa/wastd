@@ -1,7 +1,6 @@
 from django_filters.rest_framework import BooleanFilter
 from rest_framework_filters import FilterSet, RelatedFilter
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.routers import DefaultRouter
 
 from shared.api import (
     BatchUpsertViewSet,
@@ -24,8 +23,6 @@ from taxonomy.models import (
     Community,
 )
 from taxonomy import serializers
-
-router = DefaultRouter()
 
 
 class HbvNameFilter(FilterSet):
@@ -356,12 +353,9 @@ class HbvNameViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvName.objects.all()
     serializer_class = serializers.HbvNameSerializer
-    filter_class = HbvNameFilter
+    filterset_class = HbvNameFilter
     model = HbvName
     uid_fields = ("name_id",)
-
-
-router.register("names", HbvNameViewSet)
 
 
 class HbvSupraViewSet(BatchUpsertViewSet):
@@ -369,7 +363,7 @@ class HbvSupraViewSet(BatchUpsertViewSet):
 
     queryset = HbvSupra.objects.all()
     serializer_class = serializers.HbvSupraSerializer
-    filter_class = HbvSupraFilter
+    filterset_class = HbvSupraFilter
     model = HbvSupra
     uid_fields = ("supra_code", )
 
@@ -386,20 +380,14 @@ class HbvSupraViewSet(BatchUpsertViewSet):
         return qs.values("pk", "supra_code", )
 
 
-router.register("supra", HbvSupraViewSet)
-
-
 class HbvGroupViewSet(NameIDBatchUpsertViewSet):
     """View set for HbvGroup.See HBV Names for details and usage examples."""
 
     queryset = HbvGroup.objects.all()
     serializer_class = serializers.HbvGroupSerializer
-    filter_class = HbvGroupFilter
+    filterset_class = HbvGroupFilter
     model = HbvGroup
     uid_fields = ("name_id",)
-
-
-router.register("groups", HbvGroupViewSet)
 
 
 class HbvFamilyViewSet(NameIDBatchUpsertViewSet):
@@ -407,12 +395,9 @@ class HbvFamilyViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvFamily.objects.all()
     serializer_class = serializers.HbvFamilySerializer
-    filter_class = HbvFamilyFilter
+    filterset_class = HbvFamilyFilter
     model = HbvFamily
     uid_fields = ("name_id",)
-
-
-router.register("families", HbvFamilyViewSet)
 
 
 class HbvGenusViewSet(NameIDBatchUpsertViewSet):
@@ -420,12 +405,9 @@ class HbvGenusViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvGenus.objects.all()
     serializer_class = serializers.HbvGenusSerializer
-    filter_class = HbvGenusFilter
+    filterset_class = HbvGenusFilter
     model = HbvGenus
     uid_fields = ("name_id",)
-
-
-router.register("genera", HbvGenusViewSet)
 
 
 class HbvSpeciesViewSet(NameIDBatchUpsertViewSet):
@@ -433,12 +415,9 @@ class HbvSpeciesViewSet(NameIDBatchUpsertViewSet):
 
     queryset = HbvSpecies.objects.all()
     serializer_class = serializers.HbvSpeciesSerializer
-    filter_class = HbvSpeciesFilter
+    filterset_class = HbvSpeciesFilter
     model = HbvSpecies
     uid_fields = ("name_id",)
-
-
-router.register("species", HbvSpeciesViewSet)
 
 
 class HbvVernacularViewSet(OgcFidBatchUpsertViewSet):
@@ -446,12 +425,9 @@ class HbvVernacularViewSet(OgcFidBatchUpsertViewSet):
 
     queryset = HbvVernacular.objects.all()
     serializer_class = serializers.HbvVernacularSerializer
-    filter_class = HbvVernacularFilter
+    filterset_class = HbvVernacularFilter
     model = HbvVernacular
     uid_fields = ("ogc_fid", )
-
-
-router.register("vernaculars", HbvVernacularViewSet)
 
 
 class HbvXrefViewSet(BatchUpsertViewSet):
@@ -459,7 +435,7 @@ class HbvXrefViewSet(BatchUpsertViewSet):
 
     queryset = HbvXref.objects.all()
     serializer_class = serializers.HbvXrefSerializer
-    filter_class = HbvXrefFilter
+    filterset_class = HbvXrefFilter
     model = HbvXref
     uid_fields = ("xref_id",)
 
@@ -470,20 +446,14 @@ class HbvXrefViewSet(BatchUpsertViewSet):
         ).values("pk", "xref_id")
 
 
-router.register("xrefs", HbvXrefViewSet)
-
-
 class HbvParentViewSet(OgcFidBatchUpsertViewSet):
     """View set for HbvParent. See HBV Names for details and usage examples."""
 
     queryset = HbvParent.objects.all()
     serializer_class = serializers.HbvParentSerializer
-    filter_class = HbvParentFilter
+    filterset_class = HbvParentFilter
     model = HbvParent
     uid_fields = ("ogc_fid", )
-
-
-router.register("parents", HbvParentViewSet)
 
 
 class TaxonFilter(FilterSet):
@@ -536,21 +506,15 @@ class TaxonViewSet(NameIDBatchUpsertViewSet):
         "document_set",
     )
     serializer_class = serializers.TaxonSerializer
-    filter_class = TaxonFilter
+    filterset_class = TaxonFilter
     model = Taxon
     uid_fields = ("name_id", )
-
-
-router.register("taxon", TaxonViewSet, basename="taxon_full")
 
 
 class FastTaxonViewSet(TaxonViewSet):
     """Fast View set for Taxon."""
 
     serializer_class = serializers.FastTaxonSerializer
-
-
-router.register("taxon-fast", FastTaxonViewSet, basename="taxon_fast")
 
 
 class VernacularFilter(FilterSet):
@@ -578,12 +542,9 @@ class VernacularViewSet(OgcFidBatchUpsertViewSet):
 
     queryset = Vernacular.objects.all()
     serializer_class = serializers.VernacularSerializer
-    filter_class = VernacularFilter
+    filterset_class = VernacularFilter
     model = Vernacular
     uid_fields = ("ogc_fid", )
-
-
-router.register("vernacular", VernacularViewSet)
 
 
 class CrossreferenceFilter(FilterSet):
@@ -647,7 +608,7 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
 
     queryset = Crossreference.objects.all()
     serializer_class = serializers.CrossreferenceSerializer
-    filter_class = CrossreferenceFilter
+    filterset_class = CrossreferenceFilter
     pagination_class = LimitOffsetPagination
     model = Crossreference
     uid_fields = ("xref_id", )
@@ -657,9 +618,6 @@ class CrossreferenceViewSet(BatchUpsertViewSet):
         return model.objects.filter(
             xref_id__in=list(set([x["xref_id"] for x in new_records]))
         ).values("pk", "xref_id")
-
-
-router.register("crossreference", CrossreferenceViewSet)
 
 
 class CommunityFilter(FilterSet):
@@ -690,7 +648,7 @@ class CommunityViewSet(BatchUpsertViewSet):
         # "document_set",
     )
     serializer_class = serializers.CommunitySerializer
-    filter_class = CommunityFilter
+    filterset_class = CommunityFilter
     model = Community
     uid_fields = ("code",)
 
@@ -699,6 +657,3 @@ class CommunityViewSet(BatchUpsertViewSet):
         return model.objects.filter(
             code__in=list(set([x["code"] for x in new_records]))
         ).values("pk", "code")
-
-
-router.register("community", CommunityViewSet)

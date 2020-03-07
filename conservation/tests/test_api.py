@@ -27,10 +27,8 @@ class ObservationGroupSerializerTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = User.objects.create_user('testuser', 'testuser@test.com', 'pass')
-        self.user.is_staff = True
-        self.user.is_superuser = True  # TODO: test user/group permissions properly
-        self.user.save()
+        # TODO: test user/group permissions properly
+        self.user = User.objects.create_superuser('testuser', 'testuser@test.com', 'pass')
         self.client.login(username='testuser', password='pass')
         self.community = Community.objects.create(code='Test community')
         self.taxon = Taxon.objects.create(name_id=0, name='Test taxon')
@@ -49,7 +47,7 @@ class ObservationGroupSerializerTests(TestCase):
         )
         self.ccl = CommunityConservationListing.objects.create(community=self.community)
 
-    def test_get_endpoints(self):
+    def test_get_list_endpoints(self):
         for i in [
             'conservationlist',
             'conservationcategory',
@@ -57,6 +55,23 @@ class ObservationGroupSerializerTests(TestCase):
             'taxonconservationlisting',
             'communityconservationlisting',
         ]:
-            url = reverse('conservation_api:{}-list'.format(i))
+            url = reverse('api:{}-list'.format(i))
             resp = self.client.get(url, {'format': 'json'})
             self.assertEqual(resp.status_code, 200)
+
+    def test_get_detail_endpoints(self):
+        url = reverse('api:conservationlist-detail', kwargs={'pk': self.clist.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('api:conservationcategory-detail', kwargs={'pk': self.ccategory.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('api:conservationcriterion-detail', kwargs={'pk': self.ccriterion.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('api:taxonconservationlisting-detail', kwargs={'pk': self.taxon_listing.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        url = reverse('api:communityconservationlisting-detail', kwargs={'pk': self.ccl.pk})
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
