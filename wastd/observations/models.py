@@ -21,8 +21,6 @@ actions:
 * disposal actions
 
 """
-from __future__ import absolute_import, unicode_literals
-
 import itertools
 import logging
 import urllib
