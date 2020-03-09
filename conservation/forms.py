@@ -139,7 +139,7 @@ class ConservationActionForm(forms.ModelForm):
                 'implementation_notes',
                 Div(
                     Div('completion_date', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
-                    Div('expenditure', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
+                    # Div('expenditure', css_class="col col-lg-6 col-md-6 col-sm-12 col-12"),
                     css_class='row'
                 ),
             ),
