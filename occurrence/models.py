@@ -7,9 +7,6 @@ Fauna, Flora and Comunities (defined in taxonomy).
 Observer name / address / phone / email is captured through the observer being
 a system user.
 """
-from __future__ import absolute_import, unicode_literals
-
-# import itertools
 import logging
 
 from django.contrib.auth import get_user_model
@@ -20,23 +17,14 @@ from django.db.models.signals import post_save, pre_delete, pre_save  # noqa
 from django.dispatch import receiver
 
 from django.template import loader
-# from django.contrib.gis.db.models.query import GeoQuerySet
-# from django.urls import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
-# from durationfield.db.models.fields.duration import DurationField
-# from django.db.models.fields import DurationField
-# from django_fsm import FSMField, transition
-# from django_fsm_log.decorators import fsm_log_by
-# from django_fsm_log.models import StateLog
-# from rest_framework.reverse import reverse as rest_reverse
 from polymorphic.models import PolymorphicModel
 
-# from wastd.users.models import User
 from shared.models import (
     CodeLabelDescriptionMixin,
     RenderMixin,
@@ -53,7 +41,6 @@ User = get_user_model()
 
 class EncounterType(CodeLabelDescriptionMixin, models.Model):
     """The encounter type."""
-
     pass
 
 

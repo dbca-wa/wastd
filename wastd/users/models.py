@@ -8,7 +8,6 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.authtoken.models import Token
@@ -21,7 +20,6 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
-@python_2_unicode_compatible
 class User(AbstractUser):
     """WAStD User."""
 
