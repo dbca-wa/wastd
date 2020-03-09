@@ -8,8 +8,6 @@ https://docs.djangoproject.com/en/dev/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
-from __future__ import absolute_import, unicode_literals
-
 import os
 import environ
 from confy import database, env
@@ -778,9 +776,9 @@ WASTD_RELEASE = env("WASTD_RELEASE", default="master")
 if env('SENTRY_DSN', False):
     # RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
     sentry_sdk.init(
-            env('SENTRY_DSN'),
-            integrations=[DjangoIntegration(),],
-            release="wastd@{0}".format(WASTD_RELEASE)
+        env('SENTRY_DSN'),
+        integrations=[DjangoIntegration()],
+        release="wastd@{0}".format(WASTD_RELEASE)
     )
 
 SETTINGS_EXPORT = [
