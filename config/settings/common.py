@@ -421,7 +421,7 @@ SESSION_CACHE_ALIAS = "default"
 # SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
-ADMIN_URL = "^admin/"
+ADMIN_URL = "admin/"
 
 # API: django-restframework
 # ------------------------------------------------------------------------------
