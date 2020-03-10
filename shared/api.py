@@ -97,7 +97,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
     uid_fields = ("source", "source_id", )
 
     def resolve_fks(self, data):
-        """Resolve FKs from PK to object. 
+        """Resolve FKs from PK to object.
 
         Override in viewset inheriting from BatchUpsertViewSet.
         """
@@ -127,17 +127,17 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
     def fetch_existing_records(self, new_records, model):
         """Fetch pk, (status if QC mixin), and **uid_fields values from a model.
 
-        The UID fields are hard-coded here, as it seems impossible to 
+        The UID fields are hard-coded here, as it seems impossible to
         programmatically filter (with an ``__in``) clause using ``uid_fields``.
 
-        Overwrite this method in your queryset if your uid_fields are not 
+        Overwrite this method in your queryset if your uid_fields are not
         "source" and "source_id".
 
         A better way is show in Django admin filters:
         https://github.com/django/django/blob/master/django/contrib/admin/filters.py
         """
         qs = model.objects.filter(
-            source__in=list(set([x["source"] for x in new_records])), 
+            source__in=list(set([x["source"] for x in new_records])),
             source_id__in=list(set([x["source_id"] for x in new_records]))
         )
         if issubclass(model, QualityControlMixin):
@@ -167,7 +167,6 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         logger.debug('[API][create_one] Received '
                      '{0} with unique fields {1}'.format(
                          self.model._meta.verbose_name, str(unique_data)))
-
 
         obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
         verb = "Created" if created else "Updated"
@@ -211,11 +210,10 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
-            res = self.create_one(request.data).__dict__         
-            return RestResponse(res, status=st)
+            return self.create_one(request.data)
 
         # Create many --------------------------------------------------------#
-        elif (type(request.data) == list and 
+        elif (type(request.data) == list and
               self.uid_fields[0] in request.data[0]):
             logger.info('[API][create] found batch of {0} records,'
                         ' creating/updating...'.format(len(request.data)))
@@ -223,7 +221,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             # The slow way:
             # res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
 
-            # A new hope: bulk update/create 
+            # A new hope: bulk update/create
             # https://github.com/dbca-wa/wastd/issues/205
 
             # Existing vs new
@@ -241,31 +239,30 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                 logger.info("[API][create] Skipping {0} locally changed records".format(len(to_retain)))
                 logger.debug("[API][create] Skipping locally changed records: {0}".format(str(to_retain)))
 
-                # With QA: update if existing but unchanged (QA status "NEW")                
+                # With QA: update if existing but unchanged (QA status "NEW")
                 to_update = [t for t in existing_records if t["status"] == QualityControlMixin.STATUS_NEW]
             else:
                 # Without QA: update if existing
                 to_update = existing_records
                 to_retain = []
-                
+
             # Only UID fields of new records (request.data)
             # new_records_uid_only = [{rec[uid_field] for uid_field in self.uid_fields} for rec in new_records]
-            
+
             existing_records_uid_only = [{rec[uid_field] for uid_field in self.uid_fields} for rec in existing_records]
 
             # Bucket "bulk_update": List of new_records where uid_fields match existing_objects
-            records_to_update = [new_record for new_record in new_records 
-                                 if {new_record[uid_field] for uid_field in self.uid_fields} 
+            records_to_update = [new_record for new_record in new_records
+                                 if {new_record[uid_field] for uid_field in self.uid_fields}
                                  in existing_records_uid_only]
 
             # Bucket "bulk_create": List of new records without match in existing records
-            records_to_create = [new_record for new_record in new_records 
-                                 if {new_record[uid_field] for uid_field in self.uid_fields} 
+            records_to_create = [new_record for new_record in new_records
+                                 if {new_record[uid_field] for uid_field in self.uid_fields}
                                  not in existing_records_uid_only]
             logger.info("[API][create] Done sorting records: {0} to retain, {1} to update, {2} to create.".format(
                 len(to_retain), len(records_to_update), len(records_to_create)
-                )
-            )
+            ))
 
             # Hammertime
             with transaction.atomic():
@@ -281,7 +278,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
                         # to update cached fields
                         # self.model.objects.filter(**unique_data).refresh_from_db()
-                        # self.model.objects.filter(**unique_data).save()  
+                        # self.model.objects.filter(**unique_data).save()
 
                 if records_to_create:
                     logger.info("[API][create] Creating records...")
@@ -305,7 +302,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
                         # to update cached fields
                         obj.refresh_from_db()
-                        obj.save()  
+                        obj.save()
 
             logger.info("[API][create] Finished.")
             msg = "Retained {0}, updated {1}, created {2} records.".format(
@@ -327,7 +324,6 @@ class FastBatchUpsertViewSet(BatchUpsertViewSet):
     """Viewset with LO pagination and page size 10."""
 
     pagination_class = FastLimitOffsetPagination
-
 
 
 class NameIDBatchUpsertViewSet(BatchUpsertViewSet):
@@ -359,6 +355,7 @@ class OgcFidBatchUpsertViewSet(BatchUpsertViewSet):
             return qs.values("pk", "ogc_fid", "status")
         else:
             return qs.values("pk", "ogc_fid", )
+
 
 class AreaEncounterObsBatchUpsertViewSet(BatchUpsertViewSet):
     """A viewset to upsert Observations linked to an AreaEncounter."""
