@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Conservation models."""
-from __future__ import absolute_import, unicode_literals
-
-# import itertools
-# import urllib
-# import slugify
 from datetime import datetime
-# from dateutil import tz
 import logging
 import uuid
 
@@ -16,20 +9,11 @@ from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
-# from django.contrib.gis.db import models as geo_models
-# from django.contrib.gis.db.models.query import GeoQuerySet
 from django.urls import reverse
-# from rest_framework.reverse import reverse as rest_reverse
-# from django.template import loader
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-# from polymorphic.models import PolymorphicModel
-# from durationfield.db.models.fields.duration import DurationField
-# from django.db.models.fields import DurationField
 from django_fsm import FSMIntegerField, transition
 from django_fsm_log.decorators import fsm_log_by
-from taxonomy.models import Community, Taxon
 
 from wastd.users.models import User
 from shared.models import (
@@ -38,10 +22,7 @@ from shared.models import (
     CodeLabelDescriptionMixin,
     ObservationAuditMixin
 )
-
-# from django.utils.safestring import mark_safe
-
-# from django_fsm_log.models import StateLog
+from taxonomy.models import Community, Taxon
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +33,6 @@ def fileattachment_media(instance, filename):
     return 'attachment/{0}/{1}/{2}'.format(instance.content_type, instance.object_id, filename)
 
 
-@python_2_unicode_compatible
 class FileAttachment(models.Model):
     """A generic file attachment to any model."""
 
@@ -95,7 +75,6 @@ class FileAttachment(models.Model):
 
 # -----------------------------------------------------------------------------
 # Conservation (Management) Threats and Actions
-@python_2_unicode_compatible
 class ConservationThreatCategory(CodeLabelDescriptionMixin, models.Model):
     """A conservation management threat category."""
 
@@ -106,7 +85,6 @@ class ConservationThreatCategory(CodeLabelDescriptionMixin, models.Model):
         verbose_name_plural = "Conservation Threat Categories"
 
 
-@python_2_unicode_compatible
 class ConservationThreat(RenderMixin, UrlsMixin, ObservationAuditMixin, models.Model):
     """A conservation threat is a potentially damaging event against a taxon or community.
 
@@ -257,7 +235,6 @@ class ConservationThreat(RenderMixin, UrlsMixin, ObservationAuditMixin, models.M
         return "[{0}] {1}".format(self.category, self.cause)
 
 
-@python_2_unicode_compatible
 class ConservationActionCategory(CodeLabelDescriptionMixin, models.Model):
     """A conservation management action category."""
 
@@ -268,7 +245,6 @@ class ConservationActionCategory(CodeLabelDescriptionMixin, models.Model):
         verbose_name_plural = "Conservation Action Categories"
 
 
-@python_2_unicode_compatible
 class ConservationAction(RenderMixin, UrlsMixin, models.Model):
     """A conservation action is an intended conservation management measure.
 
@@ -455,7 +431,6 @@ def update_status_cache(sender, instance, *args, **kwargs):
         models.Sum('expenditure'))['expenditure__sum']
 
 
-@python_2_unicode_compatible
 class ConservationActivity(UrlsMixin, models.Model):
     """An implementation of a conservation management measure."""
 
@@ -532,7 +507,6 @@ def update_consaction_caches(sender, instance, *args, **kwargs):
     instance.conservation_action.save()
 
 
-@python_2_unicode_compatible
 class ConservationList(models.Model):
     """A Conservation List like BCA, EPBC, RedList."""
 
@@ -641,7 +615,6 @@ class ConservationList(models.Model):
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
-@python_2_unicode_compatible
 class ConservationCategory(models.Model):
     """A Conservation Category like CR, EN, VU."""
 
@@ -763,7 +736,6 @@ class ConservationCategory(models.Model):
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
-@python_2_unicode_compatible
 class ConservationCriterion(models.Model):
     """A Conservation Criterion like A4a."""
 
@@ -854,7 +826,6 @@ class ActiveNationalConservationListingManager(models.Manager):
         )
 
 
-@python_2_unicode_compatible
 class ConservationListing(RenderMixin, UrlsMixin, models.Model):
     """The allocation of one or more ConservationCategories and Criteria.
 
@@ -1381,7 +1352,6 @@ class ConservationListing(RenderMixin, UrlsMixin, models.Model):
     # ------------------------------------------------------------------------#
 
 
-@python_2_unicode_compatible
 class TaxonConservationListing(ConservationListing):
     """The ConservationListing of a ConservationCategory against a Taxon.
 
@@ -1462,7 +1432,6 @@ class TaxonConservationListing(ConservationListing):
         ).exclude(pk=self.pk)]
 
 
-@python_2_unicode_compatible
 class CommunityConservationListing(ConservationListing):
     """The ConservationListing of a ConservationCategory against a Community."""
 
@@ -1553,7 +1522,6 @@ def conservationlisting_caches(sender, instance, *args, **kwargs):
 
 # -----------------------------------------------------------------------------
 # Documents
-@python_2_unicode_compatible
 class Document(RenderMixin, UrlsMixin, models.Model):
     """A Document with attachments and approval workflow."""
 

@@ -7,17 +7,13 @@ They are populated and updated through the TSC API.
 Taxon, Crossreferece, and Vernacular are populated from Hbv* through ``taxonomy.utils.make_taxon_names``.
 Community is initally populated from TEC through the API, then updated both through the admin and the API.
 """
-from __future__ import absolute_import, unicode_literals
 import logging
-
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models.signals import pre_save  # , post_save
 from django.dispatch import receiver
 from django.urls import reverse
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-
 from mptt.models import MPTTModel, TreeForeignKey
 
 from shared.models import LegacySourceMixin, UrlsMixin, RenderMixin
@@ -25,7 +21,6 @@ from shared.models import LegacySourceMixin, UrlsMixin, RenderMixin
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class HbvSupra(models.Model):
     r"""HBV Suprafamily Group.
 
@@ -87,7 +82,6 @@ class HbvSupra(models.Model):
         return self.supra_name
 
 
-@python_2_unicode_compatible
 class HbvGroup(models.Model):
     r"""Paraphyletic or informal group of taxa.
 
@@ -175,7 +169,6 @@ class HbvGroup(models.Model):
         return "[{0}] {1}".format(self.class_id, self.name)
 
 
-@python_2_unicode_compatible
 class HbvFamily(models.Model):
     r"""Taxonomic nodes from Families and up from HBVFamilies.
 
@@ -392,7 +385,6 @@ class HbvFamily(models.Model):
         return self.family_name
 
 
-@python_2_unicode_compatible
 class HbvGenus(models.Model):
     r"""Taxonomic Genera.
 
@@ -555,7 +547,6 @@ class HbvGenus(models.Model):
         return self.genus
 
 
-@python_2_unicode_compatible
 class HbvSpecies(models.Model):
     r"""Taxonomic species names.
 
@@ -870,7 +861,6 @@ class HbvSpecies(models.Model):
         )
 
 
-@python_2_unicode_compatible
 class HbvName(models.Model):
     r"""Taxonomic Names from HBVnames.
 
@@ -1257,7 +1247,6 @@ class HbvName(models.Model):
         return self.__str__()
 
 
-@python_2_unicode_compatible
 class HbvVernacular(models.Model):
     r"""Taxonomic vernacular names.
 
@@ -1369,7 +1358,6 @@ class HbvVernacular(models.Model):
         return self.vernacular
 
 
-@python_2_unicode_compatible
 class HbvXref(models.Model):
     r"""Taxonomic operations on NameIDs.
 
@@ -1451,7 +1439,7 @@ class HbvXref(models.Model):
     )
 
     authorised_on = models.CharField(
-        db_index = True,
+        db_index=True,
         max_length=100,
         blank=True, null=True,
         verbose_name=_("WACensus authorised on"),
@@ -1502,7 +1490,6 @@ class HbvXref(models.Model):
             self.authorised_on)
 
 
-@python_2_unicode_compatible
 class HbvParent(models.Model):
     r"""Taxonomic inheritance: name_id is child of parent_nid.
 
@@ -1584,7 +1571,8 @@ class HbvParent(models.Model):
 
 
 # django-mptt tree models ----------------------------------------------------#
-@python_2_unicode_compatible
+
+
 class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
     """A taxonomic name at any taxonomic rank.
 
@@ -1812,7 +1800,6 @@ class Taxon(RenderMixin, UrlsMixin, MPTTModel, geo_models.Model):
             ['rank', 'current'],
         ]
 
-
     class Meta:
         """Class options."""
 
@@ -2037,7 +2024,6 @@ def taxon_pre_save(sender, instance, *args, **kwargs):
     instance.vernacular_names = instance.build_vernacular_names
 
 
-@python_2_unicode_compatible
 class Vernacular(models.Model):
     """Vernacular Name."""
 
@@ -2099,7 +2085,6 @@ class Vernacular(models.Model):
             self.name)
 
 
-@python_2_unicode_compatible
 class Crossreference(models.Model):
     """Taxonomic crossreference."""
 
@@ -2205,7 +2190,6 @@ class Crossreference(models.Model):
         return list(set(pre + suc))
 
 
-@python_2_unicode_compatible
 class Community(RenderMixin, UrlsMixin, LegacySourceMixin, geo_models.Model):
     """Ecological Community."""
 

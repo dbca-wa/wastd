@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from wastd import api
+from wastd.users import api as users_api
 from wastd.observations import api as observations_api
 from conservation import api as conservation_api
 from occurrence import api as occurrence_api
@@ -7,7 +7,7 @@ from taxonomy import api as taxonomy_api
 
 router = DefaultRouter()
 # wastd
-router.register("users", api.UserViewSet)
+router.register("users", users_api.UserViewSet)
 # observations
 router.register("area", observations_api.AreaViewSet)
 router.register("surveys", observations_api.SurveyViewSet)

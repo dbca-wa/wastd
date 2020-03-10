@@ -9,7 +9,7 @@ from unittest import skip
 
 from occurrence.models import (
     AreaEncounter, ObservationGroup, HabitatComposition, PlantCount, CountMethod, CountAccuracy,
-    AnimalObservation, SecondarySigns, FileAttachment,
+    AnimalObservation, SecondarySigns, FileAttachment, SampleType,
 )
 
 User = get_user_model()
@@ -51,16 +51,37 @@ class ObservationGroupSerializerTests(TestCase):
         self.assertFalse('ObservationGroup' in [i['obstype'] for i in data['results']])
 
     def test_occ_observation_post(self):
+        """Test the occurrent_observation_group POST endpoint handles lookups and null fields
+        """
+        SampleType.objects.create(code='frozen-carcass', label='Frozen carcass')
+        resp = self.client.post(
+            self.url,
+            {
+                'obstype': 'PhysicalSample',
+                'source': self.ae.source,
+                'source_id': self.ae.source_id,
+                'sample_type': 'frozen-carcass',
+                'sample_label': '[WA Museum]abc123',
+                'sample_destination': None,
+                'permit_type': None,
+            }
+        )
+        self.assertEqual(resp.status_code, 201)
+
+    def test_occ_observation_obstype_post(self):
         """Test the occurrence_observation_group API POST endpoint for object types not requiring special cases
         """
         models = [
             'HabitatComposition', 'HabitatCondition', 'AreaAssessment', 'FireHistory', 'VegetationClassification']
         for model in models:
-            resp = self.client.post(self.url, {
-                'obstype': model,
-                'source': self.ae.source,
-                'source_id': self.ae.source_id,
-            })
+            resp = self.client.post(
+                self.url,
+                {
+                    'obstype': model,
+                    'source': self.ae.source,
+                    'source_id': self.ae.source_id,
+                }
+            )
             self.assertEqual(resp.status_code, 201)
 
     def test_occ_observation_post_plantcount(self):

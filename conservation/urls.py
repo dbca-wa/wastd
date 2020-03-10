@@ -1,63 +1,62 @@
 # -*- coding: utf-8 -*-
 """Conservation urls."""
-from django.urls import re_path
+from django.urls import path
 
 from . import views
 
 app_name = 'conservation'
 
 urlpatterns = [
-    re_path(r'^threats/$',
+    path('threats/',
             views.ConservationThreatListView.as_view(),
             name="conservationthreat-list"),
-    re_path(r'^threats/(?P<pk>\d+)/$',
+    path('threats/<int:pk>/',
             views.ConservationThreatDetailView.as_view(),
             name="conservationthreat-detail"),
-    re_path(r'^threats/(?P<pk>\d+)/update/$',
+    path('threats/<int:pk>/update/',
             views.ConservationThreatUpdateView.as_view(),
             name="conservationthreat-update"),
-    re_path(r'^threats/create/$',
+    path('threats/create/',
             views.ConservationThreatCreateView.as_view(),
             name="conservationthreat-create"),
 
-    re_path(r'^actions/$',
+    path('actions/',
             views.ConservationActionListView.as_view(),
             name="conservationaction-list"),
-    re_path(r'^actions/(?P<pk>\d+)/$',
+    path('actions/<int:pk>/',
             views.ConservationActionDetailView.as_view(),
             name="conservationaction-detail"),
-    re_path(r'^actions/(?P<pk>\d+)/update/$',
+    path('actions/<int:pk>/update/',
             views.ConservationActionUpdateView.as_view(),
             name="conservationaction-update"),
-    re_path(r'^actions/create/$',
+    path('actions/create/',
             views.ConservationActionCreateView.as_view(),
             name="conservationaction-create"),
 
-    re_path(r'^actions/(?P<pk>\d+)/report-progress/$',
+    path('actions/<int:pk>/report-progress/',
             views.ConservationActivityCreateView.as_view(),
             name="conservationactivity-create"),
-    re_path(r'^actions/activities/(?P<pk>\d+)/update/$',
+    path('actions/activities/<int:pk>/update/',
             views.ConservationActivityUpdateView.as_view(),
             name="conservationactivity-update"),
 
-    re_path(r'^nominate-taxon/$',
+    path('nominate-taxon/',
             views.TaxonConservationListingCreateView.as_view(),
             name="taxonconservationlisting-create"),
-    re_path(r'^nominate-community/$',
+    path('nominate-community/',
             views.CommunityConservationListingCreateView.as_view(),
             name="communityconservationlisting-create"),
 
-    re_path(r'^documents/$',
+    path('documents/',
             views.DocumentListView.as_view(),
             name="document-list"),
-    re_path(r'^documents/create/$',
+    path('documents/create/',
             views.DocumentCreateView.as_view(),
             name="document-create"),
-    re_path(r'^documents/(?P<pk>\d+)/$',
+    path('documents/<int:pk>/',
             views.DocumentDetailView.as_view(),
             name="document-detail"),
-    re_path(r'^documents/(?P<pk>\d+)/update/$',
+    path('documents/<int:pk>/update/',
             views.DocumentUpdateView.as_view(),
             name="document-update"),
-
 ]
