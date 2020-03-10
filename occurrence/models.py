@@ -18,7 +18,6 @@ from django.dispatch import receiver
 
 from django.template import loader
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -322,7 +321,6 @@ class AreaEncounter(PolymorphicModel,
         return AreaEncounter.objects.filter(point__distance_lte=(self.point, dist_dd))
 
 
-@python_2_unicode_compatible
 class TaxonAreaEncounter(AreaEncounter):
     """An Encounter in time and space with a Taxon."""
 
@@ -379,7 +377,6 @@ class TaxonAreaEncounter(AreaEncounter):
         )
 
 
-@python_2_unicode_compatible
 class CommunityAreaEncounter(AreaEncounter):
     """An Encounter in time and space with a community."""
 
@@ -454,7 +451,6 @@ def area_caches(sender, instance, *args, **kwargs):
 
 
 # Observation models ---------------------------------------------------------#
-@python_2_unicode_compatible
 class ObservationGroup(
         QualityControlMixin,
         RenderMixin,
