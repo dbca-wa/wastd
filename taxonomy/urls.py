@@ -11,7 +11,7 @@ urlpatterns = [
     # ------------------------------------------------------------------------#
     # Species
     path('species/', views.TaxonListView.as_view(), name='taxon-list'),
-    path('species/<int:name_id>/', views.TaxonDetailView.as_view(), name='taxon-detail'),
+    path('species/<name_id>/', views.TaxonDetailView.as_view(), name='taxon-detail'),
     # ------------------------------------------------------------------------#
     # Communities
     path('communities/', views.CommunityListView.as_view(), name='community-list'),
