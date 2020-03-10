@@ -32,11 +32,8 @@ This API is built using:
 """
 import logging
 from django.template import Context, Template
-from rest_framework import serializers, status, viewsets
-from rest_framework.response import Response as RestResponse
 from rest_framework_gis.filters import InBBoxFilter
 
-from wastd.users.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -118,71 +115,3 @@ class CustomBBoxFilter(InBBoxHTMLMixin, InBBoxFilter):
     """Custom BBox filter."""
 
     bbox_param = "in_bbox"
-
-
-class UserSerializer(serializers.ModelSerializer):
-    """User serializer."""
-
-    class Meta:
-        """Class options."""
-
-        model = User
-        fields = ("pk", "username", "name", "nickname",
-                  "aliases", "role", "email", "phone", )
-
-
-class FastUserSerializer(serializers.ModelSerializer):
-    """Minimal User serializer."""
-
-    class Meta:
-        """Class options."""
-
-        model = User
-        fields = ("pk", "username", "name",)
-
-
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    """User view set."""
-
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    uid_field = "username"
-    model = User
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance."""
-        from wastd.observations.utils import lowersnake
-        un = lowersnake(data["name"])
-
-        obj, created = self.model.objects.get_or_create(
-            username=un, defaults=data)
-        if not created:
-            self.model.objects.filter(username=un).update(**data)
-
-        verb = "Created" if created else "Updated"
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = "[API][UserViewSet][create_one] {0} {1}".format(
-            verb, obj.__str__())
-        content = {"id": obj.id, "msg": msg}
-        logger.info(msg)
-
-        return RestResponse(content, status=st)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be:
-
-        * a GeoJSON feature property dict, or
-        * a list of GeoJSON feature property dicts.
-        """
-        # pdb.set_trace()
-        if "name" in request.data:
-            res = self.create_one(request.data)
-            return res
-        elif isinstance(request.data, list) and "name" in request.data[1]:
-            res = [self.create_one(data) for data in request.data]
-            return RestResponse(request.data, status=status.HTTP_200_OK)
-        else:
-            return RestResponse(request.data, status=status.HTTP_400_BAD_REQUEST)
