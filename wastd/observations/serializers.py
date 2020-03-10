@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer, ReadOnlyField, FileField
 from rest_framework_gis.fields import GeometryField
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from wastd.api import FastUserSerializer
+from wastd.users.api import FastUserSerializer
 from wastd.observations.models import (
     Observation,
     Survey,
