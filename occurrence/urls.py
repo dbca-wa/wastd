@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """Taxonomy urls."""
-from django.urls import path
+from django.urls import path, register_converter
 
+from shared.utils import BigIntConverter
 from . import views
 # from . import wms_config
 
 app_name = 'occurrence'
+register_converter(BigIntConverter, 'bigint')
 
 urlpatterns = [
 
@@ -25,11 +27,11 @@ urlpatterns = [
             views.TaxonAreaEncounterListView.as_view(),
             name='taxonareaencounter-list'),
 
-    path('species/<name_id>/report/',
+    path('species/<bigint:name_id>/report/',
             views.TaxonAreaEncounterCreateView.as_view(),
             name='taxon-occurrence-create'),
 
-    path('species/<name_id>/area/<area_code>/report/',
+    path('species/<bigint:name_id>/area/<area_code>/report/',
             views.TaxonAreaEncounterCreateView.as_view(),
             name='taxon-occurrence-area-create'),
 
@@ -37,11 +39,11 @@ urlpatterns = [
             views.TaxonAreaEncounterCreateView.as_view(),
             name='taxonareaencounter-create'),
 
-    path('species/<pk>/',
+    path('species/<int:pk>/',
             views.TaxonAreaEncounterDetailView.as_view(),
             name='taxonareaencounter-detail'),
 
-    path('species/<pk>/update/',
+    path('species/<int:pk>/update/',
             views.TaxonAreaEncounterUpdateView.as_view(),
             name='taxonareaencounter-update'),
 
@@ -129,15 +131,15 @@ urlpatterns = [
             views.VegetationClassificationUpdateView.as_view(),
             name='vegetationclassification-update'),
 
-    path('(<int:occ_pk>\d+)/associated-species/report/',
+    path('<int:occ_pk>/associated-species/report/',
             views.AssociatedSpeciesCreateView.as_view(),
             name='associatedspecies-create'),
 
-    path('<int:occ_pk>\d+)/associated-species/<int:obs_pk>/',
+    path('<int:occ_pk>/associated-species/<int:obs_pk>/',
             views.AssociatedSpeciesUpdateView.as_view(),
             name='associatedspecies-update'),
 
-    path('(<int:occ_pk>/animal-observation/report/',
+    path('<int:occ_pk>/animal-observation/report/',
             views.AnimalObservationCreateView.as_view(),
             name='animalobservation-create'),
 
