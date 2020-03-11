@@ -298,87 +298,6 @@ class TurtleNestEncounterFilter(FilterSet):
         }
 
 
-class TurtleNestEncounterViewSet(ModelViewSet):
-    """TurtleNestEncounter view set.
-
-    TNE are turtle tracks with or without nests.
-
-    # Filters
-    In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
-
-    # nest_age
-    * [/api/1/turtle-nest-encounters/?nest_age=fresh](/api/1/turtle-nest-encounters/?nest_age=fresh)
-      observed in the morning, made the night before (same turtle date)
-    * [/api/1/turtle-nest-encounters/?nest_age=old](/api/1/turtle-nest-encounters/?nest_age=old)
-      older than a day (previous turtle date)
-    * [/api/1/turtle-nest-encounters/?nest_age=unknown](/api/1/turtle-nest-encounters/?nest_age=unknown)
-      unknown
-    * [/api/1/turtle-nest-encounters/?nest_age=missed](/api/1/turtle-nest-encounters/?nest_age=missed)
-      missed turtle during turtle tagging, track observed and made within same night (same turtle date)
-
-    # nest_type
-    * [/api/1/turtle-nest-encounters/?nest_type=track-not-assessed](
-      /api/1/turtle-nest-encounters/?nest_type=track-not-assessed) track, not checked for nest
-    * [/api/1/turtle-nest-encounters/?nest_type=false-crawl](
-      /api/1/turtle-nest-encounters/?nest_type=false-crawl) track without nest
-    * [/api/1/turtle-nest-encounters/?nest_type=successful-crawl](
-      /api/1/turtle-nest-encounters/?nest_type=successful-crawl) track with nest
-    * [/api/1/turtle-nest-encounters/?nest_type=track-unsure](
-      /api/1/turtle-nest-encounters/?nest_type=track-unsure) track, checked for nest, unsure if nest
-    * [/api/1/turtle-nest-encounters/?nest_type=nest](
-      /api/1/turtle-nest-encounters/?nest_type=nest) nest, unhatched, no track
-    * [/api/1/turtle-nest-encounters/?nest_type=hatched-nest](
-      /api/1/turtle-nest-encounters/?nest_type=hatched-nest) nest, hatched
-    * [/api/1/turtle-nest-encounters/?nest_type=body-pit](
-      /api/1/turtle-nest-encounters/?nest_type=body-pit) body pit, no track
-
-    # species
-    * [/api/1/turtle-nest-encounters/?species=natator-depressus](
-      /api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
-    * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](
-      /api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
-    * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](
-      /api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
-    * [/api/1/turtle-nest-encounters/?species=caretta-caretta](
-      /api/1/turtle-nest-encounters/?species=caretta-caretta) Loggerhead turtle
-    * [/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea](
-      /api/1/turtle-nest-encounters/?species=lepidochelys-olivacea) Olive ridley turtle
-    * [/api/1/turtle-nest-encounters/?species=corolla-corolla](
-      /api/1/turtle-nest-encounters/?species=corolla-corolla) Hatchback turtle (training dummy)
-
-    # habitat
-    * [/api/1/turtle-nest-encounters/?habitat=na](
-      /api/1/turtle-nest-encounters/?habitat=na) unknown habitat
-    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](
-      /api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
-    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](
-      /api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
-    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](
-      /api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
-    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](
-      /api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
-
-    # disturbance
-    Indicates whether disturbance observation is attached.
-
-    * [/api/1/turtle-nest-encounters/?disturbance=present](/api/1/turtle-nest-encounters/?disturbance=present) present
-    * [/api/1/turtle-nest-encounters/?disturbance=absent](/api/1/turtle-nest-encounters/?disturbance=absent) absent
-    * [/api/1/turtle-nest-encounters/?disturbance=na](/api/1/turtle-nest-encounters/?disturbance=na) na
-
-    # name
-    * [/api/1/turtle-nest-encounters/?name=WA1234](/api/1/turtle-nest-encounters/?name=WA1234) Turtle name if known
-    """
-    latex_name = "latex/turtlenestencounter.tex"
-    queryset = TurtleNestEncounter.objects.all()
-    serializer_class = serializers.TurtleNestEncounterSerializer
-    filter_class = TurtleNestEncounterFilter
-    pagination_class = MyGeoJsonPagination
-
-    def pre_latex(self, t_dir, data):
-        """Symlink photographs to temp dir for use by latex template."""
-        symlink_resources(t_dir, data)
-
-
 class AnimalEncounterFilter(FilterSet):
     when = DateFilter()
 
@@ -519,6 +438,87 @@ class TurtleMorphometricObservationViewSet(ModelViewSet):
                      "encounter__status"]
     search_fields = ("comments", )
     pagination_class = MyGeoJsonPagination
+
+
+class TurtleNestEncounterViewSet(ModelViewSet):
+    """TurtleNestEncounter view set.
+
+    TNE are turtle tracks with or without nests.
+
+    # Filters
+    In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
+
+    # nest_age
+    * [/api/1/turtle-nest-encounters/?nest_age=fresh](/api/1/turtle-nest-encounters/?nest_age=fresh)
+      observed in the morning, made the night before (same turtle date)
+    * [/api/1/turtle-nest-encounters/?nest_age=old](/api/1/turtle-nest-encounters/?nest_age=old)
+      older than a day (previous turtle date)
+    * [/api/1/turtle-nest-encounters/?nest_age=unknown](/api/1/turtle-nest-encounters/?nest_age=unknown)
+      unknown
+    * [/api/1/turtle-nest-encounters/?nest_age=missed](/api/1/turtle-nest-encounters/?nest_age=missed)
+      missed turtle during turtle tagging, track observed and made within same night (same turtle date)
+
+    # nest_type
+    * [/api/1/turtle-nest-encounters/?nest_type=track-not-assessed](
+      /api/1/turtle-nest-encounters/?nest_type=track-not-assessed) track, not checked for nest
+    * [/api/1/turtle-nest-encounters/?nest_type=false-crawl](
+      /api/1/turtle-nest-encounters/?nest_type=false-crawl) track without nest
+    * [/api/1/turtle-nest-encounters/?nest_type=successful-crawl](
+      /api/1/turtle-nest-encounters/?nest_type=successful-crawl) track with nest
+    * [/api/1/turtle-nest-encounters/?nest_type=track-unsure](
+      /api/1/turtle-nest-encounters/?nest_type=track-unsure) track, checked for nest, unsure if nest
+    * [/api/1/turtle-nest-encounters/?nest_type=nest](
+      /api/1/turtle-nest-encounters/?nest_type=nest) nest, unhatched, no track
+    * [/api/1/turtle-nest-encounters/?nest_type=hatched-nest](
+      /api/1/turtle-nest-encounters/?nest_type=hatched-nest) nest, hatched
+    * [/api/1/turtle-nest-encounters/?nest_type=body-pit](
+      /api/1/turtle-nest-encounters/?nest_type=body-pit) body pit, no track
+
+    # species
+    * [/api/1/turtle-nest-encounters/?species=natator-depressus](
+      /api/1/turtle-nest-encounters/?species=natator-depressus) Flatback turtle
+    * [/api/1/turtle-nest-encounters/?species=chelonia-mydas](
+      /api/1/turtle-nest-encounters/?species=chelonia-mydas) Green turtle
+    * [/api/1/turtle-nest-encounters/?species=eretmochelys-imbricata](
+      /api/1/turtle-nest-encounters/?species=eretmochelys-imbricata) Hawksbill turtle
+    * [/api/1/turtle-nest-encounters/?species=caretta-caretta](
+      /api/1/turtle-nest-encounters/?species=caretta-caretta) Loggerhead turtle
+    * [/api/1/turtle-nest-encounters/?species=lepidochelys-olivacea](
+      /api/1/turtle-nest-encounters/?species=lepidochelys-olivacea) Olive ridley turtle
+    * [/api/1/turtle-nest-encounters/?species=corolla-corolla](
+      /api/1/turtle-nest-encounters/?species=corolla-corolla) Hatchback turtle (training dummy)
+
+    # habitat
+    * [/api/1/turtle-nest-encounters/?habitat=na](
+      /api/1/turtle-nest-encounters/?habitat=na) unknown habitat
+    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](
+      /api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
+    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](
+      /api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
+    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](
+      /api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
+    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](
+      /api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
+
+    # disturbance
+    Indicates whether disturbance observation is attached.
+
+    * [/api/1/turtle-nest-encounters/?disturbance=present](/api/1/turtle-nest-encounters/?disturbance=present) present
+    * [/api/1/turtle-nest-encounters/?disturbance=absent](/api/1/turtle-nest-encounters/?disturbance=absent) absent
+    * [/api/1/turtle-nest-encounters/?disturbance=na](/api/1/turtle-nest-encounters/?disturbance=na) na
+
+    # name
+    * [/api/1/turtle-nest-encounters/?name=WA1234](/api/1/turtle-nest-encounters/?name=WA1234) Turtle name if known
+    """
+    latex_name = "latex/turtlenestencounter.tex"
+    queryset = TurtleNestEncounter.objects.all()
+    serializer_class = serializers.TurtleNestEncounterSerializer
+    filter_class = TurtleNestEncounterFilter
+    pagination_class = MyGeoJsonPagination
+
+    def pre_latex(self, t_dir, data):
+        """Symlink photographs to temp dir for use by latex template."""
+        symlink_resources(t_dir, data)
 
 
 class TurtleNestObservationViewSet(ModelViewSet):

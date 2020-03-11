@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, ReadOnlyField, FileField
+from rest_framework.serializers import ModelSerializer, ReadOnlyField, FileField, ValidationError
 from rest_framework_gis.fields import GeometryField
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
@@ -585,26 +585,55 @@ class TurtleNestDisturbanceObservationSerializer(ModelSerializer):
 
     class Meta:
         model = TurtleNestDisturbanceObservation
-        fields = ("observation_name",  # "as_latex",
-                  "disturbance_cause", "disturbance_cause_confidence",
-                  "disturbance_severity", "comments", )
-
-
-class TurtleNestDisturbanceObservationEncounterSerializer(GeoFeatureModelSerializer):
-    """TurtleNestDisturbanceObservation serializer with encounter."""
-    encounter = FastEncounterSerializer(many=False, read_only=True)
-    point = GeometryField()
-
-    class Meta:
-        model = TurtleNestDisturbanceObservation
-        geo_field = "point"
         fields = (
-            "encounter",
             "observation_name",
+            # "as_latex",
             "disturbance_cause",
             "disturbance_cause_confidence",
             "disturbance_severity",
-            "comments", )
+            "comments",
+        )
+
+
+class TurtleNestDisturbanceObservationEncounterSerializer(ModelSerializer):
+    """TurtleNestDisturbanceObservation serializer with encounter.
+    """
+    encounter = FastEncounterSerializer(read_only=True)
+
+    class Meta:
+        model = TurtleNestDisturbanceObservation
+        fields = "__all__"
+
+    def validate(self, data):
+        """Raise ValidateError on missing Encounter (encounter PK or source & source_id value).
+        """
+        if 'encounter' not in self.initial_data and (
+            'source' not in self.initial_data and 'source_id' not in self.initial_data
+        ):
+            raise ValidationError('Encounter reference is required')
+        if 'encounter' in self.initial_data:
+            if not Encounter.objects.filter(pk=self.initial_data['encounter']).exists():
+                raise ValidationError(
+                    "Encounter {} does not exist.".format(self.initial_data['encounter'])
+                )
+        if 'source' in self.initial_data and 'source_id' in self.initial_data:
+            if not Encounter.objects.filter(source=self.initial_data["source"], source_id=self.initial_data["source_id"]).exists():
+                raise ValidationError(
+                    "Encounter with source {} and source_id {} does not exist.".format(
+                        self.initial_data["source"],
+                        self.initial_data["source_id"])
+                )
+        return data
+
+    def create(self, validated_data):
+        """Create one new object, resolve Encounter from either PK or source & source_id.
+        """
+        if 'encounter' in self.initial_data:
+            validated_data["encounter"] = Encounter.objects.get(pk=self.initial_data['encounter'])
+        else:
+            validated_data["encounter"] = Encounter.objects.get(
+                source=self.initial_data["source"], source_id=self.initial_data["source_id"])
+        return TurtleNestDisturbanceObservation.objects.create(**validated_data)
 
 
 class HatchlingMorphometricObservationSerializer(ModelSerializer):
