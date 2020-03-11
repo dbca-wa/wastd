@@ -1,6 +1,4 @@
-from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet
 
 from .models import User
@@ -28,3 +26,12 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     uid_field = "username"
     model = User
+    filterset_fields = ['username', 'nickname', 'email', 'phone']
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+        # TODO: undertake fuzzy string matching on user name/username (if required).
+        name = self.request.query_params.get('name', None)
+        if name is not None:
+            queryset = queryset.filter(name=name)
+        return queryset
