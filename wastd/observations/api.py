@@ -14,6 +14,7 @@ from wastd.observations.models import (
     MediaAttachment,
     NestTagObservation,
     TagObservation,
+    ManagementAction,
     TurtleMorphometricObservation,
     TurtleNestEncounter,
     TurtleNestObservation,
@@ -431,12 +432,32 @@ class TagObservationViewSet(ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
+class NestTagObservationViewSet(ModelViewSet):
+    queryset = NestTagObservation.objects.all()
+    serializer_class = serializers.NestTagObservationEncounterSerializer
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
+                     "status", "flipper_tag_id", "date_nest_laid", "tag_label", "comments"]
+    pagination_class = MyGeoJsonPagination
+
+
+class ManagementActionViewSet(ModelViewSet):
+    queryset = ManagementAction.objects.all()
+    serializer_class = serializers.ManagementActionSerializer
+
+
 class TurtleMorphometricObservationViewSet(ModelViewSet):
     queryset = TurtleMorphometricObservation.objects.all()
     serializer_class = serializers.TurtleMorphometricObservationEncounterSerializer
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
                      "encounter__status"]
     search_fields = ("comments", )
+    pagination_class = MyGeoJsonPagination
+
+
+class HatchlingMorphometricObservationEncounterViewSet(ModelViewSet):
+    queryset = HatchlingMorphometricObservation.objects.all()
+    serializer_class = serializers.HatchlingMorphometricObservationEncounterSerializer
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
     pagination_class = MyGeoJsonPagination
 
 
@@ -532,26 +553,11 @@ class TurtleNestObservationViewSet(ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
-class NestTagObservationViewSet(ModelViewSet):
-    queryset = NestTagObservation.objects.all()
-    serializer_class = serializers.NestTagObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
-                     "status", "flipper_tag_id", "date_nest_laid", "tag_label", "comments"]
-    pagination_class = MyGeoJsonPagination
-
-
 class TurtleNestDisturbanceObservationEncounterViewSet(ModelViewSet):
     queryset = TurtleNestDisturbanceObservation.objects.all()
     serializer_class = serializers.TurtleNestDisturbanceObservationEncounterSerializer
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
                      "disturbance_cause", "disturbance_cause_confidence", "disturbance_severity", ]
-    pagination_class = MyGeoJsonPagination
-
-
-class HatchlingMorphometricObservationEncounterViewSet(ModelViewSet):
-    queryset = HatchlingMorphometricObservation.objects.all()
-    serializer_class = serializers.HatchlingMorphometricObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
     pagination_class = MyGeoJsonPagination
 
 
