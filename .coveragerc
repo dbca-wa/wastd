@@ -1,7 +1,10 @@
 [run]
 omit =
+    wastd/observations/utils.py
+    wastd/observations/templatetags/observations.py
     wastd/users/adapters.py
     wastd/templates/*
+    shared/dashboard.py
     *migrations*
     *tests*
     venv/*
@@ -13,6 +16,8 @@ omit =
     docs_source/*
     *grappelli*
     */__init__.py
+    */widgets.py
+    */apps.py
     *.html
     fabfile.py
     manage.py
