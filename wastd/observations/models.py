@@ -2978,8 +2978,7 @@ class TagObservation(Observation):
         help_text=_("Any other comments or notes."),)
 
     def __str__(self):
-        """The unicode representation."""
-        return u"{0} {1} {2} on {3}".format(
+        return "{0} {1} {2} on {3}".format(
             self.get_tag_type_display(),
             self.name,
             self.get_status_display(),
