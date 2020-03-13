@@ -97,7 +97,7 @@ def test():
     local('coverage run --source="." manage.py test'
           ' --settings=config.settings.test --parallel 4 --keepdb -v 2'  # --noinput to drop db
           ' && coverage report -m', shell='/bin/bash')
-    #local('coveralls')
+    local('coveralls')
     print(green("Completed running tests."))
 
 
