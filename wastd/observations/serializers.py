@@ -1,5 +1,4 @@
-from rest_framework.serializers import ModelSerializer, ReadOnlyField, FileField, ValidationError
-from rest_framework_gis.fields import GeometryField
+from rest_framework.serializers import ModelSerializer, ReadOnlyField, ValidationError
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from wastd.users.api import FastUserSerializer
@@ -160,6 +159,32 @@ class ObservationSerializer(ModelSerializer):
                 source=self.initial_data['source'], source_id=self.initial_data['source_id'])
         return self.Meta.model.objects.create(**validated_data)
 
+    def save(self):
+        """Override the save method in order to prevent 'duplicate' instances being created by
+        the API endpoints. We override save in order to avoid duplicate by either create or update.
+        """
+        if 'encounter' in self.initial_data:
+            self.validated_data['encounter'] = Encounter.objects.get(pk=self.initial_data['encounter'])
+        else:
+            self.validated_data['encounter'] = Encounter.objects.get(
+                source=self.initial_data['source'], source_id=self.initial_data['source_id'])
+        # Gate check: we want to ensure that duplicate objects are not created.
+        #
+        duplicates = self.Meta.model.objects.filter(**self.validated_data)
+        if duplicates.exists():
+            if duplicates.count() == 1:
+                # Just return the single existing duplicate instance.
+                # TODO: work out how we might return HTTP status 200 instead of 201.
+                return self.Meta.model.objects.get(**self.validated_data)
+            else:
+                # Passed-in data matches >1 existing instance, so raise a validation error.
+                raise ValidationError("{}: existing duplicate(s) with {} ".format(
+                    self.Meta.model._meta.label, str(**self.validated_data)
+                ))
+        else:
+            # Create the new, unique instance.
+            return self.Meta.model.objects.create(**self.validated_data)
+
 
 class MediaAttachmentSerializer(ObservationSerializer):
 
@@ -305,48 +330,42 @@ class LightSourceObservationEncounterSerializer(ObservationSerializer):
         )
 
 
-class TurtleDamageObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
+class TurtleDamageObservationSerializer(ObservationSerializer):
 
     class Meta:
         model = TurtleDamageObservation
         fields = ("observation_name", "body_part", "damage_type", "damage_age", "description")
 
 
-class TrackTallyObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
+class TrackTallyObservationSerializer(ObservationSerializer):
 
     class Meta:
         model = TrackTallyObservation
         fields = ("observation_name", "species", "nest_type")
 
 
-class TurtleNestDisturbanceTallyObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
+class TurtleNestDisturbanceTallyObservationSerializer(ObservationSerializer):
 
     class Meta:
         model = TurtleNestDisturbanceTallyObservation
         fields = ("observation_name", "species", "disturbance_cause")
 
 
-class TemperatureLoggerSettingsSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
+class TemperatureLoggerSettingsSerializer(ObservationSerializer):
 
     class Meta:
         model = TemperatureLoggerSettings
         fields = ("observation_name", "logging_interval", "recording_start", "tested")
 
 
-class DispatchRecordSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
+class DispatchRecordSerializer(ObservationSerializer):
 
     class Meta:
         model = DispatchRecord
         fields = ("observation_name", "sent_to")
 
 
-class TemperatureLoggerDeploymentSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
+class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
 
     class Meta:
         model = TemperatureLoggerDeployment
@@ -362,8 +381,7 @@ class TemperatureLoggerDeploymentSerializer(ModelSerializer):
         )
 
 
-class DugongMorphometricObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
+class DugongMorphometricObservationSerializer(ObservationSerializer):
 
     class Meta:
         model = DugongMorphometricObservation
