@@ -31,6 +31,9 @@ from wastd.observations.models import (
 )
 
 
+#-----------------------------------------------------------------------------#
+# Areas, Surveys
+#-----------------------------------------------------------------------------#
 class AreaSerializer(GeoFeatureModelSerializer):
 
     class Meta:
@@ -87,9 +90,14 @@ class FastSurveySerializer(ModelSerializer):
         ]
 
 
+#-----------------------------------------------------------------------------#
+# Encounter
+#-----------------------------------------------------------------------------#
 class EncounterSerializer(GeoFeatureModelSerializer):
     """Encounter serializer.
     """
+    area = FastAreaSerializer(many=False)
+    site = FastAreaSerializer(many=False)
 
     class Meta:
         """The non-standard name `where` is declared as the geo field for the
@@ -108,6 +116,8 @@ class EncounterSerializer(GeoFeatureModelSerializer):
 class FastEncounterSerializer(EncounterSerializer):
     """Faster encounter serializer.
     """
+    area = FastAreaSerializer(many=False)
+    site = FastAreaSerializer(many=False)
 
     class Meta(EncounterSerializer.Meta):
         fields = (
@@ -116,7 +126,105 @@ class FastEncounterSerializer(EncounterSerializer):
             "encounter_type", "leaflet_title", "latitude", "longitude", "crs"
         )
 
+class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
+    """Encounter serializer with pk, source, source_id, where, when, status.
 
+    Use this serializer to retrieve a filtered set of Encounter ``source_id``
+    values to split data imports into create / update / skip.
+
+    @see https://github.com/dbca-wa/wastd/issues/253
+    """
+
+    class Meta:
+        """The non-standard name `where` is declared as the geo field for the
+        GeoJSON serializer's benefit.
+        """
+        model = Encounter
+        name = "encounter"
+        fields = ("pk", "where", "when", "status", "source", "source_id", )
+        geo_field = "where"
+        id_field = "source_id"
+
+
+class AnimalEncounterSerializer(EncounterSerializer):
+    """AnimalEncounter Serializer.
+
+    Omitted are performace bombs: photographs, observation_set, tx_logs.
+    
+    * photographs = MediaAttachments
+    * Observations = specific observation seralizers
+    """
+    # photographs = MediaAttachmentSerializer(many=True, read_only=False)
+    # tx_logs = ReadOnlyField()
+
+    area = FastAreaSerializer(many=False)
+    site = FastAreaSerializer(many=False)
+
+    class Meta:
+        model = AnimalEncounter
+        fields = ("pk", "area", "site", "survey", "source", "source_id",
+                  "encounter_type", "leaflet_title",
+                  "status", "observer", "reporter", "comments",
+                  "where", "latitude", "longitude", "crs", "location_accuracy",
+                  "when", "name",
+                  "name", "taxon", "species", "health", "sex", "maturity", "behaviour",
+                  "habitat", "activity", "nesting_event",
+                  "checked_for_injuries",
+                  "scanned_for_pit_tags",
+                  "checked_for_flipper_tags",
+                  "cause_of_death", "cause_of_death_confidence",
+                  "absolute_admin_url", #"photographs", "tx_logs",
+                  # "observation_set", 
+                  )
+        geo_field = "where"
+        id_field = "source_id"
+
+
+class TurtleNestEncounterSerializer(EncounterSerializer):
+    # photographs = MediaAttachmentSerializer(many=True, read_only=False)
+    # tx_logs = ReadOnlyField()
+
+    area = FastAreaSerializer(many=False)
+    site = FastAreaSerializer(many=False)
+
+    class Meta:
+        model = TurtleNestEncounter
+        fields = ("pk", "area", "site", "survey", "source", "source_id",
+                  "encounter_type", "leaflet_title",
+                  "status", "observer", "reporter", "comments",
+                  "where", "latitude", "longitude", "crs", "location_accuracy",
+                  "when", "name",
+                  "nest_age", "nest_type", "species", "habitat", "disturbance",
+                  "comments",
+                  "absolute_admin_url", #"photographs", "tx_logs",
+                  # "observation_set",
+                  )
+        geo_field = "where"
+
+
+class LoggerEncounterSerializer(EncounterSerializer):
+
+    area = FastAreaSerializer(many=False)
+    site = FastAreaSerializer(many=False)
+
+    class Meta:
+        model = LoggerEncounter
+        fields = ("pk", "area", "site", "survey", "source", "source_id",
+                  "encounter_type", "leaflet_title",
+                  "status", "observer", "reporter", "comments",
+                  "where", "latitude", "longitude", "crs", "location_accuracy",
+                  "when", "name",
+                  "deployment_status", "comments",
+                  "comments",
+                  "absolute_admin_url",
+                  # "observation_set", 
+                  )
+        geo_field = "where"
+
+
+#-----------------------------------------------------------------------------#
+# Observations
+#-----------------------------------------------------------------------------#
 class ObservationSerializer(ModelSerializer):
     """A serializer class for an Observation model associated with an Encounter.
     Should also be resuable for serializing other model classes that inherit from
@@ -141,7 +249,10 @@ class ObservationSerializer(ModelSerializer):
                     'Encounter {} does not exist.'.format(self.initial_data['encounter'])
                 )
         if 'source' in self.initial_data and 'source_id' in self.initial_data:
-            if not Encounter.objects.filter(source=self.initial_data['source'], source_id=self.initial_data['source_id']).exists():
+            if not Encounter.objects.filter(
+                source=self.initial_data['source'], 
+                source_id=self.initial_data['source_id']
+                ).exists():
                 raise ValidationError(
                     'Encounter with source {} and source_id {} does not exist.'.format(
                         self.initial_data['source'],
@@ -392,81 +503,6 @@ class DugongMorphometricObservationSerializer(ObservationSerializer):
                   "tusks_found",
                   )
 
-
-class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
-    """Encounter serializer with pk, source, source_id, where, when, status.
-
-    Use this serializer to retrieve a filtered set of Encounter ``source_id``
-    values to split data imports into create / update / skip.
-
-    @see https://github.com/dbca-wa/wastd/issues/253
-    """
-
-    class Meta:
-        """The non-standard name `where` is declared as the geo field for the
-        GeoJSON serializer's benefit.
-        """
-        model = Encounter
-        name = "encounter"
-        fields = ("pk", "where", "when", "status", "source", "source_id", )
-        geo_field = "where"
-        id_field = "source_id"
-
-
-class AnimalEncounterSerializer(EncounterSerializer):
-    photographs = MediaAttachmentSerializer(many=True, read_only=False)
-    tx_logs = ReadOnlyField()
-
-    class Meta:
-        model = AnimalEncounter
-        fields = ("pk", "area", "site", "survey", "source", "source_id",
-                  "encounter_type", "leaflet_title",
-                  "status", "observer", "reporter", "comments",
-                  "where", "latitude", "longitude", "crs", "location_accuracy",
-                  "when", "name",
-                  "name", "taxon", "species", "health", "sex", "maturity", "behaviour",
-                  "habitat", "activity", "nesting_event",
-                  "checked_for_injuries",
-                  "scanned_for_pit_tags",
-                  "checked_for_flipper_tags",
-                  "cause_of_death", "cause_of_death_confidence",
-                  "absolute_admin_url", "photographs", "tx_logs",
-                  "observation_set", )
-        geo_field = "where"
-        id_field = "source_id"
-
-
-class TurtleNestEncounterSerializer(EncounterSerializer):
-
-    class Meta:
-        model = TurtleNestEncounter
-        fields = ("pk", "area", "site", "survey", "source", "source_id",
-                  "encounter_type", "leaflet_title",
-                  "status", "observer", "reporter", "comments",
-                  "where", "latitude", "longitude", "crs", "location_accuracy",
-                  "when", "name",
-                  "nest_age", "nest_type", "species", "habitat", "disturbance",
-                  "comments",
-                  "absolute_admin_url",
-                  # "observation_set",
-                  )
-        geo_field = "where"
-
-
-class LoggerEncounterSerializer(EncounterSerializer):
-
-    class Meta:
-        model = LoggerEncounter
-        fields = ("pk", "area", "site", "survey", "source", "source_id",
-                  "encounter_type", "leaflet_title",
-                  "status", "observer", "reporter", "comments",
-                  "where", "latitude", "longitude", "crs", "location_accuracy",
-                  "when", "name",
-                  "deployment_status", "comments",
-                  "comments",
-                  "absolute_admin_url",
-                  "observation_set", )
-        geo_field = "where"
 
 
 class TagObservationSerializer(ModelSerializer):
