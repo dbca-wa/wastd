@@ -98,6 +98,9 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     """
     area = FastAreaSerializer(many=False)
     site = FastAreaSerializer(many=False)
+    survey = FastSurveySerializer(many=False)
+    observer = FastUserSerializer(many=False)
+    reporter = FastUserSerializer(many=False)
 
     class Meta:
         """The non-standard name `where` is declared as the geo field for the
@@ -105,10 +108,28 @@ class EncounterSerializer(GeoFeatureModelSerializer):
         """
         model = Encounter
         fields = (
-            "pk", "area", "site", "survey", "where", "location_accuracy", "when",
-            "name", "observer", "reporter", "comments", "status", "source", "source_id",
-            "encounter_type", "leaflet_title", "latitude", "longitude", "crs", "absolute_admin_url",
-            "photographs", "tx_logs"
+            "pk", 
+            "area", 
+            "site", 
+            "survey", 
+            "where", 
+            "location_accuracy", 
+            "when",
+            "name", 
+            "observer", 
+            "reporter", 
+            "comments", 
+            "status", 
+            "source", 
+            "source_id",
+            "encounter_type", 
+            "leaflet_title", 
+            "latitude", 
+            "longitude", 
+            "crs", 
+            "absolute_admin_url",
+            "photographs", 
+            "tx_logs"
         )
         geo_field = "where"
 
@@ -116,14 +137,31 @@ class EncounterSerializer(GeoFeatureModelSerializer):
 class FastEncounterSerializer(EncounterSerializer):
     """Faster encounter serializer.
     """
-    area = FastAreaSerializer(many=False)
-    site = FastAreaSerializer(many=False)
+    # area = FastAreaSerializer(many=False)
+    # site = FastAreaSerializer(many=False)
+    # survey = FastSurveySerializer(many=False)
+
 
     class Meta(EncounterSerializer.Meta):
         fields = (
-            "pk", "area", "site", "survey", "location_accuracy", "when",
-            "name", "observer", "reporter", "comments", "status", "source", "source_id",
-            "encounter_type", "leaflet_title", "latitude", "longitude", "crs"
+            "pk", 
+            "area", 
+            "site", 
+            "survey", 
+            "location_accuracy", 
+            "when",
+            "name", 
+            "observer", 
+            "reporter", 
+            "comments", 
+            "status", 
+            "source", 
+            "source_id",
+            "encounter_type", 
+            "leaflet_title", 
+            "latitude", 
+            "longitude", 
+            "crs"
         )
 
 class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
@@ -159,6 +197,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
 
     area = FastAreaSerializer(many=False)
     site = FastAreaSerializer(many=False)
+    survey = FastSurveySerializer(many=False)
 
     class Meta:
         model = AnimalEncounter
@@ -186,6 +225,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
 
     area = FastAreaSerializer(many=False)
     site = FastAreaSerializer(many=False)
+    survey = FastSurveySerializer(many=False)
 
     class Meta:
         model = TurtleNestEncounter
@@ -206,6 +246,7 @@ class LoggerEncounterSerializer(EncounterSerializer):
 
     area = FastAreaSerializer(many=False)
     site = FastAreaSerializer(many=False)
+    survey = FastSurveySerializer(many=False)
 
     class Meta:
         model = LoggerEncounter
@@ -356,18 +397,32 @@ class TurtleMorphometricObservationEncounterSerializer(ObservationSerializer):
     class Meta:
         model = TurtleMorphometricObservation
         fields = (
-            'pk', "encounter", "latitude", "longitude",
-            "curved_carapace_length_mm", "curved_carapace_length_accuracy",
-            "straight_carapace_length_mm", "straight_carapace_length_accuracy",
-            "curved_carapace_width_mm", "curved_carapace_width_accuracy",
-            "tail_length_carapace_mm", "tail_length_carapace_accuracy",
-            "tail_length_vent_mm", "tail_length_vent_accuracy",
-            "tail_length_plastron_mm", "tail_length_plastron_accuracy",
-            "maximum_head_width_mm", "maximum_head_width_accuracy",
-            "maximum_head_length_mm", "maximum_head_length_accuracy",
-            "body_depth_mm", "body_depth_accuracy",
-            "body_weight_g", "body_weight_accuracy",
-            "handler", "recorder",
+            'pk', 
+            "encounter", 
+            "latitude", 
+            "longitude",
+            "curved_carapace_length_mm", 
+            "curved_carapace_length_accuracy",
+            "straight_carapace_length_mm", 
+            "straight_carapace_length_accuracy",
+            "curved_carapace_width_mm", 
+            "curved_carapace_width_accuracy",
+            "tail_length_carapace_mm", 
+            "tail_length_carapace_accuracy",
+            "tail_length_vent_mm", 
+            "tail_length_vent_accuracy",
+            "tail_length_plastron_mm", 
+            "tail_length_plastron_accuracy",
+            "maximum_head_width_mm", 
+            "maximum_head_width_accuracy",
+            "maximum_head_length_mm", 
+            "maximum_head_length_accuracy",
+            "body_depth_mm", 
+            "body_depth_accuracy",
+            "body_weight_g", 
+            "body_weight_accuracy",
+            "handler", 
+            "recorder",
         )
 
 
