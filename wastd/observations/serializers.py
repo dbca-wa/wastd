@@ -301,14 +301,27 @@ class MediaAttachmentSerializer(ObservationSerializer):
 
     class Meta:
         model = MediaAttachment
-        fields = ('pk', 'media_type', 'title', 'attachment')
+        fields = (
+            'pk', 
+            'media_type', 
+            'title', 
+            'attachment'
+        )
 
 
 class TagObservationEncounterSerializer(ObservationSerializer):
 
     class Meta:
         model = TagObservation
-        fields = ('pk', 'encounter', 'tag_type', 'name', 'tag_location', 'status', 'comments')
+        fields = (
+            'pk', 
+            'encounter', 
+            'tag_type', 
+            'name', 
+            'tag_location', 
+            'status', 
+            'comments'
+        )
 
 
 class NestTagObservationEncounterSerializer(ObservationSerializer):
@@ -316,14 +329,26 @@ class NestTagObservationEncounterSerializer(ObservationSerializer):
     class Meta:
         model = NestTagObservation
         fields = (
-            'pk', 'encounter', 'status', 'flipper_tag_id', 'date_nest_laid', 'tag_label', 'comments')
+            'pk', 
+            'encounter', 
+            'status', 
+            'flipper_tag_id', 
+            'date_nest_laid', 
+            'tag_label', 
+            'comments'
+        )
 
 
 class ManagementActionSerializer(ObservationSerializer):
 
     class Meta:
         model = ManagementAction
-        fields = ('pk', 'encounter', 'management_actions', 'comments')
+        fields = (
+            'pk', 
+            # 'encounter', 
+            'management_actions', 
+            'comments'
+        )
 
 
 class TurtleMorphometricObservationEncounterSerializer(ObservationSerializer):
@@ -331,7 +356,7 @@ class TurtleMorphometricObservationEncounterSerializer(ObservationSerializer):
     class Meta:
         model = TurtleMorphometricObservation
         fields = (
-            "encounter", "latitude", "longitude",
+            'pk', "encounter", "latitude", "longitude",
             "curved_carapace_length_mm", "curved_carapace_length_accuracy",
             "straight_carapace_length_mm", "straight_carapace_length_accuracy",
             "curved_carapace_width_mm", "curved_carapace_width_accuracy",
@@ -351,6 +376,7 @@ class HatchlingMorphometricObservationEncounterSerializer(ObservationSerializer)
     class Meta:
         model = HatchlingMorphometricObservation
         fields = (
+            'pk', 
             'encounter',
             'latitude',
             'longitude',
@@ -365,8 +391,12 @@ class TurtleNestDisturbanceObservationEncounterSerializer(ObservationSerializer)
     class Meta:
         model = TurtleNestDisturbanceObservation
         fields = (
-            'pk', 'encounter', 'disturbance_cause', 'disturbance_cause_confidence',
-            'disturbance_severity', 'comments',
+            'pk', 
+            'encounter', 
+            'disturbance_cause', 
+            'disturbance_cause_confidence',
+            'disturbance_severity', 
+            'comments',
         )
 
 
@@ -375,14 +405,31 @@ class TurtleNestObservationEncounterSerializer(ObservationSerializer):
     class Meta:
         model = TurtleNestObservation
         fields = (
-            'pk', 'encounter', 'observation_name', 'latitude', 'longitude',
-            'nest_position', 'eggs_laid', 'egg_count',
-            'hatching_success', 'emergence_success',
-            'no_egg_shells', 'no_live_hatchlings_neck_of_nest', 'no_live_hatchlings',
-            'no_dead_hatchlings', 'no_undeveloped_eggs',
-            'no_unhatched_eggs', 'no_unhatched_term', 'no_depredated_eggs',
-            'nest_depth_top', 'nest_depth_bottom',
-            'sand_temp', 'air_temp', 'water_temp', 'egg_temp', 'comments',
+            'pk', 
+            'encounter', 
+            'observation_name', 
+            'latitude', 
+            'longitude',
+            'nest_position', 
+            'eggs_laid', 
+            'egg_count',
+            'hatching_success', 
+            'emergence_success',
+            'no_egg_shells', 
+            'no_live_hatchlings_neck_of_nest', 
+            'no_live_hatchlings',
+            'no_dead_hatchlings', 
+            'no_undeveloped_eggs',
+            'no_unhatched_eggs', 
+            'no_unhatched_term', 
+            'no_depredated_eggs',
+            'nest_depth_top', 
+            'nest_depth_bottom',
+            'sand_temp', 
+            'air_temp', 
+            'water_temp', 
+            'egg_temp', 
+            'comments',
         )
 
 
@@ -391,6 +438,7 @@ class TurtleHatchlingEmergenceObservationEncounterSerializer(ObservationSerializ
     class Meta:
         model = TurtleHatchlingEmergenceObservation
         fields = (
+            'pk', 
             'encounter',
             'observation_name',
             'latitude',
@@ -416,6 +464,7 @@ class TurtleHatchlingEmergenceOutlierObservationEncounterSerializer(ObservationS
     class Meta:
         model = TurtleHatchlingEmergenceOutlierObservation
         fields = (
+            'pk', 
             "encounter",
             "observation_name",
             "latitude",
@@ -431,6 +480,7 @@ class LightSourceObservationEncounterSerializer(ObservationSerializer):
     class Meta:
         model = LightSourceObservation
         fields = (
+            'pk', 
             "encounter",
             "observation_name",
             "latitude",
@@ -445,35 +495,62 @@ class TurtleDamageObservationSerializer(ObservationSerializer):
 
     class Meta:
         model = TurtleDamageObservation
-        fields = ("observation_name", "body_part", "damage_type", "damage_age", "description")
+        fields = (
+            'pk', 
+            "observation_name", 
+            "body_part", 
+            "damage_type", 
+            "damage_age", 
+            "description"
+        )
 
 
 class TrackTallyObservationSerializer(ObservationSerializer):
 
     class Meta:
         model = TrackTallyObservation
-        fields = ("observation_name", "species", "nest_type")
+        fields = (
+            'pk', 
+            "observation_name", 
+            "species", 
+            "nest_type"
+        )
 
 
 class TurtleNestDisturbanceTallyObservationSerializer(ObservationSerializer):
 
     class Meta:
         model = TurtleNestDisturbanceTallyObservation
-        fields = ("observation_name", "species", "disturbance_cause")
+        fields = (
+            'pk', 
+            "observation_name", 
+            "species", 
+            "disturbance_cause"
+        )
 
 
 class TemperatureLoggerSettingsSerializer(ObservationSerializer):
 
     class Meta:
         model = TemperatureLoggerSettings
-        fields = ("observation_name", "logging_interval", "recording_start", "tested")
+        fields = (
+            'pk', 
+            "observation_name", 
+            "logging_interval", 
+            "recording_start", 
+            "tested"
+        )
 
 
 class DispatchRecordSerializer(ObservationSerializer):
 
     class Meta:
         model = DispatchRecord
-        fields = ("observation_name", "sent_to")
+        fields = (
+            'pk', 
+            "observation_name", 
+            "sent_to"
+        )
 
 
 class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
@@ -481,6 +558,7 @@ class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
     class Meta:
         model = TemperatureLoggerDeployment
         fields = (
+            'pk', 
             "observation_name",
             "depth_mm",
             "marker1_present",
@@ -496,12 +574,14 @@ class DugongMorphometricObservationSerializer(ObservationSerializer):
 
     class Meta:
         model = DugongMorphometricObservation
-        fields = ("observation_name",
-                  "body_length_mm",
-                  "body_girth_mm",
-                  "tail_fluke_width_mm",
-                  "tusks_found",
-                  )
+        fields = (
+            'pk', 
+            "observation_name",
+            "body_length_mm",
+            "body_girth_mm",
+            "tail_fluke_width_mm",
+            "tusks_found",
+        )
 
 
 
@@ -510,9 +590,15 @@ class TagObservationSerializer(ModelSerializer):
 
     class Meta:
         model = TagObservation
-        fields = ("observation_name",  # "as_latex",
-                  "tag_type", "name", "tag_location",
-                  "status", "comments", )
+        fields = (
+            'pk', 
+            "observation_name",  # "as_latex",
+            "tag_type", 
+            "name", 
+            "tag_location",
+            "status", 
+            "comments", 
+        )
 
 
 class TurtleMorphometricObservationSerializer(ModelSerializer):
@@ -520,18 +606,32 @@ class TurtleMorphometricObservationSerializer(ModelSerializer):
 
     class Meta:
         model = TurtleMorphometricObservation
-        fields = ("observation_name",  # "as_latex",
-                  "curved_carapace_length_mm", "curved_carapace_length_accuracy",
-                  "straight_carapace_length_mm", "straight_carapace_length_accuracy",
-                  "curved_carapace_width_mm", "curved_carapace_width_accuracy",
-                  "tail_length_carapace_mm", "tail_length_carapace_accuracy",
-                  "tail_length_vent_mm", "tail_length_vent_accuracy",
-                  "tail_length_plastron_mm", "tail_length_plastron_accuracy",
-                  "maximum_head_width_mm", "maximum_head_width_accuracy",
-                  "maximum_head_length_mm", "maximum_head_length_accuracy",
-                  "body_depth_mm", "body_depth_accuracy",
-                  "body_weight_g", "body_weight_accuracy",
-                  "handler", "recorder", )
+        fields = (
+            'pk', 
+            "observation_name",  # "as_latex",
+            "curved_carapace_length_mm", 
+            "curved_carapace_length_accuracy",
+            "straight_carapace_length_mm", 
+            "straight_carapace_length_accuracy",
+            "curved_carapace_width_mm", 
+            "curved_carapace_width_accuracy",
+            "tail_length_carapace_mm", 
+            "tail_length_carapace_accuracy",
+            "tail_length_vent_mm", 
+            "tail_length_vent_accuracy",
+            "tail_length_plastron_mm", 
+            "tail_length_plastron_accuracy",
+            "maximum_head_width_mm", 
+            "maximum_head_width_accuracy",
+            "maximum_head_length_mm", 
+            "maximum_head_length_accuracy",
+            "body_depth_mm", 
+            "body_depth_accuracy",
+            "body_weight_g", 
+            "body_weight_accuracy",
+            "handler", 
+            "recorder", 
+        )
 
 
 class TurtleNestObservationSerializer(ModelSerializer):
@@ -539,18 +639,32 @@ class TurtleNestObservationSerializer(ModelSerializer):
 
     class Meta:
         model = TurtleNestObservation
-        fields = ("observation_name",  # "as_latex",
-                  "nest_position", "eggs_laid", "egg_count",
-                  "egg_count_calculated",
-                  "no_emerged", "no_egg_shells",
-                  "no_live_hatchlings_neck_of_nest",
-                  "no_live_hatchlings", "no_dead_hatchlings",
-                  "no_undeveloped_eggs", "no_unhatched_eggs",
-                  "no_unhatched_term", "no_depredated_eggs",
-                  "nest_depth_top", "nest_depth_bottom",
-                  "sand_temp", "air_temp", "water_temp", "egg_temp",
-                  "hatching_success", "emergence_success",
-                  "comments")
+        fields = (
+            'pk', 
+            "observation_name",
+            "nest_position", 
+            "eggs_laid", 
+            "egg_count",
+            "egg_count_calculated",
+            "no_emerged", 
+            "no_egg_shells",
+            "no_live_hatchlings_neck_of_nest",
+            "no_live_hatchlings", 
+            "no_dead_hatchlings",
+            "no_undeveloped_eggs", 
+            "no_unhatched_eggs",
+            "no_unhatched_term", 
+            "no_depredated_eggs",
+            "nest_depth_top", 
+            "nest_depth_bottom",
+            "sand_temp", 
+            "air_temp", 
+            "water_temp", 
+            "egg_temp",
+            "hatching_success", 
+            "emergence_success",
+            "comments"
+        )
 
 
 class NestTagObservationSerializer(ModelSerializer):
@@ -558,13 +672,16 @@ class NestTagObservationSerializer(ModelSerializer):
 
     class Meta:
         model = NestTagObservation
-        fields = ("observation_name",  # "as_latex", #
-                  "status",
-                  "flipper_tag_id",
-                  "date_nest_laid",
-                  "tag_label",
-                  "comments",
-                  )
+        fields = (
+            'pk', 
+            "encounter",
+            "observation_name", 
+            "status",
+            "flipper_tag_id",
+            "date_nest_laid",
+            "tag_label",
+            "comments",
+        )
 
 
 class TurtleNestDisturbanceObservationSerializer(ModelSerializer):
@@ -573,6 +690,7 @@ class TurtleNestDisturbanceObservationSerializer(ModelSerializer):
     class Meta:
         model = TurtleNestDisturbanceObservation
         fields = (
+            'pk', 
             "observation_name",
             # "as_latex",
             "disturbance_cause",
@@ -587,11 +705,13 @@ class HatchlingMorphometricObservationSerializer(ModelSerializer):
 
     class Meta:
         model = HatchlingMorphometricObservation
-        fields = ("observation_name",  # "as_latex", #
-                  "straight_carapace_length_mm",
-                  "straight_carapace_width_mm",
-                  "body_weight_g",
-                  )
+        fields = (
+            'pk', 
+            "observation_name",
+            "straight_carapace_length_mm",
+            "straight_carapace_width_mm",
+            "body_weight_g",
+        )
 
 
 class TurtleHatchlingEmergenceObservationSerializer(ModelSerializer):
@@ -600,6 +720,7 @@ class TurtleHatchlingEmergenceObservationSerializer(ModelSerializer):
     class Meta:
         model = TurtleHatchlingEmergenceObservation
         fields = (
+            'pk', 
             "bearing_to_water_degrees",
             "bearing_leftmost_track_degrees",
             "bearing_rightmost_track_degrees",
@@ -623,6 +744,7 @@ class TurtleHatchlingEmergenceOutlierObservationSerializer(ModelSerializer):
         model = TurtleHatchlingEmergenceOutlierObservation
 
         fields = (
+            'pk', 
             "bearing_outlier_track_degrees",
             "outlier_group_size",
             "outlier_track_comment",
@@ -636,6 +758,7 @@ class LightSourceObservationSerializer(ModelSerializer):
     class Meta:
         model = LightSourceObservation
         fields = (
+            'pk', 
             "bearing_light_degrees",
             "light_source_type",
             "light_source_description",
