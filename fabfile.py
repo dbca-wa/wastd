@@ -94,16 +94,19 @@ def pep():
 def test():
     """Run test suite."""
     print(yellow("Running tests..."))
-    local('coverage run --source="." manage.py test'
-          ' --settings=config.settings.test --parallel 4 --keepdb -v 2'  # --noinput to drop db
-          ' && coverage report -m', shell='/bin/bash')
+    local('COVERAGE_PROCESS_START=./.coveragerc coverage run --parallel-mode '
+          '--concurrency=multiprocessing --rcfile=./.coveragerc ' 
+          'manage.py test --settings=config.settings.test --parallel 4 --keepdb -v 2 '
+          '&& coverage report -m', shell='/bin/bash')
     local('coveralls')
     print(green("Completed running tests."))
 
 
 def doc():
     """Compile docs, draw data models and transitions."""
-    local("mkdir -p docs_source/_static && cd docs_source && make clean && make singlehtml && cd ..")
+    local("mkdir -p docs_source/_static && "
+          "cd docs_source && make clean && "
+          "make singlehtml && cd ..")
 
 def dbuild():
     """Build Docker image."""
