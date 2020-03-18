@@ -59,6 +59,7 @@ class OccurrenceAreaPolyViewSet(BatchUpsertViewSet):
     """Occurrence Area viewset.
     """
     model = AreaEncounter
+    queryset = AreaEncounter.objects.all()
     serializer_class = serializers.OccurrenceAreaEncounterPolySerializer
     filter_class = OccurrenceAreaEncounterFilter
     pagination_class = MyGeoJsonPagination
