@@ -48,8 +48,8 @@ class EncounterSerializerTests(TestCase):
                 'source_id': 'uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb',
                 'where': 'POINT (114.0 -21.0)',
                 'when': '2020-01-01 12:00:00',
-                'reporter': self.user.pk,
-                'observer': self.user.pk,
+                'observer_id': self.user.pk,
+                'reporter_id': self.user.pk,
             }
         )
         self.assertEqual(resp.status_code, 201)
@@ -57,7 +57,7 @@ class EncounterSerializerTests(TestCase):
     def test_post_turtlenestencounter(self):
         """Test the POST endpoint for TurtleNestEncounter
         """
-        url = reverse('api:turtlenestencounter-list')
+        url = reverse('api:turtlenestencounter-list') + "?format=json"
         resp = self.client.post(
             url,
             {
@@ -65,8 +65,8 @@ class EncounterSerializerTests(TestCase):
                 'source_id': 'uuid:673f1150-4d60-4cc5-846a-ebca5a98d4eb',
                 'where': 'POINT (114.0 -21.0)',
                 'when': '2020-01-01 12:00:00',
-                'reporter': self.user.pk,
-                'observer': self.user.pk,
+                'observer_id': self.user.pk,
+                'reporter_id': self.user.pk,
                 'nest_age': 'fresh',
                 'nest_type': 'false-crawl',
                 'species': 'chelonia-mydas',
