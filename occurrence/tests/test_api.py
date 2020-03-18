@@ -1,21 +1,25 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import Polygon, Point
 from django.urls import reverse
 from io import BytesIO
 import json
 # from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
-from unittest import skip
+# from unittest import skip
+import uuid
 
 from occurrence.models import (
     AreaEncounter, ObservationGroup, HabitatComposition, PlantCount, CountMethod, CountAccuracy,
-    AnimalObservation, SecondarySigns, FileAttachment, SampleType,
+    AnimalObservation, SecondarySigns, FileAttachment, SampleType, TaxonAreaEncounter,
+    EncounterType,
 )
+from taxonomy.models import Taxon
 
 User = get_user_model()
 
 
-class ObservationGroupSerializerTests(TestCase):
+class AreaEncounterSerializerTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
@@ -26,9 +30,117 @@ class ObservationGroupSerializerTests(TestCase):
         self.client.login(username='testuser', password='pass')
         # token = Token.objects.get(user__username='testuser')
         # self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
-        self.ae = AreaEncounter.objects.create(description='Test AreaEncounter')
+        self.ae = AreaEncounter.objects.create(
+            source_id=uuid.uuid4(),
+            description='Test polygon AreaEncounter',
+            geom=Polygon(((115.0, -32.0), (115.0, -33.0), (116.0, -33.0), (116.0, -32.0), (115.0, -32.0)))
+        )
+        self.ae_point = AreaEncounter.objects.create(
+            source_id=uuid.uuid4(),
+            description='Test point AreaEncounter',
+            point=Point((115.0, -32.0))
+        )
         self.og = ObservationGroup.objects.create(encounter=self.ae)
         self.hc = HabitatComposition.objects.create(encounter=self.ae)
+        self.taxon = Taxon.objects.create(name_id=0, name='Test taxon')
+        self.taxon_ae = TaxonAreaEncounter.objects.create(
+            source_id=uuid.uuid4(),
+            description='Test taxon area encounter',
+            geom=self.ae.geom,
+            taxon=self.taxon
+        )
+        self.enc_type = EncounterType.objects.create(code='enctype', label='Encounter type')
+
+    def test_occ_areas_get(self):
+        for i in ['occurrence_area_polys', 'occurrence_area_points', 'occurrence_taxonarea_polys', 'occurrence_taxonarea_points']:
+            url = reverse('api:{}-list'.format(i))
+            resp = self.client.get(url, {'format': 'json'})
+            self.assertEqual(resp.status_code, 200)
+
+    def test_occ_areas_post(self):
+        url = reverse('api:occurrence_area_polys-list') + '?format=json'
+        resp = self.client.post(
+            url,
+            {
+                'source': 0,
+                'source_id': str(uuid.uuid4()),
+                'code': 'code',
+                'label': 'Label',
+                'name': 'Name',
+                'geom': 'POLYGON ((115 -32, 115 -33, 116 -33, 116 -32, 115 -32))',
+            },
+        )
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.content)
+        url = reverse('api:occurrence_area_polys-detail', kwargs={'pk': data['id']})
+        # Also check the detail view for the new object.
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        self.assertEqual(data['geometry']['type'], 'Polygon')
+
+    def test_occ_points_post(self):
+        url = reverse('api:occurrence_area_points-list')
+        resp = self.client.post(
+            url,
+            {
+                'source': 0,
+                'source_id': str(uuid.uuid4()),
+                'code': 'code',
+                'label': 'Label',
+                'name': 'Name',
+                'point': 'POINT (115 -32)',
+            },
+        )
+        self.assertEqual(resp.status_code, 201)
+
+    def test_occ_taxonareas_post(self):
+        url = reverse('api:occurrence_taxonarea_polys-list') + '?format=json'
+        resp = self.client.post(
+            url,
+            {
+                'source': 0,
+                'source_id': str(uuid.uuid4()),
+                'code': 'code',
+                'label': 'Label',
+                'name': 'Name',
+                'taxon': self.taxon.name_id,
+                'encountered_by': self.user.pk,
+                'encounter_type': self.enc_type.pk,
+                'geom': 'POLYGON ((115 -32, 115 -33, 116 -33, 116 -32, 115 -32))',
+            },
+        )
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.content)
+        url = reverse('api:occurrence_taxonarea_polys-detail', kwargs={'pk': data['id']})
+        # Also check the detail view for the new object.
+        resp = self.client.get(url, {'format': 'json'})
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        self.assertEqual(data['geometry']['type'], 'Polygon')
+
+    def test_occ_taxonpoints_post(self):
+        url = reverse('api:occurrence_taxonarea_points-list')
+        resp = self.client.post(
+            url,
+            {
+                'source': 0,
+                'source_id': str(uuid.uuid4()),
+                'code': 'code',
+                'label': 'Label',
+                'name': 'Name',
+                'taxon': self.taxon.name_id,
+                'encountered_by': self.user.pk,
+                'encounter_type': self.enc_type.pk,
+                'point': 'POINT (115 -32)',
+            },
+        )
+        self.assertEqual(resp.status_code, 201)
+
+class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
+
+    def setUp(self):
+        super(ObservationGroupSerializerTests, self).setUp()
         self.url = reverse('api:occurrence_observation_group-list')
 
     def test_occ_observation_get(self):
