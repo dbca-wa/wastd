@@ -30,6 +30,7 @@ class EncounterSerializerTests(TestCase):
     def test_get_list_endpoints(self):
         for i in [
                 'encounter',
+                'animalencounter',
                 'turtlenestencounter',
         ]:
             url = reverse('api:{}-list'.format(i))
