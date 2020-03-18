@@ -1,4 +1,5 @@
 [run]
+concurrency=multiprocessing
 omit =
     wastd/observations/utils.py
     wastd/observations/templatetags/observations.py
