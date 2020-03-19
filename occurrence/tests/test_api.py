@@ -10,11 +10,10 @@ from rest_framework.test import APIClient
 import uuid
 
 from occurrence.models import (
-    AreaEncounter, ObservationGroup, HabitatComposition, PlantCount, CountMethod, CountAccuracy,
-    AnimalObservation, SecondarySigns, FileAttachment, SampleType, TaxonAreaEncounter,
-    EncounterType,
+    AreaEncounter, ObservationGroup, HabitatComposition, CountMethod, CountAccuracy,
+    EncounterType, SecondarySigns, SampleType, TaxonAreaEncounter, CommunityAreaEncounter,
 )
-from taxonomy.models import Taxon
+from taxonomy.models import Community, Taxon
 
 User = get_user_model()
 
@@ -52,7 +51,10 @@ class AreaEncounterSerializerTests(TestCase):
         self.enc_type = EncounterType.objects.create(code='enctype', label='Encounter type')
 
     def test_occ_areas_get(self):
-        for i in ['occurrence_area_polys', 'occurrence_area_points', 'occurrence_taxonarea_polys', 'occurrence_taxonarea_points']:
+        for i in [
+            'occurrence_area_polys', 'occurrence_area_points', 'occurrence_taxonarea_polys',
+            'occurrence_taxonarea_points', 'occurrence_communityarea_polys', 'occurrence_communityarea_points',
+        ]:
             url = reverse('api:{}-list'.format(i))
             resp = self.client.get(url, {'format': 'json'})
             self.assertEqual(resp.status_code, 200)
@@ -136,6 +138,45 @@ class AreaEncounterSerializerTests(TestCase):
             },
         )
         self.assertEqual(resp.status_code, 201)
+
+    def test_occ_communityareas_post(self):
+        community = Community.objects.create(code='comm1', name='Test community')
+        url = reverse('api:occurrence_communityarea_polys-list')
+        resp = self.client.post(
+            url,
+            {
+                'source': 0,
+                'source_id': str(uuid.uuid4()),
+                'code': 'code',
+                'label': 'Label',
+                'name': 'Name',
+                'community': 'comm1',
+                'encountered_by': self.user.pk,
+                'encounter_type': self.enc_type.pk,
+                'geom': 'POLYGON ((115 -32, 115 -33, 116 -33, 116 -32, 115 -32))',
+            },
+        )
+        self.assertEqual(resp.status_code, 201)
+
+    def test_occ_communitypoints_post(self):
+        community = Community.objects.create(code='comm1', name='Test community')
+        url = reverse('api:occurrence_communityarea_points-list')
+        resp = self.client.post(
+            url,
+            {
+                'source': 0,
+                'source_id': str(uuid.uuid4()),
+                'code': 'code',
+                'label': 'Label',
+                'name': 'Name',
+                'community': 'comm1',
+                'encountered_by': self.user.pk,
+                'encounter_type': self.enc_type.pk,
+                'point': 'POINT (115 -32)',
+            },
+        )
+        self.assertEqual(resp.status_code, 201)
+
 
 class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
 
