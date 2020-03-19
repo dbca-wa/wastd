@@ -12,8 +12,6 @@ from rest_framework.settings import api_settings
 
 from shared.models import QualityControlMixin
 
-# from taxonomy.models import Taxon
-
 logger = logging.getLogger(__name__)
 
 
@@ -101,9 +99,6 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         Override in viewset inheriting from BatchUpsertViewSet.
         """
-        # data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
-        # data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
-        # data["encounter_type"] = occ_models.EncounterType.objects.get(pk=data["encounter_type"])
         return data
 
     def split_data(self, data):

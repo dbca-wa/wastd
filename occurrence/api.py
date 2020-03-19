@@ -1,6 +1,7 @@
 from django.apps import apps
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_filters import FilterSet
+from rest_framework.serializers import ValidationError
 
 from shared.api import BatchUpsertViewSet, MyGeoJsonPagination
 from wastd.users.models import User
@@ -101,9 +102,23 @@ class OccurrenceTaxonAreaEncounterPolyViewSet(BatchUpsertViewSet):
     uid_fields = ("source", "source_id")
 
     def resolve_fks(self, data):
-        """Resolve FKs from PK to object."""
-        data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
+        """Resolve FKs from PK to object.
+        """
+        # Undertake validation for required request params.
+        if 'taxon' not in data:
+            raise ValidationError('taxon is required')
+        elif not Taxon.objects.filter(name_id=data['taxon']).exists():
+            raise ValidationError('Unknown taxon {}'.format(data['taxon']))
+        data['taxon'] = Taxon.objects.get(name_id=data['taxon'])
+        if 'encountered_by' not in data:
+            raise ValidationError('encountered_by is required')
+        elif not User.objects.filter(pk=data['encountered_by']).exists():
+            raise ValidationError('Unknown user {}'.format(data['encountered_by']))
         data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
+        if 'encounter_type' not in data:
+            raise ValidationError('encounter_type is required')
+        elif not EncounterType.objects.filter(pk=data['encounter_type']).exists():
+            raise ValidationError('Unknown encounter type {}'.format(data['encounter_type']))
         data["encounter_type"] = EncounterType.objects.get(pk=data["encounter_type"])
         return data
 
@@ -144,14 +159,23 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
 
     def resolve_fks(self, data):
         """Resolve FKs from PK to object."""
-        try:
-            data["community"] = Community.objects.get(code=data["community"])
-        except Exception as e:
-            print("Exception {0}: community {1} not known,".format(e, data["community"]))
+        # Undertake validation for required request params.
+        if 'community' not in data:
+            raise ValidationError('community is required')
+        elif not Community.objects.filter(code=data["community"]).exists():
+            raise ValidationError('Unknown community {}'.format(data['community']))
+        data['community'] = Community.objects.get(code=data["community"])
+        if 'encountered_by' not in data:
+            raise ValidationError('encountered_by is required')
+        elif not User.objects.filter(pk=data['encountered_by']).exists():
+            raise ValidationError('Unknown user {}'.format(data['encountered_by']))
         data["encountered_by"] = User.objects.get(pk=data["encountered_by"])
+        if 'encounter_type' not in data:
+            raise ValidationError('encounter_type is required')
+        elif not EncounterType.objects.filter(pk=data['encounter_type']).exists():
+            raise ValidationError('Unknown encounter type {}'.format(data['encounter_type']))
         data["encounter_type"] = EncounterType.objects.get(pk=data["encounter_type"])
         return data
-
 
 class OccurrenceCommunityAreaEncounterPointViewSet(OccurrenceCommunityAreaEncounterPolyViewSet):
     """Occurrence CommunityAreaEncounter view set."""
