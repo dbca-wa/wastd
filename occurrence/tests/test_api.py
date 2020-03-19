@@ -11,7 +11,7 @@ import uuid
 
 from occurrence.models import (
     AreaEncounter, ObservationGroup, HabitatComposition, CountMethod, CountAccuracy,
-    EncounterType, SecondarySigns, SampleType, TaxonAreaEncounter, CommunityAreaEncounter,
+    EncounterType, SecondarySigns, SampleType, TaxonAreaEncounter,
 )
 from taxonomy.models import Community, Taxon
 
@@ -98,20 +98,25 @@ class AreaEncounterSerializerTests(TestCase):
 
     def test_occ_taxonareas_post(self):
         url = reverse('api:occurrence_taxonarea_polys-list') + '?format=json'
-        resp = self.client.post(
-            url,
-            {
-                'source': 0,
-                'source_id': str(uuid.uuid4()),
-                'code': 'code',
-                'label': 'Label',
-                'name': 'Name',
-                'taxon': self.taxon.name_id,
-                'encountered_by': self.user.pk,
-                'encounter_type': self.enc_type.pk,
-                'geom': 'POLYGON ((115 -32, 115 -33, 116 -33, 116 -32, 115 -32))',
-            },
-        )
+        # Test the validation of required request params.
+        # This dict is missing taxon, encountered_by and encounter_type.
+        taxon_data = {
+            'source': 0,
+            'source_id': str(uuid.uuid4()),
+            'code': 'code',
+            'label': 'Label',
+            'name': 'Name',
+            'geom': 'POLYGON ((115 -32, 115 -33, 116 -33, 116 -32, 115 -32))',
+        }
+        resp = self.client.post(url, taxon_data)
+        # POST will fail.
+        self.assertEqual(resp.status_code, 400)
+        # Update the dict with required data and re-try.
+        taxon_data['taxon'] = self.taxon.name_id
+        taxon_data['encountered_by'] = self.user.pk
+        taxon_data['encounter_type'] = self.enc_type.pk
+        # POST will now succeed.
+        resp = self.client.post(url, taxon_data)
         self.assertEqual(resp.status_code, 201)
         data = json.loads(resp.content)
         url = reverse('api:occurrence_taxonarea_polys-detail', kwargs={'pk': data['id']})
@@ -140,7 +145,7 @@ class AreaEncounterSerializerTests(TestCase):
         self.assertEqual(resp.status_code, 201)
 
     def test_occ_communityareas_post(self):
-        community = Community.objects.create(code='comm1', name='Test community')
+        Community.objects.create(code='comm1', name='Test community')
         url = reverse('api:occurrence_communityarea_polys-list')
         resp = self.client.post(
             url,
@@ -159,7 +164,7 @@ class AreaEncounterSerializerTests(TestCase):
         self.assertEqual(resp.status_code, 201)
 
     def test_occ_communitypoints_post(self):
-        community = Community.objects.create(code='comm1', name='Test community')
+        Community.objects.create(code='comm1', name='Test community')
         url = reverse('api:occurrence_communityarea_points-list')
         resp = self.client.post(
             url,
