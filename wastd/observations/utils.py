@@ -39,12 +39,14 @@ def int_or_none(string):
     except:
         return None
 
+
 def float_or_none(string):
     """Return the string as Integer or return None."""
     try:
         return float(string)
     except:
         return None
+
 
 def str_or_na(string):
     """Return the string or "na". """
@@ -2501,9 +2503,9 @@ def make_mapping():
         "disturbance": yes_no,
         "nesting": yes_no,
 
-        "overwrite": [t["source_id"] for t in 
+        "overwrite": [t["source_id"] for t in
         Encounter.objects.filter(
-            source="odk", 
+            source="odk",
             status=Encounter.STATUS_NEW
         ).values('source_id')]
     }
@@ -4007,7 +4009,7 @@ def handle_odka_fanangles(enc, media, data):
           ],
 
 
-        # ToN 0.54 
+        # ToN 0.54
         "fan_angles": {
             "photo_hatchling_tracks_seawards": "1547734428418.jpg",
             "photo_hatchling_tracks_relief": "1547734482953.jpg",
@@ -4055,7 +4057,7 @@ def handle_odka_fanangles(enc, media, data):
 
         # outlier_track > outlier_track_photo
         # light_source light_source_photo
-    
+
 
     Returns:
 
@@ -4063,7 +4065,7 @@ def handle_odka_fanangles(enc, media, data):
 
     Examples:
     import os; path = os.path.join(settings.MEDIA_ROOT, "odka"); from wastd.observations.utils import *
-    fa=[import_odka_tt044(x) for x in downloaded_data("test_fanangles", path)] 
+    fa=[import_odka_tt044(x) for x in downloaded_data("test_fanangles", path)]
     tt51=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-51_1517196378", path)]  # 39 fans
     tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)]  # 695 fans
     tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)] # 336 fans
@@ -4076,27 +4078,35 @@ def handle_odka_fanangles(enc, media, data):
             new_data = dict(
                 encounter_id = enc.id,
                 bearing_to_water_degrees = float_or_none(
-                    obs.get("bearing_to_water_manual", None) or 
+                    obs.get("bearing_to_water_manual", None) or
                     obs.get("bearing_to_water_auto", None)
                 ),
                 bearing_leftmost_track_degrees = float_or_none(
-                    obs.get("leftmost_track_manual", None) or 
+                    obs.get("leftmost_track_manual", None) or
                     obs.get("leftmost_track_auto", None)
                 ),
                 bearing_rightmost_track_degrees = float_or_none(
-                    obs.get("rightmost_track_manual", None) or 
+                    obs.get("rightmost_track_manual", None) or
                     obs.get("rightmost_track_auto", None)
                 ),
-                no_tracks_main_group = int_or_none(obs["no_tracks_main_group"]), 
-                no_tracks_main_group_min = int_or_none(obs["no_tracks_main_group_min"]),
-                no_tracks_main_group_max = int_or_none(obs["no_tracks_main_group_max"]), 
-                outlier_tracks_present = str_or_na(obs.get("outlier_tracks_present", "na")),
+                no_tracks_main_group = int_or_none(
+                    obs["no_tracks_main_group"]),
+                no_tracks_main_group_min = int_or_none(
+                    obs["no_tracks_main_group_min"]),
+                no_tracks_main_group_max = int_or_none(
+                    obs["no_tracks_main_group_max"]),
+                outlier_tracks_present = str_or_na(
+                    obs.get("outlier_tracks_present", "na")),
                 path_to_sea_comments = "{0} {1}".format(
                     obs["hatchling_path_to_sea"], obs["path_to_sea_comments"]),
-                hatchling_emergence_time_known = str_or_na(obs["hatchling_emergence_time_known"]),
-                light_sources_present = str_or_na(obs["light_sources_present"]),
-                hatchling_emergence_time = int_or_none(data["hatchling_emergence_time_group"]["hatchling_emergence_time"]),
-                hatchling_emergence_time_accuracy = str_or_na(data["hatchling_emergence_time_group"]["hatchling_emergence_time_source"]),
+                hatchling_emergence_time_known = str_or_na(
+                    obs["hatchling_emergence_time_known"]),
+                light_sources_present = str_or_na(
+                    obs["light_sources_present"]),
+                hatchling_emergence_time = int_or_none(
+                    data["hatchling_emergence_time_group"]["hatchling_emergence_time"]),
+                hatchling_emergence_time_accuracy = str_or_na(
+                    data["hatchling_emergence_time_group"]["hatchling_emergence_time_source"]),
                 cloud_cover_at_emergence = int_or_none(data["emergence_climate"]["cloud_cover_at_emergence"]),
             )
 
@@ -4116,7 +4126,7 @@ def handle_odka_fanangles(enc, media, data):
                 handle_media_attachment_odka(
                     enc, media, obs["photo_hatchling_tracks_seawards"], title="Photo {0}".format(e.__str__()))
 
-            
+
             if obs["photo_hatchling_tracks_relief"]:
                 handle_media_attachment_odka(
                     enc, media, obs["photo_hatchling_tracks_relief"], title="Photo {0}".format(e.__str__()))
@@ -4136,8 +4146,8 @@ def handle_odka_fanangles(enc, media, data):
             new_data = dict(
                     encounter_id = enc.id,
                     bearing_outlier_track_degrees = float_or_none(
-                        obs.get("outlier_track_bearing_manual", None) or 
-                        obs.get("track_bearing_manual", None) or 
+                        obs.get("outlier_track_bearing_manual", None) or
+                        obs.get("track_bearing_manual", None) or
                         obs.get("track_bearing_auto", None)
                     ),
                     outlier_group_size = int_or_none(obs["outlier_group_size"]),
@@ -4178,8 +4188,8 @@ def handle_odka_fanangles(enc, media, data):
             new_data = dict(
                     encounter_id = enc.id,
                     bearing_light_degrees = float_or_none(
-                        obs.get("light_bearing_manual", None) or 
-                        obs.get("light_bearing_auto", None) 
+                        obs.get("light_bearing_manual", None) or
+                        obs.get("light_bearing_auto", None)
                     ),
                     light_source_type = obs["light_source_type"],
                     light_source_description = obs["light_source_description"],
@@ -5391,7 +5401,7 @@ def import_all_odka(path="."):
     Example usage on shell_plus:
 
     import sys; reload(sys); sys.setdefaultencoding('UTF8');
-    import os; path = os.path.join(settings.MEDIA_ROOT, "odka") 
+    import os; path = os.path.join(settings.MEDIA_ROOT, "odka")
     from wastd.observations.utils import *
     save_all_odka(path=path)
     enc = import_all_odka(path="data/odka")

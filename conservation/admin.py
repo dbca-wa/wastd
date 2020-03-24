@@ -218,17 +218,17 @@ class ConservationCategoryAdmin(VersionAdmin):
     """Admin for ConservationCategory."""
 
     list_display = [
-        "code", 
-        "label", 
-        "level", 
-        "short_code", 
-        "description", 
-        "conservation_list", 
+        "code",
+        "label",
+        "level",
+        "short_code",
+        "description",
+        "conservation_list",
         "rank"
     ]
     list_filter = [
-        "level", 
-        "short_code", 
+        "level",
+        "short_code",
         "conservation_list",
         "conservation_list__scope_wa",
         "conservation_list__scope_cmw",
@@ -249,10 +249,10 @@ class ConservationCategoryAdmin(VersionAdmin):
 class ConservationCriterionAdmin(VersionAdmin):
     """Admin for ConservationCriterion."""
     list_display = [
-        "code", 
-        "label", 
-        "description", 
-        "conservation_list", 
+        "code",
+        "label",
+        "description",
+        "conservation_list",
         "rank"
     ]
     list_filter = [

@@ -32,27 +32,27 @@ def update_names():
 def import_odka():
     """Download and import new ODKA submissions."""
     capture_message(
-        "[wastd.observations.tasks.import_odka] Starting ODKA import.", 
+        "[wastd.observations.tasks.import_odka] Starting ODKA import.",
         level="warning"
     )
     path = os.path.join(settings.MEDIA_ROOT, "odka")
     os.makedirs(path, exist_ok=True)
-    
+
     utils.save_all_odka(path=path)
     capture_message(
-        "[wastd.observations.tasks.import_odka] ODKA submissions downloaded.", 
+        "[wastd.observations.tasks.import_odka] ODKA submissions downloaded.",
         level="info"
     )
-    
+
     utils.import_all_odka(path=path)
     capture_message(
-        "[wastd.observations.tasks.import_odka] ODKA submissions imported.", 
+        "[wastd.observations.tasks.import_odka] ODKA submissions imported.",
         level="info"
     )
-    
+
     utils.reconstruct_missing_surveys()
     capture_message(
         "[wastd.observations.tasks.import_odka] "
-        "ODKA surveys reconstructed, task successfully finished.", 
+        "ODKA surveys reconstructed, task successfully finished.",
         level="warning"
     )

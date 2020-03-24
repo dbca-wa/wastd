@@ -118,10 +118,10 @@ class AdminDashboard(Dashboard):
                     collapsible=True,
                     models=(
                         'wastd.observations.models.Encounter',
-                        'wastd.observations.models.AnimalEncounter',  
-                        'wastd.observations.models.TurtleNestEncounter', 
-                        'wastd.observations.models.LineTransectEncounter', 
-                        'wastd.observations.models.LoggerEncounter', 
+                        'wastd.observations.models.AnimalEncounter',
+                        'wastd.observations.models.TurtleNestEncounter',
+                        'wastd.observations.models.LineTransectEncounter',
+                        'wastd.observations.models.LoggerEncounter',
                     ),
                 ),
                 modules.AppList(
@@ -129,27 +129,27 @@ class AdminDashboard(Dashboard):
                     column=2,
                     collapsible=True,
                     models=(
-                        ## Adult animals
+                        # Adult animals:
                         'wastd.observations.models.TagObservation',
                         # TurtleMorphometricObservation
                         # TurtleDamageObservation
-                        
-                        ## Turtle Nests
-                        'wastd.observations.models.TurtleNestObservation', 
-                        'wastd.observations.models.TurtleNestDisturbanceObservation', 
-                        'wastd.observations.models.NestTagObservation',  
+                        #
+                        # Turtle Nests:
+                        'wastd.observations.models.TurtleNestObservation',
+                        'wastd.observations.models.TurtleNestDisturbanceObservation',
+                        'wastd.observations.models.NestTagObservation',
                         # TurtleHatchlingEmergenceObservation
                         # TurtleHatchlingEmergenceOutlierObservation
                         # LightSourceObservation
                         # HatchlingMorphometricObservation
                         # DugongMorphometricObservation
 
-                        ## LineTransects
+                        # LineTransects:
                         # TrackTallyObservation
                         # TurtleNestDisturbanceTallyObservation
-                        
-                        ## Loggers
-                        'wastd.observations.models.LoggerEncounter', 
+
+                        # Loggers
+                        'wastd.observations.models.LoggerEncounter',
                         # TemperatureLoggerSettings
                         # DispatchRecord
                         # TemperatureLoggerDeployment

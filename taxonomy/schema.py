@@ -7,6 +7,8 @@ from taxonomy import models as tax_models
 # ----------------------------------------------------------------------------#
 # Types
 # ----------------------------------------------------------------------------#
+
+
 class CommunityType(DjangoObjectType):
     class Meta:
         model = tax_models.Community
@@ -29,11 +31,11 @@ class CrossreferenceType(DjangoObjectType):
 # ----------------------------------------------------------------------------#
 class Query(object):
     community = graphene.Field(CommunityType,
-                                id=graphene.Int(),
-                                code=graphene.String(),
-                                name=graphene.String(),
-                                description=graphene.String(),
-                                )
+                               id=graphene.Int(),
+                               code=graphene.String(),
+                               name=graphene.String(),
+                               description=graphene.String(),
+                               )
 
     all_communities = graphene.List(CommunityType)
 
@@ -41,7 +43,6 @@ class Query(object):
 
     all_taxa = graphene.List(TaxonType)
     all_crossreferences = graphene.List(CrossreferenceType)
-
 
     def resolve_community(self, info, **kwargs):
         id = kwargs.get('id')
