@@ -1,0 +1,30 @@
+/* make sure HTML is at least as tall as the viewport */
+html{
+    height: 100vh;
+    position:relative;
+}
+
+/* force the BODY element to match the height of the HTML element */
+body{
+    height:100%;
+    background: url('/static/images/80mile.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    /*font-family: 'Open Sans',Arial,Helvetica,Sans-Serif;*/
+}
+
+#grp-context-navigation {background: #eeeeee50;}
+#grp-breadcrumbs > ul > li > a {color: black;}
+/*.grp-changelist-results {background: none !important;}*/
+/*.grp-module {border: none; background: none;}*/
+.grp-pagination > ul > li > a {
+    color: black;
+    background-image: linear-gradient(#eeeeee,#e0e0e0);
+}
+.grp-pagination > ul > li > span.this-page {
+    color: black;
+    font-size: 1.2em;
+    background-image: linear-gradient(#eeeeee,#e0e0e0);
+}
