@@ -654,6 +654,10 @@ SILKY_PYTHON_PROFILER_BINARY = True
 # ------------------------------------------------------------------------------
 
 
+# Pandoc
+# Addressing a build error on GitHub Actions "No pandoc was found"
+os.environ.setdefault('PYPANDOC_PANDOC', '/usr/bin/pandoc')
+
 # Data
 # ------------------------------------------------------------------------------
 # Local cache of downloaded ODK data
