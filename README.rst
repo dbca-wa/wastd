@@ -6,7 +6,7 @@ WAStD / TSC is a co-branded project to house:
 * WA Sea Turtle Database: Sea turtle tagging and nesting census
 * Threatened Species and Communities: conservation listing, recovery planning and occurrences of WA TSCs
 
-.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
+.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-0be857.svg
      :target: https://github.com/pydanny/cookiecutter-django/
      :alt: Built with Cookiecutter Django
 .. image:: https://circleci.com/gh/dbca-wa/wastd.svg?style=svg
@@ -15,7 +15,7 @@ WAStD / TSC is a co-branded project to house:
 .. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
-.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+.. image:: https://img.shields.io/badge/License-MIT-green.svg
      :target: https://opensource.org/licenses/MIT
      :alt: MIT License
 
