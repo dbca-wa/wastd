@@ -2,6 +2,10 @@
 omit =
     wastd/observations/utils.py
     wastd/observations/templates/*
+    wastd/templates/account/*
+    wastd/templates/reports/*
+    wastd/templates/users/*
+    wastd/templates/tx_logs.html
     wastd/users/adapters.py
     shared/dashboard.py
     *migrations*
