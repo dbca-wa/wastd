@@ -37,8 +37,16 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install Pandoc with Latex
-      uses: Ender-events/pandoc@v1
+    #- name: Install Pandoc with Latex
+    #  uses: Ender-events/pandoc@v1
+
+    - name: Install Pandoc
+      uses: r-lib/actions/setup-pandoc@v1
+      with:
+        pandoc-version: '2.7.3'
+
+    - name: Test pandoc
+      run: echo "# Test" | pandoc -t html
 
     - name: Checkout code
       uses: actions/checkout@v2
@@ -46,6 +54,7 @@ jobs:
     - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
+        python setup.py download_pandoc; python setup.py bdist_wheel
         pip install -r requirements/base.txt
         mkdir logs
         touch logs/wastd.log
