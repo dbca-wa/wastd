@@ -25,21 +25,29 @@ jobs:
         postgresql db: wastd
         postgresql user: wastd
         postgresql password: wastd
-    - name: Checkout code
-      uses: actions/checkout@v2
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -qq binutils libproj-dev gdal-bin redis-server
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Pandoc with Latex
+
+    - name: Install Pandoc with Latex
       uses: Ender-events/pandoc@v1
-    - name: Install Dependencies
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Python Dependencies
       run: |
-        sudo apt update
-        sudo apt install -qq binutils libproj-dev gdal-bin redis-server
         python -m pip install --upgrade pip
-        pip install Fabric3
         pip install -r requirements/base.txt
+        mkdir logs
         touch logs/wastd.log
+
     - name: Run Tests
       run: fab test
