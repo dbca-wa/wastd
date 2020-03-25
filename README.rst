@@ -10,7 +10,7 @@ WAStD / TSC is a co-branded project to house:
      :target: https://github.com/pydanny/cookiecutter-django/
      :alt: Built with Cookiecutter Django
 .. image:: https://github.com/dbca-wa/wastd/workflows/Django%20CI/badge.svg?branch=master
-     :target: https://github.com/dbca-wa/wastd/actions?query=workflow%3A%22Django+CI%22
+     :target: https://github.com/dbca-wa/wastd/actions?query=workflow%3ADjangoCI
      :alt: CI status
 .. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
