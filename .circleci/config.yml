@@ -76,7 +76,7 @@ jobs:
           name: Run tests
           command: |
             . venv/bin/activate
-            fab test
+            fab ptest
 
       - store_artifacts:
           path: logs

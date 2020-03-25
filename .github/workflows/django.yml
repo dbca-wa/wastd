@@ -39,6 +39,7 @@ jobs:
 
     #- name: Install Pandoc with Latex
     #  uses: Ender-events/pandoc@v1
+    # Has Latex but fails to include Pandoc in PATH
 
     - name: Install Pandoc
       uses: r-lib/actions/setup-pandoc@v1
