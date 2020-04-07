@@ -552,9 +552,9 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                 'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
                 'fields': (
                     'area', 'site', 'survey',
-                    'where', 
+                    'where',
                     'location_accuracy',
-                    'when', 
+                    'when',
                     'observer', 'reporter',
                     'source', 'source_id',
                 )

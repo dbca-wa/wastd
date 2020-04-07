@@ -1,40 +1,34 @@
 {% extends 'popup/encounter.html' %}
 {% load observations %}
 {% with original as o %}
-
 {% block title %}
-{% if o.species != "na" %}{{ o.get_species_display }}{% else %}Animal Encounter{% endif %}
+    {% if o.species != "na" %}{{ o.get_species_display }}{% else %}Animal Encounter{% endif %}
 {% endblock %}
-
 {% block headlines %}
-<!-- Animal overview -->
-<div class="row"><i class="fa fa-fw fa-heartbeat"></i>
-    {{ o.get_health_display }} {{ o.get_maturity_display }}
-    {{ o.get_sex_display }} on {{ o.get_habitat_display }}
-</div>
+    <!-- Animal overview -->
+    <div class="row"><i class="fa fa-fw fa-heartbeat"></i>
+        {{ o.get_health_display }} {{ o.get_maturity_display }}
+        {{ o.get_sex_display }} on {{ o.get_habitat_display }}
+    </div>
 {% endblock %}
-
 {% block encounterdetails %}
-<!-- Checked for... -->
-<div class="row">
-    <i class="fa fa-fw fa-eye"></i>
-    Damage  {{ o.checked_for_injuries}} <i class="{{ o.checked_for_injuries|fa_observation_icon }}"></i>
-    PIT tags {{ o.scanned_for_pit_tags }} <i class="{{ o.scanned_for_pit_tags|fa_observation_icon }}"></i>
-    Flipper tags {{ o.checked_for_flipper_tags }} <i class="{{ o.checked_for_flipper_tags|fa_observation_icon }}"></i>
-</div>
-
-{% if o.behaviour %}
-<div class="row">
-    <i class="fa fa-fw fa-comment-o"></i> {{ o.behaviour }}
-</div>
-{% endif %}
-
-{% if o.cause_of_death != "na" %}
-<div class="row">
-    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-    {{ o.get_cause_of_death_display }} ({{ o.get_cause_of_death_confidence_display }})
-</div>
-{% endif %}
-
+    <!-- Checked for... -->
+    <div class="row">
+        <i class="fa fa-fw fa-eye"></i>
+        Damage  {{ o.checked_for_injuries}} <i class="{{ o.checked_for_injuries|fa_observation_icon }}"></i>
+        PIT tags {{ o.scanned_for_pit_tags }} <i class="{{ o.scanned_for_pit_tags|fa_observation_icon }}"></i>
+        Flipper tags {{ o.checked_for_flipper_tags }} <i class="{{ o.checked_for_flipper_tags|fa_observation_icon }}"></i>
+    </div>
+    {% if o.behaviour %}
+        <div class="row">
+            <i class="fa fa-fw fa-comment-o"></i> {{ o.behaviour }}
+        </div>
+    {% endif %}
+    {% if o.cause_of_death != "na" %}
+        <div class="row">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            {{ o.get_cause_of_death_display }} ({{ o.get_cause_of_death_confidence_display }})
+        </div>
+    {% endif %}
 {% endblock %}
 {% endwith %}

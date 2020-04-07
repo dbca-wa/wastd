@@ -12,7 +12,7 @@
 #     model = TaxonAreaEncounter
 
 # class CAEWmsLayer(layers.WmsVectorLayer):
-#     model = CommunityAreaEncounter    
+#     model = CommunityAreaEncounter
 
 # # Subclass the WmsMap class and add the layer to it
 # class OccWmsMap(maps.WmsMap):

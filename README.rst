@@ -6,29 +6,22 @@ WAStD / TSC is a co-branded project to house:
 * WA Sea Turtle Database: Sea turtle tagging and nesting census
 * Threatened Species and Communities: conservation listing, recovery planning and occurrences of WA TSCs
 
-.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
+.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-0be857.svg
      :target: https://github.com/pydanny/cookiecutter-django/
      :alt: Built with Cookiecutter Django
-.. image:: https://circleci.com/gh/dbca-wa/wastd.svg?style=svg
-     :target: https://circleci.com/gh/dbca-wa/wastd
-     :alt: Test status
+.. image:: https://github.com/dbca-wa/wastd/workflows/Django%20CI/badge.svg?branch=master
+     :target: https://github.com/dbca-wa/wastd/actions?query=workflow%3ADjangoCI
+     :alt: CI status
 .. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
-.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+.. image:: https://img.shields.io/badge/License-MIT-green.svg
      :target: https://opensource.org/licenses/MIT
      :alt: MIT License
 
 
-Settings
-------------
-
-Moved to settings_.
-
-.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
-
-Basic Commands
---------------
+Admin
+-----
 
 Setting Up Your Users
 ^^^^^^^^^^^^^^^^^^^^^
@@ -46,46 +39,19 @@ For convenience, you can keep your normal user logged in on Chrome and your
 superuser logged in on Firefox (or similar), so that you can see how the site
 behaves for both kinds of users.
 
-Test coverage
-^^^^^^^^^^^^^
 
-To run the tests, check your test coverage, and generate an HTML coverage report::
-
-    $ coverage run manage.py test
-    $ coverage html
-    $ open htmlcov/index.html
-
-Running tests
-~~~~~~~~~~~~~
-
-::
-
-  $ fab test
+Maintenance
+-----------
+RKS instructions
 
 
-Live reloading and Sass CSS compilation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Development
+-----------
 
-Moved to `Live reloading and SASS compilation`_.
+Set up dev
+^^^^^^^^^^
+TODO update instructions.
 
-.. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
-
-
-Deployment - docker-compose
-----------------------i-----
-* Create prod and UAT dbs on a postgres cluster.
-* Set up TSC virtualenv as per instructions below and ``./manage.py migrate``.
-* Environment: Linux with Docker and docker-compose
-* Create a docker-compose file (TODO insert example)
-* ``docker pull dbcawa/wastd``
-* Adjust wastd image number in docker-compose file
-* ``docker-compose down``
-* ``docker-compose up &``
-
-Alternative: use docker swarm.
-
-Deployment - virtualenv
------------------------
 First, create a postgis database on an available database cluster.::
 
     export CLUSTERNAME=sdis
@@ -117,17 +83,9 @@ Then, migrate the database and start the app::
     $ fab migrate
     $ fab go
 
-Upgrade
--------
-
-::
-
-    $ git pull
-    $ fab deploy
-    $ ./hoit
 
 Permissions
------------
+^^^^^^^^^^^
 Source: `SO <https://stackoverflow.com/a/805453/2813717>`_.
 See also `this post <https://stackoverflow.com/a/16409205/2813717>`_.
 
@@ -144,7 +102,7 @@ as long as the admin is in the same group as the webserver, e.g. www-data.
 
 
 Data migration
---------------
+^^^^^^^^^^^^^^
 Restoring a snapshot of the production database to a development environment::
 
     (wastd)florianm@aws-eco-001:~/projects/wastd$ pg_dump -h localhost -p 5443 -U sdis -Fc wastd_8220 > data/wastd.dump

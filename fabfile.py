@@ -94,7 +94,8 @@ def pep():
 def test():
     """Run test suite with coverage reporting."""
     print(yellow("Running tests with coverage..."))
-    local('coverage run manage.py test --settings=config.settings.test --keepdb -v 2 '
+    local('coverage run --source="." manage.py test '
+          '--settings=config.settings.test --keepdb -v 2 '
           '&& coverage report -m', shell='/bin/bash')
     local('coveralls')
     print(green("Completed running tests and reporting test coverage."))
@@ -102,7 +103,8 @@ def test():
 def ptest():
     """Run parallel test suite without coverage."""
     print(yellow("Running parallel tests..."))
-    local('python manage.py test --settings=config.settings.test --parallel 4 --keepdb -v 2 ', 
+    local('python manage.py test --settings=config.settings.test '
+            '--parallel 4 --keepdb -v 2 ', 
           shell='/bin/bash')
     print(green("Completed running tests."))
 
