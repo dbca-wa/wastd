@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements/base.txt
 
 FROM python_libs_wastd
 COPY . .
-RUN python manage.py collectstatic --clear --noinput -l
+RUN python manage.py collectstatic -v 0 --clear --noinput -l
 # USER www-data
 EXPOSE 8080
 HEALTHCHECK --interval=1m --timeout=20s --start-period=10s --retries=3 \

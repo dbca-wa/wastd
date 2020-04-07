@@ -1,25 +1,26 @@
 [run]
-concurrency=multiprocessing
 omit =
     wastd/observations/utils.py
-    wastd/observations/templatetags/observations.py
+    wastd/observations/templates/*
+    wastd/templates/account/*
+    wastd/templates/reports/*
+    wastd/templates/users/*
+    wastd/templates/tx_logs.html
     wastd/users/adapters.py
-    wastd/templates/*
     shared/dashboard.py
     *migrations*
     *tests*
-    venv/*
     *site-packages*
     node_modules/*
     config/*
     htmlcov/*
     docs/*
+    venv/*
     docs_source/*
     *grappelli*
     */__init__.py
     */widgets.py
     */apps.py
-    *.html
     fabfile.py
     manage.py
 plugins =

@@ -308,7 +308,7 @@ class PlantCountAdmin(FSMTransitionMixin, VersionAdmin):
     ]
     form = occ_forms.PlantCountForm
     fsm_field = ['status', ]
-    
+
     fieldsets = (
         (_('Plant count survey'), {
             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),

@@ -31,9 +31,9 @@ from wastd.observations.models import (
 )
 
 
-#-----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 # Areas, Surveys
-#-----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 class AreaSerializer(GeoFeatureModelSerializer):
 
     class Meta:
@@ -90,9 +90,9 @@ class FastSurveySerializer(ModelSerializer):
         ]
 
 
-#-----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 # Encounter
-#-----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 class EncounterSerializer(GeoFeatureModelSerializer):
     """Encounter serializer.
     """
@@ -209,7 +209,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
                   "scanned_for_pit_tags",
                   "checked_for_flipper_tags",
                   "cause_of_death", "cause_of_death_confidence",
-                  "absolute_admin_url", #"photographs", "tx_logs",
+                  "absolute_admin_url",  # "photographs", "tx_logs",
                   # "observation_set",
                   )
         geo_field = "where"
@@ -235,7 +235,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
             "when", "name",
             "nest_age", "nest_type", "species", "habitat", "disturbance",
             "comments",
-            "absolute_admin_url", #"photographs", "tx_logs",
+            "absolute_admin_url",  # "photographs", "tx_logs",
             # "observation_set",
             "observer_id", "reporter_id",
         )
@@ -259,9 +259,9 @@ class LoggerEncounterSerializer(EncounterSerializer):
         geo_field = "where"
 
 
-#-----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 # Observations
-#-----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 class ObservationSerializer(ModelSerializer):
     """A serializer class for an Observation model associated with an Encounter.
     Should also be resuable for serializing other model classes that inherit from
@@ -289,7 +289,7 @@ class ObservationSerializer(ModelSerializer):
             if not Encounter.objects.filter(
                 source=self.initial_data['source'],
                 source_id=self.initial_data['source_id']
-                ).exists():
+            ).exists():
                 raise ValidationError(
                     'Encounter with source {} and source_id {} does not exist.'.format(
                         self.initial_data['source'],
