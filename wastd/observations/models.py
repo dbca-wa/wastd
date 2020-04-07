@@ -29,14 +29,11 @@ from datetime import timedelta
 import slugify
 from dateutil import tz
 from django.contrib.gis.db import models as geo_models
-# from django.core.urlresolvers import reverse
 from django.db import models
-# from durationfield.db.models.fields.duration import DurationField
 from django.db.models.fields import DurationField
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.template import loader
-# from django.contrib.gis.db.models.query import GeoQuerySet
 from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
