@@ -1,7 +1,10 @@
 from django.apps import apps
+import json
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_filters import FilterSet
-from rest_framework.serializers import ValidationError
 
 from shared.api import BatchUpsertViewSet, MyGeoJsonPagination
 from wastd.users.models import User
@@ -35,6 +38,7 @@ from occurrence.models import (
     SampleDestination,
     PermitType,
     ObservationGroup,
+    PhysicalSample,
 )
 
 
@@ -176,6 +180,7 @@ class OccurrenceCommunityAreaEncounterPolyViewSet(BatchUpsertViewSet):
             raise ValidationError('Unknown encounter type {}'.format(data['encounter_type']))
         data["encounter_type"] = EncounterType.objects.get(pk=data["encounter_type"])
         return data
+
 
 class OccurrenceCommunityAreaEncounterPointViewSet(OccurrenceCommunityAreaEncounterPolyViewSet):
     """Occurrence CommunityAreaEncounter view set."""
@@ -400,3 +405,45 @@ class ObservationGroupViewSet(ModelViewSet):
             return apps.get_model("occurrence", model_name).objects.all()
         else:
             return ObservationGroup.objects.all()
+
+    @action(detail=False, methods=['get', 'post'])
+    def bulk_create(self, request):
+        model_name = self.request.query_params.get('obstype', None)
+        if model_name is not None:
+            model_type = apps.get_model("occurrence", model_name)
+        else:
+            model_type = ObservationGroup
+        created_count = 0
+        errors = []
+        encounter_cache = {}
+        sampletype_cache = {}
+        sampledest_cache = {}
+        permittype_cache = {}
+        if model_type == PhysicalSample:
+            for obj in request.data:
+                source = obj['source']
+                source_id = obj['source_id']
+                # Do some caching to reduce DB queries.
+                if '{}|{}'.format(source, source_id) not in encounter_cache:
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                if 'sample_type' in obj and obj['sample_type'] not in sampletype_cache:
+                    sampletype_cache[obj['sample_type']] = SampleType.objects.get(code=obj['sample_type'])
+                if 'sample_destination' in obj and obj['sample_destination'] not in sampledest_cache:
+                    sampledest_cache[obj['sample_destination']] = SampleDestination.objects.get(code=obj['sample_destination'])
+                if 'permit_type' in obj and obj['permit_type'] not in permittype_cache:
+                    permittype_cache[obj['permit_type']] = PermitType.objects.get(code=obj['permit_type'])
+                # GODDAMMIT we can't use bulk_create with a multi-table inherited model.
+                try:
+                    PhysicalSample.objects.create(
+                        encounter=encounter_cache['{}|{}'.format(source, source_id)],
+                        sample_type=sampletype_cache[obj['sample_type']] if 'sample_type' in obj else None,
+                        sample_label=obj['sample_label'] if 'sample_label' in obj else '',
+                        collector_id=obj['collector_id'] if 'collector_id' in obj else '',
+                        sample_destination=sampledest_cache[obj['sample_destination']] if 'sample_destination' in obj else None,
+                        permit_type=permittype_cache[obj['permit_type']] if 'permit_type' in obj else None,
+                        permit_id=obj['permit_id'] if 'permit_id' in obj else '',
+                    )
+                    created_count += 1
+                except:
+                    errors.append(obj)
+        return Response({'model_name': model_name, 'created_count': created_count, 'errors': json.dumps(errors)})
