@@ -1,5 +1,4 @@
 from django.apps import apps
-import json
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
@@ -39,6 +38,7 @@ from occurrence.models import (
     PermitType,
     ObservationGroup,
     PhysicalSample,
+    AnimalObservation,
 )
 
 
@@ -408,9 +408,15 @@ class ObservationGroupViewSet(ModelViewSet):
 
     @action(detail=False, methods=['get', 'post'])
     def bulk_create(self, request):
+        """A custom method to serve as an extra action of this viewset to bulk-create objects.
+        Expects a JSON payload of a list of dicts, each being a valid object.
+        In order to be as fast as possible, the save method is bespoke for each different model type.
+        Unfortunately, we can't call bulk_create so this still needs to save each object individually.
+        TODO: this method could probably be refactored to be more general in nature.
+        """
         model_name = self.request.query_params.get('obstype', None)
         if model_name is not None:
-            model_type = apps.get_model("occurrence", model_name)
+            model_type = apps.get_model('occurrence', model_name)
         else:
             model_type = ObservationGroup
         created_count = 0
@@ -419,6 +425,14 @@ class ObservationGroupViewSet(ModelViewSet):
         sampletype_cache = {}
         sampledest_cache = {}
         permittype_cache = {}
+        detectmethod_cache = {}
+        confidence_cache = {}
+        maturity_cache = {}
+        sex_cache = {}
+        health_cache = {}
+        causedeath_cache = {}
+        secsigns_cache = {}
+
         if model_type == PhysicalSample:
             for obj in request.data:
                 source = obj['source']
@@ -432,7 +446,6 @@ class ObservationGroupViewSet(ModelViewSet):
                     sampledest_cache[obj['sample_destination']] = SampleDestination.objects.get(code=obj['sample_destination'])
                 if 'permit_type' in obj and obj['permit_type'] not in permittype_cache:
                     permittype_cache[obj['permit_type']] = PermitType.objects.get(code=obj['permit_type'])
-                # GODDAMMIT we can't use bulk_create with a multi-table inherited model.
                 try:
                     PhysicalSample.objects.create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
@@ -446,4 +459,57 @@ class ObservationGroupViewSet(ModelViewSet):
                     created_count += 1
                 except:
                     errors.append(obj)
-        return Response({'model_name': model_name, 'created_count': created_count, 'errors': json.dumps(errors)})
+        elif model_type == AnimalObservation:
+            for obj in request.data:
+                source = obj['source']
+                source_id = obj['source_id']
+                # Do some caching to reduce DB queries.
+                if '{}|{}'.format(source, source_id) not in encounter_cache:
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                if 'detection_method' in obj and obj['detection_method'] not in detectmethod_cache:
+                    detectmethod_cache[obj['detection_method']] = DetectionMethod.objects.get(code=obj['detection_method'])
+                if 'species_id_confidence' in obj and obj['species_id_confidence'] not in confidence_cache:
+                    confidence_cache[obj['species_id_confidence']] = Confidence.objects.get(code=obj['species_id_confidence'])
+                if 'maturity' in obj and obj['maturity'] not in maturity_cache:
+                    maturity_cache[obj['maturity']] = ReproductiveMaturity.objects.get(code=obj['maturity'])
+                if 'sex' in obj and obj['sex'] not in sex_cache:
+                    sex_cache[obj['sex']] = AnimalSex.objects.get(code=obj['sex'])
+                if 'health' in obj and obj['health'] not in health_cache:
+                    health_cache[obj['health']] = AnimalHealth.objects.get(code=obj['health'])
+                if 'cause_of_death' in obj and obj['cause_of_death'] not in causedeath_cache:
+                    causedeath_cache[obj['cause_of_death']] = CauseOfDeath.objects.get(code=obj['cause_of_death'])
+                if 'secondary_signs' in obj:
+                    for ss in obj['secondary_signs']:
+                        if ss not in secsigns_cache:
+                            secsigns_cache[ss] = SecondarySigns.objects.get(code=ss)
+                try:
+                    ae = AnimalObservation.objects.create(
+                        encounter=encounter_cache['{}|{}'.format(source, source_id)],
+                        detection_method=detectmethod_cache[obj['detection_method']] if 'detection_method' in obj else None,
+                        species_id_confidence=confidence_cache[obj['species_id_confidence']] if 'species_id_confidence' in obj else None,
+                        maturity=maturity_cache[obj['maturity']] if 'maturity' in obj else None,
+                        sex=sex_cache[obj['sex']] if 'sex' in obj else None,
+                        health=health_cache[obj['health']] if 'health' in obj else None,
+                        cause_of_death=causedeath_cache[obj['cause_of_death']] if 'cause_of_death' in obj else None,
+                        distinctive_features=obj['distinctive_features'] if 'distinctive_features' in obj else '',
+                        actions_taken=obj['actions_taken'] if 'actions_taken' in obj else '',
+                        actions_required=obj['actions_required'] if 'actions_required' in obj else '',
+                        no_adult_male=obj['no_adult_male'] if 'no_adult_male' in obj else None,
+                        no_adult_female=obj['no_adult_female'] if 'no_adult_female' in obj else None,
+                        no_adult_unknown=obj['no_adult_unknown'] if 'no_adult_unknown' in obj else None,
+                        no_juvenile_male=obj['no_juvenile_male'] if 'no_juvenile_male' in obj else None,
+                        no_juvenile_female=obj['no_juvenile_female'] if 'no_juvenile_female' in obj else None,
+                        no_juvenile_unknown=obj['no_juvenile_unknown'] if 'no_juvenile_unknown' in obj else None,
+                        no_dependent_young_male=obj['no_dependent_young_male'] if 'no_dependent_young_male' in obj else None,
+                        no_dependent_young_female=obj['no_dependent_young_female'] if 'no_dependent_young_female' in obj else None,
+                        no_dependent_young_unknown=obj['no_dependent_young_unknown'] if 'no_dependent_young_unknown' in obj else None,
+                        observation_details=obj['observation_details'] if 'observation_details' in obj else '',
+                    )
+                    if 'secondary_signs' in obj:
+                        for ss in obj['secondary_signs']:
+                            ae.secondary_signs.add(secsigns_cache[ss])
+                    created_count += 1
+                except:
+                    errors.append(obj)
+
+        return Response({'model_name': model_name, 'created_count': created_count, 'errors': errors})
