@@ -40,6 +40,7 @@ from occurrence.models import (
     PhysicalSample,
     AnimalObservation,
     VegetationClassification,
+    HabitatComposition,
 )
 
 
@@ -433,6 +434,11 @@ class ObservationGroupViewSet(ModelViewSet):
         health_cache = {}
         causedeath_cache = {}
         secsigns_cache = {}
+        landform_cache = {}
+        rocktype_cache = {}
+        soiltype_cache = {}
+        soilcolour_cache = {}
+        drainage_cache = {}
 
         if model_type == PhysicalSample:
             for obj in request.data:
@@ -512,7 +518,7 @@ class ObservationGroupViewSet(ModelViewSet):
                     created_count += 1
                 except:
                     errors.append(obj)
-        if model_type == VegetationClassification:
+        elif model_type == VegetationClassification:
             for obj in request.data:
                 source = obj['source']
                 source_id = obj['source_id']
@@ -526,6 +532,36 @@ class ObservationGroupViewSet(ModelViewSet):
                         level2=obj['level2'] if 'level2' in obj else '',
                         level3=obj['level3'] if 'level3' in obj else '',
                         level4=obj['level4'] if 'level4' in obj else '',
+                    )
+                    created_count += 1
+                except:
+                    errors.append(obj)
+        elif model_type == HabitatComposition:
+            for obj in request.data:
+                source = obj['source']
+                source_id = obj['source_id']
+                # Do some caching to reduce DB queries.
+                if '{}|{}'.format(source, source_id) not in encounter_cache:
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                if 'landform' in obj and obj['landform'] not in landform_cache:
+                    landform_cache[obj['landform']] = Landform.objects.get(code=obj['landform'])
+                if 'rock_type' in obj and obj['rock_type'] not in rocktype_cache:
+                    rocktype_cache[obj['rock_type']] = RockType.objects.get(code=obj['rock_type'])
+                if 'soil_type' in obj and obj['soil_type'] not in soiltype_cache:
+                    soiltype_cache[obj['soil_type']] = SoilType.objects.get(code=obj['soil_type'])
+                if 'soil_colour' in obj and obj['soil_colour'] not in soilcolour_cache:
+                    soilcolour_cache[obj['soil_colour']] = SoilColour.objects.get(code=obj['soil_colour'])
+                if 'drainage' in obj and obj['drainage'] not in drainage_cache:
+                    drainage_cache[obj['drainage']] = Drainage.objects.get(code=obj['drainage'])
+                try:
+                    HabitatComposition.objects.create(
+                        encounter=encounter_cache['{}|{}'.format(source, source_id)],
+                        landform=landform_cache[obj['landform']] if 'landform' in obj else None,
+                        rock_type=rocktype_cache[obj['rock_type']] if 'rock_type' in obj else None,
+                        loose_rock_percent=obj['loose_rock_percent'] if 'loose_rock_percent' in obj else None,
+                        soil_type=soiltype_cache[obj['soil_type']] if 'soil_type' in obj else None,
+                        soil_colour=soilcolour_cache[obj['soil_colour']] if 'soil_colour' in obj else None,
+                        drainage=drainage_cache[obj['drainage']] if 'drainage' in obj else None,
                     )
                     created_count += 1
                 except:
