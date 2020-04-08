@@ -39,6 +39,7 @@ from occurrence.models import (
     ObservationGroup,
     PhysicalSample,
     AnimalObservation,
+    VegetationClassification,
 )
 
 
@@ -406,7 +407,7 @@ class ObservationGroupViewSet(ModelViewSet):
         else:
             return ObservationGroup.objects.all()
 
-    @action(detail=False, methods=['get', 'post'])
+    @action(detail=False, methods=['post'])
     def bulk_create(self, request):
         """A custom method to serve as an extra action of this viewset to bulk-create objects.
         Expects a JSON payload of a list of dicts, each being a valid object.
@@ -508,6 +509,24 @@ class ObservationGroupViewSet(ModelViewSet):
                     if 'secondary_signs' in obj:
                         for ss in obj['secondary_signs']:
                             ae.secondary_signs.add(secsigns_cache[ss])
+                    created_count += 1
+                except:
+                    errors.append(obj)
+        if model_type == VegetationClassification:
+            for obj in request.data:
+                source = obj['source']
+                source_id = obj['source_id']
+                # Do some caching to reduce DB queries.
+                if '{}|{}'.format(source, source_id) not in encounter_cache:
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                try:
+                    VegetationClassification.objects.create(
+                        encounter=encounter_cache['{}|{}'.format(source, source_id)],
+                        level1=obj['level1'] if 'level1' in obj else '',
+                        level2=obj['level2'] if 'level2' in obj else '',
+                        level3=obj['level3'] if 'level3' in obj else '',
+                        level4=obj['level4'] if 'level4' in obj else '',
+                    )
                     created_count += 1
                 except:
                     errors.append(obj)
