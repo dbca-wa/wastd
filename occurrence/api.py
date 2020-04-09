@@ -424,80 +424,76 @@ class ObservationGroupViewSet(ModelViewSet):
         created_count = 0
         errors = []
         encounter_cache = {}
-        sampletype_cache = {}
-        sampledest_cache = {}
-        permittype_cache = {}
-        detectmethod_cache = {}
-        confidence_cache = {}
-        maturity_cache = {}
-        sex_cache = {}
-        health_cache = {}
-        causedeath_cache = {}
-        secsigns_cache = {}
-        landform_cache = {}
-        rocktype_cache = {}
-        soiltype_cache = {}
-        soilcolour_cache = {}
-        drainage_cache = {}
 
+        # TODO: AreaAssessment, FireHistory, PlantCount, AssociatedSpecies, WildlifeIncident
         if model_type == PhysicalSample:
+            sample_type_cache = {}
+            sample_destination_cache = {}
+            permit_type_cache = {}
             for obj in request.data:
                 source = obj['source']
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
                     encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
-                if 'sample_type' in obj and obj['sample_type'] not in sampletype_cache:
-                    sampletype_cache[obj['sample_type']] = SampleType.objects.get(code=obj['sample_type'])
-                if 'sample_destination' in obj and obj['sample_destination'] not in sampledest_cache:
-                    sampledest_cache[obj['sample_destination']] = SampleDestination.objects.get(code=obj['sample_destination'])
-                if 'permit_type' in obj and obj['permit_type'] not in permittype_cache:
-                    permittype_cache[obj['permit_type']] = PermitType.objects.get(code=obj['permit_type'])
+                if 'sample_type' in obj and obj['sample_type'] not in sample_type_cache:
+                    sample_type_cache[obj['sample_type']] = SampleType.objects.get(code=obj['sample_type'])
+                if 'sample_destination' in obj and obj['sample_destination'] not in sample_destination_cache:
+                    sample_destination_cache[obj['sample_destination']] = SampleDestination.objects.get(code=obj['sample_destination'])
+                if 'permit_type' in obj and obj['permit_type'] not in permit_type_cache:
+                    permit_type_cache[obj['permit_type']] = PermitType.objects.get(code=obj['permit_type'])
                 try:
                     PhysicalSample.objects.create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
-                        sample_type=sampletype_cache[obj['sample_type']] if 'sample_type' in obj else None,
+                        sample_type=sample_type_cache[obj['sample_type']] if 'sample_type' in obj else None,
                         sample_label=obj['sample_label'] if 'sample_label' in obj else '',
                         collector_id=obj['collector_id'] if 'collector_id' in obj else '',
-                        sample_destination=sampledest_cache[obj['sample_destination']] if 'sample_destination' in obj else None,
-                        permit_type=permittype_cache[obj['permit_type']] if 'permit_type' in obj else None,
+                        sample_destination=sample_destination_cache[obj['sample_destination']] if 'sample_destination' in obj else None,
+                        permit_type=permit_type_cache[obj['permit_type']] if 'permit_type' in obj else None,
                         permit_id=obj['permit_id'] if 'permit_id' in obj else '',
                     )
                     created_count += 1
                 except:
                     errors.append(obj)
         elif model_type == AnimalObservation:
+            secondary_signs_cache = {}
+            detection_method_cache = {}
+            species_id_confidence_cache = {}
+            maturity_cache = {}
+            sex_cache = {}
+            health_cache = {}
+            cause_of_death_cache = {}
             for obj in request.data:
                 source = obj['source']
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
                     encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
-                if 'detection_method' in obj and obj['detection_method'] not in detectmethod_cache:
-                    detectmethod_cache[obj['detection_method']] = DetectionMethod.objects.get(code=obj['detection_method'])
-                if 'species_id_confidence' in obj and obj['species_id_confidence'] not in confidence_cache:
-                    confidence_cache[obj['species_id_confidence']] = Confidence.objects.get(code=obj['species_id_confidence'])
+                if 'detection_method' in obj and obj['detection_method'] not in detection_method_cache:
+                    detection_method_cache[obj['detection_method']] = DetectionMethod.objects.get(code=obj['detection_method'])
+                if 'species_id_confidence' in obj and obj['species_id_confidence'] not in species_id_confidence_cache:
+                    species_id_confidence_cache[obj['species_id_confidence']] = Confidence.objects.get(code=obj['species_id_confidence'])
                 if 'maturity' in obj and obj['maturity'] not in maturity_cache:
                     maturity_cache[obj['maturity']] = ReproductiveMaturity.objects.get(code=obj['maturity'])
                 if 'sex' in obj and obj['sex'] not in sex_cache:
                     sex_cache[obj['sex']] = AnimalSex.objects.get(code=obj['sex'])
                 if 'health' in obj and obj['health'] not in health_cache:
                     health_cache[obj['health']] = AnimalHealth.objects.get(code=obj['health'])
-                if 'cause_of_death' in obj and obj['cause_of_death'] not in causedeath_cache:
-                    causedeath_cache[obj['cause_of_death']] = CauseOfDeath.objects.get(code=obj['cause_of_death'])
+                if 'cause_of_death' in obj and obj['cause_of_death'] not in cause_of_death_cache:
+                    cause_of_death_cache[obj['cause_of_death']] = CauseOfDeath.objects.get(code=obj['cause_of_death'])
                 if 'secondary_signs' in obj:
                     for ss in obj['secondary_signs']:
-                        if ss not in secsigns_cache:
-                            secsigns_cache[ss] = SecondarySigns.objects.get(code=ss)
+                        if ss not in secondary_signs_cache:
+                            secondary_signs_cache[ss] = SecondarySigns.objects.get(code=ss)
                 try:
                     ae = AnimalObservation.objects.create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
-                        detection_method=detectmethod_cache[obj['detection_method']] if 'detection_method' in obj else None,
-                        species_id_confidence=confidence_cache[obj['species_id_confidence']] if 'species_id_confidence' in obj else None,
+                        detection_method=detection_method_cache[obj['detection_method']] if 'detection_method' in obj else None,
+                        species_id_confidence=species_id_confidence_cache[obj['species_id_confidence']] if 'species_id_confidence' in obj else None,
                         maturity=maturity_cache[obj['maturity']] if 'maturity' in obj else None,
                         sex=sex_cache[obj['sex']] if 'sex' in obj else None,
                         health=health_cache[obj['health']] if 'health' in obj else None,
-                        cause_of_death=causedeath_cache[obj['cause_of_death']] if 'cause_of_death' in obj else None,
+                        cause_of_death=cause_of_death_cache[obj['cause_of_death']] if 'cause_of_death' in obj else None,
                         distinctive_features=obj['distinctive_features'] if 'distinctive_features' in obj else '',
                         actions_taken=obj['actions_taken'] if 'actions_taken' in obj else '',
                         actions_required=obj['actions_required'] if 'actions_required' in obj else '',
@@ -514,7 +510,7 @@ class ObservationGroupViewSet(ModelViewSet):
                     )
                     if 'secondary_signs' in obj:
                         for ss in obj['secondary_signs']:
-                            ae.secondary_signs.add(secsigns_cache[ss])
+                            ae.secondary_signs.add(secondary_signs_cache[ss])
                     created_count += 1
                 except:
                     errors.append(obj)
@@ -537,6 +533,11 @@ class ObservationGroupViewSet(ModelViewSet):
                 except:
                     errors.append(obj)
         elif model_type == HabitatComposition:
+            landform_cache = {}
+            rocktype_cache = {}
+            soiltype_cache = {}
+            soilcolour_cache = {}
+            drainage_cache = {}
             for obj in request.data:
                 source = obj['source']
                 source_id = obj['source_id']
