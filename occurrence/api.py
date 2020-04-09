@@ -2,6 +2,7 @@ from django.apps import apps
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
+from rest_framework.status import HTTP_201_CREATED
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_filters import FilterSet
 
@@ -568,4 +569,6 @@ class ObservationGroupViewSet(ModelViewSet):
                 except:
                     errors.append(obj)
 
-        return Response({'model_name': model_name, 'created_count': created_count, 'errors': errors})
+        return Response(
+            {'model_name': model_name, 'created_count': created_count, 'errors': errors}, status=HTTP_201_CREATED
+        )
