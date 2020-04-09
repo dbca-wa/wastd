@@ -11,7 +11,7 @@ import uuid
 
 from occurrence.models import (
     AreaEncounter, ObservationGroup, HabitatComposition, CountMethod, CountAccuracy,
-    EncounterType, SecondarySigns, SampleType, TaxonAreaEncounter,
+    EncounterType, SecondarySigns, SampleType, TaxonAreaEncounter, Landform,
 )
 from taxonomy.models import Community, Taxon
 
@@ -352,3 +352,21 @@ class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
             format='multipart',
         )
         self.assertEqual(resp.status_code, 201)
+
+    def test_bulk_create(self):
+        url = reverse('api:occurrence_observation_group-bulk-create') + '?format=json&obstype=VegetationClassification'
+        # Ensure that we have some valid lookup data.
+        Landform.objects.create(code='cave', label='Cave')
+        Landform.objects.create(code='plain', label='Plain')
+        Landform.objects.create(code='depression', label='Depression')
+        resp = self.client.post(
+            url,
+            data=[
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'landform': 'cave'},
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'landform': 'plain'},
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'landform': 'depression'}
+            ]
+        )
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.content)
+        self.assertEqual(data['created_count'], 3)
