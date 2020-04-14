@@ -191,3 +191,4 @@ pytest-sugar
 model_mommy
 # mommy_spatial_generators
 -e git+https://github.com/sigma-geosistemas/mommy_spatial_generators.git#egg=mommy_spatial_generators
+tblib
