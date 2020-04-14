@@ -257,35 +257,6 @@ class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
             )
             self.assertEqual(resp.status_code, 201)
 
-    def test_post_duplicate(self):
-        """Test that exact duplicate objects aren't created via POST.
-        """
-        #self.assertEqual(HabitatComposition.objects.count(), 1)
-        self.hc.delete()
-        data = {
-            'obstype': 'HabitatComposition',
-            'source': self.ae.source,
-            'source_id': self.ae.source_id,
-            'loose_rock_percent': 10,
-        }
-        resp = self.client.post(self.url, data)
-        self.assertEqual(resp.status_code, 201)
-        self.assertEqual(HabitatComposition.objects.count(), 1)
-        resp = self.client.post(self.url, data)
-        self.assertEqual(resp.status_code, 201)
-        self.assertEqual(HabitatComposition.objects.count(), 1)
-        #data = {
-        #    'source': 'odk',
-        #    'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
-        #    'name': 'ABC123',
-        #}
-        # POST once, create an object.
-        #resp = self.client.post(url, data)
-        #self.assertEqual(TagObservation.objects.count(), 1)
-        # POST a second time, no duplicate created.
-        #resp = self.client.post(url, data)
-        #self.assertEqual(TagObservation.objects.count(), 1)
-
     def test_occ_observation_post_plantcount(self):
         """Test the PlantCount POST endpoint behaves correctly
         """
@@ -317,7 +288,7 @@ class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
             'obstype': 'AnimalObservation',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
-            'secondary_signs': ('fur',),
+            'secondary_signs': ['fur'],
         })
         self.assertEqual(resp.status_code, 201)
         SecondarySigns.objects.create(code='eggs', label='Eggs')
@@ -326,7 +297,7 @@ class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
             'obstype': 'AnimalObservation',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
-            'secondary_signs': ('fur', 'eggs'),
+            'secondary_signs': ['fur', 'eggs'],
         })
         self.assertEqual(resp.status_code, 201)
         # Confirm that secondary_signs is optional.
