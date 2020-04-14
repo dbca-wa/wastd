@@ -1,3 +1,4 @@
+from django.apps import apps
 from rest_framework.serializers import SlugRelatedField, ModelSerializer, ValidationError
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from rest_polymorphic.serializers import PolymorphicSerializer
@@ -487,28 +488,3 @@ class ObservationGroupPolymorphicSerializer(PolymorphicSerializer):
     def to_internal_value(self, data):
         """Gate checks for data sanity."""
         return super(ObservationGroupPolymorphicSerializer, self).to_internal_value(data)
-
-    def save(self):
-        """Override the save method in order to prevent 'duplicate' instances being created by
-        the API endpoints. We override save in order to avoid duplicate by either create or update.
-        """
-        if 'encounter' in self.initial_data:
-            self.validated_data['encounter'] = AreaEncounter.objects.get(pk=self.initial_data['encounter'])
-        else:
-            self.validated_data['encounter'] = AreaEncounter.objects.get(
-                source=self.initial_data['source'], source_id=self.initial_data['source_id'])
-        # Gate check: we want to ensure that duplicate objects are not created.
-        duplicates = self.Meta.model.objects.filter(**self.validated_data)
-        if duplicates.exists():
-            if duplicates.count() == 1:
-                # Just return the single existing duplicate instance.
-                # TODO: work out how we might return HTTP status 200 instead of 201.
-                return self.Meta.model.objects.get(**self.validated_data)
-            else:
-                # Passed-in data matches >1 existing instance, so raise a validation error.
-                raise ValidationError("{}: existing duplicate(s) with {} ".format(
-                    self.Meta.model._meta.label, str(**self.validated_data)
-                ))
-        else:
-            # Create the new, unique instance.
-            return self.Meta.model.objects.create(**self.validated_data)
