@@ -11,7 +11,8 @@ import uuid
 
 from occurrence.models import (
     AreaEncounter, ObservationGroup, HabitatComposition, CountMethod, CountAccuracy,
-    EncounterType, SecondarySigns, SampleType, TaxonAreaEncounter, Landform,
+    EncounterType, SecondarySigns, SampleType, TaxonAreaEncounter, Landform, RockType,
+    SoilType,
 )
 from taxonomy.models import Community, Taxon
 
@@ -354,17 +355,60 @@ class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
         self.assertEqual(resp.status_code, 201)
 
     def test_bulk_create(self):
-        url = reverse('api:occurrence_observation_group-bulk-create') + '?format=json&obstype=VegetationClassification'
-        # Ensure that we have some valid lookup data.
+        url = reverse('api:occurrence_observation_group-bulk-create')
+
+        # PhysicalSample object type.
+        resp = self.client.post(
+            url + '?format=json&obstype=PhysicalSample',
+            data=[
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'sample_label': 'foo'},
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'sample_label': 'bar'},
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'sample_label': 'baz'}
+            ]
+        )
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.content)
+        self.assertEqual(data['created_count'], 3)
+
+        # AnimalObservation.
+        SecondarySigns.objects.create(code='tracks', label='Tracks')
+        resp = self.client.post(
+            url + '?format=json&obstype=AnimalObservation',
+            data=[
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'no_adult_female': 1, 'secondary_signs': ['tracks']},
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'no_adult_male': 2, 'secondary_signs': ['tracks']},
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'no_adult_unknown': 3, 'secondary_signs': ['tracks']}
+            ]
+        )
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.content)
+        self.assertEqual(data['created_count'], 3)
+
+        # VegetationClassification.
         Landform.objects.create(code='cave', label='Cave')
         Landform.objects.create(code='plain', label='Plain')
         Landform.objects.create(code='depression', label='Depression')
         resp = self.client.post(
-            url,
+            url + '?format=json&obstype=VegetationClassification',
             data=[
                 {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'landform': 'cave'},
                 {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'landform': 'plain'},
                 {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'landform': 'depression'}
+            ]
+        )
+        self.assertEqual(resp.status_code, 201)
+        data = json.loads(resp.content)
+        self.assertEqual(data['created_count'], 3)
+
+        # HabitatComposition.
+        RockType.objects.create(code='banded-iron', label='Banded Iron')
+        SoilType.objects.create(code='clay', label='Clay')
+        resp = self.client.post(
+            url + '?format=json&obstype=HabitatComposition',
+            data=[
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'landform': 'cave'},
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'rock_type': 'banded-iron'},
+                {'source': self.ae.source, 'source_id': str(self.ae.source_id), 'soil_type': 'clay'}
             ]
         )
         self.assertEqual(resp.status_code, 201)
