@@ -1,4 +1,5 @@
 {% extends "pages/base.html" %}
+{% comment %}
 {% load django_tables2 crispy_forms_tags leaflet_tags %}
 {% leaflet_css plugins="ALL" %}
 {% leaflet_js plugins="ALL" %}
@@ -28,4 +29,35 @@
 
 {% block fullwidthcontent %}
 {% render_table table %}
+{% endblock %}
+{% endcomment %}
+
+{# Temporary table list below #}
+{% block content %}
+<div>
+    <a href="{% url 'animalencounter_create' %}">Create new Animal Encounter</a>
+</div>
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Observed on</th>
+                <th>Taxonomic group</th>
+                <th>Species</th>
+                <th>Measured by</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+            <tr>
+                <td><a href="{{ object.get_absolute_url }}">{{ object.when }}</a></td>
+                <td>{{ object.taxon }}</td>
+                <td>{{ object.species }}</td>
+                <td>{{ object.observer }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
