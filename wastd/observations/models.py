@@ -2034,10 +2034,10 @@ class Encounter(PolymorphicModel, geo_models.Model):
         # c = Context({"original": self})
         return mark_safe(t.render({"original": self}))
 
-    @property
-    def observations(self):
-        """Return Observations as list."""
-        return self.observation_set.all()
+    #@property
+    #def observations(self):
+    #    """Return Observations as list."""
+    #    return self.observation_set.all()
 
     @property
     def latitude(self):
@@ -2439,6 +2439,9 @@ class AnimalEncounter(Encounter):
         has_old_tagobs = len(old_tagobs) > 0
         return (has_new_tagobs and not has_old_tagobs)
 
+    def get_absolute_url(self):
+        return reverse('animalencounter_detail', kwargs={'pk': self.pk})
+
 
 class TurtleNestEncounter(Encounter):
     """The encounter of turtle nest during its life cycle.
@@ -2770,6 +2773,7 @@ class Observation(PolymorphicModel, models.Model):
         Encounter,
         on_delete=models.CASCADE,
         verbose_name=_("Encounter"),
+        related_name='encounter',
         help_text=("The Encounter during which the observation was made"),)
 
     class Meta:

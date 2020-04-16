@@ -5,12 +5,11 @@
 # from rest_framework import response, schemas, permissions
 
 from django.contrib import messages
-# from django.views.generic import ListView, TemplateView
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.views.generic.list import ListView
+from django.views.generic import ListView, CreateView, DetailView
 # Tables
 from django_tables2 import RequestConfig, SingleTableView, tables
 from rest_framework.renderers import CoreJSONRenderer
@@ -19,8 +18,8 @@ from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from sentry_sdk import capture_message
 
 from wastd.observations.filters import AnimalEncounterFilter, EncounterFilter
-from wastd.observations.forms import AnimalEncounterListFormHelper, EncounterListFormHelper
-from wastd.observations.models import AnimalEncounter, Encounter
+from wastd.observations.forms import AnimalEncounterListFormHelper, EncounterListFormHelper, AnimalEncounterForm, FlipperTagObservationFormSet
+from wastd.observations.models import AnimalEncounter, Encounter, TagObservation
 from wastd.observations.tasks import import_odka, update_names
 
 
@@ -145,6 +144,50 @@ class AnimalEncounterTableView(EncounterTableView):
     filter_class = AnimalEncounterFilter
     formhelper_class = AnimalEncounterListFormHelper
     template = "observations/encounter.html"
+
+
+class AnimalEncounterList(ListView):
+    paginate_by = 20
+
+    def get_queryset(self):
+        return AnimalEncounter.objects.order_by('-pk')
+
+
+class AnimalEncounterCreate(CreateView):
+    model = AnimalEncounter
+    form_class = AnimalEncounterForm
+
+    def get_context_data(self, **kwargs):
+        data = super(AnimalEncounterCreate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['flipper_tags'] = FlipperTagObservationFormSet(self.request.POST)
+        else:
+            data['flipper_tags'] = FlipperTagObservationFormSet()
+        data['formset_prefix'] = 'encounter'  # We set this in order to give the JavaScript something to match.
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        flipper_tags = context['flipper_tags']
+        with transaction.atomic():
+            # Set observer and reporter to the request user.
+            form.instance.observer = self.request.user
+            form.instance.reporter = self.request.user
+            self.object = form.save()
+            if flipper_tags.is_valid():
+                flipper_tags.instance = self.object
+                flipper_tags.tag_type = 'flipper-tag'
+                flipper_tags.save()
+        return super(AnimalEncounterCreate, self).form_valid(form)
+
+
+class AnimalEncounterDetail(DetailView):
+    model = AnimalEncounter
+
+    def get_context_data(self, **kwargs):
+        data = super(AnimalEncounterDetail, self).get_context_data(**kwargs)
+        data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        return data
 
 
 # Django-Rest-Swagger View ---------------------------------------------------#

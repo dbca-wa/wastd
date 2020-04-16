@@ -269,11 +269,23 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 TIME_ZONE = 'Australia/Perth'
 DATE_FORMAT = '%d-%m-%Y'
 DATE_INPUT_FORMATS = [
+    '%d/%m/%Y',      # '25/10/2006'
+    '%d/%m/%y',
+    '%d-%m-%Y',
+    '%d-%m-%Y',      # '25-10-2006'
+    '%d %b %Y',
+    '%d %b, %Y',
+    '%d %B %Y',
+    '%d %B, %Y',
     '%Y-%m-%d',      # '2006-10-25'
     '%Y/%m/%d',      # '2006/10/25'
     '%Y-%m-%dZ',     # '2006-10-25Z' from WACensus via KMI GeoServer
-    '%d-%m-%Y',      # '25-10-2006'
-    '%d/%m/%Y',      # '25/10/2006'
+]
+DATETIME_INPUT_FORMATS = [
+    '%d/%m/%Y %H:%M',
+    '%d/%m/%y %H:%M',
+    '%d-%m-%Y %H:%M',
+    '%d-%m-%y %H:%M',
 ]
 
 
@@ -284,10 +296,10 @@ LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
-USE_I18N = True
+USE_I18N = False
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = True
+USE_L10N = False
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True

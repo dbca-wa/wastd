@@ -1,0 +1,35 @@
+{% extends "pages/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock extrastyle %}
+
+{% block content %}
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">Please correct the error(s) below:<br>
+{{ form.errors }}
+</div>
+{% endif %}
+{% crispy form %}
+{% endblock content %}
+
+{% block extrajs %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.formset/1.2.2/jquery.formset.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $('.datetimeinput').datetimepicker({
+            format: 'DD-MM-YYYY HH:mm',
+        });
+
+        $('.formset_row-{{ formset_prefix }}').formset({
+            addText: 'Add another',
+            deleteText: 'Remove',
+            prefix: '{{ formset_prefix }}',
+        });
+
+    });
+</script>
+{% endblock extrajs %}
