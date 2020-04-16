@@ -594,7 +594,7 @@ class ObservationGroupViewSet(ModelViewSet):
                     created_count += 1
                 except:
                     errors.append(obj)
-
+        logger.info("[API][bulk_create] Created {} {}.".format(len(request.data), model_type))
         return Response(
             {'model_name': model_name, 'created_count': created_count, 'errors': errors}, status=HTTP_201_CREATED
         )
