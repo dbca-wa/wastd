@@ -1,3 +1,5 @@
+import logging
+
 from django.apps import apps
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -43,6 +45,8 @@ from occurrence.models import (
     VegetationClassification,
     HabitatComposition,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class OccurrenceAreaEncounterFilter(FilterSet):
@@ -436,11 +440,13 @@ class ObservationGroupViewSet(ModelViewSet):
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
-                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
+                        source=source, source_id=source_id)
                 if 'sample_type' in obj and obj['sample_type'] not in sample_type_cache:
                     sample_type_cache[obj['sample_type']] = SampleType.objects.get(code=obj['sample_type'])
                 if 'sample_destination' in obj and obj['sample_destination'] not in sample_destination_cache:
-                    sample_destination_cache[obj['sample_destination']] = SampleDestination.objects.get(code=obj['sample_destination'])
+                    sample_destination_cache[obj['sample_destination']
+                                             ] = SampleDestination.objects.get(code=obj['sample_destination'])
                 if 'permit_type' in obj and obj['permit_type'] not in permit_type_cache:
                     permit_type_cache[obj['permit_type']] = PermitType.objects.get(code=obj['permit_type'])
                 try:
@@ -449,7 +455,8 @@ class ObservationGroupViewSet(ModelViewSet):
                         sample_type=sample_type_cache[obj['sample_type']] if 'sample_type' in obj else None,
                         sample_label=obj['sample_label'] if 'sample_label' in obj else '',
                         collector_id=obj['collector_id'] if 'collector_id' in obj else '',
-                        sample_destination=sample_destination_cache[obj['sample_destination']] if 'sample_destination' in obj else None,
+                        sample_destination=sample_destination_cache[obj['sample_destination']
+                                                                    ] if 'sample_destination' in obj else None,
                         permit_type=permit_type_cache[obj['permit_type']] if 'permit_type' in obj else None,
                         permit_id=obj['permit_id'] if 'permit_id' in obj else '',
                     )
@@ -469,13 +476,19 @@ class ObservationGroupViewSet(ModelViewSet):
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
-                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
+                        source=source, source_id=source_id)
                 if 'detection_method' in obj and obj['detection_method'] not in detection_method_cache:
-                    detection_method_cache[obj['detection_method']] = DetectionMethod.objects.get(code=obj['detection_method'])
+                    detection_method_cache[obj['detection_method']
+                                           ] = DetectionMethod.objects.get(code=obj['detection_method'])
                 if 'species_id_confidence' in obj and obj['species_id_confidence'] not in species_id_confidence_cache:
-                    species_id_confidence_cache[obj['species_id_confidence']] = Confidence.objects.get(code=obj['species_id_confidence'])
+                    species_id_confidence_cache[obj['species_id_confidence']
+                                                ] = Confidence.objects.get(code=obj['species_id_confidence'])
                 if 'maturity' in obj and obj['maturity'] not in maturity_cache:
-                    maturity_cache[obj['maturity']] = ReproductiveMaturity.objects.get(code=obj['maturity'])
+                    try:
+                        maturity_cache[obj['maturity']] = ReproductiveMaturity.objects.get(code=obj['maturity'])
+                    except:
+                        logger.warn("ReproductiveMaturity does not exist: {}".format(obj['maturity']))
                 if 'sex' in obj and obj['sex'] not in sex_cache:
                     sex_cache[obj['sex']] = AnimalSex.objects.get(code=obj['sex'])
                 if 'health' in obj and obj['health'] not in health_cache:
@@ -483,14 +496,25 @@ class ObservationGroupViewSet(ModelViewSet):
                 if 'cause_of_death' in obj and obj['cause_of_death'] not in cause_of_death_cache:
                     cause_of_death_cache[obj['cause_of_death']] = CauseOfDeath.objects.get(code=obj['cause_of_death'])
                 if 'secondary_signs' in obj:
+                    if type(obj['secondary_signs']) == str:
+                        obj['secondary_signs'] = obj['secondary_signs'].split(",")
+                    if type(obj['secondary_signs']) != list:
+                        obj['secondary_signs'] = [obj['secondary_signs'], ]
                     for ss in obj['secondary_signs']:
-                        if ss not in secondary_signs_cache:
-                            secondary_signs_cache[ss] = SecondarySigns.objects.get(code=ss)
+                        if ss not in secondary_signs_cache and ss is not None:
+                            try:
+                                logger.info("SecSigns cache miss: {}".format(ss))
+                                secondary_signs_cache[ss] = SecondarySigns.objects.get(code=ss)
+                            except:
+                                logger.warn("SecondarySigns does not exist: {}".format(ss))
+
                 try:
                     ae = AnimalObservation.objects.create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
-                        detection_method=detection_method_cache[obj['detection_method']] if 'detection_method' in obj else None,
-                        species_id_confidence=species_id_confidence_cache[obj['species_id_confidence']] if 'species_id_confidence' in obj else None,
+                        detection_method=detection_method_cache[obj['detection_method']
+                                                                ] if 'detection_method' in obj else None,
+                        species_id_confidence=species_id_confidence_cache[obj['species_id_confidence']
+                                                                          ] if 'species_id_confidence' in obj else None,
                         maturity=maturity_cache[obj['maturity']] if 'maturity' in obj else None,
                         sex=sex_cache[obj['sex']] if 'sex' in obj else None,
                         health=health_cache[obj['health']] if 'health' in obj else None,
@@ -521,7 +545,8 @@ class ObservationGroupViewSet(ModelViewSet):
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
-                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
+                        source=source, source_id=source_id)
                 try:
                     VegetationClassification.objects.create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
@@ -544,7 +569,8 @@ class ObservationGroupViewSet(ModelViewSet):
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
-                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
+                        source=source, source_id=source_id)
                 if 'landform' in obj and obj['landform'] not in landform_cache:
                     landform_cache[obj['landform']] = Landform.objects.get(code=obj['landform'])
                 if 'rock_type' in obj and obj['rock_type'] not in rocktype_cache:
@@ -568,7 +594,7 @@ class ObservationGroupViewSet(ModelViewSet):
                     created_count += 1
                 except:
                     errors.append(obj)
-
+        logger.info("[API][bulk_create] Created {} {}.".format(len(request.data), model_type))
         return Response(
             {'model_name': model_name, 'created_count': created_count, 'errors': errors}, status=HTTP_201_CREATED
         )

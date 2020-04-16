@@ -229,15 +229,35 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
             "survey",
             "source",
             "source_id",
-            "encounter_type", "leaflet_title",
-            "status", "observer", "reporter", "comments",
-            "where", "latitude", "longitude", "crs", "location_accuracy",
-            "when", "name",
-            "nest_age", "nest_type", "species", "habitat", "disturbance",
+            "encounter_type",
+            "leaflet_title",
+            "status",
+            "observer",
+            "reporter",
             "comments",
-            "absolute_admin_url",  # "photographs", "tx_logs",
+            "where",
+            "latitude",
+            "longitude",
+            "crs",
+            "location_accuracy",
+            "when",
+            "name",
+            "nest_age",
+            "nest_type",
+            "species",
+            "habitat",
+            "disturbance",
+            'nest_tagged',
+            'logger_found',
+            'eggs_counted',
+            'hatchlings_measured',
+            'fan_angles_measured',
+            "comments",
+            "absolute_admin_url",
+            # "photographs", "tx_logs",
             # "observation_set",
-            "observer_id", "reporter_id",
+            "observer_id",
+            "reporter_id",
         )
         geo_field = "where"
 
@@ -363,6 +383,8 @@ class TagObservationEncounterSerializer(ObservationSerializer):
 
 class NestTagObservationEncounterSerializer(ObservationSerializer):
 
+    # encounter = TurtleNestEncounterSerializer(read_only=True)
+
     class Meta:
         model = NestTagObservation
         fields = (
@@ -424,6 +446,8 @@ class TurtleMorphometricObservationEncounterSerializer(ObservationSerializer):
 
 class HatchlingMorphometricObservationEncounterSerializer(ObservationSerializer):
 
+    # encounter = TurtleNestEncounterSerializer(read_only=True)
+
     class Meta:
         model = HatchlingMorphometricObservation
         fields = (
@@ -452,6 +476,8 @@ class TurtleNestDisturbanceObservationEncounterSerializer(ObservationSerializer)
 
 
 class TurtleNestObservationEncounterSerializer(ObservationSerializer):
+
+    # encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = TurtleNestObservation
@@ -485,6 +511,8 @@ class TurtleNestObservationEncounterSerializer(ObservationSerializer):
 
 
 class TurtleHatchlingEmergenceObservationEncounterSerializer(ObservationSerializer):
+
+    # encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = TurtleHatchlingEmergenceObservation

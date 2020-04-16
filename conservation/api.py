@@ -27,120 +27,6 @@ from taxonomy.models import Community, Taxon
 logger = logging.getLogger(__name__)
 
 
-class CommunityConservationListingFilter(FilterSet):
-    """CommunityConservationListing filter.
-    """
-    class Meta:
-        model = CommunityConservationListing
-        fields = {
-            "community": ["exact", ],
-            "scope": ["exact", "in"],
-            "status": ["exact", "in"],
-            "category": ["exact", "in"],
-            "criteria": ["exact", "in"],
-            "proposed_on": ["exact", "year__gt"],
-            "effective_from": ["exact", "year__gt"],
-            "effective_to": ["exact", "year__gt"],
-            "last_reviewed_on": ["exact", "year__gt"],
-            "review_due": ["exact", "year__gt"],
-            "comments": ["exact", "icontains"],
-        }
-
-
-class CommunityConservationListingViewSet(BatchUpsertViewSet):
-    """View set for CommunityConservationListing.
-    """
-    model = CommunityConservationListing
-    queryset = CommunityConservationListing.objects.all().select_related("community")
-    serializer_class = CommunityConservationListingSerializer
-    filterset_class = CommunityConservationListingFilter
-    uid_fields = ("source", "source_id")
-
-    def resolve_fks(self, data):
-        """Resolve FKs from PK to object."""
-        try:
-            data["community"] = Community.objects.get(code=data["community"])
-        except Exception as e:
-            print("Exception '{0}': community '{1}' not known.".format(e, data["community"]))
-        return data
-
-    def create_one(self, data):
-        """POST: Create or update exactly one model instance.
-
-        The ViewSet must have a method ``split_data`` returning a dict
-        of the unique, mandatory fields to get_or_create,
-        and a dict of the other optional values to update.
-
-        Return Response(content, status)
-        """
-        unique_data, update_data = self.split_data(data)
-
-        # Pop category and criterion out update_data
-        cat_ids = force_as_list(update_data.pop("category"))
-        logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
-        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
-        crit_ids = force_as_list(update_data.pop("criteria"))
-        logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
-        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
-
-        # Early exit 1: None value in unique data
-        if None in unique_data.values():
-            msg = "[API][create_one] Skipping invalid data: {0} {1}".format(
-                str(update_data), str(unique_data))
-            logger.warning(msg)
-            content = {"msg": msg}
-            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-        logger.debug("[API][create_one] Received "
-                     "{0} with unique fields {1}".format(
-                         self.model._meta.verbose_name, str(unique_data)))
-
-        # Without the QA status deciding whether to update existing data:
-        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        obj.category.set(categories)
-        obj.criteria.set(criteria)
-        obj.save()  # better save() than sorry
-        obj.refresh_from_db()
-        obj.save()  # to update cached fields
-
-        verb = "Created" if created else "Updated"
-        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        msg = "[API][create_one] {0} {1}".format(verb, obj.__str__())
-        content = {"id": obj.id, "msg": msg}
-        logger.info(msg)
-        return Response(content, status=st)
-
-    def create(self, request):
-        """POST: Create or update one or many model instances.
-
-        request.data must be a dict or a list of dicts.
-
-        Return Response(result, status)
-
-        result:
-
-        * Warning message if invalid data (status 406 not acceptable)
-        * Dict of object_id and message if one record
-        * List of one-record dicts if several records
-        """
-
-        # Create one ---------------------------------------------------------#
-        if self.uid_fields[0] in request.data:
-            logger.info('[API][create] found one record, creating/updating...')
-            res = self.create_one(request.data).__dict__
-            return Response(res, status=status.HTTP_201_CREATED)
-
-        # Create many --------------------------------------------------------#
-        elif (isinstance(request.data, list) and
-              self.uid_fields[0] in request.data[0]):
-            logger.info('[API][create] found batch of {0} records,'
-                        ' creating/updating...'.format(len(request.data)))
-
-            # The slow way:
-            res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
-        return Response([], status=status.HTTP_200_OK)
-
-
 class ConservationCategoryFilter(FilterSet):
     """ConservationCategory filter."""
 
@@ -421,10 +307,139 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 
         # Create many --------------------------------------------------------#
         elif (isinstance(request.data, list) and
+              len(request.data) > 0 and
               self.uid_fields[0] in request.data[0]):
             logger.info('[API][create] found batch of {0} records,'
                         ' creating/updating...'.format(len(request.data)))
 
             # The slow way:
-            res = [getattr(self.create_one(data), "__dict__", None) for data in request.data]
-        return Response([], status=status.HTTP_200_OK)
+            res = [getattr(self.create_one(data), "__dict__", None)
+                   for data in request.data]
+        else:
+            return Response(
+                request.data,
+                status=status.HTTP_406_NOT_ACCEPTABLE
+            )
+
+
+# ----------------------------------------------------------------------------#
+# CommunityConservationListing
+#
+class CommunityConservationListingFilter(FilterSet):
+    """CommunityConservationListing filter.
+    """
+    class Meta:
+        model = CommunityConservationListing
+        fields = {
+            "community": ["exact", ],
+            "scope": ["exact", "in"],
+            "status": ["exact", "in"],
+            "category": ["exact", "in"],
+            "criteria": ["exact", "in"],
+            "proposed_on": ["exact", "year__gt"],
+            "effective_from": ["exact", "year__gt"],
+            "effective_to": ["exact", "year__gt"],
+            "last_reviewed_on": ["exact", "year__gt"],
+            "review_due": ["exact", "year__gt"],
+            "comments": ["exact", "icontains"],
+        }
+
+
+class CommunityConservationListingViewSet(BatchUpsertViewSet):
+    """View set for CommunityConservationListing.
+    """
+    model = CommunityConservationListing
+    queryset = CommunityConservationListing.objects.all().select_related("community")
+    serializer_class = CommunityConservationListingSerializer
+    filterset_class = CommunityConservationListingFilter
+    uid_fields = ("source", "source_id")
+
+    def resolve_fks(self, data):
+        """Resolve FKs from PK to object."""
+        try:
+            data["community"] = Community.objects.get(code=data["community"])
+        except Exception as e:
+            print("Exception '{0}': community '{1}' not known.".format(e, data["community"]))
+        return data
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance.
+
+        The ViewSet must have a method ``split_data`` returning a dict
+        of the unique, mandatory fields to get_or_create,
+        and a dict of the other optional values to update.
+
+        Return Response(content, status)
+        """
+        unique_data, update_data = self.split_data(data)
+
+        # Pop category and criterion out update_data
+        cat_ids = force_as_list(update_data.pop("category"))
+        logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
+        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
+        crit_ids = force_as_list(update_data.pop("criteria"))
+        logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
+        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
+
+        # Early exit 1: None value in unique data
+        if None in unique_data.values():
+            msg = "[API][create_one] Skipping invalid data: {0} {1}".format(
+                str(update_data), str(unique_data))
+            logger.warning(msg)
+            content = {"msg": msg}
+            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        logger.debug("[API][create_one] Received "
+                     "{0} with unique fields {1}".format(
+                         self.model._meta.verbose_name, str(unique_data)))
+
+        # Without the QA status deciding whether to update existing data:
+        obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
+        obj.category.set(categories)
+        obj.criteria.set(criteria)
+        obj.save()  # better save() than sorry
+        obj.refresh_from_db()
+        obj.save()  # to update cached fields
+
+        verb = "Created" if created else "Updated"
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        msg = "[API][create_one] {0} {1}".format(verb, obj.__str__())
+        content = {"id": obj.id, "msg": msg}
+        logger.info(msg)
+        return Response(content, status=st)
+
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be a dict or a list of dicts.
+
+        Return Response(result, status)
+
+        result:
+
+        * Warning message if invalid data (status 406 not acceptable)
+        * Dict of object_id and message if one record
+        * List of one-record dicts if several records
+        """
+
+        # Create one ---------------------------------------------------------#
+        if self.uid_fields[0] in request.data:
+            logger.info('[API][create] found one record, creating/updating...')
+            res = self.create_one(request.data).__dict__
+            return Response(res, status=status.HTTP_201_CREATED)
+
+        # Create many --------------------------------------------------------#
+        elif (isinstance(request.data, list) and
+              len(request.data) > 0 and
+              self.uid_fields[0] in request.data[0]):
+            logger.info('[API][create] found batch of {0} records,'
+                        ' creating/updating...'.format(len(request.data)))
+
+            # The slow way:
+            res = [getattr(self.create_one(data), "__dict__", None)
+                   for data in request.data]
+        else:
+            return Response(
+                request.data,
+                status=status.HTTP_406_NOT_ACCEPTABLE
+            )
