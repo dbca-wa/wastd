@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 """Views for WAStD."""
-# from django.shortcuts import render
-# from rest_framework.decorators import api_view, renderer_classes, permission_classes
-# from rest_framework import response, schemas, permissions
-
 from django.contrib import messages
 from django.db import transaction
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
@@ -166,6 +163,12 @@ class AnimalEncounterCreate(CreateView):
         data['formset_prefix'] = 'encounter'  # We set this in order to give the JavaScript something to match.
         return data
 
+    def post(self, request, *args, **kwargs):
+        # If the user clicked Cancel, redirect back to the list view.
+        if request.POST.get("cancel"):
+            return redirect("animalencounter_list")
+        return super(AnimalEncounterCreate, self).post(request, *args, **kwargs)
+
     def form_valid(self, form):
         context = self.get_context_data()
         flipper_tags = context['flipper_tags']
@@ -203,13 +206,18 @@ class AnimalEncounterUpdate(UpdateView):
         data['formset_prefix'] = 'encounter'  # We set this in order to give the JavaScript something to match.
         return data
 
+    def post(self, request, *args, **kwargs):
+        # If the user clicked Cancel, redirect back to the detail view.
+        if request.POST.get("cancel"):
+            return redirect(self.get_object().get_absolute_url())
+        return super(AnimalEncounterUpdate, self).post(request, *args, **kwargs)
+
     def form_valid(self, form):
         context = self.get_context_data()
         flipper_tags = context['flipper_tags']
         with transaction.atomic():
             self.object = form.save()
             if flipper_tags.is_valid():
-                #import ipdb;ipdb.set_trace()
                 flipper_tags.instance = self.object
                 flipper_tags.save()
         return super(AnimalEncounterUpdate, self).form_valid(form)

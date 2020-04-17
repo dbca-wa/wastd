@@ -3,11 +3,12 @@
 {% block content %}
 <div class="panel panel-default">
     <div>
+        <a class="btn btn-secondary" href="{% url 'animalencounter_list' %}">Full list</a>
         <a class="btn btn-primary" href="{% url 'animalencounter_update' pk=object.pk %}">Update</a>
     </div>
     <div>
         <h4>Encounter</h4>
-        <table>
+        <table class="table table-bordered table-sm table-dark">
             <tbody>
                 <tr>
                     <th>Observed on</th>
@@ -54,7 +55,8 @@
     </div>
     <div>
         <h4>Tags</h4>
-        <table>
+        {% if tags %}
+        <table class="table table-bordered table-sm table-dark">
             <tbody>
                 <tr>
                     <th>Tag ID</th>
@@ -68,6 +70,9 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <p>None</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
