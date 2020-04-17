@@ -27,7 +27,8 @@
 
         $('.formset_row-{{ formset_prefix }}').formset({
             addText: 'Add another flipper tag',
-            deleteText: 'Remove',
+            deleteText: '❌',
+            addCssClass: 'btn btn-primary btn-sm',
             prefix: '{{ formset_prefix }}',
         });
 
