@@ -35,7 +35,7 @@
 {# Temporary table list below #}
 {% block content %}
 <div>
-    <a href="{% url 'animalencounter_create' %}">Create new Animal Encounter</a>
+    <a class="btn btn-primary" href="{% url 'animalencounter_create' %}">Create new Animal Encounter</a>
 </div>
 
 <div>
@@ -46,18 +46,40 @@
                 <th>Taxonomic group</th>
                 <th>Species</th>
                 <th>Measured by</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td><a href="{{ object.get_absolute_url }}">{{ object.when }}</a></td>
-                <td>{{ object.taxon }}</td>
-                <td>{{ object.species }}</td>
+                <td>{{ object.when }}</td>
+                <td>{{ object.get_taxon_display }}</td>
+                <td>{{ object.get_species_display }}</td>
                 <td>{{ object.observer }}</td>
+                <td><a href="{{ object.get_absolute_url }}">Details</a> Edit</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+</div>
+
+<hr>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
 </div>
 {% endblock %}
