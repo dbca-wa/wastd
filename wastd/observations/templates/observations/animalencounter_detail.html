@@ -1,0 +1,73 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+<div class="panel panel-default">
+    <div>
+        <a class="btn btn-primary" href="{% url 'animalencounter_update' pk=object.pk %}">Update</a>
+    </div>
+    <div>
+        <h4>Encounter</h4>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Observed on</th>
+                    <td>{{ object.when }}</td>
+                </tr>
+                <tr>
+                    <th>Observed location</th>
+                    <td>{{ object.where }}</td>
+                </tr>
+                <tr>
+                    <th>Measured by</th>
+                    <td>{{ object.observer }}</td>
+                </tr>
+                <tr>
+                    <th>Reported by</th>
+                    <td>{{ object.reporter }}</td>
+                </tr>
+                <tr>
+                    <th>Data source</th>
+                    <td>{{ object.source }}</td>
+                </tr>
+                <tr>
+                    <th>Taxonomic group</th>
+                    <td>{{ object.get_taxon_diplay }}</td>
+                </tr>
+                <tr>
+                    <th>Species</th>
+                    <td>{{ object.get_species_display }}</td>
+                </tr>
+                <tr>
+                    <th>Health status</th>
+                    <td>{{ object.get_health_display }}</td>
+                </tr>
+                <tr>
+                    <th>Sex</th>
+                    <td>{{ object.get_sex_display }}</td>
+                </tr>
+                <tr>
+                    <th>Maturity</th>
+                    <td>{{ object.get_maturity_display }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h4>Tags</h4>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Tag ID</th>
+                    <th>Type</th>
+                </tr>
+                {% for tag in tags %}
+                <tr>
+                    <td>{{ tag.name }}</td>
+                    <td>{{ tag.get_tag_type_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
