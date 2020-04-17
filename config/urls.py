@@ -51,6 +51,7 @@ urlpatterns = [
     path('animal-encounters/', wastd_views.AnimalEncounterList.as_view(), name="animalencounter_list"),
     path('animal-encounters/create/', wastd_views.AnimalEncounterCreate.as_view(), name='animalencounter_create'),
     path('animal-encounters/<int:pk>/', wastd_views.AnimalEncounterDetail.as_view(), name='animalencounter_detail'),
+    path('animal-encounters/<int:pk>/update/', wastd_views.AnimalEncounterUpdate.as_view(), name='animalencounter_update'),
 
     # API
     path('api/1/swagger/', wastd_views.schema_view, name="api-docs"),

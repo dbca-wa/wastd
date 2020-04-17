@@ -15,6 +15,7 @@
 {% endblock content %}
 
 {% block extrajs %}
+{{ block.super }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.formset/1.2.2/jquery.formset.min.js"></script>
 <script type="text/javascript">
@@ -25,7 +26,7 @@
         });
 
         $('.formset_row-{{ formset_prefix }}').formset({
-            addText: 'Add another',
+            addText: 'Add another flipper tag',
             deleteText: 'Remove',
             prefix: '{{ formset_prefix }}',
         });
