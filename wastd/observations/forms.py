@@ -93,6 +93,7 @@ class AnimalEncounterForm(BaseForm):
                     HTML('<p>The ID of any tag must be unique within the tag type.</p>'),
                     Formset('flipper_tags', template='observations/formset_simple.html')
                 ),
+                HTML('<hr>'),
                 ButtonHolder(
                     self.save_button,
                     self.cancel_button,
