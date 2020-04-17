@@ -9,7 +9,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, CreateView, DetailView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView
 # Tables
 from django_tables2 import RequestConfig, SingleTableView, tables
 from rest_framework.renderers import CoreJSONRenderer
@@ -188,6 +188,31 @@ class AnimalEncounterDetail(DetailView):
         data = super(AnimalEncounterDetail, self).get_context_data(**kwargs)
         data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
         return data
+
+
+class AnimalEncounterUpdate(UpdateView):
+    model = AnimalEncounter
+    form_class = AnimalEncounterForm
+
+    def get_context_data(self, **kwargs):
+        data = super(AnimalEncounterUpdate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['flipper_tags'] = FlipperTagObservationFormSet(self.request.POST, instance=self.object)
+        else:
+            data['flipper_tags'] = FlipperTagObservationFormSet(instance=self.object)
+        data['formset_prefix'] = 'encounter'  # We set this in order to give the JavaScript something to match.
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        flipper_tags = context['flipper_tags']
+        with transaction.atomic():
+            self.object = form.save()
+            if flipper_tags.is_valid():
+                #import ipdb;ipdb.set_trace()
+                flipper_tags.instance = self.object
+                flipper_tags.save()
+        return super(AnimalEncounterUpdate, self).form_valid(form)
 
 
 # Django-Rest-Swagger View ---------------------------------------------------#

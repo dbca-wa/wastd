@@ -116,7 +116,7 @@ class TagObservationForm(forms.ModelForm):
         self.helper.layout = Layout(
             Row(
                 Field('name'),
-                Field('DELETE'),
+                Field('DELETE', type='hidden'),
                 css_class='formset_row-{}'.format(formtag_prefix)
             )
         )

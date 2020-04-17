@@ -56,7 +56,10 @@
                 <td>{{ object.get_taxon_display }}</td>
                 <td>{{ object.get_species_display }}</td>
                 <td>{{ object.observer }}</td>
-                <td><a href="{{ object.get_absolute_url }}">Details</a> Edit</td>
+                <td>
+                    <a href="{{ object.get_absolute_url }}">Details</a>
+                    <a href="{% url 'animalencounter_update' pk=object.pk %}">Update</a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
