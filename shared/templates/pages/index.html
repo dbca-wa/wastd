@@ -205,14 +205,36 @@
         src="{% static 'images/map_wa_square.png' %}"
         alt="Map of Western Australia showing TSC data on ESRI imagery. Copyright background layers: ESRI."
         width="140" height="140">
-      <h2>Map</h2>
+      <h2>Marine Wildlife Incidents</h2>
       <p>
-        View selected occurrences of threatened species and communities on a map.
+        View, report, list incidents (mortalities, entanglements, injuries) involving
+        threatened marine megafauna: Turtles, Dugong, Sea snakes, Pinnipeds and Cetaceans.
+        We recommend to report Marine Wildlife Incidents using our app - get started <a href="" title="TODO">here</a>.
       </p>
+
       <p>
         <a class="btn btn-primary" href="{% url 'map' %}"
-            title="Map Threatened Species and Communities">
-          View Map »
+            title="Map Marine Wildlife Incidents">
+          Map »
+        </a>
+      </p>
+      <p>
+        <a class="btn btn-primary" href="{% url 'animalencounter_list' %}"
+            title="List, filter, export Marine Wildlife Incidents">
+          Browse »
+        </a>
+      </p>
+      <p>
+        <a class="btn btn-primary" href=""
+            title="Get our app to report Marine Wildlife Incidents">
+          Report (via app) »
+        </a>
+      </p>
+      <p>
+        <a class="btn btn-secondary" href="{% url 'animalencounter_create' %}"
+            title="Report a new Marine Wildlife Incident captured on paper.
+Please upgrade to use the app!">
+          Report (via web form) »
         </a>
       </p>
     </div>
