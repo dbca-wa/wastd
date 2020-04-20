@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block extrastyle %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.3/flatpickr.min.css">
 {% endblock extrastyle %}
 
 {% block content %}
@@ -16,13 +16,15 @@
 
 {% block extrajs %}
 {{ block.super }}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.3/flatpickr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.formset/1.2.2/jquery.formset.min.js"></script>
 <script type="text/javascript">
     $(function () {
 
-        $('.datetimeinput').datetimepicker({
-            format: 'DD-MM-YYYY HH:mm',
+        $('.datetimeinput').flatpickr({
+            enableTime: true,
+            dateFormat: 'd-m-Y H:i',
+            time_24hr: true,
         });
 
         $('.formset_row-{{ formset_prefix }}').formset({

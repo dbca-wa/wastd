@@ -75,6 +75,7 @@ class AnimalEncounterForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super(AnimalEncounterForm, self).__init__(*args, **kwargs)
+        self.fields['when'].help_text = 'Date & time (AWST) of the observation.'
         self.helper.layout = Layout(
             Div(
                 Fieldset(
