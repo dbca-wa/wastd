@@ -1,78 +1,96 @@
 {% extends "pages/base.html" %}
+{% load leaflet_tags geojson_tags taxonomy_tags staticfiles %}
+{% load render_table from django_tables2 %}
+
+{% block extrastyle %}
+<style>
+.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
+  width: 350px; /* narrower popup */
+  padding: -10px;  /* fix close button position */
+}
+.leaflet-tooltip { width: 200px; word-wrap: break-word; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="panel panel-default">
-    <div>
-        <a class="btn btn-secondary" href="{% url 'observations:animalencounter-list' %}">Full list</a>
-        <a class="btn btn-primary" href="{% url 'observations:animalencounter-update' pk=object.pk %}">Update</a>
-    </div>
-    <div>
-        <h4>Encounter</h4>
-        <table class="table table-bordered table-sm table-dark">
-            <tbody>
-                <tr>
-                    <th>Observed on</th>
-                    <td>{{ object.when }}</td>
-                </tr>
-                <tr>
-                    <th>Observed location</th>
-                    <td>{{ object.where }}</td>
-                </tr>
-                <tr>
-                    <th>Measured by</th>
-                    <td>{{ object.observer }}</td>
-                </tr>
-                <tr>
-                    <th>Reported by</th>
-                    <td>{{ object.reporter }}</td>
-                </tr>
-                <tr>
-                    <th>Data source</th>
-                    <td>{{ object.source }}</td>
-                </tr>
-                <tr>
-                    <th>Taxonomic group</th>
-                    <td>{{ object.get_taxon_diplay }}</td>
-                </tr>
-                <tr>
-                    <th>Species</th>
-                    <td>{{ object.get_species_display }}</td>
-                </tr>
-                <tr>
-                    <th>Health status</th>
-                    <td>{{ object.get_health_display }}</td>
-                </tr>
-                <tr>
-                    <th>Sex</th>
-                    <td>{{ object.get_sex_display }}</td>
-                </tr>
-                <tr>
-                    <th>Maturity</th>
-                    <td>{{ object.get_maturity_display }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <h4>Flipper tags</h4>
-        {% if tags %}
-        <table class="table table-bordered table-sm table-dark">
-            <tbody>
-                <tr>
-                    <th>Tag ID</th>
-                    <th>Type</th>
-                </tr>
-                {% for tag in tags %}
-                <tr>
-                    <td>{{ tag.name }}</td>
-                    <td>{{ tag.get_tag_type_display }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>None</p>
-        {% endif %}
-    </div>
-</div>
+{% include 'shared/breadcrumbs.html' %}
+<div class="row" id="row-occ-detail">
+  <!-- Subject details -->
+  <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="occ-detail-main">
+    <div class="card card-lg detailarea m-0">
+      <div class="card-header">
+        <small class="float-right">
+          {% include "shared/update_links_qa.html" with label=False %}
+        </small>
+        <h3>{{ object.get_taxon_display }} - {{ object.get_species_display }}</h3>
+      </div>
+
+      <div class="card-body">
+
+        <div class="row">
+          <div class="col col-12">
+            <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
+            {{ object.when|date:"r" }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col col-12">
+            <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
+            {{ object.get_encounter_type_display }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col col-12">
+            <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
+              {{ object.observer }}
+          </div>
+        </div><!-- /.row -->
+
+        <div class="row">
+          <div class="col col-12">
+              <strong>Data source:</strong> {{ object.get_source_display }}<br>
+              <strong>Health status:</strong> {{ object.get_health_display }}<br>
+              <strong>Sex:</strong> {{ object.get_sex_display }}<br>
+              <strong>Maturity:</strong> {{ object.get_maturity_display }}<br>
+          </div>
+        </div><!-- /.row -->
+      </div><!-- /.card-body -->
+
+    </div><!-- /.card -->
+  </div><!-- /.col#occ-detail-main -->
+
+  <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
+      <div>
+        {% leaflet_map "detailmap" callback="window.map_init" %}
+      </div>
+  </div><!-- /.col#occ-map -->
+</div><!-- .row#row-occ-detail -->
+
+<div id="row-occ-extra">
+  <div class="col col-12 mb-2">
+
+<div class="card-group">
+{% for tag in tags %}
+  <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg">
+
+    <div class="card-header">
+      <h5 class="card-title">
+        Tag ID {{ tag.name }}
+      </h5>
+    </div><!-- /.card-header -->
+
+    <div class="card-body">
+        Type: {{ tag.get_tag_type_display }}<br>
+        Location: {{ tag.get_tag_location_display }}
+    </div><!-- /.card-body -->
+
+  </div><!-- /.card -->
+{% endfor %}
+</div><!-- /.card-group -->
+
+  </div>
+</div><!-- .row#row-occ-extra -->
+
 {% endblock %}
