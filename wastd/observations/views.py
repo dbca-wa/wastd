@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from export_download.views import ResourceDownloadMixin
 # Tables
 from django_tables2 import RequestConfig, SingleTableView, tables
 from rest_framework.renderers import CoreJSONRenderer
@@ -14,9 +15,12 @@ from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from sentry_sdk import capture_message
 
-from wastd.observations.filters import AnimalEncounterFilter, EncounterFilter
+from shared.views import ListViewBreadcrumbMixin
+
+from wastd.observations.filters import AnimalEncounterFilter, AnimalEncounterFilter2, EncounterFilter
 from wastd.observations.forms import AnimalEncounterListFormHelper, EncounterListFormHelper, AnimalEncounterForm, FlipperTagObservationFormSet
 from wastd.observations.models import AnimalEncounter, Encounter, TagObservation
+from wastd.observations.resources import AnimalEncounterResource
 from wastd.observations.tasks import import_odka, update_names
 
 
@@ -143,11 +147,17 @@ class AnimalEncounterTableView(EncounterTableView):
     template = "observations/encounter.html"
 
 
-class AnimalEncounterList(ListView):
+class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+    model = AnimalEncounter
+    template_name = 'pages/default_list.html'
     paginate_by = 20
+    filter_class = AnimalEncounterFilter2
+    resource_class = AnimalEncounterResource
 
-    def get_queryset(self):
-        return AnimalEncounter.objects.order_by('-pk')
+    def get_context_data(self, **kwargs):
+        context = super(AnimalEncounterList, self).get_context_data(**kwargs)
+        context['list_filter'] = AnimalEncounterFilter2(self.request.GET, queryset=self.get_queryset())
+        return context
 
 
 class AnimalEncounterCreate(CreateView):

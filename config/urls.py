@@ -47,11 +47,7 @@ urlpatterns = [
 
     # WAStD Encounters
     path('encounters/', wastd_views.EncounterTableView.as_view(), name="encounter_list"),
-    #path('animal-encounters/', wastd_views.AnimalEncounterTableView.as_view(), name="animalencounter_list"),
-    path('animal-encounters/', wastd_views.AnimalEncounterList.as_view(), name="animalencounter_list"),
-    path('animal-encounters/create/', wastd_views.AnimalEncounterCreate.as_view(), name='animalencounter_create'),
-    path('animal-encounters/<int:pk>/', wastd_views.AnimalEncounterDetail.as_view(), name='animalencounter_detail'),
-    path('animal-encounters/<int:pk>/update/', wastd_views.AnimalEncounterUpdate.as_view(), name='animalencounter_update'),
+    path('observations/', include(('wastd.observations.urls'), namespace='observations')),
 
     # API
     path('api/1/swagger/', wastd_views.schema_view, name="api-docs"),

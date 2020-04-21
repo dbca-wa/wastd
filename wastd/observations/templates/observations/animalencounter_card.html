@@ -1,0 +1,43 @@
+<div class="card {% if not collapse %}card-md col-lg-4 col-md-6 col-sm-6{% endif %} col-12 shadow-lg">
+  <div class="card-header">
+    <h6 class="card-title">
+      {{ object.when|date:'d M Y H:i' }}
+      {{ object.get_encounter_type_display }}
+      <span class="float-right">
+        <a href="{{ object.get_absolute_url }}"
+          class="mr-2 text-primary"
+          title="View {{ object }}.">
+          <span class="oi oi-eye" aria-hidden="true"></span>
+        </a>
+        <span class="oi oi-map-marker zoom-map text-warning"
+          data-lon="{{ object.longitude }}" data-lat="{{ object.latitude }}"
+          title="Show on map" aria-hidden="true"></span>
+      </span>
+    </h6>
+  </div>
+  <div class="occ-detail">
+  <div class="card-body">
+    {% if not collapse %}
+    <p class="card-text">
+        <span class="oi oi-eye" title="Name" aria-hidden="true"></span>
+        {{ object.get_taxon_display }} - {{ object.get_species_display }}
+    </p>
+    {% endif %}
+    <h6 class="card-text">
+      <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
+      {{ object.observer }}
+    </h6>
+    <p class="card-text">
+      <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
+      {{ object.description }}
+    </p>
+  </div><!-- /.card-body -->
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-12">
+        {% include "shared/update_links_qa.html" with label=True %}
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.card-footer -->
+  </div><!-- /.occ-details -->
+</div><!-- /.card -->
