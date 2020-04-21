@@ -35,7 +35,7 @@
 {# Temporary table list below #}
 {% block content %}
 <div>
-    <a class="btn btn-primary" href="{% url 'animalencounter_create' %}">Create new Animal Encounter</a>
+    <a class="btn btn-primary" href="{% url 'observations:animalencounter-create' %}">Create new Animal Encounter</a>
 </div>
 
 <div>
@@ -58,7 +58,7 @@
                 <td>{{ object.observer }}</td>
                 <td>
                     <a class="btn btn-secondary" href="{{ object.get_absolute_url }}">Details</a>
-                    <a class="btn btn-primary" href="{% url 'animalencounter_update' pk=object.pk %}">Update</a>
+                    <a class="btn btn-primary" href="{% url 'observations:animalencounter-update' pk=object.pk %}">Update</a>
                 </td>
             </tr>
         {% endfor %}
