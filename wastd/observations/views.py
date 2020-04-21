@@ -15,7 +15,7 @@ from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from sentry_sdk import capture_message
 
-from shared.views import ListViewBreadcrumbMixin
+from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin
 
 from wastd.observations.filters import AnimalEncounterFilter, AnimalEncounterFilter2, EncounterFilter
 from wastd.observations.forms import AnimalEncounterListFormHelper, EncounterListFormHelper, AnimalEncounterForm, FlipperTagObservationFormSet
@@ -194,7 +194,7 @@ class AnimalEncounterCreate(CreateView):
         return super(AnimalEncounterCreate, self).form_valid(form)
 
 
-class AnimalEncounterDetail(DetailView):
+class AnimalEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = AnimalEncounter
 
     def get_context_data(self, **kwargs):
