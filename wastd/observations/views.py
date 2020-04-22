@@ -159,6 +159,9 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
         context['list_filter'] = AnimalEncounterFilter2(self.request.GET, queryset=self.get_queryset())
         return context
 
+    def get_queryset(self):
+        return AnimalEncounterFilter2(self.request.GET, queryset=AnimalEncounter.objects.all()).qs
+
 
 class AnimalEncounterCreate(CreateView):
     model = AnimalEncounter
