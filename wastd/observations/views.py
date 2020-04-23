@@ -160,7 +160,8 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
         return context
 
     def get_queryset(self):
-        return AnimalEncounterFilter2(self.request.GET, queryset=AnimalEncounter.objects.all()).qs
+        qs = super(AnimalEncounterList, self).get_queryset().order_by('-when')
+        return AnimalEncounterFilter2(self.request.GET, queryset=qs).qs
 
 
 class AnimalEncounterCreate(CreateView):
