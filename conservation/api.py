@@ -250,13 +250,15 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         unique_data, update_data = self.split_data(data)
 
         # Pop category and criterion out update_data
-        cat_ids = force_as_list(update_data.pop("category"))
-        logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
-        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
+        if 'category' in update_data:
+            cat_ids = force_as_list(update_data.pop("category"))
+            logger.debug("[API][create_one] Found categories {}".format(cat_ids))
+            categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
 
-        crit_ids = force_as_list(update_data.pop("criteria"))
-        logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
-        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
+        if 'criteria' in update_data:
+            crit_ids = force_as_list(update_data.pop("criteria"))
+            logger.debug("[API][create_one] Found criteria {}".format(crit_ids))
+            criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
