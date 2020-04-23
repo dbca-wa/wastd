@@ -2035,10 +2035,16 @@ class Encounter(PolymorphicModel, geo_models.Model):
         # c = Context({"original": self})
         return mark_safe(t.render({"original": self}))
 
-    #@property
-    #def observations(self):
-    #    """Return Observations as list."""
-    #    return self.observation_set.all()
+    def get_observations(self):
+        """Return related observations as a queryset.
+        """
+        return Observation.objects.filter(encounter=self)
+
+    @property
+    def observation_set(self):
+        """Manually implement the backwards relation to the Observation model.
+        """
+        return self.get_observations()
 
     @property
     def latitude(self):
