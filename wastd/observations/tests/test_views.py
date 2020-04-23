@@ -78,6 +78,6 @@ class AnimalEncounterViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def animalencounter_list_loads(self):
-        """Test "animalencounter_list" view."""
-        response = self.client.get(reverse("animalencounter_list"))
+        """Test "observations:animalencounter-list" view."""
+        response = self.client.get(reverse("observations:animalencounter-list"))
         self.assertEqual(response.status_code, 200)
