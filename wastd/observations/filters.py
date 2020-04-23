@@ -4,7 +4,7 @@
 import rest_framework_filters as filters
 from django.contrib.admin import SimpleListFilter
 from django.utils.translation import ugettext_lazy as _
-from django_filters import widgets
+from django_filters import widgets, FilterSet
 from rest_framework_gis import filters as gis_filters
 from rest_framework_gis.filterset import GeoFilterSet
 
@@ -105,3 +105,9 @@ class AnimalEncounterFilter(EncounterFilter):
 
         model = AnimalEncounter
         exclude = ['where', ]
+
+
+class AnimalEncounterFilter2(FilterSet):
+    class Meta:
+        model = AnimalEncounter
+        fields = ['taxon', 'species', 'sex', 'maturity', 'health', 'checked_for_flipper_tags']
