@@ -443,12 +443,27 @@ class ObservationGroupViewSet(ModelViewSet):
                     encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
                         source=source, source_id=source_id)
                 if 'sample_type' in obj and obj['sample_type'] not in sample_type_cache:
-                    sample_type_cache[obj['sample_type']] = SampleType.objects.get(code=obj['sample_type'])
+                    try:
+                        logger.info("SampleType cache miss: {}".format(obj['sample_type']))
+                        sample_type_cache[obj['sample_type']] = SampleType.objects.get(code=obj['sample_type'])
+                    except:
+                        logger.warn("SampleType does not exist: {}".format(obj['sample_type']))
+
                 if 'sample_destination' in obj and obj['sample_destination'] not in sample_destination_cache:
-                    sample_destination_cache[obj['sample_destination']
-                                             ] = SampleDestination.objects.get(code=obj['sample_destination'])
+                    try:
+                        logger.info("SampleDestination cache miss: {}".format(obj['sample_destination']))
+                        sample_destination_cache[obj['sample_destination']
+                                                 ] = SampleDestination.objects.get(code=obj['sample_destination'])
+                    except:
+                        logger.warn("SampleDestination does not exist: {}".format(obj['sample_type']))
+
                 if 'permit_type' in obj and obj['permit_type'] not in permit_type_cache:
-                    permit_type_cache[obj['permit_type']] = PermitType.objects.get(code=obj['permit_type'])
+                    try:
+                        logger.info("PermitType cache miss: {}".format(obj['permit_type']))
+                        permit_type_cache[obj['permit_type']] = PermitType.objects.get(code=obj['permit_type'])
+                    except:
+                        logger.warn("PermitType does not exist: {}".format(obj['permit_type']))
+
                 try:
                     PhysicalSample.objects.create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
@@ -478,23 +493,52 @@ class ObservationGroupViewSet(ModelViewSet):
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
                     encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
                         source=source, source_id=source_id)
+
                 if 'detection_method' in obj and obj['detection_method'] not in detection_method_cache:
-                    detection_method_cache[obj['detection_method']
-                                           ] = DetectionMethod.objects.get(code=obj['detection_method'])
+                    try:
+                        logger.info("DetectionMethod cache miss: {}".format(obj['detection_method']))
+                        detection_method_cache[obj['detection_method']
+                                               ] = DetectionMethod.objects.get(code=obj['detection_method'])
+                    except:
+                        logger.warn("DetectionMethod does not exist: {}".format(obj['detection_method']))
+
                 if 'species_id_confidence' in obj and obj['species_id_confidence'] not in species_id_confidence_cache:
-                    species_id_confidence_cache[obj['species_id_confidence']
-                                                ] = Confidence.objects.get(code=obj['species_id_confidence'])
+                    try:
+                        logger.info("Confidence cache miss: {}".format(obj['species_id_confidence']))
+                        species_id_confidence_cache[obj['species_id_confidence']
+                                                    ] = Confidence.objects.get(code=obj['species_id_confidence'])
+                    except:
+                        logger.warn("Confidence does not exist: {}".format(obj['species_id_confidence']))
+
                 if 'maturity' in obj and obj['maturity'] not in maturity_cache:
                     try:
+                        logger.info("ReproductiveMaturity cache miss: {}".format(obj['maturity']))
                         maturity_cache[obj['maturity']] = ReproductiveMaturity.objects.get(code=obj['maturity'])
                     except:
                         logger.warn("ReproductiveMaturity does not exist: {}".format(obj['maturity']))
+
                 if 'sex' in obj and obj['sex'] not in sex_cache:
-                    sex_cache[obj['sex']] = AnimalSex.objects.get(code=obj['sex'])
+                    try:
+                        logger.info("AnimalSex cache miss: {}".format(obj['sex']))
+                        sex_cache[obj['sex']] = AnimalSex.objects.get(code=obj['sex'])
+                    except:
+                        logger.warn("AnimalSex does not exist: {}".format(obj['sex']))
+
                 if 'health' in obj and obj['health'] not in health_cache:
-                    health_cache[obj['health']] = AnimalHealth.objects.get(code=obj['health'])
+                    try:
+                        logger.info("AnimalHealth cache miss: {}".format(obj['health']))
+                        health_cache[obj['health']] = AnimalHealth.objects.get(code=obj['health'])
+                    except:
+                        logger.warn("AnimalHealth does not exist: {}".format(obj['health']))
+
                 if 'cause_of_death' in obj and obj['cause_of_death'] not in cause_of_death_cache:
-                    cause_of_death_cache[obj['cause_of_death']] = CauseOfDeath.objects.get(code=obj['cause_of_death'])
+                    try:
+                        logger.info("CauseOfDeath cache miss: {}".format(obj['cause_of_death']))
+                        cause_of_death_cache[obj['cause_of_death']
+                                             ] = CauseOfDeath.objects.get(code=obj['cause_of_death'])
+                    except:
+                        logger.warn("CauseOfDeath does not exist: {}".format(obj['cause_of_death']))
+
                 if 'secondary_signs' in obj:
                     if type(obj['secondary_signs']) == str:
                         obj['secondary_signs'] = obj['secondary_signs'].split(",")
@@ -571,16 +615,42 @@ class ObservationGroupViewSet(ModelViewSet):
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
                     encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
                         source=source, source_id=source_id)
+
                 if 'landform' in obj and obj['landform'] not in landform_cache:
-                    landform_cache[obj['landform']] = Landform.objects.get(code=obj['landform'])
+                    try:
+                        logger.info("Landform cache miss: {}".format(obj['landform']))
+                        landform_cache[obj['landform']] = Landform.objects.get(code=obj['landform'])
+                    except:
+                        logger.warn("Landform does not exist: {}".format(obj['landform']))
+
                 if 'rock_type' in obj and obj['rock_type'] not in rocktype_cache:
-                    rocktype_cache[obj['rock_type']] = RockType.objects.get(code=obj['rock_type'])
+                    try:
+                        logger.info("RockType cache miss: {}".format(obj['rock_type']))
+                        rocktype_cache[obj['rock_type']] = RockType.objects.get(code=obj['rock_type'])
+                    except:
+                        logger.warn("RockType does not exist: {}".format(obj['rock_type']))
+
                 if 'soil_type' in obj and obj['soil_type'] not in soiltype_cache:
-                    soiltype_cache[obj['soil_type']] = SoilType.objects.get(code=obj['soil_type'])
+                    try:
+                        logger.info("SoilType cache miss: {}".format(obj['soil_type']))
+                        soiltype_cache[obj['soil_type']] = SoilType.objects.get(code=obj['soil_type'])
+                    except:
+                        logger.warn("SoilType does not exist: {}".format(obj['soil_type']))
+
                 if 'soil_colour' in obj and obj['soil_colour'] not in soilcolour_cache:
-                    soilcolour_cache[obj['soil_colour']] = SoilColour.objects.get(code=obj['soil_colour'])
+                    try:
+                        logger.info("SoilColour cache miss: {}".format(obj['soil_colour']))
+                        soilcolour_cache[obj['soil_colour']] = SoilColour.objects.get(code=obj['soil_colour'])
+                    except:
+                        logger.warn("SoilColour does not exist: {}".format(obj['soil_colour']))
+
                 if 'drainage' in obj and obj['drainage'] not in drainage_cache:
-                    drainage_cache[obj['drainage']] = Drainage.objects.get(code=obj['drainage'])
+                    try:
+                        logger.info("Drainage cache miss: {}".format(obj['drainage']))
+                        drainage_cache[obj['drainage']] = Drainage.objects.get(code=obj['drainage'])
+                    except:
+                        logger.warn("Drainage does not exist: {}".format(obj['drainage']))
+
                 try:
                     HabitatComposition.objects.create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
