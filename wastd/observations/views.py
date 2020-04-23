@@ -178,8 +178,8 @@ class AnimalEncounterCreate(CreateView):
 
     def post(self, request, *args, **kwargs):
         # If the user clicked Cancel, redirect back to the list view.
-        if request.POST.get("cancel"):
-            return redirect("animalencounter_list")
+        if request.POST.get('cancel'):
+            return redirect('observations:animalencounter-list')
         return super(AnimalEncounterCreate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -221,7 +221,7 @@ class AnimalEncounterUpdate(UpdateView):
 
     def post(self, request, *args, **kwargs):
         # If the user clicked Cancel, redirect back to the detail view.
-        if request.POST.get("cancel"):
+        if request.POST.get('cancel'):
             return redirect(self.get_object().get_absolute_url())
         return super(AnimalEncounterUpdate, self).post(request, *args, **kwargs)
 
