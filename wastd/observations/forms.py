@@ -75,10 +75,11 @@ class AnimalEncounterForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super(AnimalEncounterForm, self).__init__(*args, **kwargs)
+        self.fields['when'].help_text = 'Date & time (AWST) of the observation.'
         self.helper.layout = Layout(
             Div(
                 Fieldset(
-                    'Marine animal observation details',
+                    'Marine animal encounter details',
                     Field('where'),
                     Field('when'),
                     Field('taxon'),
@@ -94,9 +95,10 @@ class AnimalEncounterForm(BaseForm):
                     Formset('flipper_tags', template='observations/formset_simple.html')
                 ),
                 HTML('<hr>'),
-                ButtonHolder(
+                Div(
                     self.save_button,
                     self.cancel_button,
+                    css_class='offset-sm-4 offset-md-3 offset-lg-2',
                 )
             ),
         )
@@ -106,7 +108,7 @@ class TagObservationForm(forms.ModelForm):
 
     class Meta:
         model = TagObservation
-        fields = ['name']
+        fields = ['name', 'tag_location']
 
     def __init__(self, *args, **kwargs):
         super(TagObservationForm, self).__init__(*args, **kwargs)
@@ -117,6 +119,7 @@ class TagObservationForm(forms.ModelForm):
         self.helper.layout = Layout(
             Row(
                 Field('name'),
+                Field('tag_location'),
                 Field('DELETE', type='hidden'),
                 css_class='formset_row-{}'.format(formtag_prefix)
             )

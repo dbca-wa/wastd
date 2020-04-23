@@ -43,6 +43,7 @@ from django_fsm_log.decorators import fsm_log_by
 from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
 from rest_framework.reverse import reverse as rest_reverse
+from shared.models import UrlsMixin
 from shared.utils import sanitize_tag_label
 
 from wastd.users.models import User
@@ -2034,10 +2035,16 @@ class Encounter(PolymorphicModel, geo_models.Model):
         # c = Context({"original": self})
         return mark_safe(t.render({"original": self}))
 
-    #@property
-    #def observations(self):
-    #    """Return Observations as list."""
-    #    return self.observation_set.all()
+    def get_observations(self):
+        """Return related observations as a queryset.
+        """
+        return Observation.objects.filter(encounter=self)
+
+    @property
+    def observation_set(self):
+        """Manually implement the backwards relation to the Observation model.
+        """
+        return self.get_observations()
 
     @property
     def latitude(self):
@@ -2219,7 +2226,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
         return
 
 
-class AnimalEncounter(Encounter):
+class AnimalEncounter(UrlsMixin, Encounter):
     """The encounter of an animal of a species.
 
     Extends the base Encounter class with:
@@ -2440,7 +2447,10 @@ class AnimalEncounter(Encounter):
         return (has_new_tagobs and not has_old_tagobs)
 
     def get_absolute_url(self):
-        return reverse('animalencounter_detail', kwargs={'pk': self.pk})
+        return reverse('observations:animalencounter-detail', kwargs={'pk': self.pk})
+
+    def card_template(self):
+        return 'observations/animalencounter_card.html'
 
 
 class TurtleNestEncounter(Encounter):
