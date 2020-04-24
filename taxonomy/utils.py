@@ -579,6 +579,7 @@ def make_all_species():
         with tax_models.Taxon.objects.delay_mptt_updates():
             species = [make_species(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Species")]
             logger.info("[update_taxon] Updating MPTT.")
+    rebuild_mptt_tree()
     return species
 
 
@@ -592,6 +593,7 @@ def make_all_subspecies():
             subspecies = [make_subspecies(x, CUR, PUB)
                           for x in tax_models.HbvSpecies.objects.filter(rank_name="Subspecies")]
             logger.info("[update_taxon] Updating MPTT.")
+    rebuild_mptt_tree()
     return subspecies
 
 
@@ -604,6 +606,7 @@ def make_all_varieties():
         with tax_models.Taxon.objects.delay_mptt_updates():
             varieties = [make_variety(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Variety")]
             logger.info("[update_taxon] Updating MPTT.")
+    rebuild_mptt_tree()
     return varieties
 
 
@@ -616,6 +619,7 @@ def make_all_forms():
         with tax_models.Taxon.objects.delay_mptt_updates():
             forms = [make_form(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Form")]
             logger.info("[update_taxon] Updating MPTT.")
+    rebuild_mptt_tree()
     return forms
 
 def make_all_vernaculars():
@@ -688,7 +692,6 @@ def update_taxon():
 
     See also
     http://django-mptt.readthedocs.io/en/latest/mptt.managers.html#mptt.managers.TreeManager.disable_mptt_updates
-
     """
     rebuild_mptt_tree() # repair MPTT tree before bulk update/creates
     kingdoms = make_all_kingdoms()
