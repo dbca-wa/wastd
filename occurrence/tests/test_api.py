@@ -308,7 +308,7 @@ class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
         })
         self.assertEqual(resp.status_code, 201)
 
-    def abuse_occ_observation_post_animalobservation_secondarysigns(self):
+    def test_occ_observation_post_animalobservation_secondarysigns(self):
         """Test the AnimalObservation POST endpoint tolerates strings for secondary signs."""
         SecondarySigns.objects.create(code='fur', label='Fur')
         SecondarySigns.objects.create(code='eggs', label='Eggs')
@@ -318,7 +318,7 @@ class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
             'obstype': 'AnimalObservation',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
-            'secondary_signs': 'fur,eggs',
+            'secondary_signs': ['fur', 'eggs'],
         })
         self.assertEqual(resp.status_code, 201)
 
@@ -327,7 +327,7 @@ class ObservationGroupSerializerTests(AreaEncounterSerializerTests):
             'obstype': 'AnimalObservation',
             'source': self.ae.source,
             'source_id': self.ae.source_id,
-            'secondary_signs': 'fur',
+            'secondary_signs': ['fur'],
         })
         self.assertEqual(resp.status_code, 201)
 
