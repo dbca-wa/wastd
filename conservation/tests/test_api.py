@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.test import TestCase
+import json
 from rest_framework.test import APIClient
 
 from taxonomy.models import Community, Taxon
@@ -75,3 +76,11 @@ class ObservationGroupSerializerTests(TestCase):
         url = reverse('api:communityconservationlisting-detail', kwargs={'pk': self.ccl.pk})
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)
+
+    def test_post_endpoints(self):
+        """Test the TaxonConservationListing POST endpoint behaves correctly
+        """
+        url = reverse('api:taxonconservationlisting-list')
+        data = {'source': 0, 'source_id': 'foobar', 'taxon': self.taxon.name_id, 'comments': 'Test comment', 'category': [], 'criteria': []}
+        resp = self.client.post(url, data=data)
+        self.assertEqual(resp.status_code, 201)
