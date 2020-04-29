@@ -382,12 +382,19 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         unique_data, update_data = self.split_data(data)
 
         # Pop category and criterion out update_data
-        cat_ids = force_as_list(update_data.pop("category"))
-        logger.debug("[API][create_one] Found categories {0}".format(cat_ids))
-        categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
-        crit_ids = force_as_list(update_data.pop("criteria"))
-        logger.debug("[API][create_one] Found criteria {0}".format(crit_ids))
-        criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
+        if 'category' in update_data:
+            cat_ids = force_as_list(update_data.pop("category"))
+            logger.debug("[API][create_one] Found categories {}".format(cat_ids))
+            categories = [ConservationCategory.objects.get(id=x) for x in cat_ids if x != 'NA']
+        else:
+            categories = []
+
+        if 'criteria' in update_data:
+            crit_ids = force_as_list(update_data.pop("criteria"))
+            logger.debug("[API][create_one] Found criteria {}".format(crit_ids))
+            criteria = [ConservationCriterion.objects.get(id=x) for x in crit_ids if x != 'NA']
+        else:
+            criteria = []
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
@@ -403,8 +410,10 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
 
         # Without the QA status deciding whether to update existing data:
         obj, created = self.model.objects.update_or_create(defaults=update_data, **unique_data)
-        obj.category.set(categories)
-        obj.criteria.set(criteria)
+        if categories:
+            obj.category.set(categories)
+        if criteria:
+            obj.criteria.set(criteria)
         obj.save()  # better save() than sorry
         obj.refresh_from_db()
         obj.save()  # to update cached fields
