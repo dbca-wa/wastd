@@ -232,11 +232,13 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 
     def resolve_fks(self, data):
         """Resolve FKs from PK to object."""
+
         try:
             data["taxon"] = Taxon.objects.get(name_id=data["taxon"])
         except Exception as e:
             logger.error("Exception {0}: taxon {1} not known,".format(e, data["taxon"]))
         return data
+
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance.
@@ -289,9 +291,8 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         msg = "[API][create_one] {0} {1}".format(verb, obj.__str__())
-        content = {"id": obj.id, "msg": msg}
         logger.info(msg)
-        return Response(content, status=st)
+        return {"id": obj.pk, "msg": msg, "status": st}
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -302,16 +303,15 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
 
         result:
 
-        * Warning message if invalid data (status 406 not acceptable)
-        * Dict of object_id and message if one record
+        * Warning message plus data if invalid data (status 406 not acceptable)
+        * Dict of object_id, message, and status if one record
         * List of one-record dicts if several records
         """
-
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
-            res = self.create_one(request.data).__dict__
-            return Response(res, status=status.HTTP_201_CREATED)
+            res = self.create_one(request.data)
+            return Response(res, status=res["status"])
 
         # Create many --------------------------------------------------------#
         elif (isinstance(request.data, list) and
@@ -321,9 +321,11 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
                         ' creating/updating...'.format(len(request.data)))
 
             # The slow way:
-            res = [getattr(self.create_one(data), "__dict__", None)
-                   for data in request.data]
+            res = [self.create_one(data) for data in request.data]
+            return Response(res, status=status.HTTP_201_CREATED)
+
         else:
+            logger.error("[API][tcl create] failed with data {}".format(request.data))
             return Response(
                 request.data,
                 status=status.HTTP_406_NOT_ACCEPTABLE
@@ -421,9 +423,8 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         verb = "Created" if created else "Updated"
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         msg = "[API][create_one] {0} {1}".format(verb, obj.__str__())
-        content = {"id": obj.id, "msg": msg}
         logger.info(msg)
-        return Response(content, status=st)
+        return {"id": obj.pk, "msg": msg, "status": st}
 
     def create(self, request):
         """POST: Create or update one or many model instances.
@@ -442,8 +443,8 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
-            res = self.create_one(request.data).__dict__
-            return Response(res, status=status.HTTP_201_CREATED)
+            res = self.create_one(request.data)
+            return Response(res, status=res["status"])
 
         # Create many --------------------------------------------------------#
         elif (isinstance(request.data, list) and
@@ -451,10 +452,9 @@ class CommunityConservationListingViewSet(BatchUpsertViewSet):
               self.uid_fields[0] in request.data[0]):
             logger.info('[API][create] found batch of {0} records,'
                         ' creating/updating...'.format(len(request.data)))
+            res = [self.create_one(data) for data in request.data]
+            return Response(res, status=status.HTTP_201_CREATED)
 
-            # The slow way:
-            res = [getattr(self.create_one(data), "__dict__", None)
-                   for data in request.data]
         else:
             return Response(
                 request.data,
