@@ -81,6 +81,23 @@ class ObservationGroupSerializerTests(TestCase):
         """Test the TaxonConservationListing POST endpoint behaves correctly
         """
         url = reverse('api:taxonconservationlisting-list')
-        data = {'source': 0, 'source_id': 'foobar', 'taxon': self.taxon.name_id, 'comments': 'Test comment', 'category': [], 'criteria': []}
+        data = {
+            'source': 0,
+            'source_id': 'foobar',
+            'taxon': self.taxon.name_id,
+            'comments': 'Test comment',
+            'category': [self.ccategory.pk],
+            'criteria': [self.ccriterion.pk]
+        }
+        resp = self.client.post(url, data=data)
+        self.assertEqual(resp.status_code, 201)
+        # Category or criteria can also be a single PK.
+        data['category'] = self.ccategory.pk
+        data['criteria'] = self.ccriterion.pk
+        resp = self.client.post(url, data=data)
+        self.assertEqual(resp.status_code, 201)
+        # Test with no categories or criteria.
+        data.pop('category')
+        data.pop('criteria')
         resp = self.client.post(url, data=data)
         self.assertEqual(resp.status_code, 201)
