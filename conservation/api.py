@@ -239,7 +239,6 @@ class TaxonConservationListingViewSet(BatchUpsertViewSet):
             logger.error("Exception {0}: taxon {1} not known,".format(e, data["taxon"]))
         return data
 
-
     def create_one(self, data):
         """POST: Create or update exactly one model instance.
 
