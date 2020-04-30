@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.test import TestCase
 import json
 from rest_framework.test import APIClient
+import uuid
 
 from taxonomy.models import Community, Taxon
 from conservation.models import (
@@ -77,10 +78,56 @@ class ObservationGroupSerializerTests(TestCase):
         resp = self.client.get(url, {'format': 'json'})
         self.assertEqual(resp.status_code, 200)
 
-    def test_post_endpoints(self):
+    def test_post_taxonconservationlisting(self):
         """Test the TaxonConservationListing POST endpoint behaves correctly
         """
         url = reverse('api:taxonconservationlisting-list')
-        data = {'source': 0, 'source_id': 'foobar', 'taxon': self.taxon.name_id, 'comments': 'Test comment', 'category': [], 'criteria': []}
+        data = {
+            'source': 0,
+            'source_id': uuid.uuid4(),
+            'taxon': self.taxon.name_id,
+            'comments': 'Test comment',
+            'category': [self.ccategory.pk],
+            'criteria': [self.ccriterion.pk]
+        }
+        resp = self.client.post(url, data=data)
+        self.assertEqual(resp.status_code, 201)
+        # Category or criteria can also be a single PK.
+        data['source_id'] = uuid.uuid4()
+        data['category'] = self.ccategory.pk
+        data['criteria'] = self.ccriterion.pk
+        resp = self.client.post(url, data=data)
+        self.assertEqual(resp.status_code, 201)
+        # Test with no categories or criteria.
+        data['source_id'] = uuid.uuid4()
+        data.pop('category')
+        data.pop('criteria')
+        resp = self.client.post(url, data=data)
+        self.assertEqual(resp.status_code, 201)
+
+    def test_post_communityconservationlisting(self):
+        """Test the CommunityConservationListing POST endpoint behaves correctly
+        """
+        url = reverse('api:communityconservationlisting-list')
+        data = {
+            'source': 0,
+            'source_id': uuid.uuid4(),
+            'community': self.community.code,
+            'comments': 'Test comment',
+            'category': [self.ccategory.pk],
+            'criteria': [self.ccriterion.pk]
+        }
+        resp = self.client.post(url, data=data)
+        self.assertEqual(resp.status_code, 201)
+        # Category or criteria can also be a single PK.
+        data['source_id'] = uuid.uuid4()
+        data['category'] = self.ccategory.pk
+        data['criteria'] = self.ccriterion.pk
+        resp = self.client.post(url, data=data)
+        self.assertEqual(resp.status_code, 201)
+        # Test with no categories or criteria.
+        data['source_id'] = uuid.uuid4()
+        data.pop('category')
+        data.pop('criteria')
         resp = self.client.post(url, data=data)
         self.assertEqual(resp.status_code, 201)

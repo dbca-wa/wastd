@@ -50,10 +50,5 @@ jobs:
         pip install -r requirements/base.txt
         mkdir logs && touch logs/wastd.log
 
-    - name: Run tests and report test coverage
-      if: matrix.python-version == 3.7
-      run: fab test
-
     - name: Run parallel tests and skip test coverage
-      if: matrix.python-version != 3.7
       run: fab ptest
