@@ -4070,7 +4070,7 @@ def handle_odka_fanangles(enc, media, data):
     tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)]  # 695 fans
     tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)] # 336 fans
     """
-    if data["nest"]["fan_angles_measured"] == "yes":
+    if "fan_angles_measured" in data["nest"] and data["nest"]["fan_angles_measured"] == "yes":
 
         for obs in listify(data["fan_angles"]):
 
