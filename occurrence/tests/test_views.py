@@ -5,6 +5,7 @@ Occurrence view tests
 ^^^^^^^^^^^^^^^^^^^^^
 """
 from __future__ import unicode_literals
+import uuid
 
 from django.utils import timezone
 
@@ -90,6 +91,7 @@ class CommunityAreaEncounterTests(TestCase):
 
         self.cae = occ_models.CommunityAreaEncounter.objects.create(
             community=self.com0,
+            source_id = uuid.uuid1(),
             encountered_on=timezone.now(),
             encountered_by=self.user,
             code="area1",
@@ -103,6 +105,7 @@ class CommunityAreaEncounterTests(TestCase):
 
         self.cae1 = occ_models.CommunityAreaEncounter.objects.create(
             community=self.com0,
+            source_id = uuid.uuid1(),
             encountered_on=timezone.now(),
             encountered_by=self.user,
             code="area2",
@@ -376,6 +379,7 @@ class TaxonAreaEncounterTests(TestCase):
 
         self.tae = occ_models.TaxonAreaEncounter.objects.create(
             taxon=self.taxon0,
+            source_id = uuid.uuid1(),
             encountered_on=timezone.now(),
             encountered_by=self.user,
             code="area1",
@@ -389,6 +393,7 @@ class TaxonAreaEncounterTests(TestCase):
 
         self.tae1 = occ_models.TaxonAreaEncounter.objects.create(
             taxon=self.taxon0,
+            source_id = uuid.uuid1(),
             encountered_on=timezone.now(),
             encountered_by=self.user,
             point=GEOSGeometry('POINT (115 -32)', srid=4326)

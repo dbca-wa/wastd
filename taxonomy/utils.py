@@ -553,7 +553,8 @@ def make_all_families():
     CUR = {'N': False, 'Y': True}
     PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
-        with tax_models.Taxon.objects.delay_mptt_updates():
+        # with tax_models.Taxon.objects.delay_mptt_updates():
+        with tax_models.Taxon.objects.disable_mptt_updates():
             families = [make_family(x, KINGDOM_ID_TAXA, CUR, PUB) for x in tax_models.HbvFamily.objects.all()]
             logger.info("[update_taxon] Updating MPTT.")
     return families
@@ -565,7 +566,7 @@ def make_all_genera():
     CUR = {'N': False, 'Y': True}
     PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
-        with tax_models.Taxon.objects.delay_mptt_updates():
+        with tax_models.Taxon.objects.disable_mptt_updates():
             genera = [make_genus(x, CUR, PUB) for x in tax_models.HbvGenus.objects.all()]
             logger.info("[update_taxon] Updating MPTT.")
     return genera
@@ -576,10 +577,10 @@ def make_all_species():
     CUR = {'N': False, 'Y': True}
     PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
-        with tax_models.Taxon.objects.delay_mptt_updates():
+        with tax_models.Taxon.objects.disable_mptt_updates():
             species = [make_species(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Species")]
             logger.info("[update_taxon] Updating MPTT.")
-    rebuild_mptt_tree()
+    # rebuild_mptt_tree()
     return species
 
 
@@ -589,11 +590,11 @@ def make_all_subspecies():
     CUR = {'N': False, 'Y': True}
     PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
-        with tax_models.Taxon.objects.delay_mptt_updates():
+        with tax_models.Taxon.objects.disable_mptt_updates():
             subspecies = [make_subspecies(x, CUR, PUB)
                           for x in tax_models.HbvSpecies.objects.filter(rank_name="Subspecies")]
             logger.info("[update_taxon] Updating MPTT.")
-    rebuild_mptt_tree()
+    # rebuild_mptt_tree()
     return subspecies
 
 
@@ -603,10 +604,10 @@ def make_all_varieties():
     CUR = {'N': False, 'Y': True}
     PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
-        with tax_models.Taxon.objects.delay_mptt_updates():
+        with tax_models.Taxon.objects.disable_mptt_updates():
             varieties = [make_variety(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Variety")]
             logger.info("[update_taxon] Updating MPTT.")
-    rebuild_mptt_tree()
+    # rebuild_mptt_tree()
     return varieties
 
 
@@ -616,10 +617,10 @@ def make_all_forms():
     CUR = {'N': False, 'Y': True}
     PUB = {'PN': 0, 'MS': 1, '-': 2}
     with transaction.atomic():
-        with tax_models.Taxon.objects.delay_mptt_updates():
+        with tax_models.Taxon.objects.disable_mptt_updates():
             forms = [make_form(x, CUR, PUB) for x in tax_models.HbvSpecies.objects.filter(rank_name="Form")]
             logger.info("[update_taxon] Updating MPTT.")
-    rebuild_mptt_tree()
+    # rebuild_mptt_tree()
     return forms
 
 def make_all_vernaculars():
@@ -693,7 +694,7 @@ def update_taxon():
     See also
     http://django-mptt.readthedocs.io/en/latest/mptt.managers.html#mptt.managers.TreeManager.disable_mptt_updates
     """
-    rebuild_mptt_tree() # repair MPTT tree before bulk update/creates
+    # rebuild_mptt_tree() # repair MPTT tree before bulk update/creates
     kingdoms = make_all_kingdoms()
     families = make_all_families()
     genera = make_all_genera()

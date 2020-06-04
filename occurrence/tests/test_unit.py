@@ -75,6 +75,7 @@ Test TAE and CAE geom. Create, validate, view, export.
 [REQ 42] Record all actions (e.g. changes to data) in an audit trail. Tax, Cons, Occ.
 """
 from __future__ import unicode_literals
+import uuid
 
 from django.utils import timezone
 
@@ -139,6 +140,7 @@ class CommunityAreaEncounterTests(TestCase):
 
         self.cae = occ_models.CommunityAreaEncounter.objects.create(
             community=self.com0,
+            source_id = uuid.uuid1(),
             code="testcode1",
             encountered_on=timezone.now(),
             encountered_by=self.user,
@@ -147,6 +149,7 @@ class CommunityAreaEncounterTests(TestCase):
         self.cae.save()
         self.cae1 = occ_models.CommunityAreaEncounter.objects.create(
             community=self.com0,
+            source_id = uuid.uuid1(),
             code="testcode",
             encountered_on=timezone.now(),
             encountered_by=self.user,
@@ -342,6 +345,7 @@ class TaxonAreaEncounterTests(TestCase):
 
         self.tae = occ_models.TaxonAreaEncounter.objects.create(
             taxon=self.taxon0,
+            source_id = uuid.uuid1(),
             code="testcode",
             encountered_on=timezone.now(),
             encountered_by=self.user,
@@ -351,6 +355,7 @@ class TaxonAreaEncounterTests(TestCase):
 
         self.tae1 = occ_models.TaxonAreaEncounter.objects.create(
             taxon=self.taxon0,
+            source_id = uuid.uuid1(),
             code="testcode1",
             encountered_on=timezone.now(),
             encountered_by=self.user,
