@@ -1,6 +1,6 @@
 # Django
 # ------------------------------------------------
-django==2.2.10
+django==2.2.13
 django-extensions==2.2.8
 
 # breaking django-1.10:
