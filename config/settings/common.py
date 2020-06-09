@@ -122,15 +122,15 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='c4)!ho4t^lsy0ozrnlqamjso@^n-ookiq
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE_FIRST = (
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 MIDDLEWARE_LAST = (
@@ -192,6 +192,7 @@ MIGRATION_MODULES = {
 
 CACHES = {
     "default": {
+        # 'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         'LOCATION': 'django_cache_table'
     },
