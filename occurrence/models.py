@@ -338,6 +338,7 @@ class TaxonAreaEncounter(AreaEncounter):
         verbose_name = "Taxon Encounter"
         verbose_name_plural = "Taxon Encounters"
         card_template = "occurrence/cards/areaencounter.html"
+        ordering = ["id", ]
 
     def __str__(self):
         """The unicode representation."""
@@ -389,6 +390,7 @@ class CommunityAreaEncounter(AreaEncounter):
         verbose_name = "Community Encounter"
         verbose_name_plural = "Community Encounters"
         card_template = "occurrence/cards/areaencounter.html"
+        ordering = ["id", ]
 
     def __str__(self):
         """The unicode representation."""
