@@ -2,7 +2,10 @@ from django_filters.rest_framework import DateFilter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_filters import FilterSet
 
-from shared.api import MyGeoJsonPagination
+from shared.api import (
+    MyGeoJsonPagination,
+    BatchUpsertViewSet
+)
 from wastd.observations.models import (
     Observation,
     Survey,
@@ -95,7 +98,7 @@ class SurveyFilter(FilterSet):
         }
 
 
-class SurveyViewSet(ModelViewSet):
+class SurveyViewSet(BatchUpsertViewSet):
     """Survey ModelViewSet.
 
     All filters are available on all fields except location and team.
@@ -104,6 +107,7 @@ class SurveyViewSet(ModelViewSet):
     serializer_class = serializers.SurveySerializer
     filter_class = SurveyFilter
     pagination_class = MyGeoJsonPagination  # provides top level features
+    model = Survey
 
 
 class EncounterFilter(FilterSet):
@@ -112,23 +116,30 @@ class EncounterFilter(FilterSet):
     class Meta:
         model = Encounter
         fields = {
-            "area": "__all__",
-            "encounter_type": "__all__",
-            "status": "__all__",
+            "source": ["iexact", "icontains"],
             "site": "__all__",
             "survey": "__all__",
-            "source": "__all__",
-            "location_accuracy": "__all__",
-            "when": "__all__",
-            "name": "__all__",
-            "source_id": "__all__",
+            "location_accuracy": ["iexact", "icontains"],
+            "when": ["iexact", "icontains"],
+            "name": ["iexact", "icontains"],
+            "source_id": ["iexact", "icontains"],
             "observer": "__all__",
             "reporter": "__all__",
-            "comments": "__all__",
+            "comments": ["iexact", "icontains"],
         }
 
+class FastEncounterFilter(FilterSet):
+    when = DateFilter()
 
-class EncounterViewSet(ModelViewSet):
+    class Meta:
+        model = Encounter
+        fields = {
+            "source": ["iexact", "icontains"],
+            "when": "__all__",
+            "source_id": ["iexact", "icontains"],
+        }
+
+class EncounterViewSet(BatchUpsertViewSet):
     """Encounters are a common, minimal, shared set of data about:
 
     * Strandings (turtles, dugong, ceataceans (pre-QA raw import), pinnipeds (coming soon), sea snakes)
@@ -261,10 +272,53 @@ class EncounterViewSet(ModelViewSet):
     # bbox_filter_include_overlapping = True
     pagination_class = MyGeoJsonPagination
     filter_class = EncounterFilter
+    model = Encounter
 
     def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
+
+
+class FastEncounterViewSet(ModelViewSet):
+    """A minimal Encounter viewset.
+
+    Use this viewset to download a minimal useable set of Encounter records.
+    """
+    latex_name = "latex/encounter_fast.tex"
+    queryset = Encounter.objects.all()
+    serializer_class = serializers.FastEncounterSerializer
+    search_fields = ("name", "source_id", )
+
+    bbox_filter_field = "where"
+    # bbox_filter_include_overlapping = True
+    pagination_class = MyGeoJsonPagination
+    filter_class = FastEncounterFilter
+
+    def pre_latex(self, t_dir, data):
+        """Symlink photographs to temp dir for use by latex template."""
+        pass
+
+
+class SourceIdEncounterViewSet(ModelViewSet):
+    """A minimal Encounter viewset showign source and source ID.
+
+    Use this viewset to download a minimal set of Encounter records
+    to determine what needs to be updated (existing records) and
+    what needs to be created (non-existing records).
+    """
+    latex_name = "latex/encounter_fast.tex"
+    queryset = Encounter.objects.all()
+    serializer_class = serializers.SourceIdEncounterSerializer
+    search_fields = ("name", "source_id", )
+
+    bbox_filter_field = "where"
+    # bbox_filter_include_overlapping = True
+    pagination_class = MyGeoJsonPagination
+    filter_class = FastEncounterFilter
+
+    def pre_latex(self, t_dir, data):
+        """Symlink photographs to temp dir for use by latex template."""
+        pass
 
 
 class TurtleNestEncounterFilter(FilterSet):
@@ -331,7 +385,7 @@ class AnimalEncounterFilter(FilterSet):
         }
 
 
-class AnimalEncounterViewSet(ModelViewSet):
+class AnimalEncounterViewSet(BatchUpsertViewSet):
     """AnimalEncounter view set.
 
     # Filters
@@ -369,19 +423,6 @@ class AnimalEncounterViewSet(ModelViewSet):
 
     "health", "sex", "maturity", "checked_for_injuries", "scanned_for_pit_tags", "checked_for_flipper_tags",
     "cause_of_death", "cause_of_death_confidence"
-
-    # habitat
-    * [/api/1/turtle-nest-encounters/?habitat=na](/api/1/turtle-nest-encounters/?habitat=na) unknown habitat
-    * [/api/1/turtle-nest-encounters/?habitat=beach-below-high-water](
-      /api/1/turtle-nest-encounters/?habitat=beach-below-high-water) beach below high water mark
-    * [/api/1/turtle-nest-encounters/?habitat=beach-above-high-water](
-      /api/1/turtle-nest-encounters/?habitat=beach-above-high-water) beach above high water mark and dune
-    * [/api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation](
-      /api/1/turtle-nest-encounters/?habitat=beach-edge-of-vegetation) edge of vegetation
-    * [/api/1/turtle-nest-encounters/?habitat=in-dune-vegetation](
-      /api/1/turtle-nest-encounters/?habitat=in-dune-vegetation) inside vegetation
-    * plus all other habitat choices.
-
     """
 
     latex_name = "latex/animalencounter.tex"
@@ -390,13 +431,14 @@ class AnimalEncounterViewSet(ModelViewSet):
     filter_class = AnimalEncounterFilter
     search_fields = ("name", "source_id", "behaviour", )
     pagination_class = MyGeoJsonPagination
+    model = AnimalEncounter
 
     def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
 
-class LoggerEncounterViewSet(ModelViewSet):
+class LoggerEncounterViewSet(BatchUpsertViewSet):
     latex_name = "latex/loggerencounter.tex"
     queryset = LoggerEncounter.objects.all()
     serializer_class = serializers.LoggerEncounterSerializer
@@ -406,12 +448,13 @@ class LoggerEncounterViewSet(ModelViewSet):
                      "deployment_status", "comments"]
     search_fields = ("name", "source_id", )
     pagination_class = MyGeoJsonPagination
+    model = LoggerEncounter
 
     def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
-
+# Observations related to AnimalEncounter
 class ObservationViewSet(ModelViewSet):
     queryset = Observation.objects.all()
     serializer_class = serializers.ObservationSerializer
@@ -426,8 +469,17 @@ class MediaAttachmentViewSet(ModelViewSet):
 class TagObservationViewSet(ModelViewSet):
     queryset = TagObservation.objects.all()
     serializer_class = serializers.TagObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
-                     "tag_type", "tag_location", "name", "status", "comments"]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+        "handler",
+        "recorder",
+        "tag_type",
+        "tag_location",
+        "name",
+        "status",
+        "comments"]
     search_fields = ("name", "comments", )
     pagination_class = MyGeoJsonPagination
 
@@ -452,6 +504,7 @@ class TurtleMorphometricObservationViewSet(ModelViewSet):
                      "encounter__status"]
     search_fields = ("comments", )
     pagination_class = MyGeoJsonPagination
+    model = TurtleMorphometricObservation
 
 
 class HatchlingMorphometricObservationEncounterViewSet(ModelViewSet):
@@ -461,7 +514,7 @@ class HatchlingMorphometricObservationEncounterViewSet(ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
-class TurtleNestEncounterViewSet(ModelViewSet):
+class TurtleNestEncounterViewSet(BatchUpsertViewSet):
     """TurtleNestEncounter view set.
 
     TNE are turtle tracks with or without nests.
@@ -536,12 +589,13 @@ class TurtleNestEncounterViewSet(ModelViewSet):
     serializer_class = serializers.TurtleNestEncounterSerializer
     filter_class = TurtleNestEncounterFilter
     pagination_class = MyGeoJsonPagination
+    model = TurtleNestEncounter
 
     def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
-
+# Observations related to TurtleNestEncounter
 class TurtleNestObservationViewSet(ModelViewSet):
     """TurtleNestObservation view set."""
 

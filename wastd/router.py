@@ -6,16 +6,31 @@ from occurrence import api as occurrence_api
 from taxonomy import api as taxonomy_api
 
 router = DefaultRouter()
-# wastd
+# meta: users, area, surveys
 router.register("users", users_api.UserViewSet)
-# observations
 router.register("area", observations_api.AreaViewSet)
 router.register("surveys", observations_api.SurveyViewSet)
-router.register("encounters", observations_api.EncounterViewSet)
+
+# Encounters
+router.register(
+        "encounters",
+        observations_api.EncounterViewSet,
+        basename="encounters_full")
+router.register(
+        "encounters-fast",
+        observations_api.FastEncounterViewSet,
+        basename="encounters_fast")
+router.register(
+        "encounters-src",
+        observations_api.SourceIdEncounterViewSet,
+        basename="encounters_src")
 router.register("animal-encounters", observations_api.AnimalEncounterViewSet)
-router.register("turtle-nest-encounters",
-                observations_api.TurtleNestEncounterViewSet)
+router.register(
+        "turtle-nest-encounters",
+        observations_api.TurtleNestEncounterViewSet)
 router.register("logger-encounters", observations_api.LoggerEncounterViewSet)
+
+# Observations
 router.register("observations", observations_api.ObservationViewSet)
 router.register("media-attachments", observations_api.MediaAttachmentViewSet)
 router.register("tag-observations", observations_api.TagObservationViewSet)
@@ -36,7 +51,7 @@ router.register("turtle-nest-hatchling-emergence-outliers",
                 observations_api.TurtleHatchlingEmergenceOutlierObservationEncounterViewSet)
 router.register("turtle-nest-hatchling-emergence-light-sources",
                 observations_api.LightSourceObservationEncounterViewSet)
-# conservation
+# conservation.ConservationListing -------------------------------------------#
 router.register("community-conservationlisting",
                 conservation_api.CommunityConservationListingViewSet)
 router.register("conservationcategory",
@@ -47,24 +62,39 @@ router.register("conservationlist", conservation_api.ConservationListViewSet)
 router.register("document", conservation_api.DocumentViewSet)
 router.register("taxon-conservationlisting",
                 conservation_api.TaxonConservationListingViewSet)
-# occurrence
+# occurrence.AreaEncounter ---------------------------------------------------#
 # Without basename, the last registered viewset overrides the other area viewsets
-router.register("occ-areas", occurrence_api.OccurrenceAreaPolyViewSet,
-                basename="occurrence_area_polys")
-router.register("occ-area-points", occurrence_api.OccurrenceAreaPointViewSet,
-                basename="occurrence_area_points")
+router.register(
+        "occ-areas",
+        occurrence_api.OccurrenceAreaPolyViewSet,
+        basename="occurrence_area_polys")
+router.register(
+        "occ-area-points",
+        occurrence_api.OccurrenceAreaPointViewSet,
+        basename="occurrence_area_points")
 # Without basename, the last registered viewset overrides the other area viewsets
-router.register("occ-taxon-areas", occurrence_api.OccurrenceTaxonAreaEncounterPolyViewSet,
-                basename="occurrence_taxonarea_polys")
-router.register("occ-taxon-points", occurrence_api.OccurrenceTaxonAreaEncounterPointViewSet,
-                basename="occurrence_taxonarea_points")
+router.register(
+        "occ-taxon-areas",
+        occurrence_api.OccurrenceTaxonAreaEncounterPolyViewSet,
+        basename="occurrence_taxonarea_polys")
+router.register(
+        "occ-taxon-points",
+        occurrence_api.OccurrenceTaxonAreaEncounterPointViewSet,
+        basename="occurrence_taxonarea_points")
 # Without basename, the last registered viewset overrides the other area viewsets
-router.register("occ-community-areas", occurrence_api.OccurrenceCommunityAreaEncounterPolyViewSet,
-                basename="occurrence_communityarea_polys")
-router.register("occ-community-points", occurrence_api.OccurrenceCommunityAreaEncounterPointViewSet,
-                basename="occurrence_communityarea_points")
-router.register("occ-observation", occurrence_api.ObservationGroupViewSet,
-                basename="occurrence_observation_group")
+router.register(
+        "occ-community-areas",
+        occurrence_api.OccurrenceCommunityAreaEncounterPolyViewSet,
+        basename="occurrence_communityarea_polys")
+router.register(
+        "occ-community-points",
+        occurrence_api.OccurrenceCommunityAreaEncounterPointViewSet,
+        basename="occurrence_communityarea_points")
+router.register(
+        "occ-observation",
+        occurrence_api.ObservationGroupViewSet,
+        basename="occurrence_observation_group")
+# Occurrence Lookups ---------------------------------------------------------#
 router.register("lookup-landform", occurrence_api.LandformViewSet)
 router.register("lookup-rocktype", occurrence_api.RockTypeViewSet)
 router.register("lookup-soiltype", occurrence_api.SoilTypeViewSet)

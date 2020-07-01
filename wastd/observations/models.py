@@ -28,6 +28,7 @@ from datetime import timedelta
 
 import slugify
 from dateutil import tz
+from django.conf import settings
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models.fields import DurationField
@@ -1009,7 +1010,7 @@ class Expedition(PolymorphicModel, geo_models.Model):
 
     site = models.ForeignKey(
         Area,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Surveyed area"),
         help_text=_("The entire surveyed area."), )
@@ -1192,7 +1193,7 @@ class Survey(QualityControl, geo_models.Model):
 
     site = models.ForeignKey(
         Area,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Surveyed site"),
         help_text=_("The surveyed site, if known."), )
@@ -1207,7 +1208,8 @@ class Survey(QualityControl, geo_models.Model):
 
     reporter = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_DEFAULT,
+        default=settings.TSC_ADMIN_USER,
         verbose_name=_("Recorded by"),
         blank=True, null=True,
         help_text=_(
@@ -1451,7 +1453,8 @@ class SurveyEnd(geo_models.Model):
 
     reporter = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_DEFAULT,
+        default=settings.TSC_ADMIN_USER,
         verbose_name=_("Recorded by"),
         blank=True, null=True,
         help_text=_(
@@ -1460,7 +1463,7 @@ class SurveyEnd(geo_models.Model):
 
     site = models.ForeignKey(
         Area,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_("Surveyed site"),
         help_text=_("The surveyed site, if known."), )
@@ -1681,10 +1684,18 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     location_accuracy = models.CharField(
         max_length=300,
-        verbose_name=_("Location accuracy (m)"),
+        verbose_name=_("Location accuracy class (m)"),
         default=LOCATION_DEFAULT,
         choices=LOCATION_ACCURACY_CHOICES,
-        help_text=_("The accuracy of the supplied location."), )
+        help_text=_(
+            "The source of the supplied location "
+            "implies a rough location accuracy."), )
+
+    location_accuracy_m = models.FloatField(
+        verbose_name=_("Location accuracy (m)"),
+        null=True, blank=True,
+        help_text=_("The accuracy of the supplied location in metres, if given."),
+    )
 
     name = models.CharField(
         max_length=1000,
@@ -1695,19 +1706,23 @@ class Encounter(PolymorphicModel, geo_models.Model):
 
     observer = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
-        verbose_name=_("Measured by"),
+        on_delete=models.SET_DEFAULT,
+        default=settings.TSC_ADMIN_USER,
+        verbose_name=_("Observed by"),
         related_name="observer",
-        help_text=_("The person who executes the measurements, "
-                    "source of measurement bias"))
+        help_text=_(
+            "The person who encountered the subject, and executed any measurements. "
+            "The observer is the source of measurement bias."))
 
     reporter = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_DEFAULT,
+        default=settings.TSC_ADMIN_USER,
         verbose_name=_("Recorded by"),
         related_name="reporter",
-        help_text=_("The person who writes the data sheet in the field, "
-                    "source of handwriting and spelling errors"))
+        help_text=_(
+            "The person who wrote the initial data sheet in the field. "
+            "The reporter is the source of handwriting and spelling errors. "))
 
     as_html = models.TextField(
         verbose_name=_("HTML representation"),
@@ -1786,7 +1801,7 @@ class Encounter(PolymorphicModel, geo_models.Model):
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
         return "{0} {1} {2}".format(
-            '' if not self.when else self.when.year,
+            self.when or '',
             self.get_encounter_type_display(),
             self.name or '')
 
@@ -2969,7 +2984,8 @@ class TagObservation(Observation):
 
     handler = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_DEFAULT,
+        default=settings.TSC_ADMIN_USER,
         blank=True, null=True,
         verbose_name=_("Handled by"),
         related_name="tag_handler",
@@ -2977,7 +2993,8 @@ class TagObservation(Observation):
 
     recorder = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_DEFAULT,
+        default=settings.TSC_ADMIN_USER,
         blank=True, null=True,
         verbose_name=_("Recorded by"),
         related_name="tag_recorder",
@@ -3269,7 +3286,7 @@ class TurtleMorphometricObservation(Observation):
 
     handler = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         related_name="morphometric_handler",
         verbose_name=_("Measured by"),
@@ -3277,7 +3294,7 @@ class TurtleMorphometricObservation(Observation):
 
     recorder = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         related_name="morphometric_recorder",
         verbose_name=_("Recorded by"),
@@ -4023,7 +4040,8 @@ class DispatchRecord(Observation):
 
     sent_to = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_DEFAULT,
+        default=settings.TSC_ADMIN_USER,
         verbose_name=_("Sent to"),
         related_name="receiver",
         blank=True, null=True,

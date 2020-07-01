@@ -24,9 +24,17 @@ class User(AbstractUser):
     """WAStD User."""
 
     # First Name and Last Name do not cover name patterns around the globe.
-    name = models.CharField(_("Name of User"), blank=True, max_length=255)
+    name = models.CharField(
+        _("Name of User"),
+        blank=True,
+        max_length=255
+    )
 
-    nickname = models.CharField(_("Preferred name"), blank=True, max_length=255)
+    nickname = models.CharField(
+        _("Preferred name"),
+        blank=True,
+        max_length=255
+    )
 
     aliases = models.TextField(
         _("Aliases of User"),
@@ -36,21 +44,25 @@ class User(AbstractUser):
                     "Separate names by comma.")
     )
 
-    role = models.CharField(_("Role of User"),
-                            blank=True, null=True,
-                            max_length=1000,
-                            help_text=_("The role of the user."))
+    role = models.TextField(
+        _("Role of User"),
+        blank=True, null=True,
+        help_text=_("The role of the user.")
+    )
+
     affiliation = models.TextField(
         _("Affiliation"),
         blank=True,
         help_text=_("The organisational affiliation of the user.")
     )
+
     phone = PhoneNumberField(
         verbose_name=_("Phone Number"),
         blank=True, null=True,
         help_text=_("The primary contact number including national prefix, "
                     "e.g. +61 412 345 678. "
-                    "Spaces are accepted but will be removed on saving."), )
+                    "Spaces are accepted but will be removed on saving."),
+    )
 
     class Meta:
         """Class opts."""

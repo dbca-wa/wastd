@@ -490,8 +490,11 @@ class ObservationGroupViewSet(ModelViewSet):
             health_cache = {}
             cause_of_death_cache = {}
             for obj in request.data:
-                source = obj['source']
-                source_id = obj['source_id']
+                try:
+                    source = obj['source']
+                    source_id = obj['source_id']
+                except:
+                    logger.error("{} failed with data {}".format(model_type, str(obj)))
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
                     encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
