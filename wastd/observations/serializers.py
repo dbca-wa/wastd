@@ -132,10 +132,39 @@ class EncounterSerializer(GeoFeatureModelSerializer):
             "longitude",
             "crs",
             "absolute_admin_url",
-            "photographs",
+            # "photographs",
             "tx_logs"
         )
         geo_field = "where"
+
+
+class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
+    """Encounter serializer with pk, source, source_id, where, when, status.
+
+    Use this serializer to retrieve a filtered set of Encounter ``source_id``
+    values to split data imports into create / update / skip.
+
+    @see https://github.com/dbca-wa/wastd/issues/253
+    """
+
+    class Meta:
+        """The non-standard name `where` is declared as the geo field for the
+        GeoJSON serializer's benefit.
+        """
+        model = Encounter
+        name = "encounter"
+        fields = (
+            "pk",
+            "where",
+            "when",
+            "status",
+            "source",
+            "source_id",
+            "observer",
+            "reporter"
+        )
+        geo_field = "where"
+        id_field = "pk"
 
 
 class FastEncounterSerializer(EncounterSerializer):
@@ -163,26 +192,6 @@ class FastEncounterSerializer(EncounterSerializer):
             "longitude",
             "crs"
         )
-
-
-class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
-    """Encounter serializer with pk, source, source_id, where, when, status.
-
-    Use this serializer to retrieve a filtered set of Encounter ``source_id``
-    values to split data imports into create / update / skip.
-
-    @see https://github.com/dbca-wa/wastd/issues/253
-    """
-
-    class Meta:
-        """The non-standard name `where` is declared as the geo field for the
-        GeoJSON serializer's benefit.
-        """
-        model = Encounter
-        name = "encounter"
-        fields = ("pk", "where", "when", "status", "source", "source_id", )
-        geo_field = "where"
-        id_field = "source_id"
 
 
 class AnimalEncounterSerializer(EncounterSerializer):
@@ -240,6 +249,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
             "longitude",
             "crs",
             "location_accuracy",
+            "location_accuracy_m",
             "when",
             "name",
             "nest_age",
@@ -368,11 +378,20 @@ class MediaAttachmentSerializer(ObservationSerializer):
 
 class TagObservationEncounterSerializer(ObservationSerializer):
 
+    handler_id = IntegerField(write_only=True)
+    handler = FastUserSerializer(read_only=True)
+    recorder_id = IntegerField(write_only=True)
+    recorder = FastUserSerializer(read_only=True)
+
     class Meta:
         model = TagObservation
         fields = (
             'pk',
             'encounter',
+            'handler',
+            'handler_id',
+            'recorder',
+            'recorder_id',
             'tag_type',
             'name',
             'tag_location',

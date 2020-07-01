@@ -251,6 +251,8 @@ SENTRY_ADMINS = ("Florian.Mayer@dbca.wa.gov.au",)
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (("Florian Mayer", 'Florian.Mayer@dpaw.wa.gov.au'),)
 
+TSC_ADMIN_USER = env("TSC_ADMIN_USER", default=1)
+
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 

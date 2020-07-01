@@ -29,7 +29,9 @@ class EncounterSerializerTests(TestCase):
 
     def test_get_list_endpoints(self):
         for i in [
-                'encounter',
+                'encounters_full',
+                'encounters_fast',
+                'encounters_src',
                 'animalencounter',
                 'turtlenestencounter',
         ]:
@@ -40,7 +42,7 @@ class EncounterSerializerTests(TestCase):
     def test_post_encounter(self):
         """Test the POST endpoint for Encounter
         """
-        url = reverse('api:encounter-list')
+        url = reverse('api:encounters_full-list')
         resp = self.client.post(
             url,
             {
@@ -101,8 +103,8 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
-                'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+            'source': 'odk',
+            'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e'
             }
         )
         self.assertEqual(resp.status_code, 201)
@@ -116,6 +118,11 @@ class ObservationSerializerTests(EncounterSerializerTests):
             'source': 'odk',
             'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
             'name': 'ABC123',
+            'tag_type': 'flipper-tag',
+            'tag_location': 'flipper-front-left-1',
+            'status': 'resighted',
+            'recorder_id': self.user.id,
+            'handler_id': self.user.id,
         }
         # POST once, create an object.
         resp = self.client.post(url, data)
@@ -148,6 +155,11 @@ class ObservationSerializerTests(EncounterSerializerTests):
                 'source': 'odk',
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
                 'name': 'ABC123',
+                'recorder_id': self.user.id,
+                'handler_id': self.user.id,
+                'tag_type': 'flipper-tag',
+                'tag_location': 'flipper-front-left-1',
+                'status': 'resighted'
             }
         )
         self.assertEqual(resp.status_code, 201)

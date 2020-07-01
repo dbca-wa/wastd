@@ -610,7 +610,7 @@ class FileAttachment(ObservationGroup):
 
     author = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         verbose_name=_("Author"),
         related_name="occurrence_fileattachments",
         blank=True, null=True,

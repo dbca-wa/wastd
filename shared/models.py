@@ -404,6 +404,7 @@ class QualityControlMixin(models.Model):
         target=STATUS_CURATED,
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
+
         custom=dict(
             verbose="Mark as trustworthy",
             explanation=("This record is deemed trustworthy."),

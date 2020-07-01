@@ -78,3 +78,19 @@ def transfer_user(old, new):
     * u.document_set.all()
     """
     raise NotImplementedError("transfer_user needs to be implemented")
+
+    for x in Encounter.objects.filter(reporter=old):
+        x.reporter = new
+        x.save()
+
+    for x in Encounter.objects.filter(observer=old):
+        x.observer = new
+        x.save()
+
+    for x in old.survey_set.all():
+        x.reporter = new
+        x.save()
+
+    for x in old.surveyend_set.all():
+        x.reporter = new
+        x.save()
