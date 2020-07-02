@@ -94,6 +94,7 @@ pytest = "*"
 pytest-django = "*"
 pytest-sugar = "*"
 model-mommy = "*"
+graphviz = "*"
 
 [dev-packages]
 
