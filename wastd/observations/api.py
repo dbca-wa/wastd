@@ -18,6 +18,7 @@ from wastd.observations.models import (
     NestTagObservation,
     TagObservation,
     ManagementAction,
+    TurtleDamageObservation,
     TurtleMorphometricObservation,
     TurtleNestEncounter,
     TurtleNestObservation,
@@ -283,6 +284,7 @@ class FastEncounterViewSet(ModelViewSet):
     """A minimal Encounter viewset.
 
     Use this viewset to download a minimal useable set of Encounter records.
+    This viewset is used in Observation viewsets to form a standalone dataset.
     """
     latex_name = "latex/encounter_fast.tex"
     queryset = Encounter.objects.all()
@@ -300,11 +302,12 @@ class FastEncounterViewSet(ModelViewSet):
 
 
 class SourceIdEncounterViewSet(ModelViewSet):
-    """A minimal Encounter viewset showign source and source ID.
+    """A minimal Encounter viewset showing source and source ID.
 
     Use this viewset to download a minimal set of Encounter records
-    to determine what needs to be updated (existing records) and
-    what needs to be created (non-existing records).
+    to determine skip logic:
+    existing records can be updated (if new) or skipped (if QA'd),
+    non-existing records can be created.
     """
     latex_name = "latex/encounter_fast.tex"
     queryset = Encounter.objects.all()
@@ -388,6 +391,9 @@ class AnimalEncounterFilter(FilterSet):
 class AnimalEncounterViewSet(BatchUpsertViewSet):
     """AnimalEncounter view set.
 
+    AnimalEncounters come from marine wildlife incidents (strandings and rescues),
+    turtle tagging, and turtle sightings.
+
     # Filters
     In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
 
@@ -421,8 +427,8 @@ class AnimalEncounterViewSet(BatchUpsertViewSet):
     # Other filters
     Other enabled filters (typically these categories will be used later during analysis):
 
-    "health", "sex", "maturity", "checked_for_injuries", "scanned_for_pit_tags", "checked_for_flipper_tags",
-    "cause_of_death", "cause_of_death_confidence"
+    "health", "sex", "maturity", "checked_for_injuries", "scanned_for_pit_tags",
+    "checked_for_flipper_tags", "cause_of_death", "cause_of_death_confidence"
     """
 
     latex_name = "latex/animalencounter.tex"
@@ -454,19 +460,82 @@ class LoggerEncounterViewSet(BatchUpsertViewSet):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
-# Observations related to AnimalEncounter
 class ObservationViewSet(ModelViewSet):
+    """Generic list of Observations.
+
+    [Admin](/admin/observations/)
+    """
     queryset = Observation.objects.all()
     serializer_class = serializers.ObservationSerializer
+    model = Observation
 
 
 class MediaAttachmentViewSet(ModelViewSet):
+    """Binary media (photos, datasheet PDFs etc) with Encounter details.
+
+    Can be many per Encounter.
+    Admin: see Encounter inlines.
+    """
     queryset = MediaAttachment.objects.all()
-    serializer_class = serializers.MediaAttachmentSerializer
+    serializer_class = serializers.MediaAttachmentEncounterSerializer
     pagination_class = MyGeoJsonPagination
+    model = MediaAttachment
 
 
 class TagObservationViewSet(ModelViewSet):
+    """An Observation of an identifying tag on an observed entity including Encounter details.
+
+    The identifying tag can be a flipper tag on a turtle, a PIT tag,
+    a satellite tag, a barcode on a sample taken off an animal, a whisker ID
+    from a picture of a pinniped, a genetic fingerprint or similar.
+
+    The tag has its own life cycle through stages of production, delivery,
+    affiliation with an animal, repeated sightings and disposal.
+
+    The life cycle stages will vary between tag types.
+
+    A TagObservation will find the tag in exactly one of the life cycle stages.
+
+    The life history of each tag can be reconstructed from the sum of all of its
+    TagObservations.
+
+    As TagObservations can sometimes occur without an Observation of an animal,
+    the FK to Observations is optional.
+
+    Flipper Tag Status as per WAMTRAM:
+
+    * # = tag attached new, number NA, need to double-check number
+    * P, p: re-sighted as attached to animal, no actions taken or necessary
+    * do not use: 0L, A2, M, M1, N
+    * AE = A1
+    * P_ED = near flipper edge, might fall off soon
+    * PX = tag re-sighted, but operator could not read tag ID
+      (e.g. turtle running off)
+    * RQ = tag re-sighted, tag was "insecure", but no action was recorded
+
+    Recaptured tags: Need to record state (open, closed, tip locked or not)
+    as feedback to taggers to improve their tagging technique.
+
+    PIT tag status:
+
+    * applied and did read OK
+    * applied and did not read (but still inside and might read later on)
+
+    Sample status:
+
+    * taken off animal
+    * handed to lab
+    * done science to it
+    * handed in report
+
+    Animal Name:
+    All TagObservations of one animal are linked by shared encounters or
+    shared tag names. The earliest associated flipper tag name is used as the
+    animal's name, and transferred onto all related TagObservations.
+
+    Can be many per Encounter.
+    [Admin](/admin/observations/tagobservation/)
+    """
     queryset = TagObservation.objects.all()
     serializer_class = serializers.TagObservationEncounterSerializer
     filter_fields = [
@@ -482,42 +551,95 @@ class TagObservationViewSet(ModelViewSet):
         "comments"]
     search_fields = ("name", "comments", )
     pagination_class = MyGeoJsonPagination
+    model = TagObservation
 
 
 class NestTagObservationViewSet(ModelViewSet):
+    """NestTagObservations are sightings of tags on a turtle nest.
+
+    Nest tags allow to connect multiple sightings of a nest with the same tag
+    into a contiguous record.
+
+    Nest tags have a life cycle which includes application and resighting.
+
+    Typically one, but can be many per Encounter.
+    [Admin](/admin/observations/nesttagobservation/)
+    """
     queryset = NestTagObservation.objects.all()
     serializer_class = serializers.NestTagObservationEncounterSerializer
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
                      "status", "flipper_tag_id", "date_nest_laid", "tag_label", "comments"]
     pagination_class = MyGeoJsonPagination
+    model = NestTagObservation
 
 
 class ManagementActionViewSet(ModelViewSet):
+    """ManagementActions following Encounters.
+
+    E.g.: animal rescue, rehab, disposal, euthanasia.
+    Sometimes this information is also recorded as Encounter.comments.
+
+    Can be many per Encounter.
+    """
+
     queryset = ManagementAction.objects.all()
     serializer_class = serializers.ManagementActionSerializer
+    model = ManagementAction
 
+
+class TurtleDamageObservationEncounterViewSet(ModelViewSet):
+    """Observation of turtle damages or injuries including Encounter details.
+
+    Can be many per Encounter.
+    """
+    queryset = TurtleDamageObservation.objects.all()
+    serializer_class = serializers.TurtleDamageObservationEncounterSerializer
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+        "encounter__status"
+    ]
+    pagination_class = MyGeoJsonPagination
+    model = TurtleDamageObservation
 
 class TurtleMorphometricObservationViewSet(ModelViewSet):
+    """Morphometric measurements of a turtle including Encounter details.
+
+    Admin: see Encounter inlines.
+    """
     queryset = TurtleMorphometricObservation.objects.all()
     serializer_class = serializers.TurtleMorphometricObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
-                     "encounter__status"]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+        "encounter__status"
+    ]
     search_fields = ("comments", )
     pagination_class = MyGeoJsonPagination
     model = TurtleMorphometricObservation
 
 
 class HatchlingMorphometricObservationEncounterViewSet(ModelViewSet):
+    """Morphometric measurements of a hatchling including Encounter details.
+
+    Can be many per Encounter.
+    Admin: see Encounter inlines.
+    """
     queryset = HatchlingMorphometricObservation.objects.all()
     serializer_class = serializers.HatchlingMorphometricObservationEncounterSerializer
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
     pagination_class = MyGeoJsonPagination
+    model = HatchlingMorphometricObservation
 
 
 class TurtleNestEncounterViewSet(BatchUpsertViewSet):
     """TurtleNestEncounter view set.
 
     TNE are turtle tracks with or without nests.
+    A TNE can include multiple observations (disturbance, nest tag, egg count,
+    hatchling morph, fan angles etc).
 
     # Filters
     In addition to the filters documented at [/api/1/encounters/](/api/1/encounters/):
@@ -583,6 +705,8 @@ class TurtleNestEncounterViewSet(BatchUpsertViewSet):
 
     # name
     * [/api/1/turtle-nest-encounters/?name=WA1234](/api/1/turtle-nest-encounters/?name=WA1234) Turtle name if known
+
+    [Admin](/admin/observations/turtlenestencounter/)
     """
     latex_name = "latex/turtlenestencounter.tex"
     queryset = TurtleNestEncounter.objects.all()
@@ -595,42 +719,89 @@ class TurtleNestEncounterViewSet(BatchUpsertViewSet):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
 
-# Observations related to TurtleNestEncounter
+
 class TurtleNestObservationViewSet(ModelViewSet):
-    """TurtleNestObservation view set."""
+    """Nest excavations during tagging or after hatching including Encounter details.
+
+    Egg count is done as total, plus categories of nest contents following
+    "Determining Clutch Size and Hatching Success, Jeffrey D. Miller,
+    Research and Management Techniques for the Conservation of Sea Turtles,
+    IUCN Marine Turtle Specialist Group, 1999.
+
+    Typically one per Encounter.
+    [Admin](/admin/observations/turtlenestobservation/)
+    """
 
     queryset = TurtleNestObservation.objects.all()
     serializer_class = serializers.TurtleNestObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
-                     "nest_position", "eggs_laid", "encounter__status"]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+        "encounter__status",
+        "nest_position",
+        "eggs_laid",
+    ]
     search_fields = ("comments", )
     pagination_class = MyGeoJsonPagination
+    model = TurtleNestObservation
 
 
 class TurtleNestDisturbanceObservationEncounterViewSet(ModelViewSet):
+    """Turtle nest disturbance observations including Encounter details.
+
+    Can be many per Encounter.
+    [Admin](/admin/observations/turtlenestdisturbanceobservation/)
+    """
     queryset = TurtleNestDisturbanceObservation.objects.all()
     serializer_class = serializers.TurtleNestDisturbanceObservationEncounterSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
-                     "disturbance_cause", "disturbance_cause_confidence", "disturbance_severity", ]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+        "encounter__status",
+        "disturbance_cause",
+        "disturbance_cause_confidence",
+        "disturbance_severity",
+    ]
     pagination_class = MyGeoJsonPagination
+    model = TurtleNestDisturbanceObservation
 
 
 class TurtleHatchlingEmergenceObservationEncounterViewSet(ModelViewSet):
+    """Turtle hatchling emergence observation (fan angles) including Encounter details.
+
+    Typically one per Encounter.
+    Admin: see Encounter inlines.
+    """
     queryset = TurtleHatchlingEmergenceObservation.objects.all()
     serializer_class = serializers.TurtleHatchlingEmergenceObservationEncounterSerializer
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
     pagination_class = MyGeoJsonPagination
+    model = TurtleHatchlingEmergenceObservation
 
 
 class TurtleHatchlingEmergenceOutlierObservationEncounterViewSet(ModelViewSet):
+    """Fan angle outliers including Encounter details.
+
+    Can be many per Encounter.
+    Admin: see Encounter inlines.
+    """
     queryset = TurtleHatchlingEmergenceOutlierObservation.objects.all()
     serializer_class = serializers.TurtleHatchlingEmergenceOutlierObservationEncounterSerializer
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
     pagination_class = MyGeoJsonPagination
+    model = TurtleHatchlingEmergenceOutlierObservation
 
 
 class LightSourceObservationEncounterViewSet(ModelViewSet):
+    """Known light sources during turtle hatching including Encounter details.
+
+    Can be many per Encounter.
+    Admin: see Encounter inlines.
+    """
     queryset = LightSourceObservation.objects.all()
     serializer_class = serializers.LightSourceObservationEncounterSerializer
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
     pagination_class = MyGeoJsonPagination
+    model = LightSourceObservation

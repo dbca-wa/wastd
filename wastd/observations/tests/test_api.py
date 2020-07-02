@@ -86,6 +86,7 @@ class ObservationSerializerTests(EncounterSerializerTests):
                 'tagobservation',
                 'nesttagobservation',
                 'managementaction',
+                'turtledamageobservation',
                 'turtlemorphometricobservation',
                 'hatchlingmorphometricobservation',
                 'turtlenestdisturbanceobservation',
@@ -190,6 +191,21 @@ class ObservationSerializerTests(EncounterSerializerTests):
         )
         self.assertEqual(resp.status_code, 201)
 
+    def test_post_turtle_damageobs(self):
+        url = reverse('api:turtledamageobservation-list')
+        resp = self.client.post(
+            url,
+            {
+                'source': 'odk',
+                'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'body_part': 'flipper-front-left-1',
+                'damage_type': 'tip-amputated',
+                'damage_age': 'fresh',
+                'description': 'test description'
+            }
+        )
+        self.assertEqual(resp.status_code, 201)
+
     def test_post_turtle_morphometrics(self):
         url = reverse('api:turtlemorphometricobservation-list')
         resp = self.client.post(
@@ -198,6 +214,7 @@ class ObservationSerializerTests(EncounterSerializerTests):
                 'source': 'odk',
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
                 'handler': self.user.pk,
+                'recorder': self.user.pk,
             }
         )
         self.assertEqual(resp.status_code, 201)

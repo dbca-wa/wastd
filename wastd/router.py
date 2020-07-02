@@ -37,6 +37,8 @@ router.register("tag-observations", observations_api.TagObservationViewSet)
 router.register("nest-tag-observations",
                 observations_api.NestTagObservationViewSet)
 router.register("management-actions", observations_api.ManagementActionViewSet)
+router.register("turtle-damage-observations",
+                observations_api.TurtleDamageObservationEncounterViewSet)
 router.register("turtle-morphometrics",
                 observations_api.TurtleMorphometricObservationViewSet)
 router.register("turtle-hatchling-morphometrics",
