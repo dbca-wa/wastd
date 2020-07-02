@@ -305,7 +305,11 @@ class LegacySourceMixin(models.Model):
 
 
 class QualityControlMixin(models.Model):
-    """Mixin class for QA status levels with django-fsm transitions."""
+    """Mixin class for QA status levels with django-fsm transitions.
+
+    Upcoming work: permissions https://github.com/dbca-wa/wastd/issues/291
+    Related: https://github.com/dbca-wa/wastd/issues/299
+    """
 
     STATUS_NEW = 'new'
     STATUS_PROOFREAD = 'proofread'
@@ -408,7 +412,7 @@ class QualityControlMixin(models.Model):
     @fsm_log_by
     @transition(
         field=status,
-        source=[STATUS_PROOFREAD, STATUS_FLAGGED],
+        source=[STATUS_NEW, STATUS_PROOFREAD, STATUS_FLAGGED],
         target=STATUS_CURATED,
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -422,6 +426,7 @@ class QualityControlMixin(models.Model):
         """Accept record as trustworthy.
 
         Curated data is deemed trustworthy by a subject matter expert.
+        Records can be marked as curated from new, proofread, or flagged.
         """
         return
 
