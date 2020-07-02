@@ -282,6 +282,7 @@ class LoggerEncounterSerializer(EncounterSerializer):
                   "encounter_type", "leaflet_title",
                   "status", "observer", "reporter", "comments",
                   "where", "latitude", "longitude", "crs", "location_accuracy",
+                  "location_accuracy_m",
                   "when", "name",
                   "deployment_status", "comments",
                   "comments",
