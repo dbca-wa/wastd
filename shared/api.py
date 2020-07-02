@@ -176,6 +176,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         else:
             # Continue on happy trail: update if new or existing but unchanged
+            # TODO wastd.observations.Observation models
+            # have Encounter(source, source_id) but update own fields
             self.model.objects.filter(**unique_data).update(**update_data)
 
         obj.refresh_from_db()
