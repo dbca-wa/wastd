@@ -311,18 +311,26 @@ class QualityControlMixin(models.Model):
     STATUS_PROOFREAD = 'proofread'
     STATUS_CURATED = 'curated'
     STATUS_PUBLISHED = 'published'
+    STATUS_FLAGGED = 'flagged'
+    STATUS_REJECTED = 'rejected'
 
     STATUS_CHOICES = (
         (STATUS_NEW, _("New")),
         (STATUS_PROOFREAD, _("Proofread")),
         (STATUS_CURATED, _("Curated")),
-        (STATUS_PUBLISHED, _("Published")), )
+        (STATUS_PUBLISHED, _("Published")),
+        (STATUS_FLAGGED, _("Flagged")),
+        (STATUS_REJECTED, _("Rejected")),
+    )
 
     STATUS_LABELS = {
-        STATUS_NEW: "danger",
+        STATUS_NEW: "secondary",
         STATUS_PROOFREAD: "warning",
-        STATUS_CURATED: "info",
-        STATUS_PUBLISHED: "success", }
+        STATUS_CURATED: "success",
+        STATUS_PUBLISHED: "info",
+        STATUS_FLAGGED: "warning",
+        STATUS_REJECTED: "danger",
+    }
 
     status = FSMField(
         default=STATUS_NEW,
@@ -353,9 +361,9 @@ class QualityControlMixin(models.Model):
         conditions=[can_proofread],
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
-            verbose="Mark as proofread",
-            explanation=("This record is a faithful representation of the "
-                         "data sheet."),
+            verbose="Submit for QA",
+            explanation=("Submit this record as a faithful representation of the "
+                         "data source for QA to become an accepted record."),
             notify=True,)
     )
     def proofread(self, by=None):
@@ -394,30 +402,30 @@ class QualityControlMixin(models.Model):
         return
 
     def can_curate(self):
-        """Return true if this document can be marked as curated."""
+        """Return true if this record can be accepted."""
         return True
 
     @fsm_log_by
     @transition(
         field=status,
-        source=STATUS_PROOFREAD,
+        source=[STATUS_PROOFREAD, STATUS_FLAGGED],
         target=STATUS_CURATED,
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
 
         custom=dict(
-            verbose="Mark as trustworthy",
+            verbose="Accept as trustworthy",
             explanation=("This record is deemed trustworthy."),
             notify=True,)
     )
     def curate(self, by=None):
-        """Mark encounter as curated.
+        """Accept record as trustworthy.
 
         Curated data is deemed trustworthy by a subject matter expert.
         """
         return
 
-    def can_revoke_curated(self):
+    def can_flag(self):
         """Return true if curated status can be revoked."""
         return True
 
@@ -425,11 +433,11 @@ class QualityControlMixin(models.Model):
     @transition(
         field=status,
         source=STATUS_CURATED,
-        target=STATUS_PROOFREAD,
-        conditions=[can_revoke_curated],
+        target=STATUS_FLAGGED,
+        conditions=[can_flag],
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
-            verbose="Flag",
+            verbose="Flag as not trustworthy",
             explanation=("This record cannot be true. This record requires"
                          " review by a subject matter expert."),
             notify=True,)
@@ -439,6 +447,50 @@ class QualityControlMixin(models.Model):
 
         Curated data is deemed trustworthy by a subject matter expert.
         Revoking curation flags data for requiring changes by an expert.
+        """
+        return
+
+    def can_reject(self):
+        """Return true if the record can be rejected as entirely wrong."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
+        target=STATUS_REJECTED,
+        conditions=[can_flag],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Confirm as not trustworthy",
+            explanation=("This record is confirmed wrong and not trustworthy."),
+            notify=True,)
+    )
+    def reject(self, by=None):
+        """Confirm that a record is not trustworthy and beyond repair."""
+        return
+
+
+    def can_reset(self):
+        """Return true if the record QA status can be reset."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_REJECTED,
+        target=STATUS_NEW,
+        conditions=[can_reset],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Reset QA status",
+            explanation=("The QA status of this record needs to be reset."),
+            notify=True,)
+    )
+    def reset(self, by=None):
+        """Reset the QA status of a record to NEW.
+
+        This allows a record to be brought into the desired QA status.
         """
         return
 
