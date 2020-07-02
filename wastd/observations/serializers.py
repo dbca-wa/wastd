@@ -376,6 +376,18 @@ class MediaAttachmentSerializer(ObservationSerializer):
         )
 
 
+class MediaAttachmentEncounterSerializer(ObservationSerializer):
+
+    class Meta:
+        model = MediaAttachment
+        fields = (
+            'pk',
+            'encounter',
+            'media_type',
+            'title',
+            'attachment'
+        )
+
 class TagObservationEncounterSerializer(ObservationSerializer):
 
     handler_id = IntegerField(write_only=True)
@@ -586,6 +598,21 @@ class LightSourceObservationEncounterSerializer(ObservationSerializer):
             "bearing_light_degrees",
             "light_source_type",
             "light_source_description",
+        )
+
+
+class TurtleDamageObservationEncounterSerializer(ObservationSerializer):
+
+    class Meta:
+        model = TurtleDamageObservation
+        fields = (
+            'pk',
+            "encounter",
+            "observation_name",
+            "body_part",
+            "damage_type",
+            "damage_age",
+            "description"
         )
 
 
