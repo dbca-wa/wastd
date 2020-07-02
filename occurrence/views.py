@@ -51,6 +51,7 @@ class TaxonAreaEncounterListView(
             self.request.GET,
             queryset=self.get_queryset()
         )
+        context["count"] = self.get_queryset().count()
         return context
 
     def get_queryset(self):
@@ -86,6 +87,7 @@ class CommunityAreaEncounterListView(
             self.request.GET,
             queryset=self.get_queryset()
         )
+        context["count"] = self.get_queryset().count()
         return context
 
     def get_queryset(self):

@@ -121,6 +121,8 @@
            title="Browse non-current animal names requiring manual changes to conservation listing to their current counterparts">
           <span class="oi oi-grid-three-up" aria-hidden="true"></span>
           <span class="align-left">Browse non-current thr/prio animals</span>
+          <!-- https://github.com/dbca-wa/wastd/issues/187 -->
+          <!-- API queries via async JS: count results -->
         </a>
         <a class="btn btn-warning btn-block mb-2 text-left"
            href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
