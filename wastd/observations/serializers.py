@@ -2,33 +2,7 @@ from rest_framework.serializers import ModelSerializer, ReadOnlyField, Validatio
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from wastd.users.api import FastUserSerializer
-from wastd.observations.models import (
-    Observation,
-    Survey,
-    AnimalEncounter,
-    Area,
-    DispatchRecord,
-    DugongMorphometricObservation,
-    Encounter,
-    HatchlingMorphometricObservation,
-    LoggerEncounter,
-    ManagementAction,
-    MediaAttachment,
-    NestTagObservation,
-    TagObservation,
-    TemperatureLoggerDeployment,
-    TemperatureLoggerSettings,
-    TrackTallyObservation,
-    TurtleDamageObservation,
-    TurtleMorphometricObservation,
-    TurtleNestDisturbanceObservation,
-    TurtleNestDisturbanceTallyObservation,
-    TurtleNestEncounter,
-    TurtleNestObservation,
-    TurtleHatchlingEmergenceObservation,
-    TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation
-)
+from wastd.observations import models
 
 
 # ----------------------------------------------------------------------------#
@@ -37,7 +11,7 @@ from wastd.observations.models import (
 class AreaSerializer(GeoFeatureModelSerializer):
 
     class Meta:
-        model = Area
+        model = models.Area
         geo_field = "geom"
         fields = (
             "pk",
@@ -55,7 +29,7 @@ class FastAreaSerializer(ModelSerializer):
     """Minimal Area serializer.
     """
     class Meta:
-        model = Area
+        model = models.Area
         geo_field = "geom"
         fields = ("pk", "area_type", "name")
 
@@ -66,7 +40,7 @@ class SurveySerializer(GeoFeatureModelSerializer):
     status = ReadOnlyField()
 
     class Meta:
-        model = Survey
+        model = models.Survey
         geo_field = "start_location"
         fields = "__all__"
 
@@ -76,7 +50,7 @@ class FastSurveySerializer(ModelSerializer):
     site = FastAreaSerializer(many=False, read_only=True)
 
     class Meta:
-        model = Survey
+        model = models.Survey
         fields = [
             "id",
             "site",
@@ -108,15 +82,13 @@ class EncounterSerializer(GeoFeatureModelSerializer):
         """The non-standard name `where` is declared as the geo field for the
         GeoJSON serializer's benefit.
         """
-        model = Encounter
+        model = models.Encounter
         fields = (
             "pk",
             "area",
             "site",
             "survey",
             "where",
-            "location_accuracy",
-            "when",
             "name",
             "observer_id",
             "observer",
@@ -127,13 +99,16 @@ class EncounterSerializer(GeoFeatureModelSerializer):
             "source",
             "source_id",
             "encounter_type",
+            "when",
             "leaflet_title",
+            "location_accuracy",
+            "location_accuracy_m",
             "latitude",
             "longitude",
             "crs",
             "absolute_admin_url",
             # "photographs",
-            "tx_logs"
+            # "tx_logs"
         )
         geo_field = "where"
 
@@ -151,7 +126,7 @@ class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
         """The non-standard name `where` is declared as the geo field for the
         GeoJSON serializer's benefit.
         """
-        model = Encounter
+        model = models.Encounter
         name = "encounter"
         fields = (
             "pk",
@@ -170,28 +145,31 @@ class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
 class FastEncounterSerializer(EncounterSerializer):
     """Faster encounter serializer.
     """
+    # area = FastAreaSerializer(required=False)
+    # site = FastAreaSerializer(required=False)
+    # survey = FastSurveySerializer(required=False)
 
     class Meta(EncounterSerializer.Meta):
         fields = (
             "pk",
-            "area",
-            "site",
-            "survey",
-            "location_accuracy",
-            "location_accuracy_m",
-            "when",
-            "name",
-            "observer",
-            "reporter",
-            "comments",
-            "status",
             "source",
             "source_id",
             "encounter_type",
-            "leaflet_title",
+            "status",
+            "when",
             "latitude",
             "longitude",
-            "crs"
+            "crs",
+            "location_accuracy",
+            "location_accuracy_m",
+            "name",
+            "leaflet_title",
+            "observer",
+            "reporter",
+            "comments",
+            "area",
+            "site",
+            "survey",
         )
 
 
@@ -207,22 +185,46 @@ class AnimalEncounterSerializer(EncounterSerializer):
     # tx_logs = ReadOnlyField()
 
     class Meta:
-        model = AnimalEncounter
-        fields = ("pk", "area", "site", "survey", "source", "source_id",
-                  "encounter_type", "leaflet_title",
-                  "status", "observer", "reporter", "comments",
-                  "where", "latitude", "longitude", "crs", "location_accuracy",
-                  "location_accuracy_m",
-                  "when", "name",
-                  "name", "taxon", "species", "health", "sex", "maturity", "behaviour",
-                  "habitat", "activity", "nesting_event",
-                  "checked_for_injuries",
-                  "scanned_for_pit_tags",
-                  "checked_for_flipper_tags",
-                  "cause_of_death", "cause_of_death_confidence",
-                  "absolute_admin_url",  # "photographs", "tx_logs",
-                  # "observation_set",
-                  )
+        model = models.AnimalEncounter
+        fields = (
+            "pk",
+            "source",
+            "source_id",
+            "encounter_type",
+            "status",
+            "when",
+            "latitude",
+            "longitude",
+            "crs",
+            "location_accuracy",
+            "location_accuracy_m",
+            "name",
+            "leaflet_title",
+            "observer",
+            "reporter",
+            "comments",
+            "area",
+            "site",
+            "survey",
+
+            "taxon",
+            "species",
+            "health",
+            "sex",
+            "maturity",
+            "behaviour",
+            "habitat",
+            "activity",
+            "nesting_event",
+            "laparoscopy",
+            "checked_for_injuries",
+            "scanned_for_pit_tags",
+            "checked_for_flipper_tags",
+            "cause_of_death",
+            "cause_of_death_confidence",
+            "absolute_admin_url",  # "photographs", "tx_logs",
+            # "observation_set",
+            )
         geo_field = "where"
         id_field = "source_id"
 
@@ -232,28 +234,28 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
     # tx_logs = ReadOnlyField()
 
     class Meta:
-        model = TurtleNestEncounter
+        model = models.TurtleNestEncounter
         fields = (
             "pk",
-            "area",
-            "site",
-            "survey",
             "source",
             "source_id",
             "encounter_type",
-            "leaflet_title",
             "status",
-            "observer",
-            "reporter",
-            "comments",
-            "where",
+            "when",
             "latitude",
             "longitude",
             "crs",
             "location_accuracy",
             "location_accuracy_m",
-            "when",
             "name",
+            "leaflet_title",
+            "observer",
+            "reporter",
+            "comments",
+            "area",
+            "site",
+            "survey",
+
             "nest_age",
             "nest_type",
             "species",
@@ -268,8 +270,6 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
             "absolute_admin_url",
             # "photographs", "tx_logs",
             # "observation_set",
-            "observer_id",
-            "reporter_id",
         )
         geo_field = "where"
 
@@ -277,18 +277,64 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
 class LoggerEncounterSerializer(EncounterSerializer):
 
     class Meta:
-        model = LoggerEncounter
-        fields = ("pk", "area", "site", "survey", "source", "source_id",
-                  "encounter_type", "leaflet_title",
-                  "status", "observer", "reporter", "comments",
-                  "where", "latitude", "longitude", "crs", "location_accuracy",
-                  "location_accuracy_m",
-                  "when", "name",
-                  "deployment_status", "comments",
-                  "comments",
-                  "absolute_admin_url",
-                  # "observation_set",
-                  )
+        model = models.LoggerEncounter
+        fields = (
+            "pk",
+            "source",
+            "source_id",
+            "encounter_type",
+            "status",
+            "when",
+            "latitude",
+            "longitude",
+            "crs",
+            "location_accuracy",
+            "location_accuracy_m",
+            "name",
+            "leaflet_title",
+            "observer",
+            "reporter",
+            "comments",
+            "area",
+            "site",
+            "survey",
+
+            "deployment_status",
+            "absolute_admin_url",
+            # "observation_set",
+        )
+        geo_field = "where"
+
+
+class LineTransectEncounterSerializer(EncounterSerializer):
+    """Serializer for LineTransectEncounter, geofield: transect.."""
+
+    class Meta:
+        model = models.LineTransectEncounter
+        fields = (
+            "pk",
+            "source",
+            "source_id",
+            "encounter_type",
+            "status",
+            "when",
+            "latitude",
+            "longitude",
+            "crs",
+            "location_accuracy",
+            "location_accuracy_m",
+            "name",
+            "leaflet_title",
+            "observer",
+            "reporter",
+            "comments",
+            "area",
+            "site",
+            "survey",
+
+            "transect",
+            "absolute_admin_url",
+        )
         geo_field = "where"
 
 
@@ -296,14 +342,15 @@ class LoggerEncounterSerializer(EncounterSerializer):
 # Observations
 # ----------------------------------------------------------------------------#
 class ObservationSerializer(ModelSerializer):
-    """A serializer class for an Observation model associated with an Encounter.
+    """
+    A serializer class for an Observation model associated with an Encounter.
     Should also be resuable for serializing other model classes that inherit from
     Observation.
     """
-    encounter = FastEncounterSerializer(read_only=True)
+    encounter = EncounterSerializer(read_only=True)
 
     class Meta:
-        model = Observation
+        model = models.Observation
         fields = ['pk', 'encounter']
 
     def validate(self, data):
@@ -314,12 +361,12 @@ class ObservationSerializer(ModelSerializer):
         ):
             raise ValidationError('Encounter reference is required')
         if 'encounter' in self.initial_data:
-            if not Encounter.objects.filter(pk=self.initial_data['encounter']).exists():
+            if not models.Encounter.objects.filter(pk=self.initial_data['encounter']).exists():
                 raise ValidationError(
                     'Encounter {} does not exist.'.format(self.initial_data['encounter'])
                 )
         if 'source' in self.initial_data and 'source_id' in self.initial_data:
-            if not Encounter.objects.filter(
+            if not models.Encounter.objects.filter(
                 source=self.initial_data['source'],
                 source_id=self.initial_data['source_id']
             ).exists():
@@ -334,9 +381,9 @@ class ObservationSerializer(ModelSerializer):
         """Create one new object, resolve Encounter from either PK or source & source_id.
         """
         if 'encounter' in self.initial_data:
-            validated_data['encounter'] = Encounter.objects.get(pk=self.initial_data['encounter'])
+            validated_data['encounter'] = models.Encounter.objects.get(pk=self.initial_data['encounter'])
         else:
-            validated_data['encounter'] = Encounter.objects.get(
+            validated_data['encounter'] = models.Encounter.objects.get(
                 source=self.initial_data['source'], source_id=self.initial_data['source_id'])
         return self.Meta.model.objects.create(**validated_data)
 
@@ -345,9 +392,9 @@ class ObservationSerializer(ModelSerializer):
         the API endpoints. We override save in order to avoid duplicate by either create or update.
         """
         if 'encounter' in self.initial_data:
-            self.validated_data['encounter'] = Encounter.objects.get(pk=self.initial_data['encounter'])
+            self.validated_data['encounter'] = models.Encounter.objects.get(pk=self.initial_data['encounter'])
         else:
-            self.validated_data['encounter'] = Encounter.objects.get(
+            self.validated_data['encounter'] = models.Encounter.objects.get(
                 source=self.initial_data['source'], source_id=self.initial_data['source_id'])
         # Gate check: we want to ensure that duplicate objects are not created.
         #
@@ -370,28 +417,17 @@ class ObservationSerializer(ModelSerializer):
 class MediaAttachmentSerializer(ObservationSerializer):
 
     class Meta:
-        model = MediaAttachment
+        model = models.MediaAttachment
         fields = (
-            'pk',
+            "pk",
+            "encounter",
             'media_type',
             'title',
             'attachment'
         )
 
 
-class MediaAttachmentEncounterSerializer(ObservationSerializer):
-
-    class Meta:
-        model = MediaAttachment
-        fields = (
-            'pk',
-            'encounter',
-            'media_type',
-            'title',
-            'attachment'
-        )
-
-class TagObservationEncounterSerializer(ObservationSerializer):
+class TagObservationSerializer(ObservationSerializer):
 
     handler_id = IntegerField(write_only=True)
     handler = FastUserSerializer(read_only=True)
@@ -399,10 +435,10 @@ class TagObservationEncounterSerializer(ObservationSerializer):
     recorder = FastUserSerializer(read_only=True)
 
     class Meta:
-        model = TagObservation
+        model = models.TagObservation
         fields = (
-            'pk',
-            'encounter',
+            "pk",
+            "encounter",
             'handler',
             'handler_id',
             'recorder',
@@ -415,41 +451,41 @@ class TagObservationEncounterSerializer(ObservationSerializer):
         )
 
 
-class NestTagObservationEncounterSerializer(ObservationSerializer):
+class NestTagObservationSerializer(ObservationSerializer):
 
     # encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
-        model = NestTagObservation
+        model = models.NestTagObservation
         fields = (
-            'pk',
-            'encounter',
-            'status',
-            'flipper_tag_id',
-            'date_nest_laid',
-            'tag_label',
-            'comments'
+            "pk",
+            "encounter",
+            "status",
+            "flipper_tag_id",
+            "date_nest_laid",
+            "tag_label",
+            "comments",
         )
 
 
 class ManagementActionSerializer(ObservationSerializer):
 
     class Meta:
-        model = ManagementAction
+        model = models.ManagementAction
         fields = (
-            'pk',
-            # 'encounter',
+            "pk",
+            "encounter",
             'management_actions',
             'comments'
         )
 
 
-class TurtleMorphometricObservationEncounterSerializer(ObservationSerializer):
+class TurtleMorphometricObservationSerializer(ObservationSerializer):
 
     class Meta:
-        model = TurtleMorphometricObservation
+        model = models.TurtleMorphometricObservation
         fields = (
-            'pk',
+            "pk",
             "encounter",
             "latitude",
             "longitude",
@@ -478,30 +514,28 @@ class TurtleMorphometricObservationEncounterSerializer(ObservationSerializer):
         )
 
 
-class HatchlingMorphometricObservationEncounterSerializer(ObservationSerializer):
+class HatchlingMorphometricObservationSerializer(ObservationSerializer):
 
     # encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
-        model = HatchlingMorphometricObservation
+        model = models.HatchlingMorphometricObservation
         fields = (
-            'pk',
-            'encounter',
-            'latitude',
-            'longitude',
+            "pk",
+            "encounter",
             'straight_carapace_length_mm',
             'straight_carapace_width_mm',
             'body_weight_g',
         )
 
 
-class TurtleNestDisturbanceObservationEncounterSerializer(ObservationSerializer):
+class TurtleNestDisturbanceObservationSerializer(ObservationSerializer):
 
     class Meta:
-        model = TurtleNestDisturbanceObservation
+        model = models.TurtleNestDisturbanceObservation
         fields = (
-            'pk',
-            'encounter',
+            "pk",
+            "encounter",
             'disturbance_cause',
             'disturbance_cause_confidence',
             'disturbance_severity',
@@ -509,18 +543,15 @@ class TurtleNestDisturbanceObservationEncounterSerializer(ObservationSerializer)
         )
 
 
-class TurtleNestObservationEncounterSerializer(ObservationSerializer):
+class TurtleNestObservationSerializer(ObservationSerializer):
 
     # encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
-        model = TurtleNestObservation
+        model = models.TurtleNestObservation
         fields = (
-            'pk',
-            'encounter',
-            'observation_name',
-            'latitude',
-            'longitude',
+            "pk",
+            "encounter",
             'nest_position',
             'eggs_laid',
             'egg_count',
@@ -544,18 +575,15 @@ class TurtleNestObservationEncounterSerializer(ObservationSerializer):
         )
 
 
-class TurtleHatchlingEmergenceObservationEncounterSerializer(ObservationSerializer):
+class TurtleHatchlingEmergenceObservationSerializer(ObservationSerializer):
 
     # encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
-        model = TurtleHatchlingEmergenceObservation
+        model = models.TurtleHatchlingEmergenceObservation
         fields = (
-            'pk',
-            'encounter',
-            'observation_name',
-            'latitude',
-            'longitude',
+            "pk",
+            "encounter",
             'bearing_to_water_degrees',
             'bearing_leftmost_track_degrees',
             'bearing_rightmost_track_degrees',
@@ -572,98 +600,81 @@ class TurtleHatchlingEmergenceObservationEncounterSerializer(ObservationSerializ
         )
 
 
-class TurtleHatchlingEmergenceOutlierObservationEncounterSerializer(ObservationSerializer):
+class TurtleHatchlingEmergenceOutlierObservationSerializer(ObservationSerializer):
 
     class Meta:
-        model = TurtleHatchlingEmergenceOutlierObservation
+        model = models.TurtleHatchlingEmergenceOutlierObservation
         fields = (
-            'pk',
+            "pk",
             "encounter",
-            "observation_name",
-            "latitude",
-            "longitude",
             "bearing_outlier_track_degrees",
             "outlier_group_size",
             "outlier_track_comment",
         )
 
 
-class LightSourceObservationEncounterSerializer(ObservationSerializer):
+class LightSourceObservationSerializer(ObservationSerializer):
 
     class Meta:
-        model = LightSourceObservation
+        model = models.LightSourceObservation
         fields = (
-            'pk',
+            "pk",
             "encounter",
-            "observation_name",
-            "latitude",
-            "longitude",
             "bearing_light_degrees",
             "light_source_type",
             "light_source_description",
         )
 
 
-class TurtleDamageObservationEncounterSerializer(ObservationSerializer):
-
-    class Meta:
-        model = TurtleDamageObservation
-        fields = (
-            'pk',
-            "encounter",
-            "observation_name",
-            "body_part",
-            "damage_type",
-            "damage_age",
-            "description"
-        )
-
-
 class TurtleDamageObservationSerializer(ObservationSerializer):
 
     class Meta:
-        model = TurtleDamageObservation
+        model = models.TurtleDamageObservation
         fields = (
-            'pk',
-            "observation_name",
+            "pk",
+            "encounter",
             "body_part",
             "damage_type",
             "damage_age",
             "description"
         )
-
 
 class TrackTallyObservationSerializer(ObservationSerializer):
 
     class Meta:
-        model = TrackTallyObservation
+        model = models.TrackTallyObservation
         fields = (
-            'pk',
-            "observation_name",
+            "pk",
+            "encounter",
             "species",
-            "nest_type"
+            "nest_age",
+            "nest_type",
+            "tally"
         )
 
 
 class TurtleNestDisturbanceTallyObservationSerializer(ObservationSerializer):
 
     class Meta:
-        model = TurtleNestDisturbanceTallyObservation
+        model = models.TurtleNestDisturbanceTallyObservation
         fields = (
-            'pk',
-            "observation_name",
+            "pk",
+            "encounter",
             "species",
-            "disturbance_cause"
+            "disturbance_cause",
+            "no_nests_disturbed",
+            "no_tracks_encountered",
+            "comments"
         )
 
 
 class TemperatureLoggerSettingsSerializer(ObservationSerializer):
 
     class Meta:
-        model = TemperatureLoggerSettings
+        model = models.TemperatureLoggerSettings
         fields = (
-            'pk',
-            "observation_name",
+            "pk",
+            "encounter",
             "logging_interval",
             "recording_start",
             "tested"
@@ -673,10 +684,10 @@ class TemperatureLoggerSettingsSerializer(ObservationSerializer):
 class DispatchRecordSerializer(ObservationSerializer):
 
     class Meta:
-        model = DispatchRecord
+        model = models.DispatchRecord
         fields = (
-            'pk',
-            "observation_name",
+            "pk",
+            "encounter",
             "sent_to"
         )
 
@@ -684,10 +695,10 @@ class DispatchRecordSerializer(ObservationSerializer):
 class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
 
     class Meta:
-        model = TemperatureLoggerDeployment
+        model = models.TemperatureLoggerDeployment
         fields = (
-            'pk',
-            "observation_name",
+            "pk",
+            "encounter",
             "depth_mm",
             "marker1_present",
             "distance_to_marker1_mm",
@@ -701,192 +712,12 @@ class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
 class DugongMorphometricObservationSerializer(ObservationSerializer):
 
     class Meta:
-        model = DugongMorphometricObservation
+        model = models.DugongMorphometricObservation
         fields = (
-            'pk',
-            "observation_name",
+            "pk",
+            "encounter",
             "body_length_mm",
             "body_girth_mm",
             "tail_fluke_width_mm",
             "tusks_found",
-        )
-
-
-class TagObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
-
-    class Meta:
-        model = TagObservation
-        fields = (
-            'pk',
-            "observation_name",  # "as_latex",
-            "tag_type",
-            "name",
-            "tag_location",
-            "status",
-            "comments",
-        )
-
-
-class TurtleMorphometricObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
-
-    class Meta:
-        model = TurtleMorphometricObservation
-        fields = (
-            'pk',
-            "observation_name",  # "as_latex",
-            "curved_carapace_length_mm",
-            "curved_carapace_length_accuracy",
-            "straight_carapace_length_mm",
-            "straight_carapace_length_accuracy",
-            "curved_carapace_width_mm",
-            "curved_carapace_width_accuracy",
-            "tail_length_carapace_mm",
-            "tail_length_carapace_accuracy",
-            "tail_length_vent_mm",
-            "tail_length_vent_accuracy",
-            "tail_length_plastron_mm",
-            "tail_length_plastron_accuracy",
-            "maximum_head_width_mm",
-            "maximum_head_width_accuracy",
-            "maximum_head_length_mm",
-            "maximum_head_length_accuracy",
-            "body_depth_mm",
-            "body_depth_accuracy",
-            "body_weight_g",
-            "body_weight_accuracy",
-            "handler",
-            "recorder",
-        )
-
-
-class TurtleNestObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
-
-    class Meta:
-        model = TurtleNestObservation
-        fields = (
-            'pk',
-            "observation_name",
-            "nest_position",
-            "eggs_laid",
-            "egg_count",
-            "egg_count_calculated",
-            "no_emerged",
-            "no_egg_shells",
-            "no_live_hatchlings_neck_of_nest",
-            "no_live_hatchlings",
-            "no_dead_hatchlings",
-            "no_undeveloped_eggs",
-            "no_unhatched_eggs",
-            "no_unhatched_term",
-            "no_depredated_eggs",
-            "nest_depth_top",
-            "nest_depth_bottom",
-            "sand_temp",
-            "air_temp",
-            "water_temp",
-            "egg_temp",
-            "hatching_success",
-            "emergence_success",
-            "comments"
-        )
-
-
-class NestTagObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
-
-    class Meta:
-        model = NestTagObservation
-        fields = (
-            'pk',
-            "encounter",
-            "observation_name",
-            "status",
-            "flipper_tag_id",
-            "date_nest_laid",
-            "tag_label",
-            "comments",
-        )
-
-
-class TurtleNestDisturbanceObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
-
-    class Meta:
-        model = TurtleNestDisturbanceObservation
-        fields = (
-            'pk',
-            "observation_name",
-            # "as_latex",
-            "disturbance_cause",
-            "disturbance_cause_confidence",
-            "disturbance_severity",
-            "comments",
-        )
-
-
-class HatchlingMorphometricObservationSerializer(ModelSerializer):
-    # as_latex = ReadOnlyField()
-
-    class Meta:
-        model = HatchlingMorphometricObservation
-        fields = (
-            'pk',
-            "observation_name",
-            "straight_carapace_length_mm",
-            "straight_carapace_width_mm",
-            "body_weight_g",
-        )
-
-
-class TurtleHatchlingEmergenceObservationSerializer(ModelSerializer):
-    """TurtleHatchlingEmergenceObservation serializer excluding encounter for inlines."""
-
-    class Meta:
-        model = TurtleHatchlingEmergenceObservation
-        fields = (
-            'pk',
-            "bearing_to_water_degrees",
-            "bearing_leftmost_track_degrees",
-            "bearing_rightmost_track_degrees",
-            "no_tracks_main_group",
-            "no_tracks_main_group_min",
-            "no_tracks_main_group_max",
-            "outlier_tracks_present",
-            "path_to_sea_comments",
-            "hatchling_emergence_time_known",
-            "light_sources_present",
-            "hatchling_emergence_time",
-            "hatchling_emergence_time_accuracy",
-            "cloud_cover_at_emergence",
-        )
-
-
-class TurtleHatchlingEmergenceOutlierObservationSerializer(ModelSerializer):
-    """TurtleHatchlingEmergenceOutlierObservation serializer excluding encounter for inlines."""
-
-    class Meta:
-        model = TurtleHatchlingEmergenceOutlierObservation
-
-        fields = (
-            'pk',
-            "bearing_outlier_track_degrees",
-            "outlier_group_size",
-            "outlier_track_comment",
-        )
-
-
-class LightSourceObservationSerializer(ModelSerializer):
-    """LightSource serializer excluding encounter for inlines.
-    """
-
-    class Meta:
-        model = LightSourceObservation
-        fields = (
-            'pk',
-            "bearing_light_degrees",
-            "light_source_type",
-            "light_source_description",
         )

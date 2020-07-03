@@ -3116,6 +3116,7 @@ class TrackTallyObservation(Observation):
         return t1.format(self.tally, self.nest_age, self.nest_type, self.species)
 
 
+
 class TurtleNestDisturbanceTallyObservation(Observation):
     """Observation of turtle track tallies and signs of predation."""
 
