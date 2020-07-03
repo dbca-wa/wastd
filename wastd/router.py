@@ -33,6 +33,9 @@ router.register(
 router.register(
     "logger-encounters",
     observations_api.LoggerEncounterViewSet)
+router.register(
+    "line-transect-encounters",
+    observations_api.LineTransectEncounterViewSet)
 
 # Observations
 router.register(
@@ -52,28 +55,28 @@ router.register(
     observations_api.ManagementActionViewSet)
 router.register(
     "turtle-damage-observations",
-    observations_api.TurtleDamageObservationEncounterViewSet)
+    observations_api.TurtleDamageObservationViewSet)
 router.register(
     "turtle-morphometrics",
     observations_api.TurtleMorphometricObservationViewSet)
 router.register(
     "turtle-hatchling-morphometrics",
-    observations_api.HatchlingMorphometricObservationEncounterViewSet)
+    observations_api.HatchlingMorphometricObservationViewSet)
 router.register(
     "turtle-nest-disturbance-observations",
-    observations_api.TurtleNestDisturbanceObservationEncounterViewSet)
+    observations_api.TurtleNestDisturbanceObservationViewSet)
 router.register(
     "turtle-nest-excavations",
     observations_api.TurtleNestObservationViewSet)
 router.register(
     "turtle-nest-hatchling-emergences",
-    observations_api.TurtleHatchlingEmergenceObservationEncounterViewSet)
+    observations_api.TurtleHatchlingEmergenceObservationViewSet)
 router.register(
     "turtle-nest-hatchling-emergence-outliers",
-    observations_api.TurtleHatchlingEmergenceOutlierObservationEncounterViewSet)
+    observations_api.TurtleHatchlingEmergenceOutlierObservationViewSet)
 router.register(
     "turtle-nest-hatchling-emergence-light-sources",
-    observations_api.LightSourceObservationEncounterViewSet)
+    observations_api.LightSourceObservationViewSet)
 # conservation.ConservationListing -------------------------------------------#
 router.register(
     "community-conservationlisting",
