@@ -34,6 +34,8 @@ class EncounterSerializerTests(TestCase):
                 'encounters_src',
                 'animalencounter',
                 'turtlenestencounter',
+                'linetransectencounter',
+                'loggerencounter'
         ]:
             url = reverse('api:{}-list'.format(i))
             resp = self.client.get(url, {'format': 'json'})
@@ -320,3 +322,5 @@ class ObservationSerializerTests(EncounterSerializerTests):
             }
         )
         self.assertEqual(resp.status_code, 201)
+
+# TODO add tests for remaining API endpoints

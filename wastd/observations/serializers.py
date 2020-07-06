@@ -299,6 +299,8 @@ class LoggerEncounterSerializer(EncounterSerializer):
             "site",
             "survey",
 
+            "logger_type",
+            "logger_id",
             "deployment_status",
             "absolute_admin_url",
             # "observation_set",
