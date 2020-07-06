@@ -346,6 +346,9 @@ class ObservationSerializer(ModelSerializer):
     A serializer class for an Observation model associated with an Encounter.
     Should also be resuable for serializing other model classes that inherit from
     Observation.
+
+    TODO Make writeable, avoid duplicates, avoid losing QA edits:
+    https://github.com/dbca-wa/wastd/issues/297
     """
     encounter = EncounterSerializer(read_only=True)
 
