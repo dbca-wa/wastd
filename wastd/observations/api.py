@@ -868,3 +868,35 @@ class LightSourceObservationViewSet(ModelViewSet):
     filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
     pagination_class = MyGeoJsonPagination
     model = models.LightSourceObservation
+
+
+class TrackTallyObservationViewSet(ModelViewSet):
+    """A turtle track tally from a LineTransectEncounter.
+
+    Can be many per Encounter.
+    Admin: see Encounter inlines.
+    """
+    queryset = models.TrackTallyObservation.objects.all().prefetch_related(
+        "encounter", "encounter__observer", "encounter__reporter",
+        "encounter__survey", "encounter__survey__reporter",
+        "encounter__site", "encounter__area")
+    serializer_class = serializers.TrackTallyObservationSerializer
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    pagination_class = MyGeoJsonPagination
+    model = models.TrackTallyObservation
+
+
+class TurtleNestDisturbanceTallyObservationViewSet(ModelViewSet):
+    """A turtle nest disturbance tally from a LineTransectEncounter.
+
+    Can be many per Encounter.
+    Admin: see Encounter inlines.
+    """
+    queryset = models.TurtleNestDisturbanceTallyObservation.objects.all().prefetch_related(
+        "encounter", "encounter__observer", "encounter__reporter",
+        "encounter__survey", "encounter__survey__reporter",
+        "encounter__site", "encounter__area")
+    serializer_class = serializers.TurtleNestDisturbanceTallyObservationSerializer
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    pagination_class = MyGeoJsonPagination
+    model = models.TurtleNestDisturbanceTallyObservation

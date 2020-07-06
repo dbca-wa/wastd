@@ -37,37 +37,41 @@ router.register(
     "line-transect-encounters",
     observations_api.LineTransectEncounterViewSet)
 
-# Observations
+# General Observations
 router.register(
     "observations",
     observations_api.ObservationViewSet)
 router.register(
     "media-attachments",
     observations_api.MediaAttachmentViewSet)
-router.register(
-    "tag-observations",
-    observations_api.TagObservationViewSet)
-router.register(
-    "nest-tag-observations",
-    observations_api.NestTagObservationViewSet)
+
+# Animal Observations
 router.register(
     "management-actions",
     observations_api.ManagementActionViewSet)
 router.register(
-    "turtle-damage-observations",
-    observations_api.TurtleDamageObservationViewSet)
+    "tag-observations",
+    observations_api.TagObservationViewSet)
 router.register(
     "turtle-morphometrics",
     observations_api.TurtleMorphometricObservationViewSet)
 router.register(
-    "turtle-hatchling-morphometrics",
-    observations_api.HatchlingMorphometricObservationViewSet)
+    "turtle-damage-observations",
+    observations_api.TurtleDamageObservationViewSet)
+
+# Turtle Nest Observations
 router.register(
     "turtle-nest-disturbance-observations",
     observations_api.TurtleNestDisturbanceObservationViewSet)
 router.register(
+    "nest-tag-observations",
+    observations_api.NestTagObservationViewSet)
+router.register(
     "turtle-nest-excavations",
     observations_api.TurtleNestObservationViewSet)
+router.register(
+    "turtle-hatchling-morphometrics",
+    observations_api.HatchlingMorphometricObservationViewSet)
 router.register(
     "turtle-nest-hatchling-emergences",
     observations_api.TurtleHatchlingEmergenceObservationViewSet)
@@ -77,6 +81,16 @@ router.register(
 router.register(
     "turtle-nest-hatchling-emergence-light-sources",
     observations_api.LightSourceObservationViewSet)
+
+# Track Tally Obs
+router.register(
+    "track-tally",
+    observations_api.TrackTallyObservationViewSet)
+router.register(
+    "turtle-nest-disturbance-tally",
+    observations_api.TurtleNestDisturbanceTallyObservationViewSet)
+
+
 # conservation.ConservationListing -------------------------------------------#
 router.register(
     "community-conservationlisting",
