@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['-northern_extent', 'name'],
                 'verbose_name': 'Area',
-                'manager_inheritance_from_future': True,
+                #'manager_inheritance_from_future': True,
                 'verbose_name_plural': 'Areas',
             },
         ),
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                 ('community', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='community_related_areas', to='taxonomy.Community')),
             ],
             options={
-                'manager_inheritance_from_future': True,
+                #'manager_inheritance_from_future': True,
             },
             bases=('occurrence.area',),
         ),
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 ('taxon', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='taxon_related_areas', to='taxonomy.Taxon')),
             ],
             options={
-                'manager_inheritance_from_future': True,
+                #'manager_inheritance_from_future': True,
             },
             bases=('occurrence.area',),
         ),

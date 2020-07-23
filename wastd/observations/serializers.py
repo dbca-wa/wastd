@@ -131,6 +131,7 @@ class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
         fields = (
             "pk",
             "where",
+            "location_accuracy_m",
             "when",
             "status",
             "source",
