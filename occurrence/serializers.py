@@ -322,7 +322,10 @@ class ObservationGroupSerializer(ModelSerializer):
     def validate(self, data):
         """Raise ValidateError on missing AreaEncounter(source, source_id).
         """
-        if not AreaEncounter.objects.filter(source=int(self.initial_data["source"]), source_id=str(self.initial_data["source_id"])).exists():
+        if not AreaEncounter.objects.filter(
+                source=int(self.initial_data["source"]),
+                source_id=str(self.initial_data["source_id"])
+                ).exists():
             raise ValidationError(
                 "AreaEncounter with source {0} and source_id {1}"
                 " does not exist, skipping.".format(
