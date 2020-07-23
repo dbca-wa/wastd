@@ -456,7 +456,8 @@ class ObservationGroupViewSet(ModelViewSet):
                 if 'sample_destination' in obj and obj['sample_destination'] and obj['sample_destination'] not in sample_destination_cache:
                     try:
                         logger.info("SampleDestination cache miss: {}".format(obj['sample_destination']))
-                        sample_destination_cache[obj['sample_destination']] = SampleDestination.objects.get(code=obj['sample_destination'])
+                        sample_destination_cache[obj['sample_destination']
+                                                 ] = SampleDestination.objects.get(code=obj['sample_destination'])
                     except:
                         logger.warn("SampleDestination does not exist: {}".format(obj['sample_type']))
                         sample_destination_cache[obj['sample_destination']] = None
@@ -468,13 +469,15 @@ class ObservationGroupViewSet(ModelViewSet):
                         logger.warn("PermitType does not exist: {}".format(obj['permit_type']))
                         permit_type_cache[obj['permit_type']] = None
                 try:
-                    PhysicalSample.objects.create(
+                    PhysicalSample.objects.get_or_create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
                         sample_type=sample_type_cache[obj['sample_type']] if 'sample_type' in obj else None,
                         sample_label=obj['sample_label'] if 'sample_label' in obj else '',
                         collector_id=obj['collector_id'] if 'collector_id' in obj else '',
-                        sample_destination=sample_destination_cache[obj['sample_destination']] if ('sample_destination' in obj and obj['sample_destination']) else None,
-                        permit_type=permit_type_cache[obj['permit_type']] if ('permit_type' in obj and obj['permit_type']) else None,
+                        sample_destination=sample_destination_cache[obj['sample_destination']] if (
+                            'sample_destination' in obj and obj['sample_destination']) else None,
+                        permit_type=permit_type_cache[obj['permit_type']] if (
+                            'permit_type' in obj and obj['permit_type']) else None,
                         permit_id=obj['permit_id'] if 'permit_id' in obj else '',
                     )
                     created_count += 1
@@ -502,14 +505,16 @@ class ObservationGroupViewSet(ModelViewSet):
                 if 'detection_method' in obj and obj['detection_method'] and obj['detection_method'] not in detection_method_cache:
                     try:
                         logger.info("DetectionMethod cache miss: {}".format(obj['detection_method']))
-                        detection_method_cache[obj['detection_method']] = DetectionMethod.objects.get(code=obj['detection_method'])
+                        detection_method_cache[obj['detection_method']
+                                               ] = DetectionMethod.objects.get(code=obj['detection_method'])
                     except:
                         logger.warn("DetectionMethod does not exist: {}".format(obj['detection_method']))
                         detection_method_cache[obj['detection_method']] = None
                 if 'species_id_confidence' in obj and obj['species_id_confidence'] and obj['species_id_confidence'] not in species_id_confidence_cache:
                     try:
                         logger.info("Confidence cache miss: {}".format(obj['species_id_confidence']))
-                        species_id_confidence_cache[obj['species_id_confidence']] = Confidence.objects.get(code=obj['species_id_confidence'])
+                        species_id_confidence_cache[obj['species_id_confidence']
+                                                    ] = Confidence.objects.get(code=obj['species_id_confidence'])
                     except:
                         logger.warn("Confidence does not exist: {}".format(obj['species_id_confidence']))
                         species_id_confidence_cache[obj['species_id_confidence']] = None
@@ -537,7 +542,8 @@ class ObservationGroupViewSet(ModelViewSet):
                 if 'cause_of_death' in obj and obj['cause_of_death'] and obj['cause_of_death'] not in cause_of_death_cache:
                     try:
                         logger.info("CauseOfDeath cache miss: {}".format(obj['cause_of_death']))
-                        cause_of_death_cache[obj['cause_of_death']] = CauseOfDeath.objects.get(code=obj['cause_of_death'])
+                        cause_of_death_cache[obj['cause_of_death']
+                                             ] = CauseOfDeath.objects.get(code=obj['cause_of_death'])
                     except:
                         logger.warn("CauseOfDeath does not exist: {}".format(obj['cause_of_death']))
                         cause_of_death_cache[obj['cause_of_death']] = None
@@ -555,14 +561,17 @@ class ObservationGroupViewSet(ModelViewSet):
                                 logger.warn("SecondarySigns does not exist: {}".format(ss))
 
                 try:
-                    ae = AnimalObservation.objects.create(
+                    ae, _ = AnimalObservation.objects.get_or_create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
-                        detection_method=detection_method_cache[obj['detection_method']] if ('detection_method' in obj and obj['detection_method']) else None,
-                        species_id_confidence=species_id_confidence_cache[obj['species_id_confidence']] if ('species_id_confidence' in obj and obj['species_id_confidence']) else None,
+                        detection_method=detection_method_cache[obj['detection_method']] if (
+                            'detection_method' in obj and obj['detection_method']) else None,
+                        species_id_confidence=species_id_confidence_cache[obj['species_id_confidence']] if (
+                            'species_id_confidence' in obj and obj['species_id_confidence']) else None,
                         maturity=maturity_cache[obj['maturity']] if ('maturity' in obj and obj['maturity']) else None,
                         sex=sex_cache[obj['sex']] if ('sex' in obj and obj['sex']) else None,
                         health=health_cache[obj['health']] if ('health' in obj and obj['health']) else None,
-                        cause_of_death=cause_of_death_cache[obj['cause_of_death']] if ('cause_of_death' in obj and obj['cause_of_death']) else None,
+                        cause_of_death=cause_of_death_cache[obj['cause_of_death']] if (
+                            'cause_of_death' in obj and obj['cause_of_death']) else None,
                         distinctive_features=obj['distinctive_features'] if 'distinctive_features' in obj else '',
                         actions_taken=obj['actions_taken'] if 'actions_taken' in obj else '',
                         actions_required=obj['actions_required'] if 'actions_required' in obj else '',
@@ -593,7 +602,7 @@ class ObservationGroupViewSet(ModelViewSet):
                     encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
                         source=source, source_id=source_id)
                 try:
-                    VegetationClassification.objects.create(
+                    VegetationClassification.objects.get_or_create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
                         level1=obj['level1'] if 'level1' in obj else '',
                         level2=obj['level2'] if 'level2' in obj else '',
@@ -656,10 +665,14 @@ class ObservationGroupViewSet(ModelViewSet):
                     HabitatComposition.objects.create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
                         landform=landform_cache[obj['landform']] if ('landform' in obj and obj['landform']) else None,
-                        rock_type=rocktype_cache[obj['rock_type']] if ('rock_type' in obj and obj['rock_type']) else None,
-                        loose_rock_percent=obj['loose_rock_percent'] if ('loose_rock_percent' in obj and obj['loose_rock_percent']) else None,
-                        soil_type=soiltype_cache[obj['soil_type']] if ('soil_type' in obj and obj['soil_type']) else None,
-                        soil_colour=soilcolour_cache[obj['soil_colour']] if ('soil_colour' in obj and obj['soil_colour']) else None,
+                        rock_type=rocktype_cache[obj['rock_type']] if (
+                            'rock_type' in obj and obj['rock_type']) else None,
+                        loose_rock_percent=obj['loose_rock_percent'] if (
+                            'loose_rock_percent' in obj and obj['loose_rock_percent']) else None,
+                        soil_type=soiltype_cache[obj['soil_type']] if (
+                            'soil_type' in obj and obj['soil_type']) else None,
+                        soil_colour=soilcolour_cache[obj['soil_colour']] if (
+                            'soil_colour' in obj and obj['soil_colour']) else None,
                         drainage=drainage_cache[obj['drainage']] if ('drainage' in obj and obj['drainage']) else None,
                     )
                     created_count += 1
@@ -673,15 +686,18 @@ class ObservationGroupViewSet(ModelViewSet):
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
-                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
+                        source=source, source_id=source_id)
                 if 'survey_method' in obj and obj['survey_method'] and obj['survey_method'] not in survey_method_cache:
                     survey_method_cache[obj['survey_method']] = SurveyMethod.objects.get(code=obj['survey_method'])
                 try:
-                    AreaAssessment.objects.create(
+                    AreaAssessment.objects.get_or_create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
                         survey_method=survey_method_cache[obj['survey_method']] if 'survey_method' in obj else None,
-                        area_surveyed_m2=obj['area_surveyed_m2'] if ('area_surveyed_m2' in obj and obj['area_surveyed_m2']) else None,
-                        survey_duration_min=obj['survey_duration_min'] if ('survey_duration_min' in obj and obj['survey_duration_min']) else None,
+                        area_surveyed_m2=obj['area_surveyed_m2'] if (
+                            'area_surveyed_m2' in obj and obj['area_surveyed_m2']) else None,
+                        survey_duration_min=obj['survey_duration_min'] if (
+                            'survey_duration_min' in obj and obj['survey_duration_min']) else None,
                     )
                     created_count += 1
                 except:
@@ -693,9 +709,10 @@ class ObservationGroupViewSet(ModelViewSet):
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
-                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
+                        source=source, source_id=source_id)
                 try:
-                    FireHistory.objects.create(
+                    FireHistory.objects.get_or_create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
                         last_fire_date=obj['last_fire_date'] if 'last_fire_date' in obj else None,
                         fire_intensity=obj['fire_intensity'] if 'fire_intensity' in obj else FireHistory.HMLN_DEFAULT,
@@ -714,45 +731,73 @@ class ObservationGroupViewSet(ModelViewSet):
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
-                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
-                if 'count_method' in obj and obj['count_method'] and obj['count_method'] not in count_method_cache:
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
+                        source=source, source_id=source_id)
+                if ('count_method' in obj and obj['count_method'] and obj['count_method'] not in count_method_cache):
                     count_method_cache[obj['count_method']] = CountMethod.objects.get(code=obj['count_method'])
-                if 'count_accuracy' in obj and obj['count_accuracy'] and obj['count_accuracy'] not in count_accuracy_cache:
+                if ('count_accuracy' in obj and
+                    obj['count_accuracy'] and
+                    obj['count_accuracy'] not in count_accuracy_cache):
                     count_accuracy_cache[obj['count_accuracy']] = CountAccuracy.objects.get(code=obj['count_accuracy'])
-                if 'count_subject' in obj and obj['count_subject'] and obj['count_subject'] not in count_subject_cache:
+                if ('count_subject' in obj and
+                    obj['count_subject'] and
+                    obj['count_subject'] not in count_subject_cache):
                     count_subject_cache[obj['count_subject']] = CountSubject.objects.get(code=obj['count_subject'])
-                if 'plant_condition' in obj and obj['plant_condition'] and obj['plant_condition'] not in plant_condition_cache:
-                    plant_condition_cache[obj['plant_condition']] = PlantCondition.objects.get(code=obj['plant_condition'])
+                if ('plant_condition' in obj and
+                    obj['plant_condition'] and
+                    obj['plant_condition'] not in plant_condition_cache):
+                    plant_condition_cache[obj['plant_condition']
+                                          ] = PlantCondition.objects.get(code=obj['plant_condition'])
                 try:
-                    PlantCount.objects.create(
+                    PlantCount.objects.get_or_create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
                         land_manager_present=obj['land_manager_present'] if 'land_manager_present' in obj else False,
-                        count_method=count_method_cache[obj['count_method']] if ('count_method' in obj and obj['count_method']) else None,
-                        count_accuracy=count_accuracy_cache[obj['count_accuracy']] if ('count_accuracy' in obj and obj['count_accuracy']) else None,
-                        count_subject=count_subject_cache[obj['count_subject']] if ('count_subject' in obj and obj['count_subject']) else None,
-                        no_alive_mature=obj['no_alive_mature'] if ('no_alive_mature' in obj and obj['no_alive_mature']) else None,
-                        no_alive_juvenile=obj['no_alive_juvenile'] if ('no_alive_juvenile' in obj and obj['no_alive_juvenile']) else None,
-                        no_alive_seedlings=obj['no_alive_seedlings'] if ('no_alive_seedlings' in obj and obj['no_alive_seedlings']) else None,
-                        no_dead_mature=obj['no_dead_mature'] if ('no_dead_mature' in obj and obj['no_dead_mature']) else None,
-                        no_dead_juvenile=obj['no_dead_juvenile'] if ('no_dead_juvenile' in obj and obj['no_dead_juvenile']) else None,
-                        no_dead_seedlings=obj['no_dead_seedlings'] if ('no_dead_seedlings' in obj and obj['no_dead_seedlings']) else None,
-                        no_alive_simple=obj['no_alive_simple'] if ('no_alive_simple' in obj and obj['no_alive_simple']) else None,
-                        no_dead_simple=obj['no_dead_simple'] if ('no_dead_simple' in obj and obj['no_dead_simple']) else None,
-                        population_area_estimated_m2=obj['population_area_estimated_m2'] if ('population_area_estimated_m2' in obj and obj['population_area_estimated_m2']) else None,
+                        count_method=count_method_cache[obj['count_method']] if (
+                            'count_method' in obj and obj['count_method']) else None,
+                        count_accuracy=count_accuracy_cache[obj['count_accuracy']] if (
+                            'count_accuracy' in obj and obj['count_accuracy']) else None,
+                        count_subject=count_subject_cache[obj['count_subject']] if (
+                            'count_subject' in obj and obj['count_subject']) else None,
+                        no_alive_mature=obj['no_alive_mature'] if (
+                            'no_alive_mature' in obj and obj['no_alive_mature']) else None,
+                        no_alive_juvenile=obj['no_alive_juvenile'] if (
+                            'no_alive_juvenile' in obj and obj['no_alive_juvenile']) else None,
+                        no_alive_seedlings=obj['no_alive_seedlings'] if (
+                            'no_alive_seedlings' in obj and obj['no_alive_seedlings']) else None,
+                        no_dead_mature=obj['no_dead_mature'] if (
+                            'no_dead_mature' in obj and obj['no_dead_mature']) else None,
+                        no_dead_juvenile=obj['no_dead_juvenile'] if (
+                            'no_dead_juvenile' in obj and obj['no_dead_juvenile']) else None,
+                        no_dead_seedlings=obj['no_dead_seedlings'] if (
+                            'no_dead_seedlings' in obj and obj['no_dead_seedlings']) else None,
+                        no_alive_simple=obj['no_alive_simple'] if (
+                            'no_alive_simple' in obj and obj['no_alive_simple']) else None,
+                        no_dead_simple=obj['no_dead_simple'] if (
+                            'no_dead_simple' in obj and obj['no_dead_simple']) else None,
+                        population_area_estimated_m2=obj['population_area_estimated_m2'] if (
+                            'population_area_estimated_m2' in obj and obj['population_area_estimated_m2']) else None,
                         quadrats_present=obj['quadrats_present'] if 'quadrats_present' in obj else None,
-                        quadrats_details_attached=obj['quadrats_details_attached'] if 'quadrats_details_attached' in obj else None,
-                        no_quadrats_surveyed=obj['no_quadrats_surveyed'] if ('no_quadrats_surveyed' in obj and obj['no_quadrats_surveyed']) else None,
-                        quadrat_area_individual_m2=obj['quadrat_area_individual_m2'] if ('quadrat_area_individual_m2' in obj and obj['quadrat_area_individual_m2']) else None,
-                        quadrat_area_total_m2=obj['quadrat_area_total_m2'] if ('quadrat_area_total_m2' in obj and obj['quadrat_area_total_m2']) else None,
-                        flowering_plants_percent=obj['flowering_plants_percent'] if ('flowering_plants_percent' in obj and obj['flowering_plants_percent']) else None,
+                        quadrats_details_attached=obj['quadrats_details_attached'] if (
+                            'quadrats_details_attached' in obj) else None,
+                        no_quadrats_surveyed=obj['no_quadrats_surveyed'] if (
+                            'no_quadrats_surveyed' in obj and obj['no_quadrats_surveyed']) else None,
+                        quadrat_area_individual_m2=obj['quadrat_area_individual_m2'] if (
+                            'quadrat_area_individual_m2' in obj and obj['quadrat_area_individual_m2']) else None,
+                        quadrat_area_total_m2=obj['quadrat_area_total_m2'] if (
+                            'quadrat_area_total_m2' in obj and obj['quadrat_area_total_m2']) else None,
+                        flowering_plants_percent=obj['flowering_plants_percent'] if (
+                            'flowering_plants_percent' in obj and obj['flowering_plants_percent']) else None,
                         clonal_present=obj['clonal_present'] if 'clonal_present' in obj else None,
                         vegetative_present=obj['vegetative_present'] if 'vegetative_present' in obj else None,
                         flowerbuds_present=obj['flowerbuds_present'] if 'flowerbuds_present' in obj else None,
                         flowers_present=obj['flowers_present'] if 'flowers_present' in obj else None,
-                        immature_fruit_present=obj['immature_fruit_present'] if 'immature_fruit_present' in obj else None,
+                        immature_fruit_present=obj['immature_fruit_present'] if (
+                            'immature_fruit_present' in obj) else None,
                         ripe_fruit_present=obj['ripe_fruit_present'] if 'ripe_fruit_present' in obj else None,
-                        dehisced_fruit_present=obj['dehisced_fruit_present'] if 'dehisced_fruit_present' in obj else None,
-                        plant_condition=plant_condition_cache[obj['plant_condition']] if ('plant_condition' in obj and obj['plant_condition']) else None,
+                        dehisced_fruit_present=obj['dehisced_fruit_present'] if (
+                            'dehisced_fruit_present' in obj) else None,
+                        plant_condition=plant_condition_cache[obj['plant_condition']] if (
+                            'plant_condition' in obj and obj['plant_condition']) else None,
                         comments=obj['comments'] if 'comments' in obj else None,
                     )
                     created_count += 1
@@ -766,19 +811,28 @@ class ObservationGroupViewSet(ModelViewSet):
                 source_id = obj['source_id']
                 # Do some caching to reduce DB queries.
                 if '{}|{}'.format(source, source_id) not in encounter_cache:
-                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(source=source, source_id=source_id)
-                if 'soil_condition' in obj and obj['soil_condition'] and obj['soil_condition'] not in soil_condition_cache:
+                    encounter_cache['{}|{}'.format(source, source_id)] = AreaEncounter.objects.get(
+                        source=source, source_id=source_id)
+                if ('soil_condition' in obj and
+                    obj['soil_condition'] and
+                        obj['soil_condition'] not in soil_condition_cache):
                     soil_condition_cache[obj['soil_condition']] = SoilCondition.objects.get(code=obj['soil_condition'])
                 try:
-                    HabitatCondition.objects.create(
+                    HabitatCondition.objects.get_or_create(
                         encounter=encounter_cache['{}|{}'.format(source, source_id)],
-                        pristine_percent=obj['pristine_percent'] if ('pristine_percent' in obj and obj['pristine_percent']) else None,
-                        excellent_percent=obj['excellent_percent'] if ('excellent_percent' in obj and obj['excellent_percent']) else None,
-                        very_good_percent=obj['very_good_percent'] if ('very_good_percent' in obj and obj['very_good_percent']) else None,
+                        pristine_percent=obj['pristine_percent'] if (
+                            'pristine_percent' in obj and obj['pristine_percent']) else None,
+                        excellent_percent=obj['excellent_percent'] if (
+                            'excellent_percent' in obj and obj['excellent_percent']) else None,
+                        very_good_percent=obj['very_good_percent'] if (
+                            'very_good_percent' in obj and obj['very_good_percent']) else None,
                         good_percent=obj['good_percent'] if ('good_percent' in obj and obj['good_percent']) else None,
-                        degraded_percent=obj['degraded_percent'] if ('degraded_percent' in obj and obj['degraded_percent']) else None,
-                        completely_degraded_percent=obj['completely_degraded_percent'] if ('completely_degraded_percent' in obj and obj['completely_degraded_percent']) else None,
-                        soil_condition=soil_condition_cache[obj['soil_condition']] if ('soil_condition' in obj and obj['soil_condition']) else None,
+                        degraded_percent=obj['degraded_percent'] if (
+                            'degraded_percent' in obj and obj['degraded_percent']) else None,
+                        completely_degraded_percent=obj['completely_degraded_percent'] if (
+                            'completely_degraded_percent' in obj and obj['completely_degraded_percent']) else None,
+                        soil_condition=soil_condition_cache[obj['soil_condition']] if (
+                            'soil_condition' in obj and obj['soil_condition']) else None,
                     )
                     created_count += 1
                 except:
