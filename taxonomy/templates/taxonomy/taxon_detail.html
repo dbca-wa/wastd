@@ -1,5 +1,5 @@
 {% extends "pages/base.html" %}
-{% load staticfiles leaflet_tags geojson_tags mptt_tags taxonomy_tags observations crispy_forms_tags bootstrap4 %}
+{% load static leaflet_tags geojson_tags mptt_tags taxonomy_tags observations crispy_forms_tags bootstrap4 %}
 {% load render_table from django_tables2 %}
 
 {% block extrastyle %}
@@ -57,7 +57,7 @@
         <h1 class="display-4">
           {{ object.canonical_name }}
         </h1>
-        
+
         <!-- Author -->
         {% if object.author %}
           <p class="lead">
@@ -320,7 +320,7 @@
     {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
     <script src="{% static 'offline/jquery.min.js' %}"></script>
     {% else %}{# Serve third party libraries from CDN - production mode #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     {% endif %}
 <script type="text/javascript">

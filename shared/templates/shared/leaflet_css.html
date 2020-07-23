@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <!-- This file loads CSS assets for Leaflet and its plugins as per settings.LEAFLET_CONFIG from CDN -->
 {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
 <link rel="stylesheet" href="{% static 'offline/leaflet.css' %}">
@@ -11,35 +11,35 @@
 <link rel="stylesheet" href="{% static 'offline/MarkerCluster.Default.css' %}">
 {% else %}
 <!-- https://github.com/makinacorpus/django-leaflet/blob/master/leaflet/templates/leaflet/css.html -->
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css" 
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css"
   integrity="sha256-iYUgmrapfDGvBrePJPrMWQZDcObdAcStKBpjP3Az+3s=" crossorigin="anonymous" />
  -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css"
   integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous" />
-    
+
 <!-- https://cdnjs.com/libraries/leaflet.draw -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
 	integrity="sha256-XzD3RpaHPv7lzX9qt+2n1j5cWj48O24KsgaGYpKN8x8=" crossorigin="anonymous" />
 
 <!-- https://cdnjs.com/libraries/Leaflet.awesome-markers -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"
 	integrity="sha256-EFpFyBbuttUJtoocYzsBnERPWee2JYz4cn5nkUBjW0A=" crossorigin="anonymous" />
 
 <!-- https://unpkg.com/leaflet.label@0.2.4/ -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet.label@0.2.4/dist/leaflet.label.css" crossorigin="anonymous" />
 
 <!-- https://cdnjs.com/libraries/perliedman-leaflet-control-geocoder -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/1.8.2/Control.Geocoder.min.css" 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/1.8.2/Control.Geocoder.min.css"
   integrity="sha256-tlrFNLcgZ3Z5bEhYvNVi9H/kohDIMiW2gpaVHSifDAM=" crossorigin="anonymous" />
 
 <!-- https://cdnjs.com/libraries/leaflet.fullscreen -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.5.1/Control.FullScreen.css" 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.5.1/Control.FullScreen.css"
 	integrity="sha256-RTALnHN76PJ32RJx2mxggy+RUt9TIRV+mfPLSLbI75A=" crossorigin="anonymous" />
 
 <!-- https://cdnjs.com/libraries/leaflet.markercluster -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css" 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css"
 	integrity="sha256-+bdWuWOXMFkX0v9Cvr3OWClPiYefDQz9GGZP/7xZxdc=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css" 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css"
   integrity="sha256-LWhzWaQGZRsWFrrJxg+6Zn8TT84k0/trtiHBc6qcGpY=" crossorigin="anonymous" />
 {% endif %}
 
