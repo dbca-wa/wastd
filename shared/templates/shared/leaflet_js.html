@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <!-- This file loads JS assets for Leaflet and its plugins as per settings.LEAFLET_CONFIG from CDN -->
 {% if settings.OFFLINE %}
 <!-- <script src="{% static 'offline/jquery.min.js' %}" type="text/javascript"></script> -->
@@ -14,57 +14,57 @@
 <script src="{% static 'offline/TileLayer.GeoJSON.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'offline/leaflet-providers.min.js' %}" type="text/javascript"></script>
 {% else %}
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
 <!-- https://github.com/makinacorpus/django-leaflet/blob/master/leaflet/templates/leaflet/js.html -->
 <!-- Leaflet 1.3.1 as used by django-leaflet -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js" 
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js"
   integrity="sha256-CNm+7c26DTTCGRQkM9vp7aP85kHFMqs9MhPEuytF+fQ=" crossorigin="anonymous"></script> -->
 
 <!-- Leaflet 1.5.1 latest stable -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js"
   integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
 
 <!-- Leaflet plugins -->
 <!-- https://cdnjs.com/libraries/proj4js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"
   integrity="sha256-KJI74PS1qv3+hue+yyIWK/l8TxvS9u4WX7QDrtHkHOo=" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/proj4leaflet -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"
   integrity="sha256-IIb6zlGmoYdKMco2DkshWuX5Oz/d4VSFbOG7x0Zamjo=" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet.draw -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"
   integrity="sha256-siofc4Uwjlra3YWkwthOn8Uj69cNN4aMug/iOHNiRgs=" crossorigin="anonymous"></script>
 
 <!-- Leaflet.awesome-markers -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js"
   integrity="sha256-IqiRR5X1QtAdcq5lG4vBB1/WxwrRCkkjno4pfvWyag0=" crossorigin="anonymous"></script>
 
 <!-- leaflet.label -->
 <script src="https://unpkg.com/leaflet.label@0.2.4/dist/leaflet.label.js" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/perliedman-leaflet-control-geocoder -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/1.8.2/Control.Geocoder.min.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/1.8.2/Control.Geocoder.min.js"
   integrity="sha256-Stk1bo/8vj3p8NX3wtwWGeAQxSvL4DWGIE2tLLRzAFA=" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet.fullscreen -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.5.1/Control.FullScreen.min.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.5.1/Control.FullScreen.min.js"
   integrity="sha256-1EgFzhCy7+u8Ju2guUij0GIo5WNWtR0WjeS4W6VmpH0=" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet.markercluster -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"
   integrity="sha256-WL6HHfYfbFEkZOFdsJQeY7lJG/E5airjvqbznghUzRw=" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet-tilelayer-geojson -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.min.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.min.js"
   integrity="sha256-wAPWjo+rSGf0uCc0Bx0INODQ6En5mOPxSDGwKBLkfhg=" crossorigin="anonymous"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet-providers -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.8.0/leaflet-providers.min.js" 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.8.0/leaflet-providers.min.js"
   integrity="sha256-5oc3Ox+lXzhE5v6ZRXbBHnTfeHaiyqUi+dyfl9zpo+Q=" crossorigin="anonymous"></script>
 {% endif %}
 

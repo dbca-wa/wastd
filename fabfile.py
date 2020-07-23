@@ -104,7 +104,7 @@ def ptest():
     """Run parallel test suite without coverage."""
     print(yellow("Running parallel tests..."))
     local('python manage.py test --settings=config.settings.test '
-            '--parallel 4 --keepdb -v 2 ', 
+            '--parallel 4 --keepdb -v 2 ',
           shell='/bin/bash')
     print(green("Completed running tests."))
 

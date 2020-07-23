@@ -1,194 +1,204 @@
-# Django
-# ------------------------------------------------
-django==2.2.13
-django-extensions==2.2.8
-
-# breaking django-1.10:
-# https://github.com/django-polymorphic/django-polymorphic/issues/225 - fixed
-# https://github.com/makinacorpus/django-geojson/issues/82 - resolved in 2.9.1
-# https://djaodjin.com/blog/subfieldbase-deprecated-durationfield.blog.html - fixed
-# https://github.com/gadventures/django-fsm-admin/issues/63 - fixed (overwrote mixins.py with get_field() )
-# https://github.com/saxix/django-adminactions/pull/104 - fixed by using own PR
-# https://github.com/sehmaschine/django-grappelli/issues/783 - fixed by 2.9.1
-
-# Admin
-# ------------------------------------------------
-django-adminactions==1.8.1
-
-# https://github.com/sehmaschine/django-grappelli/issues/884
-#-e git+https://github.com/sehmaschine/django-grappelli@master#egg=django-grappelli
-django-grappelli==2.14.1
-
-# API
-# ------------------------------------------------
-djangorestframework==3.11.0
-djangorestframework-gis==0.15
-djangorestframework-csv==2.1.0
-djangorestframework-yaml==1.0.3
-djangorestframework-jsonp==1.0.2
-djangorestframework-filters==1.0.0.dev0
-django-rest-polymorphic==0.1.8
-drf-proxy-pagination==0.2.0
-django-url-filter==0.3.15
-#dynamic-rest
-rest-framework-latex==0.1.0
-markdown
-django-filter==2.2.0
-django-rest-swagger
-coreapi==2.3.3
-coreapi-cli
-pypandoc
-graphene-django
-django-graphql-extensions
-django-graphql-geojson
-xmltodict==0.12.0
-
-# Auth
-# ------------------------------------------------
-django-allauth==0.41.0
-dbca-utils==1.1.1
-
-
-# Background tasks
-# ------------------------------------------------
-django-background-tasks==1.2.5
-
-
-# DevOps
-# ------------------------------------------------
-Fabric3==1.14.post1
-gunicorn==20.0.4
-uwsgi==2.0.18
-
-# Cache
-# ------------------------------------------------
-python-memcached
-
-# Configuration
-# ------------------------------------------------
-django-confy==1.0.4
-django-environ==0.4.5
-unipath==1.1
-
-
-# Data processing
-# ------------------------------------------------
-pandas==1.0.1
-
-# Docs
-# ------------------------------------------------
-Sphinx>=1.6.1
-pydot==1.4.1
-sphinx_rtd_theme==0.4.3
-
-
-# Email backends for Mailgun, Postmark, SendGrid
-# ------------------------------------------------
-django-anymail==5.0
-
-# Forms
-# ------------------------------------------------
-django-braces==1.14.0
-django-crispy-forms==1.8.1
-django-floppyforms==1.8.0
-django-easy-select2==1.5.6
-django_select2==7.0.5
-django-bootstrap4==1.1.1
-django-ajax-selects==1.9.1
-django-map-widgets==0.2.2
-
-# Logging
-# ------------------------------------------------
-sentry-sdk==0.14.0
-raven==6.10.0
-
-# Models
-# ------------------------------------------------
-django-polymorphic==2.1.2
-django-model-utils==4.0.0
-django-reversion==3.0.5
-django-fsm==2.7.0
-django-fsm-log==1.6.2
-django-fsm-admin==1.2.4
-django-extra-fields==2.0.2
-django-synctool
-phonenumbers==8.11.4
-django-phonenumber-field==4.0.0
-django-mptt==0.10.0
-
-
-# Views
-# ------------------------------------------------
-django-tables2==2.2.1
-django-export-download==0.2.3
-
-# Images
-# ------------------------------------------------
-Pillow==7.0.0
-
-
-# Python-PostgreSQL Database Adapter
-# ------------------------------------------------
-psycopg2-binary==2.8.4
-
-# Unicode slugification
-# ------------------------------------------------
-unicode-slugify==0.1.3
-django-autoslug==1.9.6
-
-
-# Time zones support
-# ------------------------------------------------
-pytz
-
-# Templates
-# ------------------------------------------------
-django-settings-export==1.2.1
-
-# Redis support
-# ------------------------------------------------
-django-redis==4.11.0
-# redis==3.3.11 # through django-redis
-
-
-# Map
-# ------------------------------------------------
-django-geojson==2.12.0
-django-leaflet==0.26.0
-# git+git://github.com/makinacorpus/django-leaflet@master
-django-wms==0.1.12
-django-raster==0.7
-
-
-# Static and Media Storage
-# ------------------------------------------------
-whitenoise==5.0.1
-django_compressor==2.4
+alabaster==0.7.12
+amqp==2.6.0
+aniso8601==7.0.0
+asgiref==3.2.10
+attrs==19.3.0
+autopep8==1.5.3
+Babel==2.8.0
+backcall==0.2.0
+bcrypt==3.1.7
+beautifulsoup4==4.9.1
+billiard==3.6.3.0
 boto==2.49.0
-django-storages-redux==1.3.3
+boto3==1.14.26
+botocore==1.17.26
+cached-property==1.5.1
+celery==4.4.6
+certifi==2020.6.20
+cffi==1.14.0
+chardet==3.0.4
+click==7.1.2
+coreapi==2.3.3
+coreapi-cli==1.0.9
+coreschema==0.0.4
+coverage==5.2
+coveralls==2.1.1
+cryptography==3.0
+dbca-utils==1.1.1
+decorator==4.4.2
+defusedxml==0.6.0
+diff-match-patch==20200713
 dj-static==0.0.6
-
-
-# Profiling and Debug
-# ------------------------------------------------
-django-silk
-django-debug-toolbar
-ipdb
-
-# Testing
-# ------------------------------------------------
-# see https://github.com/davedash/django-fixture-magic/issues/59 - use master
-# django-fixture-magic==0.1.3
--e git+https://github.com/davedash/django-fixture-magic.git@master#egg=django_fixture_magic
-coveralls
-coverage
-django-coverage-plugin
-django-test-plus
-factory_boy
-pytest
-pytest-django
-pytest-sugar
-model_mommy
-# mommy_spatial_generators
--e git+https://github.com/sigma-geosistemas/mommy_spatial_generators.git#egg=mommy_spatial_generators
-tblib
+Django==3.0.8
+django-adminactions==1.8.1
+django-ajax-selects==1.9.1
+django-allauth==0.42.0
+django-anymail==7.1.0
+django-appconf==1.0.4
+django-autoslug==1.9.6
+django-background-tasks==1.2.5
+django-bootstrap4==2.2.0
+django-braces==1.14.0
+django-colorful==1.3
+django-compat==1.0.15
+django-compressor==2.4
+django-confy==1.0.4
+django-coverage-plugin==1.8.0
+django-crispy-forms==1.9.2
+django-debug-toolbar==2.2
+django-easy-select2==1.5.7
+django-environ==0.4.5
+django-export-download==0.2.3
+django-extensions==3.0.3
+django-extra-fields==2.0.5
+django-filter==2.3.0
+-e git+https://github.com/davedash/django-fixture-magic.git@001194742b3165dc61541bc4532febaba9c1552d#egg=django_fixture_magic
+django-floppyforms==1.9.0
+django-fsm==2.7.0
+django-fsm-admin==1.2.4
+django-fsm-log==2.0.1
+django-geojson==3.0.0
+django-graphql-extensions==0.0.7
+django-graphql-geojson==0.1.4
+django-grappelli==2.14.2
+django-import-export==2.3.0
+django-js-asset==1.2.2
+django-leaflet==0.27.0
+django-map-widgets==0.3.0
+django-model-utils==4.0.0
+django-mptt==0.11.0
+django-phonenumber-field==4.0.0
+django-polymorphic==2.1.2
+django-raster==0.8
+django-redis==4.12.1
+django-rest-polymorphic==0.1.9
+django-rest-swagger==2.2.0
+django-reversion==3.0.7
+django-select2==7.4.2
+django-settings-export==1.2.1
+django-silk==4.0.1
+django-storages-redux==1.3.3
+django-synctool==1.1.0
+django-tables2==2.3.1
+django-test-plus==1.4.0
+django-url-filter==0.3.15
+django-wms==0.1.12
+djangorestframework==3.11.0
+djangorestframework-csv==2.1.0
+djangorestframework-filters==1.0.0.dev0
+djangorestframework-gis==0.15
+djangorestframework-jsonp==1.0.2
+djangorestframework-yaml==2.0.0
+docopt==0.6.2
+docutils==0.15.2
+drf-proxy-pagination==0.2.0
+enum-compat==0.0.3
+et-xmlfile==1.0.1
+Fabric3==1.14.post1
+factory-boy==2.12.0
+Faker==4.1.1
+future==0.18.2
+gprof2dot==2019.11.30
+graphene==2.1.8
+graphene-django==2.12.1
+graphql-core==2.3.2
+graphql-relay==2.0.1
+graphviz==0.14.1
+gunicorn==20.0.4
+idna==2.10
+imagesize==1.2.0
+importlib-metadata==1.7.0
+ipdb==0.13.3
+ipython==7.16.1
+ipython-genutils==0.2.0
+itypes==1.2.0
+jdcal==1.4.1
+jedi==0.17.2
+Jinja2==2.11.2
+jmespath==0.10.0
+kombu==4.6.11
+Markdown==3.2.2
+MarkupPy==1.14
+MarkupSafe==1.1.1
+mock==4.0.2
+model-mommy==2.0.0
+-e git+https://github.com/sigma-geosistemas/mommy_spatial_generators.git@2ecace9f8ac142f7f8a2229ac922541f4eba7d80#egg=mommy_spatial_generators
+more-itertools==8.4.0
+numpy==1.19.1
+oauthlib==3.1.0
+odfpy==1.4.1
+openapi-codec==1.3.2
+openpyxl==3.0.4
+packaging==20.4
+pandas==1.0.5
+paramiko==2.7.1
+parso==0.7.0
+pexpect==4.8.0
+phonenumbers==8.12.6
+pickleshare==0.7.5
+Pillow==7.0.0
+pluggy==0.13.1
+promise==2.3
+prompt-toolkit==3.0.5
+psycopg2-binary==2.8.5
+ptyprocess==0.6.0
+py==1.9.0
+pycodestyle==2.6.0
+pycparser==2.20
+pydot==1.4.1
+Pygments==2.6.1
+PyNaCl==1.4.0
+pypandoc==1.5
+pyparsing==2.4.7
+pytest==5.4.3
+pytest-django==3.9.0
+pytest-sugar==0.9.4
+python-dateutil==2.8.1
+python-memcached==1.59
+python3-openid==3.2.0
+pytz==2020.1
+PyYAML==5.3.1
+raven==6.10.0
+rcssmin==1.0.6
+redis==3.5.3
+requests==2.24.0
+requests-oauthlib==1.3.0
+rest-framework-latex==0.1.0
+rjsmin==1.1.0
+Rx==1.6.1
+s3transfer==0.3.3
+sentry-sdk==0.16.2
+simplejson==3.17.2
+singledispatch==3.4.0.3
+six==1.15.0
+snowballstemmer==2.0.0
+soupsieve==2.0.1
+Sphinx==3.1.2
+sphinx-rtd-theme==0.4.3
+sphinxcontrib-applehelp==1.0.2
+sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-htmlhelp==1.0.3
+sphinxcontrib-jsmath==1.0.1
+sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-serializinghtml==1.1.4
+sqlparse==0.3.1
+static3==0.7.0
+tablib==2.0.0
+termcolor==1.1.0
+text-unidecode==1.3
+toml==0.10.1
+traitlets==4.3.3
+unicode-slugify==0.1.3
+unicodecsv==0.14.1
+Unidecode==1.1.1
+Unipath==1.1
+uritemplate==3.0.1
+urllib3==1.25.10
+uWSGI==2.0.19.1
+vine==1.3.0
+wcwidth==0.2.5
+whitenoise==5.1.0
+xlrd==1.2.0
+xlwt==1.3.0
+xmltodict==0.12.0
+zipp==3.1.0

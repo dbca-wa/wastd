@@ -1,6 +1,6 @@
 <!-- Generic list template: Breadcrumbs, pagination, resource download, cards, filters. -->
 {% extends "pages/base.html" %}
-{% load staticfiles leaflet_tags geojson_tags crispy_forms_tags bootstrap4 export_download %}
+{% load static leaflet_tags geojson_tags crispy_forms_tags bootstrap4 export_download %}
 
 {% block content %}
 <span class="float-right">{% resource_download_menu %}</span>
@@ -49,7 +49,7 @@
     {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
     <script src="{% static 'offline/jquery.min.js' %}"></script>
     {% else %}{# Serve third party libraries from CDN - production mode #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     {% endif %}
 {% endblock %}
