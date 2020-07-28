@@ -581,6 +581,15 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         CustomStateLogInline
     ]
 
+    def get_queryset(self, request):
+        return super(
+            EncounterAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'observer', 'reporter', 'area', 'site',
+        )
+
     def source_display(self, obj):
         """Make data source readable."""
         return obj.get_source_display()
@@ -648,6 +657,15 @@ class AnimalEncounterAdmin(EncounterAdmin):
         CustomStateLogInline
     ]
 
+    def get_queryset(self, request):
+        return super(
+            AnimalEncounterAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'observer', 'reporter', 'area', 'site',
+        )
+
     def health_display(self, obj):
         """Make health status human readable."""
         return obj.get_health_display()
@@ -713,6 +731,15 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         CustomStateLogInline
     ]
 
+    def get_queryset(self, request):
+        return super(
+            TurtleNestEncounterAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'observer', 'reporter', 'area', 'site',
+        )
+
     def habitat_display(self, obj):
         """Make habitat human readable."""
         return obj.get_habitat_display()
@@ -751,6 +778,15 @@ class LineTransectEncounterAdmin(EncounterAdmin):
         CustomStateLogInline
     ]
 
+    def get_queryset(self, request):
+        return super(
+            LineTransectEncounterAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'observer', 'reporter', 'area', 'site',
+        )
+
 
 @admin.register(LoggerEncounter)
 class LoggerEncounterAdmin(EncounterAdmin):
@@ -781,6 +817,15 @@ class LoggerEncounterAdmin(EncounterAdmin):
         TemperatureLoggerDeploymentInline,
         CustomStateLogInline
     ]
+
+    def get_queryset(self, request):
+        return super(
+            LoggerEncounterAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'observer', 'reporter', 'area', 'site',
+        )
 
     def logger_type_display(self, obj):
         """Make habitat human readable."""
