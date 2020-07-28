@@ -21,262 +21,63 @@
               aria-haspopup="true"
               aria-expanded="false">
             <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-            Species
+            Animals
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-species">
 
               <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true"
-                 title="Browse, filter and search all species (default: current names of terminal taxa)">
+                 href="{% url 'observations:animalencounter-list' %}"
+                 title="Browse, filter and search all Animal Encounters">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Browse all species</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true&conservation_level=threatened"
-                 title="Browse, filter and search species currently listed as threatened or priority in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse all conservation significant species</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true&conservation_level=threatened"
-                 title="Browse, filter and search species currently listed as threatened in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse all threatened species</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true&conservation_level=priority"
-                 title="Browse, filter and search species currently listed as priority in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse all priority species</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&current=true"
-                 title="Browse, filter and search threatened species">
-                <span class="oi oi-list" aria-hidden="true"></span>
-                <span class="align-left">List all species</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'occurrence:taxonareaencounter-list' %}"
-                 title="Browse, filter and search threatened species occurrences">
-                <span class="oi oi-target" aria-hidden="true"></span>
-                <span class="align-left">Browse species occurrences</span>
+                <span class="align-left">Browse all Animal Encounters</span>
               </a>
 
-              <div class="dropdown-divider"></div>
-
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true"
-                 title="Browse, filter and search animals">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Browse animals</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority"
-                 title="Browse, filter and search animals currently listed as threatened or priority in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse conservation significant animals</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened"
-                 title="Browse, filter and search animals currently listed as threatened in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse threatened animals</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=priority"
-                 title="Browse, filter and search animals currently listed as priority in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse priority animals</span>
-              </a>
-              {% if request.user.is_staff %}
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&current=false"
-                 title="Browse non-current animal names requiring manual changes to conservation listing to their current counterparts">
-                <span class="oi oi-grid-three-up text-warning" aria-hidden="true"></span>
-                <span class="align-left">Browse non-current thr/prio animals</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
-                 title="Browse non-terminal animal names requiring manual changes to conservation listing to their terminal descendants">
-                <span class="oi oi-grid-three-up text-warning" aria-hidden="true"></span>
-                <span class="align-left">Browse non-terminal thr/prio animals</span>
-              </a>
-              {% endif %}
-              <a class="dropdown-item"
-                 href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.ANIMALS_PK }}"
-                 title="Browse, filter and search threatened animal occurrences">
-                <span class="oi oi-target" aria-hidden="true"></span>
-                <span class="align-left">Browse animal occurrences</span>
-              </a>
-
-              <div class="dropdown-divider"></div>
-
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true"
-                 title="Browse, filter and search plants (sensu latu)">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Browse plants</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority"
-                 title="Browse, filter and search plants (sensu latu) currently listed as threatened or priority in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse conservation significant plants</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened"
-                 title="Browse, filter and search plants (sensu latu) currently listed as threatened in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse threatened plants</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=priority"
-                 title="Browse, filter and search plants (sensu latu) currently listed as priority in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse priority plants</span>
-              </a>
-              {% if request.user.is_staff %}
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&current=false"
-                 title="Browse non-current plant names requiring manual changes to conservation listing to their current counterparts">
-                <span class="oi oi-grid-three-up text-warning" aria-hidden="true"></span>
-                <span class="align-left">Browse non-current thr/prio plants</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
-                 title="Browse non-terminal plant names requiring manual changes to conservation listing to their terminal descendants">
-                <span class="oi oi-grid-three-up text-warning" aria-hidden="true"></span>
-                <span class="align-left">Browse non-terminal thr/prio plants</span>
-              </a>
-              {% endif %}
-              <a class="dropdown-item"
-                 href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.PLANTS_PK }}"
-                 title="Browse, filter and search threatened plant (sensu latu) occurrences">
-                <span class="oi oi-target" aria-hidden="true"></span>
-                <span class="align-left">Browse plant occurrences</span>
-              </a>
             </div>
           </li>
 
           <li class="nav-item dropdown">
             <a  class="nav-link dropdown-toggle" href="/"
-              id="nav-li-conservation"
-              title="Communities"
+              id="nav-li-tracks"
+              title="Turtle Nesting Census"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false">
             <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-            Communities
+            Tracks
             </a>
-            <div class="dropdown-menu" aria-labelledby="nav-li-communities">
+            <div class="dropdown-menu" aria-labelledby="nav-li-tracks">
 
               <a class="dropdown-item"
-                 href="{% url 'taxonomy:community-list' %}"
-                 title="Browse, filter and search all communities">
+                 href=""
+                 title="Browse, filter and search all Turtle Nest Encounters">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                Browse all communities
+                Browse all Turtle Nest Encounters
               </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:community-list' %}?conservation_level=threatened&conservation_level=priority"
-                 title="Browse, filter and search communities currently listed as threatened or priority in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse conservation significant communities</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:community-list' %}?conservation_level=threatened"
-                 title="Browse, filter and search communities currently listed as threatened in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse threatened communities</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:community-list' %}?conservation_level=priority"
-                 title="Browse, filter and search communities currently listed as priority in Western Australia">
-                <span class="oi oi-grid-three-up text-danger" aria-hidden="true"></span>
-                <span class="align-left">Browse priority communities</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'taxonomy:community-list' %}"
-                 title="List, filter and search threatened species">
-                <span class="oi oi-list" aria-hidden="true"></span>
-                <span class="align-left">List all communities</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'occurrence:communityareaencounter-list' %}"
-                 title="Browse, filter and search threatened community occurrences">
-                <span class="oi oi-target" aria-hidden="true"></span>
-                <span class="align-left">Browse community occurrences</span>
-              </a>
+
             </div>
           </li>
 
           <li class="nav-item dropdown">
             <a  class="nav-link dropdown-toggle" href="/"
-              id="nav-li-conservation"
-              title="Conservation"
+              id="nav-li-mwi"
+              title="Marine Wildlife Incidents"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false">
             <span class="oi oi-pulse" aria-hidden="true"></span>
-            Conservation
+            Strandings
             </a>
-            <div class="dropdown-menu" aria-labelledby="nav-li-conservation">
+            <div class="dropdown-menu" aria-labelledby="nav-li-mwi">
 
               <a class="dropdown-item"
-                 href="{% url 'conservation:taxonconservationlisting-create' %}"
-                 title="Propose a new taxon conservation listing">
-                <span class="oi oi-plus" aria-hidden="true"></span>
-                <span class="oi oi-shield" aria-hidden="true"></span>
-                Propose taxon conservation listing
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'conservation:communityconservationlisting-create' %}"
-                 title="Propose a new communtiy conservation listing">
-                <span class="oi oi-plus" aria-hidden="true"></span>
-                <span class="oi oi-shield" aria-hidden="true"></span>
-                Propose community conservation listing
+                 href="{% url 'map' %}"
+                 title="View Marine Wildlife Incidents Map">
+                <span class="oi oi-globe" aria-hidden="true"></span>
+                View Marine Wildlife Incidents map
               </a>
 
-              <div class="dropdown-divider"></div>
-
-              <a class="dropdown-item"
-                 href="{% url 'conservation:conservationthreat-list' %}"
-                 title="Browse, filter and search conservation threats">
-                <span class="oi oi-flash" aria-hidden="true"></span>
-                Threats
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'conservation:conservationaction-list' %}"
-                 title="Browse, filter and search conservation actions">
-                <span class="oi oi-task" aria-hidden="true"></span>
-                Actions
-              </a>
-
-              <div class="dropdown-divider"></div>
-
-              <a class="dropdown-item"
-                 href="{% url 'conservation:document-list' %}"
-                 title="Browse, filter and search conservation documents">
-                <span class="oi oi-document" aria-hidden="true"></span>
-                Documents
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'conservation:document-list' %}?status=80&review_due=next-six-months"
-                 title="Browse, filter and search conservation documents">
-                <span class="oi oi-document text-warning" aria-hidden="true"></span>
-                Documents coming up for review
-              </a>
             </div>
           </li>
-
-          <!--
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'map' %}"
-              title="Map {{ settings.SITE_NAME }}">
-            <span class="oi oi-globe" aria-hidden="true"></span>
-            Map
-            </a>
-          </li>
-          -->
 
           <li class="nav-item dropdown">
             <a  class="nav-link dropdown-toggle" href="/"
@@ -387,12 +188,7 @@
                <span class="oi oi-loop-circular" aria-hidden="true"></span>
                Rebuild Animal Names
               </a>
-              <a class="dropdown-item"
-                href="{% url 'taxonomy:task-update-taxon' %}"
-                title="Update taxon names">
-               <span class="oi oi-loop-circular" aria-hidden="true"></span>
-               Update Taxon Names
-              </a>
+
              <!--  <a class="dropdown-item"
                 href="/api/1/animal-encounters/?format=latex"
                 target="_blank"

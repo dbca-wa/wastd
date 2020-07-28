@@ -27,78 +27,7 @@ class AdminDashboard(Dashboard):
     def init_with_context(self, context):
         site_name = get_admin_site_name(context)
 
-        # Col1: TSC
-        self.children.append(modules.Group(
-            _('Threatened Species and Communities'),
-            column=1,
-            collapsible=True,
-            children=[
-                modules.AppList(
-                    _('Taxonomy'),
-                    column=1,
-                    collapsible=True,
-                    models=('taxonomy.models.Taxon',
-                            'taxonomy.models.HbvSupra',
-                            'taxonomy.models.Community',),
-                ),
-                modules.AppList(
-                    _('Conservation Listings'),
-                    column=1,
-                    css_classes=('collapse',),
-                    models=(
-                        'conservation.models.ConservationList',
-                        'conservation.models.ConservationCategory',
-                        'conservation.models.ConservationCriterion',
-                        'conservation.models.CommunityConservationListing',
-                        'conservation.models.TaxonConservationListing',
-                    ),
-                ),
-
-                modules.AppList(
-                    _('Conservation Threats and Actions'),
-                    column=1,
-                    css_classes=('collapse',),
-                    models=(
-                        'conservation.models.ConservationThreatCategory',
-                        'conservation.models.ConservationActionCategory',
-                        'conservation.models.ConservationThreat',
-                        'conservation.models.ConservationAction',
-                        'conservation.models.ConservationActivity',
-                    ),
-                ),
-                modules.AppList(
-                    _('Conservation Plans and Documents'),
-                    column=1,
-                    css_classes=('collapse',),
-                    models=(
-                        'conservation.models.Document',
-                    ),
-                ),
-
-                modules.AppList(
-                    _('Occurrences'),
-                    column=1,
-                    css_classes=('collapse',),
-                    models=(
-                        'occurrence.models.TaxonAreaEncounter',
-                        'occurrence.models.CommunityAreaEncounter',
-                    ),
-                ),
-                modules.AppList(
-                    _('Occurrence Lookups'),
-                    column=1,
-                    css_classes=('collapse grp-closed',),
-                    models=('occurrence.models.*',),
-                    exclude=(
-                        'occurrence.models.TaxonAreaEncounter',
-                        'occurrence.models.CommunityAreaEncounter',
-                    ),
-                )
-
-            ]
-        ))
-
-        # Col2: WAStD
+        # Col: WAStD
         self.children.append(modules.Group(
             _('WA Sea Turtle Database'),
             column=2,
@@ -110,7 +39,8 @@ class AdminDashboard(Dashboard):
                     collapsible=True,
                     models=(
                         'wastd.observations.models.Area',
-                        'wastd.observations.models.Survey', ),
+                        'wastd.observations.models.Survey',
+                    ),
                 ),
                 modules.AppList(
                     _('Encounters'),
@@ -131,36 +61,34 @@ class AdminDashboard(Dashboard):
                     models=(
                         # Adult animals:
                         'wastd.observations.models.TagObservation',
-                        # TurtleMorphometricObservation
-                        # TurtleDamageObservation
-                        #
+                        'wastd.observations.models.TurtleMorphometricObservation',
+                        'wastd.observations.models.TurtleDamageObservation',
+                        'wastd.observations.models.DugongMorphometricObservation',
+
                         # Turtle Nests:
                         'wastd.observations.models.TurtleNestObservation',
                         'wastd.observations.models.TurtleNestDisturbanceObservation',
+                        'wastd.observations.models.TurtleHatchlingEmergenceObservation',
+                        'wastd.observations.models.TurtleHatchlingEmergenceOutlierObservation',
+                        'wastd.observations.models.LightSourceObservation',
+                        'wastd.observations.models.HatchlingMorphometricObservation',
                         'wastd.observations.models.NestTagObservation',
-                        # TurtleHatchlingEmergenceObservation
-                        # TurtleHatchlingEmergenceOutlierObservation
-                        # LightSourceObservation
-                        # HatchlingMorphometricObservation
-                        # DugongMorphometricObservation
 
                         # LineTransects:
-                        # TrackTallyObservation
-                        # TurtleNestDisturbanceTallyObservation
+                        'wastd.observations.models.TrackTallyObservation',
+                        'wastd.observations.models.TurtleNestDisturbanceTallyObservation',
 
                         # Loggers
-                        'wastd.observations.models.LoggerEncounter',
-                        # TemperatureLoggerSettings
-                        # DispatchRecord
-                        # TemperatureLoggerDeployment
-
+                        'wastd.observations.models.TemperatureLoggerSettings',
+                        'wastd.observations.models.DispatchRecord',
+                        'wastd.observations.models.TemperatureLoggerDeployment',
                     ),
                 ),
 
             ]
         ))
 
-        # Col3: Admin
+        # Col: Admin
         self.children.append(modules.Group(
             _('Administration'),
             column=3,
@@ -172,13 +100,6 @@ class AdminDashboard(Dashboard):
                     css_classes=('collapse grp-closed',),
                     collapsible=True,
                     models=('wastd.users.*', 'django.contrib.*', ),
-                ),
-                modules.AppList(
-                    _('WACensus Staging Area'),
-                    column=1,
-                    css_classes=('collapse grp-closed',),
-                    collapsible=True,
-                    models=('taxonomy.models.Hbv*',),
                 ),
             ]
         ))

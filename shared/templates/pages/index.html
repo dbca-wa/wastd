@@ -20,6 +20,15 @@
 
 <div class="container centering">
 
+    <!-- Turtles redirect notice -->
+  <div class="alert alert-primary alert-dismissible fade show" role="alert">
+    <strong>We're updating this page!</strong>
+    Turtle data QA can resume as per normal through the data curation portal.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
   <div class="row">
 
     <div class="col-lg-4 col-md-6 col-12">
@@ -27,124 +36,25 @@
         src="{% static 'images/green_hatchling_140.png' %}"
         alt="Green turtle hatchling at Thevenard Island. Photo: Florian Mayer, DBCA."
         width="140" height="140">
-      <h2>Species</h2>
+      <h2>Turtle Tagging</h2>
       <p>
-        Browse and search WA species, view conservation status and suggest conservation status changes.
+        Browse and filter Animal Encounters involving tagged turtles.
       </p>
       <p>
-        <a class="btn btn-primary"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true"
-           title="Browse, filter and search animals">
-          Animals »
-        </a>
-        <a class="btn btn-primary"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true"
-           title="Browse, filter and search plants (sensu latu)">
-          Plants »
-        </a>
-        <a class="btn btn-primary" href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true"
-            title="Browse, filter and search Species">
-          All »
-        </a>
-      </p>
-      <p>
-        <a class="btn btn-danger"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority"
-           title="Browse, filter and search conservation significant animals">
-          Animals »
-        </a>
-        <a class="btn btn-danger"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority"
-           title="Browse, filter and search conservation significant plants (sensu latu)">
-          Plants »
-        </a>
-        <a class="btn btn-danger" href="{% url 'taxonomy:taxon-list' %}?is_terminal_taxon=true&conservation_level=threatened&conservation_level=priority"
-            title="Browse, filter and search conservation significant species">
-          All »
-        </a>
-      </p>
-      <h4>Occurrences</h4>
-      <p>
-        <a class="btn btn-primary"
-           href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.ANIMALS_PK }}"
-           title="Browse, filter and search all animal occurrences">
-          Animals »
-        </a>
-        <a class="btn btn-primary"
-           href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.PLANTS_PK }}"
-           title="Browse, filter and search all plant (sensu latu) occurrences">
-          Plants »
-        </a>
-        <a class="btn btn-primary"
-          href="{% url 'occurrence:taxonareaencounter-list' %}"
-          title="Browse all species occurrences">
-          All »
-        </a>
-      </p>
-      <p>
-        <a class="btn btn-danger"
-           href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.ANIMALS_PK }}&conservation_level=threatened&conservation_level=priority"
-           title="Browse, filter and search conservation significant animal occurrences">
-          Animals »
-        </a>
-        <a class="btn btn-danger"
-           href="{% url 'occurrence:taxonareaencounter-list' %}?taxon__paraphyletic_groups={{ settings.PLANTS_PK }}&conservation_level=threatened&conservation_level=priority"
-           title="Browse, filter and search conservation significant plant (sensu latu) occurrences">
-          Plants »
-        </a>
-        <a class="btn btn-danger"
-          href="{% url 'occurrence:taxonareaencounter-list' %}?conservation_level=threatened&conservation_level=priority"
-          title="Browse conservation significant species occurrences">
-          All »
-        </a>
-      </p>
-      <p>
-        <a class="btn btn-primary"
-        href="{% url 'occurrence:taxonareaencounter-create' %}"
-        title="Submit species occurrences">
-        Report occurrence »</a>
-      </p>
-      <h4>Conservation listing</h4>
-      <p>
-        <a class="btn btn-primary btn-block mb-2 text-left"
-          href="{% url 'conservation:taxonconservationlisting-create' %}"
-          title="Nominate a species for a conservation status">
-          <span class="oi oi-plus" aria-hidden="true"></span>
-          <span class="align-left">Propose conservation listing</span>
-        </a>
-      </p>
-
-      {% if request.user.is_staff %}
-      <p>
-        <a class="btn btn-warning btn-block mb-2 text-left"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&current=false"
-           title="Browse non-current animal names requiring manual changes to conservation listing to their current counterparts">
-          <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-          <span class="align-left">Browse non-current thr/prio animals</span>
-          <!-- https://github.com/dbca-wa/wastd/issues/187 -->
-          <!-- API queries via async JS: count results -->
-        </a>
-        <a class="btn btn-warning btn-block mb-2 text-left"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.ANIMALS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
-           title="Browse non-terminal animal names requiring manual changes to conservation listing to their terminal descendants">
-          <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-          <span class="align-left">Browse non-terminal thr/prio animals</span>
+        <a class="btn btn-primary btn-block"
+           href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging"
+           title="Browse, filter and search animal encounters">
+          Tagged Turtles »
         </a>
 
-        <a class="btn btn-warning btn-block mb-2 text-left"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&current=false"
-           title="Browse non-current plant names requiring manual changes to conservation listing to their current counterparts">
-          <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-          <span class="align-left">Browse non-current thr/prio plants</span>
+        {% if request.user.is_staff %}
+        <a class="btn btn-success btn-block"
+           href="{% url 'admin:observations_animalencounter_changelist' %}?encounter_type=tagging"
+           title="Curate and QA animal encounters">
+          QA Turtle Tagging data »
         </a>
-        <a class="btn btn-warning btn-block mb-2 text-left"
-           href="{% url 'taxonomy:taxon-list' %}?paraphyletic_groups={{ settings.PLANTS_PK }}&is_terminal_taxon=true&current=true&conservation_level=threatened&conservation_level=priority&is_terminal_taxon=false"
-           title="Browse non-terminal plant names requiring manual changes to conservation listing to their terminal descendants">
-          <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-          <span class="align-left">Browse non-terminal thr/prio plants</span>
-        </a>
+        {% endif %}
       </p>
-      {% endif %}
 
     </div>
 
@@ -153,56 +63,29 @@
         src="{% static 'images/tec_val.png' %}"
         alt="Shrublands and woodlands of the eastern side of the Swan Coastal Plain TEC. Photo: Val English, DBCA."
         width="140" height="140">
-      <h2>Communities</h2>
+      <h2>Turtle Nesting Census</h2>
       <p>
-        Browse and search WA ecological communities,
-        view conservation status and suggest conservation status changes.
+        Browse and search Turtle Nest Encounters,
+        including turtle tracks and nests, disturbance, predation, nest excavations,
+        hatchling morphometrics, fan angles, and light disturbance.
       </p>
       <p>
-        <a class="btn btn-primary" href="{% url 'taxonomy:community-list' %}"
-            title="Browse, filter and search communities">
-          Browse communities »
+        <a class="btn btn-primary btn-block" href=""
+            title="Browse, filter and search Turtle Nest Encounters">
+          Browse Turtle Nests »
         </a>
-      </p>
-      <p>
-        <a class="btn btn-danger" href="{% url 'taxonomy:community-list' %}?conservation_level=threatened&conservation_level=priority"
-            title="Browse, filter and search conservation significant communities">
-          Browse communities »
+        {% if request.user.is_staff %}
+        <a class="btn btn-success btn-block"
+           href="{% url 'admin:observations_turtlenestencounter_changelist' %}"
+           title="Curate and QA animal encounters">
+          QA Turtle Nests »
         </a>
+        {% endif %}
       </p>
-      <h4>Occurrences</h4>
-      <p>
-        <a class="btn btn-primary"
-          href="{% url 'occurrence:communityareaencounter-list' %}"
-          title="Browse community occurrences">
-          Browse occurrences »
-        </a>
-      </p>
-      <p>
-        <a class="btn btn-danger"
-          href="{% url 'occurrence:communityareaencounter-list' %}?conservation_level=threatened&conservation_level=priority"
-          title="Browse conservation significant community occurrences">
-          Browse occurrences »
-        </a>
-      </p>
-      <p>
-        <a class="btn btn-primary"
-        href="{% url 'occurrence:communityareaencounter-create' %}"
-        title="Submit community occurrences">
-        Report occurrence »</a>
-      </p>
-      <h4>Conservation listing</h4>
-      <p>
-        <a class="btn btn-primary btn-block mb-2 text-left"
-          href="{% url 'conservation:communityconservationlisting-create' %}"
-          title="Nominate an ecological community for a conservation status">
-          <span class="oi oi-plus" aria-hidden="true"></span>
-          <span class="align-left">Propose conservation listing</span>
-        </a>
-      </p>
+
     </div>
 
-    <!--
+
      <div class="col-lg-4 col-md-6 col-12">
       <img class="rounded-circle"
         src="{% static 'images/map_wa_square.png' %}"
@@ -211,37 +94,37 @@
       <h2>Marine Wildlife Incidents</h2>
       <p>
         View, report, list incidents (mortalities, entanglements, injuries) involving
-        threatened marine megafauna: Turtles, Dugong, Sea snakes, Pinnipeds and Cetaceans.
+        threatened marine megafauna: Turtles, Dugong, Sea snakes, excluding Pinnipeds and Cetaceans.
         We recommend to report Marine Wildlife Incidents using our app - get started <a href="" title="TODO">here</a>.
       </p>
 
       <p>
-        <a class="btn btn-primary" href="{% url 'map' %}"
+        <a class="btn btn-primary btn-block" href="{% url 'map' %}"
             title="Map Marine Wildlife Incidents">
           Map »
         </a>
       </p>
       <p>
-        <a class="btn btn-primary" href="{% url 'observations:animalencounter-list' %}"
+        <a class="btn btn-primary btn-block" href="{% url 'observations:animalencounter-list' %}?encounter_type=stranding"
             title="List, filter, export Marine Wildlife Incidents">
           Browse »
         </a>
       </p>
       <p>
-        <a class="btn btn-primary" href=""
+        <a class="btn btn-primary btn-block" href=""
             title="Get our app to report Marine Wildlife Incidents">
           Report (via app) »
         </a>
       </p>
       <p>
-        <a class="btn btn-secondary" href="{% url 'observations:animalencounter-create' %}"
+        <a class="btn btn-secondary btn-block" href="{% url 'observations:animalencounter-create' %}"
             title="Report a new Marine Wildlife Incident captured on paper.
 Please upgrade to use the app!">
           Report (via web form) »
         </a>
       </p>
     </div>
-  -->
+
 
   </div><!-- .row -->
 </div><!-- .container -->
