@@ -11,6 +11,7 @@ from rest_framework_csv.renderers import CSVRenderer
 from rest_framework.settings import api_settings
 
 from shared.models import QualityControlMixin
+from wastd.observations.models import Observation, Encounter
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +120,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         return (unique_fields, data)
 
-    def fetch_existing_records(self, new_records, model):
+    def fetch_existing_records(self, new_records, model, source_field="source", source_id_field="source_id"):
         """Fetch pk, (status if QC mixin), and **uid_fields values from a model.
 
         The UID fields are hard-coded here, as it seems impossible to
@@ -132,8 +133,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         https://github.com/django/django/blob/master/django/contrib/admin/filters.py
         """
         qs = model.objects.filter(
-            source__in=list(set([x["source"] for x in new_records])),
-            source_id__in=list(set([x["source_id"] for x in new_records]))
+            source__in=list(set([x[source_field] for x in new_records])),
+            source_id__in=list(set([x[source_id_field] for x in new_records]))
         )
         if issubclass(model, QualityControlMixin):
             return qs.values("pk", "source", "source_id", "status")
@@ -203,6 +204,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         * Dict of object_id and message if one record
         * List of one-record dicts if several records
         """
+        # import ipdb; ipdb.set_trace()
 
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
@@ -222,9 +224,11 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             # https://github.com/dbca-wa/wastd/issues/205
 
             # Existing vs new
+
             new_records = request.data
             logger.info("[API][create] Fetching existing records...")
-            existing_records = self.fetch_existing_records(new_records, self.model)
+            m = Encounter if issubclass(self.model, Observation) else self.model
+            existing_records = self.fetch_existing_records(new_records, m)
             logger.info("[API][create] Done fetching existing records.")
 
             # Having QA status or not decides what to update or retain
@@ -295,7 +299,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                                     "{0}, update fields {1}, created: {2}".format(
                                         str(unique_data), str(update_data), created
                                     )
-                        )
+                                    )
 
                         # to update cached fields
                         obj.refresh_from_db()
@@ -354,7 +358,194 @@ class OgcFidBatchUpsertViewSet(BatchUpsertViewSet):
             return qs.values("pk", "ogc_fid", )
 
 
-class AreaEncounterObsBatchUpsertViewSet(BatchUpsertViewSet):
+class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
     """A viewset to upsert Observations linked to an AreaEncounter."""
 
-    pass
+    def create(self, request):
+        """POST: Create or update one or many model instances.
+
+        request.data must be a dict or a list of dicts.
+
+        Return RestResponse(result, status)
+
+        result:
+
+        * Warning message if invalid data (status 406 not acceptable)
+        * Dict of object_id and message if one record
+        * List of one-record dicts if several records
+        """
+        # import ipdb; ipdb.set_trace()
+
+        # Create one ---------------------------------------------------------#
+        if self.uid_fields[0] in request.data:
+            logger.info('[API][create] found one record, creating/updating...')
+            return self.create_one(request.data)
+
+        # Create many --------------------------------------------------------#
+        elif (
+            type(request.data) == list and self.uid_fields[0] in request.data[0]
+        ):
+            logger.info('[API][create] found batch of {0} records,'
+                        ' creating/updating...'.format(len(request.data)))
+
+            new_records = request.data
+
+            # ----------------------------------------------------------------#
+            # Fetch existing Encounter valuess based on encounter_source_id
+            logger.info("[API][create] Fetching existing Encounter records...")
+            existing_records = self.fetch_existing_records(
+                new_records,
+                Observation,
+                source_id_field="source_id"
+            )
+            existing_records_source_ids = [
+                r["source_id"] for r in existing_records
+            ]
+            # Only UID fields of new records (request.data)
+            new_records_uid_only = [
+                {rec[uid_field] for uid_field in self.uid_fields}
+                for rec in new_records
+            ]
+            new_records_source_ids = [
+                r["source_id"] for r in new_records
+            ]
+            existing_records_uid_only = [
+                {rec[uid_field] for uid_field in self.uid_fields}
+                for rec in existing_records
+            ]
+
+            existing_encounters = self.fetch_existing_records(
+                new_records,
+                Encounter,
+                source_id_field="encounter_source_id"
+            )
+            encounter_source_ids = [
+                e["source_id"] for e in existing_encounters
+            ]
+            encounters_to_retain = [
+                e["source_id"] for e in existing_encounters
+                if e["status"] > QualityControlMixin.STATUS_NEW
+            ]
+            encounters_to_update = [
+                e["source_id"] for e in existing_encounters
+                if e["status"] == QualityControlMixin.STATUS_NEW
+            ]
+            encounter_dict = {
+                "{}|{}".format(e["source"], e["source_id"]): e["pk"]
+                for e in existing_encounters
+            }
+
+            logger.info(
+                "[API][create] Found {0} existing Encounter records: "
+                "{1} to retain, {2} to update".format(
+                    len(existing_encounters),
+                    len(encounters_to_retain),
+                    len(encounters_to_update)
+                )
+            )
+
+            # ----------------------------------------------------------------#
+            # Observations without an existing Encounter are refused.
+            # Create Encounters first, then corresponding Observations.
+            to_refuse = [
+                x for x in new_records
+                if x["encounter_source_id"] not in encounter_source_ids
+            ]
+            logger.info(
+                "[API][create] Found {0} records without matching Encounter. "
+                .format(len(to_refuse))
+            )
+
+            # Bucket "retain": existing_objects with status > STATUS_NEW
+            # to_retain = [t for t in existing_records if t["status"] > QualityControlMixin.STATUS_NEW]
+            to_retain = [
+                x for x in new_records
+                if x["encounter_source_id"] in encounters_to_retain
+            ]
+
+            # TODO Log PKs (debug) or total number (info) of skipped records
+            logger.info("[API][create] Skipping {0} QA'd records".format(len(to_retain)))
+            logger.debug("[API][create] Skipping QA'd records: {0}".format(str(to_retain)))
+
+            # Bucket "bulk_update": List of new_records where uid_fields match existing_objects
+            records_to_update = [
+                new_record for new_record in new_records
+                if {new_record[uid_field] for uid_field in self.uid_fields}
+                in existing_records_uid_only
+                and new_record["encounter_source_id"] in encounters_to_update  # noqa
+            ]
+
+            # Bucket "bulk_create": List of new records without match in existing records
+            records_to_create = [
+                new_record for new_record in new_records
+                if {new_record[uid_field] for uid_field in self.uid_fields}
+                not in existing_records_uid_only
+                and new_record["encounter_source_id"] in encounter_source_ids  # noqa
+            ]
+
+            logger.info(
+                "[API][create] Done sorting records: "
+                "{0} refused (create Encounter first), {1} to retain, "
+                "{2} to update, {1} to create.".format(
+                    len(to_refuse),
+                    len(to_retain),
+                    len(records_to_update),
+                    len(records_to_create)
+                )
+            )
+
+            # Hammertime
+            with transaction.atomic():
+                if records_to_update:
+                    logger.info("[API][create] Updating records...")
+                    for data in records_to_update:
+                        data["encounter_id"] = encounter_dict[
+                            "{}|{}".format(data["source"], data["encounter_source_id"])
+                        ]
+                        data.pop("encounter_source_id")
+                        unique_data, update_data = self.split_data(data)
+                        self.model.objects.filter(**unique_data).update(**update_data)
+
+                        # to update cached fields
+                        # self.model.objects.filter(**unique_data).refresh_from_db()
+                        # self.model.objects.filter(**unique_data).save()
+
+                if records_to_create:
+                    logger.info("[API][create] Creating records...")
+                    for data in records_to_create:
+                        data["encounter_id"] = encounter_dict[
+                            "{}|{}".format(data["source"], data["encounter_source_id"])
+                        ]
+                        data.pop("encounter_source_id")
+                        unique_data, update_data = self.split_data(data)
+                        obj, created = self.model.objects.get_or_create(
+                            defaults=update_data, **unique_data
+                        )
+                        # obj = self.model.objects.create(**data)
+                        logger.info("[API][create] Creating record with unique fields "
+                                    "{0}, update fields {1}, created: {2}".format(
+                                        str(unique_data), str(update_data), created
+                                    )
+                                    )
+
+                        # to update cached fields
+                        obj.refresh_from_db()
+                        obj.save()
+
+            logger.info("[API][create] Finished.")
+            msg = "Refused {0}, retained {1}, updated {2}, created {3} records.".format(
+                len(to_refuse),
+                len(to_retain),
+                len(records_to_update),
+                len(records_to_create)
+            )
+            logger.info(msg)
+
+            return RestResponse(msg, status=status.HTTP_200_OK)
+
+        # Create none --------------------------------------------------------#
+        else:
+            msg = ("[API][BatchUpsertViewSet] unknown data format:"
+                   "{0}".format(str(request.data)))
+            logger.warning(msg)
+            return RestResponse({"msg": msg}, status=status.HTTP_406_NOT_ACCEPTABLE)

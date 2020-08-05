@@ -719,7 +719,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
@@ -743,7 +743,7 @@ LOGGING = {
             'propagate': True
         },
         'django': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'handlers': ['console', 'sentry'],
             'propagate': True
         },
@@ -763,21 +763,6 @@ LOGGING = {
             'propagate': True,
         },
         'wastd': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'sentry'],
-            'propagate': True,
-        },
-        'taxonomy': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'sentry'],
-            'propagate': True,
-        },
-        'conservation': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'sentry'],
-            'propagate': True,
-        },
-        'occurrence': {
             'level': 'DEBUG',
             'handlers': ['console', 'sentry'],
             'propagate': True,
