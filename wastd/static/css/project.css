@@ -42,12 +42,25 @@ html{
 /* force the BODY element to match the height of the HTML element */
 body{
     height:100%;
-    background: url('/static/images/80mile.jpg') no-repeat center center fixed;
+    /*background: url('/static/images/80mile.jpg') no-repeat center center fixed;*/
+    background: url('/static/images/green_hatchling.jpg') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     /*font-family: 'Open Sans',Arial,Helvetica,Sans-Serif;*/
+}
+
+.panel-transparent {
+        background: none;
+    }
+
+.panel-transparent .panel-heading{
+    background: rgba(122, 130, 136, 0.2)!important;
+}
+
+.panel-transparent .panel-body{
+    background: rgba(46, 51, 56, 0.2)!important;
 }
 
 .info {

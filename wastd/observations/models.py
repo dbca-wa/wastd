@@ -2454,7 +2454,7 @@ class LoggerEncounter(Encounter):
 
 
 # Observation models ---------------------------------------------------------#
-class Observation(PolymorphicModel, models.Model):
+class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     """The Observation base class for encounter observations.
 
     Everything happens somewhere, at a time, to someone, and someone records it.

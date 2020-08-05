@@ -28,8 +28,8 @@ from api.schema import schema
 actions.add_to_site(site)
 
 urlpatterns = [
-    path('', cache_page(60 * 60)(TemplateView.as_view(template_name='pages/index.html')), name='home'),
-    path('map/', cache_page(60 * 60)(wastd_views.HomeView.as_view()), name='map'),
+    path('', TemplateView.as_view(template_name='pages/index.html'), name='home'),
+    path('map/', wastd_views.HomeView.as_view(), name='map'),
     path('healthcheck/', TemplateView.as_view(template_name='pages/healthcheck.html'), name='healthcheck'),
 
     path(settings.ADMIN_URL, admin.site.urls),

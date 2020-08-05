@@ -477,11 +477,12 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         'area', 'site', 'status',
         # 'observer', 'reporter',
 
-        'location_accuracy', 'encounter_type', 'source')  # 'survey',
+        'location_accuracy',
+        'encounter_type', 'source')  # 'survey',
 
     # Columns for change_list, allow re-use and inserting fields
     FIRST_COLS = ('when', 'area', 'site', 'latitude', 'longitude',
-                  'location_accuracy', 'name')
+                  'location_accuracy', 'location_accuracy_m', 'name')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
                  'status', 'encounter_type')  # 'survey',
     list_display = FIRST_COLS + LAST_COLS
@@ -554,6 +555,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                     'area', 'site', 'survey',
                     'where',
                     'location_accuracy',
+                    'location_accuracy_m',
                     'when',
                     'observer', 'reporter',
                     'source', 'source_id',
