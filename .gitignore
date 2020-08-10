@@ -48,6 +48,9 @@ htmlcov
 *.swp
 *.swo
 
+# Sublime
+*.sublime-project
+
 # npm
 node_modules/
 
