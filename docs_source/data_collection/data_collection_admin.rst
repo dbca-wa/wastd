@@ -47,12 +47,11 @@ Setup the tablet
 * Start fully charged, plug into charger to lengthen screen timeout
 * Language: English / Australia
 * Wifi: do not use DBCA's Wongi, use guest.dbca.wa.gov.au
-* Sign into a work-only Google account - all tablets handed out from turtle program are linked to florianm.dec@gmail.com.
+* Sign into a work-only Google account - all tablets handed out from turtle program are linked to wa.turtles@gmail.com.
   If you are not Florian Mayer, use your own work-only Google account.
-* If you have other tablets already set up and linked against your Google account, let the tablet restore from backup (installs apps).
+* Skip restore from backup.
 * Google services: untick "help improve..." options. Keep "Back up apps etc" and "Location services" option.
-* Wait for restore to finish.
-* Skip creating a Lenovo ID. The "Start using your new device" button is hidden under the keyboard. Press "Back" to minimize keyboard.
+* Skip creating a Lenovo/Samsung account. The "Start using your new device" button is hidden under the keyboard. Press "Back" to minimize keyboard.
 * Update Android apps if prompted and address any notifications.
 
 Device settings:
@@ -62,27 +61,21 @@ Device settings:
 
 App settings:
 
-* Camera: Enable location capture, so that all photos are geo-referenced with
+* Camera: Open app, enable location capture, so that all photos are geo-referenced with
   the coordinates they were taken at. This turns the camera into a generic
   data collection form (image, time, location).
-* Google Photos: auto-backup all photos in original resolution to Google Photos.
+* Google Photos: open app, settings, auto-backup all photos in "high resolution" (about 2MP) to Google Photos.
 
 
 Setup ODK Collect from QR code
 ------------------------------
+Open ODK Collect. 2020 update: accept message to migrate forms to "private storage".
+
 If you were provided with a QR code, you can speed up the ODK Collect setup.
 
-* Settings > Admin settings > Import/Export settings > Scan code from other device > Scan provided QR code
+* Settings (three dots top right) > Configure via QR code
   (if asked, grant ODK Collect required permissions to access camera)
-* If you were provided with one QR code (e.g. for ODK Aggregate username Murujuga1) for a range of tablets
-  (with usernames Murujuga2 through Murujuga8), set the ODK Aggregate username as follows:
-
-  * Settings > General settings > Server > Username > Change the trailing number (e.g. 1)
-    to create the other usernames (e.g. 2 through 8).
-  * Every tablet must have a separate ODK Aggregate username.
-  * Label the tablets (e.g. gaffa tape on the back) with the username to easily identify them,
-    e.g. when asking Florian for support.
-
+* Update the username to a real name, e.g. "Florian Mayer".
 * Get blank forms on each tablet. This both prepares the tablets for field work,
   and verifies username/password/server url.
 
