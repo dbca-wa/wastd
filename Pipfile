@@ -96,6 +96,7 @@ pytest-sugar = "*"
 model-mommy = "*"
 graphviz = "*"
 tblib = "*"
+fabric3 = "*"
 
 [dev-packages]
 

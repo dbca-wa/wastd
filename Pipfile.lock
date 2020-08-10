@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a47808cd6f82ea82bde18b5a1f344c5ce33287e81ca620f049bc9f5b40eedd8d"
+            "sha256": "4f358ef250a3b27130b900c16edf1d8b3dc7091edc23593de13bef1bd9b8d2a9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -505,7 +505,7 @@
         "django-fixture-magic": {
             "editable": true,
             "git": "https://github.com/davedash/django-fixture-magic.git",
-            "ref": "master"
+            "ref": "001194742b3165dc61541bc4532febaba9c1552d"
         },
         "django-floppyforms": {
             "hashes": [
@@ -1043,7 +1043,8 @@
         },
         "mommy-spatial-generators": {
             "editable": true,
-            "git": "https://github.com/sigma-geosistemas/mommy_spatial_generators.git"
+            "git": "https://github.com/sigma-geosistemas/mommy_spatial_generators.git",
+            "ref": "2ecace9f8ac142f7f8a2229ac922541f4eba7d80"
         },
         "more-itertools": {
             "hashes": [
