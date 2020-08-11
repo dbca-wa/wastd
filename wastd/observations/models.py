@@ -25,6 +25,7 @@ import itertools
 import logging
 import urllib
 from datetime import timedelta
+from dateutil import parser as dateparser
 
 import slugify
 from dateutil import tz
@@ -39,16 +40,16 @@ from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django_fsm import FSMField, transition
-from django_fsm_log.decorators import fsm_log_by
+# from django_fsm import FSMField, transition
+# from django_fsm_log.decorators import fsm_log_by
 from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
 from rest_framework.reverse import reverse as rest_reverse
 from shared.models import (
-    CodeLabelDescriptionMixin,
-    RenderMixin,
+    # CodeLabelDescriptionMixin,
+    # RenderMixin,
     LegacySourceMixin,
-    ObservationAuditMixin,
+    # ObservationAuditMixin,
     QualityControlMixin,
     UrlsMixin
 )
@@ -1049,6 +1050,12 @@ class Survey(QualityControlMixin, geo_models.Model):
         verbose_name=_("Survey start point"),
         help_text=_("The start location as point in WGS84."))
 
+    start_location_accuracy_m = models.FloatField(
+        verbose_name=_("Start location accuracy (m)"),
+        null=True, blank=True,
+        help_text=_("The accuracy of the supplied start location in metres, if given."),
+    )
+
     start_time = models.DateTimeField(
         verbose_name=_("Survey start time"),
         blank=True, null=True,
@@ -1086,6 +1093,12 @@ class Survey(QualityControlMixin, geo_models.Model):
         blank=True, null=True,
         verbose_name=_("Survey end point"),
         help_text=_("The end location as point in WGS84."))
+
+    end_location_accuracy_m = models.FloatField(
+        verbose_name=_("End location accuracy (m)"),
+        null=True, blank=True,
+        help_text=_("The accuracy of the supplied end location in metres, if given."),
+    )
 
     end_time = models.DateTimeField(
         verbose_name=_("Survey end time"),
@@ -1227,13 +1240,17 @@ def claim_encounters(survey_instance):
 
 
 @receiver(pre_save, sender=Survey)
-def survey_pre_save(sender, instance, buffer_mins=30, *args, **kwargs):
+def survey_pre_save(sender, instance, buffer_mins=30, initial_duration_hrs = 6, *args, **kwargs):
     """Survey: Claim site, end point, adjust end time if encounters already claimed."""
+    if type(instance.start_time) == str:
+        instance.start_time = dateparser.parse(instance.start_time)
+    if type(instance.end_time) == str:
+        instance.end_time = dateparser.parse(instance.end_time)
     if instance.status == Survey.STATUS_NEW and not instance.site:
         instance.site = guess_site(instance)
     if instance.status == Survey.STATUS_NEW and not instance.end_time:
         claim_end_points(instance)
-    if instance.end_time == instance.start_time + timedelta(hours=6):
+    if instance.end_time == instance.start_time + timedelta(hours=initial_duration_hrs):
         et = instance.end_time
         if instance.encounters:
             instance.end_time = instance.encounters.last().when + timedelta(minutes=buffer_mins)
@@ -1241,10 +1258,10 @@ def survey_pre_save(sender, instance, buffer_mins=30, *args, **kwargs):
                    "{2} minutes after last of {3} encounters.").format(
                 et, instance.end_time, buffer_mins, len(instance.encounters))
         else:
-            instance.end_time = instance.start_time + timedelta(minutes=buffer_mins)
+            instance.end_time = instance.start_time + timedelta(hours=initial_duration_hrs)
             msg = ("[survey_pre_save] End time adjusted from {0} to {1}, "
-                   "{2} minutes after the start of the survey. "
-                   "No encounters found.").format(et, instance.end_time, buffer_mins)
+                   "{2} hours after the start of the survey. "
+                   "No encounters found.").format(et, instance.end_time, initial_duration_hrs)
         instance.end_comments = msg
         logger.info(msg)
     instance.label = instance.make_label
