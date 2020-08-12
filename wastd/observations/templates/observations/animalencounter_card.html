@@ -8,59 +8,57 @@
       <span class="oi oi-eye" title="Name" aria-hidden="true"></span>
       {{ object.get_taxon_display }} - {{ object.get_species_display }}
 
+      <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
+      {{ object.observer }}
+
       <span class="float-right">
         <a class="mr-2 text-primary" type="button" data-toggle="collapse"
-          href="#details{{ object.id }}" aria-expanded="false" aria-controls="details{{ object.id }}">
+          href="#details{{ object.id }}" aria-expanded="false" aria-controls="details{{ object.id }}"
+          title="Toggle details">
           <span class="oi oi-expand-down" title="Name" aria-hidden="true"></span>
-          Details
         </a>
-        {% include "shared/update_links_qa.html" with label=True %}
+        {% include "shared/admin_qa.html" with label=False %}
       </span>
 
     </h6>
   </div>
 
-
-
-  <div class="occ-detail collapse" id="details{{ object.id }}">
+  <div class="collapse" id="details{{ object.id }}">
   <div class="card-body">
-      <div class="card-text">
-        <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
-      {{ object.observer }}
-      </div>
-      <div class="card-text">
+    <div class="card-text">
       <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
-      {{ object.description | default:"No further comments" }}
-      </div>
+      {{ object.description | default:"-" }}
+    </div>
+    {% for obs in object.observation_set.all %}
+    <div class="card-text ml-2">
+      {{ obs.as_html|safe }}
+    </div>
+    {% endfor %}
 
-      {% if object.photographs %}
-      <ul class="list-unstyled">
+    {% if object.photographs %}
+    <div class="card-columns mt-2">
       {% for m in object.photographs %}
-        <img src="{{ m.attachment.url }}" class="mr-3 max-vh-50" alt="{{ m.media_type|title }}: {{ m.title }}">
-
-
-        <li class="media">
-          <img src="{{ m.attachment.url }}" class="mr-3" alt="{{ m.media_type|title }}: {{ m.title }}">
-          <div class="media-body">
-            <h5 class="mt-0 mb-1">{{ m.media_type|title }}</h5>
-            {{ m.title }}
-          </div>
-        </li>
-
+      <div class="card shadow-lg">
+        <img src="{{ m.attachment.url }}" class="card-img-top" alt="{{ m.media_type|title }}">
+        <div class="card-body">
+          <p class="card-text">{{ m.title }}
+          </p>
+        </div>
+      </div>
       {% endfor %}
-      </ul>
-      {% endif %}
+    </div>
+    {% endif %}
   </div>
 
   <!--
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
-        stuff
+        Footer content
       </div>
     </div>
   </div>
--->
+  -->
 
-  </div><!-- /.occ-detail -->
+  </div><!-- /#details{{ object.id }} -->
 </div><!-- /.card -->

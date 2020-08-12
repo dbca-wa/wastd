@@ -6,7 +6,8 @@
 {% endblock %}
 {% block headlines %}
     <!-- Animal overview -->
-    <div class="row"><i class="fa fa-fw fa-heartbeat"></i>
+    <div class="row">
+        <span class="oi oi-pulse"></span>
         {{ o.get_health_display }} {{ o.get_maturity_display }}
         {{ o.get_sex_display }} on {{ o.get_habitat_display }}
     </div>
@@ -14,19 +15,19 @@
 {% block encounterdetails %}
     <!-- Checked for... -->
     <div class="row">
-        <i class="fa fa-fw fa-eye"></i>
+        <span class="oi oi-eye"></span>
         Damage  {{ o.checked_for_injuries}} <i class="{{ o.checked_for_injuries|fa_observation_icon }}"></i>
         PIT tags {{ o.scanned_for_pit_tags }} <i class="{{ o.scanned_for_pit_tags|fa_observation_icon }}"></i>
         Flipper tags {{ o.checked_for_flipper_tags }} <i class="{{ o.checked_for_flipper_tags|fa_observation_icon }}"></i>
     </div>
     {% if o.behaviour %}
         <div class="row">
-            <i class="fa fa-fw fa-comment-o"></i> {{ o.behaviour }}
+            <span class="oi oi-comment-square"></span> {{ o.behaviour }}
         </div>
     {% endif %}
     {% if o.cause_of_death != "na" %}
         <div class="row">
-            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            <span class="oi oi-medical-cross"></span>
             {{ o.get_cause_of_death_display }} ({{ o.get_cause_of_death_confidence_display }})
         </div>
     {% endif %}

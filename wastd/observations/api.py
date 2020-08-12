@@ -572,7 +572,7 @@ class ObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.Observation
 
 
-class MediaAttachmentViewSet(ObservationViewSet):
+class MediaAttachmentViewSet(ObservationBatchUpsertViewSet):
     """Binary media (photos, datasheet PDFs etc) with Encounter details.
 
     Can be many per Encounter.
@@ -764,8 +764,6 @@ class HatchlingMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.HatchlingMorphometricObservation
 
 
-
-
 class TurtleNestObservationViewSet(ObservationBatchUpsertViewSet):
     """Nest excavations during tagging or after hatching including Encounter details.
 
@@ -799,8 +797,10 @@ class TurtleNestObservationViewSet(ObservationBatchUpsertViewSet):
 class TurtleNestDisturbanceObservationViewSet(ObservationBatchUpsertViewSet):
     """Turtle nest disturbance observations including Encounter details.
 
-    * General disturbances are of Encounter type [other](/api/1/turtle-nest-disturbance-observations/?encounter__encounter_type=other)
-    * Nest disturbances are of Encounter type [nest](/api/1/turtle-nest-disturbance-observations/?encounter__encounter_type=nest)
+    * General disturbances are of Encounter type
+      [other](/api/1/turtle-nest-disturbance-observations/?encounter__encounter_type=other)
+    * Nest disturbances are of Encounter type
+      [nest](/api/1/turtle-nest-disturbance-observations/?encounter__encounter_type=nest)
 
     Can be many per Encounter.
     [Admin](/admin/observations/turtlenestdisturbanceobservation/)

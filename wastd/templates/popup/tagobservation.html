@@ -1,8 +1,9 @@
 {% with original as o %}
 <div class="row">
-    <a href="{{ o.history_url }}" target="_">
-    <i class="fa fa-fw fa-tag"></i></a>
+    <a href="{{ o.history_url }}" target="_" title="View tag history">
+    <span class="oi oi-tags"></span>
     {{ o.get_tag_type_display }} {{ o.name }}
     {{ o.get_status_display }} on {{ o.get_tag_location_display }}
+    </a>
 </div>
 {% endwith %}

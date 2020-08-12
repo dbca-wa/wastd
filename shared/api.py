@@ -396,19 +396,18 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
             existing_records = self.fetch_existing_records(
                 new_records,
                 Observation,
+                source_field="source",
                 source_id_field="source_id"
             )
-            existing_records_source_ids = [
-                r["source_id"] for r in existing_records
-            ]
+            # existing_records_source_ids = [
+            #     r["source_id"] for r in existing_records
+            # ]
             # Only UID fields of new records (request.data)
-            new_records_uid_only = [
-                {rec[uid_field] for uid_field in self.uid_fields}
-                for rec in new_records
-            ]
-            new_records_source_ids = [
-                r["source_id"] for r in new_records
-            ]
+            # new_records_uid_only = [
+            #     {rec[uid_field] for uid_field in self.uid_fields}
+            #     for rec in new_records
+            # ]
+            # new_records_source_ids = [r["source_id"] for r in new_records]
             existing_records_uid_only = [
                 {rec[uid_field] for uid_field in self.uid_fields}
                 for rec in existing_records
@@ -417,6 +416,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
             existing_encounters = self.fetch_existing_records(
                 new_records,
                 Encounter,
+                source_field="encounter_source",
                 source_id_field="encounter_source_id"
             )
             encounter_source_ids = [
@@ -494,14 +494,19 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                 )
             )
 
+            # import ipdb; ipdb.set_trace()
+
             # Hammertime
             with transaction.atomic():
                 if records_to_update:
                     logger.info("[API][create] Updating records...")
+
+                    # TODO debug cache miss in encounter_dict
                     for data in records_to_update:
                         data["encounter_id"] = encounter_dict[
-                            "{}|{}".format(data["source"], data["encounter_source_id"])
+                            "{}|{}".format(data["encounter_source"], data["encounter_source_id"])
                         ]
+                        data.pop("encounter_source")
                         data.pop("encounter_source_id")
                         unique_data, update_data = self.split_data(data)
                         self.model.objects.filter(**unique_data).update(**update_data)
@@ -514,8 +519,9 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                     logger.info("[API][create] Creating records...")
                     for data in records_to_create:
                         data["encounter_id"] = encounter_dict[
-                            "{}|{}".format(data["source"], data["encounter_source_id"])
+                            "{}|{}".format(data["encounter_source"], data["encounter_source_id"])
                         ]
+                        data.pop("encounter_source")
                         data.pop("encounter_source_id")
                         unique_data, update_data = self.split_data(data)
                         obj, created = self.model.objects.get_or_create(

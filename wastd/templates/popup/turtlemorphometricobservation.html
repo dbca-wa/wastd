@@ -1,7 +1,7 @@
 {% load observations %}
 {% with original as o %}
 <div class="row">
-    <i class="fa fa-fw fa-bar-chart"></i>
+    <span class="oi oi-bar-chart"></span>
     {% if o.curved_carapace_length_mm %}
     CCL {{ o.curved_carapace_length_mm }} &plusmn; {{ o.curved_carapace_length_accuracy }} mm
     {% endif %}
@@ -43,12 +43,12 @@
     {% endif %}
 
     {% if o.handler %}
-    <i class="fa fa-fw fa-eye"></i>
+    <span class="oi oi-eye"></span>
     <a href="mailto:{{ o.observer.email }}">{{ o.handler.name }}</a>
     {% endif %}
 
     {% if o.recorder %}
-    <i class="fa fa-fw fa-pencil"></i>
+    <span class="oi oi-chat"></span>
     <a href="mailto:{{ o.reporter.email }}">{{ o.recorder.name }}</a>
     {% endif %}
 </div>
