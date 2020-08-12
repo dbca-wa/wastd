@@ -362,32 +362,36 @@ class ObservationSerializer(ModelSerializer):
     def validate(self, data):
         """Raise ValidateError on missing Encounter (encounter PK or source & source_id value).
         """
-        if 'encounter' not in self.initial_data and (
-            'source' not in self.initial_data and 'source_id' not in self.initial_data
+        if 'encounter_id' not in self.initial_data and (
+            'encounter_source' not in self.initial_data and
+            'encounter_source_id' not in self.initial_data
         ):
-            raise ValidationError('Encounter reference is required')
-        if 'encounter' in self.initial_data:
-            if not models.Encounter.objects.filter(pk=self.initial_data['encounter']).exists():
+            raise ValidationError(
+                'Encounter reference is required, either as encounter_id or as '
+                'encounter_source and encounter_source_id.'
+            )
+        if 'encounter_id' in self.initial_data:
+            if not models.Encounter.objects.filter(pk=self.initial_data['encounter_id']).exists():
                 raise ValidationError(
-                    'Encounter {} does not exist.'.format(self.initial_data['encounter'])
+                    'Encounter {} does not exist.'.format(self.initial_data['encounter_id'])
                 )
-        if 'source' in self.initial_data and 'source_id' in self.initial_data:
+        if 'encounter_source' in self.initial_data and 'encounter_source_id' in self.initial_data:
             if not models.Encounter.objects.filter(
-                source=self.initial_data['source'],
-                source_id=self.initial_data['source_id']
+                source=self.initial_data['encounter_source'],
+                source_id=self.initial_data['encounter_source_id']
             ).exists():
                 raise ValidationError(
                     'Encounter with source {} and source_id {} does not exist.'.format(
-                        self.initial_data['source'],
-                        self.initial_data['source_id'])
+                        self.initial_data['encounter_source'],
+                        self.initial_data['encounter_source_id'])
                 )
         return data
 
     def create(self, validated_data):
         """Create one new object, resolve Encounter from either PK or source & source_id.
         """
-        if 'encounter' in self.initial_data:
-            validated_data['encounter'] = models.Encounter.objects.get(pk=self.initial_data['encounter'])
+        if 'encounter_id' in self.initial_data:
+            validated_data['encounter'] = models.Encounter.objects.get(pk=self.initial_data['encounter_id'])
         else:
             validated_data['encounter'] = models.Encounter.objects.get(
                 source=self.initial_data['source'], source_id=self.initial_data['source_id'])

@@ -1,7 +1,7 @@
 {% load observations %}
 {% with original as o %}
 <div class="row">
-    <i class="fa fa-fw fa-bar-chart"></i>
+    <span class="oi oi-bar-chart"></span>
     {{ o.get_light_source_type_display }} at {{ o.light_bearing_manual }} deg: {{ o.light_source_description }}
 </div>
 {% endwith %}

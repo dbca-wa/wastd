@@ -1,13 +1,13 @@
 {% load observations rest_framework_latex %}
 {% with original as o %}
 <div class="row">
-    <i class="fa fa-fw fa-child"></i>
+    <span class="oi oi-check"></span>
     Hatching success {{ o.hatching_success }} &#37;&nbsp;
     Emergence success {{ o.emergence_success }} &#37;
 </div>
 
 <div class="row">
-    <i class="fa fa-fw fa-tasks"></i>
+    <span class="oi oi-bar-chart"></span>
     Total {{ o.egg_count }}&nbsp;&nbsp;
     {% if o.no_emerged %}E {{ o.no_emerged }}&nbsp;&nbsp;{% endif %}
     {% if o.no_egg_shells %}S {{ o.no_egg_shells }}&nbsp;&nbsp;{% endif %}
@@ -20,13 +20,13 @@
 </div>
 {% if o.nest_depth_top or o.nest_depth_bottom %}
 <div class="row">
-    <i class="fa fa-fw fa-balance-scale"></i>
+    <span class="oi oi-graph"></span>
     Nest depth {{ o.nest_depth_top|mm_as_cm }} to {{ o.nest_depth_bottom|mm_as_cm }} cm
 </div>
 {% endif %}
 {% if o.sand_temp  or o.air_temp or o.water_temp or o.egg_temp%}
 <div class="row">
-    <i class="fa fa-fw fa-fire"></i>
+    <span class="oi oi-graph"></span>
     {% if o.sand_temp %}Sand {{ o.sand_temp }} &deg;C{% endif %}
     {% if o.air_temp %}Air {{ o.air_temp }} &deg;C{% endif %}
     {% if o.water_temp %}Water {{ o.water_temp }} &deg;C{% endif %}

@@ -110,4 +110,12 @@ class AnimalEncounterFilter(EncounterFilter):
 class AnimalEncounterFilter2(FilterSet):
     class Meta:
         model = AnimalEncounter
-        fields = ['encounter_type', 'taxon', 'species', 'sex', 'maturity', 'health', 'checked_for_flipper_tags', ]
+        fields = [
+            'encounter_type',
+            'taxon',
+            'species',
+            'sex',
+            'maturity',
+            'health',
+            'checked_for_flipper_tags',
+        ]

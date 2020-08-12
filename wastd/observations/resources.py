@@ -6,5 +6,15 @@ class AnimalEncounterResource(ModelResource):
     class Meta:
         model = AnimalEncounter
         fields = [
-            'when', 'area', 'site', 'where', 'name', 'taxon', 'species', 'sex', 'maturity',
-            'health', 'checked_for_flipper_tags']
+            'when',
+            'area',
+            'site',
+            'where',
+            'name',
+            'taxon',
+            'species',
+            'sex',
+            'maturity',
+            'health',
+            'checked_for_flipper_tags'
+        ]

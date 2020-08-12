@@ -1,6 +1,6 @@
-FROM python:3.8.5-stretch as builder_base
+FROM python:3.8.5-buster as builder_base
 LABEL maintainer=Florian.Mayer@dbca.wa.gov.au
-LABEL description="Python 3.8.5-stretch plus Latex, GDAL, Pandoc."
+LABEL description="Python 3.8.5-buster plus Latex, GDAL, Pandoc."
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install --yes \

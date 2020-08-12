@@ -10,19 +10,19 @@
     <a href="{% url 'admin:observations_encounter_changelist' %}?name={{ o.name }}"
         class="btn btn-primary btn-sm"
         target="_" title="Browse history of animal {{ o.name }} in new tab">
-        <i class="fa fa-fw fa-history"></i>
+        <span class="oi oi-box"></span>
         {{ o.name }}
     </a>
     <a href="/api/1/animal-encounters/?format=latex&name={{ o.name }}"
         class="btn btn-danger btn-sm"
         target="_" title="Export history of animal {{ o.name }}">
-        <i class="fa fa-fw fa-file-pdf-o"></i>
+        <span class="oi oi-file"></span>
     </a>
     {% endif%}
     <a href="{{ o.absolute_admin_url }}"
         class="btn btn-{{ o.status|tb_status_icon }} btn-sm"
         target="_" title="Edit Encounter in new tab">
-        <i class="fa fa-fw fa-pencil"></i>
+        <span class="oi oi-pencil"></span>
         {{ o.get_status_display }}
     </a>
 
@@ -31,20 +31,20 @@
 
 <!-- Time and location -->
 <div class="row">
-  <i class="fa fa-fw fa-calendar"></i>
+  <span class="oi oi-calendar"></span>
   {{ o.when|date:"r" }}
-  <i class="fa fa-fw fa-map-marker"></i>
+  <span class="oi oi-globe"></span>
       Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
       ({{ o.crs }}) &plusmn; {{ o.location_accuracy }} m WGS 84
 </div>
 
 <!-- Observer -->
 <div class="row">
-  <i class="fa fa-fw fa-eye"></i>
+  <span class="oi oi-eye"></span>
   <a href="mailto:{{ o.observer.email }}"
   title="Send email to {{ o.observer.fullname }}">{{ o.observer.name }}</a>
 
-  <i class="fa fa-fw fa-pencil"></i>
+  <span class="oi oi-chat"></span>
   <a href="mailto:{{ o.reporter.email }}"
   title="Send email to {{ o.reporter.fullname }}">{{ o.reporter.name }}</a>
 </div><!-- /.row -->
@@ -69,7 +69,7 @@
     <div class="carousel-inner">
           {% for p in o.photographs %}
           <div class="carousel-item{% if forloop.first %} active{% endif %}">
-            <img src="{{ p.attachment.url }}" class="d-block w-100 rounded" alt="{{ p.title }}">
+            <img src="{{ p.attachment.url }}" class="d-block h-100 rounded" alt="{{ p.title }}">
             <div class="carousel-caption d-none d-md-block">
               <h5 class="text-shadow">{{ p.title }}</h5>
             </div>
