@@ -76,7 +76,7 @@ class TagObservationInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
-class NestTagObservationInline(admin.TabularInline):
+class NestTagObservationInline(admin.StackedInline):
     """TabularInlineAdmin for NestTagObservation."""
 
     extra = 0
@@ -156,7 +156,7 @@ class TurtleNestDisturbanceObservationInline(admin.TabularInline):
     classes = ('grp-collapse grp-open',)
 
 
-class TurtleHatchlingEmergenceObservationInline(admin.TabularInline):
+class TurtleHatchlingEmergenceObservationInline(admin.StackedInline):
     """Admin for TurtleHatchlingEmergenceObservation."""
 
     extra = 0
@@ -219,8 +219,7 @@ class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
     )
     LIST_LAST = (
         'encounter_link',
-        'status',
-        'comments'
+        'encounter_status',
     )
     LIST_FILTER = (
         'encounter__area',
@@ -282,6 +281,146 @@ class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
     encounter_link.short_description = 'Encounter'
     encounter_link.allow_tags = True
 
+    def encounter_status(self, obj):
+        """A link to the encounter."""
+        return obj.encounter.get_status_display()
+    encounter_status.short_description = 'QA status'
+
+
+@admin.register(ManagementAction)
+class ManagementActionAdmin(ObservationAdminMixin):
+    """Admin for ManagementAction."""
+
+    # save_on_top = True
+    # date_hierarchy = 'encounter__when'
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        'management_actions',
+        'comments',
+    ) + ObservationAdminMixin.LIST_LAST
+
+    list_filter = ObservationAdminMixin.LIST_FILTER + ()
+    search_fields = ('management_actions', 'comments', )
+
+    def get_queryset(self, request):
+        return super(
+            ManagementActionAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
+@admin.register(MediaAttachment)
+class MediaAttachmentAdmin(ObservationAdminMixin):
+    """Admin for MediaAttachment."""
+
+    # save_on_top = True
+    # date_hierarchy = 'encounter__when'
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        'media_type',
+        'title',
+        'thumbnail',
+    ) + ObservationAdminMixin.LIST_LAST
+
+    list_filter = ObservationAdminMixin.LIST_FILTER + (
+        'media_type',
+    )
+    search_fields = ('title', )
+    # readonly_fields = ('thumbnail',)
+
+    def get_queryset(self, request):
+        return super(
+            MediaAttachmentAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+    def thumbnail(self, obj):
+        return obj.thumbnail
+
+    thumbnail.short_description = 'Preview'
+    thumbnail.allow_tags = True
+
+
+@admin.register(TurtleMorphometricObservation)
+class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
+    """Admin for TurtleMorphometricObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        "curved_carapace_length_mm",
+        # "curved_carapace_length_accuracy",
+        "straight_carapace_length_mm",
+        # "straight_carapace_length_accuracy",
+        "curved_carapace_width_mm",
+        # "curved_carapace_width_accuracy",
+        "tail_length_carapace_mm",
+        # "tail_length_carapace_accuracy",
+        "tail_length_vent_mm",
+        # "tail_length_vent_accuracy",
+        "tail_length_plastron_mm",
+        # "tail_length_plastron_accuracy",
+        "maximum_head_width_mm",
+        # "maximum_head_width_accuracy",
+        "maximum_head_length_mm",
+        # "maximum_head_length_accuracy",
+        "body_depth_mm",
+        # "body_depth_accuracy",
+        "body_weight_g",
+        # "body_weight_accuracy",
+        "handler",
+        "recorder",
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ()
+    search_fields = ()
+
+    handler = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=get_user_model(),
+            search_fields=[
+                "username__icontains",
+                "name__icontains",
+                "role__icontains",
+                "email__icontains"]
+        )
+    )
+    recorder = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=get_user_model(),
+            search_fields=[
+                "username__icontains",
+                "name__icontains",
+                "role__icontains",
+                "email__icontains"]
+        )
+    )
+
+    def get_queryset(self, request):
+        return super(
+            TurtleMorphometricObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'handler',
+            'recorder',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
 
 @admin.register(TagObservation)
 class TagObservationAdmin(ObservationAdminMixin):
@@ -331,22 +470,70 @@ class TagObservationAdmin(ObservationAdminMixin):
     animal_name.short_description = 'Animal Name'
 
 
-@admin.register(NestTagObservation)
-class NestTagObservationAdmin(ObservationAdminMixin):
-    """Admin for NestTagObservation."""
+@admin.register(TurtleDamageObservation)
+class TurtleDamageObservationAdmin(ObservationAdminMixin):
+    """Admin for TurtleDamageObservation."""
 
+    # save_on_top = True
+    # date_hierarchy = 'encounter__when'
     list_display = ObservationAdminMixin.LIST_FIRST + (
-        'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
+        'body_part',
+        'damage_type',
+        'damage_age',
+        'description',
     ) + ObservationAdminMixin.LIST_LAST
-    list_filter = ObservationAdminMixin.LIST_FILTER + \
-        ('flipper_tag_id', 'tag_label',)
-    search_fields = ('flipper_tag_id', 'date_nest_laid',
-                     'tag_label', 'comments')
 
-    def tag_name(self, obj):
-        """Nest tag name."""
-        return obj.name
-    tag_name.short_description = 'Nest Tag ID'
+    list_filter = ObservationAdminMixin.LIST_FILTER + (
+        'body_part',
+        'damage_type',
+        'damage_age',
+    )
+
+    def get_queryset(self, request):
+        return super(
+            TurtleDamageObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
+
+@admin.register(TurtleNestDisturbanceObservation)
+class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
+    """Admin for TurtleNestDisturbanceObservation."""
+
+    # save_on_top = True
+    # date_hierarchy = 'encounter__when'
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        'disturbance_cause',
+        'disturbance_cause_confidence',
+        'disturbance_severity',
+        'comments',
+    ) + ObservationAdminMixin.LIST_LAST
+
+    list_filter = ObservationAdminMixin.LIST_FILTER + (
+        'disturbance_cause_confidence',
+        'disturbance_severity',
+    )
+
+    def get_queryset(self, request):
+        return super(
+            TurtleNestDisturbanceObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
 
 
 @admin.register(TurtleNestObservation)
@@ -364,25 +551,228 @@ class TurtleNestObservationAdmin(ObservationAdminMixin):
     list_filter = ObservationAdminMixin.LIST_FILTER + \
         ('nest_position', 'eggs_laid',)
 
+    def get_queryset(self, request):
+        return super(
+            TurtleNestObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
 
-@admin.register(TurtleNestDisturbanceObservation)
-# class TurtleNestDisturbanceObservationAdmin(VersionAdmin, admin.ModelAdmin):
-class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleNestDisturbanceObservation."""
 
-    # save_on_top = True
-    # date_hierarchy = 'encounter__when'
+@admin.register(NestTagObservation)
+class NestTagObservationAdmin(ObservationAdminMixin):
+    """Admin for NestTagObservation."""
+
     list_display = ObservationAdminMixin.LIST_FIRST + (
-        'disturbance_cause',
-        'disturbance_cause_confidence',
-        'disturbance_severity',
-        'comments',
+        'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
     ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ('flipper_tag_id', 'tag_label',)
+    search_fields = ('flipper_tag_id', 'date_nest_laid',
+                     'tag_label', 'comments')
 
-    list_filter = ObservationAdminMixin.LIST_FILTER + (
-        'disturbance_cause_confidence',
-        'disturbance_severity',
-    )
+    def tag_name(self, obj):
+        """Nest tag name."""
+        return obj.name
+    tag_name.short_description = 'Nest Tag ID'
+
+    def get_queryset(self, request):
+        return super(
+            NestTagObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
+@admin.register(HatchlingMorphometricObservation)
+class HatchlingMorphometricObservationAdmin(ObservationAdminMixin):
+    """Admin for HatchlingMorphometricObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        "straight_carapace_length_mm",
+        "straight_carapace_width_mm",
+        "body_weight_g"
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ()
+    search_fields = ()
+
+    def get_queryset(self, request):
+        return super(
+            HatchlingMorphometricObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
+@admin.register(TurtleHatchlingEmergenceObservation)
+class TurtleHatchlingEmergenceObservationAdmin(ObservationAdminMixin):
+    """Admin for TurtleHatchlingEmergenceObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        "bearing_to_water_degrees",
+        "bearing_leftmost_track_degrees",
+        "bearing_rightmost_track_degrees",
+        "no_tracks_main_group",
+        "no_tracks_main_group_min",
+        "no_tracks_main_group_max",
+        "outlier_tracks_present",
+        "path_to_sea_comments",
+        "hatchling_emergence_time_known",
+        "cloud_cover_at_emergence_known",
+        "light_sources_present",
+        "hatchling_emergence_time",
+        "hatchling_emergence_time_accuracy",
+        "cloud_cover_at_emergence",
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ()
+    search_fields = ()
+
+    def get_queryset(self, request):
+        return super(
+            TurtleHatchlingEmergenceObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
+@admin.register(TurtleHatchlingEmergenceOutlierObservation)
+class TurtleHatchlingEmergenceOutlierObservationAdmin(ObservationAdminMixin):
+    """Admin for TurtleHatchlingEmergenceOutlierObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        "bearing_outlier_track_degrees",
+        "outlier_group_size",
+        "outlier_track_comment",
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ()
+    search_fields = ()
+
+    def get_queryset(self, request):
+        return super(
+            TurtleHatchlingEmergenceOutlierObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
+@admin.register(LightSourceObservation)
+class LightSourceObservationAdmin(ObservationAdminMixin):
+    """Admin for LightSourceObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        "bearing_light_degrees",
+        "light_source_type",
+        "light_source_description",
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ()
+    search_fields = ()
+
+    def get_queryset(self, request):
+        return super(
+            LightSourceObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
+@admin.register(TrackTallyObservation)
+class TrackTallyObservationAdmin(ObservationAdminMixin):
+    """Admin for TrackTallyObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        "species",
+        "nest_age",
+        "nest_type",
+        "tally",
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ("species",
+         "nest_age",
+         "nest_type",)
+    search_fields = ()
+
+    def get_queryset(self, request):
+        return super(
+            TrackTallyObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
+@admin.register(TurtleNestDisturbanceTallyObservation)
+class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
+    """Admin for TurtleNestDisturbanceTallyObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        "species",
+        "disturbance_cause",
+        "no_nests_disturbed",
+        "no_tracks_encountered",
+        "comments"
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ("species",
+         "disturbance_cause",)
+    search_fields = ("comments", )
+
+    def get_queryset(self, request):
+        return super(
+            TurtleNestDisturbanceTallyObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
 
 
 class FieldMediaAttachmentInline(admin.TabularInline):
@@ -654,8 +1044,8 @@ class AnimalEncounterAdmin(EncounterAdmin):
         TurtleMorphometricObservationInline,
         DugongMorphometricObservationInline,
         TurtleNestObservationInline,
-        ManagementActionInline,
         NestTagObservationInline,
+        ManagementActionInline,
         CustomStateLogInline
     ]
 
@@ -739,7 +1129,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         ).get_queryset(
             request
         ).prefetch_related(
-            'observer', 'reporter', 'area', 'site',
+            'observer', 'reporter', 'area', 'site'
         )
 
     def habitat_display(self, obj):

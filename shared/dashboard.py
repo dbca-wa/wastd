@@ -59,6 +59,7 @@ class AdminDashboard(Dashboard):
                     column=2,
                     collapsible=True,
                     models=(
+                        'wastd.observations.models.MediaAttachment',
                         # Adult animals:
                         'wastd.observations.models.TagObservation',
                         'wastd.observations.models.TurtleMorphometricObservation',
