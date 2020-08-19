@@ -402,7 +402,6 @@ class AnimalEncounterViewSet(BatchUpsertViewSet):
         symlink_resources(t_dir, data)
 
 
-
 class TurtleNestEncounterFilter(FilterSet):
     when = DateFilter()
 
@@ -521,7 +520,6 @@ class TurtleNestEncounterViewSet(BatchUpsertViewSet):
     def pre_latex(self, t_dir, data):
         """Symlink photographs to temp dir for use by latex template."""
         symlink_resources(t_dir, data)
-
 
 
 class LineTransectEncounterViewSet(BatchUpsertViewSet):
@@ -709,6 +707,7 @@ class TurtleDamageObservationViewSet(ObservationBatchUpsertViewSet):
     """Observation of turtle damages or injuries including Encounter details.
 
     Can be many per Encounter.
+    [Admin](/admin/observations/turtledamageobservation/)
     """
     queryset = models.TurtleDamageObservation.objects.all().prefetch_related(
         "encounter__observer", "encounter__reporter",
@@ -729,7 +728,7 @@ class TurtleDamageObservationViewSet(ObservationBatchUpsertViewSet):
 class TurtleMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
     """Morphometric measurements of a turtle including Encounter details.
 
-    Admin: see Encounter inlines.
+    [Admin](/admin/observations/turtlemorphometricobservation/)
     """
     queryset = models.TurtleMorphometricObservation.objects.all().prefetch_related(
         "encounter__observer", "encounter__reporter",
@@ -753,7 +752,7 @@ class HatchlingMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
     """Morphometric measurements of a hatchling including Encounter details.
 
     Can be many per Encounter.
-    Admin: see Encounter inlines.
+    [Admin](/admin/observations/hatchlingmorphometricobservation/)
     """
     queryset = models.HatchlingMorphometricObservation.objects.all().prefetch_related(
         "encounter", "encounter__observer", "encounter__reporter",
@@ -827,7 +826,7 @@ class TurtleHatchlingEmergenceObservationViewSet(ObservationBatchUpsertViewSet):
     """Turtle hatchling emergence observation (fan angles) including Encounter details.
 
     Typically one per Encounter.
-    Admin: see Encounter inlines.
+    [Admin](/admin/observations/turtlehatchlingemergenceobservation/)
     """
     queryset = models.TurtleHatchlingEmergenceObservation.objects.all().prefetch_related(
         "encounter", "encounter__observer", "encounter__reporter",
@@ -843,7 +842,7 @@ class TurtleHatchlingEmergenceOutlierObservationViewSet(ObservationBatchUpsertVi
     """Fan angle outliers including Encounter details.
 
     Can be many per Encounter.
-    Admin: see Encounter inlines.
+    [Admin](/admin/observations/turtlehatchlingemergenceoutlierobservation/)
     """
     queryset = models.TurtleHatchlingEmergenceOutlierObservation.objects.all().prefetch_related(
         "encounter", "encounter__observer", "encounter__reporter",
@@ -859,7 +858,7 @@ class LightSourceObservationViewSet(ObservationBatchUpsertViewSet):
     """Known light sources during turtle hatching including Encounter details.
 
     Can be many per Encounter.
-    Admin: see Encounter inlines.
+    [Admin](/admin/observations/lightsourceobservation/)
     """
     queryset = models.LightSourceObservation.objects.all().prefetch_related(
         "encounter", "encounter__observer", "encounter__reporter",

@@ -106,8 +106,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-            'source': 'odk',
-            'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e'
+            'source': 2,
+            'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+            'encounter_source': self.encounter.source,
+            'encounter_source_id': self.encounter.source_id,
             }
         )
         self.assertEqual(resp.status_code, 201)
@@ -118,8 +120,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         self.assertEqual(TagObservation.objects.count(), 0)
         url = reverse('api:tagobservation-list')
         data = {
-            'source': 'odk',
+            'source': 2,
             'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+            'encounter_source': self.encounter.source,
+            'encounter_source_id': self.encounter.source_id,
             'name': 'ABC123',
             'tag_type': 'flipper-tag',
             'tag_location': 'flipper-front-left-1',
@@ -141,8 +145,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'title': 'Media attachment',
                 'attachment': testfile,
             },
@@ -155,8 +161,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'name': 'ABC123',
                 'recorder_id': self.user.id,
                 'handler_id': self.user.id,
@@ -172,8 +180,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'flipper_tag_id': 'ABC123',
                 'date_nest_laid': date.today(),
             }
@@ -185,8 +195,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'management_actions': 'Some actions',
                 'comments': 'A comment',
             }
@@ -198,8 +210,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'body_part': 'flipper-front-left-1',
                 'damage_type': 'tip-amputated',
                 'damage_age': 'fresh',
@@ -213,8 +227,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'handler': self.user.pk,
                 'recorder': self.user.pk,
             }
@@ -226,8 +242,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'body_weight_g': 20,
             }
         )
@@ -264,8 +282,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'comments': 'Device ID 91c7fbd10d6f294b\nDug up, but crab prints obscured cause',
                 'disturbance_cause': 'unknown',
                 'disturbance_cause_confidence': 'guess',
@@ -279,8 +299,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'eggs_laid': True,
                 'egg_count': 10,
             }
@@ -292,8 +314,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'bearing_to_water_degrees': 0,
             }
         )
@@ -304,8 +328,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'bearing_outlier_track_degrees': 0,
             }
         )
@@ -316,8 +342,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'source': 'odk',
+                'source': 2,
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
                 'bearing_light_degrees': 0,
             }
         )

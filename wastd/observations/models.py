@@ -2569,10 +2569,10 @@ class MediaAttachment(Observation):
         verbose_name=_("File attachment"),
         help_text=_("Upload the file"),)
 
-    class Meta:
-        """Class options."""
-
-        # base_manager_name = 'base_objects'
+    # class Meta:
+    #    """Class options."""#
+    #
+    #    # base_manager_name = 'base_objects'
 
     def __str__(self):
         """The unicode representation."""
@@ -2586,6 +2586,21 @@ class MediaAttachment(Observation):
         except BaseException:
             fpath = None
         return fpath
+
+    @property
+    def thumbnail(self):
+        if self.attachment:
+            return mark_safe(
+                '<a href="{0}" target="_" rel="nofollow" '
+                'title="Click to view full screen in new browser tab">'
+                '<img src="{0}" alt="{1} {2}" style="height:100px;"></img>'
+                '</a>'.format(
+                self.attachment.url,
+                self.get_media_type_display(),
+                self.title
+            ))
+        else:
+            return ""
 
 
 class TagObservation(Observation):
@@ -3014,15 +3029,13 @@ class HatchlingMorphometricObservation(Observation):
 
     def __str__(self):
         """The unicode representation."""
-        tpl = u"{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
+        tpl = u"{0} Hatchling SCL {1} mm, SCW {2} mm, Wt {3} g"
         return tpl.format(
             self.pk,
-            self.encounter.species,
             self.straight_carapace_length_mm,
             self.straight_carapace_width_mm,
             self.body_weight_g,
         )
-
 
 class DugongMorphometricObservation(Observation):
     """Morphometric measurements of a Dugong at an AnimalEncounter."""
