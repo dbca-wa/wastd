@@ -17,10 +17,20 @@ from sentry_sdk import capture_message
 
 from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin
 
-from wastd.observations.filters import AnimalEncounterFilter, AnimalEncounterFilter2, EncounterFilter
-from wastd.observations.forms import AnimalEncounterListFormHelper, EncounterListFormHelper, AnimalEncounterForm, FlipperTagObservationFormSet
-from wastd.observations.models import AnimalEncounter, Encounter, TagObservation
-from wastd.observations.resources import AnimalEncounterResource
+from wastd.observations.filters import (
+    AnimalEncounterFilter,
+    AnimalEncounterFilter2,
+    EncounterFilter,
+    TurtleNestEncounterFilter
+)
+from wastd.observations.forms import (
+    AnimalEncounterListFormHelper,
+    EncounterListFormHelper,
+    AnimalEncounterForm,
+    FlipperTagObservationFormSet
+)
+from wastd.observations.models import AnimalEncounter, TurtleNestEncounter, Encounter, TagObservation
+from wastd.observations.resources import AnimalEncounterResource, TurtleNestEncounterResource
 from wastd.observations.tasks import import_odka, update_names
 
 
@@ -236,6 +246,33 @@ class AnimalEncounterUpdate(UpdateView):
                 flipper_tags.instance = self.object
                 flipper_tags.save()
         return super(AnimalEncounterUpdate, self).form_valid(form)
+
+
+class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+    model = TurtleNestEncounter
+    template_name = 'pages/default_list.html'
+    paginate_by = 20
+    filter_class = TurtleNestEncounterFilter
+    resource_class = TurtleNestEncounterResource
+
+    def get_context_data(self, **kwargs):
+        context = super(TurtleNestEncounterList, self).get_context_data(**kwargs)
+        context['list_filter'] = TurtleNestEncounterFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+
+    def get_queryset(self):
+        qs = super(TurtleNestEncounterList, self).get_queryset().prefetch_related(
+            "observer", "reporter", "area", "site").order_by('-when')
+        return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
+
+
+class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
+    model = TurtleNestEncounter
+
+    def get_context_data(self, **kwargs):
+        data = super(TurtleNestEncounterDetail, self).get_context_data(**kwargs)
+        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        return data
 
 
 # Django-Rest-Swagger View ---------------------------------------------------#

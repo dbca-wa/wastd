@@ -110,7 +110,9 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         Unique fields and CSRF middleware token are removed from data.
         """
+        logger.info(data)
         data = self.resolve_fks(data)
+        logger.info(data)
         unique_fields = {x: data[x] for x in self.uid_fields}
         [data.pop(x) for x in self.uid_fields if x in data]
         if 'csrfmiddlewaretoken' in data:

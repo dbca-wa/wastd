@@ -2287,6 +2287,14 @@ class TurtleNestEncounter(Encounter):
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
 
+    # -------------------------------------------------------------------------
+    # URLs
+
+    def get_absolute_url(self):
+        return reverse('observations:turtlenestencounter-detail', kwargs={'pk': self.pk})
+
+    def card_template(self):
+        return 'observations/turtlenestencounter_card.html'
 
 class LineTransectEncounter(Encounter):
     """Encounter with a line transect.
@@ -2358,6 +2366,24 @@ class LineTransectEncounter(Encounter):
         if self.name is not None:
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
+
+    # -------------------------------------------------------------------------
+    # URLs
+    def get_absolute_url(self):
+        """Detail url."""
+        return self.get_absolute_url()
+
+    @property
+    def list_url(self):
+        """ObsGroup list is not defined."""
+        return self.list_url()
+
+    # @property
+    # def update_url(self):
+    #     """Custom update url contains occ pk and obsgroup pk."""
+    #     return reverse('{0}:{1}-update'.format(
+    #         self._meta.app_label, self._meta.model_name),
+    #         kwargs={'occ_pk': self.encounter.pk, 'obs_pk': self.pk})
 
 
 class LoggerEncounter(Encounter):

@@ -574,7 +574,7 @@ class MediaAttachmentViewSet(ObservationBatchUpsertViewSet):
     """Binary media (photos, datasheet PDFs etc) with Encounter details.
 
     Can be many per Encounter.
-    Admin: see Encounter inlines.
+    [Admin](/admin/observations/media-attachments/)
     """
     queryset = models.MediaAttachment.objects.all().prefetch_related(
         "encounter__observer", "encounter__reporter",

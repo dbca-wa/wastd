@@ -8,7 +8,7 @@ from django_filters import widgets, FilterSet
 from rest_framework_gis import filters as gis_filters
 from rest_framework_gis.filterset import GeoFilterSet
 
-from wastd.observations.models import AnimalEncounter, Area, Encounter
+from wastd.observations.models import AnimalEncounter, Area, Encounter, TurtleNestEncounter
 
 
 class AreaFilter(GeoFilterSet):
@@ -118,4 +118,21 @@ class AnimalEncounterFilter2(FilterSet):
             'maturity',
             'health',
             'checked_for_flipper_tags',
+        ]
+
+class TurtleNestEncounterFilter(FilterSet):
+    class Meta:
+        model = TurtleNestEncounter
+        fields = [
+            'encounter_type',
+            'species',
+            'nest_type',
+            'nest_age',
+            'habitat',
+            'disturbance',
+            'nest_tagged',
+            'logger_found',
+            'eggs_counted',
+            'hatchlings_measured',
+            'fan_angles_measured',
         ]
