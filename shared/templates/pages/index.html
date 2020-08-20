@@ -44,14 +44,14 @@
         <a class="btn btn-primary btn-block"
            href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging"
            title="Browse, filter and search animal encounters">
-          Tagged Turtles »
+          Browse »
         </a>
 
         {% if request.user.is_staff %}
         <a class="btn btn-success btn-block"
            href="{% url 'admin:observations_animalencounter_changelist' %}?encounter_type=tagging"
            title="Curate and QA animal encounters">
-          QA Turtle Tagging data »
+          Curate »
         </a>
         {% endif %}
       </p>
@@ -70,18 +70,27 @@
         hatchling morphometrics, fan angles, and light disturbance.
       </p>
       <p>
-        <a class="btn btn-primary btn-block" href=""
+        <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}"
             title="Browse, filter and search Turtle Nest Encounters">
-          Browse Turtle Nests »
+          Browse »
         </a>
-        {% if request.user.is_staff %}
+      </p>
+      <p>
+        <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}?disturbance=present"
+            title="Browse, filter and search Turtle Nest Encounters">
+          Browse (disturbed) »
+        </a>
+      </p>
+
+      {% if request.user.is_staff %}
+      <p>
         <a class="btn btn-success btn-block"
            href="{% url 'admin:observations_turtlenestencounter_changelist' %}"
            title="Curate and QA animal encounters">
-          QA Turtle Nests »
+          Curate »
         </a>
-        {% endif %}
       </p>
+      {% endif %}
 
     </div>
 
@@ -110,6 +119,15 @@
           Browse »
         </a>
       </p>
+      {% if request.user.is_staff %}
+      <p>
+        <a class="btn btn-success btn-block"
+           href="{% url 'admin:observations_animalencounter_changelist' %}?encounter_type=stranding"
+           title="Curate and QA marine wildlife incidents">
+          Curate »
+        </a>
+      </p>
+      {% endif %}
       <p>
         <a class="btn btn-primary btn-block" href=""
             title="Get our app to report Marine Wildlife Incidents">

@@ -1,0 +1,64 @@
+<div class="card col-12 shadow-lg">
+  <div class="card-header">
+    <h6 class="card-title">
+      <span class="oi oi-calendar" aria-hidden="true"></span>
+      {{ object.when|date:'d M Y H:i' }}
+      {{ object.get_encounter_type_display }}
+
+      <span class="oi oi-eye" title="Name" aria-hidden="true"></span>
+      {{ object.get_taxon_display }} - {{ object.get_species_display }}
+
+      <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
+      {{ object.observer }}
+
+      <span class="float-right">
+        <a class="mr-2 text-primary" type="button" data-toggle="collapse"
+          href="#details{{ object.id }}" aria-expanded="false" aria-controls="details{{ object.id }}"
+          title="Toggle details">
+          <span class="oi oi-expand-down" title="Name" aria-hidden="true"></span>
+        </a>
+        {% include "shared/admin_qa.html" with label=False %}
+      </span>
+
+    </h6>
+  </div>
+
+  <div class="collapse" id="details{{ object.id }}">
+  <div class="card-body">
+    <div class="card-text">
+      <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
+      {{ object.description | default:"-" }}
+    </div>
+    {% for obs in object.observation_set.all %}
+    <div class="card-text ml-2">
+      {{ obs.as_html|safe }}
+    </div>
+    {% endfor %}
+
+    {% if object.photographs %}
+    <div class="card-columns mt-2">
+      {% for m in object.photographs %}
+      <div class="card shadow-lg">
+        <img src="{{ m.attachment.url }}" class="card-img-top" alt="{{ m.media_type|title }}">
+        <div class="card-body">
+          <p class="card-text">{{ m.title }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!--
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-12">
+        Footer content
+      </div>
+    </div>
+  </div>
+  -->
+
+  </div><!-- /#details{{ object.id }} -->
+</div><!-- /.card -->
