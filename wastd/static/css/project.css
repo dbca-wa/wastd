@@ -111,3 +111,6 @@ body{
 
 /* Leaflet mapwidget raw textarea width */
 .django-leaflet-raw-textarea {width: 100%;}
+
+/* Leaflet widget height */
+.leaflet-container, .leaflet-container-default {min-height: 500px;}

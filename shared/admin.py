@@ -15,7 +15,7 @@ from reversion.admin import VersionAdmin
 S2ATTRS = {'data-width': '50em'}
 
 LEAFLET_WIDGET_ATTRS = {
-    'map_height': '500px',
+    'map_height': '700px',
     'map_width': '100%',
     'display_raw': 'true',
     'map_srid': 4326,

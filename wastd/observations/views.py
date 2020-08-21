@@ -18,18 +18,24 @@ from sentry_sdk import capture_message
 from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin
 
 from wastd.observations.filters import (
-    AnimalEncounterFilter,
-    AnimalEncounterFilter2,
     EncounterFilter,
+    AnimalEncounterFilter,
     TurtleNestEncounterFilter
 )
 from wastd.observations.forms import (
-    AnimalEncounterListFormHelper,
     EncounterListFormHelper,
     AnimalEncounterForm,
+    AnimalEncounterListFormHelper,
     FlipperTagObservationFormSet
 )
-from wastd.observations.models import AnimalEncounter, TurtleNestEncounter, Encounter, TagObservation
+from wastd.observations.models import (
+    Encounter,
+    AnimalEncounter,
+    TurtleNestEncounter,
+    LoggerEncounter,
+    LineTransectEncounter,
+    TagObservation
+)
 from wastd.observations.resources import AnimalEncounterResource, TurtleNestEncounterResource
 from wastd.observations.tasks import import_odka, update_names
 
@@ -161,18 +167,19 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
     model = AnimalEncounter
     template_name = 'pages/default_list.html'
     paginate_by = 20
-    filter_class = AnimalEncounterFilter2
+    filter_class = AnimalEncounterFilter
     resource_class = AnimalEncounterResource
 
     def get_context_data(self, **kwargs):
         context = super(AnimalEncounterList, self).get_context_data(**kwargs)
-        context['list_filter'] = AnimalEncounterFilter2(self.request.GET, queryset=self.get_queryset())
+        context['list_filter'] = AnimalEncounterFilter(
+            self.request.GET, queryset=self.get_queryset())
         return context
 
     def get_queryset(self):
         qs = super(AnimalEncounterList, self).get_queryset().prefetch_related(
             "observer", "reporter", "area", "site").order_by('-when')
-        return AnimalEncounterFilter2(self.request.GET, queryset=qs).qs
+        return AnimalEncounterFilter(self.request.GET, queryset=qs).qs
 
 
 class AnimalEncounterCreate(CreateView):
@@ -257,7 +264,9 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
 
     def get_context_data(self, **kwargs):
         context = super(TurtleNestEncounterList, self).get_context_data(**kwargs)
-        context['list_filter'] = TurtleNestEncounterFilter(self.request.GET, queryset=self.get_queryset())
+        context['list_filter'] = TurtleNestEncounterFilter(
+            self.request.GET, queryset=self.get_queryset()
+        )
         return context
 
     def get_queryset(self):

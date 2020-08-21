@@ -2121,6 +2121,16 @@ class AnimalEncounter(UrlsMixin, Encounter):
         return slugify.slugify("-".join(nameparts))
 
     @property
+    def latitude(self):
+        """Return the WGS 84 DD latitude."""
+        return self.where.y
+
+    @property
+    def longitude(self):
+        """Return the WGS 84 DD longitude."""
+        return self.where.x
+
+    @property
     def is_stranding(self):
         """Return whether the Encounters is stranding or tagging.
 
@@ -2287,6 +2297,16 @@ class TurtleNestEncounter(Encounter):
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
 
+    @property
+    def latitude(self):
+        """Return the WGS 84 DD latitude."""
+        return self.where.y
+
+    @property
+    def longitude(self):
+        """Return the WGS 84 DD longitude."""
+        return self.where.x
+
     # -------------------------------------------------------------------------
     # URLs
 
@@ -2295,6 +2315,7 @@ class TurtleNestEncounter(Encounter):
 
     def card_template(self):
         return 'observations/turtlenestencounter_card.html'
+
 
 class LineTransectEncounter(Encounter):
     """Encounter with a line transect.
@@ -2366,6 +2387,16 @@ class LineTransectEncounter(Encounter):
         if self.name is not None:
             nameparts.append(self.name)
         return slugify.slugify("-".join(nameparts))
+
+    @property
+    def latitude(self):
+        """Return the WGS 84 DD latitude."""
+        return self.where.y
+
+    @property
+    def longitude(self):
+        """Return the WGS 84 DD longitude."""
+        return self.where.x
 
     # -------------------------------------------------------------------------
     # URLs
@@ -2494,6 +2525,16 @@ class LoggerEncounter(Encounter):
     def inferred_name(self):
         """Set the encounter name from logger ID."""
         return self.logger_id
+
+    @property
+    def latitude(self):
+        """Return the WGS 84 DD latitude."""
+        return self.where.y
+
+    @property
+    def longitude(self):
+        """Return the WGS 84 DD longitude."""
+        return self.where.x
 
 
 # Observation models ---------------------------------------------------------#
