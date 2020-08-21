@@ -125,6 +125,7 @@ class CustomDateTimeRangeFilter(django_filters.DateRangeFilter):
         }),
     }
 
+
 FILTER_OVERRIDES = {
     models.CharField: {
         'filter_class': django_filters.CharFilter,
