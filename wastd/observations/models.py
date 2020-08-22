@@ -1376,7 +1376,7 @@ def delete_observations(sender, instance, **kwargs):
 
 
 # Encounter models -----------------------------------------------------------#
-class Encounter(QualityControlMixin, PolymorphicModel, geo_models.Model):
+class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Model):
     """The base Encounter class.
 
     * When: Datetime of encounter, stored in UTC, entered and displayed in local
@@ -1626,6 +1626,8 @@ class Encounter(QualityControlMixin, PolymorphicModel, geo_models.Model):
         """
         return rest_reverse(self._meta.model_name + '-detail',
                             kwargs={'pk': self.pk, 'format': format})
+
+
 
     # -------------------------------------------------------------------------
     # Derived properties
@@ -1925,7 +1927,7 @@ class Encounter(QualityControlMixin, PolymorphicModel, geo_models.Model):
             return None
 
 
-class AnimalEncounter(UrlsMixin, Encounter):
+class AnimalEncounter(Encounter):
     """The encounter of an animal of a species.
 
     Extends the base Encounter class with:
@@ -2309,7 +2311,6 @@ class TurtleNestEncounter(Encounter):
 
     # -------------------------------------------------------------------------
     # URLs
-
     def get_absolute_url(self):
         return reverse('observations:turtlenestencounter-detail', kwargs={'pk': self.pk})
 
@@ -2397,24 +2398,6 @@ class LineTransectEncounter(Encounter):
     def longitude(self):
         """Return the WGS 84 DD longitude."""
         return self.where.x
-
-    # -------------------------------------------------------------------------
-    # URLs
-    def get_absolute_url(self):
-        """Detail url."""
-        return self.get_absolute_url()
-
-    @property
-    def list_url(self):
-        """ObsGroup list is not defined."""
-        return self.list_url()
-
-    # @property
-    # def update_url(self):
-    #     """Custom update url contains occ pk and obsgroup pk."""
-    #     return reverse('{0}:{1}-update'.format(
-    #         self._meta.app_label, self._meta.model_name),
-    #         kwargs={'occ_pk': self.encounter.pk, 'obs_pk': self.pk})
 
 
 class LoggerEncounter(Encounter):
