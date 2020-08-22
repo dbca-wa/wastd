@@ -31,7 +31,26 @@
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-left">Browse all Animal Encounters</span>
               </a>
-
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">Animal Encounter flavours</h6>
+              <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging"
+                 title="Browse, filter and search all Turtle Tagging encounters">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Nesting turtles</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?checked_for_injuries=present"
+                 title="Browse, filter and search all encounters with injured turtles, including tagging and strandings">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Injured Turtles</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?checked_for_flipper_tags=present"
+                 title="Browse, filter and search all encounters with injured turtles, including tagging and strandings">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Flipper tagged Turtles</span>
+              </a>
             </div>
           </li>
 
@@ -43,15 +62,76 @@
               aria-haspopup="true"
               aria-expanded="false">
             <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-            Tracks
+            Nests and Tracks
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-tracks">
 
               <a class="dropdown-item"
-                 href=""
+                 href="{% url 'observations:turtlenestencounter-list' %}"
                  title="Browse, filter and search all Turtle Nest Encounters">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 Browse all Turtle Nest Encounters
+              </a>
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">Turtle Nest Encounter flavours</h6>
+              <a class="dropdown-item"
+                 href="{% url 'observations:turtlenestencounter-list' %}?disturbance=present"
+                 title="Browse, filter and search disturbed or predated nests">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Disturbed nests
+              </a>
+              <a class="dropdown-item"
+                 href=""
+                 title="Browse, filter and search general disturbance or predator presence">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                General dist/pred
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:turtlenestencounter-list' %}?nest_tagged=present"
+                 title="Browse, filter and search tagged nests">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Tagged nests
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:turtlenestencounter-list' %}?logger_found=present"
+                 title="Browse, filter and search Turtle Nest Encounters where loggers were deployed or found">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Nests with loggers
+              </a>
+              <a class="dropdown-item"
+                 href=""
+                 title="Browse, filter and search Logger Encounters, including the handling of loggers outside of nests">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Logger Encounters
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:turtlenestencounter-list' %}?eggs_counted=present"
+                 title="Browse, filter and search eggscavated nests">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Excavated nests
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:turtlenestencounter-list' %}?hatchlings_measured=present"
+                 title="Browse, filter and search excavated nests with hatchling morphometric measurements">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Nests with live hatchlings
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:turtlenestencounter-list' %}?fan_angles_measured=present"
+                 title="Browse, filter and search nests with fan angles">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Nests with fan angles
+              </a>
+
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">QA shortlists</h6>
+
+
+              <a class="dropdown-item"
+                 href="{% url 'observations:turtlenestencounter-list' %}?species=cheloniidae-fam"
+                 title="Browse, filter and search nests with fan angles">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Tracks with uncertain species ID
               </a>
 
             </div>

@@ -61,29 +61,15 @@
         hatchling morphometrics, fan angles, and light disturbance.
       </p>
       <p>
+        Find shortcuts to more options under "Nests and Tracks".
+      </p>
+      <p>
         <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}"
             title="Browse, filter and search Turtle Nest Encounters">
           Browse »
         </a>
       </p>
-      <p>
-        <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}?disturbance=present"
-            title="Browse, filter and search Turtle Nest Encounters">
-          Browse disturbed nests »
-        </a>
-      </p>
-      <p>
-        <a class="btn btn-primary btn-block" href=""
-            title="Browse, filter and search General Disturbances / Predator presence">
-          Browse general dist / pred (coming soon) »
-        </a>
-      </p>
-      <p>
-        <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}?species=cheloniidae-fam"
-            title="Browse, filter and search Turtle Nest Encounters">
-          Browse uncertain species ID »
-        </a>
-      </p>
+
       {% if request.user.is_staff %}
       <p>
         <a class="btn btn-success btn-block"

@@ -160,7 +160,7 @@ class UrlsMixin(models.Model):
 
     This mixin provides the following URLs:
 
-    * absolute_admin_url() - implement or receive NotImplementedError
+    * absolute_admin_url()
     * get_absolute_url() - available in templates as object.get_absolute_url
     * list_url (classmethod)
     * create_url (classmethod)
