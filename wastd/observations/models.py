@@ -525,6 +525,18 @@ OBSERVATION_ICONS = {
     "absent": "fa fa-times",
     "present": "fa fa-check"}
 
+OBSERVATION_COLOURS = {
+    NA_VALUE: "secondary",
+    "absent": "dark",
+    "present": "primary",
+    "yes": "primary",
+    "no": "dark",
+    False: "dark",
+    True: "primary",
+    "False": "dark",
+    "True": "primary"
+    }
+
 PHOTO_CHOICES = NA + (("see photos", "See attached photos for details"),)
 
 PHOTO_ICONS = {

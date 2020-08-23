@@ -1,64 +1,33 @@
-<div class="card col-12 shadow-lg">
-  <div class="card-header">
-    <h6 class="card-title">
-      <span class="oi oi-calendar" aria-hidden="true"></span>
-      {{ object.when|date:'d M Y H:i' }}
-      {{ object.get_encounter_type_display }}
+{% extends "observations/encounter_card.html" %}
+{% load observations %}
 
-      <span class="oi oi-eye" title="Name" aria-hidden="true"></span>
-      {{ object.get_nest_age_display }} {{ object.get_species_display }} {{ object.get_nest_type_display }}
+{% block title_row %}
+      {{ object.get_nest_age_display }}
+      {{ object.get_species_display }}
+      {{ object.get_nest_type_display }}
+{% endblock %}
 
-      <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
-      {{ object.observer }}
+{% block title_labels %}
+<span class="badge badge-{{ object.disturbance|obs_colour }}"
+  title="Disturbance or predation: {{ object.get_disturbance_display }}">dist</span>
+<span class="badge badge-{{ object.nest_tagged|obs_colour }}"
+  title="Nest tag: {{ object.get_nest_tagged_display }}">tag</span>
+<span class="badge badge-{{ object.logger_found|obs_colour }}"
+  title="Logger: {{ object.get_logger_found_display }}">log</span>
+<span class="badge badge-{{ object.eggs_counted|obs_colour }}"
+  title="Nest excavation: {{ object.get_eggs_counted_display }}">eggs</span>
+<span class="badge badge-{{ object.hatchlings_measured|obs_colour }}"
+  title="Hatchlings measured: {{ object.get_hatchlings_measured_display }}">hatch</span>
+<span class="badge badge-{{ object.fan_angles_measured|obs_colour }}"
+  title="Fan angles: {{ object.get_fan_angles_measured_display }}">fan</span>
 
-      <span class="float-right">
-        <a class="mr-2 text-primary" type="button" data-toggle="collapse"
-          href="#details{{ object.id }}" aria-expanded="false" aria-controls="details{{ object.id }}"
-          title="Toggle details">
-          <span class="oi oi-expand-down" title="Name" aria-hidden="true"></span>
-        </a>
-        {% include "shared/admin_qa.html" with label=False %}
-      </span>
 
-    </h6>
-  </div>
 
-  <div class="collapse" id="details{{ object.id }}">
-  <div class="card-body">
-    <div class="card-text">
-      <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
-      {{ object.description | default:"-" }}
-    </div>
-    {% for obs in object.observation_set.all %}
-    <div class="card-text ml-2">
-      {{ obs.as_html|safe }}
-    </div>
-    {% endfor %}
 
-    {% if object.photographs %}
-    <div class="card-columns mt-2">
-      {% for m in object.photographs %}
-      <div class="card shadow-lg">
-        <img src="{{ m.attachment.url }}" class="card-img-top" alt="{{ m.media_type|title }}">
-        <div class="card-body">
-          <p class="card-text">{{ m.title }}
-          </p>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-  </div>
 
-  <!--
-  <div class="card-footer">
-    <div class="row">
-      <div class="col-12">
-        Footer content
-      </div>
-    </div>
-  </div>
-  -->
 
-  </div><!-- /#details{{ object.id }} -->
-</div><!-- /.card -->
+
+
+
+
+{% endblock %}

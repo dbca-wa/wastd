@@ -20,7 +20,7 @@
     <div class="card card-lg detailarea m-0">
       <div class="card-header">
         <small class="float-right">
-          {% include "shared/update_links_qa.html" with label=False %}
+          {% include "shared/admin_qa.html" with label=False %}
         </small>
         <h3>{{ object.get_taxon_display }} - {{ object.get_species_display }}</h3>
       </div>
@@ -50,15 +50,16 @@
 
         <div class="row">
           <div class="col col-12">
-              <strong>Data source:</strong> {{ object.get_source_display }}<br>
-              <strong>Health status:</strong> {{ object.get_health_display }}<br>
-              <strong>Sex:</strong> {{ object.get_sex_display }}<br>
-              <strong>Maturity:</strong> {{ object.get_maturity_display }}<br>
+              <strong>Nest age:</strong> {{ object.get_nest_age_display }}<br>
+              <strong>Species:</strong> {{ object.get_species_display }}<br>
+              <strong>Nest type:</strong> {{ object.get_nest_type_display }}<br>
               {% for obs in object.observation_set.all %}
               <div class="row"><div class="col col-12">{{ obs.as_html|safe }}</div></div>
               {% endfor %}
           </div>
         </div><!-- /.row -->
+
+
       </div><!-- /.card-body -->
 
     </div><!-- /.card -->
@@ -70,31 +71,5 @@
       </div>
   </div><!-- /.col#occ-map -->
 </div><!-- .row#row-occ-detail -->
-
-<div id="row-occ-extra">
-  <div class="col col-12 mb-2">
-
-    <div class="card-group">
-    {% for tag in tags %}
-      <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 shadow-lg">
-
-        <div class="card-header">
-          <h5 class="card-title">
-            Tag ID {{ tag.name }}
-          </h5>
-        </div><!-- /.card-header -->
-
-        <div class="card-body">
-            Type: {{ tag.get_tag_type_display }}<br>
-            Location: {{ tag.get_tag_location_display }}
-        </div><!-- /.card-body -->
-
-      </div><!-- /.card -->
-    {% endfor %}
-    </div><!-- /.card-group -->
-
-  </div>
-</div><!-- .row#row-occ-extra -->
-
 
 {% endblock %}

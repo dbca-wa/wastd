@@ -7,7 +7,7 @@ from django.template.defaultfilters import register, stringfilter
 from django_fsm_log.models import StateLog
 from rest_framework.authtoken.models import Token
 
-from wastd.observations.models import OBSERVATION_ICONS, Encounter
+from wastd.observations.models import OBSERVATION_ICONS, OBSERVATION_COLOURS, Encounter
 
 register = template.Library()
 
@@ -74,6 +74,19 @@ def fa_observation_icon(observation_value):
     * na: did not measure
     """
     return OBSERVATION_ICONS[observation_value]
+
+@register.filter
+@stringfilter
+def obs_colour(observation_value):
+    """Turn a given present/absent/na value into a twitter-bootstrap colour
+
+    Uses ``wastd.observations.OBSERVATION_ICONS`` to resolve values for:
+
+    * present: primary
+    * absent: secondary
+    * na: dark
+    """
+    return OBSERVATION_COLOURS[observation_value]
 
 
 @register.filter
