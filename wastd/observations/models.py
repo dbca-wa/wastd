@@ -1177,6 +1177,9 @@ class Survey(QualityControlMixin, geo_models.Model):
         return reverse('admin:{0}_{1}_change'.format(
             self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    def card_template(self):
+        return 'observations/survey_card.html'
+
     @property
     def encounters(self):
         """Return the QuerySet of all Encounters within this SiteVisit unless it's a training run."""
@@ -2412,6 +2415,9 @@ class LineTransectEncounter(Encounter):
         return self.where.x
 
 
+    def card_template(self):
+        return 'observations/linetransectencounter_card.html'
+
 class LoggerEncounter(Encounter):
     """The encounter of an electronic logger during its life cycle.
 
@@ -2531,6 +2537,8 @@ class LoggerEncounter(Encounter):
         """Return the WGS 84 DD longitude."""
         return self.where.x
 
+    def card_template(self):
+        return 'observations/loggerencounter_card.html'
 
 # Observation models ---------------------------------------------------------#
 class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
@@ -2631,10 +2639,9 @@ class MediaAttachment(Observation):
         verbose_name=_("File attachment"),
         help_text=_("Upload the file"),)
 
-    # class Meta:
-    #    """Class options."""#
-    #
-    #    # base_manager_name = 'base_objects'
+    class Meta:
+        """Class opts."""
+        verbose_name = "Media Attachment"
 
     def __str__(self):
         """The unicode representation."""
@@ -2766,6 +2773,10 @@ class TagObservation(Observation):
         blank=True, null=True,
         help_text=_("Any other comments or notes."),)
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Tag Observation"
+
     def __str__(self):
         return "{0} {1} {2} on {3}".format(
             self.get_tag_type_display(),
@@ -2857,6 +2868,10 @@ class NestTagObservation(Observation):
         blank=True, null=True,
         help_text=_("Any other comments or notes."),)
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Nest Tag Observation"
+
     def __str__(self):
         """The unicode representation."""
         return u"{0} ({1})".format(self.name, self.get_status_display())
@@ -2912,6 +2927,11 @@ class ManagementAction(Observation):
         verbose_name=_("Comments"),
         blank=True, null=True,
         help_text=_("Any other comments or notes."),)
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Management Action"
+
 
     def __str__(self):
         """The unicode representation."""
@@ -3061,6 +3081,10 @@ class TurtleMorphometricObservation(Observation):
         verbose_name=_("Recorded by"),
         help_text=_("The person recording the measurements."))
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Morphometric Observation"
+
     def __str__(self):
         """The unicode representation."""
         tpl = u"Turtle Morphometrics {0} CCL {1} CCW {2} for Encounter {3}"
@@ -3088,6 +3112,11 @@ class HatchlingMorphometricObservation(Observation):
         blank=True, null=True,
         verbose_name=_("Body weight (g)"),
         help_text=_("The body weight in grams (1000 g = 1kg)."),)
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Hatchling Morphometric Observation"
+
 
     def __str__(self):
         """The unicode representation."""
@@ -3123,6 +3152,10 @@ class DugongMorphometricObservation(Observation):
         choices=OBSERVATION_CHOICES,
         default=NA_VALUE,
         help_text=_("Did the animal have tusks?"), )
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Dugong Morphometric Observation"
 
     def __str__(self):
         """The unicode representation."""
@@ -3165,6 +3198,10 @@ class TurtleDamageObservation(Observation):
         blank=True, null=True,
         help_text=_("A description of the damage."), )
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Damage Observation"
+
     def __str__(self):
         """The unicode representation."""
         return u"{0}: {1} {2}".format(
@@ -3201,6 +3238,11 @@ class TrackTallyObservation(Observation):
         verbose_name=_("Tally"),
         blank=True, null=True,
         help_text=_("The sum of encountered tracks."),)
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Track Tally Observation"
+
 
     def __str__(self):
         """The unicode representation."""
@@ -3240,6 +3282,11 @@ class TurtleNestDisturbanceTallyObservation(Observation):
         verbose_name=_("Comments"),
         blank=True, null=True,
         help_text=_("Any other comments or notes."),)
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Nest Disturbance Tally Observation"
+
 
     def __str__(self):
         """The unicode representation."""
@@ -3372,8 +3419,8 @@ class TurtleNestObservation(Observation):
 
     class Meta:
         """Class opts."""
-
-        verbose_name = "Turtle Nest Excavation"
+        verbose_name = "Turtle Nest Excavation (Egg count)"
+        verbose_name_plural = "Turtle Nest Excavations (Egg count)"
 
     def __str__(self):
         """The unicode representation."""
@@ -3497,6 +3544,10 @@ class TurtleNestDisturbanceObservation(Observation):
         return u"Nest Disturbance {0} {1}".format(
             self.disturbance_cause, self.disturbance_severity)
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Nest Disturbance Observation"
+
 
 class PathToSea(models.Model):
     """A Mixin providing code, label and description."""
@@ -3523,7 +3574,6 @@ class PathToSea(models.Model):
 
     class Meta:
         """Class opts."""
-
         # abstract = True
         ordering = ["code", ]
 
@@ -3681,6 +3731,11 @@ class TurtleHatchlingEmergenceObservation(Observation):
         blank=True, null=True,
         help_text=_("If known, in eights."),)
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Hatchling Emergence Observation (Fan Angle)"
+        verbose_name_plural = "Turtle Hatchling Emergence Observations (Fan Angles)"
+
     def __str__(self):
         """The full name."""
         return "Fan {0} ({1}-{2}) tracks ({3}-{4} deg); water {5} deg".format(
@@ -3720,6 +3775,11 @@ class LightSourceObservation(Observation):
         blank=True, null=True,
         help_text=_("Any other comments or notes."),)
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Hatchling Light Source Observation (Fan Angle)"
+        verbose_name_plural = "Turtle Hatchling Light Source Observations (Fan Angles)"
+
     def __str__(self):
         """The full name."""
         return "Light Source {0} at {1} deg: {2}".format(
@@ -3755,6 +3815,12 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
         blank=True, null=True,
         help_text=_("Any other comments or notes."),)
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Turtle Hatchling Emergence Outlier Observation (Fan Angle)"
+        verbose_name_plural = "Turtle Hatchling Emergence Outlier Observations (Fan Angles)"
+
+
     def __str__(self):
         """The full name."""
         return "Outlier: {0} tracks at {1} deg. {2}".format(
@@ -3789,6 +3855,11 @@ class TemperatureLoggerSettings(Observation):
         default=NA_VALUE,
         help_text=_("Was the logger tested after programming?"), )
 
+    class Meta:
+        """Class opts."""
+        verbose_name = "Temperature Logger Setting"
+
+
     def __str__(self):
         """The unicode representation."""
         return u"Sampling starting on {0} with rate {1}".format(
@@ -3811,6 +3882,11 @@ class DispatchRecord(Observation):
     #     verbose_name=_("Sent on"),
     #     blank=True, null=True,
     #     help_text=_("The date of dispatch."))
+
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Dispatch Record"
 
     def __str__(self):
         """The unicode representation."""
@@ -3862,6 +3938,11 @@ class TemperatureLoggerDeployment(Observation):
         help_text=_("The distance to the beach-vegetation border in mm. "
                     "Positive values if logger is located on beach, "
                     "negative values if in vegetation."),)
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Temperature Logger Deployment"
+
 
     def __str__(self):
         """The unicode representation."""

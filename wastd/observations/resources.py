@@ -4,8 +4,37 @@ from wastd.observations.models import (
     AnimalEncounter,
     TurtleNestEncounter,
     LoggerEncounter,
-    LineTransectEncounter
+    LineTransectEncounter,
+    Survey
 )
+
+class SurveyResource(ModelResource):
+    class Meta:
+        model = Survey
+        fields = [
+            'source',
+            'source_id',
+            'device_id',
+            'site',
+            'transect',
+            'reporter',
+            'reporter__name',
+            'start_location',
+            'start_location_accuracy_m',
+            'start_time',
+            'start_photo',
+            'start_comments',
+            'end_source_id',
+            'end_device_id',
+            'end_location',
+            'end_location_accuracy_m',
+            'end_time',
+            'end_photo',
+            'end_comments',
+            'production',
+            'team',
+            'label',
+        ]
 
 
 class EncounterResource(ModelResource):
@@ -52,6 +81,7 @@ class AnimalEncounterResource(ModelResource):
             'observer__name',
             'reporter',
             'reporter__name',
+            'encounter_type',
             'name',
             'taxon',
             'species',
@@ -69,6 +99,7 @@ class TurtleNestEncounterResource(ModelResource):
             'source',
             'source_id',
             'where',
+            'wkt'
             'longitude',
             'latitude',
             'location_accuracy_m',
@@ -81,6 +112,7 @@ class TurtleNestEncounterResource(ModelResource):
             'observer__name',
             'reporter',
             'reporter__name',
+            'encounter_type',
             'species',
             'nest_type',
             'nest_age',
@@ -101,6 +133,7 @@ class LoggerEncounterResource(ModelResource):
             'source',
             'source_id',
             'where',
+            'wkt'
             'longitude',
             'latitude',
             'location_accuracy_m',
@@ -113,6 +146,7 @@ class LoggerEncounterResource(ModelResource):
             'observer__name',
             'reporter',
             'reporter__name',
+            'encounter_type',
             'logger_type',
             'deployment_status',
             'logger_id',
@@ -126,6 +160,7 @@ class LineTransectEncounterResource(ModelResource):
             'source',
             'source_id',
             'where',
+            'wkt'
             'longitude',
             'latitude',
             'location_accuracy_m',
@@ -138,5 +173,7 @@ class LineTransectEncounterResource(ModelResource):
             'observer__name',
             'reporter',
             'reporter__name',
+            'encounter_type',
             'transect',
         ]
+

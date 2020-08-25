@@ -2,9 +2,9 @@
 {% load observations %}
 
 {% block title_row %}
-      {{ object.get_nest_age_display }}
-      {{ object.get_species_display }}
-      {{ object.get_nest_type_display }}
+{{ object.get_nest_age_display }}
+{{ object.get_species_display }}
+{{ object.get_nest_type_display }}
 {% endblock %}
 
 {% block title_labels %}
@@ -20,14 +20,4 @@
   title="Hatchlings measured: {{ object.get_hatchlings_measured_display }}">hatch</span>
 <span class="badge badge-{{ object.fan_angles_measured|obs_colour }}"
   title="Fan angles: {{ object.get_fan_angles_measured_display }}">fan</span>
-
-
-
-
-
-
-
-
-
-
 {% endblock %}

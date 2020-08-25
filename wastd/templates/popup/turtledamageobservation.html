@@ -1,8 +1,9 @@
 {% with original as o %}
 <div class="row">
-    <span class="oi oi-flash"></span>
-    {{ o.get_body_part_display }}:
-    {{ o.get_damage_age_display }} {{ o.get_damage_type_display }}
+    <span class="oi oi-flash"></span>&nbsp;
+    {{ o.get_body_part_display }}:&nbsp;
+    {{ o.get_damage_age_display }}&nbsp;
+    {{ o.get_damage_type_display }}&nbsp;
     {{ o.description }}
 </div>
 {% endwith %}

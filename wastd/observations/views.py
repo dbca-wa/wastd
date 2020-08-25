@@ -18,9 +18,12 @@ from sentry_sdk import capture_message
 from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin
 
 from wastd.observations.filters import (
+    SurveyFilter,
     EncounterFilter,
     AnimalEncounterFilter,
-    TurtleNestEncounterFilter
+    TurtleNestEncounterFilter,
+    LineTransectEncounterFilter,
+    LoggerEncounterFilter
 )
 from wastd.observations.forms import (
     EncounterListFormHelper,
@@ -29,6 +32,7 @@ from wastd.observations.forms import (
     FlipperTagObservationFormSet
 )
 from wastd.observations.models import (
+    Survey,
     Encounter,
     AnimalEncounter,
     TurtleNestEncounter,
@@ -36,7 +40,14 @@ from wastd.observations.models import (
     LineTransectEncounter,
     TagObservation
 )
-from wastd.observations.resources import AnimalEncounterResource, TurtleNestEncounterResource
+from wastd.observations.resources import (
+    SurveyResource,
+    EncounterResource,
+    AnimalEncounterResource,
+    TurtleNestEncounterResource,
+    LineTransectEncounterResource,
+    LoggerEncounterResource
+)
 from wastd.observations.tasks import import_odka, update_names
 
 
@@ -75,6 +86,37 @@ class HomeView(ListView):
     def get_queryset(self, **kwargs):
         """Queryset."""
         return AnimalEncounter.objects.filter(encounter_type="stranding")
+
+
+#-----------------------------------------------------------------------------#
+# Survey
+class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+    model = Survey
+    template_name = 'pages/default_list.html'
+    paginate_by = 20
+    filter_class = SurveyFilter
+    resource_class = SurveyResource
+
+    def get_context_data(self, **kwargs):
+        context = super(SurveyList, self).get_context_data(**kwargs)
+        context['list_filter'] = SurveyFilter(
+            self.request.GET, queryset=self.get_queryset()
+        )
+        return context
+
+    def get_queryset(self):
+        qs = super(SurveyList, self).get_queryset().prefetch_related(
+            "reporter", "site").order_by('-start_time')
+        return SurveyFilter(self.request.GET, queryset=qs).qs
+
+
+class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
+    model = Survey
+
+    def get_context_data(self, **kwargs):
+        data = super(SurveyDetail, self).get_context_data(**kwargs)
+        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        return data
 
 
 # Encounters -----------------------------------------------------------------#
@@ -152,6 +194,39 @@ class EncounterTableView(PagedFilteredTableView):
     formhelper_class = EncounterListFormHelper
 
 
+#-----------------------------------------------------------------------------#
+# Encounter
+class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+    model = Encounter
+    template_name = 'pages/default_list.html'
+    paginate_by = 20
+    filter_class = EncounterFilter
+    resource_class = EncounterResource
+
+    def get_context_data(self, **kwargs):
+        context = super(EncounterList, self).get_context_data(**kwargs)
+        context['list_filter'] = EncounterFilter(
+            self.request.GET, queryset=self.get_queryset()
+        )
+        return context
+
+    def get_queryset(self):
+        qs = super(EncounterList, self).get_queryset().prefetch_related(
+            "observer", "reporter", "area", "site").order_by('-when')
+        return EncounterFilter(self.request.GET, queryset=qs).qs
+
+
+class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
+    model = Encounter
+
+    def get_context_data(self, **kwargs):
+        data = super(EncounterDetail, self).get_context_data(**kwargs)
+        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        return data
+
+
+#-----------------------------------------------------------------------------#
+# AnimalEncounter
 class AnimalEncounterTableView(EncounterTableView):
     """Filtered paginated TableView for AninmalEncounter."""
 
@@ -254,7 +329,8 @@ class AnimalEncounterUpdate(UpdateView):
                 flipper_tags.save()
         return super(AnimalEncounterUpdate, self).form_valid(form)
 
-
+#-----------------------------------------------------------------------------#
+# TNE
 class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = TurtleNestEncounter
     template_name = 'pages/default_list.html'
@@ -282,6 +358,69 @@ class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         data = super(TurtleNestEncounterDetail, self).get_context_data(**kwargs)
         # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
         return data
+
+
+#-----------------------------------------------------------------------------#
+# LineTransectEncounter
+class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+    model = LineTransectEncounter
+    template_name = 'pages/default_list.html'
+    paginate_by = 20
+    filter_class = LineTransectEncounterFilter
+    resource_class = LineTransectEncounterResource
+
+    def get_context_data(self, **kwargs):
+        context = super(LineTransectEncounterList, self).get_context_data(**kwargs)
+        context['list_filter'] = LineTransectEncounterFilter(
+            self.request.GET, queryset=self.get_queryset()
+        )
+        return context
+
+    def get_queryset(self):
+        qs = super(LineTransectEncounterList, self).get_queryset().prefetch_related(
+            "observer", "reporter", "area", "site").order_by('-when')
+        return LineTransectEncounterFilter(self.request.GET, queryset=qs).qs
+
+
+class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
+    model = LineTransectEncounter
+
+    def get_context_data(self, **kwargs):
+        data = super(LineTransectEncounterDetail, self).get_context_data(**kwargs)
+        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        return data
+
+
+#-----------------------------------------------------------------------------#
+# LoggerEncounter
+class LoggerEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+    model = LoggerEncounter
+    template_name = 'pages/default_list.html'
+    paginate_by = 20
+    filter_class = LoggerEncounterFilter
+    resource_class = LoggerEncounterResource
+
+    def get_context_data(self, **kwargs):
+        context = super(LoggerEncounterList, self).get_context_data(**kwargs)
+        context['list_filter'] = LoggerEncounterFilter(
+            self.request.GET, queryset=self.get_queryset()
+        )
+        return context
+
+    def get_queryset(self):
+        qs = super(LoggerEncounterList, self).get_queryset().prefetch_related(
+            "observer", "reporter", "area", "site").order_by('-when')
+        return LoggerEncounterFilter(self.request.GET, queryset=qs).qs
+
+
+class LoggerEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
+    model = LoggerEncounter
+
+    def get_context_data(self, **kwargs):
+        data = super(LoggerEncounterDetail, self).get_context_data(**kwargs)
+        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        return data
+
 
 
 # Django-Rest-Swagger View ---------------------------------------------------#
