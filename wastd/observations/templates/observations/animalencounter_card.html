@@ -2,7 +2,7 @@
 {% load observations %}
 
 {% block title_row %}
-{{ object.get_health_display }}
+{{ object.get_health_display|title }}
 {{ object.get_maturity_display }}
 {{ object.get_species_display }}
 {% endblock %}

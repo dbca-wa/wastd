@@ -1,0 +1,11 @@
+{% extends "observations/encounter_card.html" %}
+{% load observations %}
+
+{% block title_row %}
+{{ object.get_logger_type_display }}
+{{ object.get_deployment_status_display }}
+{{ object.logger_id }}
+{% endblock %}
+
+{% block title_labels %}
+{% endblock %}

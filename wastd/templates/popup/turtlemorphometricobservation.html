@@ -1,55 +1,61 @@
 {% load observations %}
 {% with original as o %}
 <div class="row">
-    <span class="oi oi-bar-chart"></span>
+    <span class="oi oi-bar-chart"></span>&nbsp;
     {% if o.curved_carapace_length_mm %}
-    CCL {{ o.curved_carapace_length_mm }} &plusmn; {{ o.curved_carapace_length_accuracy }} mm
+    CCL {{ o.curved_carapace_length_mm }} &plusmn; {{ o.curved_carapace_length_accuracy }} mm&nbsp;
     {% endif %}
 
     {% if o.straight_carapace_length_mm %}
-    SCL {{ o.straight_carapace_length_mm }} &plusmn; {{ o.straight_carapace_length_accuracy }} mm
+    SCL {{ o.straight_carapace_length_mm }} &plusmn; {{ o.straight_carapace_length_accuracy }} mm&nbsp;
     {% endif %}
 
     {% if o.curved_carapace_width_mm %}
-    CCW {{ o.curved_carapace_width_mm }} &plusmn; {{ o.curved_carapace_width_accuracy }} mm
+    CCW {{ o.curved_carapace_width_mm }} &plusmn; {{ o.curved_carapace_width_accuracy }} mm&nbsp;
     {% endif %}
 
     {% if o.tail_length_carapace_mm %}
-    TLC {{ o.tail_length_carapace_mm }} &plusmn; {{ o.tail_length_carapace_accuracy }} mm
+    TLC {{ o.tail_length_carapace_mm }} &plusmn; {{ o.tail_length_carapace_accuracy }} mm&nbsp;
     {% endif %}
 
     {% if o.tail_length_vent_mm %}
-    TLV {{ o.tail_length_vent_mm }} &plusmn; {{ o.tail_length_vent_accuracy }} mm
+    TLV {{ o.tail_length_vent_mm }} &plusmn;
+    {{ o.tail_length_vent_accuracy }} mm&nbsp;
     {% endif %}
 
     {% if o.tail_length_plastron_mm %}
-    TLP {{ o.tail_length_plastron_mm }} &plusmn; {{ o.tail_length_plastron_accuracy }}mm
+    TLP {{ o.tail_length_plastron_mm }} &plusmn;
+    {{ o.tail_length_plastron_accuracy }}mm&nbsp;
     {% endif %}
 
     {% if o.maximum_head_width_mm %}
-    HW {{ o.maximum_head_width_mm }} &plusmn; {{ o.maximum_head_width_accuracy }} mm
+    HW {{ o.maximum_head_width_mm }} &plusmn;
+    {{ o.maximum_head_width_accuracy }} mm&nbsp;
     {% endif %}
 
     {% if o.maximum_head_length_mm %}
-    HL {{ o.maximum_head_length_mm }} &plusmn; {{ o.maximum_head_length_accuracy }} mm
+    HL {{ o.maximum_head_length_mm }} &plusmn;
+    {{ o.maximum_head_length_accuracy }} mm&nbsp;
     {% endif %}
 
     {% if o.body_depth_mm %}
-    BD {{ o.body_depth_mm }} &plusmn; {{ o.body_depth_accuracy }} mm
+    BD {{ o.body_depth_mm }} &plusmn;
+    {{ o.body_depth_accuracy }} mm&nbsp;
     {% endif %}
 
     {% if o.body_weight_g %}
-    Wt {{ o.body_weight_g }} &plusmn; {{ o.body_weight_accuracy }} g
+    Wt {{ o.body_weight_g }} &plusmn;
+    {{ o.body_weight_accuracy }} g&nbsp;
     {% endif %}
 
     {% if o.handler %}
-    <span class="oi oi-eye"></span>
-    <a href="mailto:{{ o.observer.email }}">{{ o.handler.name }}</a>
+    <span class="oi oi-eye"></span>&nbsp;
+    <a href="mailto:{{ o.observer.email }}" title="Tag handled by">{{ o.handler.name }}</a>&nbsp;
     {% endif %}
 
     {% if o.recorder %}
-    <span class="oi oi-chat"></span>
-    <a href="mailto:{{ o.reporter.email }}">{{ o.recorder.name }}</a>
+    <span class="oi oi-chat"></span>&nbsp;
+    <a href="mailto:{{ o.reporter.email }}" title="Tag recorded by">{{ o.recorder.name }}</a>
     {% endif %}
 </div>
 {% endwith %}

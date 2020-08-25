@@ -13,12 +13,57 @@ from django_filters.filters import (  # noqa
 from shared.filters import FILTER_OVERRIDES
 from wastd.observations.models import (
     Area,
+    Survey,
     Encounter,
     AnimalEncounter,
     TurtleNestEncounter,
     LoggerEncounter,
     LineTransectEncounter
 )
+
+
+class SurveyFilter(FilterSet):
+    """Survey Filter.
+
+    https://django-filter.readthedocs.io/en/latest/usage.html
+    """
+    site = ModelChoiceFilter(
+        label="Site",
+        queryset=Area.objects.filter(
+            area_type__in=[Area.AREATYPE_SITE,]
+        ).order_by(
+            "-northern_extent",
+            "name"
+        ),
+        # method='taxa_occurring_in_area'
+    )
+    class Meta:
+        """Options for EncounterFilter."""
+        model = Survey
+        filter_overrides = FILTER_OVERRIDES
+        fields = [
+            'source',
+            'source_id',
+            'device_id',
+            'site',
+            'reporter',
+            'start_location',
+            'start_location_accuracy_m',
+            'start_time',
+            'start_comments',
+            'end_source_id',
+            'end_device_id',
+            'end_location',
+            'end_location_accuracy_m',
+            'end_time',
+            'end_comments',
+            'production',
+            # 'team', # m2m
+            # 'label',
+            'transect',
+        ]
+
+
 
 class EncounterFilter(FilterSet):
     """Encounter Filter.
@@ -95,4 +140,24 @@ class TurtleNestEncounterFilter(EncounterFilter):
             'eggs_counted',
             'hatchlings_measured',
             'fan_angles_measured',
+        ]
+
+
+class LoggerEncounterFilter(EncounterFilter):
+
+    class Meta(EncounterFilter.Meta):
+        model = LoggerEncounter
+        fields = EncounterFilter._meta.fields + [
+            'logger_type',
+            'deployment_status',
+            'logger_id',
+        ]
+
+
+class LineTransectEncounterFilter(EncounterFilter):
+
+    class Meta(EncounterFilter.Meta):
+        model = LineTransectEncounter
+        fields = EncounterFilter._meta.fields + [
+            'transect',
         ]

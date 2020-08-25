@@ -1,19 +1,19 @@
 {% load observations %}
 <div class="card col-12 shadow-lg">
-  <div class="card-header">
+  <div class="card-header{% if not object.production%} text-muted{% endif %}">
     <span class="float-right">{% block title_labels %}{% endblock title_labels %}</span>
     <h5 class="card-title">
-      {% block title_row %}{{ object }}{% endblock title_row%}
+      {{ object }}
     </h5>
     <h6 class="card-title text-muted">
       <span class="oi oi-calendar" aria-hidden="true"></span>
-      {{ object.when|date:'d M Y H:i' }}
+      {{ object.start_time|date:'d M Y H:i' }} - {{ object.end_time|date:'d M Y H:i' }}
 
       <span class="oi oi-tags" aria-hidden="true"></span>
-      {{ object.get_encounter_type_display }}
+      {{ object.production }}
 
       <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
-      {{ object.observer }}
+      {{ object.reporter }}
 
 
       <span class="float-right">
@@ -31,28 +31,42 @@
   <div class="collapse" id="details{{ object.id }}">
   <div class="card-body">
     <div class="card-text">
-      <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
-      {{ object.comments | default:"-" }}
+      <span class="oi oi-comment-square" title="Start comments" aria-hidden="true"></span>
+      {{ object.start_comments | default:"-" }}
     </div>
-    {% for obs in object.observation_set.all %}
-    <div class="card-text ml-3">
-      {{ obs.as_html|safe }}
+    <div class="card-text">
+      <span class="oi oi-comment-square" title="End comments" aria-hidden="true"></span>
+      {{ object.end_comments | default:"-" }}
     </div>
-    {% endfor %}
 
-    {% if object.photographs %}
+    <div class="card-text ml-3">
+    {% for user in object.team_set.all %}
+      {{ user }}&nbsp;
+    {% endfor %}
+    </div>
+
+
     <div class="card-columns mt-2">
-      {% for m in object.photographs %}
+      {% if object.start_photo %}
       <div class="card shadow-lg">
-        <img src="{{ m.attachment.url }}" class="card-img-top" alt="{{ m.media_type|title }}">
+        <img src="{{ object.start_photo.attachment.url }}"
+          class="card-img-top" alt="Photo: Site conditions at survey start">
         <div class="card-body">
-          <p class="card-text">{{ m.title }}
-          </p>
+          <p class="card-text">Site conditions at survey start</p>
         </div>
       </div>
-      {% endfor %}
+      {% endif %}
+      {% if object.end_photo %}
+      <div class="card shadow-lg">
+        <img src="{{ object.end_photo.attachment.url }}"
+          class="card-img-top" alt="Photo: Site conditions at survey end">
+        <div class="card-body">
+          <p class="card-text">Site conditions at survey end</p>
+        </div>
+      </div>
+      {% endif %}
+
     </div>
-    {% endif %}
   </div>
 
   <!--

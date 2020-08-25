@@ -51,6 +51,12 @@
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-left">Flipper tagged Turtles</span>
               </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?encounter_type=inwater"
+                 title="Browse, filter and search all in-water encounters">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">In-water encounters</span>
+              </a>
             </div>
           </li>
 
@@ -81,7 +87,7 @@
                 Disturbed nests
               </a>
               <a class="dropdown-item"
-                 href=""
+                 href="{% url 'observations:encounter-list' %}"
                  title="Browse, filter and search general disturbance or predator presence">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 General dist/pred
@@ -99,7 +105,7 @@
                 Nests with loggers
               </a>
               <a class="dropdown-item"
-                 href=""
+                 href="{% url 'observations:loggerencounter-list' %}"
                  title="Browse, filter and search Logger Encounters, including the handling of loggers outside of nests">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 Logger Encounters
@@ -121,6 +127,12 @@
                  title="Browse, filter and search nests with fan angles">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 Nests with fan angles
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:linetransectencounter-list' %}"
+                 title="Browse, filter and search Track Tallies">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Track Tallies
               </a>
 
               <div class="dropdown-divider"></div>
@@ -155,6 +167,30 @@
                 <span class="oi oi-globe" aria-hidden="true"></span>
                 View Marine Wildlife Incidents map
               </a>
+
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a  class="nav-link dropdown-toggle" href="/"
+              id="nav-li-surveys"
+              title="Surveys"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false">
+            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            Surveys
+            </a>
+            <div class="dropdown-menu" aria-labelledby="nav-li-surveys">
+
+              <a class="dropdown-item"
+                 href="{% url 'observations:survey-list' %}?production=true"
+                 title="Browse, filter and search all Surveys - production surveys pre-selected">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Browse all Surveys</span>
+              </a>
+              {# <div class="dropdown-divider"></div> #}
+              {# <h6 class="dropdown-header">QA shortlist</h6> #}
 
             </div>
           </li>

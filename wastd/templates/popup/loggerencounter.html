@@ -7,11 +7,13 @@
 
 {% block encounterdetails %}
 <!-- Logger overview -->
-<div class="row"><i class="fa fa-fw fa-tablet"></i>
+<div class="row">
+    <span class="oi oi-tags"></span>&nbsp;
     {{ o.get_deployment_status_display }}
 </div>
 {% if o.comments %}
-<div class="row"><i class="fa fa-fw fa-comment-o"></i>
+<div class="row">
+    <span class="oi oi-comment-square"></span>&nbsp;
     {{ o.comments }}
 </div>
 {% endif %}

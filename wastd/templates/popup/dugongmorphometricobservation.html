@@ -1,7 +1,7 @@
 {% load observations %}
 {% with original as o %}
 <div class="row">
-    <i class="fa fa-fw fa-bar-chart"></i>
+    <span class="oi oi-bar-chart"></span>&nbsp;
     {% if o.body_length_mm %}
     Length {{ o.body_length_mm|mm_as_cm }} cm
     {% endif %}
