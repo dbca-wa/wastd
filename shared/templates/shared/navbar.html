@@ -167,8 +167,14 @@
                 <span class="oi oi-globe" aria-hidden="true"></span>
                 View Marine Wildlife Incidents map
               </a>
-
+              <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?checked_for_injuries=present"
+                 title="Browse, filter and search all encounters with injured animals">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Browse Marine Wildlife Incidents</span>
+              </a>
             </div>
+            <!-- TODO add live rescues and mortalities -->
           </li>
 
           <li class="nav-item dropdown">

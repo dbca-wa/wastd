@@ -363,6 +363,73 @@ class OgcFidBatchUpsertViewSet(BatchUpsertViewSet):
 class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
     """A viewset to upsert Observations linked to an AreaEncounter."""
 
+
+    def create_one(self, data):
+        """POST: Create or update exactly one model instance.
+
+        The ViewSet must have a method ``split_data`` returning a dict
+        of the unique, mandatory fields to get_or_create,
+        and a dict of the other optional values to update.
+
+        Return RestResponse(content, status)
+        """
+        unique_data, update_data = self.split_data(data)
+        update_data = {x:update_data[x] for x in update_data}
+
+        # Early exit 1: None value in unique data
+        if None in unique_data.values():
+            msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
+                str(update_data), str(unique_data))
+            logger.warning(msg)
+            content = {"msg": msg}
+            return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        logger.debug('[API][create_one] Received '
+                     '{0} with unique fields {1} and update_data {2}'.format(
+                         self.model._meta.verbose_name, str(unique_data), str(update_data)))
+
+        # resolve Encounter
+        if 'encounter_source' in update_data and 'encounter_source_id' in update_data:
+            enc = Encounter.objects.filter(
+                source__exact=update_data["encounter_source"],
+                source_id__exact=update_data["encounter_source_id"]
+                ).first()
+            if enc:
+                update_data["encounter_id"] = enc.pk
+            update_data.pop("encounter_source")
+            update_data.pop("encounter_source_id")
+
+
+        logger.debug('[API][create_one] Creating '
+                     '{0} with unique fields {1} and update_data {2}'.format(
+                         self.model._meta.verbose_name, str(unique_data), str(update_data)))
+        obj, created = self.model.objects.get_or_create(defaults=update_data, **unique_data)
+        verb = "Created" if created else "Updated"
+
+        # Early exit 2: retain locally changed data (status not NEW)
+        if (not created and obj.encounter.status != QualityControlMixin.STATUS_NEW):
+            msg = ('[API][create_one] Not overwriting locally changed data '
+                   'with QA status: {0}'.format(obj.encounter.get_status_display()))
+            logger.info(msg)
+            content = {"msg": msg}
+            return RestResponse(content, status=status.HTTP_200_OK)
+
+        else:
+            # Continue on happy trail: update if new or existing but unchanged
+            # TODO wastd.observations.Observation models
+            # have Encounter(source, source_id) but update own fields
+            self.model.objects.filter(**unique_data).update(**update_data)
+
+        obj.refresh_from_db()
+        obj.save()  # to update cached fields
+
+        verb = "Created" if created else "Updated"
+        st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        msg = '[API][create_one] {0} {1}'.format(verb, obj.__str__())
+        content = {"id": obj.id, "msg": msg}
+        logger.info(msg)
+        return RestResponse(content, status=st)
+
     def create(self, request):
         """POST: Create or update one or many model instances.
 
@@ -382,6 +449,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
             return self.create_one(request.data)
+
 
         # Create many --------------------------------------------------------#
         elif (
@@ -532,9 +600,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                         # obj = self.model.objects.create(**data)
                         logger.info("[API][create] Creating record with unique fields "
                                     "{0}, update fields {1}, created: {2}".format(
-                                        str(unique_data), str(update_data), created
-                                    )
-                                    )
+                                        str(unique_data), str(update_data), created))
 
                         # to update cached fields
                         obj.refresh_from_db()
