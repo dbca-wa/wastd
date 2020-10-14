@@ -1,9 +1,11 @@
-from rest_framework.serializers import ModelSerializer, ReadOnlyField, ValidationError, IntegerField
+from rest_framework.serializers import ModelSerializer, ReadOnlyField, ValidationError, IntegerField, FileField
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-
 from wastd.users.api import FastUserSerializer
 from wastd.observations import models
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------------#
 # Areas, Surveys
@@ -38,6 +40,8 @@ class SurveySerializer(GeoFeatureModelSerializer):
     reporter = FastUserSerializer(many=False)
     site = FastAreaSerializer(many=False)
     status = ReadOnlyField()
+    start_photo = FileField(required=False)
+    end_photo = FileField(required=False)
 
     class Meta:
         model = models.Survey
@@ -357,7 +361,7 @@ class ObservationSerializer(ModelSerializer):
 
     class Meta:
         model = models.Observation
-        fields = ['pk', 'encounter']
+        fields = ['pk', 'encounter', 'source', 'source_id']
 
     def validate(self, data):
         """Raise ValidateError on missing Encounter (encounter PK or source & source_id value).
@@ -390,30 +394,54 @@ class ObservationSerializer(ModelSerializer):
     def create(self, validated_data):
         """Create one new object, resolve Encounter from either PK or source & source_id.
         """
+
         if 'encounter_id' in self.initial_data:
-            validated_data['encounter'] = models.Encounter.objects.get(pk=self.initial_data['encounter_id'])
+            validated_data['encounter'] = models.Encounter.objects.get(
+                pk=self.initial_data['encounter_id'])
         else:
             validated_data['encounter'] = models.Encounter.objects.get(
-                source=self.initial_data['source'], source_id=self.initial_data['source_id'])
+                source=self.initial_data['encounter_source'],
+                source_id=self.initial_data['encounter_source_id'])
         return self.Meta.model.objects.create(**validated_data)
 
     def save(self):
         """Override the save method in order to prevent 'duplicate' instances being created by
         the API endpoints. We override save in order to avoid duplicate by either create or update.
         """
+        # logger.info(str(self.validated_data))
+        # unique_data = {
+        #     source: self.validated_data["source"],
+        #     source_id: self.validated_data["source_id"]
+        # }
+
         if 'encounter' in self.initial_data:
-            self.validated_data['encounter'] = models.Encounter.objects.get(pk=self.initial_data['encounter'])
+            self.validated_data['encounter'] = models.Encounter.objects.get(
+                pk=self.initial_data['encounter']
+            )
         else:
             self.validated_data['encounter'] = models.Encounter.objects.get(
-                source=self.initial_data['source'], source_id=self.initial_data['source_id'])
+                source = self.initial_data["encounter_source"],
+                source_id = self.initial_data["encounter_source_id"]
+                )
+        # import ipdb; ipdb.set_trace()
         # Gate check: we want to ensure that duplicate objects are not created.
-        #
-        duplicates = self.Meta.model.objects.filter(**self.validated_data)
+        duplicates = self.Meta.model.objects.filter(
+            source = self.initial_data["source"],
+            source_id = self.initial_data["source_id"]
+        )
         if duplicates.exists():
             if duplicates.count() == 1:
-                # Just return the single existing duplicate instance.
                 # TODO: work out how we might return HTTP status 200 instead of 201.
-                return self.Meta.model.objects.get(**self.validated_data)
+                # Update existing record: breaks file upload paths! bad!
+                # logger.info(f"Updating existing record {str(self.validated_data)}")
+                # duplicates.update(**self.validated_data)
+                # duplicates.first().save()
+
+                # return self.Meta.model.objects.get(
+                #     source = self.initial_data["source"],
+                #     source_id = self.initial_data["source_id"])
+                # simpler:
+                return duplicates.first()
             else:
                 # Passed-in data matches >1 existing instance, so raise a validation error.
                 raise ValidationError("{}: existing duplicate(s) with {} ".format(
@@ -425,11 +453,16 @@ class ObservationSerializer(ModelSerializer):
 
 
 class MediaAttachmentSerializer(ObservationSerializer):
+    """A special Serializer for MediaAttachment to handle file uploads."""
+
+    attachment = FileField(required=True)
 
     class Meta:
         model = models.MediaAttachment
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             'media_type',
             'title',
@@ -448,6 +481,8 @@ class TagObservationSerializer(ObservationSerializer):
         model = models.TagObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             'handler',
             'handler_id',
@@ -469,6 +504,8 @@ class NestTagObservationSerializer(ObservationSerializer):
         model = models.NestTagObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "status",
             "flipper_tag_id",
@@ -484,6 +521,8 @@ class ManagementActionSerializer(ObservationSerializer):
         model = models.ManagementAction
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             'management_actions',
             'comments'
@@ -496,6 +535,8 @@ class TurtleMorphometricObservationSerializer(ObservationSerializer):
         model = models.TurtleMorphometricObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "latitude",
             "longitude",
@@ -532,6 +573,8 @@ class HatchlingMorphometricObservationSerializer(ObservationSerializer):
         model = models.HatchlingMorphometricObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             'straight_carapace_length_mm',
             'straight_carapace_width_mm',
@@ -545,6 +588,8 @@ class TurtleNestDisturbanceObservationSerializer(ObservationSerializer):
         model = models.TurtleNestDisturbanceObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             'disturbance_cause',
             'disturbance_cause_confidence',
@@ -561,6 +606,8 @@ class TurtleNestObservationSerializer(ObservationSerializer):
         model = models.TurtleNestObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             'nest_position',
             'eggs_laid',
@@ -593,6 +640,8 @@ class TurtleHatchlingEmergenceObservationSerializer(ObservationSerializer):
         model = models.TurtleHatchlingEmergenceObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             'bearing_to_water_degrees',
             'bearing_leftmost_track_degrees',
@@ -616,6 +665,8 @@ class TurtleHatchlingEmergenceOutlierObservationSerializer(ObservationSerializer
         model = models.TurtleHatchlingEmergenceOutlierObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "bearing_outlier_track_degrees",
             "outlier_group_size",
@@ -629,6 +680,8 @@ class LightSourceObservationSerializer(ObservationSerializer):
         model = models.LightSourceObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "bearing_light_degrees",
             "light_source_type",
@@ -642,6 +695,8 @@ class TurtleDamageObservationSerializer(ObservationSerializer):
         model = models.TurtleDamageObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "body_part",
             "damage_type",
@@ -655,6 +710,8 @@ class TrackTallyObservationSerializer(ObservationSerializer):
         model = models.TrackTallyObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "species",
             "nest_age",
@@ -669,6 +726,8 @@ class TurtleNestDisturbanceTallyObservationSerializer(ObservationSerializer):
         model = models.TurtleNestDisturbanceTallyObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "species",
             "disturbance_cause",
@@ -684,6 +743,8 @@ class TemperatureLoggerSettingsSerializer(ObservationSerializer):
         model = models.TemperatureLoggerSettings
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "logging_interval",
             "recording_start",
@@ -697,6 +758,8 @@ class DispatchRecordSerializer(ObservationSerializer):
         model = models.DispatchRecord
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "sent_to"
         )
@@ -708,6 +771,8 @@ class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
         model = models.TemperatureLoggerDeployment
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "depth_mm",
             "marker1_present",
@@ -725,6 +790,8 @@ class DugongMorphometricObservationSerializer(ObservationSerializer):
         model = models.DugongMorphometricObservation
         fields = (
             "pk",
+            "source",
+            "source_id",
             "encounter",
             "body_length_mm",
             "body_girth_mm",

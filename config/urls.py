@@ -91,6 +91,8 @@ urlpatterns = [
 
     path('tasks/import-odka/', wastd_views.import_odka_view, name="import-odka"),
     path('tasks/update-names/', wastd_views.update_names_view, name="update-names"),
+    path('tasks/reconstruct-surveys/', wastd_views.reconstruct_surveys_view, name="reconstruct-surveys"),
+
     path('400/', default_views.bad_request, kwargs={'exception': Exception('Bad request')}),
     path('403/', default_views.permission_denied, kwargs={'exception': Exception('Permission denied')}),
     path('404/', default_views.page_not_found, kwargs={'exception': Exception('Page not found')}),

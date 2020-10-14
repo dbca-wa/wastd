@@ -1,7 +1,7 @@
 from django_filters.rest_framework import DateFilter
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework_filters import FilterSet
-
 from shared.api import (
     MyGeoJsonPagination,
     BatchUpsertViewSet,
@@ -570,7 +570,7 @@ class ObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.Observation
 
 
-class MediaAttachmentViewSet(ObservationBatchUpsertViewSet):
+class MediaAttachmentViewSet(ModelViewSet):
     """Binary media (photos, datasheet PDFs etc) with Encounter details.
 
     Can be many per Encounter.
@@ -583,6 +583,7 @@ class MediaAttachmentViewSet(ObservationBatchUpsertViewSet):
     )
     serializer_class = serializers.MediaAttachmentSerializer
     pagination_class = MyGeoJsonPagination
+    parser_classes = [FormParser, MultiPartParser]
     model = models.MediaAttachment
 
 

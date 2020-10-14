@@ -56,3 +56,14 @@ def import_odka():
         "ODKA surveys reconstructed, task successfully finished.",
         level="warning"
     )
+
+@background(queue="admin-tasks", schedule=timezone.now())
+def reconstruct_surveys():
+    """Reconstruct missing surveys."""
+
+    utils.reconstruct_missing_surveys()
+    capture_message(
+        "[wastd.observations.tasks.reconstruct_surveys] "
+        "ODKA surveys reconstructed, task successfully finished.",
+        level="warning"
+    )

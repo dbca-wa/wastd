@@ -48,8 +48,7 @@ from wastd.observations.resources import (
     LineTransectEncounterResource,
     LoggerEncounterResource
 )
-from wastd.observations.tasks import import_odka, update_names
-
+from wastd.observations.tasks import import_odka, update_names, reconstruct_surveys
 
 @csrf_exempt
 def import_odka_view(request):
@@ -66,6 +65,16 @@ def update_names_view(request):
     """Import all available ODK-Aggregate forms."""
     capture_message("[wastd.observations.views.update_names] Rebuilding names.", level="error")
     msg = update_names.now()
+    messages.success(request, msg)
+    capture_message(msg, level="error")
+    return HttpResponseRedirect("/")
+
+
+@csrf_exempt
+def reconstruct_surveys_view(request):
+    """Import all available ODK-Aggregate forms."""
+    capture_message("[wastd.observations.views.reconstruct_surveys_view] Rreconstructing surveys.", level="error")
+    msg = reconstruct_surveys.now()
     messages.success(request, msg)
     capture_message(msg, level="error")
     return HttpResponseRedirect("/")

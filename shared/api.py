@@ -361,8 +361,7 @@ class OgcFidBatchUpsertViewSet(BatchUpsertViewSet):
 
 
 class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
-    """A viewset to upsert Observations linked to an AreaEncounter."""
-
+    """A viewset to upsert Observations linked to an Encounter."""
 
     def create_one(self, data):
         """POST: Create or update exactly one model instance.
@@ -538,6 +537,8 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
             logger.debug("[API][create] Skipping QA'd records: {0}".format(str(to_retain)))
 
             # Bucket "bulk_update": List of new_records where uid_fields match existing_objects
+            # see https://github.com/dbca-wa/wastd/issues/330
+            # TODO this contains records that should be created
             records_to_update = [
                 new_record for new_record in new_records
                 if {new_record[uid_field] for uid_field in self.uid_fields}
@@ -579,11 +580,11 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                         data.pop("encounter_source")
                         data.pop("encounter_source_id")
                         unique_data, update_data = self.split_data(data)
-                        self.model.objects.filter(**unique_data).update(**update_data)
+                        # logger.debug(str(unique_data))
+                        obj, created = self.model.objects.update_or_create(**unique_data, defaults=update_data)
 
-                        # to update cached fields
-                        # self.model.objects.filter(**unique_data).refresh_from_db()
-                        # self.model.objects.filter(**unique_data).save()
+                        # self.model.objects.filter(**unique_data).update(**update_data)
+                        # logger.debug(obj)
 
                 if records_to_create:
                     logger.info("[API][create] Creating records...")
