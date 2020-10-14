@@ -3394,6 +3394,47 @@ def handle_odka_nesttagobservation(enc, media, data):
     return None
 
 
+def handle_odka_loggerobservation(enc, media, data):
+    """Handle empty, one, or multiple LoggerEncounters.
+
+    Arguments:
+
+        enc A TurtleNestEncounter
+        media A dict of photo filename:url
+        data A "data" dict from ODK "Track or Treat 0.51" or higher.
+
+    Returns:
+
+        None
+
+    "logger_details": {
+        "logger_id": "ID",
+        "photo_logger": "12345.jpg",
+    }
+    """
+    if "logger_details" not in data:
+        logger.debug("[handle_odka_loggerobservation] found no LoggerEncounter")
+        return None
+
+    obs = listify(data["logger_details"])
+
+    if obs:
+        logger.debug("[handle_odka_loggerobservation] found {0} LoggerEncounter(s)".format(len(obs)))
+        [handle_loggerenc(
+            dict(
+                encounter=enc,
+                logger_id=x["logger_id"],
+
+                photo_tag=make_photo_dict(x["photo_logger"], media)
+            ),
+            enc) for x in obs]
+    else:
+        logger.debug("[handle_odka_loggerobservation] found invalid data:\n{0}".format(
+            json.dumps(obs, indent=2)))
+
+    return None
+
+
 def handle_odka_tagsobs(enc, media, data):
     """Handle empty, one, or multiple TagObservations.
 
@@ -4966,6 +5007,11 @@ def import_odka_tt044(r):
         handle_odka_turtlenestobservation(enc, media, data)
         handle_odka_hatchlingmorphometricobservation(enc, media, data)
         handle_odka_fanangles(enc, media, data)
+        handle_loggerencounter(end, media, data)
+        # [handle_loggerenc(lg, e)
+        #     for lg in r["logger_details"]
+        #     if len(r["logger_details"]) > 0]
+
         enc.save()
 
     # # bonus round for fan angles imported post QA (proofread records won't update)

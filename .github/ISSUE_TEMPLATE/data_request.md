@@ -1,6 +1,6 @@
 ---
 name: Data request
-about: Request a report (template) using data from TSC
+about: Request a report (template) using data from WAStD
 title: ''
 labels: data
 assignees: florianm
