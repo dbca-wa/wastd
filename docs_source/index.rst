@@ -1,5 +1,5 @@
 =====================================================================
-WAStD - WA Sea Turtle Data / TSC - Threatened Species and Communities
+WAStD - WA Sea Turtle Data
 =====================================================================
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
@@ -23,7 +23,7 @@ WAStD - WA Sea Turtle Data / TSC - Threatened Species and Communities
 Overview
 ========
 
-WAStD / TSC is a data warehouse for:
+WAStD is a data warehouse for:
 
 * Turtle strandings in WA, as reported to the
   Department of Biodiversity, Conservation and Attractions, WA.
@@ -31,7 +31,6 @@ WAStD / TSC is a data warehouse for:
 * Turtle track observations, taken at sunrise after nesting (can involve nests,
   predation, nest tags, temperature loggers, egg excavation and hatchling measurements).
 * Temperature logger asset management.
-* Threatened Species and Communities of WA: occurrences, conservation status, management plans.
 
 WAStD is built scalable enough to accommodate other, related, data:
 
@@ -105,6 +104,8 @@ The journey so far:
 * 2018: Threatened species and communities.
 * Season 2018/19: Bar two programs, all WA regions join digital data collection of
   turtle track census. One program is relatively small and remote, the other lacks basic literacy among available data collectors, favouring pictogram-based and established solutions like CyberTracker.
+* Season 2019-20: Migration from ODK Aggregate to ODK Central, ETL via API and R packages wastdr and etlTurtleNesting.
+* SEason 2020-21: Inclusion of turtle tagging in electronic data capture.
 
 
 WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange
