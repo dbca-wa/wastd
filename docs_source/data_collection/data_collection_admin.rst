@@ -35,6 +35,32 @@ For each team collecting data at the same time:
 * Turtle track ID guide
 * Predator track ID guide
 
+Admin: Create offline background imagery
+========================================
+* Use QGIS 3.14 or higher
+* Add ArcGIS Map Service as title "ESRI World Imagery" and with URL
+  https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer
+* Add "High Resolution 30cm imagery" and zoom to target location (e.g. Thevenard Island)
+* Change Project CRS to WGS84 (EPSG:4326)
+* Open QGIS Processing Toolbox > Raster tools > Generate XYZ tiles (MBTiles)
+* Run with settings:
+  * Extent: draw on map
+  * DPI 96
+  * Zoom max 20, min 5. Figure out max zoom vs max avail zoom of ESRI imagery.
+  * Format png
+  * save to file (e.g. THV.mbtiles) with extension ``.mbtiles``
+* Repeat for each program's location and distribute resulting files to local coordinators.
+
+Example log:
+
+  Algorithm 'Generate XYZ tiles (MBTiles)' starting…
+  Input parameters:
+  { 'BACKGROUND_COLOR' : QColor(0, 0, 0, 0), 'DPI' : 96,
+  'EXTENT' : '113.488658367,114.279178912,-22.808838676,-21.702109913 [EPSG:4326]',
+  'METATILESIZE' : 4, 'OUTPUT_FILE' : '/home/florianm/projects/GIS/NIN.mbtiles',
+  'QUALITY' : 75, 'TILE_FORMAT' : 0, 'ZOOM_MAX' : 20, 'ZOOM_MIN' : 5 }
+
+
 Admin: First time setup
 =======================
 
@@ -66,6 +92,19 @@ App settings:
   data collection form (image, time, location).
 * Google Photos: open app, settings, auto-backup all photos in "high resolution" (about 2MP) to Google Photos.
 
+Setup the tablet after a season
+-------------------------------
+This section is for administrators updating tablets for a new field season.
+
+* Fully charge tablets
+* Turn on tablets, apply all available system updates:
+
+  * Settings > Software > Check for updates (or follow notifications).
+  * There can be multiple big (>1GB, new Android version) and smaller (~200MB security patches) updates.
+* Google Play: update all apps, ODK Collect first.
+* Scan new QR code as and when instructed.
+* Delete and re-create all home screen widgets.
+
 
 Setup ODK Collect from QR code
 ------------------------------
@@ -79,40 +118,15 @@ If you were provided with a QR code, you can speed up the ODK Collect setup.
 * Get blank forms on each tablet. This both prepares the tablets for field work,
   and verifies username/password/server url.
 
-Setup ODK Collect from scratch
-------------------------------
-
-These steps have to be run once by the admin per device while online.
-Less than 10 MB will be downloaded.
-These steps can also be run by an interested data collector on their own Android
-device.
-
-Requirements:
-
-* An Android device
-* A valid username and password for https://dpaw-data.appspot.com as provided to you by Florian Mayer.
-  The username and password will be per tablet, not per data collector.
-
-* On your Android device, install
-  `ODK Collect <https://play.google.com/store/apps/details?id=org.odk.collect.android>`_
-* Drop a shortcut to ODK Collect onto the home screen.
-* In ODK Collect > Settings (three dots top or bottom right) > General Settings > Server >
-
-  * URL: https://dpaw-data.appspot.com
-  * username and password as provided to you by the ODK data maintainer.
-
-  These credentials determine whether you can retrieve new
-  forms and submit data, and the username will be automatically recorded when
-  collecting data. It is crucial to spell the credentials exactly as provided.
-* Form management:
-  * Form update: check every hour for form updates,
-    automatic download of updated versions, hide old versions.
-  * Auto send: "WiFi only"
-  * Delete after send: yes
-* User and device identity > Form metadata > Username: set to the data collector's username.
-  This name will be automatically recorded in ODK forms as "observed by".
-* ODK Collect > Settings > Admin settings > User settings: de-select all but "Form metadata".
-* ODK Collect > Settings > Admin settings > Admin password: set and remember.
+Distribute offline background imagery
+-------------------------------------
+* You will be provided the background imagery files (extension ``.mbtiles``).
+* Connect each tablet via USB, unlock screen, confirm dialogue to allow file transfer on tablet.
+* Copy the mbtiles files into ``/Android/data/org.odk.collect.android/files/layers`` on each tablet.
+* You can provide multiple mbtiles. Mind available disk space (16GB ish) vs mbtiles size
+  (200-500MB each) vs storage for ODK records including media files (photos).
+* Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
+  select the correct reference layer (named after your location).
 
 Providing training
 ==================
