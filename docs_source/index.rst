@@ -2,22 +2,19 @@
 WAStD - WA Sea Turtle Data
 =====================================================================
 
-.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
-     :target: https://github.com/pydanny/cookiecutter-django/
-     :alt: Built with Cookiecutter Django
-.. image:: https://circleci.com/gh/dbca-wa/wastd.svg?style=svg
-     :target: https://circleci.com/gh/dbca-wa/wastd
-     :alt: Test status
+.. image:: https://github.com/dbca-wa/wastd/workflows/CodeQL/badge.svg?branch=master
+     :target: https://github.com/dbca-wa/wastd/actions
+     :alt: CodeQL
+.. image:: https://github.com/dbca-wa/wastd/workflows/DjangoCI/badge.svg?branch=master
+     :target: https://github.com/dbca-wa/wastd/actions
+     :alt: DjangoCI
 .. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
      :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
      :alt: Test coverage
-.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+.. image:: https://img.shields.io/badge/License-MIT-green.svg
      :target: https://opensource.org/licenses/MIT
      :alt: MIT License
 
-.. "WA STD - now you've got it, too"
-
-.. "Strandings are red, tags are blue, nests are green and tracks are there, too"
 
 ========
 Overview
@@ -105,11 +102,7 @@ The journey so far:
 * Season 2018/19: Bar two programs, all WA regions join digital data collection of
   turtle track census. One program is relatively small and remote, the other lacks basic literacy among available data collectors, favouring pictogram-based and established solutions like CyberTracker.
 * Season 2019-20: Migration from ODK Aggregate to ODK Central, ETL via API and R packages wastdr and etlTurtleNesting.
-* SEason 2020-21: Inclusion of turtle tagging in electronic data capture.
-
-
-WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange
-standards and analytical knowledge pipelines.
+* Season 2020-21: Inclusion of turtle tagging in electronic data capture.
 
 
 .. toctree::

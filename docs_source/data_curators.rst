@@ -803,3 +803,35 @@ Use their ``firstname_lastname`` as username, select a password, save, then add 
 
 WAStD will create a new user profile at first login for each DBCA staff member, but
 the profile will miss the details
+
+Curate records from training days
+---------------------------------
+
+
+
+For CBB on Oct 25:
+All Tracks/Nests:
+Open TurtleNestEncounters, filter to area and date.
+https://wastd.dbca.wa.gov.au/admin/observations/turtlenestencounter/?area__id__exact=19&when__month=10&when__year=2020
+For each record, set species to Hatchback, set any affiliated TurtleNestDisturbanceObservations to "test record" and curate.
+
+All Dist/Pred:
+ODK form "Dist/Pred" becomes a WAStD Encounter plus TurtleNestDisturbanceObservation.
+ODK form "Track or Nest" becomes a WAStD TurtleNestEncounter plus TurtleNestDisturbanceObservation.
+
+Open TurtleNestDisturbanceObservations, filter to area and date.
+https://wastd.dbca.wa.gov.au/admin/observations/turtlenestdisturbanceobservation/?encounter__area__id__exact=19&encounter__when__month=10&encounter__when__year=2020
+This list will contain the (now curated and hatchbacked) TurtleNestEncounters from Track or Nest, as well as Dist/Pred forms.
+For any record that shows as status "new" or cause not "training": open the link to the Encounter (column "encounter" on the right)
+Set species to Hatchback (if it's a TNE), set disturbance cause to "training" and curate Encounter
+
+All MWI:
+Open AnimalEncounters, filter to area and date.
+https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&when__year=2020 (no records for CBB Oct 25).
+Set species to hatchback and curate.
+
+Productivity tips:
+Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving. Close tabs by middle-click on tab header or Ctrl+w.
+Collapse WAStD form sections by clicking on the blue header, e.g. collapse "Encounter".
+"Curate" includes saving the record. No need to "Save and continue editing".
+
