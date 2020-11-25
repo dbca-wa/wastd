@@ -97,6 +97,7 @@ model-mommy = "*"
 graphviz = "*"
 tblib = "*"
 fabric3 = "*"
+sphinx = "*"
 
 [dev-packages]
 

@@ -1,0 +1,703 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data collectors &mdash; WAStD 0.45.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.45
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html#project-delivery-ticking-the-boxes">Project delivery: ticking the boxes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Data collectors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/data_collectors.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data-collectors">
+<h1>Data collectors<a class="headerlink" href="#data-collectors" title="Permalink to this headline">¶</a></h1>
+<p>NOTE this chapter has been split up (content duplicated) into the data collection chapters for admins and collectors.</p>
+<p>Each field in the data sheets has been, and should be questioned:</p>
+<ul class="simple">
+<li><p>Is this information used in any of the analytical outputs?</p></li>
+<li><p>Does this information serve any QA purpose?</p></li>
+<li><p>Is this information used to derive other information, e.g. deformities being
+used to identify a resighted, untagged animal?</p></li>
+<li><p>Will anyone in the foreseeable future require this information?</p></li>
+</ul>
+<div class="section" id="turtle-tracks-or-nests">
+<span id="data-capture-tracks"></span><h2>Turtle tracks or nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline">¶</a></h2>
+<p>Turtle track counts can be collected on mobile app (OpenDataKit, ODK),
+or on paper data sheets (backup if ODK unavailable).</p>
+<p>Tracks can be recorded individually (preferred) or tallied over beach sections.</p>
+<ul class="simple">
+<li><p><em>Nest</em> counts: walking in a straight line along the high water mark, each
+uptrack is followed to its apex, where the presence or absence of a nest
+determines the type of track (track without nest, track with nest, track with
+a possible nest).
+If evident, nest disturbance is recorded as well.
+Disturbed unhatched nests without tracks, as well as hatched nests (without
+tracks), if spotted, are recorded as well.</p></li>
+<li><p><em>Speed run</em> counts: walking in a straight line along the high water mark, only
+inbound tracks (uptracks) are counted as “tracks with success not assessed”.
+The tracks are not followed. Except for the first day, only fresh (younger
+than 24h) tracks are recorded. Nests are recorded if spotted.</p></li>
+<li><p><em>Track tallies</em> are recorded only under extreme time pressure, or on saturation
+beaches, where the geo-referencing of individual tracks is not possible within
+the available survey time. However, individual track counts (<em>nest</em> or <em>speed run</em>)
+are preferred.</p></li>
+</ul>
+<div class="section" id="mobile-data-collection-using-open-data-kit">
+<h3>Mobile data collection using Open Data Kit<a class="headerlink" href="#mobile-data-collection-using-open-data-kit" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="admin-first-time-setup">
+<h4>Admin: First time setup<a class="headerlink" href="#admin-first-time-setup" title="Permalink to this headline">¶</a></h4>
+<p>These steps have to be run once by the ODK admin per device while online.
+Less than 10 MB will be downloaded.
+These steps can also be run by an interested data collector on their own Android
+device.</p>
+<ul class="simple">
+<li><p>On your Android device, install
+<a class="reference external" href="https://play.google.com/store/apps/details?id=org.odk.collect.android">ODK Collect</a></p></li>
+<li><p>In ODK Collect &gt; General Settings &gt; Server Settings &gt; Configure platform settings:</p></li>
+<li><p>URL: <a class="reference external" href="https://dpaw-data.appspot.com">https://dpaw-data.appspot.com</a>, plus username and password as provided to
+you by the ODK admin. These credentials determine whether you can retrieve new
+forms and submit data, and the username will be automatically recorded when
+collecting data. It is crucial to spell the credentials exactly as provided.</p></li>
+<li><p>The username and password can also be set under General Settings &gt; Server Settings.</p></li>
+<li><p>Auto send: “only with WiFi” if few data points are collected.
+Disable for vigorous data collection in remote areas with limited WiFi -
+don’t swamp the WiFi hotspot by auto-uploading data with photos.</p></li>
+<li><p>Default to finalized</p></li>
+<li><p>Delete after send</p></li>
+<li><p>If the device is used by many volunteers who are new to the software, enable
+the “Admin Settings” (set password) and disable menu options that are not needed
+or risk data loss (e.g. “delete forms”).</p></li>
+</ul>
+<p><strong>Note</strong> You <strong>must not</strong> share your credentials, and
+<strong>always use your own credentials</strong> in General Settings &gt; Username/Password
+to collect data. Failure to do so <strong>will</strong> result in data loss, data corruption and
+loss of attribution.</p>
+</div>
+<div class="section" id="admin-prepare-devices-pre-field-trip">
+<h4>Admin: Prepare devices pre field trip<a class="headerlink" href="#admin-prepare-devices-pre-field-trip" title="Permalink to this headline">¶</a></h4>
+<p>For each device before a field trip, while still within WiFi:</p>
+<ul class="simple">
+<li><p>Install ODK Collect, configure:</p></li>
+<li><p>server <a class="reference external" href="https://dpaw-data.appspot.com/">https://dpaw-data.appspot.com/</a></p></li>
+<li><p>username and password must be valid and spelled correctly</p></li>
+<li><p>Get Blank Forms &gt; select latest “Track or Treat”, “Track Tally”, “Turtle Stranding”</p></li>
+<li><p>Delete Forms &gt; Blank Forms &gt; delete older versions of above forms</p></li>
+</ul>
+<p>As discussed previously, it is possible to restrict user-accessible settings
+to username / password only.
+Do so at your own discretion (through Admin Settings) to reduce possible confusion
+and user errors.</p>
+</div>
+<div class="section" id="collector-prepare-devices-pre-survey">
+<h4>Collector: Prepare devices pre survey<a class="headerlink" href="#collector-prepare-devices-pre-survey" title="Permalink to this headline">¶</a></h4>
+<p>Ideally, the admin handing out the Android device will double-check these settings
+together with the data collector.</p>
+<ul class="simple">
+<li><p><strong>Credentials</strong> Set the collector’s ODK credentials (username and password)
+for the respective ODK Aggregate server, (e.g. <a class="reference external" href="https://dpaw-data.appspot.com/">https://dpaw-data.appspot.com/</a>)
+<strong>exactly</strong> as given and <strong>before</strong> collecting data.
+The entered username will be stored automatically with each record (only
+correct usernames will ensure correct attribution), and used to authenticate
+data upload to ODK Aggregate (incorrect usernames will result in failed upload).</p></li>
+<li><p><strong>Battery</strong> Make sure the battery is full before you head out.
+Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
+GPS on only during surveys, WiFi on only during data upload.</p></li>
+</ul>
+<p><strong>Note</strong> Exact spelling includes capitalisation, interpunctuation and whitespace.
+E.g., the username <cite>stephen_king</cite> is not correct if spelled <cite>Stephen_King</cite>,
+<cite>StephenK</cite>, <cite>stephen king</cite>, <cite>stephen-king</cite> or <cite>stephenking</cite>.</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png"><img alt="Track Count work flow" src="https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png" /></a>
+</div>
+<div class="section" id="collector-collect-speed-run-data">
+<h4>Collector: Collect “speed run” data<a class="headerlink" href="#collector-collect-speed-run-data" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Walk along the high water mark on the beach until you encounter either
+an unmarked inbound track (“uptrack”) or unmarked outbound hatchling tracks.</p></li>
+<li><p>“Fill Blank Form” &gt; Track or Treat (latest version)</p></li>
+<li><p>Track age: fresh (default) if less than 24 h old, or old if older than 24 h.
+If the beach was surveyed within the last day, all unmarked tracks are “fresh”.</p></li>
+<li><p>Species: select species if possible, else if unsure, keep default “turtle”.</p></li>
+<li><p>Take photo of track if unsure about species ID. Landscape format is preferred!
+Place a length reference (measuring tape) across the whole track, lining up
+the end with the edge of the track. This allows curators to gauge the track
+width easily from the photo.
+Select angle of camera, sun and track so that the track is clearly visible.</p></li>
+</ul>
+<p>Adult turtle tracks:</p>
+<ul class="simple">
+<li><p>Track type: keep default “track, not checked for nest”</p></li>
+<li><p>Location: Start GeoPoint. Required. Can be saved as soon as “accuracy” is
+shown, will auto-save once accuracy drops below 5m. The fix should not take
+longer than 5 to 10 seconds. The acquisition speed depends on the device’s GPS
+chip and available satellites. The first fix can take a bit longer, subsequent
+GPS fixes should be faster.</p></li>
+</ul>
+<p>Hatchling tracks:</p>
+<ul class="simple">
+<li><p>Track type: “nest, hatched”</p></li>
+<li><p>Location: Follow to hatched nest, capture location of nest.</p></li>
+<li><p>Swipe right and fill in subsequent nest-related screens. A senior field worker
+will conduct the nest excavation.</p></li>
+</ul>
+<p>You should at least set species and GeoPoint, if the other value defaults are correct.</p>
+<p>Review the data, then swipe right to finish the form.</p>
+<p>If you are sure of species ID, keep “Mark form as finalized” ticked and “Save Form and Exit”.</p>
+<p>If you are unsure of the species ID, (species is “turtle” and photo of track is
+provided), untick “Mark form as finalized” and “Save Form and Exit”.
+This gives the field supervisors a chance to review and possibly determine species ID
+(based on the photo taken) before uploading.</p>
+<p>This form will take a trained operator about 13 taps and swipes over about 15 seconds
+plus the time to take a photo.</p>
+<p>Repeat for each track.</p>
+</div>
+<div class="section" id="collect-nest-data">
+<h4>Collect “nest” data<a class="headerlink" href="#collect-nest-data" title="Permalink to this headline">¶</a></h4>
+<p>Look for both tracks (crossing your path) and nests (may be inland).</p>
+<p><strong>Track</strong> same screen as uptrack up to photo of track. Resuming from track type:</p>
+<ul class="simple">
+<li><p>Follow the track until you find the nest or downtrack.</p></li>
+<li><p>Depending on presence of nest, set Track or nest type: “track without nest”,
+“track with nest”, or “track, checked for nest, unsure if nest”.</p></li>
+<li><p>If you’re unsure about the presence of a nest, take a photo of the nest and
+do not mark the record as “finalized”. This gives the field supervisors a
+chance to review and possibly determine nesting success
+(based on the photo taken) before uploading.</p></li>
+<li><p>Record the location of the nest, or (if no nest found) the track apex.</p></li>
+</ul>
+<p><strong>Nest</strong> choose whether nest is unhatched (no shells) or hatched (shells).</p>
+<p>Swipe right. If nest is present, fill in the “nest” screen.
+Indicate whether:</p>
+<ul class="simple">
+<li><p>disturbance was evident,</p></li>
+<li><p>eggs were counted,</p></li>
+<li><p>the nest had an ID tag buried within the eggs (or tied to a nest marker pole),</p></li>
+<li><p>there was a temperature logger in the nest, or</p></li>
+<li><p>hatchlings were found and measured.</p></li>
+</ul>
+<p>Swipe right. Depending on the indications above, extra screens will be shown.</p>
+<p><strong>Disturbance</strong></p>
+<ul class="simple">
+<li><p>“Add a new Disturbance observation group” for each distinct disturbance cause.</p></li>
+<li><p>Record disturbances before excavating nests, take photos of evidence.</p></li>
+</ul>
+<p><strong>Eggs</strong>
+This step assumes that a trained operator has now excavated the nest, and sorted
+the eggs into the categories defined by Miller (1999) on top of a cutting board
+with a reference grid.</p>
+<ul class="simple">
+<li><p>egg category tallies are required (0 if none found)</p></li>
+<li><p>nest depth (caution - millimeters) is optional</p></li>
+<li><p>photograph the eggs on top of the reference cutting board and take as many
+pictures as required.</p></li>
+</ul>
+<p><strong>Nest tag</strong>
+Some nests may contain a nest tag, which consists of builders’ ribbon with the
+nest tag ID written in text marker on it.
+A nest tag ID consists of up to three parts:</p>
+<ul class="simple">
+<li><p>Flipper tag ID: provide <strong>exactly one</strong>, and <strong>do not</strong> include any other information.
+e.g. <cite>WA1234</cite>. Whitespace and capitalisation will be ignored, so <cite>wa1234</cite>,
+<cite>WA 1234</cite> and <cite>wa 1234</cite> are equivalent. However, <cite>WA1234 and some words</cite> will
+<strong>not</strong> match up with flipper tag <cite>WA1234</cite> unless manually rectified.
+Operators are encouraged to enter this value with greatest care and precision.
+The turtle flipper tag may have been unavailable or unknown at the time of
+writing the nest tag, so it can be blank.</p></li>
+<li><p>Date nest laid: this is the <strong>calendar</strong> date of the nesting event. If a nest
+was tagged after the initial nesting event, the date may be unknown, and
+therefore also blank.</p></li>
+<li><p>Nest label: any extra information that is not the first flipper tag or the
+lay date will go here, e.g. an informal nest name like <cite>M1</cite>. The nest label
+may also be blank.</p></li>
+</ul>
+<p><strong>Temperature logger</strong>
+In hatched nests, one or two temperature loggers can be found, and will always
+be retrieved for later data download.</p>
+<ul class="simple">
+<li><p>Logger ID: the number underneath the bar code.</p></li>
+<li><p>Photo: take a photo of the logger ID / serial / bar code area if lighting allows.
+This is a good backup for proofreading the logger ID.</p></li>
+<li><p>Why not barcode: the white-on-black HOBO logger barcode does not scan quickly,
+and barcode scanners can mistakenly OCR the logger ID (from plain text).</p></li>
+</ul>
+<p><strong>Hatchling measurement</strong>
+Enter straight carapace length in mm, straight carapace width in mm and weight in grams.</p>
+<p>This is the end of the form. Proceed to the next track or nest and repeat.</p>
+<p>At the end of the survey, turn off location services, and hand the device back to the admin.</p>
+</div>
+<div class="section" id="admin-review-data">
+<h4>Admin: Review data<a class="headerlink" href="#admin-review-data" title="Permalink to this headline">¶</a></h4>
+<p>“Edit Saved Form” lists all unfinalized forms pending review and species / nest ID:</p>
+<ul class="simple">
+<li><p>Tap once to view read-only, tap again to edit</p></li>
+<li><p>review and update data (e.g. species ID)</p></li>
+<li><p>save and mark as finalized.</p></li>
+</ul>
+</div>
+<div class="section" id="admin-upload-data">
+<h4>Admin: Upload data<a class="headerlink" href="#admin-upload-data" title="Permalink to this headline">¶</a></h4>
+<p>When surveys are done in locations where the device can return to the comforts
+of WiFi and power points daily, data can be uploaded directly to the clearinghouse.</p>
+<ul class="simple">
+<li><p>Settings: make sure the correct username and password are given. The admin can
+choose to use their own username / password.</p></li>
+<li><p>Turn on the WiFi hotspot or move into WiFi range.</p></li>
+<li><p>Turn on the device’s WiFi.</p></li>
+</ul>
+<p>With “Auto-send in WiFi” settings enabled, the device will automatically upload
+all data marked as “finalized”.</p>
+<p>When WiFi is not available daily, the admin needs to backup data by downloading
+it manually and keeping the downloaded data safe (multiple copies over separate
+storage media). With the mobile device connected and “MTP file transfer” enabled,
+ODK data is located in either internal or SD storage in <code class="docutils literal notranslate"><span class="pre">odk/instances</span></code>.
+Each form will be stored in a separate folder, containing both the filled in form
+as XML file, and all related pictures and media.</p>
+</div>
+<div class="section" id="where-s-the-data-now">
+<h4>Where’s the data now?<a class="headerlink" href="#where-s-the-data-now" title="Permalink to this headline">¶</a></h4>
+<p>ODK Collect uploads data to the configured ODK Aggregate clearinghouse.
+In our case, this is <a class="reference external" href="https://dpaw-data.appspot.com/">https://dpaw-data.appspot.com/</a>.
+Data collectors will have received credentials to login, which are the credentials
+to be used in ODK Collect.</p>
+<p>A synchronised copy of the data is streamed to Google Fusion Tables (GFT)
+for immediate visualization.</p>
+<p>For an initial analysis and summary, data are downloaded from GFT and presented
+in an RMarkdown workbook <a class="reference external" href="http://rpubs.com/florian_mayer/tracks">Tracks</a>.</p>
+<p>After each field trip, data from ODK Aggregate are exported (as JSON) and ingested
+into WAStD. The process can be repeated; data that has been changed in WAStD and
+marked as “proofread” or even “curated” will not be overwritten.</p>
+<p>Once data are marked as “proofread” (or higher levels of QA) in WAStD,
+WAStD becomes the point of truth, as proofreading and curation (e.g.
+double-checking species ID based on submitted photos) can change the data compared
+to the initial submission on ODK Aggregate.</p>
+<p>Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
+<a class="reference external" href="https://strandings.dpaw.wa.gov.au/">https://strandings.dpaw.wa.gov.au/</a>. See chapter “Data consumers” for working
+examples.</p>
+<p>The final analysis (in development at the time of writing) will consume
+curated data through the WAStD API.</p>
+</div>
+</div>
+</div>
+<div class="section" id="turtle-stranding">
+<span id="itp-stranding-report"></span><h2>Turtle Stranding<a class="headerlink" href="#turtle-stranding" title="Permalink to this headline">¶</a></h2>
+<p>Setup the device as described above and select the latest “Turtle Stranding” form
+in “Get blank forms”.</p>
+<p>The expected work flow is:</p>
+<ul class="simple">
+<li><p>A member of the public reports a stranded animal, a field officer responds to
+the report and inspects the stranded animal personally.</p></li>
+<li><p>A field officer discovers a stranded animal during a patrol.</p></li>
+<li><p>In both cases, the field officer carries a mobile device with ODK Collect and
+the latest “Turtle Stranding” form.</p></li>
+<li><p>The field officer fills in the form while attending to the stranded animal.</p></li>
+<li><p>All freshly dead turtles (D1 and D2) should be frozen and sent to Perth
+(Erina Young) for a necropsy.</p></li>
+</ul>
+<p>The form should be self-explanatory. Some fields default to the “not assessed / NA”
+option, however effort should be untertaken to determine the correct option.</p>
+<p>Photographs are very important, in that they allow data curators to verify the field
+operator’s choice of available options.</p>
+<p>If possible, photographs should be taken in landscape format.</p>
+<p>The habitat photo should be taken from about 10 m distance to the animal.</p>
+<p>Although taking several photos next to a decomposing animal may pose an olfactory
+challenge, taking a photo is invaluable, in that it cannot be taken at a later
+time, and it preserves valuable and volatile information.</p>
+</div>
+<div class="section" id="lessons-learnt-from-paper-based-field-data-collection">
+<span id="lessons-learnt-paper-based-data-capture"></span><h2>Lessons learnt from paper-based field data collection<a class="headerlink" href="#lessons-learnt-from-paper-based-field-data-collection" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="scenario-1-two-tags-applied-both-tags-recorded-incorrectly">
+<h3>Scenario 1: Two tags applied, both tags recorded incorrectly<a class="headerlink" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly" title="Permalink to this headline">¶</a></h3>
+<p>One turtle is encountered in two subsequent nights by two separate teams.</p>
+<div class="section" id="night-1">
+<h4>Night 1<a class="headerlink" href="#night-1" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Data entry operators “Tim” and “Natalie” were in a rush, tagged turtle with tag “WB7326”, but
+recorded next tag “WB7330” on tag dispenser as “applied new”.</p></li>
+<li><p>Operators grabbed a PIT tag “900006000144755” from bag and applied it to turtle,
+then went back to the bag, mistook another empty PIT package of tag
+“900006000143470” (hint: with a few missing ID stickers - missing means peeled
+off by sand, or stuck onto another datasheet when applied to a turtle)
+for the package of the just applied tag “…755” and recorded “…470” incorrectly
+as “applied new”.</p></li>
+<li><p>Team 1 measure CCL</p></li>
+</ul>
+</div>
+<div class="section" id="night-2">
+<h4>Night 2<a class="headerlink" href="#night-2" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Second team “Spud” and “Coral” encounter the same turtle with left flipper tag</p></li>
+</ul>
+<blockquote>
+<div><p>“WB7326”</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>They scan for PIT tag, find and record “…755”</p></li>
+<li><p>They apply and record another flipper tag “WB7384” on right flipper</p></li>
+<li><p>They measure CCL and CCW</p></li>
+</ul>
+</div>
+<div class="section" id="the-aftermath">
+<h4>The aftermath<a class="headerlink" href="#the-aftermath" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Team leader “Spud” wants to lookup tag history “WB7326”, suspecting the turtle
+might originate from different nesting location, based on the fact that the
+turtle was already tagged. Most likely, seeing a tagged turtle this early in the
+tagging season means that the tag has been applied elswhere earlier.</p></li>
+<li><p>The tag is not in the tagging database. This is unexpected.</p></li>
+<li><p>Data curator realises that the tag is from the tag series allocated to the current
+field trip. This means that the tag must have been applied new within the past
+days, and the corresponding datasheet must be present in the field office.</p></li>
+<li><p>Data curator spends the next half hour manically trying to find the datasheet
+referencing the application of tag “WB7326”.</p></li>
+<li><p>Data curator questions correctness of first datasheet’s tag ID.</p></li>
+<li><p>Day 1’s datasheet is the only potentially matching candidate with similarities
+to day 2’s datasheet: CCL within 3mm, one tag on front left flipper.</p></li>
+<li><p>Data curator decides that at least one of two datasheets is incorrect.</p></li>
+<li><p>Data curator locates “WB7330” in one of the tagging backpacks. This means that
+datasheet 1’s flipper tag ID must be incorrect.</p></li>
+<li><p>Data curator infers based on similar body length and position of single flipper
+tag, datasheet 1 and 2 refer to the same turtle, and corrects the tag ID on
+datasheet 1 to “WB7326”.</p></li>
+<li><p>Data curator learns from “Natalie” that the empty PIT tag box had only two
+remaining stickers out of five left. This indicates that the recorded PIT tag ID
+on datasheet 1 is also incorrect. The curator therefore assumes that the PIT
+tag ID of datasheet 2 is correct and adjusts datasheet 1 to report PIT tag ID
+“…755”.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="lessons-learnt-from-mobile-field-data-collection">
+<h2>Lessons learnt from mobile field data collection<a class="headerlink" href="#lessons-learnt-from-mobile-field-data-collection" title="Permalink to this headline">¶</a></h2>
+<p>The choice of methodology can be driven by time availability.</p>
+<p>Example: Teams are dropped off on remote beaches and have too little time to
+identify and individually record turtle tracks (on paper or on mobile).
+In this case, a tally was kept on paper forms, as no specialised mobile app for
+tally observations was available yet.</p>
+<div class="section" id="devices-shoot-out">
+<h3>Devices shoot-out<a class="headerlink" href="#devices-shoot-out" title="Permalink to this headline">¶</a></h3>
+<p>Hands-on field testing at Thevenard and Barrow Islands Nov/Dec 2016.</p>
+<div class="section" id="general-notes">
+<h4>General notes<a class="headerlink" href="#general-notes" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>There are not many rugged cases available for low end, older or exotic devices</p></li>
+<li><p>$70 charger with 6 USB outlets replaces the Great Charger Kelp Forest</p></li>
+<li><p>$80 15Ah battery packs provide backup power</p></li>
+<li><p>$5 neoprene sleeves protect every device against bumps, scratches and sand</p></li>
+<li><p>$5 whiteboards plus whiteboard marker, placed in geotagged photo of any random
+observation are the best way to capture opportunistic observations</p></li>
+</ul>
+</div>
+<div class="section" id="samsung-galaxy-s2-9-7">
+<h4>Samsung Galaxy S2 9.7”<a class="headerlink" href="#samsung-galaxy-s2-9-7" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>$700 device, $150 rugged case, $50 64GB SD</p></li>
+<li><p>Office sleeves available in store, rugged cases only available online</p></li>
+<li><p>GPS fix ~ 10 sec to below 5m accuracy</p></li>
+<li><p>64 GB internal storage is plenty for data collection</p></li>
+<li><p>Battery life excellent</p></li>
+<li><p>Screen excellent resolution and daylight readability</p></li>
+<li><p>System fast and snappy</p></li>
+<li><p>Android 6.0.1</p></li>
+<li><p>Large size is excellent to review visualisations and read</p></li>
+<li><p>(-) Larger size (A4 page) requires two hands to hold</p></li>
+<li><p>(-) too expensive to distribute widely or use in extreme conditions</p></li>
+</ul>
+</div>
+<div class="section" id="samsung-galaxy-s2-8">
+<h4>Samsung Galaxy S2 8”<a class="headerlink" href="#samsung-galaxy-s2-8" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>$550 device, $150 rugged case, $50 64GB SD</p></li>
+<li><p>Fits in 8” sleeve, can be balanced on one hand while operating with other.</p></li>
+<li><p>Same pros and cons as 9.7” version, plus:</p></li>
+<li><p>Size is on the border of one and two hand hold (depending on hand size).</p></li>
+<li><p>32 GB internal storage is still plenty for data collection.</p></li>
+<li><p>(-) still too expensive to distribute widely or use in extreme conditions.</p></li>
+</ul>
+</div>
+<div class="section" id="samsung-galaxy-tab-a-7">
+<h4>Samsung Galaxy Tab A 7”<a class="headerlink" href="#samsung-galaxy-tab-a-7" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>$160 device, $30 plastic shell, $50 64GB SD</p></li>
+<li><p>Fits in 7” sleeve, large trouser pocket, can be held securely in one hand.</p></li>
+<li><p>Rugged cases available in store at time of writing.</p></li>
+<li><p>Decidedly slower and laggier performance than flagship S2.</p></li>
+<li><p>(-) GPS unacceptably slow.</p></li>
+<li><p>(-) 8GB internal storage is too small to collect data.</p></li>
+<li><p>(-) Android 5.1.1 means external SD chip does not format as internal storage.</p></li>
+</ul>
+</div>
+<div class="section" id="lenovo-tab-3-7-tb3-730f">
+<h4>Lenovo Tab 3 7” TB3-730F<a class="headerlink" href="#lenovo-tab-3-7-tb3-730f" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>$100 device, $50 64GB SD</p></li>
+<li><p>No cover in store, but device is splash-resistant.</p></li>
+<li><p>Fits in 7” sleeve, trouser pocket, can be held securely in one hand.</p></li>
+<li><p>Very fast GPS fix, faster than Samsung S2, slower than a Moto G4+ phone.</p></li>
+<li><p>Best cost-benefit for handing out in bulk.</p></li>
+</ul>
+</div>
+<div class="section" id="moto-g4-plus-phone">
+<h4>Moto G4 Plus phone<a class="headerlink" href="#moto-g4-plus-phone" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>$400 device, $4 plastic shell, $50 SD</p></li>
+<li><p>Very good mid-range 5” Android phone</p></li>
+<li><p>Fast GPS fix (~4-5 sec outdoors)</p></li>
+<li><p>Dual SIM</p></li>
+<li><p>Data collection works nicely</p></li>
+<li><p>Good option for work phone for front-line staff at time of writing (Dec 2016)</p></li>
+</ul>
+</div>
+<div class="section" id="general-observations">
+<h4>General observations<a class="headerlink" href="#general-observations" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>All devices were daylight-readable.</p></li>
+<li><p>All devices had sufficient battery life to support hours of data collection.</p></li>
+<li><p>Operation in harsh environments was no problem: walking along sandy beaches in
+daylight, sweaty fingers, flying sand.</p></li>
+<li><p>External battery packs extend time between wall power charging.</p></li>
+<li><p>Best low-cost field device: Lenovo Tab 3. Runner-up: Samsung S2 8”.</p></li>
+<li><p>Strong case against Galaxy Tab A (slow GPS, low internal storage, old OS version).</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="cost-benefit-analysis-for-digital-data-collection">
+<span id="cost-benefit-analysis-digital-data-capture"></span><h2>Cost-benefit analysis for digital data collection<a class="headerlink" href="#cost-benefit-analysis-for-digital-data-collection" title="Permalink to this headline">¶</a></h2>
+<p>The following diagram is also shown at <a class="reference internal" href="business_analysts.html#dm-data-entry"><span class="std std-ref">IT processes along the Data life cycle</span></a>.</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png"><img alt="Turtle data flow, ideal state" src="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png" /></a>
+<p>Digital data collection provides systematic advantages over paper-based
+data collection, as it skips several work-intensive, error-prone steps
+in the data life cycle.</p>
+<div class="section" id="paper-based-data-collection">
+<h3>Paper-based data collection<a class="headerlink" href="#paper-based-data-collection" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="filling-in-a-paper-data-sheet">
+<h4>Filling in a paper data sheet<a class="headerlink" href="#filling-in-a-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Error sources: typos, illegible or rushed handwriting, invalid values, fields
+incorrectly filled or skipped.</p></li>
+<li><p>Breaking the analog-digital barrier multiple times is costly and error prone:
+GPS, PIT tag reader, barcodes for samples etc.</p></li>
+<li><p>Associating media to records is labourious and error-prone</p></li>
+</ul>
+</div>
+<div class="section" id="digitising-a-paper-data-sheet">
+<h4>Digitising a paper data sheet<a class="headerlink" href="#digitising-a-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+<p>Data collected on paper has to be read (interpreting handwriting correctly),
+mentally mapped from datasheet to electronic form, and typed off (correctly) by
+the data entry operator.</p>
+</div>
+<div class="section" id="proof-reading-a-digital-record-against-paper-data-sheet">
+<h4>Proof-reading a digital record against paper data sheet<a class="headerlink" href="#proof-reading-a-digital-record-against-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+<p>A second person, acting as proofreader, has to reproduce the same mental effort
+to map the paper data sheet to the electronic form and correct any errors they find.</p>
+</div>
+</div>
+<div class="section" id="digital-data-collection">
+<h3>Digital data collection<a class="headerlink" href="#digital-data-collection" title="Permalink to this headline">¶</a></h3>
+<p>Digital forms can offer dropdown menus with pre-defined values to reduce sources
+of error.</p>
+<p>Digital data capture devices can reliably and easily record and associate
+location and take photos. Compare pressing a “record location” button to taking
+a GPS point, reading, understanding, typing, and confirming 15 digits under time
+pressure, sleep deprivation and harsh environmental conditions.</p>
+<p>Data collected digitally enters the system as “proofread”, eliminating two laborious
+and error-prone steps requiring human interaction.
+In addition, the data is available to QA straight away, possibly creating a
+tighter error-checking loop.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020 DBCA
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

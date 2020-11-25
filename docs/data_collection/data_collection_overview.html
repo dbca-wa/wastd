@@ -1,0 +1,566 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data collection &mdash; WAStD 0.45.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data collection administrators" href="data_collection_admin.html" />
+    <link rel="prev" title="WAStD - WA Sea Turtle Data" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.45
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data collection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#solution-architecture-and-infrastructure">Solution architecture and infrastructure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lessons-learnt-from-paper-based-field-data-collection">Lessons learnt from paper-based field data collection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly">Scenario 1: Two tags applied, both tags recorded incorrectly</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#night-1">Night 1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#night-2">Night 2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-aftermath">The aftermath</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lessons-learnt-from-mobile-field-data-collection">Lessons learnt from mobile field data collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gps-location-and-wifi">GPS location and WiFi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#devices-shoot-out">Devices shoot-out</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-notes">General notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#samsung-galaxy-s2-9-7">Samsung Galaxy S2 9.7”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#samsung-galaxy-s2-8">Samsung Galaxy S2 8”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#samsung-galaxy-tab-a-7">Samsung Galaxy Tab A 7”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lenovo-tab-3-7-tb3-730f">Lenovo Tab 3 7” TB3-730F</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lenovo-tab-7-essential-tb-7304f">Lenovo Tab 7 Essential TB-7304F</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lenovo-tab-e7">Lenovo Tab E7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#moto-g4-plus-phone">Moto G4 Plus phone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#moto-g6-phone">Moto G6 phone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#general-observations">General observations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cost-benefit-analysis-for-digital-data-collection">Cost-benefit analysis for digital data collection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#paper-based-data-collection">Paper-based data collection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#filling-in-a-paper-data-sheet">Filling in a paper data sheet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#digitising-a-paper-data-sheet">Digitising a paper data sheet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#proof-reading-a-digital-record-against-paper-data-sheet">Proof-reading a digital record against paper data sheet</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#digital-data-collection">Digital data collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#re-thinking-datasheets">Re-thinking datasheets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html#project-delivery-ticking-the-boxes">Project delivery: ticking the boxes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Data collection</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/data_collection/data_collection_overview.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data-collection">
+<h1>Data collection<a class="headerlink" href="#data-collection" title="Permalink to this headline">¶</a></h1>
+<p>This chapter provides an entrypoint to all documentation on the data collection process.</p>
+<p>Are you a volunteer or staff data collector?
+All you need to know is written at <a class="reference internal" href="data_collection_training.html#data-collection-training"><span class="std std-ref">Data collection training</span></a>,
+but feel free to read more of this documentation.</p>
+<p>Are you a data collection admin in charge of maintaining collection devices
+(tablets), training data collectors, and uploading the data?
+Read <a class="reference internal" href="data_collection_admin.html#data-collection-admin"><span class="std std-ref">Data collection administrators</span></a>.</p>
+<p>Are you a solution architect, developer or business analyst? Then read on.</p>
+<div class="section" id="solution-architecture-and-infrastructure">
+<h2>Solution architecture and infrastructure<a class="headerlink" href="#solution-architecture-and-infrastructure" title="Permalink to this headline">¶</a></h2>
+<p>This section provides a condensed overview of the information management infrastructure behind our digital data collection process.</p>
+<ul class="simple">
+<li><p>Forms are built using the form builder software
+<a class="reference external" href="https://opendatakit.org/use/build/">ODK Build</a>,
+hosted <a class="reference external" href="http://build.opendatakit.org/">here</a>.</p></li>
+<li><p>Forms are pushed from ODK Build to an instance of the data
+clearinghouse software
+<a class="reference external" href="https://opendatakit.org/use/aggregate/">ODK Aggregate</a>,
+deployed <a class="reference external" href="http://dpaw-data.appspot.com/">here</a>.</p></li>
+<li><p>Mobile Android devices (tablets, phablets, smartphones) running
+the data collection software
+<a class="reference external" href="https://opendatakit.org/use/collect/">ODK Collect</a>
+are configured to load data collection forms from
+<a class="reference external" href="http://dpaw-data.appspot.com/">DBCA’s ODK Aggregate server</a>,
+collect data (offline capable), and submit collected data back to
+DBCA’s ODK Aggregate server.</p></li>
+<li><p>The data manager (Florian Mayer) uploads data from DBCA’s
+ODK Aggregate server to the WA Sea Turtle Database
+<a class="reference external" href="https://tsc.dpaw.wa.gov.au/">WAStD</a>.</p></li>
+<li><p>Data anlysts access the WAStD API e.g. using the R package
+<a class="reference external" href="https://parksandwildlife.github.io/wastdr/">wastdR</a> to produce insight
+from the collected data.</p></li>
+<li><p>Insight is disseminated through the
+<a class="reference external" href="https://data.dpaw.wa.gov.au/">DBCA data catalogue</a> and other internal or public platforms.</p></li>
+</ul>
+<p>See also <a class="reference internal" href="../business_analysts.html#business-process-turtle-tracks"><span class="std std-ref">Business Process Turtle Tracks</span></a>.</p>
+<p>The following diagram is also shown at <a class="reference internal" href="../business_analysts.html#dm-data-entry"><span class="std std-ref">IT processes along the Data life cycle</span></a>.</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png"><img alt="Turtle data flow, ideal state" src="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png" /></a>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png"><img alt="Turtle data flow, current state" src="https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png" /></a>
+</div>
+<div class="section" id="lessons-learnt-from-paper-based-field-data-collection">
+<span id="lessons-learnt-paper-based-data-capture"></span><h2>Lessons learnt from paper-based field data collection<a class="headerlink" href="#lessons-learnt-from-paper-based-field-data-collection" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="scenario-1-two-tags-applied-both-tags-recorded-incorrectly">
+<h3>Scenario 1: Two tags applied, both tags recorded incorrectly<a class="headerlink" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly" title="Permalink to this headline">¶</a></h3>
+<p>One turtle is encountered in two subsequent nights by two separate teams.</p>
+<div class="section" id="night-1">
+<h4>Night 1<a class="headerlink" href="#night-1" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Data entry operators “Tim” and “Natalie” were in a rush, tagged turtle with tag “WB7326”, but
+recorded next tag “WB7330” on tag dispenser as “applied new”.</p></li>
+<li><p>Operators grabbed a PIT tag “900006000144755” from bag and applied it to turtle,
+then went back to the bag, mistook another empty PIT package of tag
+“900006000143470” (hint: with a few missing ID stickers - missing means peeled
+off by sand, or stuck onto another datasheet when applied to a turtle)
+for the package of the just applied tag “…755” and recorded “…470” incorrectly
+as “applied new”.</p></li>
+<li><p>Team 1 measure CCL</p></li>
+</ul>
+</div>
+<div class="section" id="night-2">
+<h4>Night 2<a class="headerlink" href="#night-2" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Second team “Spud” and “Coral” encounter the same turtle with left flipper tag</p></li>
+</ul>
+<blockquote>
+<div><p>“WB7326”</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>They scan for PIT tag, find and record “…755”</p></li>
+<li><p>They apply and record another flipper tag “WB7384” on right flipper</p></li>
+<li><p>They measure CCL and CCW</p></li>
+</ul>
+</div>
+<div class="section" id="the-aftermath">
+<h4>The aftermath<a class="headerlink" href="#the-aftermath" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Team leader “Spud” wants to lookup tag history “WB7326”, suspecting the turtle
+might originate from different nesting location, based on the fact that the
+turtle was already tagged. Most likely, seeing a tagged turtle this early in the
+tagging season means that the tag has been applied elswhere earlier.</p></li>
+<li><p>The tag is not in the tagging database. This is unexpected.</p></li>
+<li><p>Data curator realises that the tag is from the tag series allocated to the current
+field trip. This means that the tag must have been applied new within the past
+days, and the corresponding datasheet must be present in the field office.</p></li>
+<li><p>Data curator spends the next half hour manically trying to find the datasheet
+referencing the application of tag “WB7326”.</p></li>
+<li><p>Data curator questions correctness of first datasheet’s tag ID.</p></li>
+<li><p>Day 1’s datasheet is the only potentially matching candidate with similarities
+to day 2’s datasheet: CCL within 3mm, one tag on front left flipper.</p></li>
+<li><p>Data curator decides that at least one of two datasheets is incorrect.</p></li>
+<li><p>Data curator locates “WB7330” in one of the tagging backpacks. This means that
+datasheet 1’s flipper tag ID must be incorrect.</p></li>
+<li><p>Data curator infers based on similar body length and position of single flipper
+tag, datasheet 1 and 2 refer to the same turtle, and corrects the tag ID on
+datasheet 1 to “WB7326”.</p></li>
+<li><p>Data curator learns from “Natalie” that the empty PIT tag box had only two
+remaining stickers out of five left. This indicates that the recorded PIT tag ID
+on datasheet 1 is also incorrect. The curator therefore assumes that the PIT
+tag ID of datasheet 2 is correct and adjusts datasheet 1 to report PIT tag ID
+“…755”.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="lessons-learnt-from-mobile-field-data-collection">
+<h2>Lessons learnt from mobile field data collection<a class="headerlink" href="#lessons-learnt-from-mobile-field-data-collection" title="Permalink to this headline">¶</a></h2>
+<p>The choice of methodology can be driven by time availability.</p>
+<p>Example: Teams are dropped off on remote beaches and have too little time to
+identify and individually record turtle tracks (on paper or on mobile).
+In this case, a tally was kept on paper forms, as no specialised mobile app for
+tally observations was available yet. Now such a form has been built.</p>
+</div>
+<div class="section" id="gps-location-and-wifi">
+<span id="geolocation-and-wifi"></span><h2>GPS location and WiFi<a class="headerlink" href="#gps-location-and-wifi" title="Permalink to this headline">¶</a></h2>
+<p>Android devices can set the location mode (System settings) to use WiFi + network + GPS, WiFi + network only, or GPS only.</p>
+<p>A particularity of the guest WiFi network used for all tablets on DBCA campuses is that this WiFi network
+does NOT provide a geolocation at all. If a tablet is therefore set to location mode “WiFi + GPS” and used
+indoors (no GPS signal), the ODK Collect geolocation will time out on (not) getting a location estimate
+from the guest WiFi at DBCA. This problem does not exist with other WiFi networks we tested.</p>
+<p>Therefore, all training must happen outdoors. The location mode can be set to “WiFi + GPS” or “GPS only”, but
+tablets must have a clear view of the sky.</p>
+<p>All devices get a good GPS signal on beaches outside of WiFi range, independent on location mode.</p>
+<p>This insight was derived from testing devices in the field (beaches from Ningaloo, Karratha to Broome)
+and DBCA offices (Exmouth, Karratha, Broome, Perth) and non-DBCA locations over seveal months.</p>
+</div>
+<div class="section" id="devices-shoot-out">
+<span id="device-shootout"></span><h2>Devices shoot-out<a class="headerlink" href="#devices-shoot-out" title="Permalink to this headline">¶</a></h2>
+<p>Hands-on field testing at Thevenard and Barrow Islands Nov/Dec 2016.</p>
+<div class="section" id="general-notes">
+<h3>General notes<a class="headerlink" href="#general-notes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>There are not many rugged cases available for low end, older or exotic devices</p></li>
+<li><p>$70 charger with 6 USB outlets replaces the Great Charger Kelp Forest</p></li>
+<li><p>$80 15Ah battery packs provide backup power</p></li>
+<li><p>$5 neoprene sleeves protect every device against bumps, scratches and sand</p></li>
+<li><p>$5 whiteboards plus whiteboard marker, placed in geotagged photo of any random
+observation are the best way to capture opportunistic observations</p></li>
+</ul>
+</div>
+<div class="section" id="samsung-galaxy-s2-9-7">
+<h3>Samsung Galaxy S2 9.7”<a class="headerlink" href="#samsung-galaxy-s2-9-7" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>$700 device, $150 rugged case, $50 64GB SD</p></li>
+<li><p>Office sleeves available in store, rugged cases only available online</p></li>
+<li><p>GPS fix ~ 10 sec to below 5m accuracy</p></li>
+<li><p>64 GB internal storage is plenty for data collection</p></li>
+<li><p>Battery life excellent</p></li>
+<li><p>Screen excellent resolution and daylight readability</p></li>
+<li><p>System fast and snappy</p></li>
+<li><p>Android 6.0.1</p></li>
+<li><p>Large size is excellent to review visualisations and read</p></li>
+<li><p>(-) Larger size (A4 page) requires two hands to hold</p></li>
+<li><p>(-) too expensive to distribute widely or use in extreme conditions</p></li>
+<li><p>(-) compass bearing measurements vary wildly between four identical devices</p></li>
+</ul>
+</div>
+<div class="section" id="samsung-galaxy-s2-8">
+<h3>Samsung Galaxy S2 8”<a class="headerlink" href="#samsung-galaxy-s2-8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>$550 device, $150 rugged case, $50 64GB SD</p></li>
+<li><p>Fits in 8” sleeve, can be balanced on one hand while operating with other.</p></li>
+<li><p>Same pros and cons as 9.7” version, plus:</p></li>
+<li><p>Size is on the border of one and two hand hold (depending on hand size).</p></li>
+<li><p>32 GB internal storage is still plenty for data collection.</p></li>
+<li><p>(-) still too expensive to distribute widely or use in extreme conditions.</p></li>
+</ul>
+</div>
+<div class="section" id="samsung-galaxy-tab-a-7">
+<h3>Samsung Galaxy Tab A 7”<a class="headerlink" href="#samsung-galaxy-tab-a-7" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>$160 device, $30 plastic shell, $50 64GB SD</p></li>
+<li><p>Fits in 7” sleeve, large trouser pocket, can be held securely in one hand.</p></li>
+<li><p>Rugged cases available in store at time of writing.</p></li>
+<li><p>Decidedly slower and laggier performance than flagship S2.</p></li>
+<li><ol class="upperroman simple" start="30">
+<li><p>GPS unacceptably slow.</p></li>
+</ol>
+</li>
+<li><p>(-) 8GB internal storage is too small to collect data.</p></li>
+<li><p>(-) Android 5.1.1 means external SD chip does not format as internal storage.</p></li>
+</ul>
+</div>
+<div class="section" id="lenovo-tab-3-7-tb3-730f">
+<h3>Lenovo Tab 3 7” TB3-730F<a class="headerlink" href="#lenovo-tab-3-7-tb3-730f" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>$100 device, $50 64GB SD</p></li>
+<li><p>No cover in store, but device is splash-resistant.</p></li>
+<li><p>Fits in 7” sleeve, trouser pocket, can be held securely in one hand.</p></li>
+<li><p>Very fast GPS fix, faster than Samsung S2, slower than a Moto G4+ phone.</p></li>
+<li><p>Best cost-benefit for handing out in bulk.</p></li>
+<li><p>(-) Being phased out as of early 2018, replaced by TB-7304F.</p></li>
+</ul>
+</div>
+<div class="section" id="lenovo-tab-7-essential-tb-7304f">
+<h3>Lenovo Tab 7 Essential TB-7304F<a class="headerlink" href="#lenovo-tab-7-essential-tb-7304f" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Successor to the TB3-730F.</p></li>
+<li><p>Beautiful performance, low price.</p></li>
+<li><p>Lives longer with silicone shell and screen protector.</p></li>
+<li><p>Cheap rugged case options available on eBay.</p></li>
+<li><p>(-) Being phased out as of late 2018, replaced by (GPS-less = useless) TB7104F.</p></li>
+</ul>
+</div>
+<div class="section" id="lenovo-tab-e7">
+<h3>Lenovo Tab E7<a class="headerlink" href="#lenovo-tab-e7" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Successor to the TB-7304F.</p></li>
+<li><ol class="upperroman simple" start="30">
+<li><p>Does not have a GPS chip. Does not advertise lack of GPS anywhere on packaging.</p></li>
+</ol>
+</li>
+<li><p>Cannot use for ODK Collect.</p></li>
+</ul>
+</div>
+<div class="section" id="moto-g4-plus-phone">
+<h3>Moto G4 Plus phone<a class="headerlink" href="#moto-g4-plus-phone" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>$400 device, $4 plastic shell, $50 SD</p></li>
+<li><p>Cheap rugged case options available on eBay.</p></li>
+<li><p>Very good mid-range 5” Android phone</p></li>
+<li><p>Fast GPS fix (~4-5 sec outdoors)</p></li>
+<li><p>Dual SIM</p></li>
+<li><p>Data collection works nicely</p></li>
+<li><p>Good option for work phone for front-line staff at time of writing (Dec 2016)</p></li>
+</ul>
+</div>
+<div class="section" id="moto-g6-phone">
+<h3>Moto G6 phone<a class="headerlink" href="#moto-g6-phone" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>$388 in 2018.</p></li>
+<li><p>Successor to Moto G4/G4+.</p></li>
+<li><p>Cheap rugged case options available on eBay.</p></li>
+<li><p>Works perfectly fine with ODK Collect.</p></li>
+</ul>
+</div>
+<div class="section" id="general-observations">
+<h3>General observations<a class="headerlink" href="#general-observations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>All devices were daylight-readable.</p></li>
+<li><p>Screen protectors, especially the non-sticky plastic sheets from rugged cases,
+tend to decrease the contrast a bit.</p></li>
+<li><p>Polarising sunglasses and (polarised) device screens cancel each other out
+at certain angles, so that the display appears to blacken.</p></li>
+<li><p>All devices had sufficient battery life to support hours of data collection.</p></li>
+<li><p>Operation in harsh environments was against expectations no problem:
+walking along sandy beaches in daylight, sweaty fingers, flying sand.</p></li>
+<li><p>Large devices in rugged cases in full sun can overheat to the point of auto-shutdown.
+Hold them in your own shade when operating and out of the sun when not.</p></li>
+<li><p>External battery packs extend time between wall power charging.</p></li>
+<li><p>Best low-cost field device: Lenovo Tab 3. Runner-up: Samsung S2 8”.</p></li>
+<li><p>Strong case against Galaxy Tab A (slow GPS, low internal storage,
+old OS version) and of course devices without GPS chip.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="cost-benefit-analysis-for-digital-data-collection">
+<span id="cost-benefit-analysis-digital-data-capture"></span><h2>Cost-benefit analysis for digital data collection<a class="headerlink" href="#cost-benefit-analysis-for-digital-data-collection" title="Permalink to this headline">¶</a></h2>
+<p>Digital data collection provides systematic advantages over paper-based
+data collection, as it skips several work-intensive, error-prone steps
+in the data life cycle.</p>
+<div class="section" id="paper-based-data-collection">
+<h3>Paper-based data collection<a class="headerlink" href="#paper-based-data-collection" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="filling-in-a-paper-data-sheet">
+<h4>Filling in a paper data sheet<a class="headerlink" href="#filling-in-a-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Error sources: typos, illegible or rushed handwriting, invalid values, fields
+incorrectly filled or skipped.</p></li>
+<li><p>Breaking the analog-digital barrier multiple times is costly and error prone:
+GPS, PIT tag reader, barcodes for samples etc.</p></li>
+<li><p>Associating media to records is labourious and error-prone</p></li>
+</ul>
+</div>
+<div class="section" id="digitising-a-paper-data-sheet">
+<h4>Digitising a paper data sheet<a class="headerlink" href="#digitising-a-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+<p>Data collected on paper has to be read (interpreting handwriting correctly),
+mentally mapped from datasheet to electronic form, and typed off (correctly) by
+the data entry operator.</p>
+</div>
+<div class="section" id="proof-reading-a-digital-record-against-paper-data-sheet">
+<h4>Proof-reading a digital record against paper data sheet<a class="headerlink" href="#proof-reading-a-digital-record-against-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+<p>A second person, acting as proofreader, has to reproduce the same mental effort
+to map the paper data sheet to the electronic form and correct any errors they find.</p>
+</div>
+</div>
+<div class="section" id="digital-data-collection">
+<h3>Digital data collection<a class="headerlink" href="#digital-data-collection" title="Permalink to this headline">¶</a></h3>
+<p>Digital forms can offer dropdown menus with pre-defined values to reduce sources
+of error.</p>
+<p>Digital data capture devices can reliably and easily record and associate
+location and take photos. Compare pressing a “record location” button to taking
+a GPS point, reading, understanding, typing, and confirming 15 digits under time
+pressure, sleep deprivation and harsh environmental conditions.</p>
+<p>Data collected digitally enters the system as “proofread”, eliminating two laborious
+and error-prone steps requiring human interaction.
+In addition, the data is available to QA straight away, possibly creating a
+tighter error-checking loop.</p>
+</div>
+<div class="section" id="re-thinking-datasheets">
+<h3>Re-thinking datasheets<a class="headerlink" href="#re-thinking-datasheets" title="Permalink to this headline">¶</a></h3>
+<p>Each field in the data sheets has been, and should continue to be questioned:</p>
+<ul class="simple">
+<li><p>Is this information used in any of the analytical outputs?</p></li>
+<li><p>Does this information serve any QA purpose?</p></li>
+<li><p>Is this information used to derive other information, e.g. deformities being
+used to identify a resighted, untagged animal?</p></li>
+<li><p>Will anyone in the foreseeable future require this information?</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="data_collection_admin.html" class="btn btn-neutral float-right" title="Data collection administrators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="WAStD - WA Sea Turtle Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020 DBCA
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
