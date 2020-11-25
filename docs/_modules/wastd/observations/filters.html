@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wastd.observations.filters &mdash; WAStD 0.45.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.45
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers.html#project-delivery-ticking-the-boxes">Project delivery: ticking the boxes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>wastd.observations.filters</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for wastd.observations.filters</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Filters for WAStD Observations.&quot;&quot;&quot;</span>
+<span class="c1"># from leaflet.forms.widgets import LeafletWidget</span>
+<span class="kn">import</span> <span class="nn">rest_framework_filters</span> <span class="k">as</span> <span class="nn">filters</span>
+<span class="kn">from</span> <span class="nn">django.contrib.admin</span> <span class="kn">import</span> <span class="n">SimpleListFilter</span>
+<span class="kn">from</span> <span class="nn">django.contrib.gis.db</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">geo_models</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django_filters</span> <span class="kn">import</span> <span class="n">FilterSet</span>
+<span class="kn">from</span> <span class="nn">django_filters.filters</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa</span>
+    <span class="n">BooleanFilter</span><span class="p">,</span> <span class="n">CharFilter</span><span class="p">,</span>
+    <span class="n">ChoiceFilter</span><span class="p">,</span> <span class="n">MultipleChoiceFilter</span><span class="p">,</span>
+    <span class="n">ModelChoiceFilter</span><span class="p">,</span> <span class="n">ModelMultipleChoiceFilter</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">shared.filters</span> <span class="kn">import</span> <span class="n">FILTER_OVERRIDES</span>
+<span class="kn">from</span> <span class="nn">wastd.observations.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Area</span><span class="p">,</span>
+    <span class="n">Survey</span><span class="p">,</span>
+    <span class="n">Encounter</span><span class="p">,</span>
+    <span class="n">AnimalEncounter</span><span class="p">,</span>
+    <span class="n">TurtleNestEncounter</span><span class="p">,</span>
+    <span class="n">LoggerEncounter</span><span class="p">,</span>
+    <span class="n">LineTransectEncounter</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">SurveyFilter</span><span class="p">(</span><span class="n">FilterSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Survey Filter.</span>
+
+<span class="sd">    https://django-filter.readthedocs.io/en/latest/usage.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">site</span> <span class="o">=</span> <span class="n">ModelChoiceFilter</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Site&quot;</span><span class="p">,</span>
+        <span class="n">queryset</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">area_type__in</span><span class="o">=</span><span class="p">[</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">,]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+            <span class="s2">&quot;-northern_extent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span>
+        <span class="p">),</span>
+        <span class="c1"># method=&#39;taxa_occurring_in_area&#39;</span>
+    <span class="p">)</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Options for EncounterFilter.&quot;&quot;&quot;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Survey</span>
+        <span class="n">filter_overrides</span> <span class="o">=</span> <span class="n">FILTER_OVERRIDES</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;source_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;device_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;site&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;reporter&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;start_location&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;start_location_accuracy_m&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;start_time&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;start_comments&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;end_source_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;end_device_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;end_location&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;end_location_accuracy_m&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;end_time&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;end_comments&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;production&#39;</span><span class="p">,</span>
+            <span class="c1"># &#39;team&#39;, # m2m</span>
+            <span class="c1"># &#39;label&#39;,</span>
+            <span class="s1">&#39;transect&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+
+
+<span class="k">class</span> <span class="nc">EncounterFilter</span><span class="p">(</span><span class="n">FilterSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Encounter Filter.</span>
+
+<span class="sd">    https://django-filter.readthedocs.io/en/latest/usage.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">ModelChoiceFilter</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Locality&quot;</span><span class="p">,</span>
+        <span class="n">queryset</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">area_type__in</span><span class="o">=</span><span class="p">[</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_LOCALITY</span><span class="p">,]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+            <span class="s2">&quot;-northern_extent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span>
+        <span class="p">),</span>
+        <span class="c1"># method=&#39;taxa_occurring_in_area&#39;</span>
+    <span class="p">)</span>
+    <span class="n">site</span> <span class="o">=</span> <span class="n">ModelChoiceFilter</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Site&quot;</span><span class="p">,</span>
+        <span class="n">queryset</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">area_type__in</span><span class="o">=</span><span class="p">[</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">,]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+            <span class="s2">&quot;-northern_extent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span>
+        <span class="p">),</span>
+        <span class="c1"># method=&#39;taxa_occurring_in_area&#39;</span>
+    <span class="p">)</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Options for EncounterFilter.&quot;&quot;&quot;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Encounter</span>
+        <span class="n">filter_overrides</span> <span class="o">=</span> <span class="n">FILTER_OVERRIDES</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;area&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;site&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;when&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;where&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;encounter_type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">AnimalEncounterFilter</span><span class="p">(</span><span class="n">EncounterFilter</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="n">EncounterFilter</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">AnimalEncounter</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">EncounterFilter</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="s1">&#39;taxon&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;species&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sex&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;maturity&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;health&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;activity&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;habitat&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;laparoscopy&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;checked_for_injuries&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;scanned_for_pit_tags&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">TurtleNestEncounterFilter</span><span class="p">(</span><span class="n">EncounterFilter</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="n">EncounterFilter</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">TurtleNestEncounter</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">EncounterFilter</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="s1">&#39;species&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nest_type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nest_age&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;habitat&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;disturbance&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nest_tagged&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;logger_found&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;eggs_counted&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;hatchlings_measured&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;fan_angles_measured&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">LoggerEncounterFilter</span><span class="p">(</span><span class="n">EncounterFilter</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="n">EncounterFilter</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">LoggerEncounter</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">EncounterFilter</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="s1">&#39;logger_type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;deployment_status&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;logger_id&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">LineTransectEncounterFilter</span><span class="p">(</span><span class="n">EncounterFilter</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="n">EncounterFilter</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">LineTransectEncounter</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">EncounterFilter</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="s1">&#39;transect&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020 DBCA
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

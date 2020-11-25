@@ -13,11 +13,6 @@ assignees: florianm
 
 ## Required data
 <!-- What data should the report show? -->
-[ ] Taxonomic names
-[ ] Ecological communities
-[ ] Taxon or community conservation listings
-[ ] Taxon or community occurrences
-
 [ ] Marine Wildlife Incidents
 [ ] Animal Encounters (strandings, rescues, live sightings, turtle taggings)
 [ ] Turtle Nest Encounters (turtle tracks or nests)

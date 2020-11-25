@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Turtle Tagging form design &mdash; WAStD 0.45.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.45
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html#project-delivery-ticking-the-boxes">Project delivery: ticking the boxes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Turtle Tagging form design</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tagging_form.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="turtle-tagging-form-design">
+<h1>Turtle Tagging form design<a class="headerlink" href="#turtle-tagging-form-design" title="Permalink to this headline">¶</a></h1>
+<p>Built by: Florian Mayer
+Consulted: Ryan Douglas</p>
+<div class="section" id="assumptions">
+<h2>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Minimal ODK record is good enough if taken just before or right after tagging</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>auto-time close enough</p></li>
+<li><p>location able to capture next to nest</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Minimal ODK record links to datasheet via datasheet ID</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Datasheet ID can be hand-written on datasheet or pre-allocated and printed on sticker</p></li>
+<li><p>Datasheet ID is ephemeral and does not need to be unique beyond field team</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>Reasons for not backfilling form directly after tagging:</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>other turtles need tagging right now</p></li>
+<li><p>dark night, preserve night vision</p></li>
+<li><p>rain, can’t use tablet</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>Backfilling of paper datasheet happens in ODK Collect. The goal is to reproduce the written data on the paper datasheet faithfully.</p></li>
+<li><p>QA happens after import into WAStD, assisted by dedicated QA reports.</p></li>
+</ol>
+</div>
+<div class="section" id="form-workflow">
+<h2>Form workflow<a class="headerlink" href="#form-workflow" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="prepare-devices-for-tagging">
+<h3>Prepare devices for tagging<a class="headerlink" href="#prepare-devices-for-tagging" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="early-in-day">
+<h3>Early in day<a class="headerlink" href="#early-in-day" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Ensure tablet is fully charged</p></li>
+</ol>
+</div>
+<div class="section" id="checking-out-tablets">
+<h3>Checking out tablets<a class="headerlink" href="#checking-out-tablets" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple" start="2">
+<li><p>Update username</p></li>
+<li><p>Turn off auto-send for tagging. You can only edit finalized forms while they are not yet uploaded.</p></li>
+</ol>
+</div>
+<div class="section" id="in-situ-tagging-night">
+<h3>In situ: Tagging night<a class="headerlink" href="#in-situ-tagging-night" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple" start="4">
+<li><p>Site Visit Start when on site</p></li>
+<li><p>Turtle Tagging for tagged turtles, Turtle Track or Nest for missed turtles. Backfill forms if bored.</p></li>
+<li><p>Site Visit End when finishing up for the night</p></li>
+</ol>
+<p>Tagging modes:
+1. Turtle encountered while nesting.</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>MinODK while egg laying (waiting phase)</p></li>
+<li><p>tagging on paper during hot phase.</p></li>
+<li><p>Backfill when possible. Don’t bother with datasheet photo.</p></li>
+<li><p>If backfilling during night, leave unfinalized.</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Turtle encountered while returning to water.</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Tagging on paper (hot phase)</p></li>
+<li><p>capture MinODK record in situ once turtle is gone</p></li>
+<li><p>backfill if time permits</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>ODK unavailable.</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>All data on paper. GPS in handheld.</p></li>
+<li><p>Backfill and choose data capture mode “New record”.</p></li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="next-morning">
+<h3>Next morning<a class="headerlink" href="#next-morning" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple" start="7">
+<li><p>Backfill ODK: Go through “Edit saved forms”, open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).</p></li>
+<li><p>Send finalized forms. Leave tablets in “manual upload mode”.</p></li>
+<li><p>Enter data into WAMTRAM.</p></li>
+</ol>
+</div>
+<div class="section" id="after-import-and-qa">
+<h3>After import and QA<a class="headerlink" href="#after-import-and-qa" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple" start="9">
+<li><p>WAStD: QA typos. Mark changed records as “curated” to prevent data loss. QA reports will assist finding records that need review. We will learn from QA and improve QA helpers this season.</p></li>
+</ol>
+</div>
+<div class="section" id="minimum-odk-record">
+<h3>Minimum ODK record<a class="headerlink" href="#minimum-odk-record" title="Permalink to this headline">¶</a></h3>
+<p>Minimum record in ODK form “Turtle Tagging” with a nest location, timestamp, the username, and datasheet ID.
+Save form as “non finalized” and name after datasheet ID.</p>
+</div>
+<div class="section" id="backfill-paper-to-odk">
+<h3>Backfill paper to ODK<a class="headerlink" href="#backfill-paper-to-odk" title="Permalink to this headline">¶</a></h3>
+<p>Backfill the ODK record from the paper datasheet.
+Find record in “Edit saved forms”, choose data capture mode “continue here”, once light allows photograph paper datasheet, save as finalized. Let record upload.</p>
+</div>
+</div>
+<div class="section" id="form-design">
+<h2>Form design<a class="headerlink" href="#form-design" title="Permalink to this headline">¶</a></h2>
+<p>Is there a nest?</p>
+<p>Observed nesting success
+nest-with-eggs - Nest with eggs - witnessed eggs drop
+nest-without-eggs - Nest without eggs - witnessed aborted laying
+nest-unsure-of-eggs - Nest unsure of eggs - found covered up nest mound
+unsure-if-nest - Unsure if nest - can’t tell whether nest mound present or not
+no-nest - No nest - witnessed aborted nest or found track with no nest
+na - Did not check</p>
+<p>TagObs
+- Securely fixed YN
+- Barnacles</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020 DBCA
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,562 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data collection administrators &mdash; WAStD 0.45.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data collection training" href="data_collection_training.html" />
+    <link rel="prev" title="Data collection" href="data_collection_overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> WAStD
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.45
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data collection administrators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#admin-getting-started">Admin: Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-prepare-field-packs">Admin: Prepare field packs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-create-offline-background-imagery">Admin: Create offline background imagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-first-time-setup">Admin: First time setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setup-the-tablet">Setup the tablet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-the-tablet-after-a-season">Setup the tablet after a season</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-odk-collect-from-qr-code">Setup ODK Collect from QR code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#distribute-offline-background-imagery">Distribute offline background imagery</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#providing-training">Providing training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-prepare-devices-pre-survey">Admin: Prepare devices pre survey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-prepare-a-length-reference-pre-survey">Admin: Prepare a length reference pre survey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collector-collect-data">Collector: Collect data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-review-data">Admin: Review data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-upload-data">Admin: Upload data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#where-s-the-data-now">Where’s the data now?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-update-forms">Admin: Update forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-form-versions-and-change-log">Admin: Form versions and change log</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#site-visit-start">Site Visit Start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#site-visit-end">Site Visit End</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#turtle-track-or-nest-track-or-treat">Turtle Track or Nest / “Track or Treat”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#turtle-tagging">Turtle Tagging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#predator-or-disturbance-fox-sake">Predator or Disturbance / “Fox Sake”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#marine-wildlife-incident">Marine Wildlife Incident</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html">Data curators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-qa">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html#project-delivery-ticking-the-boxes">Project delivery: ticking the boxes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">WAStD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Data collection administrators</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/data_collection/data_collection_admin.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data-collection-administrators">
+<span id="data-collection-admin"></span><h1>Data collection administrators<a class="headerlink" href="#data-collection-administrators" title="Permalink to this headline">¶</a></h1>
+<p>This chapter provides all required knowledge for data collection admins.
+The admins form a bridge between the ODK data maintainer (Florian Mayer)
+and the data collectors (staff and volunteers).</p>
+<p>Tasks covered:</p>
+<ul class="simple">
+<li><p>Getting started</p></li>
+<li><p>Set up tablets</p></li>
+<li><p>Provide training</p></li>
+<li><p>Prepare tablets for data collection</p></li>
+<li><p>Receive tablets after data collection</p></li>
+</ul>
+<div class="section" id="admin-getting-started">
+<h2>Admin: Getting started<a class="headerlink" href="#admin-getting-started" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Admin’s computer: set Chrome or Firefox as default browser</p></li>
+<li><p>Bookmark TSC</p></li>
+</ul>
+</div>
+<div class="section" id="admin-prepare-field-packs">
+<h2>Admin: Prepare field packs<a class="headerlink" href="#admin-prepare-field-packs" title="Permalink to this headline">¶</a></h2>
+<p>For each team collecting data at the same time:</p>
+<ul class="simple">
+<li><p>One neoprene pouch containing:</p></li>
+<li><p>Two data collection tablets</p></li>
+<li><p>Two Micro USB cables to charge tablets</p></li>
+<li><p>One power bank (mobile battery) 20000mAh</p></li>
+<li><p>One wooden folding ruler with turtle track widths (min and max) marked in coloured tape</p></li>
+<li><p>One whiteboard</p></li>
+<li><p>One whiteboard marker</p></li>
+<li><p>Turtle track ID guide</p></li>
+<li><p>Predator track ID guide</p></li>
+</ul>
+</div>
+<div class="section" id="admin-create-offline-background-imagery">
+<h2>Admin: Create offline background imagery<a class="headerlink" href="#admin-create-offline-background-imagery" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Use QGIS 3.14 or higher</p></li>
+<li><p>Add ArcGIS Map Service as title “ESRI World Imagery” and with URL
+<a class="reference external" href="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer">https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</a></p></li>
+<li><p>Add “High Resolution 30cm imagery” and zoom to target location (e.g. Thevenard Island)</p></li>
+<li><p>Change Project CRS to WGS84 (EPSG:4326)</p></li>
+<li><p>Open QGIS Processing Toolbox &gt; Raster tools &gt; Generate XYZ tiles (MBTiles)</p></li>
+<li><p>Run with settings:
+* Extent: draw on map
+* DPI 96
+* Zoom max 20, min 5. Figure out max zoom vs max avail zoom of ESRI imagery.
+* Format png
+* save to file (e.g. THV.mbtiles) with extension <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code></p></li>
+<li><p>Repeat for each program’s location and distribute resulting files to local coordinators.</p></li>
+</ul>
+<p>Example log:</p>
+<blockquote>
+<div><p>Algorithm ‘Generate XYZ tiles (MBTiles)’ starting…
+Input parameters:
+{ ‘BACKGROUND_COLOR’ : QColor(0, 0, 0, 0), ‘DPI’ : 96,
+‘EXTENT’ : ‘113.488658367,114.279178912,-22.808838676,-21.702109913 [EPSG:4326]’,
+‘METATILESIZE’ : 4, ‘OUTPUT_FILE’ : ‘/home/florianm/projects/GIS/NIN.mbtiles’,
+‘QUALITY’ : 75, ‘TILE_FORMAT’ : 0, ‘ZOOM_MAX’ : 20, ‘ZOOM_MIN’ : 5 }</p>
+</div></blockquote>
+</div>
+<div class="section" id="admin-first-time-setup">
+<h2>Admin: First time setup<a class="headerlink" href="#admin-first-time-setup" title="Permalink to this headline">¶</a></h2>
+<p>These steps have to be run once per new tablet.
+They are the minimum steps to provide a production ready data collection tablet.</p>
+<div class="section" id="setup-the-tablet">
+<h3>Setup the tablet<a class="headerlink" href="#setup-the-tablet" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Start fully charged, plug into charger to lengthen screen timeout</p></li>
+<li><p>Language: English / Australia</p></li>
+<li><p>Wifi: do not use DBCA’s Wongi, use guest.dbca.wa.gov.au</p></li>
+<li><p>Sign into a work-only Google account - all tablets handed out from turtle program are linked to <a class="reference external" href="mailto:wa&#46;turtles&#37;&#52;&#48;gmail&#46;com">wa<span>&#46;</span>turtles<span>&#64;</span>gmail<span>&#46;</span>com</a>.
+If you are not Florian Mayer, use your own work-only Google account.</p></li>
+<li><p>Skip restore from backup.</p></li>
+<li><p>Google services: untick “help improve…” options. Keep “Back up apps etc” and “Location services” option.</p></li>
+<li><p>Skip creating a Lenovo/Samsung account. The “Start using your new device” button is hidden under the keyboard. Press “Back” to minimize keyboard.</p></li>
+<li><p>Update Android apps if prompted and address any notifications.</p></li>
+</ul>
+<p>Device settings:</p>
+<ul class="simple">
+<li><p>Date &amp; time: Set time zone to AWST (GMT+08)</p></li>
+<li><p>Security: do not configure any screen lock (leave as is)</p></li>
+</ul>
+<p>App settings:</p>
+<ul class="simple">
+<li><p>Camera: Open app, enable location capture, so that all photos are geo-referenced with
+the coordinates they were taken at. This turns the camera into a generic
+data collection form (image, time, location).</p></li>
+<li><p>Google Photos: open app, settings, auto-backup all photos in “high resolution” (about 2MP) to Google Photos.</p></li>
+</ul>
+</div>
+<div class="section" id="setup-the-tablet-after-a-season">
+<h3>Setup the tablet after a season<a class="headerlink" href="#setup-the-tablet-after-a-season" title="Permalink to this headline">¶</a></h3>
+<p>This section is for administrators updating tablets for a new field season.</p>
+<ul class="simple">
+<li><p>Fully charge tablets</p></li>
+<li><p>Turn on tablets, apply all available system updates:</p>
+<ul>
+<li><p>Settings &gt; Software &gt; Check for updates (or follow notifications).</p></li>
+<li><p>There can be multiple big (&gt;1GB, new Android version) and smaller (~200MB security patches) updates.</p></li>
+</ul>
+</li>
+<li><p>Google Play: update all apps, ODK Collect first.</p></li>
+<li><p>Scan new QR code as and when instructed.</p></li>
+<li><p>Delete and re-create all home screen widgets.</p></li>
+</ul>
+</div>
+<div class="section" id="setup-odk-collect-from-qr-code">
+<h3>Setup ODK Collect from QR code<a class="headerlink" href="#setup-odk-collect-from-qr-code" title="Permalink to this headline">¶</a></h3>
+<p>Open ODK Collect. 2020 update: accept message to migrate forms to “private storage”.</p>
+<p>If you were provided with a QR code, you can speed up the ODK Collect setup.</p>
+<ul class="simple">
+<li><p>Settings (three dots top right) &gt; Configure via QR code
+(if asked, grant ODK Collect required permissions to access camera)</p></li>
+<li><p>Update the username to a real name, e.g. “Florian Mayer”.</p></li>
+<li><p>Get blank forms on each tablet. This both prepares the tablets for field work,
+and verifies username/password/server url.</p></li>
+</ul>
+</div>
+<div class="section" id="distribute-offline-background-imagery">
+<h3>Distribute offline background imagery<a class="headerlink" href="#distribute-offline-background-imagery" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>You will be provided the background imagery files (extension <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code>).</p></li>
+<li><p>Connect each tablet via USB, unlock screen, confirm dialogue to allow file transfer on tablet.</p></li>
+<li><p>Copy the mbtiles files into <code class="docutils literal notranslate"><span class="pre">/Android/data/org.odk.collect.android/files/layers</span></code> on each tablet.</p></li>
+<li><p>You can provide multiple mbtiles. Mind available disk space (16GB ish) vs mbtiles size
+(200-500MB each) vs storage for ODK records including media files (photos).</p></li>
+<li><p>Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
+select the correct reference layer (named after your location).</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="providing-training">
+<h2>Providing training<a class="headerlink" href="#providing-training" title="Permalink to this headline">¶</a></h2>
+<p>Run all data collectors through the chapter “Data collection training” until they
+are competent and comfortable with the hardware and software.</p>
+</div>
+<div class="section" id="admin-prepare-devices-pre-survey">
+<h2>Admin: Prepare devices pre survey<a class="headerlink" href="#admin-prepare-devices-pre-survey" title="Permalink to this headline">¶</a></h2>
+<p>If the logistics allow, the admin handing out the Android device will execute the steps of
+<a class="reference internal" href="data_collection_training.html#dct-pre-survey"><span class="std std-ref">Preparing a device pre survey</span></a> together with the data collector.</p>
+</div>
+<div class="section" id="admin-prepare-a-length-reference-pre-survey">
+<h2>Admin: Prepare a length reference pre survey<a class="headerlink" href="#admin-prepare-a-length-reference-pre-survey" title="Permalink to this headline">¶</a></h2>
+<p>For situations where the data collector is unsure of the turtle species causing a given turtle track,
+the data collection form offers to take a picture of the track for later review and species identification.
+Having a length reference in the photos helps the reviewer immensely with species identification.</p>
+<p>A simple and cheap length reference for tricky turtle tracks
+can be fabricated from a  foldable wooden rule (2m folding into 20cm segments),
+marked with goloured duct tape ($5 per roll) at the minimum and maximum track width
+for each turtle species expected to occur in the surveyed area.</p>
+<p>Tomato stick prototype:</p>
+<a class="reference external image-reference" href="https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3"><img alt="Turtle track length reference" src="https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3" /></a>
+<p>The reference can be simplified, e.g. if only green and flatback turtles are expected,
+a stick can be cut to the maximum flatback track width, with one marking for the
+minimum green track width.</p>
+<p>Additional length markings, e.g. intervals of 10cm, can be added as required.</p>
+<p>This method is preferred over the use of a measuring tape as length reference in
+photos of tracks of unknown species for the following reasons:</p>
+<ul class="simple">
+<li><p>A rigid rule will lay on top of sand ripples,
+while measuring tape will distort measurement by bending over them.</p></li>
+<li><p>The coloured, centimeter-wide markings on the rule will be visible at lower image quality
+than the millimeter-wide centimeter markings on a measuring tape.</p></li>
+<li><p>The coloured tape wraps around the rule and is thereby visible from any angle,
+while tape can flip over and hide its markings.</p></li>
+<li><p>By reducing length references to relevant lengths, cognitive load is taken off the data collector.
+One can simply read off the markings which species’ track width range a given track falls into.</p></li>
+</ul>
+<p>Prepare one length reference per data collection team.</p>
+</div>
+<div class="section" id="collector-collect-data">
+<h2>Collector: Collect data<a class="headerlink" href="#collector-collect-data" title="Permalink to this headline">¶</a></h2>
+<p>Now the data collector will head out into the field and collect data following
+the protocols from the “Data collection training” chapter.
+The admin should be intimately acquainted with this chapter.</p>
+</div>
+<div class="section" id="admin-review-data">
+<h2>Admin: Review data<a class="headerlink" href="#admin-review-data" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong> In 2018, we have configured ODK Collect to never leave forms unfinalized,
+so this section applies up to season 2017-18.</p>
+<p>“Edit Saved Form” lists all unfinalized forms pending review and species / nest ID:</p>
+<ul class="simple">
+<li><p>Tap once to view read-only, tap again to edit</p></li>
+<li><p>review and update data (e.g. species ID)</p></li>
+<li><p>mark as finalized and save.</p></li>
+</ul>
+<p>Delete unwanted repeating groups:</p>
+<ul class="simple">
+<li><p>Tap and hold a group title bar, select “delete”.</p></li>
+</ul>
+<p>TODO error “form not existing” - notify admin (Florian) to re-enable missing forms in ODK Aggregate,
+get blank form, then saved form is editable and uploadable again.</p>
+<p>If GPS point is missing, record GPS (which will be incorrect), note record datetime and other details, let form upload,
+let data import into WAStD, find record again (based on datetime and details), update location as appropriate.
+Mark record as “proofread”.</p>
+</div>
+<div class="section" id="admin-upload-data">
+<h2>Admin: Upload data<a class="headerlink" href="#admin-upload-data" title="Permalink to this headline">¶</a></h2>
+<p>When surveys are done in locations where the device can return to the comforts
+of WiFi and power points daily, data can be uploaded directly to the clearinghouse.</p>
+<ul class="simple">
+<li><p>Settings: the correct username and password have been configured during device setup.</p></li>
+<li><p>Turn on the WiFi hotspot or move into WiFi range.</p></li>
+<li><p>Turn on the device’s WiFi.</p></li>
+</ul>
+<p>With “Auto-send in WiFi” settings enabled, the device will automatically upload
+all data marked as “finalized”.
+This will leave all non-finalised forms requiring review in “Edit Saved Forms”.
+Review each form and “save as finalized”.</p>
+<p>When WiFi is not available daily, the admin needs to backup data by downloading
+it manually and keeping the downloaded data safe (multiple copies over separate
+storage media). With the mobile device connected and “MTP file transfer” enabled,
+ODK data is located in either internal or SD storage in <code class="docutils literal notranslate"><span class="pre">odk/instances</span></code>.
+Each form will be stored in a separate folder, containing both the filled in form
+as XML file, and all related pictures and media.</p>
+<p>Simplest backup: periodically take a copy of <code class="docutils literal notranslate"><span class="pre">odk/instances</span></code>.
+If data upload works at the end, no further steps have to be taken and the copy of
+<code class="docutils literal notranslate"><span class="pre">odk/instances</span></code> can be archived.</p>
+</div>
+<div class="section" id="where-s-the-data-now">
+<h2>Where’s the data now?<a class="headerlink" href="#where-s-the-data-now" title="Permalink to this headline">¶</a></h2>
+<p>ODK Collect uploads data to the specified ODK Aggregate clearinghouse.
+In our case, we run ODK Aggregate at
+<a class="reference external" href="https://dpaw-data.appspot.com/">https://dpaw-data.appspot.com/</a>.</p>
+<p>A synchronised copy of the data is streamed to Google Fusion Tables (GFT)
+for immediate visualization.
+A confidential link is shared with admins on request.
+DBCA staff can find the links to the data
+<a class="reference external" href="https://confluence.dpaw.wa.gov.au/display/MSIM/ODK+data+views">here</a>.</p>
+<p>After each field trip, data from ODK Aggregate are exported (as JSON) and ingested into WAStD by the maintainer (FM).
+The process can be repeated; data that has been changed in WAStD and
+marked as “proofread” or even “curated” will not be overwritten.</p>
+<p>Once data are marked as “proofread” (or higher levels of QA) in WAStD,
+WAStD becomes the point of truth, as proofreading and curation (e.g.
+double-checking species ID based on submitted photos) can change the data compared to the initial submission on ODK Aggregate.</p>
+<p>Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
+<a class="reference external" href="https://strandings.dpaw.wa.gov.au/">https://strandings.dpaw.wa.gov.au/</a>.
+See chapter “Data consumers” for working examples.</p>
+<p>The final analysis consumes curated data through the WAStD API using the R package
+<code class="docutils literal notranslate"><span class="pre">wastdR</span></code>. Working examples can be found at the
+<a class="reference external" href="https://parksandwildlife.github.io/wastdr/index.html">wastdr documentation</a>.</p>
+</div>
+<div class="section" id="admin-update-forms">
+<h2>Admin: Update forms<a class="headerlink" href="#admin-update-forms" title="Permalink to this headline">¶</a></h2>
+<p>From time to time the forms might be updated.
+In this case, all data collection admins (and volunteers using their private devices) will be notified,
+and each of their tablets need to run through the following steps:</p>
+<ul class="simple">
+<li><p>ODK Collect &gt; Get blank form &gt; (the new forms should already be selected, e.g. Track or Treat 0.36) &gt; Get selected forms</p></li>
+<li><p>ODK Collect &gt; Delete saved form &gt; Blank forms &gt; select the old form (e.g. Track or Treat 0.35) &gt; delete</p></li>
+<li><p>Once all tablets are updated, notify the maintainer (Florian Mayer).</p></li>
+<li><p>Once all devices are updated, the old form version can be retired.</p></li>
+</ul>
+</div>
+<div class="section" id="admin-form-versions-and-change-log">
+<h2>Admin: Form versions and change log<a class="headerlink" href="#admin-form-versions-and-change-log" title="Permalink to this headline">¶</a></h2>
+<p>Always use the latest available version of a form.
+Some older forms may be available for download - this is to allow import to WAStD.</p>
+<p>Process to upgrade:</p>
+<ul class="simple">
+<li><p>Send all unsent saved forms</p></li>
+<li><p>Delete saved form &gt; both Saved forms / Blank forms: Delete all</p></li>
+<li><p>Get blank form &gt; get latest version of each form</p></li>
+</ul>
+<div class="section" id="site-visit-start">
+<h3>Site Visit Start<a class="headerlink" href="#site-visit-start" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>0.3 (2018-08-01) Capture team</p></li>
+<li><p>0.2 (2017-11-16) Auto-capture device ID</p></li>
+</ul>
+</div>
+<div class="section" id="site-visit-end">
+<h3>Site Visit End<a class="headerlink" href="#site-visit-end" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>0.2 (2017-11-16) Auto-capture device ID</p></li>
+</ul>
+</div>
+<div class="section" id="turtle-track-or-nest-track-or-treat">
+<h3>Turtle Track or Nest / “Track or Treat”<a class="headerlink" href="#turtle-track-or-nest-track-or-treat" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>0.54 Renamed ToT 0.53 to clarify its purpose. Re-worded the nest tag section.</p></li>
+<li><p>0.53 Add predator “cat”</p></li>
+<li><p>0.52</p></li>
+<li><p>0.51 (2018-01-29) Bug fix: cloud cover now includes 0 (clear sky)</p></li>
+<li><p>0.50 (2018-01-27) Add informative prompts for missing required fields, simplify bearing measurements (hand-held compass only)</p></li>
+<li><p>0.49 (2018-01-18)</p></li>
+<li><p>0.47 (2017-12-05)</p></li>
+<li><p>0.46 (2017-12-01)</p></li>
+<li><p>0.45 (2017-11-19)</p></li>
+<li><p>0.44 (2017-10-31) Add fan angles (early version)</p></li>
+</ul>
+</div>
+<div class="section" id="turtle-tagging">
+<h3>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>0.3 (2018-01-29) Manual location capture uses map widget (needs to be online to show background maps)</p></li>
+<li><p>0.2 (2018-01-29) Allow capturing location as “here” or manual entry (if not on site) - animal first encountered at, nest location</p></li>
+</ul>
+</div>
+<div class="section" id="predator-or-disturbance-fox-sake">
+<h3>Predator or Disturbance / “Fox Sake”<a class="headerlink" href="#predator-or-disturbance-fox-sake" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Predator or Dustirbance 1.0 - renamed FS0.4 to make form name more palatable to a broader audience.</p></li>
+<li><p>0.4 Add predator “cat”</p></li>
+<li><p>0.3</p></li>
+</ul>
+</div>
+<div class="section" id="marine-wildlife-incident">
+<h3>Marine Wildlife Incident<a class="headerlink" href="#marine-wildlife-incident" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>0.6 (2018-01-29) Allow capturing location as “here” or manual entry (if not on site)</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="data_collection_training.html" class="btn btn-neutral float-right" title="Data collection training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="data_collection_overview.html" class="btn btn-neutral float-left" title="Data collection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020 DBCA
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

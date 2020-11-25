@@ -112,7 +112,7 @@ def doc():
     """Compile docs, draw data models and transitions."""
     local("mkdir -p docs_source/_static && "
           "cd docs_source && make clean && "
-          "make singlehtml && cd ..")
+          "make html && cd ..")
 
 def dbuild():
     """Build Docker image."""
