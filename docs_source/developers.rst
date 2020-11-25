@@ -7,7 +7,7 @@ the underlying data model.
 
 In this chapter, we will discuss:
 
-* the data model - what data can TSC/ WAStD handle?
+* the data model - what data can WAStD handle?
 * the admin - manual data entry, validation, widgets
 * the API - programmatic data retrieval and query
 * the custom User app
@@ -25,6 +25,7 @@ TFA, TFL, TEC paper forms contain further observation groups, which
 are reviewed and evaluated for trustworthiness separately.
 
 Each group becomes a model in TSC, inheriting from ``occurrences.models.ObservationGroup``.
+WAStD can add new instances of ``Observation``.
 
 * Model: add model to ``occurrences.models`` inheriting from ObservationGroup.
 * Migration: create, run in dev.
@@ -76,34 +77,6 @@ samples etc.).
   :show-inheritance:
 
 
-:mod:`taxonomy.models` Module
----------------------------------------
-
-.. automodule:: taxonomy.models
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-
-
-:mod:`conservation.models` Module
----------------------------------------
-
-.. automodule:: conservation.models
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-
-:mod:`occurrence.models` Module
----------------------------------------
-
-.. automodule:: occurrence.models
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-
 Admin
 =====
 We're using a nicely styled admin to let trained data entry operators and
@@ -134,7 +107,6 @@ and batch-export.
 ..     :members:
 ..     :undoc-members:
 ..     :show-inheritance:
-
 
 
 The rest
@@ -205,62 +177,7 @@ Tests are structured into:
     * Conditions: what needs to be done and present before a step can be executed?
     * Consequences: what will happen if I hit this button?
 
-Threatened Species and Communities
-==================================
 
-Taxonomy
---------
-:mod:`taxonomy.tests` Module
-
-.. automodule:: taxonomy.tests.test_api
-  :members:
-  :undoc-members:
-
-.. automodule:: taxonomy.tests.test_functional
-  :members:
-  :undoc-members:
-
-.. automodule:: taxonomy.tests.test_unit
-  :members:
-  :undoc-members:
-
-.. automodule:: taxonomy.tests.test_views
-  :members:
-  :undoc-members:
-
-
-Conservation
-------------
-:mod:`conservation.tests` Module
-
-.. automodule:: conservation.tests.test_functional
-  :members:
-  :undoc-members:
-
-.. automodule:: conservation.tests.test_unit
-  :members:
-  :undoc-members:
-
-.. automodule:: conservation.tests.test_views
-  :members:
-  :undoc-members:
-
-
-Occurrences
------------
-:mod:`occurrence.tests` Module
-
-.. automodule:: occurrence.tests.test_functional
-  :members:
-  :undoc-members:
-
-.. automodule:: occurrence.tests.test_unit
-  :members:
-  :undoc-members:
-
-.. automodule:: occurrence.tests.test_views
-  :members:
-  :undoc-members:
 
 WA Strandings and WA Sea Turtles
 ================================

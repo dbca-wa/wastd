@@ -164,10 +164,10 @@
             
   <div class="section" id="wastd-wa-sea-turtle-data">
 <h1>WAStD - WA Sea Turtle Data<a class="headerlink" href="#wastd-wa-sea-turtle-data" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://github.com/pydanny/cookiecutter-django/"><img alt="Built with Cookiecutter Django" src="https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg" /></a>
-<a class="reference external image-reference" href="https://circleci.com/gh/dbca-wa/wastd"><img alt="Test status" src="https://circleci.com/gh/dbca-wa/wastd.svg?style=svg" /></a>
+<a class="reference external image-reference" href="https://github.com/dbca-wa/wastd/actions"><img alt="CodeQL" src="https://github.com/dbca-wa/wastd/workflows/CodeQL/badge.svg?branch=master" /></a>
+<a class="reference external image-reference" href="https://github.com/dbca-wa/wastd/actions"><img alt="DjangoCI" src="https://github.com/dbca-wa/wastd/workflows/DjangoCI/badge.svg?branch=master" /></a>
 <a class="reference external image-reference" href="https://coveralls.io/github/dbca-wa/wastd?branch=master"><img alt="Test coverage" src="https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master" /></a>
-<a class="reference external image-reference" href="https://opensource.org/licenses/MIT"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a>
+<a class="reference external image-reference" href="https://opensource.org/licenses/MIT"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green.svg" /></a>
 </div>
 <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
@@ -248,10 +248,8 @@ egg, hatchling and logger measurements.</p></li>
 <li><p>Season 2018/19: Bar two programs, all WA regions join digital data collection of
 turtle track census. One program is relatively small and remote, the other lacks basic literacy among available data collectors, favouring pictogram-based and established solutions like CyberTracker.</p></li>
 <li><p>Season 2019-20: Migration from ODK Aggregate to ODK Central, ETL via API and R packages wastdr and etlTurtleNesting.</p></li>
-<li><p>SEason 2020-21: Inclusion of turtle tagging in electronic data capture.</p></li>
+<li><p>Season 2020-21: Inclusion of turtle tagging in electronic data capture.</p></li>
 </ul>
-<p>WAStD is part of the BioSys ecosystem of data warehousing, data curation, data exchange
-standards and analytical knowledge pipelines.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_overview.html">Data collection</a><ul>
@@ -397,6 +395,7 @@ standards and analytical knowledge pipelines.</p>
 <li class="toctree-l3"><a class="reference internal" href="data_curators.html#populate-team">Populate team</a></li>
 <li class="toctree-l3"><a class="reference internal" href="data_curators.html#add-missing-surveys">Add missing surveys</a></li>
 <li class="toctree-l3"><a class="reference internal" href="data_curators.html#add-missing-users">Add missing users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_curators.html#curate-records-from-training-days">Curate records from training days</a></li>
 </ul>
 </li>
 </ul>
@@ -498,29 +497,8 @@ standards and analytical knowledge pipelines.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html#reproducible-research">Reproducible Research</a></li>
 <li class="toctree-l1"><a class="reference internal" href="maintainers.html">Application maintainers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="maintainers.html#migration-to-kubernetes">Migration to Kubernetes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#workload-db">Workload db</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#workloads-prod-uat">Workloads prod/uat</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="maintainers.html#local-development-environment">Local development environment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#virtualenv">Virtualenv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#database">Database</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#code">Code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#permissions">Permissions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#useful-commands">Useful commands</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#production-server-1-supervisord">Production server 1: Supervisord</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#production-server-2-uwsgi">Production server 2: uwsgi</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="maintainers.html#deploying-upgrades-to-production">Deploying upgrades to production</a></li>
-<li class="toctree-l2"><a class="reference internal" href="maintainers.html#developing-with-docker">Developing with Docker</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#setting-up">Setting up</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#deployment">Deployment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#building-and-running-your-app-on-ec2">Building and running your app on EC2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="maintainers.html#security-advisory">Security advisory</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="maintainers.html#release">Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maintainers.html#deployment">Deployment</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a><ul>
@@ -530,9 +508,6 @@ standards and analytical knowledge pipelines.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="developers.html#data-model">Data model</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="developers.html#module-wastd.observations.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.models</span></code> Module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developers.html#module-taxonomy.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">taxonomy.models</span></code> Module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developers.html#module-conservation.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">conservation.models</span></code> Module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developers.html#module-occurrence.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">occurrence.models</span></code> Module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="developers.html#admin">Admin</a><ul>
@@ -551,12 +526,6 @@ standards and analytical knowledge pipelines.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html#project-delivery-ticking-the-boxes">Project delivery: ticking the boxes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developers.html#threatened-species-and-communities">Threatened Species and Communities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="developers.html#taxonomy">Taxonomy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developers.html#conservation">Conservation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developers.html#occurrences">Occurrences</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="developers.html#wa-strandings-and-wa-sea-turtles">WA Strandings and WA Sea Turtles</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="developers.html#observations">Observations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="developers.html#users">Users</a></li>
