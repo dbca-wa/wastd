@@ -83,6 +83,8 @@ class SurveyFilter(FilterSet):
 class SurveyViewSet(BatchUpsertViewSet):
     """Survey ModelViewSet.
 
+    alt: BatchUpsertViewSet
+
     All filters are available on all fields except location and team.
     """
     queryset = models.Survey.objects.all().prefetch_related("reporter", "site", "team")

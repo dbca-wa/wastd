@@ -106,10 +106,10 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-            'source': 2,
-            'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
-            'encounter_source': self.encounter.source,
-            'encounter_source_id': self.encounter.source_id,
+                'source': 2,
+                'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
             }
         )
         self.assertEqual(resp.status_code, 201)
@@ -231,8 +231,8 @@ class ObservationSerializerTests(EncounterSerializerTests):
                 'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
                 'encounter_source': self.encounter.source,
                 'encounter_source_id': self.encounter.source_id,
-                'handler': self.user.pk,
-                'recorder': self.user.pk,
+                'handler_id': self.user.pk,
+                'recorder_id': self.user.pk,
             }
         )
         self.assertEqual(resp.status_code, 201)
@@ -265,8 +265,8 @@ class ObservationSerializerTests(EncounterSerializerTests):
                 'disturbance_severity': 'partly',
             }
         )
-        self.assertEqual(resp.status_code, 400)
-        # A request with an Encounter PK should succeed.
+        self.assertTrue(resp.status_code >= 400)
+        # A request with an Encounter PK but without source and source_id should fail.
         resp = self.client.post(
             url,
             {
@@ -277,7 +277,7 @@ class ObservationSerializerTests(EncounterSerializerTests):
                 'disturbance_severity': 'partly',
             }
         )
-        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.status_code, 406)
         # A request with source and source_id should succeed.
         resp = self.client.post(
             url,

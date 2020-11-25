@@ -102,6 +102,7 @@ TURTLE_BODY_PART_CHOICES = (
 TAG_TYPE_DEFAULT = 'flipper-tag'
 TAG_TYPE_CHOICES = (
     (TAG_TYPE_DEFAULT, 'Flipper Tag'),
+    ('tag-scar', 'Tag Scar'),
     ('pit-tag', 'PIT Tag'),
     ('sat-tag', 'Satellite Relay Data Logger'),  # SRDL
     ('blood-sample', 'Blood Sample'),
@@ -109,23 +110,23 @@ TAG_TYPE_CHOICES = (
     ('stomach-content-sample', 'Stomach Content Sample'),
     ('physical-sample', 'Physical Sample'),
     ('egg-sample', 'Egg Sample'),
-    ('qld-monel-a-flipper-tag', 'QLD Monel Series A flipper tag'),         # TRT_IDENTIFICATION_TYPES A
+    ('qld-monel-a-flipper-tag', 'QLD Monel Series A flipper tag'),               # TRT_IDENTIFICATION_TYPES A
     ('qld-titanium-k-flipper-tag', 'QLD Titanium Series K flipper tag'),         # TRT_IDENTIFICATION_TYPES K
     ('qld-titanium-t-flipper-tag', 'QLD Titanium Series T flipper tag'),         # TRT_IDENTIFICATION_TYPES T
-    ('acoustic-tag', 'Acoustic tag'),                           # Acoustic
-    ('commonwealth-titanium-flipper-tag', 'Commonwealth titanium flipper tag (old db value)'),      # CA cmlth
-    ('cmlth-titanium-flipper-tag', 'Commonwealth titanium flipper tag'),      # CA cmlth
-    ('cayman-juvenile-tag', 'Cayman juvenile tag'),   # CT
-    ('hawaii-inconel-flipper-tag', 'Hawaii Inst Mar Biol Inconel tag'),  # I
-    ('ptt', 'Platform Transmitter Terminal (PTT)'),  # PTT
-    ('rototag', 'RotoTag'),  # SFU/FIU
-    ('narangebub-nickname', 'Narangebup rehab informal name'),  # RREC
-    ('aqwa-nickname', 'AQWA informal name'),  # UWW, from former name UnderWater World
-    ('atlantis-nickname', 'Atlantis informal name'),  # ATLANTIS
+    ('acoustic-tag', 'Acoustic tag'),                                            # Acoustic
+    ('commonwealth-titanium-flipper-tag', 'Commonwealth titanium flipper tag (old db value)'),    # CA cmlth
+    ('cmlth-titanium-flipper-tag', 'Commonwealth titanium flipper tag'),         # CA cmlth
+    ('cayman-juvenile-tag', 'Cayman juvenile tag'),                              # CT
+    ('hawaii-inconel-flipper-tag', 'Hawaii Inst Mar Biol Inconel tag'),          # I
+    ('ptt', 'Platform Transmitter Terminal (PTT)'),                              # PTT
+    ('rototag', 'RotoTag'),                                                      # SFU/FIU
+    ('narangebub-nickname', 'Narangebup rehab informal name'),                   # RREC
+    ('aqwa-nickname', 'AQWA informal name'),                                     # UWW, UnderWater World
+    ('atlantis-nickname', 'Atlantis informal name'),                             # ATLANTIS
     ('wa-museum-reptile-registration-number',
         'WA Museum Natural History Reptiles Catalogue Registration Number (old db value)'),  # WAMusR
     ('wam-reptile-registration-number',
-        'WA Museum Natural History Reptiles Catalogue Registration Number'),  # WAMusR
+        'WA Museum Natural History Reptiles Catalogue Registration Number'),     # WAMusR
     ('genetic-tag', 'Genetic ID sequence'),
     ('other', 'Other'),)
 
@@ -138,7 +139,7 @@ TAG_STATUS_CHOICES = (                                          # TRT_TAG_STATES
     ('allocated', 'allocated to field team'),
     (TAG_STATUS_APPLIED_NEW, 'applied new'),                    # A1, AE
     (TAG_STATUS_DEFAULT, 're-sighted associated with animal'),  # OX, P, P_OK, RQ, P_ED
-    ('reclinched', 're-sighted and reclinched on animal'),       # RC
+    ('reclinched', 're-sighted and reclinched on animal'),      # RC
     ('removed', 'taken off animal'),                            # OO, R
     ('found', 'found detached'),
     ('returned', 'returned to HQ'),
@@ -549,6 +550,7 @@ ACCURACY_CHOICES = (
     ("10", "To nearest 1 cm"),              # Default for stranding "measured"
     ("100", "To nearest 10 cm"),            # Default for stranding "estimated"
     ("1000", "To nearest 1 m or 1 kg"),
+    ("5000", "To nearest 5 m or 5 kg"),
     ("10000", "To nearest 10 m or 10 kg"),
 )
 
@@ -2414,9 +2416,9 @@ class LineTransectEncounter(Encounter):
         """Return the WGS 84 DD longitude."""
         return self.where.x
 
-
     def card_template(self):
         return 'observations/linetransectencounter_card.html'
+
 
 class LoggerEncounter(Encounter):
     """The encounter of an electronic logger during its life cycle.
@@ -2432,6 +2434,9 @@ class LoggerEncounter(Encounter):
 
     The life cycle can be repeated. The logger can be downloaded, reprogrammed
     and deployed again in situ.
+
+    This model is deprecated and LoggerEncounters will become
+    Encounters with LoggerObservations.
     """
 
     LOGGER_TYPE_DEFAULT = 'temperature-logger'
@@ -2610,6 +2615,55 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
         """The encounter's timestamp."""
         return self.encounter.when or ''
 
+class LoggerObservation(Observation):
+    """A logger is oobserved during an Encounter."""
+    LOGGER_TYPE_DEFAULT = 'temperature-logger'
+    LOGGER_TYPE_CHOICES = (
+        (LOGGER_TYPE_DEFAULT, 'Temperature Logger'),
+        ('data-logger', 'Data Logger'),
+        ('ctd-data-logger', 'Conductivity, Temperature, Depth SR data logger'),
+    )
+
+    LOGGER_STATUS_DEFAULT = 'resighted'
+    LOGGER_STATUS_NEW = "programmed"
+    LOGGER_STATUS_CHOICES = (
+        (LOGGER_STATUS_NEW, "programmed"),
+        ("posted", "posted to field team"),
+        ("deployed", "deployed in situ"),
+        ("resighted", "resighted in situ"),
+        ("retrieved", "retrieved in situ"),
+        ("downloaded", "downloaded"),
+    )
+
+    logger_type = models.CharField(
+        max_length=300,
+        default=LOGGER_TYPE_DEFAULT,
+        verbose_name=_("Type"),
+        choices=LOGGER_TYPE_CHOICES,
+        help_text=_("The logger type."), )
+
+    deployment_status = models.CharField(
+        max_length=300,
+        default=LOGGER_STATUS_DEFAULT,
+        verbose_name=_("Status"),
+        choices=LOGGER_STATUS_CHOICES,
+        help_text=_("The logger life cycle status."), )
+
+    logger_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Logger ID"),
+        help_text=_("The ID of a logger must be unique within the tag type."),)
+
+    # comments = models.TextField(
+    #     verbose_name=_("Comment"),
+    #     blank=True, null=True,
+    #     help_text=_("Comments"), )
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Logger Observation"
+
 
 class MediaAttachment(Observation):
     """A media attachment to an Encounter."""
@@ -2664,10 +2718,10 @@ class MediaAttachment(Observation):
                 'title="Click to view full screen in new browser tab">'
                 '<img src="{0}" alt="{1} {2}" style="height:100px;"></img>'
                 '</a>'.format(
-                self.attachment.url,
-                self.get_media_type_display(),
-                self.title
-            ))
+                    self.attachment.url,
+                    self.get_media_type_display(),
+                    self.title
+                ))
         else:
             return ""
 
@@ -2748,7 +2802,7 @@ class TagObservation(Observation):
         verbose_name=_("Tag status"),
         choices=TAG_STATUS_CHOICES,
         default=TAG_STATUS_DEFAULT,
-        help_text=_("The status this tag was seen in, or brought into."),)
+        help_text=_("The status this tag was after the encounter."),)
 
     handler = models.ForeignKey(
         User,
@@ -2943,11 +2997,23 @@ class TurtleMorphometricObservation(Observation):
     """Morphometric measurements of a turtle."""
 
     curved_carapace_length_mm = models.PositiveIntegerField(
-        verbose_name=_("Curved carapace length (mm)"),
+        verbose_name=_("Curved carapace length max (mm)"),
         blank=True, null=True,
-        help_text=_("The curved carapace length in millimetres."),)
+        help_text=_("The curved carapace length (max) in millimetres."),)
 
     curved_carapace_length_accuracy = models.CharField(
+        max_length=300,
+        blank=True, null=True,
+        choices=ACCURACY_CHOICES,
+        verbose_name=_("Curved carapace length (max) accuracy"),
+        help_text=_("The expected measurement accuracy."),)
+
+    curved_carapace_length_min_mm = models.PositiveIntegerField(
+        verbose_name=_("Curved carapace length min (mm)"),
+        blank=True, null=True,
+        help_text=_("The curved carapace length (min) in millimetres."),)
+
+    curved_carapace_length_min_accuracy = models.CharField(
         max_length=300,
         blank=True, null=True,
         choices=ACCURACY_CHOICES,
