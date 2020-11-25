@@ -360,6 +360,8 @@ class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
     list_display = ObservationAdminMixin.LIST_FIRST + (
         "curved_carapace_length_mm",
         # "curved_carapace_length_accuracy",
+        "curved_carapace_length_min_mm",
+        # "curved_carapace_length_min_accuracy",
         "straight_carapace_length_mm",
         # "straight_carapace_length_accuracy",
         "curved_carapace_width_mm",

@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: TSC is doing something wrong
+about: WAStD is doing something wrong
 title: ''
 labels: bug
 assignees: florianm
