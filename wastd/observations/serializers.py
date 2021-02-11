@@ -786,6 +786,22 @@ class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
         )
 
 
+class LoggerObservationSerializer(ObservationSerializer):
+
+    class Meta:
+        model = models.LoggerObservation
+        fields = (
+            "pk",
+            "source",
+            "source_id",
+            "encounter",
+            "logger_type",
+            "deployment_status",
+            "logger_id",
+            "comments"
+        )
+
+
 class DugongMorphometricObservationSerializer(ObservationSerializer):
 
     class Meta:
