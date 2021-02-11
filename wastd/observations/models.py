@@ -286,7 +286,8 @@ SPECIES_CHOICES = NA +\
     SEASNAKE_SPECIES_CHOICES
 
 SEX_CHOICES = (
-    (NA_VALUE, "unknown sex"),
+    (NA_VALUE, "NA sex"),
+    ("unknown", "unknown sex"),
     ("male", "male"),
     ("female", "female"),
     ("intersex", "hermaphrodite or intersex"), )
@@ -2615,54 +2616,6 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
         """The encounter's timestamp."""
         return self.encounter.when or ''
 
-class LoggerObservation(Observation):
-    """A logger is oobserved during an Encounter."""
-    LOGGER_TYPE_DEFAULT = 'temperature-logger'
-    LOGGER_TYPE_CHOICES = (
-        (LOGGER_TYPE_DEFAULT, 'Temperature Logger'),
-        ('data-logger', 'Data Logger'),
-        ('ctd-data-logger', 'Conductivity, Temperature, Depth SR data logger'),
-    )
-
-    LOGGER_STATUS_DEFAULT = 'resighted'
-    LOGGER_STATUS_NEW = "programmed"
-    LOGGER_STATUS_CHOICES = (
-        (LOGGER_STATUS_NEW, "programmed"),
-        ("posted", "posted to field team"),
-        ("deployed", "deployed in situ"),
-        ("resighted", "resighted in situ"),
-        ("retrieved", "retrieved in situ"),
-        ("downloaded", "downloaded"),
-    )
-
-    logger_type = models.CharField(
-        max_length=300,
-        default=LOGGER_TYPE_DEFAULT,
-        verbose_name=_("Type"),
-        choices=LOGGER_TYPE_CHOICES,
-        help_text=_("The logger type."), )
-
-    deployment_status = models.CharField(
-        max_length=300,
-        default=LOGGER_STATUS_DEFAULT,
-        verbose_name=_("Status"),
-        choices=LOGGER_STATUS_CHOICES,
-        help_text=_("The logger life cycle status."), )
-
-    logger_id = models.CharField(
-        max_length=1000,
-        blank=True, null=True,
-        verbose_name=_("Logger ID"),
-        help_text=_("The ID of a logger must be unique within the tag type."),)
-
-    # comments = models.TextField(
-    #     verbose_name=_("Comment"),
-    #     blank=True, null=True,
-    #     help_text=_("Comments"), )
-
-    class Meta:
-        """Class opts."""
-        verbose_name = "Logger Observation"
 
 
 class MediaAttachment(Observation):
@@ -4013,3 +3966,53 @@ class TemperatureLoggerDeployment(Observation):
     def __str__(self):
         """The unicode representation."""
         return u"Logger at {0} mm depth".format(self.depth_mm)
+
+
+class LoggerObservation(Observation):
+    """A logger is observed during an Encounter."""
+    LOGGER_TYPE_DEFAULT = 'temperature-logger'
+    LOGGER_TYPE_CHOICES = (
+        (LOGGER_TYPE_DEFAULT, 'Temperature Logger'),
+        ('data-logger', 'Data Logger'),
+        ('ctd-data-logger', 'Conductivity, Temperature, Depth SR Data Logger'),
+    )
+
+    LOGGER_STATUS_DEFAULT = 'resighted'
+    LOGGER_STATUS_NEW = "programmed"
+    LOGGER_STATUS_CHOICES = (
+        (LOGGER_STATUS_NEW, "programmed"),
+        ("posted", "posted to field team"),
+        ("deployed", "deployed in situ"),
+        ("resighted", "resighted in situ"),
+        ("retrieved", "retrieved in situ"),
+        ("downloaded", "downloaded"),
+    )
+
+    logger_type = models.CharField(
+        max_length=300,
+        default=LOGGER_TYPE_DEFAULT,
+        verbose_name=_("Type"),
+        choices=LOGGER_TYPE_CHOICES,
+        help_text=_("The logger type."), )
+
+    deployment_status = models.CharField(
+        max_length=300,
+        default=LOGGER_STATUS_DEFAULT,
+        verbose_name=_("Status"),
+        choices=LOGGER_STATUS_CHOICES,
+        help_text=_("The logger life cycle status."), )
+
+    logger_id = models.CharField(
+        max_length=1000,
+        blank=True, null=True,
+        verbose_name=_("Logger ID"),
+        help_text=_("The ID of a logger must be unique within the tag type."),)
+
+    comments = models.TextField(
+        verbose_name=_("Comment"),
+        blank=True, null=True,
+        help_text=_("Comments"), )
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Logger Observation"

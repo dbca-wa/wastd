@@ -873,6 +873,22 @@ class LightSourceObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.LightSourceObservation
 
 
+class LoggerObservationViewSet(ObservationBatchUpsertViewSet):
+    """Logger observations.
+
+    Can be many per Encounter.
+    [Admin](/admin/observations/loggerobservation/)
+    """
+    queryset = models.LoggerObservation.objects.all().prefetch_related(
+        "encounter", "encounter__observer", "encounter__reporter",
+        "encounter__survey", "encounter__survey__reporter",
+        "encounter__site", "encounter__area")
+    serializer_class = serializers.LoggerObservationSerializer
+    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    pagination_class = MyGeoJsonPagination
+    model = models.LoggerObservation
+
+
 class TrackTallyObservationViewSet(ObservationBatchUpsertViewSet):
     """A turtle track tally from a LineTransectEncounter.
 

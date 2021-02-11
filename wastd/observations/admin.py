@@ -45,7 +45,8 @@ from wastd.observations.models import (
     PathToSea,
     TurtleHatchlingEmergenceObservation,
     TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation
+    LightSourceObservation,
+    LoggerObservation
 )
 
 from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS
@@ -201,6 +202,14 @@ class TemperatureLoggerDeploymentInline(admin.TabularInline):
 
     extra = 0
     model = TemperatureLoggerDeployment
+    classes = ('grp-collapse grp-open',)
+
+
+class LoggerObservationInline(admin.TabularInline):
+    """Admin for LoggerObservation."""
+
+    extra = 0
+    model = LoggerObservation
     classes = ('grp-collapse grp-open',)
 
 
@@ -777,6 +786,34 @@ class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
         )
 
 
+@admin.register(LoggerObservation)
+class LoggerObservationAdmin(ObservationAdminMixin):
+    """Admin for TurtleNestDisturbanceTallyObservation."""
+
+    list_display = ObservationAdminMixin.LIST_FIRST + (
+        "logger_type",
+        "deployment_status",
+        "logger_id",
+        "comments"
+    ) + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + \
+        ("logger_type", "deployment_status", )
+    search_fields = ("logger_id", "comments", )
+
+    def get_queryset(self, request):
+        return super(
+            TurtleNestDisturbanceTallyObservationAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'encounter',
+            'encounter__reporter',
+            'encounter__observer',
+            'encounter__area',
+            'encounter__site',
+        )
+
+
 class FieldMediaAttachmentInline(admin.TabularInline):
     """TabularInlineAdmin for FieldMediaAttachment."""
 
@@ -972,6 +1009,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         TurtleHatchlingEmergenceObservationInline,
         TurtleHatchlingEmergenceOutlierObservationInline,
         LightSourceObservationObservationInline,
+        LoggerObservationInline,
         CustomStateLogInline
     ]
 
@@ -1122,6 +1160,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         TurtleHatchlingEmergenceObservationInline,
         TurtleHatchlingEmergenceOutlierObservationInline,
         LightSourceObservationObservationInline,
+        LoggerObservationInline,
         CustomStateLogInline
     ]
 
@@ -1184,7 +1223,7 @@ class LineTransectEncounterAdmin(EncounterAdmin):
 
 @admin.register(LoggerEncounter)
 class LoggerEncounterAdmin(EncounterAdmin):
-    """Admin for LoggerEncounter."""
+    """Admin for LoggerEncounter. To be replaced with LoggerObservation."""
 
     form = s2form(LoggerEncounter, attrs=S2ATTRS)
     list_display = EncounterAdmin.FIRST_COLS + (
