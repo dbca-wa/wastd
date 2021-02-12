@@ -80,6 +80,7 @@ class AdminDashboard(Dashboard):
                         'wastd.observations.models.TurtleNestDisturbanceTallyObservation',
 
                         # Loggers
+                        'wastd.observations.models.LoggerObservation',
                         'wastd.observations.models.TemperatureLoggerSettings',
                         'wastd.observations.models.DispatchRecord',
                         'wastd.observations.models.TemperatureLoggerDeployment',

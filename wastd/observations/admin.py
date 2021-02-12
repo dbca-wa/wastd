@@ -802,7 +802,7 @@ class LoggerObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return super(
-            TurtleNestDisturbanceTallyObservationAdmin, self
+            LoggerObservationAdmin, self
         ).get_queryset(
             request
         ).prefetch_related(

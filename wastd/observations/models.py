@@ -4006,7 +4006,7 @@ class LoggerObservation(Observation):
         max_length=1000,
         blank=True, null=True,
         verbose_name=_("Logger ID"),
-        help_text=_("The ID of a logger must be unique within the tag type."),)
+        help_text=_("The ID of a logger must be unique within the tag type."), )
 
     comments = models.TextField(
         verbose_name=_("Comment"),

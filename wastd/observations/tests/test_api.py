@@ -96,6 +96,7 @@ class ObservationSerializerTests(EncounterSerializerTests):
                 'turtlehatchlingemergenceobservation',
                 'turtlehatchlingemergenceoutlierobservation',
                 'lightsourceobservation',
+                'loggerobservation'
         ]:
             url = reverse('api:{}-list'.format(i))
             resp = self.client.get(url, {'format': 'json'})
@@ -347,6 +348,20 @@ class ObservationSerializerTests(EncounterSerializerTests):
                 'encounter_source': self.encounter.source,
                 'encounter_source_id': self.encounter.source_id,
                 'bearing_light_degrees': 0,
+            }
+        )
+        self.assertEqual(resp.status_code, 201)
+
+    def test_post_logger_observation(self):
+        url = reverse('api:loggerobservation-list')
+        resp = self.client.post(
+            url,
+            {
+                'source': 2,
+                'source_id': 'uuid:b2910a04-fc7b-4bb0-8570-febcb939022e',
+                'encounter_source': self.encounter.source,
+                'encounter_source_id': self.encounter.source_id,
+                'logger_id': "1234",
             }
         )
         self.assertEqual(resp.status_code, 201)

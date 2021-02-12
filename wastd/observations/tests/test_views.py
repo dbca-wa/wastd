@@ -42,7 +42,8 @@ from wastd.observations.models import (  # noqa
     PathToSea,
     TurtleHatchlingEmergenceObservation,
     TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation
+    LightSourceObservation,
+    LoggerObservation
 )
 
 

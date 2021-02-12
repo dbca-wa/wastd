@@ -82,6 +82,10 @@ router.register(
     "turtle-nest-hatchling-emergence-light-sources",
     observations_api.LightSourceObservationViewSet)
 
+router.register(
+    "logger-observations",
+    observations_api.LoggerObservationViewSet)
+
 # Track Tally Obs
 router.register(
     "track-tally",
