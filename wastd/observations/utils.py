@@ -827,62 +827,64 @@ def handle_hatchlingmorphometricobs(d, e):
     logger.info("  Hatchling Obs {0}: {1}".format(action, dd))
 
 
-def handle_loggerenc(d, e):
-    """Get or create a LoggerEncounter with photo and nest tag obs.
+# We use handle_odka_loggerobservation instead.
+# def handle_loggerenc(d, e, m=None):
+#     """Get or create a LoggerEncounter with photo and nest tag obs.
 
-    If the related TurtleNestEncounter e has a NestTagObservation, an idential
-    NTO will be created for the LoggerEncounter. This will allow to traverse
-    the list of NestTagObservations by name to link related AnimalEncounters
-    (when labelling a nest during a tagging), TurtleNestEncounters (when
-    excavating a hatched nest) and LoggerEncounters (when retrieving loggers
-    from the excavated, tagged nest).
+#     If the related TurtleNestEncounter e has a NestTagObservation, an idential
+#     NTO will be created for the LoggerEncounter. This will allow to traverse
+#     the list of NestTagObservations by name to link related AnimalEncounters
+#     (when labelling a nest during a tagging), TurtleNestEncounters (when
+#     excavating a hatched nest) and LoggerEncounters (when retrieving loggers
+#     from the excavated, tagged nest).
 
-    Arguments
+#     Arguments
 
-    d A dictionary like
-        {
-            "logger_id": "S1235",
-            "photo_logger": {
-                "filename": "1485913441063.jpg",
-                "type": "image/jpeg",
-                "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-            }
-        }
-    e The related TurtleNestEncounter (must exist)
-    """
-    logger.debug("  Creating LoggerEncounter...")
-    dd, created = LoggerEncounter.objects.get_or_create(
-        source=e.source,
-        source_id="{0}-{1}".format(e.source_id, d["logger_id"]))
+#     d A dictionary like
+#         {
+#             "logger_id": "S1235",
+#             "photo_logger": {
+#                 "filename": "1485913441063.jpg",
+#                 "type": "image/jpeg",
+#                 "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
+#             }
+#         }
+#     e The related TurtleNestEncounter (must exist)
+#     """
+#     logger.debug("  Creating LoggerObservation...")
+#     dd, created = LoggerObservation.objects.get_or_create(
+#         encounter=e,
+#         source=2,
+#         source_id="{0}-{1}".format(e.source_id, d["logger_id"]))
 
-    dd.where = e.where
-    dd.when = e.when
-    dd.location_accuracy = e.location_accuracy
-    dd.observer = e.observer
-    dd.reporter = e.reporter
-    dd.deployment_status = "retrieved"
-    dd.logger_id = d["logger_id"]
+#     # dd.logger_type = LoggerObservation.LOGGER_TYPE_DEFAULT, # TODO from form
+#     # dd.deployment_status = LoggerObservation.LOGGER_STATUS_DEFAULT,
+#     # TODO from ToN 1.2 logger_status: applied-new > deployed; rest is identical
+#     dd.logger_id = d["logger_id"]
+#     dd.comments = d["comments"] if "comments" in d else ""
 
-    dd.save()
-    action = "created" if created else "updated"
-    logger.debug("  LoggerEncounter {0}: {1}".format(action, dd))
+#     dd.save()
+#     action = "created" if created else "updated"
+#     logger.debug("  LoggerEncounter {0}: {1}".format(action, dd))
 
-    handle_media_attachment(dd, d["photo_logger"], title="Logger ID")
+#     if "photo_logger" in d and d["photo_logger"]:
+#         handle_media_attachment_odka(
+#             e, m, d["photo_logger"], title="Logger ID {0}".format(d["logger_id"]))
 
-    # If e has NestTagObservation, replicate NTO on LoggerEncounter
-    if e.observation_set.instance_of(NestTagObservation).exists():
-        logger.debug("  TurtleNestEncounter has nest tag, replicating nest tag observation on LoggerEncounter...")
-        nto = e.observation_set.instance_of(NestTagObservation).first()
-        NestTagObservation.objects.get_or_create(
-            encounter=e,
-            status=nto.status,
-            flipper_tag_id=nto.flipper_tag_id,
-            date_nest_laid=nto.date_nest_laid,
-            tag_label=nto.tag_label,
-        )
-        nto.save()
-        action = "created" if created else "updated"
-        logger.info("  NestTag Observation {0} for {1}".format(action, nto))
+#     # # If e has NestTagObservation, replicate NTO on LoggerEncounter
+#     # if e.observation_set.instance_of(NestTagObservation).exists():
+#     #     logger.debug("  TurtleNestEncounter has nest tag, replicating nest tag observation on LoggerEncounter...")
+#     #     nto = e.observation_set.instance_of(NestTagObservation).first()
+#     #     NestTagObservation.objects.get_or_create(
+#     #         encounter=e,
+#     #         status=nto.status,
+#     #         flipper_tag_id=nto.flipper_tag_id,
+#     #         date_nest_laid=nto.date_nest_laid,
+#     #         tag_label=nto.tag_label,
+#     #     )
+#     #     nto.save()
+#     #     action = "created" if created else "updated"
+#     #     logger.info("  NestTag Observation {0} for {1}".format(action, nto))
 
 
 def handle_turtlenestdisttallyobs(d, e, m=None):
@@ -989,7 +991,7 @@ def import_one_record_tt034(r, m):
      if len(r["hatchling_measurements"]) > 0]
 
     # LoggerEncounter retrieved HOBO logger
-    [handle_loggerenc(lg, e)
+    [handle_loggerenc(lg, e, m)
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
@@ -1076,7 +1078,7 @@ def import_one_record_tt036(r, m):
      if len(r["hatchling_measurements"]) > 0]
 
     # LoggerEncounter retrieved HOBO logger
-    [handle_loggerenc(lg, e)
+    [handle_loggerenc(lg, e, m)
      for lg in r["logger_details"]
      if len(r["logger_details"]) > 0]
 
@@ -3395,7 +3397,7 @@ def handle_odka_nesttagobservation(enc, media, data):
 
 
 def handle_odka_loggerobservation(enc, media, data):
-    """Handle empty, one, or multiple LoggerEncounters.
+    """Handle empty, one, or multiple LoggerObservations.
 
     Arguments:
 
@@ -3412,25 +3414,38 @@ def handle_odka_loggerobservation(enc, media, data):
         "photo_logger": "12345.jpg",
     }
     """
-    if "logger_details" not in data:
-        logger.debug("[handle_odka_loggerobservation] found no LoggerEncounter")
-        return None
+    if "logger_details" in data and data["nest"]["logger_found"] == "yes":
 
-    obs = listify(data["logger_details"])
+        for obs in listify(data["logger_details"]):
 
-    if obs:
-        logger.debug("[handle_odka_loggerobservation] found {0} LoggerEncounter(s)".format(len(obs)))
-        [handle_loggerenc(
-            dict(
-                encounter=enc,
-                logger_id=x["logger_id"],
+            # Build data dict for update
+            new_data = dict(
+                encounter_id = enc.id,
+                source=2,
+                source_id="{0}-{1}".format(enc.source_id, obs["logger_id"]),
+                logger_id=obs["logger_id"],
+                comments=obs["comments"] if "comments" in obs else ""
+            )
 
-                photo_tag=make_photo_dict(x["photo_logger"], media)
-            ),
-            enc) for x in obs]
+            criteria = new_data
+            target = LoggerObservation.objects.filter(**criteria)
+            if target.exists():
+                e = target.update(**new_data)
+                e = LoggerObservation.objects.get(**criteria)
+                logger.info("  [handle_odka_loggerobservation] Updated existing {0}...".format(e.__str__()))
+
+            else:
+                e = LoggerObservation.objects.create(**new_data)
+                logger.info("  [handle_odka_loggerobservation] Created new {0}...".format(e.__str__()))
+
+            # Handle photos
+            if obs["photo_logger"]:
+                handle_media_attachment_odka(
+                    enc, media, obs["photo_logger"], title="Photo Logger {0}".format(obs["logger_id"]))
+
     else:
-        logger.debug("[handle_odka_loggerobservation] found invalid data:\n{0}".format(
-            json.dumps(obs, indent=2)))
+        logger.info("  [handle_odka_loggerobservation] found no LoggerObservation")
+
 
     return None
 
@@ -5007,7 +5022,8 @@ def import_odka_tt044(r):
         handle_odka_turtlenestobservation(enc, media, data)
         handle_odka_hatchlingmorphometricobservation(enc, media, data)
         handle_odka_fanangles(enc, media, data)
-        handle_loggerencounter(end, media, data)
+        handle_odka_loggerobservation(enc, media, data)
+        # handle_loggerenc(enc, media, data)
         # [handle_loggerenc(lg, e)
         #     for lg in r["logger_details"]
         #     if len(r["logger_details"]) > 0]

@@ -13,26 +13,28 @@ assignees: florianm
 
 ## Required data
 <!-- What data should the report show? -->
-[ ] Marine Wildlife Incidents
-[ ] Animal Encounters (strandings, rescues, live sightings, turtle taggings)
-[ ] Turtle Nest Encounters (turtle tracks or nests)
-[ ] Turtle Nest Transects (bulk turtle tracks or nests)
-[ ] Evidence of disturbances at turtle nesting beaches
-[ ] Evidence of predator presence at turtle nesting beaches
+-[ ] Marine Wildlife Incidents
+-[ ] Animal Encounters (strandings, rescues, live sightings, turtle taggings)
+-[ ] Turtle Nest Encounters (turtle tracks or nests)
+-[ ] Turtle Nest Transects (bulk turtle tracks or nests)
+-[ ] Turtle Sightings
+-[ ] Evidence of disturbances at turtle nesting beaches
+-[ ] Evidence of predator presence at turtle nesting beaches
 
 ## Filters
 <!-- What should the data be restricted to? -->
-* Time span
-* Location
-* Attributes e.g. taxonomic name is current/published\
-* Remove personal information (names, emails)
+-[ ] Time span
+-[ ] Location
+-[ ] Attributes e.g. taxonomic name is current/published\
+-[ ] Remove personal information (names, emails)
 
 ## Outputs
-* Compiled report with maps, summary table, filterable interactive data tables
-* Raw data as CSV
-* Georeferenced data as GeoJSON
+-[ ] Compiled report with maps, summary table, filterable interactive data tables
+-[ ] Raw data as CSV
+-[ ] Georeferenced data as GeoJSON
 
 ## Dissemination
-[ ] DBCA Data Catalogue (DBCA staff only)
-[ ] rpubs.com (public)
-[ ] Google Drive folder with sharing link (anyone with link)
+-[ ] DBCA Data Catalogue (DBCA staff/intranet only)
+-[ ] rpubs.com (public)
+-[ ] Google Drive folder with sharing link (anyone with link)
+-[ ] SharePoint folder with sharing link (anyone with link)
