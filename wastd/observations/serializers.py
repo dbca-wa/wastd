@@ -68,6 +68,113 @@ class FastSurveySerializer(ModelSerializer):
         ]
 
 
+class SurveyMediaAttachmentSerializer(ModelSerializer):
+    """A special Serializer for SurveyMediaAttachment to handle file uploads."""
+
+    attachment = FileField(required=True)
+
+    class Meta:
+        model = models.SurveyMediaAttachment
+        fields = (
+            "pk",
+            "source",
+            "source_id",
+            "survey",
+            'media_type',
+            'title',
+            'attachment'
+        )
+
+    # TODO
+
+    #     def validate(self, data):
+    #     """Raise ValidateError on missing Encounter (encounter PK or source & source_id value).
+    #     """
+    #     if 'survey_id' not in self.initial_data and (
+    #         'survey_source' not in self.initial_data and
+    #         'survey_source_id' not in self.initial_data
+    #     ):
+    #         raise ValidationError(
+    #             'Survey reference is required, either as encounter_id or as '
+    #             'encounter_source and encounter_source_id.'
+    #         )
+    #     if 'encounter_id' in self.initial_data:
+    #         if not models.Encounter.objects.filter(pk=self.initial_data['encounter_id']).exists():
+    #             raise ValidationError(
+    #                 'Encounter {} does not exist.'.format(self.initial_data['encounter_id'])
+    #             )
+    #     if 'encounter_source' in self.initial_data and 'encounter_source_id' in self.initial_data:
+    #         if not models.Encounter.objects.filter(
+    #             source=self.initial_data['encounter_source'],
+    #             source_id=self.initial_data['encounter_source_id']
+    #         ).exists():
+    #             raise ValidationError(
+    #                 'Encounter with source {} and source_id {} does not exist.'.format(
+    #                     self.initial_data['encounter_source'],
+    #                     self.initial_data['encounter_source_id'])
+    #             )
+    #     return data
+
+    # def create(self, validated_data):
+    #     """Create one new object, resolve Encounter from either PK or source & source_id.
+    #     """
+
+    #     if 'encounter_id' in self.initial_data:
+    #         validated_data['encounter'] = models.Encounter.objects.get(
+    #             pk=self.initial_data['encounter_id'])
+    #     else:
+    #         validated_data['encounter'] = models.Encounter.objects.get(
+    #             source=self.initial_data['encounter_source'],
+    #             source_id=self.initial_data['encounter_source_id'])
+    #     return self.Meta.model.objects.create(**validated_data)
+
+    # def save(self):
+    #     """Override the save method in order to prevent 'duplicate' instances being created by
+    #     the API endpoints. We override save in order to avoid duplicate by either create or update.
+    #     """
+    #     # logger.info(str(self.validated_data))
+    #     # unique_data = {
+    #     #     source: self.validated_data["source"],
+    #     #     source_id: self.validated_data["source_id"]
+    #     # }
+
+    #     if 'encounter' in self.initial_data:
+    #         self.validated_data['encounter'] = models.Encounter.objects.get(
+    #             pk=self.initial_data['encounter']
+    #         )
+    #     else:
+    #         self.validated_data['encounter'] = models.Encounter.objects.get(
+    #             source = self.initial_data["encounter_source"],
+    #             source_id = self.initial_data["encounter_source_id"]
+    #             )
+    #     # import ipdb; ipdb.set_trace()
+    #     # Gate check: we want to ensure that duplicate objects are not created.
+    #     duplicates = self.Meta.model.objects.filter(
+    #         source = self.initial_data["source"],
+    #         source_id = self.initial_data["source_id"]
+    #     )
+    #     if duplicates.exists():
+    #         if duplicates.count() == 1:
+    #             # TODO: work out how we might return HTTP status 200 instead of 201.
+    #             # Update existing record: breaks file upload paths! bad!
+    #             # logger.info(f"Updating existing record {str(self.validated_data)}")
+    #             # duplicates.update(**self.validated_data)
+    #             # duplicates.first().save()
+
+    #             # return self.Meta.model.objects.get(
+    #             #     source = self.initial_data["source"],
+    #             #     source_id = self.initial_data["source_id"])
+    #             # simpler:
+    #             return duplicates.first()
+    #         else:
+    #             # Passed-in data matches >1 existing instance, so raise a validation error.
+    #             raise ValidationError("{}: existing duplicate(s) with {} ".format(
+    #                 self.Meta.model._meta.label, str(**self.validated_data)
+    #             ))
+    #     else:
+    #         # Create the new, unique instance.
+    #         return self.Meta.model.objects.create(**self.validated_data)
+
 # ----------------------------------------------------------------------------#
 # Encounter
 # ----------------------------------------------------------------------------#

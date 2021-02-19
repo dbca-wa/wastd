@@ -589,6 +589,24 @@ class MediaAttachmentViewSet(ModelViewSet):
     model = models.MediaAttachment
 
 
+# TODO
+# class SurveyMediaAttachmentViewSet(ModelViewSet):
+#     """Binary media (photos, datasheet PDFs etc) with Survey details.
+
+#     Can be many per Survey.
+#     [Admin](/admin/observations/survey-media-attachments/)
+#     """
+#     queryset = models.SurveyMediaAttachment.objects.all().prefetch_related(
+#         # "encounter__observer", "encounter__reporter",
+#         # "encounter__survey", "encounter__survey__reporter",
+#         "survey__site", #"encounter__area",
+#     )
+#     serializer_class = serializers.SurveyMediaAttachmentSerializer
+#     pagination_class = MyGeoJsonPagination
+#     parser_classes = [FormParser, MultiPartParser]
+#     model = models.SurveyMediaAttachment
+
+
 class TagObservationViewSet(ObservationBatchUpsertViewSet):
     """An Observation of an identifying tag on an observed entity including Encounter details.
 

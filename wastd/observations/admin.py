@@ -32,6 +32,7 @@ from wastd.observations.models import (
     MediaAttachment,
     NestTagObservation,
     Survey,
+    SurveyMediaAttachment,
     TagObservation,
     TemperatureLoggerDeployment,
     TemperatureLoggerSettings,
@@ -210,6 +211,13 @@ class LoggerObservationInline(admin.TabularInline):
 
     extra = 0
     model = LoggerObservation
+    classes = ('grp-collapse grp-open',)
+
+class SurveyMediaAttachmentInline(admin.TabularInline):
+    """Admin for SurveyMediaAttachment."""
+
+    extra = 0
+    model = SurveyMediaAttachment
     classes = ('grp-collapse grp-open',)
 
 
@@ -875,7 +883,7 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                         'start_photo', 'end_photo',
                         )}),
     )
-    inlines = [CustomStateLogInline, ]
+    inlines = [SurveyMediaAttachmentInline, CustomStateLogInline, ]
 
 
 @admin.register(Area)
