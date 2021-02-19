@@ -26,9 +26,9 @@ import logging
 import urllib
 from datetime import timedelta
 from dateutil import parser as dateparser
+from dateutil import tz
 
 import slugify
-from dateutil import tz
 from django.conf import settings
 from django.contrib.gis.db import models as geo_models
 from django.db import models
@@ -634,9 +634,9 @@ def expedition_media(instance, filename):
 
 def survey_media(instance, filename):
     """Return an upload path for survey media."""
-    if not instance.id:
-        instance.save()
-    return 'survey/{0}/{1}'.format(instance.id, filename)
+    if not instance.survey.id:
+        instance.survey.save()
+    return 'survey/{0}/{1}'.format(instance.survey.id, filename)
 
 
 # Spatial models -------------------------------------------------------------#
@@ -1159,7 +1159,7 @@ class Survey(QualityControlMixin, geo_models.Model):
     class Meta:
         """Class options."""
 
-        ordering = ["start_location", "start_time"]
+        ordering = ["-start_time", ]
         unique_together = ("source", "source_id")
 
     def __str__(self):
@@ -1168,11 +1168,12 @@ class Survey(QualityControlMixin, geo_models.Model):
 
     @property
     def make_label(self):
-        return "Survey {0} of {1} from {2} to {3}".format(
+        return "Survey {0} of {1} from {2} {3}-{4}".format(
             self.pk,
             "unknown site" if not self.site else self.site.name,
-            "na" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            "na" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M"))
+            "na" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d "),
+            "" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%H:%M"),
+            "" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%H:%M %Z"))
 
     @property
     def absolute_admin_url(self):
@@ -1187,12 +1188,13 @@ class Survey(QualityControlMixin, geo_models.Model):
     def encounters(self):
         """Return the QuerySet of all Encounters within this SiteVisit unless it's a training run."""
         if not self.production:
+            logger.info("[wastd.observations.models.survey.encounters] Not a production survey, skipping.")
             return None
         if not self.end_time:
-            logger.info("[wastd.observations.models.survey.encounters] No end_time set, can't filter Encounters")
+            logger.info("[wastd.observations.models.survey.encounters] No end_time set, can't filter Encounters.")
             return None
         elif not self.site:
-            logger.info("[wastd.observations.models.survey.encounters] No site set, can't filter Encounters")
+            logger.info("[wastd.observations.models.survey.encounters] No site set, can't filter Encounters.")
             return None
         else:
             e = Encounter.objects.filter(
@@ -1201,6 +1203,36 @@ class Survey(QualityControlMixin, geo_models.Model):
                 when__lte=self.end_time)
             logger.info("[Survey.encounters] {0} found {1} Encounters".format(self, len(e)))
             return e
+
+    @property
+    def start_date(self):
+        """The calendar date of the survey's start time in the local timezone."""
+        return self.start_time.astimezone(tz.tzlocal()).date()
+
+    @property
+    def duplicate_surveys(self):
+        """A queryset of other surveys on the same date and site with intersecting durations.
+        """
+        return Survey.objects.filter(
+            site=self.site,
+            start_time__date=self.start_date
+        ).exclude(
+            pk=self.pk
+        ).exclude(  # surveys starting after self
+            start_time__gte=self.end_time
+        ).exclude(  # surveys ending before self
+            end_time__lte=self.start_time
+        )
+
+    @property
+    def no_duplicates(self):
+        """The number of duplicate surveys."""
+        return self.duplicate_surveys.count()
+
+    @property
+    def has_duplicates(self):
+        """Whether there are duplicate surveys."""
+        return self.no_duplicates > 0
 
 
 def guess_site(survey_instance):
@@ -1380,6 +1412,78 @@ class SurveyEnd(geo_models.Model):
             area_type=Area.AREATYPE_SITE,
             geom__contains=self.end_location)
         return None if not candidates else candidates.first()
+
+
+class SurveyMediaAttachment(LegacySourceMixin, models.Model):
+    """A media attachment to a Survey, e.g. start or end photos."""
+
+    MEDIA_TYPE_CHOICES = (
+        ('data_sheet', _('Data sheet')),
+        ('communication', _('Communication record')),
+        ('photograph', _('Photograph')),
+        ('other', _('Other')), )
+
+    survey = models.ForeignKey(
+        Survey,
+        on_delete=models.PROTECT,
+        verbose_name=_("Survey"),
+        related_name='attachments',
+        help_text=("The Survey this attachment belongs to."),)
+
+    media_type = models.CharField(
+        max_length=300,
+        verbose_name=_("Attachment type"),
+        choices=MEDIA_TYPE_CHOICES,
+        default="photograph",
+        help_text=_("What is the attached file about?"),)
+
+    title = models.CharField(
+        max_length=300,
+        verbose_name=_("Attachment name"),
+        blank=True, null=True,
+        help_text=_("Give the attachment a representative name."),)
+
+    attachment = models.FileField(
+        upload_to=survey_media,
+        max_length=500,
+        verbose_name=_("File attachment"),
+        help_text=_("Upload the file."),)
+
+    class Meta:
+        """Class opts."""
+        verbose_name = "Survey Media Attachment"
+
+    def __str__(self):
+        """The unicode representation."""
+        return u"Media {0} {1} for {2}".format(
+            self.pk if self.pk else "",
+            self.title,
+            self.survey.__str__() if self.survey else ""
+        )
+
+    @property
+    def filepath(self):
+        """The path to attached file."""
+        try:
+            fpath = force_text(self.attachment.file)
+        except BaseException:
+            fpath = None
+        return fpath
+
+    @property
+    def thumbnail(self):
+        if self.attachment:
+            return mark_safe(
+                '<a href="{0}" target="_" rel="nofollow" '
+                'title="Click to view full screen in new browser tab">'
+                '<img src="{0}" alt="{1} {2}" style="height:100px;"></img>'
+                '</a>'.format(
+                    self.attachment.url,
+                    self.get_media_type_display(),
+                    self.title
+                ))
+        else:
+            return ""
 
 
 # Utilities ------------------------------------------------------------------#

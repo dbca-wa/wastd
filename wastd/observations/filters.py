@@ -7,7 +7,7 @@ from django.contrib.gis.db import models as geo_models
 from django.utils.translation import ugettext_lazy as _
 from django_filters import FilterSet
 from django_filters.filters import (  # noqa
-    BooleanFilter, CharFilter,
+    BooleanFilter, CharFilter, RangeFilter,
     ChoiceFilter, MultipleChoiceFilter,
     ModelChoiceFilter, ModelMultipleChoiceFilter)
 from shared.filters import FILTER_OVERRIDES
@@ -27,6 +27,28 @@ class SurveyFilter(FilterSet):
 
     https://django-filter.readthedocs.io/en/latest/usage.html
     """
+    no_start = BooleanFilter(
+        label="Start Point reconstructed",
+        field_name='source_id',
+        lookup_expr='isnull'
+    )
+
+    no_end = BooleanFilter(
+        label="End Point reconstructed",
+        field_name='end_source_id',
+        lookup_expr='isnull'
+    )
+
+    area = ModelChoiceFilter(
+        label="Locality",
+        queryset=Area.objects.filter(
+            area_type__in=[Area.AREATYPE_LOCALITY,]
+        ).order_by(
+            "-northern_extent",
+            "name"
+        ),
+    )
+
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(
@@ -37,15 +59,25 @@ class SurveyFilter(FilterSet):
         ),
         # method='taxa_occurring_in_area'
     )
+
+    duplicates = BooleanFilter(
+        label="Duplicates",
+        field_name='has_duplicates',
+    )
+
     class Meta:
         """Options for EncounterFilter."""
         model = Survey
         filter_overrides = FILTER_OVERRIDES
         fields = [
+            # 'area',
+            'site',
+            'no_start',
+            'no_end',
+            'production',
             'source',
             'source_id',
             'device_id',
-            'site',
             'reporter',
             'start_location',
             'start_location_accuracy_m',
@@ -57,7 +89,6 @@ class SurveyFilter(FilterSet):
             'end_location_accuracy_m',
             'end_time',
             'end_comments',
-            'production',
             # 'team', # m2m
             # 'label',
             'transect',

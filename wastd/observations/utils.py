@@ -92,10 +92,12 @@ def reconstruct_missing_surveys(buffer_mins=30):
     tne_data = [[t[2], t[3]] for t in tne_all]
     idx = pandas.MultiIndex.from_tuples(tne_idx, names=['site', 'date'])
     df = pandas.DataFrame(tne_data, index=idx, columns=['datetime', 'reporter'])
-    missing_surveys = pandas.pivot_table(df,
-                                         index=['date', 'site'],
-                                         values=['datetime', 'reporter'],
-                                         aggfunc={'datetime': [min, max], 'reporter': 'first'})
+    missing_surveys = pandas.pivot_table(
+        df,
+        index=['date', 'site'],
+        values=['datetime', 'reporter'],
+        aggfunc={'datetime': [min, max], 'reporter': 'first'}
+    )
     logger.info("[QA][reconstruct_missing_surveys] Done. "
                 "Creating {0} missing surveys...".format(len(missing_surveys)))
 
