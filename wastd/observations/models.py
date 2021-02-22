@@ -1234,6 +1234,63 @@ class Survey(QualityControlMixin, geo_models.Model):
         """Whether there are duplicate surveys."""
         return self.no_duplicates > 0
 
+    def close_duplicates(self, actor=None):
+        """Mark this Survey as the only production survey, others as training and adopt all Encounters.
+
+
+        Data import of Surveys reconstructed from SVS and SVE, adjusting site bondaries,
+        and previous import algorithms, can cause duplicate Surveys to be created.
+
+        The QA operator needs to identify duplicates, mark each as "not production" (=training, testing, or duplicate),
+        set this Survey as "production", then save each of them and set to "curated".
+
+        Duplicate Surveys are recognized by an overlap of place and time. They can however extend longer individually,
+        so that duplicates can contain Encounters outside the duration of the production Survey.
+        The remaining production Survey needs to adjust its start and end time to include all Encounters of all closed
+        duplicate surveys.
+        """
+        survey_pks = [survey.pk for survey in self.duplicate_surveys.all()] + [self.pk]
+        all_encounters = Encounter.objects.filter(survey_id__in=survey_pks)
+        msg = "Closing {0} duplicates of Survey {1}".format(len(survey_pks) - 1, self.pk)
+
+        # All duplicate Surveys shall be closed (not production) and own no Encounters
+        for d in self.duplicate_surveys.all():
+            logger.debug("Closing Survey {0}".format(d.pk))
+            d.production = False
+            d.save()
+            if d.status != QualityControlMixin.STATUS_CURATED:
+                d.curate(by=actor or User.objects.get(pk=1))
+
+        # From all Encounters (if any), adjust duration
+        if all_encounters.count() > 0:
+            earliest_enc = min([e.when for e in all_encounters])
+            earliest_buffered = earliest_enc - timedelta(minutes=30)
+            latest_enc = max([e.when for e in all_encounters])
+            latest_buffered = latest_enc + timedelta(minutes=30)
+
+            msg += "\n{0} combined Encounters found from duplicates between {1} and {2}".format(
+                all_encounters.count(),
+                earliest_enc,
+                latest_enc
+            )
+            if earliest_enc < self.start_time:
+                msg += "\nAdjusted Survey start time from {0} to 30 mins before earliest Encounter, {1}".format(
+                    self.start_time, earliest_buffered)
+                self.start_time = earliest_buffered
+            if latest_enc > self.end_time:
+                msg += "\nAdjusted Survey end time from {0} to 30 mins after latest Encounter, {1}".format(
+                    self.end_time, latest_buffered)
+                self.end_time = latest_buffered
+
+        # This Survey is the production survey owning all Encounters
+        self.production = True
+        self.save()
+        if self.status != QualityControlMixin.STATUS_CURATED:
+            self.curate(by=actor or User.objects.get(pk=1))
+
+        logger.info(msg)
+        return msg
+
 
 def guess_site(survey_instance):
     """Return the first Area containing the start_location or None."""
