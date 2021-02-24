@@ -91,7 +91,7 @@ body{
 
 /* Card */
 .card {
-  margin: 5px;
+  /*margin: 0px;*/
   padding: 0px;
 }
 

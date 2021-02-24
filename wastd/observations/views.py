@@ -5,6 +5,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 from export_download.views import ResourceDownloadMixin
@@ -125,8 +126,26 @@ class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         data = super(SurveyDetail, self).get_context_data(**kwargs)
-        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        # obj = self.get_object()
+        # survey_ids = [survey.pk for survey in obj.duplicate_surveys.all()] + [obj.pk]
+        # data['encounters'] = Encounter.objects.filter(survey_id__in=survey_ids)
         return data
+
+
+def close_survey_duplicates(request, pk):
+    """Close duplicates for a given Survey PK with the request user as actor.
+
+
+    All duplicate Surveys will be curated and marked as "not production".
+    The given Survey will be curated and marked as "production",
+    adopt all Encounters from all duplicate surveys, and adjust its duration.
+
+    See Survey.close_duplicates() for implementation details.
+    """
+    s = Survey.objects.get(pk=pk)
+    msg = s.close_duplicates(actor=request.user)
+    messages.success(request, msg)
+    return HttpResponseRedirect(s.get_absolute_url())
 
 
 # Encounters -----------------------------------------------------------------#
@@ -339,7 +358,8 @@ class AnimalEncounterUpdate(UpdateView):
                 flipper_tags.save()
         return super(AnimalEncounterUpdate, self).form_valid(form)
 
-#-----------------------------------------------------------------------------#
+
+# -----------------------------------------------------------------------------#
 # TNE
 class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = TurtleNestEncounter
@@ -370,7 +390,7 @@ class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         return data
 
 
-#-----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # LineTransectEncounter
 class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = LineTransectEncounter
@@ -401,7 +421,7 @@ class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         return data
 
 
-#-----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # LoggerEncounter
 class LoggerEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = LoggerEncounter
@@ -430,7 +450,6 @@ class LoggerEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         data = super(LoggerEncounterDetail, self).get_context_data(**kwargs)
         # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
         return data
-
 
 
 # Django-Rest-Swagger View ---------------------------------------------------#

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>WAStD - WA Sea Turtle Data &mdash; WAStD 0.45.10 documentation</title>
+  <title>WAStD - WA Sea Turtle and Strandings Database &mdash; WAStD 0.46.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.45
+                0.46
               </div>
             
           
@@ -89,8 +89,8 @@
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_curators.html">Data curators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-qa">Data QA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html#data-release">Data release</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
@@ -143,7 +143,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>WAStD - WA Sea Turtle Data</li>
+      <li>WAStD - WA Sea Turtle and Strandings Database</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -162,8 +162,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="wastd-wa-sea-turtle-data">
-<h1>WAStD - WA Sea Turtle Data<a class="headerlink" href="#wastd-wa-sea-turtle-data" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="wastd-wa-sea-turtle-and-strandings-database">
+<h1>WAStD - WA Sea Turtle and Strandings Database<a class="headerlink" href="#wastd-wa-sea-turtle-and-strandings-database" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://github.com/dbca-wa/wastd/actions"><img alt="CodeQL" src="https://github.com/dbca-wa/wastd/workflows/CodeQL/badge.svg?branch=master" /></a>
 <a class="reference external image-reference" href="https://github.com/dbca-wa/wastd/actions"><img alt="DjangoCI" src="https://github.com/dbca-wa/wastd/workflows/DjangoCI/badge.svg?branch=master" /></a>
 <a class="reference external image-reference" href="https://coveralls.io/github/dbca-wa/wastd?branch=master"><img alt="Test coverage" src="https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master" /></a>
@@ -176,42 +176,40 @@
 <li><p>Turtle strandings in WA, as reported to the
 Department of Biodiversity, Conservation and Attractions, WA.</p></li>
 <li><p>Dugong and sea snake strandings in WA.</p></li>
-<li><p>Turtle track observations, taken at sunrise after nesting (can involve nests,
-predation, nest tags, temperature loggers, egg excavation and hatchling measurements).</p></li>
+<li><p>Turtle nesting census, which counts nests and tracks on mornings after nesting nights
+(can involve nests, tracks, predation, nest tags, temperature loggers, egg excavations,
+hatchling measurements, hatchling emergence track measurements, light pollution observations).</p></li>
 <li><p>Temperature logger asset management.</p></li>
+<li><p>Turtle tagging observations.</p></li>
 </ul>
 <p>WAStD is built scalable enough to accommodate other, related, data:</p>
 <ul class="simple">
-<li><p>Turtle tagging observations, taken of nesting turtles.</p></li>
-<li><p>Cetacean (whales and dolphins) and pinniped (seals and sea lions) strandings.</p></li>
+<li><p>Cetacean (whales and dolphins) and pinniped (seals and sea lions) strandings.
+While an integration is technically possible, the current point of truth for these
+strandings is a different in-house database at DBCA with its own response protocols.</p></li>
 </ul>
 <p>WAStD offers as main functionalities:</p>
 <ul class="simple">
-<li><p>A “backstage” area, through which trained and trusted data curators can enter
-data from paper data sheets, and other curators can proofread and QA the data.</p></li>
-<li><p>A landing page with an interactive map displaying the data (coming up: filters
-to restrict the data shown, export tools).</p></li>
+<li><p>A user-friendly interface to trawl through the data, do QA and data exports.</p></li>
+<li><p>An access-restricted data curation portal, through which trained and trusted data curators
+can enter data from paper data sheets, then proofread and QA the data.</p></li>
 <li><p>Restricted access to the “backstage” area for trusted data consumers, where
 they can search, filter and export the raw data, but not change or delete them.</p></li>
 <li><p>A RESTful API that allows authenticated users to create, update, and download
 the data.</p></li>
 </ul>
-<p>WAStD’s purpose is:</p>
-<ul class="simple">
-<li><p>To fill an existing gap in departmental infrastructure (strandings, tracks).</p></li>
-<li><p>To develop requirements for an integrated turtle data management ecosystem
-through using real data and real processes.</p></li>
-</ul>
-<p>WAStD will integrate in the Departmental information landscape as follows:</p>
+<p>WAStD integrates in the Departmental information landscape as follows:</p>
 <ul class="simple">
 <li><p>Legacy data (starting with Turtle strandings) is manually entered from paper forms.</p></li>
 <li><p>Legacy data living in legacy systems can be batch-uploaded to WAStD, initially as a read-only copy.</p></li>
-<li><p>Data collected digitally can be streamed (or imported semi-automatically) into WAStD.</p></li>
-<li><p>WAStD can batch-upload its data to corporate data warehouses, once they exist (e.g. BioSys).</p></li>
+<li><p>Data collected digitally can be imported automatically into WAStD.</p></li>
+<li><p>WAStD can batch-upload its data to other corporate data warehouses.</p></li>
 <li><p>Analytical applications anwering defined management questions (informing
 monitoring reports, ministerial inquries, conservation planning decisions) can be
 built right now consuming the WAStD API, and later refactored to consume data from
 departmental data warehouses, once these become the point of truth for the data.</p></li>
+<li><p>Departmental data consumers can use the R package <a class="reference external" href="https://dbca-wa.github.io/wastdr/">wastdr</a> to access
+data directly from the WAStD API. <code class="docutils literal notranslate"><span class="pre">wastdr</span></code> provides working examples and extensive documentation.</p></li>
 </ul>
 <p>Departmental business related to turtle strandings:</p>
 <p>Documented at <a class="reference external" href="https://confluence.dpaw.wa.gov.au/display/MSIM/Legacy+systems">https://confluence.dpaw.wa.gov.au/display/MSIM/Legacy+systems</a></p>
@@ -336,22 +334,6 @@ turtle track census. One program is relatively small and remote, the other lacks
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_curators.html">Data curators</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data_curators.html#conservation-actions">Conservation Actions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_curators.html#threatened-fauna-occurrence">Threatened Fauna Occurrence</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#paper-form">Paper form</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#digital-form">Digital form</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data_curators.html#threatened-flora-occurrence">Threatened Flora Occurrence</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#id1">Paper form</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data_curators.html#ecological-community-occurrence">Ecological Community Occurrence</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#tec-occurrence-report-form">TEC Occurrence Report Form</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#tec-bushland-plant-survey-recording-sheet">TEC Bushland Plant Survey Recording Sheet</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#tsc-data-entry">TSC data entry</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="data_curators.html#turtle-tracks-or-nests">Turtle Tracks or Nests</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="data_curators.html#section-encounter">Section “Encounter”</a></li>
 <li class="toctree-l3"><a class="reference internal" href="data_curators.html#section-nest">Section “Nest”</a></li>
@@ -381,21 +363,22 @@ turtle track census. One program is relatively small and remote, the other lacks
 <li class="toctree-l2"><a class="reference internal" href="data_curators.html#export-files">Export files</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-qa">Data QA</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data_curators.html#proofreading">Proofreading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_curators.html#curating-data">Curating data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_qa.html#proofreading">Proofreading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_qa.html#curating-data">Curating data</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-release">Data release</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data_curators.html#data-qa-for-turtle-track-census">Data QA for turtle track census</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#data-flow-of-surveys">Data flow of surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#flag-training-surveys">Flag training surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#double-check-reporter-names">Double-check reporter names</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#qa-survey-end-time">QA Survey end time</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#populate-team">Populate team</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#add-missing-surveys">Add missing surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#add-missing-users">Add missing users</a></li>
-<li class="toctree-l3"><a class="reference internal" href="data_curators.html#curate-records-from-training-days">Curate records from training days</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html#data-release">Data release</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_qa.html#data-qa-for-turtle-track-census">Data QA for turtle track census</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#qa-tracks-with-uncertain-species">QA tracks with uncertain species</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#data-flow-of-surveys">Data flow of surveys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#flag-training-surveys">Flag training surveys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#double-check-reporter-names">Double-check reporter names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#qa-survey-end-time">QA Survey end time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#populate-team">Populate team</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#add-missing-surveys">Add missing surveys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#add-missing-users">Add missing users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_qa.html#curate-records-from-training-days">Curate records from training days</a></li>
 </ul>
 </li>
 </ul>
@@ -520,7 +503,7 @@ turtle track census. One program is relatively small and remote, the other lacks
 <li class="toctree-l3"><a class="reference internal" href="developers.html#module-wastd.users.admin"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.users.admin</span></code> Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="developers.html#module-wastd.users.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.users.views</span></code> Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="developers.html#wastd-observations-app"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations</span></code> app</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developers.html#module-wastd.observations.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="developers.html#wastd-observations-views-module"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code> Module</a></li>
 </ul>
 </li>
 </ul>

@@ -15,16 +15,13 @@
       <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
       {{ object.observer }}
 
-
       <span class="float-right">
-        <a class="mr-2 text-primary" type="button" data-toggle="collapse"
-          href="#details{{ object.id }}" aria-expanded="false"
-          aria-controls="details{{ object.id }}"
-          title="Toggle details">
-          <span class="oi oi-expand-down" title="Toggle details" aria-hidden="true"></span>
-        </a>
-        {% include "shared/admin_qa.html" with label=False %}
-      </span>
+        {% include "observations/toggle_details.html" with object=object %}
+        {% include "shared/admin_qa.html" with label=True %}
+        <span class="oi oi-map-marker zoom-map text-warning"
+          data-lon="{{ object.longitude }}" data-lat="{{ object.latitude }}"
+          title="Show on map" aria-hidden="true"></span>
+        </span>
     </h6>
   </div>
 

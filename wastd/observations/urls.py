@@ -5,6 +5,7 @@ from . import views
 app_name = 'observations'
 
 urlpatterns = [
+    path('surveys/<int:pk>/close_duplicates', views.close_survey_duplicates, name='survey-close-duplicates'),
     path('surveys/<int:pk>/', views.SurveyDetail.as_view(), name='survey-detail'),
     path('surveys/', views.SurveyList.as_view(), name='survey-list'),
     path('encounters/<int:pk>/', views.EncounterDetail.as_view(), name='encounter-detail'),

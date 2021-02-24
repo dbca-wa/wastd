@@ -3,37 +3,8 @@
   <div class="card-header{% if not object.production%} text-muted{% endif %}">
     <span class="float-right">
       {% block title_labels %}{% endblock title_labels %}
-
-      <!-- Production -->
-      <span class="badge badge-{% if object.production %}primary{% else %}secondary{% endif %}"
-        title="{% if object.production %}Production survey, included in analysis, will claim encounters when saved.{% else %}Training survey, excluded from analysis, will not claim encounters when saved.{% endif %}">
-        {% if object.production %}
-          <span class="oi oi-badge" aria-hidden="true"></span> Production
-        {% else %}
-          <span class="oi oi-ban" aria-hidden="true"></span> Training
-        {% endif %}
-      </span>
-
-      <!-- Site Visit Start -->
-      <span class="badge badge-{% if object.source_id %}primary{% else %}secondary{% endif %}"
-        title="Start point {% if object.source_id %}captured in field: {{ object.source_id }}{% else %}reconstructed{% endif %}">
-        {% if object.source_id %}
-          <span class="oi oi-tablet" aria-hidden="true"></span> Site Visit Start
-        {% else %}
-          <span class="oi oi-x" aria-hidden="true"></span> Reconstructed
-        {% endif %}
-      </span>
-
-      <!-- Site Visit End -->
-      <span class="badge badge-{% if object.end_source_id %}primary{% else %}secondary{% endif %}"
-        title="End point {% if object.end_source_id %}captured in field: {{ object.end_source_id }}{% else %}reconstructed{% endif %}">
-        {% if object.end_source_id %}
-          <span class="oi oi-tablet" aria-hidden="true"></span> Site Visit End
-        {% else %}
-          <span class="oi oi-x" aria-hidden="true"></span> Reconstructed
-        {% endif %}
-      </span>
-
+      {% include "observations/survey_is_production.html" with survey=object %}
+      {% include "observations/survey_site_visit_start_end.html" with survey=object %}
     </span>
     <h5 class="card-title">
       {{ object }}
@@ -52,13 +23,9 @@
       {{ object.no_duplicates }}
 
       <span class="float-right">
-        <a class="mr-2 text-primary" type="button" data-toggle="collapse"
-          href="#details{{ object.id }}" aria-expanded="false"
-          aria-controls="details{{ object.id }}"
-          title="Toggle details">
-          <span class="oi oi-expand-down" title="Toggle details" aria-hidden="true"></span>
-        </a>
-        {% include "shared/admin_qa.html" with label=False hide_details=True %}
+        {% include "observations/toggle_details.html" with object=object %}
+        {% include "shared/admin_qa.html" with object=object label=True hide_details=False %}
+        {% include "observations/survey_make_production.html" with survey=object %}
       </span>
     </h6>
   </div>
@@ -84,34 +51,13 @@
       <div>
       <span class="oi oi-layers" title="Duplicate survey" aria-hidden="true"></span>
       Duplicate Survey: {{ svy }}
-
       <span class="oi oi-spreadsheet" title="Encounters linked: {{ svy.encounter_set.count }}" aria-hidden="true"></span>
       {{ svy.encounter_set.count }}
-      <span class="badge badge-{% if svy.production %}primary{% else %}secondary{% endif %}"
-        title="{% if svy.production %}Production survey, included in analysis, will claim encounters when saved.{% else %}Training survey, excluded from analysis, will not claim encounters when saved.{% endif %}">
-        {% if svy.production %}
-          <span class="oi oi-badge" aria-hidden="true"></span> Production
-        {% else %}
-          <span class="oi oi-ban" aria-hidden="true"></span> Training
-        {% endif %}
-      </span>
-
-      <span class="badge badge-{{ object.status_colour }}">
-        {% if request.user.is_staff %}
-        <a href="{{ svy.absolute_admin_url }}"
-        class="text-primary text-success"
-        title="Edit and QA this record in the data curation portal">
-        <span class="oi oi-pencil" aria-hidden="true"></span>
-        {% if label %}Edit{% endif %}
-        </a>
-        {% endif %}
-        QA: {{ svy.get_status_display }}
-      </span>
-
-
+      {% include "observations/survey_is_production.html" with survey=svy %}
+      {% include "shared/admin_qa.html" with object=svy label=True hide_details=False %}
+      {% include "observations/survey_make_production.html" with survey=svy %}
       </div>
     {% endfor %}
-
 
     <div class="card-columns mt-2">
       {% if object.start_photo %}

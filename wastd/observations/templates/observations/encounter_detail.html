@@ -32,36 +32,52 @@
 
       <div class="card-body">
 
-        <div class="row">
-          <div class="col col-12">
+        <div class="card-text">
+            <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
+            <a href="{{ object.survey.get_absolute_url }}">{{ object.survey }}</a>
+        </div>
+
+        <div class="card-text">
             <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
             {{ object.when|date:"r" }}
-          </div>
         </div>
 
-        <div class="row">
-          <div class="col col-12">
+        <div class="card-text">
             <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
             {{ object.get_encounter_type_display }}
-          </div>
         </div>
 
-        <div class="row">
-          <div class="col col-12">
+        <div class="card-text">
             <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
               {{ object.observer }}
-          </div>
-        </div><!-- /.row -->
+        </div>
 
-        <div class="row">
-          <div class="col col-12">
             {% block obsdetails %}
             {% endblock %}
-              {% for obs in object.observation_set.all %}
-              <div class="row"><div class="col col-12">{{ obs.as_html|safe }}</div></div>
-              {% endfor %}
+
+        {% for obs in object.observation_set.all %}
+          <div class="card-text">
+            {{ obs.as_html|safe }}
           </div>
-        </div><!-- /.row -->
+        {% endfor %}
+
+          <div class="row" id="row-enc-media">
+            <div class="col-12" id="col-enc-media">
+              <div class="card-columns mt-2">
+
+                {% for a in object.photographs %}
+                <div class="card shadow-lg">
+                  <img src="{{ a.attachment.url }}" class="card-img-top" alt="{{ a.title }}">
+                  <div class="card-body">
+                    <p class="card-text">{{ a.title }}</p>
+                  </div>
+                </div>
+                {% endfor %}
+
+              </div>
+            </div>
+          </div>
+
       </div><!-- /.card-body -->
 
     </div><!-- /.card -->
@@ -84,3 +100,37 @@
 </div><!-- .row#row-occ-extra -->
 
 {% endblock %}
+
+{% block extrajs %}
+    <!-- Some widgets need JQuery to be loaded early -->
+    {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+    <script src="{% static 'offline/jquery.min.js' %}"></script>
+    {% else %}{# Serve third party libraries from CDN - production mode #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+      integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+      crossorigin="anonymous"></script>
+    {% endif %}
+    <script type="text/javascript">
+    function map_init(map, options) {
+
+      {% include 'shared/styles.js' %}
+
+      $.getJSON("{% url 'sites-geojson' %}", function (data) {
+          L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
+      });
+
+      /* Data loading */
+
+
+      var enc_layer = L.geoJson(
+        {{ object|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
+        { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll }
+      );
+      enc_layer.addTo(map);
+
+      map.fitBounds(enc_layer.getBounds());
+
+    };
+
+    </script>
+    {% endblock %}

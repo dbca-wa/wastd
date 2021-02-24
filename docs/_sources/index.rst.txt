@@ -1,5 +1,5 @@
 =====================================================================
-WAStD - WA Sea Turtle Data
+WAStD - WA Sea Turtle and Strandings Database
 =====================================================================
 
 .. image:: https://github.com/dbca-wa/wastd/workflows/CodeQL/badge.svg?branch=master
@@ -25,42 +25,41 @@ WAStD is a data warehouse for:
 * Turtle strandings in WA, as reported to the
   Department of Biodiversity, Conservation and Attractions, WA.
 * Dugong and sea snake strandings in WA.
-* Turtle track observations, taken at sunrise after nesting (can involve nests,
-  predation, nest tags, temperature loggers, egg excavation and hatchling measurements).
+* Turtle nesting census, which counts nests and tracks on mornings after nesting nights
+  (can involve nests, tracks, predation, nest tags, temperature loggers, egg excavations,
+  hatchling measurements, hatchling emergence track measurements, light pollution observations).
 * Temperature logger asset management.
+* Turtle tagging observations.
 
 WAStD is built scalable enough to accommodate other, related, data:
 
-* Turtle tagging observations, taken of nesting turtles.
 * Cetacean (whales and dolphins) and pinniped (seals and sea lions) strandings.
+  While an integration is technically possible, the current point of truth for these
+  strandings is a different in-house database at DBCA with its own response protocols.
 
 WAStD offers as main functionalities:
 
-* A "backstage" area, through which trained and trusted data curators can enter
-  data from paper data sheets, and other curators can proofread and QA the data.
-* A landing page with an interactive map displaying the data (coming up: filters
-  to restrict the data shown, export tools).
+* A user-friendly interface to trawl through the data, do QA and data exports.
+* An access-restricted data curation portal, through which trained and trusted data curators
+  can enter data from paper data sheets, then proofread and QA the data.
 * Restricted access to the "backstage" area for trusted data consumers, where
   they can search, filter and export the raw data, but not change or delete them.
 * A RESTful API that allows authenticated users to create, update, and download
   the data.
 
-WAStD's purpose is:
 
-* To fill an existing gap in departmental infrastructure (strandings, tracks).
-* To develop requirements for an integrated turtle data management ecosystem
-  through using real data and real processes.
-
-WAStD will integrate in the Departmental information landscape as follows:
+WAStD integrates in the Departmental information landscape as follows:
 
 * Legacy data (starting with Turtle strandings) is manually entered from paper forms.
 * Legacy data living in legacy systems can be batch-uploaded to WAStD, initially as a read-only copy.
-* Data collected digitally can be streamed (or imported semi-automatically) into WAStD.
-* WAStD can batch-upload its data to corporate data warehouses, once they exist (e.g. BioSys).
+* Data collected digitally can be imported automatically into WAStD.
+* WAStD can batch-upload its data to other corporate data warehouses.
 * Analytical applications anwering defined management questions (informing
   monitoring reports, ministerial inquries, conservation planning decisions) can be
   built right now consuming the WAStD API, and later refactored to consume data from
   departmental data warehouses, once these become the point of truth for the data.
+* Departmental data consumers can use the R package `wastdr <https://dbca-wa.github.io/wastdr/>`_ to access
+  data directly from the WAStD API. ``wastdr`` provides working examples and extensive documentation.
 
 Departmental business related to turtle strandings:
 
@@ -112,6 +111,7 @@ The journey so far:
    data_collection/data_collection_admin
    data_collection/data_collection_training
    data_curators
+   data_qa
    data_consumers
    business_analysts
    maintainers

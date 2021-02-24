@@ -1,22 +1,25 @@
 <!-- View details -->
 {% if not hide_details %}
-<a href="{{ object.get_absolute_url }}"
-  class="mr-2 text-primary"
-  title="View entire record: {{ object }}.">
+<a href="{{ object.get_absolute_url }}" title="View entire record: {{ object }}">
+  <span class="badge badge-{{ object.status_colour }}">
   <span class="oi oi-eye" aria-hidden="true"></span>
   {% if label %}View{% endif %}
+  </span>
 </a>
 {% endif %}
 
-<span class="badge badge-{{ object.status_colour }}">
-  {% if request.user.is_staff %}
-  <a href="{{ object.absolute_admin_url }}"
-  class="text-primary text-success"
-  title="Edit and QA this record in the data curation portal">
-  <span class="oi oi-pencil" aria-hidden="true"></span>
-  {% if label %}Edit{% endif %}
-  </a>
-  {% endif %}
-  QA: {{ object.get_status_display }}
-</span>
+<!-- Edit in admin if staff and show QA level -->
+{% if request.user.is_staff %}
+<a href="{{ object.absolute_admin_url }}" title="Edit and QA this record in the data curation portal">
+  <span class="badge badge-{{ object.status_colour }}">
+    <span class="oi oi-pencil text-success" aria-hidden="true"></span>
+    {% if label %}Edit{% endif %}
+    [QA: {{ object.get_status_display }}]
+  </span>
+</a>
+{% else %}
+  <span class="badge badge-{{ object.status_colour }}">
+    [QA: {{ object.get_status_display }}]
+  </span>
+{% endif %}
 

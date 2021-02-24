@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wastd.observations.models &mdash; WAStD 0.45.10 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.46.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.45
+                0.46
               </div>
             
           
@@ -88,8 +88,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_training.html">Data collection training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_curators.html">Data curators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../data_curators.html#data-qa">Data QA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../data_curators.html#data-release">Data release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_qa.html">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_qa.html#data-release">Data release</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_consumers.html">Data consumers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../business_analysts.html">Business Analysts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
@@ -448,7 +448,8 @@
     <span class="n">SEASNAKE_SPECIES_CHOICES</span>
 
 <span class="n">SEX_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="p">(</span><span class="n">NA_VALUE</span><span class="p">,</span> <span class="s2">&quot;unknown sex&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">NA_VALUE</span><span class="p">,</span> <span class="s2">&quot;NA sex&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown sex&quot;</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">&quot;male&quot;</span><span class="p">,</span> <span class="s2">&quot;male&quot;</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">&quot;female&quot;</span><span class="p">,</span> <span class="s2">&quot;female&quot;</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">&quot;intersex&quot;</span><span class="p">,</span> <span class="s2">&quot;hermaphrodite or intersex&quot;</span><span class="p">),</span> <span class="p">)</span>
@@ -2777,54 +2778,6 @@
         <span class="sd">&quot;&quot;&quot;The encounter&#39;s timestamp.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">when</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span></div></div>
 
-<div class="viewcode-block" id="LoggerObservation"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.LoggerObservation">[docs]</a><span class="k">class</span> <span class="nc">LoggerObservation</span><span class="p">(</span><span class="n">Observation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A logger is oobserved during an Encounter.&quot;&quot;&quot;</span>
-    <span class="n">LOGGER_TYPE_DEFAULT</span> <span class="o">=</span> <span class="s1">&#39;temperature-logger&#39;</span>
-    <span class="n">LOGGER_TYPE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">LOGGER_TYPE_DEFAULT</span><span class="p">,</span> <span class="s1">&#39;Temperature Logger&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;data-logger&#39;</span><span class="p">,</span> <span class="s1">&#39;Data Logger&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;ctd-data-logger&#39;</span><span class="p">,</span> <span class="s1">&#39;Conductivity, Temperature, Depth SR data logger&#39;</span><span class="p">),</span>
-    <span class="p">)</span>
-
-    <span class="n">LOGGER_STATUS_DEFAULT</span> <span class="o">=</span> <span class="s1">&#39;resighted&#39;</span>
-    <span class="n">LOGGER_STATUS_NEW</span> <span class="o">=</span> <span class="s2">&quot;programmed&quot;</span>
-    <span class="n">LOGGER_STATUS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">LOGGER_STATUS_NEW</span><span class="p">,</span> <span class="s2">&quot;programmed&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;posted&quot;</span><span class="p">,</span> <span class="s2">&quot;posted to field team&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;deployed&quot;</span><span class="p">,</span> <span class="s2">&quot;deployed in situ&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;resighted&quot;</span><span class="p">,</span> <span class="s2">&quot;resighted in situ&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;retrieved&quot;</span><span class="p">,</span> <span class="s2">&quot;retrieved in situ&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;downloaded&quot;</span><span class="p">,</span> <span class="s2">&quot;downloaded&quot;</span><span class="p">),</span>
-    <span class="p">)</span>
-
-    <span class="n">logger_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">LOGGER_TYPE_DEFAULT</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Type&quot;</span><span class="p">),</span>
-        <span class="n">choices</span><span class="o">=</span><span class="n">LOGGER_TYPE_CHOICES</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The logger type.&quot;</span><span class="p">),</span> <span class="p">)</span>
-
-    <span class="n">deployment_status</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">LOGGER_STATUS_DEFAULT</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Status&quot;</span><span class="p">),</span>
-        <span class="n">choices</span><span class="o">=</span><span class="n">LOGGER_STATUS_CHOICES</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The logger life cycle status.&quot;</span><span class="p">),</span> <span class="p">)</span>
-
-    <span class="n">logger_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Logger ID&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The ID of a logger must be unique within the tag type.&quot;</span><span class="p">),)</span>
-
-    <span class="c1"># comments = models.TextField(</span>
-    <span class="c1">#     verbose_name=_(&quot;Comment&quot;),</span>
-    <span class="c1">#     blank=True, null=True,</span>
-    <span class="c1">#     help_text=_(&quot;Comments&quot;), )</span>
-
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Class opts.&quot;&quot;&quot;</span>
-        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Logger Observation&quot;</span></div>
 
 
 <div class="viewcode-block" id="MediaAttachment"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.MediaAttachment">[docs]</a><span class="k">class</span> <span class="nc">MediaAttachment</span><span class="p">(</span><span class="n">Observation</span><span class="p">):</span>
@@ -4175,6 +4128,56 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">u</span><span class="s2">&quot;Logger at </span><span class="si">{0}</span><span class="s2"> mm depth&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">depth_mm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LoggerObservation"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.LoggerObservation">[docs]</a><span class="k">class</span> <span class="nc">LoggerObservation</span><span class="p">(</span><span class="n">Observation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A logger is oobserved during an Encounter.&quot;&quot;&quot;</span>
+    <span class="n">LOGGER_TYPE_DEFAULT</span> <span class="o">=</span> <span class="s1">&#39;temperature-logger&#39;</span>
+    <span class="n">LOGGER_TYPE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">LOGGER_TYPE_DEFAULT</span><span class="p">,</span> <span class="s1">&#39;Temperature Logger&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;data-logger&#39;</span><span class="p">,</span> <span class="s1">&#39;Data Logger&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;ctd-data-logger&#39;</span><span class="p">,</span> <span class="s1">&#39;Conductivity, Temperature, Depth SR Data Logger&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">LOGGER_STATUS_DEFAULT</span> <span class="o">=</span> <span class="s1">&#39;resighted&#39;</span>
+    <span class="n">LOGGER_STATUS_NEW</span> <span class="o">=</span> <span class="s2">&quot;programmed&quot;</span>
+    <span class="n">LOGGER_STATUS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">LOGGER_STATUS_NEW</span><span class="p">,</span> <span class="s2">&quot;programmed&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;posted&quot;</span><span class="p">,</span> <span class="s2">&quot;posted to field team&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;deployed&quot;</span><span class="p">,</span> <span class="s2">&quot;deployed in situ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;resighted&quot;</span><span class="p">,</span> <span class="s2">&quot;resighted in situ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;retrieved&quot;</span><span class="p">,</span> <span class="s2">&quot;retrieved in situ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;downloaded&quot;</span><span class="p">,</span> <span class="s2">&quot;downloaded&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">logger_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">LOGGER_TYPE_DEFAULT</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Type&quot;</span><span class="p">),</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">LOGGER_TYPE_CHOICES</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The logger type.&quot;</span><span class="p">),</span> <span class="p">)</span>
+
+    <span class="n">deployment_status</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">LOGGER_STATUS_DEFAULT</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Status&quot;</span><span class="p">),</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">LOGGER_STATUS_CHOICES</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The logger life cycle status.&quot;</span><span class="p">),</span> <span class="p">)</span>
+
+    <span class="n">logger_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Logger ID&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The ID of a logger must be unique within the tag type.&quot;</span><span class="p">),)</span>
+
+    <span class="n">comments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Comment&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Comments&quot;</span><span class="p">),</span> <span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class opts.&quot;&quot;&quot;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Logger Observation&quot;</span></div>
 </pre></div>
 
            </div>
