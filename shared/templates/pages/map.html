@@ -35,7 +35,7 @@ function map_init(map, options) {
     var gj_markers = L.geoJson(
         {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
         // {clipTiles: true, unique: getUnique},
-        {style: pointstyle, pointToLayer: ptl, onEachFeature: oef}
+        {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll}
         );
     markers.addLayer(gj_markers);
     map.addLayer(markers);

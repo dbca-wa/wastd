@@ -1,5 +1,6 @@
 import os
 
+import logging
 import pypandoc
 from django import template
 from django.conf import settings
@@ -9,6 +10,7 @@ from rest_framework.authtoken.models import Token
 
 from wastd.observations.models import OBSERVATION_ICONS, OBSERVATION_COLOURS, Encounter
 
+logger = logging.getLogger(__name__)
 register = template.Library()
 
 
@@ -75,6 +77,7 @@ def fa_observation_icon(observation_value):
     """
     return OBSERVATION_ICONS[observation_value]
 
+
 @register.filter
 @stringfilter
 def obs_colour(observation_value):
@@ -85,8 +88,18 @@ def obs_colour(observation_value):
     * present: primary
     * absent: secondary
     * na: dark
+
+    Key errors indicate that the obs_colour tag wasn't called on the correct instance.
+    E.g. an Encounter card was rendered with a Survey as object.
     """
-    return OBSERVATION_COLOURS[observation_value]
+    if observation_value == "":
+        observation_value = "na"
+    try:
+        col = OBSERVATION_COLOURS[observation_value]
+    except:
+        logger.warning("Not found: OBSERVATION_COLOURS key {0}".format(observation_value))
+        col = "secondary"
+    return col
 
 
 @register.filter

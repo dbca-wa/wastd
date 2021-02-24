@@ -529,6 +529,7 @@ OBSERVATION_ICONS = {
 
 OBSERVATION_COLOURS = {
     NA_VALUE: "secondary",
+    "": "secondary",
     "absent": "dark",
     "present": "primary",
     "yes": "primary",
@@ -1012,7 +1013,7 @@ class FieldMediaAttachment(models.Model):
         return force_text(self.attachment.file)
 
 
-class Survey(QualityControlMixin, geo_models.Model):
+class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
     source = models.CharField(
@@ -1251,7 +1252,7 @@ class Survey(QualityControlMixin, geo_models.Model):
         """
         survey_pks = [survey.pk for survey in self.duplicate_surveys.all()] + [self.pk]
         all_encounters = Encounter.objects.filter(survey_id__in=survey_pks)
-        msg = "Closing {0} duplicates of Survey {1}".format(len(survey_pks) - 1, self.pk)
+        msg = "Closing {0} duplicate(s) of Survey {1}.".format(len(survey_pks) - 1, self.pk)
 
         # All duplicate Surveys shall be closed (not production) and own no Encounters
         for d in self.duplicate_surveys.all():
@@ -1260,7 +1261,6 @@ class Survey(QualityControlMixin, geo_models.Model):
             d.save()
             if d.status != QualityControlMixin.STATUS_CURATED:
                 d.curate(by=actor or User.objects.get(pk=1))
-
         # From all Encounters (if any), adjust duration
         if all_encounters.count() > 0:
             earliest_enc = min([e.when for e in all_encounters])
@@ -1268,18 +1268,20 @@ class Survey(QualityControlMixin, geo_models.Model):
             latest_enc = max([e.when for e in all_encounters])
             latest_buffered = latest_enc + timedelta(minutes=30)
 
-            msg += "\n{0} combined Encounters found from duplicates between {1} and {2}".format(
+            msg += " {0} combined Encounters were found from duplicates between {1} and {2}.".format(
                 all_encounters.count(),
-                earliest_enc,
-                latest_enc
+                earliest_enc.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+                latest_enc.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z")
             )
             if earliest_enc < self.start_time:
-                msg += "\nAdjusted Survey start time from {0} to 30 mins before earliest Encounter, {1}".format(
-                    self.start_time, earliest_buffered)
+                msg += " Adjusted Survey start time from {0} to 30 mins before earliest Encounter, {1}.".format(
+                    self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+                    earliest_buffered.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"))
                 self.start_time = earliest_buffered
             if latest_enc > self.end_time:
-                msg += "\nAdjusted Survey end time from {0} to 30 mins after latest Encounter, {1}".format(
-                    self.end_time, latest_buffered)
+                msg += " Adjusted Survey end time from {0} to 30 mins after latest Encounter, {1}.".format(
+                    self.end_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+                    latest_buffered.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"))
                 self.end_time = latest_buffered
 
         # This Survey is the production survey owning all Encounters
@@ -1584,11 +1586,6 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
     preserve the data lineage.
     """
 
-    STATUS_NEW = 'new'
-    STATUS_PROOFREAD = 'proofread'
-    STATUS_CURATED = 'curated'
-    STATUS_PUBLISHED = 'published'
-
     LOCATION_DEFAULT = "1000"
     LOCATION_ACCURACY_CHOICES = (
         ("10", _("GPS reading at exact location (10 m)")),
@@ -1675,12 +1672,6 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         help_text=_("The ID of the record in the original source, or "
                     "a newly allocated ID if left blank. Delete and save "
                     "to regenerate this ID."), )
-
-    # status = FSMField(
-    #     db_index=True,
-    #     default=QualityControlMixin.STATUS_NEW,
-    #     choices=QualityControlMixin.STATUS_CHOICES,
-    #     verbose_name=_("QA Status"))
 
     where = geo_models.PointField(
         srid=4326,
@@ -1782,6 +1773,18 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
 
     # -------------------------------------------------------------------------
     # URLs
+    # Override create and update until we have front end forms
+    @classmethod
+    def create_url(cls):
+        """Create url. Default: app:model-create."""
+        return reverse('admin:{0}_{1}_add'.format(
+            cls._meta.app_label, cls._meta.model_name))
+
+    @property
+    def update_url(self):
+        """Update url. Default: app:model-update(**pk)."""
+        return ""
+
     @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
@@ -1810,6 +1813,10 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
 
     # -------------------------------------------------------------------------
     # Derived properties
+    def card_template(self):
+        return 'observations/encounter_card.html'
+
+
     @property
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""

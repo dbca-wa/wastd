@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Data curators &mdash; WAStD 0.45.10 documentation</title>
+  <title>Data curators &mdash; WAStD 0.46.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data consumers" href="data_consumers.html" />
+    <link rel="next" title="Data QA" href="data_qa.html" />
     <link rel="prev" title="Data collection training" href="data_collection/data_collection_training.html" /> 
 </head>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.45
+                0.46
               </div>
             
           
@@ -89,29 +89,6 @@
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection training</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data curators</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#conservation-actions">Conservation Actions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#threatened-fauna-occurrence">Threatened Fauna Occurrence</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#paper-form">Paper form</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#digital-form">Digital form</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#threatened-flora-occurrence">Threatened Flora Occurrence</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Paper form</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#ecological-community-occurrence">Ecological Community Occurrence</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#tec-occurrence-report-form">TEC Occurrence Report Form</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#glossary">Glossary</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#part-1-encounter-details">Part 1: Encounter details</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#part-2-the-occurrence">Part 2: The occurrence</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#part-3-location">Part 3: Location</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#part-4-attachments-and-additional-information">Part 4: Attachments and additional information</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#tec-bushland-plant-survey-recording-sheet">TEC Bushland Plant Survey Recording Sheet</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#tsc-data-entry">TSC data entry</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="#turtle-tracks-or-nests">Turtle Tracks or Nests</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#section-encounter">Section “Encounter”</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#section-nest">Section “Nest”</a></li>
@@ -147,25 +124,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#export-files">Export files</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#data-qa">Data QA</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#proofreading">Proofreading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#curating-data">Curating data</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#data-release">Data release</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#data-qa-for-turtle-track-census">Data QA for turtle track census</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#data-flow-of-surveys">Data flow of surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#flag-training-surveys">Flag training surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#double-check-reporter-names">Double-check reporter names</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#qa-survey-end-time">QA Survey end time</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#populate-team">Populate team</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#add-missing-surveys">Add missing surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#add-missing-users">Add missing users</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#curate-records-from-training-days">Curate records from training days</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html#data-release">Data release</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
@@ -256,228 +216,7 @@ The extent occupied by the species or community can be described either as a poi
 The encounter can incur any range of additional observations of the species or community,
 the location, or the surroundings.</p>
 <p>The following sections will instruct data curators how to enter data from
-supported data sources into WAStD/TSC.</p>
-<div class="section" id="conservation-actions">
-<h2>Conservation Actions<a class="headerlink" href="#conservation-actions" title="Permalink to this headline">¶</a></h2>
-<p>This section will explain business processes around Conservation Actions (CA).
-CA counteract threats.
-CA are suggested, may be liked to species, communities, documents, certain areas,
-individual occurrences (survey sites, plant populations, community boundaries),
-or any combination thereof.</p>
-</div>
-<div class="section" id="threatened-fauna-occurrence">
-<h2>Threatened Fauna Occurrence<a class="headerlink" href="#threatened-fauna-occurrence" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="paper-form">
-<h3>Paper form<a class="headerlink" href="#paper-form" title="Permalink to this headline">¶</a></h3>
-<p>This section discusses changes to the legacy paper form to streamline it for TSC use.</p>
-<p>Audience: TSC stakeholders, Species and Communities Branch.</p>
-<p>Form version: NA, long version</p>
-<ul class="simple">
-<li><p>Species ID: proof (photos, samples, text description), certainty of ID,</p></li>
-<li><p>Specimen: label, location</p></li>
-<li><p>Population Observation: number at age classes</p></li>
-<li><p>Survey: methodology, type</p></li>
-<li><p>Animal observation: secondary signs, cause of death, reproductive state</p></li>
-<li><p>Habitat: landform, veg type</p></li>
-<li><p>Fire history</p></li>
-<li><p>Associated flora species</p></li>
-<li><p>Associated communities</p></li>
-</ul>
-</div>
-<div class="section" id="digital-form">
-<h3>Digital form<a class="headerlink" href="#digital-form" title="Permalink to this headline">¶</a></h3>
-<p>Needs a lot of thought to streamline the very different scenarios in which an animal occurrence might be recorded.</p>
-</div>
-</div>
-<div class="section" id="threatened-flora-occurrence">
-<h2>Threatened Flora Occurrence<a class="headerlink" href="#threatened-flora-occurrence" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>Paper form<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>This section discusses changes to the legacy paper form to streamline it for TSC use.</p>
-<p>Audience: TSC stakeholders, Species and Communities Branch.</p>
-<p>Form version: 1.1 Jan 2012</p>
-<ul class="simple">
-<li><p>DRF permit</p></li>
-<li><p>Area assessment</p></li>
-<li><p>Quadrats</p></li>
-<li><p>Population structure</p></li>
-<li><p>Population condition</p></li>
-<li><p>Threats</p></li>
-<li><p>Habitat information</p></li>
-<li><p>Habitat condition</p></li>
-<li><p>Fire history</p></li>
-<li><p>Vegetation classification</p></li>
-<li><p>Associated species</p></li>
-</ul>
-</div>
-</div>
-<div class="section" id="ecological-community-occurrence">
-<h2>Ecological Community Occurrence<a class="headerlink" href="#ecological-community-occurrence" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="tec-occurrence-report-form">
-<h3>TEC Occurrence Report Form<a class="headerlink" href="#tec-occurrence-report-form" title="Permalink to this headline">¶</a></h3>
-<p>This section discusses changes to the legacy paper form to streamline it for TSC use.</p>
-<p>Audience: TSC stakeholders, Species and Communities Branch.</p>
-<p>Form version: 6.0 July 2013</p>
-<div class="section" id="glossary">
-<h4>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li><p>[A] Assumption</p></li>
-<li><p>[D] Derived information, can be reconstructed from other information, not required to capture. Exclude from paper form.</p></li>
-<li><p>[R] Redundant information, duplicates other information, not required to capture.</p></li>
-<li><p>[K] Keep, already implemented.</p></li>
-<li><p>[N] New, add.</p></li>
-<li><p>[X] Remove as per stakeholder advice.</p></li>
-</ul>
-</div>
-<div class="section" id="part-1-encounter-details">
-<h4>Part 1: Encounter details<a class="headerlink" href="#part-1-encounter-details" title="Permalink to this headline">¶</a></h4>
-<p>The “w”s: Who, when, where, what.</p>
-<p>Section “Community”:</p>
-<ul class="simple">
-<li><p>Community: [K][A] The data collector must know the community code.</p></li>
-<li><p>Observation date: [K] <code class="docutils literal notranslate"><span class="pre">encountered_on</span></code>.</p></li>
-<li><p>New occurrence: [D]</p></li>
-<li><p>Observers: <code class="docutils literal notranslate"><span class="pre">encountered_by</span></code> is the primary observer. [A] Clearly associated responsibility of reported information and person reporting.</p></li>
-<li><p>Role, email, organisation: [D] already in TSC. [A] every data reporter is or will be registered as user in TSC.</p></li>
-</ul>
-<p>Section “Submission”:</p>
-<ul class="simple">
-<li><p>Person submitting record [A] is that person entering record in TSC?</p></li>
-</ul>
-<p>Section “Location”:</p>
-<ul class="simple">
-<li><p>Description of location: [R] hand-waving about location is replaced with polygon or point.</p></li>
-<li><p>District, LGA, Reserve no: [D]</p></li>
-<li><p>Land manager present: [N] - what other fields are included in “Land manager attendance”?</p></li>
-<li><p>Datum: [R] default is WGS84.</p></li>
-<li><p>Coodinates: [R] replaced by polygon / point map widgets.</p></li>
-<li><p>Method used: [R] replaced by <code class="docutils literal notranslate"><span class="pre">location_accuracy</span></code>.</p></li>
-<li><p>Land tenure: [D]</p></li>
-</ul>
-<p>Section “Area assessment” – keep and migrate legacy data, no new form</p>
-<ul class="simple">
-<li><p>Type (edge, partial, full): [N] add as area types: TEC boundary (edge), TEC boundary (partial)</p></li>
-<li><p>Area observed (m2): [D] from polygon</p></li>
-<li><p>Effort: [D] from [N] survey start time / [N] survey end time</p></li>
-<li><p>Time spent per area: [D] from survey end - start time / area observed</p></li>
-</ul>
-</div>
-<div class="section" id="part-2-the-occurrence">
-<h4>Part 2: The occurrence<a class="headerlink" href="#part-2-the-occurrence" title="Permalink to this headline">¶</a></h4>
-<p>Condition, composition, threats and mitigation.</p>
-<p>Section “Condition of occurrence”:</p>
-<ul class="simple">
-<li><p>Single group. [N]</p></li>
-<li><p>Percentage of occurrence being rated on the Bush Forever scale as Decimal(2,0):</p>
-<ul>
-<li><p>Pristine</p></li>
-<li><p>Excellent</p></li>
-<li><p>Very good</p></li>
-<li><p>Good</p></li>
-<li><p>Degraded</p></li>
-<li><p>Completely degraded</p></li>
-</ul>
-</li>
-</ul>
-<p>Fields must add up to 100.</p>
-<p>Section “Associated species”:
-* Repeating group. [N] m2m to species.</p>
-<p>Section “Threats”: make compatible with IUCN criteria.</p>
-<ul class="simple">
-<li><p>Repeating group. [N]</p></li>
-<li><p>Threat [N] - category or free text?</p></li>
-<li><p>Cause / agent [X]</p></li>
-<li><p>Area affected percentage [N]</p></li>
-<li><p>Current impact severity [N] Nil, low, medium, high, extreme</p></li>
-<li><p>Potential impact severity [N] low, medium, high, extreme</p></li>
-<li><p>Potential threat onset [N] short term (whithin next 12 months), medium term (within 1-5 years), long term (after more than 5 years)</p></li>
-</ul>
-<p>Section “Recommended management actions” &amp; “Actions implemented”:</p>
-<ul class="simple">
-<li><p>Repeating groups, correspond to area management actions (including reporting).</p></li>
-</ul>
-</div>
-<div class="section" id="part-3-location">
-<h4>Part 3: Location<a class="headerlink" href="#part-3-location" title="Permalink to this headline">¶</a></h4>
-<p>Habitat, fire history.</p>
-<p>Section “Habitat information”: Add “other, see comments”, “comments”.</p>
-<ul class="simple">
-<li><p>Single group. [N]</p></li>
-<li><p>Land form: multiple select.</p></li>
-<li><p>Rock type: multiple select.</p></li>
-<li><p>Loose rock: [X], but keep legacy.</p></li>
-<li><p>Soil type: multiple select.</p></li>
-<li><p>Soil colour: multiple select.</p></li>
-<li><p>Drainage: single select.</p></li>
-<li><p>Specific landform element (see field manual) [X] but keep legacy.</p></li>
-<li><p>Soil condition -&gt; rename as soil moisture: single select.</p></li>
-<li><p>Vegetation classification: [X] but keep legacy.</p></li>
-</ul>
-<p>Section “Fire history”:</p>
-<ul class="simple">
-<li><p>Single group. [N]</p></li>
-<li><p>Last fire (date)</p></li>
-<li><p>Fire intensity (high/medium/low)</p></li>
-<li><p>No evidence of fire</p></li>
-</ul>
-</div>
-<div class="section" id="part-4-attachments-and-additional-information">
-<h4>Part 4: Attachments and additional information<a class="headerlink" href="#part-4-attachments-and-additional-information" title="Permalink to this headline">¶</a></h4>
-<p>Section “Comments”:</p>
-<ul class="simple">
-<li><p>Single group. [N]</p></li>
-<li><p>Text comments.</p></li>
-</ul>
-<p>Section “Attachments”</p>
-<ul class="simple">
-<li><p>Repeating group.</p></li>
-<li><p>File, title, category.</p></li>
-</ul>
-</div>
-</div>
-<div class="section" id="tec-bushland-plant-survey-recording-sheet">
-<h3>TEC Bushland Plant Survey Recording Sheet<a class="headerlink" href="#tec-bushland-plant-survey-recording-sheet" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>Encounter</p></li>
-<li><p>Location</p></li>
-<li><p>Habitat</p></li>
-<li><p>Veg structure and cover [R]</p>
-<ul>
-<li><p>life form (trees over 30m, trees 10-30m, trees &lt; 10m, mallees &gt; 8m, mallees &lt; 8m, …)</p></li>
-<li><p>cover class (select)</p></li>
-<li><p>dominant species (m2m)</p></li>
-</ul>
-</li>
-<li><p>Section “Condition of occurrence”</p></li>
-<li><p>Species presence observation</p>
-<ul>
-<li><p>Taxon</p></li>
-<li><p>Collecting ID: made up in the field, unique to collected specimen within survey</p></li>
-<li><p>Reproductive state: flowering or not etc</p></li>
-<li><p>Identified in the field or not</p></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="section" id="tsc-data-entry">
-<h3>TSC data entry<a class="headerlink" href="#tsc-data-entry" title="Permalink to this headline">¶</a></h3>
-<p>This section explains how to use the TSC data entry forms.</p>
-<p>Coming soon.</p>
-<p>Plan:</p>
-<ul class="simple">
-<li><p>One form for each part.</p></li>
-<li><p>Common fields (as per “Taxon/Community Area Encounter”) are the basic unit of an encounter with an occurrence.</p></li>
-<li><p>Additional groups are added as separate forms to the basic encounter.</p></li>
-</ul>
-<p>Occurrences can be reported</p>
-<ul class="simple">
-<li><p>from the home page (any species or community),</p></li>
-<li><p>from a species or community detail page (the species or community is then already prefilled),</p></li>
-<li><p>from a species or community area, such as a flora (sub)population or a TEC boundary (area “code” which links occurrence to that area is then also prefilled).</p></li>
-</ul>
-<p>Each occurrence has a detail page (coming soon), where additional data can be added (such as habitat information, fire history, etc).</p>
-</div>
-</div>
+supported data sources into WAStD.</p>
 <div class="section" id="turtle-tracks-or-nests">
 <h2>Turtle Tracks or Nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline">¶</a></h2>
 <p>If data is not captured via the digital forms, it is still possible to enter data manually.</p>
@@ -780,7 +519,6 @@ a “thank you” email including the known history of the animal.</p>
 </div>
 <div class="section" id="turtle-tracks">
 <h2>Turtle Tracks<a class="headerlink" href="#turtle-tracks" title="Permalink to this headline">¶</a></h2>
-<p>Track count production data are currently captured by the Ningaloo Turtle Program’s Access database.</p>
 <p>Turtle Track Tally data in WAStD:</p>
 <ul class="simple">
 <li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/">new (simple) Encounter</a>.</p></li>
@@ -820,23 +558,11 @@ a “thank you” email including the known history of the animal.</p>
 </div>
 <div class="section" id="data-upload-from-odk">
 <h1>Data upload from ODK<a class="headerlink" href="#data-upload-from-odk" title="Permalink to this headline">¶</a></h1>
-<p>To upload data from ODK, a curator hits “Import ODKA” in WAStD’s main menu.
-This will automatically read all form definitions published on our own ODK Aggregate
-server, retrieve all not yet downloaded form submissions, then ingest each into WAStD
-using the Django ORM API. This code runs from inside WAStD’s application code.</p>
-<p>In future, this functionality will be exposed through WAStD’s API, so that the data
-ingest can be triggered from a scheduled cron-job.</p>
-<p>A better way of ingesting data would be to have a nice writeable API in WAStD (coming soon), and
-to ETL data from ODK-A to WAStD from an outside script.
-Implementing this solution requires some more work on exposing WAStD’s
-mildly tricky data model (polymorphic inheritance) through the API (django-restframework).</p>
-<p>The remaining section documents how data from digital data collection forms was ingested previously.
-ODK forms are undergoing improvements, and therefore are versioned.</p>
-<p>On the ODK Aggregate server, the administrator opens the “Submissions &gt; Filter
-submissios” tab and selects “Export” to “JSON”. Under “Exported submissions”,
-the administrator downloads the JSON file (once ready).</p>
+<p>All electronically captured data from ODK is imported in a scripted and automated process
+using the R package <a class="reference external" href="https://github.com/dbca-wa/etlTurtleNesting">etlTurtleNesting</a>.</p>
 <div class="section" id="export-files">
 <h2>Export files<a class="headerlink" href="#export-files" title="Permalink to this headline">¶</a></h2>
+<p>Note: This section is outdated.</p>
 <p>On the ODK Aggregate server <a class="reference external" href="https://dpaw-data.appspot.com/">https://dpaw-data.appspot.com/</a>:</p>
 <ul class="simple">
 <li><p>Form Management &gt; Forms List &gt; for each form: Export &gt; JSON</p></li>
@@ -883,147 +609,6 @@ This simplified process could be fully automated and run either on the prod serv
 </div>
 </div>
 </div>
-<div class="section" id="data-qa">
-<h1>Data QA<a class="headerlink" href="#data-qa" title="Permalink to this headline">¶</a></h1>
-<p>This section addresses QA operators, who have two jobs:</p>
-<ul class="simple">
-<li><p>Proofreading: compare data sheets to entered data</p></li>
-<li><p>Subject matter expertise: making sense of the data</p></li>
-</ul>
-<div class="section" id="proofreading">
-<h2>Proofreading<a class="headerlink" href="#proofreading" title="Permalink to this headline">¶</a></h2>
-<p>A literate data QA operator can proofread data by simply comparing attached files
-to the information present.
-If errors are found, data can be updated - WAStD will retain the edit history.
-Once the record is deemed “Proofread”, the QA operator clicks the transition
-“Proofread Encounter”.
-This step can be reverted by clicking the transition “Require Proofreading Encounter”.
-WAStD will keep track of each transition.</p>
-</div>
-<div class="section" id="curating-data">
-<h2>Curating data<a class="headerlink" href="#curating-data" title="Permalink to this headline">¶</a></h2>
-<p>A subject matter expert can review records and e.g. confirm species identification.
-Once the expert is satisfied that the record represents accurately the case as
-evident from attached pictures, data sheet and communications records, the transition
-“Curate Encounter” will mark the encounter as “curated”.
-The transition can be reversed with “Flag Encounter”.</p>
-</div>
-</div>
-<div class="section" id="data-release">
-<h1>Data release<a class="headerlink" href="#data-release" title="Permalink to this headline">¶</a></h1>
-<p>This section addresses data publishers, who authorise data release (mark records
-as “publication ready”) or embargo data (to prevent publication).</p>
-<p>The transition “Publish Encounter” will mark the record as “published”, but not
-actually release information to the general public. The flag serves simply to
-mark a record as “ready to publish”.
-This transition can be reversed with “Embargo Encounter”, which will push the record
-back to “curated”.</p>
-<div class="section" id="data-qa-for-turtle-track-census">
-<h2>Data QA for turtle track census<a class="headerlink" href="#data-qa-for-turtle-track-census" title="Permalink to this headline">¶</a></h2>
-<p>This section addresses the regional turtle monitoring program coordinators, who
-conduct training and supervise volunteer data collection.</p>
-<div class="section" id="data-flow-of-surveys">
-<h3>Data flow of surveys<a class="headerlink" href="#data-flow-of-surveys" title="Permalink to this headline">¶</a></h3>
-<p>WAStD creates or updates (if existing) one
-<a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/survey/">Survey</a>
-for each recorded “Site Visit Start”.
-WAStD guesses the <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/area/?area_type__exact=Site">Site</a>
-from the Site Visit Start’s Geolocation.
-WAStD tries to find a corresponding “Site Visit End”, or else sets the end time to 6 hours
-after the start time, and leaves a note in the “comments at finish”.</p>
-<p>If the data collectors forgot to record a “Site Visit Start”, the QA operator has to create
-a new Survey with start and end time before and after the recorded Encounters (Track or Treat, Fox Sake).</p>
-<p>When a Survey is saved, it finds all Encounters within its start and end time at the given Site
-and links them to itself. This link can be seen in the Encounters’ field “survey”.</p>
-<p>Since data collection unavoidably lossy and incomplete due to human error,
-QA operators (coordinators) have to:</p>
-<ul class="simple">
-<li><p>Flag training surveys (to exclude their corresponding Encounters from analysis)</p></li>
-<li><p>Double-check reporter names to QA WAStD’s automated name matching</p></li>
-<li><p>Populate “team” from “comments at start” (to allow estimating volunteer hours)</p></li>
-<li><p>QA “survey end time” and set to a realistic time where guessed (to allow estimating volunteer hours)</p></li>
-</ul>
-</div>
-<div class="section" id="flag-training-surveys">
-<h3>Flag training surveys<a class="headerlink" href="#flag-training-surveys" title="Permalink to this headline">¶</a></h3>
-<p>Surveys can be marked as training surveys by unticking the “production” checkbox.
-This allows to exclude training data from analysis.</p>
-<p>Remember to “Save and continue editing”, “proofread” and “curate” the record to
-protect it from being overwritten with the original data.</p>
-</div>
-<div class="section" id="double-check-reporter-names">
-<h3>Double-check reporter names<a class="headerlink" href="#double-check-reporter-names" title="Permalink to this headline">¶</a></h3>
-<p>Filter the Survey list to each of your sites, compare “reported by” with “comments at start”.
-WAStD leaves QA messages. Surveys requiring QA will have a “NEEDS QA” remark.</p>
-</div>
-<div class="section" id="qa-survey-end-time">
-<h3>QA Survey end time<a class="headerlink" href="#qa-survey-end-time" title="Permalink to this headline">¶</a></h3>
-<p>The end time can be incorrect for two reasons:</p>
-<ul class="simple">
-<li><p>If the data collector forgot to capture a Site Visit End, WAStD will guess the end time.</p></li>
-<li><p>If WAStD’s heuristic picked the wrong Site Visit End (likely in absence of the right one),
-the Survey’s “end” fields will be populated, but likely wrong.</p></li>
-</ul>
-<p>In the first case, WAStD leaves a “Needs QA” remark in the “Comments at finish” regarding “Survey end guessed”,
-try to set the end time to a more realistic time.</p>
-<p>Where a Survey’s <code class="docutils literal notranslate"><span class="pre">device_id</span></code> differs from <code class="docutils literal notranslate"><span class="pre">end_device_id</span></code>, the data collectors either have
-switched to the backup device, or WAStD has mismatched the Site Visit End.
-Similarly, a different <code class="docutils literal notranslate"><span class="pre">[guess_user]</span></code> comment in the Survey’s <code class="docutils literal notranslate"><span class="pre">start_comments</span></code> and <code class="docutils literal notranslate"><span class="pre">end_comments</span></code>
-can indicate a mismatch.</p>
-<p>In the case of a mismatched Site Visit End, simply delete the incorrect information from the Survey’s
-<code class="docutils literal notranslate"><span class="pre">end_comments</span></code>, save and proofread. Set <code class="docutils literal notranslate"><span class="pre">end</span> <span class="pre">time</span></code> to a sensible time, ignore the end point.</p>
-</div>
-<div class="section" id="populate-team">
-<h3>Populate team<a class="headerlink" href="#populate-team" title="Permalink to this headline">¶</a></h3>
-<p>From “Comments at start” beginning after the [guess_user] QA message, the team is listed.
-Excluding the “reporter”, add all team members to the “team” field.</p>
-<p>This in combination with an accurate Survey end time assists to accurately estimate
-the volunteer hours (hours on ground times number of volunteers)
-and survey effort (hours on ground).</p>
-<p><strong>Note</strong> Remember to “Save and continue editing”, “proofread” and “curate”
-each updated record to protect it from being overwritten with the original data.
-It is not necessary to “proofread” and “curate” unchanged records.</p>
-</div>
-<div class="section" id="add-missing-surveys">
-<h3>Add missing surveys<a class="headerlink" href="#add-missing-surveys" title="Permalink to this headline">¶</a></h3>
-<p>This currently is a job for the admin: Pivot Encounters without a survey by site and date
-and extract earliest and latest Encounter. Buffer by a few minutes, extract Encounter’s reporter,
-and create missing surveys.</p>
-</div>
-<div class="section" id="add-missing-users">
-<h3>Add missing users<a class="headerlink" href="#add-missing-users" title="Permalink to this headline">¶</a></h3>
-<p>If a person is not listed in the dropdown menus, you might need to
-<a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/users/user/add/">add a User</a> for that person.
-Use their <code class="docutils literal notranslate"><span class="pre">firstname_lastname</span></code> as username, select a password, save, then add the details.</p>
-<p>WAStD will create a new user profile at first login for each DBCA staff member, but
-the profile will miss the details</p>
-</div>
-<div class="section" id="curate-records-from-training-days">
-<h3>Curate records from training days<a class="headerlink" href="#curate-records-from-training-days" title="Permalink to this headline">¶</a></h3>
-<p>For CBB on Oct 25:
-All Tracks/Nests:
-Open TurtleNestEncounters, filter to area and date.
-<a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/turtlenestencounter/?area__id__exact=19&amp;when__month=10&amp;when__year=2020">https://wastd.dbca.wa.gov.au/admin/observations/turtlenestencounter/?area__id__exact=19&amp;when__month=10&amp;when__year=2020</a>
-For each record, set species to Hatchback, set any affiliated TurtleNestDisturbanceObservations to “test record” and curate.</p>
-<p>All Dist/Pred:
-ODK form “Dist/Pred” becomes a WAStD Encounter plus TurtleNestDisturbanceObservation.
-ODK form “Track or Nest” becomes a WAStD TurtleNestEncounter plus TurtleNestDisturbanceObservation.</p>
-<p>Open TurtleNestDisturbanceObservations, filter to area and date.
-<a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/turtlenestdisturbanceobservation/?encounter__area__id__exact=19&amp;encounter__when__month=10&amp;encounter__when__year=2020">https://wastd.dbca.wa.gov.au/admin/observations/turtlenestdisturbanceobservation/?encounter__area__id__exact=19&amp;encounter__when__month=10&amp;encounter__when__year=2020</a>
-This list will contain the (now curated and hatchbacked) TurtleNestEncounters from Track or Nest, as well as Dist/Pred forms.
-For any record that shows as status “new” or cause not “training”: open the link to the Encounter (column “encounter” on the right)
-Set species to Hatchback (if it’s a TNE), set disturbance cause to “training” and curate Encounter</p>
-<p>All MWI:
-Open AnimalEncounters, filter to area and date.
-<a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&amp;when__year=2020">https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&amp;when__year=2020</a> (no records for CBB Oct 25).
-Set species to hatchback and curate.</p>
-<p>Productivity tips:
-Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving. Close tabs by middle-click on tab header or Ctrl+w.
-Collapse WAStD form sections by clicking on the blue header, e.g. collapse “Encounter”.
-“Curate” includes saving the record. No need to “Save and continue editing”.</p>
-</div>
-</div>
-</div>
 
 
            </div>
@@ -1033,7 +618,7 @@ Collapse WAStD form sections by clicking on the blue header, e.g. collapse “En
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="data_consumers.html" class="btn btn-neutral float-right" title="Data consumers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="data_qa.html" class="btn btn-neutral float-right" title="Data QA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="data_collection/data_collection_training.html" class="btn btn-neutral float-left" title="Data collection training" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -299,6 +299,8 @@ Turtle Track or Nest / "Track or Treat"
 * 0.46 (2017-12-01)
 * 0.45 (2017-11-19)
 * 0.44 (2017-10-31) Add fan angles (early version)
+...
+* Turtle Track or Nest 1.3 (2021 in prep) Logger: add deployment status
 
 Turtle Tagging
 --------------
