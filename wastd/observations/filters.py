@@ -2,6 +2,7 @@
 """Filters for WAStD Observations."""
 # from leaflet.forms.widgets import LeafletWidget
 import rest_framework_filters as filters
+import logging
 from django.contrib.admin import SimpleListFilter
 from django.contrib.gis.db import models as geo_models
 from django.utils.translation import ugettext_lazy as _
@@ -20,6 +21,8 @@ from wastd.observations.models import (
     LoggerEncounter,
     LineTransectEncounter
 )
+
+logger = logging.getLogger(__name__)
 
 
 class SurveyFilter(FilterSet):
@@ -60,17 +63,17 @@ class SurveyFilter(FilterSet):
         # method='taxa_occurring_in_area'
     )
 
-    duplicates = BooleanFilter(
-        label="Duplicates",
-        field_name='has_duplicates',
-    )
+    # duplicates = BooleanFilter(
+    #     label="Duplicates",
+    #     field_name='has_duplicates',
+    # )
 
     class Meta:
         """Options for EncounterFilter."""
         model = Survey
         filter_overrides = FILTER_OVERRIDES
         fields = [
-            # 'area',
+            'area',
             'site',
             'no_start',
             'no_end',
