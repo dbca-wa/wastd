@@ -1035,6 +1035,14 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         verbose_name=_("Device ID"),
         help_text=_("The ID of the recording device, if available."), )
 
+    area = models.ForeignKey(
+        Area,
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        verbose_name=_("Surveyed Area"),
+        related_name="survey_area",
+        help_text=_("The general area this survey took place in."), )
+
     site = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
@@ -1293,13 +1301,23 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         logger.info(msg)
         return msg
 
+def guess_area(survey_instance):
+    """Return the first Area containing the start_location or None."""
+    if not survey_instance.start_location:
+        return None
+    else:
+        return Area.objects.filter(
+            area_type=Area.AREATYPE_LOCALITY,
+            geom__contains=survey_instance.start_location).first()
 
 def guess_site(survey_instance):
     """Return the first Area containing the start_location or None."""
-    return Area.objects.filter(
+    if not survey_instance.start_location:
+        return None
+    else:
+        return Area.objects.filter(
         area_type=Area.AREATYPE_SITE,
         geom__contains=survey_instance.start_location).first()
-
 
 def claim_end_points(survey_instance):
     """Claim SurveyEnd.
@@ -1355,8 +1373,10 @@ def survey_pre_save(sender, instance, buffer_mins=30, initial_duration_hrs = 6, 
         instance.start_time = dateparser.parse(instance.start_time)
     if type(instance.end_time) == str:
         instance.end_time = dateparser.parse(instance.end_time)
-    if instance.status == Survey.STATUS_NEW and not instance.site:
+    if not instance.site:
         instance.site = guess_site(instance)
+    if not instance.area:
+        instance.area = guess_area(instance)
     if instance.status == Survey.STATUS_NEW and not instance.end_time:
         claim_end_points(instance)
     if instance.end_time == instance.start_time + timedelta(hours=initial_duration_hrs):
@@ -1448,7 +1468,8 @@ class SurveyEnd(geo_models.Model):
 
     class Meta:
         """Class options."""
-
+        verbose_name = "Survey"
+        verbose_name_plural = "Surveys"
         ordering = ["end_location", "end_time"]
         unique_together = ("source", "source_id")
 
@@ -1782,14 +1803,14 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
 
     @property
     def update_url(self):
-        """Update url. Default: app:model-update(**pk)."""
-        return ""
+        """Update url. Redirects to admin update URL, as we don't have a front end form yet."""
+        return self.absolute_admin_url
 
     @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
         return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+            self._meta.app_label, self._meta.model_name), args=[self.pk, ])
 
     def make_rest_listurl(self, format='json'):
         """Return the API list URL in given format (default: JSON).

@@ -4,9 +4,11 @@ from __future__ import absolute_import, unicode_literals
 
 # from django import forms as django_forms
 import floppyforms as ff
+import logging
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.admin.filters import RelatedFieldListFilter
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django_select2.forms import ModelSelect2Widget
@@ -53,6 +55,18 @@ from wastd.observations.models import (
 from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS
 
 TokenAdmin.raw_id_fields = ('user',)
+logger = logging.getLogger(__name__)
+
+
+class AreaFilter(RelatedFieldListFilter):
+    def field_choices(self, field, request, model_admin):
+        return field.get_choices(include_blank=False, limit_choices_to={'area_type': Area.AREATYPE_LOCALITY})
+
+
+class SiteFilter(RelatedFieldListFilter):
+    def field_choices(self, field, request, model_admin):
+        return field.get_choices(include_blank=False, limit_choices_to={'area_type': Area.AREATYPE_SITE})
+
 
 
 class ImageThumbnailFileInput(ff.ClearableFileInput):
@@ -239,8 +253,8 @@ class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
         'encounter_status',
     )
     LIST_FILTER = (
-        'encounter__area',
-        'encounter__site',
+        ('encounter__area', AreaFilter),
+        ('encounter__site', SiteFilter),
         'encounter__status',
         'encounter__encounter_type',
     )
@@ -520,7 +534,6 @@ class TurtleDamageObservationAdmin(ObservationAdminMixin):
             'encounter__area',
             'encounter__site',
         )
-
 
 
 @admin.register(TurtleNestDisturbanceObservation)
@@ -838,12 +851,13 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     # model = Survey
     # change list
     date_hierarchy = 'start_time'
-    list_select_related = ('site', 'reporter', )
+    list_select_related = ('area', 'site', 'reporter', )
     list_display = (
         '__str__',
         'source',
         'device_id',
         'end_device_id',
+        'area',
         'site',
         'start_time',
         'end_time',
@@ -853,8 +867,16 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         'status',
         'production',
     )
-    list_filter = ('device_id', 'site', 'reporter', 'status', 'production')
+    list_filter = (
+        ('area', AreaFilter),
+        ('site', SiteFilter),
+        'reporter',
+        'status',
+        'production',
+        'device_id',
+    )
     search_fields = (
+        'area__name',
         'site__name',
         'start_comments',
         'end_comments',
@@ -873,7 +895,7 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                         'end_source_id', 'end_device_id', 'production',)}),
         (_('Location'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-             'fields': ('transect', 'start_location', 'end_location', 'site',)}),
+             'fields': ('transect', 'start_location', 'end_location', 'area', 'site',)}),
         (_('Time'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
              'fields': ('start_time', 'end_time',)}),
@@ -884,6 +906,13 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
                         )}),
     )
     inlines = [SurveyMediaAttachmentInline, CustomStateLogInline, ]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "area":
+            kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
+        if db_field.name == "site":
+            kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_SITE)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Area)
@@ -911,11 +940,15 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     date_hierarchy = 'when'
     # Filters for change_list
     list_filter = (
-        'area', 'site', 'status',
+        ('area', AreaFilter),
+        ('site', SiteFilter),
+        'status',
         # 'observer', 'reporter',
 
         'location_accuracy',
-        'encounter_type', 'source')  # 'survey',
+        'encounter_type',
+        'source'
+    )  # 'survey',
 
     # Columns for change_list, allow re-use and inserting fields
     FIRST_COLS = ('when', 'area', 'site', 'latitude', 'longitude',
@@ -989,13 +1022,17 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
             {
                 'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
                 'fields': (
-                    'area', 'site', 'survey',
+                    'area',
+                    'site',
+                    'survey',
                     'where',
                     'location_accuracy',
                     'location_accuracy_m',
                     'when',
-                    'observer', 'reporter',
-                    'source', 'source_id',
+                    'observer',
+                    'reporter',
+                    'source',
+                    'source_id',
                 )
             }
          ),
@@ -1049,6 +1086,13 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         """Make encounter type readable."""
         return obj.get_encounter_type_display()
     encounter_type_display.short_description = 'Encounter Type'
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "area":
+            kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
+        if db_field.name == "site":
+            kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_SITE)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(AnimalEncounter)
