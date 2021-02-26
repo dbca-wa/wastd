@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 """User admin."""
 from __future__ import absolute_import, unicode_literals
+import logging
 
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.shortcuts import render
 
 from .models import User
 
+logger = logging.getLogger(__name__)
 
 class MyUserChangeForm(UserChangeForm):
 
@@ -62,3 +65,11 @@ class MyUserAdmin(AuthUserAdmin):
         "email__icontains",
         "phone__icontains"
     ]
+
+    def merge_user(self, request, queryset):
+        logger.info("[SurveyAdmin.merge_user] called")
+        return render(request,
+                      'admin/merge_user.html',
+                      context={})
+
+    merge_user.short_description = "Merge User"

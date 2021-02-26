@@ -24,7 +24,7 @@ class FastUserSerializer(ModelSerializer):
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    uid_field = "username"
+    uid_field = "pk"
     model = User
     filterset_fields = ['username', 'nickname', 'email', 'aliases', 'phone']
 

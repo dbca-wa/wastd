@@ -888,6 +888,7 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     form = s2form(Survey, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     fsm_field = ['status', ]
+    actions = ['merge_user', ]
     fieldsets = (
         (_('Device'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),

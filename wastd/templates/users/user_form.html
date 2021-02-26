@@ -9,7 +9,7 @@
   <div class="row">
     <div class="col-12">
         <h1>{{ user }}</h1>
-        <form class="form-horizontal" method="post" action="{% url 'users:update' %}">
+        <form class="form-horizontal" method="post" action="{% url 'users:user-update' %}">
             {% csrf_token %}
             {{ form|crispy }}
             <div class="control-group">

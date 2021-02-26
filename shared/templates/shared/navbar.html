@@ -188,12 +188,51 @@
             Surveys
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-surveys">
-
               <a class="dropdown-item"
                  href="{% url 'observations:survey-list' %}?production=true"
                  title="Browse, filter and search all Surveys - production surveys pre-selected">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Browse all Surveys</span>
+                <span class="align-left">Production Surveys</span>
+              </a>
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">QA shortlists</h6>
+              <a class="dropdown-item"
+                 href="{% url 'observations:survey-list' %}?production=false"
+                 title="Browse, filter and search all Surveys - training surveys pre-selected">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Training Surveys</span>
+              </a>
+
+            </div>
+          </li>
+
+           <li class="nav-item dropdown">
+            <a  class="nav-link dropdown-toggle" href="/"
+              id="nav-li-users"
+              title="Users"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false">
+            <span class="oi oi-person" aria-hidden="true"></span>
+            Users
+            </a>
+            <div class="dropdown-menu" aria-labelledby="nav-li-users">
+              <a class="dropdown-item"
+                 href="{% url 'users:user-list' %}"
+                 title="Browse, filter and search all Users">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Browse all Users</span>
+              </a>
+              {# <div class="dropdown-divider"></div> #}
+              {# <h6 class="dropdown-header">QA shortlist</h6> #}
+
+            </div>
+            <div class="dropdown-menu" aria-labelledby="nav-li-users">
+              <a class="dropdown-item"
+                 href="{% url 'users:user-list' %}"
+                 title="Browse, filter and search all Users">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Browse all Users</span>
               </a>
               {# <div class="dropdown-divider"></div> #}
               {# <h6 class="dropdown-header">QA shortlist</h6> #}
@@ -244,7 +283,7 @@
              {% if request.user.is_authenticated %}
              <a class="dropdown-item"
                 title="My API Authentication"
-                href="{% url 'users:detail' request.user.username  %}">
+                href="{% url 'users:user-detail' request.user.pk  %}">
               <span class="oi oi-person align-left" aria-hidden="true"></span>
               <span class="align-left">My API Authentication</span>
               </a>
@@ -289,7 +328,6 @@
                 <span class="oi oi-beaker" aria-hidden="true"></span>
                 Data Curation Portal
               </a>
-
               {% if request.user.is_superuser %}
               <div class="dropdown-divider"></div>
               <!--  <a class="dropdown-item"
@@ -345,7 +383,7 @@
       <ul class="nav navbar-nav pull-xs-right">
         {% if request.user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">
+          <a class="nav-link" href="{% url 'users:user-detail' request.user.pk  %}">
             <span class="oi oi-person" title="Profile" aria-hidden="true"></span>
             {% trans "My Profile" %}
           </a>

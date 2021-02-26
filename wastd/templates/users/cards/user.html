@@ -1,0 +1,93 @@
+{% load observations %}
+<div class="card col-12 shadow-lg">
+  <div class="card-header">
+    <span class="float-right">{% block title_labels %}{% endblock title_labels %}</span>
+    <h5 class="card-title">
+      {% block title_row %}{{ object.name }}{% endblock title_row%}
+    </h5>
+    <h6 class="card-title text-muted">
+      {{ object.nickname }}
+      <span class="float-right">
+        {% include "observations/toggle_details.html" with object=object %}
+        {% include "shared/admin_qa.html" with object=object label=True hide_details=False %}
+      </span>
+    </h6>
+  </div>
+
+  <div class="{% if collapse_details == True %}collapse{% else %}{% endif %}" id="details{{ object.id }}">
+  <div class="card-body">
+    <div class="card-text">
+      <span class="oi oi-person" title="Aliases" aria-hidden="true"></span> {{ object.aliases | default:"-" }}
+    </div>
+    <div class="card-text">
+      <span class="oi oi-comment-square" title="Role" aria-hidden="true"></span> {{ object.role }}
+    </div>
+    <div class="card-text">
+      <span class="oi oi-briefcase" title="Affiliation" aria-hidden="true"></span> {{ object.affiliation }}
+    </div>
+    <div class="card-text">
+      <span class="oi oi-envelope-closed" aria-hidden="true"></span> {{ user.email }}
+    </div>
+    <div class="card-text">
+      <span class="oi oi-phone" aria-hidden="true"></span> {{ user.phone }}
+    </div>
+
+
+    <div class="card-text">
+      <!--
+           <a href="/api/1/encounters/?format=latex&observer={{ object.pk }}"
+                class="btn btn-primary btn-sm"
+                target="_" title="Export contributions of {% firstof object.name object.username %}">
+                <span class="oi oi-file" aria-hidden="true"></span>
+                Export all encounters observed by {% firstof object.name object.username %}
+            </a>
+      -->
+             {% if object == request.user %}
+            <a class="btn btn-primary btn-sm" href="{{ object.absolute_admin_url }}">Update my Profile</a>
+            <a class="btn btn-primary btn-sm" href="{% url 'account_email' %}">Manage my E-Mails</a>
+            {% endif %}
+      </div>
+
+      {% if object == request.user %}
+      <!-- API auth -->
+      <div class="card-text">
+          <h4>Accessing data from R</h4>
+          <p>Add to your ~/.Renviron:</p>
+          <pre>
+WASTDR_API_URL="{{ request.scheme }}://{{ request.get_host }}/api/1/"
+WASTDR_API_TOKEN="Token {{ request.user.apitoken }}"
+          </pre>
+          <p>See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.</p>
+
+          <h4>Accessing data from Python</h4>
+          <pre>
+import requests
+url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
+headers = {"Authorization": "Token {{ request.user.apitoken }}"}
+j = requests.get(url + "?format=json", headers=headers).json()
+d = requests.get(url + "?format=csv", headers=headers).content
+          </pre>
+
+          <h4>Accessing data from the command line</h4>
+          <pre>
+curl {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/?format=json -H 'Authorization: Token {{ request.user.apitoken }}'
+          </pre>
+
+      </div><!-- /.row "-->
+      <!-- End API auth -->
+      {% endif %}
+
+  </div><!-- /.card-body -->
+
+  <!--
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-12">
+        Footer content
+      </div>
+    </div>
+  </div>
+  -->
+
+  </div><!-- /#details{{ object.id }} -->
+</div><!-- /.card -->

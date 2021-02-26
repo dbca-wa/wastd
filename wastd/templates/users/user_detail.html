@@ -1,82 +1,79 @@
 {% extends "pages/base.html" %}
-{% load static %}
+{% load leaflet_tags geojson_tags static %}
 
 {% block title %}User: {{ object.username }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid" id="wrap">
-  <div class="container">
-  <div class="row">
-    <div class="col-8 col-md-12">
-      <div class="row">
-        <div class="col-12">
 
-          <h2>{{ object }}</h2>
-          <p>
-            <span class="oi oi-comment-square" aria-hidden="true"></span> {{ object.nickname }}
-            <span class="oi oi-tags" aria-hidden="true"></span> {{ object.aliases }}
-            <span class="oi oi-envelope-closed" aria-hidden="true"></span> {{ object.email }}
-            <span class="oi oi-phone" aria-hidden="true"></span> {{ object.phone }}
-            <span class="oi oi-person" aria-hidden="true"></span> {{ object.role }}
-          </p>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-12">
-          <p>
-            <a href="/api/1/encounters/?format=latex&observer={{ object.pk }}"
-                class="btn btn-primary btn-sm"
-                target="_" title="Export contributions of {% firstof object.name object.username %}">
-                <span class="oi oi-file" aria-hidden="true"></span>
-                Export all encounters observed by {% firstof object.name object.username %}
-            </a>
-          </p>
-        </div>
-      </div>
-
-      {% if object == request.user %}
-      <!-- Action buttons -->
-      <div class="row">
-        <div class="col-12">
-          <p>
-            <a class="btn btn-primary" href="{% url 'users:update' %}">My Info</a>
-            <a class="btn btn-primary" href="{% url 'account_email' %}">E-Mail</a>
-          </p>
-        </div>
-      </div>
-      <!-- End Action buttons -->
-      <!-- API auth -->
-      <div class="row">
-        <div class="col-12">
-          <h2>Accessing data from R</h2>
-          <p>Add to your ~/.Renviron:</p>
-          <pre>
-WASTDR_API_URL="{{ request.scheme }}://{{ request.get_host }}/api/1/"
-WASTDR_API_TOKEN="Token {{ request.user.apitoken }}"
-          </pre>
-          <p>See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.</p>
-
-          <h2>Accessing data from Python</h2>
-          <pre>
-import requests
-url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
-headers = {"Authorization": "Token {{ request.user.apitoken }}"}
-j = requests.get(url + "?format=json", headers=headers).json()
-d = requests.get(url + "?format=csv", headers=headers).content
-          </pre>
-
-          <h2>Accessing data from the command line</h2>
-          <pre>
-curl {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/?format=json -H 'Authorization: Token {{ request.user.apitoken }}'
-          </pre>
-        </div>
-      </div><!-- /.row "-->
-      <!-- End API auth -->
-      {% endif %}
-
-    </div><!-- .col-8 -->
-  </div><!-- .row -->
+ <!-- breadcrumbs.html-->
+<div class="row">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'home' %}">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'users:user-list' %}">Users</a>
+      </li>
+      <li class="breadcrumb-item active">
+        <a href="">{{ object }}</a>
+      </li>
+    </ol>
+  </nav>
 </div>
-</div><!-- /.container -->
+<!-- /breadcrumbs.html -->
+
+  <div class="row" id="obj-detail-main">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-8">
+      {% include object.card_template %}
+    </div><!-- .col -->
+    <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
+      <div>
+        {% leaflet_map "detailmap" callback="window.map_init" %}
+      </div>
+    </div><!-- /.col#occ-map -->
+  </div><!-- .row#id="obj-detail-main" -->
+
+
+  <div class="row mt-2" id="row-enc">
+    <div class="col-12" id="col-enc">
+      {% for enc in object.encounters_reported.all %}
+      {% include enc.card_template with object=enc %}
+      {% endfor %}
+    </div><!-- /.col-svy-enc -->
+  </div><!-- /.row-svy-enc -->
 {% endblock content %}
+
+{% block extrajs %}
+  <!-- Some widgets need JQuery to be loaded early -->
+  {% if settings.OFFLINE %}{# Serve third party libraries locally - demo mode #}
+  <script src="{% static 'offline/jquery.min.js' %}"></script>
+  {% else %}{# Serve third party libraries from CDN - production mode #}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+    crossorigin="anonymous"></script>
+  {% endif %}
+  <script type="text/javascript">
+  function map_init(map, options) {
+
+    {% include 'shared/styles.js' %}
+
+    $.getJSON("{% url 'sites-geojson' %}", function (data) {
+        L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
+    });
+
+    /* Data loading */
+
+
+    var enc_layer = L.geoJson(
+      {{ object.encounters_reported.all|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
+      { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll }
+    );
+    enc_layer.addTo(map);
+
+    map.fitBounds(enc_layer.getBounds());
+
+  };
+
+  </script>
+  {% endblock %}

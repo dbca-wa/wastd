@@ -1732,7 +1732,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         on_delete=models.SET_DEFAULT,
         default=settings.TSC_ADMIN_USER,
         verbose_name=_("Observed by"),
-        related_name="observer",
+        related_name="encounters_observed",
         help_text=_(
             "The person who encountered the subject, and executed any measurements. "
             "The observer is the source of measurement bias."))
@@ -1742,7 +1742,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         on_delete=models.SET_DEFAULT,
         default=settings.TSC_ADMIN_USER,
         verbose_name=_("Recorded by"),
-        related_name="reporter",
+        related_name="encounters_reported",
         help_text=_(
             "The person who wrote the initial data sheet in the field. "
             "The reporter is the source of handwriting and spelling errors. "))
