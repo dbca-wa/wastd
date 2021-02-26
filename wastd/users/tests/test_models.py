@@ -14,7 +14,7 @@ class TestUser(TestCase):
     def test_get_absolute_url(self):
         self.assertEqual(
             self.user.get_absolute_url(),
-            '/users/testuser/')
+            '/users/{0}/'.format(self.user.pk))
 
     def test_apitoken(self):
         t = self.user.apitoken

@@ -2,7 +2,7 @@
 {% load i18n static %}
 
 {% block extrastyle %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css"
       integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous" />
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 {% endblock %}
@@ -40,7 +40,7 @@
 <ul class="nav navbar-nav pull-xs-right">
   {% if request.user.is_authenticated %}
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">
+      <a class="nav-link" href="{% url 'users:user-detail' request.user.pk  %}">
           <i class="fa fa-user"></i>&nbsp;{% trans "My Profile" %}
       </a>
     </li>

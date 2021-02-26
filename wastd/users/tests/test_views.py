@@ -23,10 +23,10 @@ class TestUserRedirectView(BaseUserTestCase):
         request.user = self.user
         # Attach the request to the view
         view.request = request
-        # Expect: '/users/<username>/'
+        # Expect: '/users/<pk>/'
         self.assertEqual(
             view.get_redirect_url(),
-            '/users/{0}/'.format(self.user.username)
+            '/users/{0}/'.format(self.user.pk)
         )
 
 
@@ -46,10 +46,10 @@ class TestUserUpdateView(BaseUserTestCase):
         self.view.request = request
 
     def test_get_success_url(self):
-        """Expect: '/users/<username>/'"""
+        """Expect: '/users/<pk>/'"""
         self.assertEqual(
             self.view.get_success_url(),
-            '/users/{0}/'.format(self.user.username)
+            '/users/{0}/'.format(self.user.pk)
         )
 
     def test_get_object(self):

@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals
 import logging
 import uuid
 
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import options
 # from django.template import loader, TemplateDoesNotExist
@@ -17,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 
-from wastd.users.models import User
+# from wastd.users.models import User
 
 # import urllib
 # import slugify
@@ -223,7 +224,7 @@ class ObservationAuditMixin(models.Model):
                     "entered in the local time zone GMT+08 (Perth/Australia)."))
 
     encountered_by = models.ForeignKey(
-        User,
+        get_user_model(),
         on_delete=models.PROTECT,
         verbose_name=_("Encountered by"),
         blank=True, null=True,
