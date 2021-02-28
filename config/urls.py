@@ -40,10 +40,10 @@ urlpatterns = [
     path('adminactions/', include('adminactions.urls')),
     path('select2/', include('django_select2.urls')),
 
-    # TSC tax, cons, occ
-    path('', include(('taxonomy.urls'), namespace='taxonomy')),
-    path('conservation/', include(('conservation.urls'), namespace='conservation')),
-    path('occurrence/', include(('occurrence.urls'), namespace='occurrence')),
+    # # TSC tax, cons, occ
+    # path('', include(('taxonomy.urls'), namespace='taxonomy')),
+    # path('conservation/', include(('conservation.urls'), namespace='conservation')),
+    # path('occurrence/', include(('occurrence.urls'), namespace='occurrence')),
 
     # WAStD Encounters
     path('encounters/', wastd_views.EncounterTableView.as_view(), name="encounter_list"),

@@ -10,6 +10,12 @@
       <span class="float-right">
         {% include "observations/toggle_details.html" with object=object %}
         {% include "shared/admin_qa.html" with object=object label=True hide_details=False %}
+        <a href="{% url 'users:user-merge' %}" title="Merge this user profile into another one">
+          <span class="badge badge-warning">
+            <span class="oi oi-pencil text-success" aria-hidden="true"></span>
+            Merge
+          </span>
+        </a>
       </span>
     </h6>
   </div>
@@ -31,7 +37,6 @@
     <div class="card-text">
       <span class="oi oi-phone" aria-hidden="true"></span> {{ user.phone }}
     </div>
-
 
     <div class="card-text">
       <!--

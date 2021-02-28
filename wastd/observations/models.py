@@ -1062,6 +1062,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         User,
         on_delete=models.SET_DEFAULT,
         default=settings.TSC_ADMIN_USER,
+        related_name="reported_surveys",
         verbose_name=_("Recorded by"),
         blank=True, null=True,
         help_text=_(
