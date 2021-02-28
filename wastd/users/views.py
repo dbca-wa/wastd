@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views.generic import DetailView, ListView, RedirectView, UpdateView, FormView
-
+from django.http import HttpResponseRedirect
 from .models import User
 from .forms import MergeForm
 from .filters import UserFilter
@@ -64,9 +64,7 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
     def get_redirect_url(self):
         """Get redirect url: user detail."""
-        return reverse("users:user-detail",
-                       kwargs={"pk": self.request.user.pk}
-                       )
+        return reverse("users:user-detail", kwargs={"pk": self.request.user.pk})
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
@@ -94,10 +92,42 @@ class MergeView(FormView):
     template_name = 'pages/default_form.html'
     form_class = MergeForm
 
+    def get_initial(self):
+        """
+        Set initial user choices to old or new user if provided.
+
+        This View can be used and populated from three URLs,
+        providing no User PK, only the old, or both User PKs.
+        """
+        initial = super().get_initial()
+        if "old_pk" in self.kwargs:
+            initial['old'] = User.objects.get(pk=self.kwargs["old_pk"])
+        if "new_pk" in self.kwargs:
+            initial['new'] = User.objects.get(pk=self.kwargs["new_pk"])
+        return initial
+
     def form_valid(self, form):
         """Transfer user, show result as success message, return to new user's detail."""
-        logger.info("[wastd.users.forms.MergeView.form_valid] transfer_user {0} to {1}".format(form.cleaned_data["old"], form.cleaned_data["new"]))
         msg = transfer_user(form.cleaned_data["old"], form.cleaned_data["new"])
         messages.success(self.request, msg)
         self.success_url = reverse("users:user-detail", kwargs={"pk": form.cleaned_data["new"].pk})
         return super().form_valid(form)
+
+
+def merge_users(request, old_pk, new_pk):
+    """Merge two users."""
+    try:
+        old = User.objects.get(pk=old_pk)
+    except:
+        messages.error(request, "User with PK {0} not found.".format(old_pk))
+        return HttpResponseRedirect("/")
+    try:
+        new = User.objects.get(pk=new_pk)
+    except:
+        messages.error(request, "User with PK {0} not found.".format(new_pk))
+        return HttpResponseRedirect("/")
+
+    msg = transfer_user(old, new)
+    messages.success(request, msg)
+
+    return HttpResponseRedirect(reverse("users:user-detail", kwargs={"pk": new.pk}))

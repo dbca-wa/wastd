@@ -16,7 +16,7 @@ class MergeForm(forms.Form):
         widget=UserWidget()
     )
     new = forms.ModelChoiceField(
-        label="User profile to be retained",
+        label="User profile to be retained and to receive all records linked against the duplicate profile",
         queryset = User.objects.all(),
         widget=UserWidget()
     )
@@ -24,8 +24,8 @@ class MergeForm(forms.Form):
     cancel_button = Submit('cancel', 'Cancel', css_class='btn-secondary')
 
     def __init__(self, *args, **kwargs):
+        """Initialize the form with a custom layout and a crispy_forms helper."""
         super(MergeForm, self).__init__(*args, **kwargs)
-        # self.fields["old_pk"] = kwargs.get("old_pk") # TODO URL include old_pk
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Div(
@@ -41,9 +41,3 @@ class MergeForm(forms.Form):
                 )
             ),
         )
-
-    # def transfer_user(self):
-    #     logger.info(
-    #         "wastd.users.forms.MergeForm.transfer_user "
-    #         "with old user {0}, new user {1}".format(self.old, self.new))
-    #     transfer_user(self.old, self.new)
