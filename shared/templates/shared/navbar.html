@@ -223,19 +223,14 @@
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-left">Browse all Users</span>
               </a>
-              {# <div class="dropdown-divider"></div> #}
-              {# <h6 class="dropdown-header">QA shortlist</h6> #}
-
-            </div>
-            <div class="dropdown-menu" aria-labelledby="nav-li-users">
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">QA operations</h6>
               <a class="dropdown-item"
-                 href="{% url 'users:user-list' %}"
-                 title="Browse, filter and search all Users">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Browse all Users</span>
+                 href="{% url 'users:user-merge' %}"
+                 title="Merge duplicate User Profiles">
+                <span class="oi oi-people" aria-hidden="true"></span>
+                <span class="align-left">Merge Profiles</span>
               </a>
-              {# <div class="dropdown-divider"></div> #}
-              {# <h6 class="dropdown-header">QA shortlist</h6> #}
 
             </div>
           </li>

@@ -9,7 +9,7 @@ class UserWidget(ModelSelect2Widget):
     """User widget."""
 
     model = get_user_model()
-    queryset = get_user_model().objects.all()
+    # queryset = get_user_model().objects.all()
     search_fields = [
         "name__icontains",
         "username__icontains",
@@ -23,7 +23,7 @@ class UserMultipleWidget(ModelSelect2MultipleWidget):
     """User widget."""
 
     model = get_user_model()
-    queryset = get_user_model().objects.all()
+    # queryset = get_user_model().objects.all()
     search_fields = [
         "name__icontains",
         "username__icontains",
