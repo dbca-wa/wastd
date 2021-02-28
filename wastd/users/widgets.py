@@ -13,6 +13,7 @@ class UserWidget(ModelSelect2Widget):
     search_fields = [
         "name__icontains",
         "username__icontains",
+        "aliases__icontains",
         "role__icontains",
         "email__icontains"
     ]
@@ -26,6 +27,7 @@ class UserMultipleWidget(ModelSelect2MultipleWidget):
     search_fields = [
         "name__icontains",
         "username__icontains",
+        "aliases__icontains",
         "role__icontains",
         "email__icontains"
     ]

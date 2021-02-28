@@ -1,10 +1,7 @@
 {% extends "pages/base.html" %}
 {% load leaflet_tags geojson_tags static %}
-
 {% block title %}User: {{ object.username }}{% endblock %}
-
 {% block content %}
-
  <!-- breadcrumbs.html-->
 <div class="row">
   <nav aria-label="breadcrumb">
@@ -22,7 +19,6 @@
   </nav>
 </div>
 <!-- /breadcrumbs.html -->
-
   <div class="row" id="obj-detail-main">
     <div class="col-12 col-sm-12 col-md-6 col-lg-8">
       {% include object.card_template %}
@@ -33,8 +29,6 @@
       </div>
     </div><!-- /.col#occ-map -->
   </div><!-- .row#id="obj-detail-main" -->
-
-
   <div class="row mt-2" id="row-enc">
     <div class="col-12" id="col-enc">
       {% for enc in object.encounters_reported.all %}
@@ -55,25 +49,27 @@
   {% endif %}
   <script type="text/javascript">
   function map_init(map, options) {
-
     {% include 'shared/styles.js' %}
-
     $.getJSON("{% url 'sites-geojson' %}", function (data) {
         L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
     });
-
-    /* Data loading */
-
-
+    var survey_start = L.geoJson(
+      {{ object.reported_surveys.all|geojsonfeature:"label:start_location"|safe }},
+      { style: pointstyle, pointToLayer: ptl_svs, onEachFeature: oef }
+    );
+    survey_start.addTo(map);
+    var survey_end = L.geoJson(
+      {{ object.reported_surveys.all|geojsonfeature:"label:end_location"|safe }},
+      { style: pointstyle, pointToLayer: ptl_sve, onEachFeature: oef }
+    );
+    survey_end.addTo(map);
     var enc_layer = L.geoJson(
       {{ object.encounters_reported.all|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
       { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll }
     );
     enc_layer.addTo(map);
-
-    map.fitBounds(enc_layer.getBounds());
-
+  var group = new L.featureGroup([survey_start, survey_end, enc_layer]);
+  map.fitBounds(group.getBounds());
   };
-
   </script>
   {% endblock %}

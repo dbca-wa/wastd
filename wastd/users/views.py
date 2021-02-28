@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 """User views."""
 from __future__ import absolute_import, unicode_literals
+import logging
 from export_download.views import ResourceDownloadMixin
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.views.generic import DetailView, ListView, RedirectView, UpdateView
+from django.views.generic import DetailView, ListView, RedirectView, UpdateView, FormView
 
 from .models import User
+from .forms import MergeForm
 from .filters import UserFilter
+from .utils import transfer_user
 from shared.views import (
     ListViewBreadcrumbMixin,
     DetailViewBreadcrumbMixin
 )
+
+logger = logging.getLogger(__name__)
 
 
 class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequiredMixin, ListView):
@@ -36,6 +42,7 @@ class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequired
         qs = super(UserListView, self).get_queryset().order_by('username')
         return UserFilter(self.request.GET, queryset=qs).qs
 
+
 class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
     """User detail view."""
 
@@ -48,6 +55,7 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
         context = super(UserDetailView, self).get_context_data(**kwargs)
         context['collapse_details'] = False
         return context
+
 
 class UserRedirectView(LoginRequiredMixin, RedirectView):
     """User redirect view."""
@@ -71,7 +79,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
     # send the user back to their own page after a successful update
     def get_success_url(self):
-        """Success url: uer detail."""
+        """Success url: user detail."""
         return reverse("users:user-detail",
                        kwargs={"pk": self.request.user.pk}
                        )
@@ -81,40 +89,15 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         return User.objects.get(pk=self.request.user.pk)
 
 
-def transfer_user(old, new):
-    """Transfer all objects relating to a user to another user.
+class MergeView(FormView):
+    """Merge any two User profiles."""
+    template_name = 'pages/default_form.html'
+    form_class = MergeForm
 
-    Transfers all FK fields to User from old to new:
-
-    * u.reporter.all()
-    * u.observer.al()
-    * u.morphometric_handler.all()
-    * u.morphometric_recorder.all()
-    * u.tag_handler.all()
-    * u.tag_recorder.all()
-    * u.revision_set.all()
-    * u.statelog_set.all()
-    * u.expedition_team.all()
-    * u.surveyend_set.all()
-    * u.survey_set.all()
-    * u.survey_team.all()
-    * u.fileattachment_set.all()
-    * u.document_set.all()
-    """
-    raise NotImplementedError("transfer_user needs to be implemented")
-
-    for x in Encounter.objects.filter(reporter=old):
-        x.reporter = new
-        x.save()
-
-    for x in Encounter.objects.filter(observer=old):
-        x.observer = new
-        x.save()
-
-    for x in old.survey_set.all():
-        x.reporter = new
-        x.save()
-
-    for x in old.surveyend_set.all():
-        x.reporter = new
-        x.save()
+    def form_valid(self, form):
+        """Transfer user, show result as success message, return to new user's detail."""
+        logger.info("[wastd.users.forms.MergeView.form_valid] transfer_user {0} to {1}".format(form.cleaned_data["old"], form.cleaned_data["new"]))
+        msg = transfer_user(form.cleaned_data["old"], form.cleaned_data["new"])
+        messages.success(self.request, msg)
+        self.success_url = reverse("users:user-detail", kwargs={"pk": form.cleaned_data["new"].pk})
+        return super().form_valid(form)

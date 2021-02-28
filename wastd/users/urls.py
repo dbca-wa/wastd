@@ -25,4 +25,6 @@ urlpatterns = [
     # URL pattern for the UserDetailView
     path('<int:pk>/', views.UserDetailView.as_view(), name='user-detail'),
 
+    path('merge/', views.MergeView.as_view(), name="user-merge")
+
 ]

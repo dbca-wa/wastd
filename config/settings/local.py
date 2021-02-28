@@ -32,15 +32,16 @@ if os.environ.get('USE_DOCKER') == 'yes':
 
 # CACHING
 # ------------------------------------------------------------------------------
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+# Disable caching:
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
 
-    },
-    "select2": {
-        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-    }
-}
+#     },
+#     "select2": {
+#         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+#     }
+# }
 
 
 # TEMPLATES
