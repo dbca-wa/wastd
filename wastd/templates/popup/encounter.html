@@ -95,7 +95,7 @@
 
 <!--  Observations -->
 {% block encounterdetails %}{% endblock %}
-{% for obs in o.observations %}
+{% for obs in o.observations.all %}
 {{ obs.as_html|safe }}
 {% endfor %}
 

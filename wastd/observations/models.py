@@ -2749,7 +2749,7 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
         Encounter,
         on_delete=models.CASCADE,
         verbose_name=_("Encounter"),
-        related_name='encounter',
+        related_name='observations',
         help_text=("The Encounter during which the observation was made"),)
 
     class Meta:
