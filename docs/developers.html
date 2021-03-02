@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer documentation &mdash; WAStD 0.50.2 documentation</title>
+  <title>Developer documentation &mdash; WAStD 0.50.4 documentation</title>
   
 
   
@@ -1195,21 +1195,6 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="wastd.observations.models.Encounter.encounter">
-<code class="sig-name descname"><span class="pre">encounter</span></code><a class="headerlink" href="#wastd.observations.models.Encounter.encounter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the related objects manager on the reverse side of a
-many-to-one relation.</p>
-<p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
-<p>Most of the implementation is delegated to a dynamically defined manager
-class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt id="wastd.observations.models.Encounter.encounter_type">
 <code class="sig-name descname"><span class="pre">encounter_type</span></code><a class="headerlink" href="#wastd.observations.models.Encounter.encounter_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -1432,6 +1417,21 @@ object the first time, the query is executed.</p>
 <dt id="wastd.observations.models.Encounter.observation_set">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">observation_set</span></code><a class="headerlink" href="#wastd.observations.models.Encounter.observation_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manually implement the backwards relation to the Observation model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="wastd.observations.models.Encounter.observations">
+<code class="sig-name descname"><span class="pre">observations</span></code><a class="headerlink" href="#wastd.observations.models.Encounter.observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
 </dd></dl>
 
 <dl class="py attribute">

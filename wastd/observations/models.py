@@ -1661,6 +1661,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         on_delete=models.SET_NULL,
         null=True, blank=True,
         verbose_name=_("Survey"),
+        # related_name='encounters', # clashes with Survey.encounters property
         help_text=_("The survey during which this encounter happened."),)
 
     area = models.ForeignKey(

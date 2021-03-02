@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wastd.users.views &mdash; WAStD 0.50.2 documentation</title>
+  <title>wastd.users.views &mdash; WAStD 0.50.4 documentation</title>
   
 
   
@@ -216,8 +216,24 @@
         <span class="kn">from</span> <span class="nn">wastd.observations.models</span> <span class="kn">import</span> <span class="n">Survey</span><span class="p">,</span> <span class="n">Encounter</span><span class="p">,</span> <span class="n">Observation</span>
         <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">UserDetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">context</span><span class="p">[</span><span class="s1">&#39;collapse_details&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;surveys&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Survey</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">reporter_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pk&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">&quot;encounter_set&quot;</span><span class="p">,</span> <span class="s2">&quot;reporter&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">)</span>
-        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;encounters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">reporter_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pk&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">&quot;observer&quot;</span><span class="p">,</span> <span class="s2">&quot;reporter&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;surveys&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Survey</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">reporter_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pk&quot;</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
+            <span class="s2">&quot;encounter_set&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reporter&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;area&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;site&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;encounter_set__observations&quot;</span>
+        <span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;encounters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">reporter_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pk&quot;</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
+            <span class="s2">&quot;observer&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reporter&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;area&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;site&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;observations&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">context</span></div>
 
 <div class="viewcode-block" id="UserDetailView.get_object"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

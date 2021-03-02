@@ -98,7 +98,7 @@
 
 <div class="row" id="row-svy-enc">
   <div class="col-12" id="col-svy-enc">
-    {% for enc in object.encounters %}
+    {% for enc in object.encounter_set.all %}
     {% include enc.card_template with object=enc %}
     {% endfor %}
   </div><!-- /.col-svy-enc -->
@@ -136,7 +136,7 @@ function map_init(map, options) {
   survey_end.addTo(map);
 
   var enc_layer = L.geoJson(
-    {{ object.encounters|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
+    {{ object.encounter_set.all|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
     { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll }
   );
   enc_layer.addTo(map);
