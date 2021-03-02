@@ -96,7 +96,12 @@ class User(AbstractUser):
     # Representation
     def __str__(self):
         """The unicode representation."""
-        return "{0} [{1} {2}]".format(self.name, self.pk, self.username)
+        return "{0} [{1} {2}]{3}".format(
+            self.name,
+            self.pk,
+            self.username,
+            "[INACTIVE]" if not self.is_active else ""
+        )
 
     def save(self, *args, **kwargs):
         """Guess site."""

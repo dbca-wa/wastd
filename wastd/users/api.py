@@ -10,7 +10,18 @@ class UserSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("pk", "username", "name", "nickname", "aliases", "role", "email", "phone")
+        fields = (
+            "pk",
+            "username",
+            "name",
+            "nickname",
+            "aliases",
+            "role",
+            "affiliation",
+            "email",
+            "phone",
+            "is_active"
+        )
 
 
 class FastUserSerializer(ModelSerializer):
@@ -26,7 +37,7 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     uid_field = "pk"
     model = User
-    filterset_fields = ['username', 'nickname', 'email', 'aliases', 'phone']
+    filterset_fields = ['username', 'nickname', 'email', 'aliases', 'phone', 'is_active']
 
     def get_queryset(self):
         queryset = User.objects.all()

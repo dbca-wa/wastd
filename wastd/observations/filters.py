@@ -13,6 +13,7 @@ from django_filters.filters import (  # noqa
     ModelChoiceFilter, ModelMultipleChoiceFilter)
 from shared.filters import FILTER_OVERRIDES
 from wastd.observations.models import (
+    HEALTH_CHOICES,
     Area,
     Survey,
     Encounter,
@@ -124,8 +125,10 @@ class EncounterFilter(FilterSet):
         ),
         # method='taxa_occurring_in_area'
     )
+
     class Meta:
         """Options for EncounterFilter."""
+
         model = Encounter
         filter_overrides = FILTER_OVERRIDES
         fields = [
@@ -140,7 +143,10 @@ class EncounterFilter(FilterSet):
 
 class AnimalEncounterFilter(EncounterFilter):
 
+    health = MultipleChoiceFilter(choices = HEALTH_CHOICES)
+
     class Meta(EncounterFilter.Meta):
+
         model = AnimalEncounter
         fields = EncounterFilter._meta.fields + [
             'taxon',
@@ -162,6 +168,7 @@ class AnimalEncounterFilter(EncounterFilter):
 class TurtleNestEncounterFilter(EncounterFilter):
 
     class Meta(EncounterFilter.Meta):
+
         model = TurtleNestEncounter
         fields = EncounterFilter._meta.fields + [
             'species',
@@ -180,6 +187,7 @@ class TurtleNestEncounterFilter(EncounterFilter):
 class LoggerEncounterFilter(EncounterFilter):
 
     class Meta(EncounterFilter.Meta):
+
         model = LoggerEncounter
         fields = EncounterFilter._meta.fields + [
             'logger_type',
@@ -191,6 +199,7 @@ class LoggerEncounterFilter(EncounterFilter):
 class LineTransectEncounterFilter(EncounterFilter):
 
     class Meta(EncounterFilter.Meta):
+
         model = LineTransectEncounter
         fields = EncounterFilter._meta.fields + [
             'transect',
