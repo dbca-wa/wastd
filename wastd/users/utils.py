@@ -131,6 +131,9 @@ def transfer_user(old, new):
     if old.role and old.role != "":
         new.role += old.role
 
+    if not new.affiliation and old.affiliation and old.affiliation != "":
+        new.affiliation += old.affiliation
+
     if not new.email and old.email:
         new.email = old.email
 
@@ -142,6 +145,9 @@ def transfer_user(old, new):
     # ------------------------------------------------------------------------#
     # Mark the old user profile as inactive
     old.is_active = False
+    old.aliases = ""
+    old.role = ""
+    old.affiliation = ""
     old.save()
 
     # ------------------------------------------------------------------------#
