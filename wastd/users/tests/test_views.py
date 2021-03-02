@@ -44,6 +44,8 @@ class TestUserUpdateView(BaseUserTestCase):
         request.user = self.user
         # Attach the request to the view
         self.view.request = request
+        # TODO add Encounters, reconstruct missing surveys,
+        # test list and detail views (Enc, Surv, User)
 
     def test_get_success_url(self):
         """Expect: '/users/<pk>/'"""
