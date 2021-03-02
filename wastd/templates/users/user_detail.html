@@ -45,7 +45,7 @@
     <div class="tab-pane active" id="svy-tab" role="tabpanel" aria-labelledby="survey-tab">
       <div class="row mt-2" id="row-svy">
         <div class="col-12" id="col-svy">
-          {% for svy in object.reported_surveys.all %}
+          {% for svy in surveys %}
           {% include svy.card_template with object=svy %}
           {% endfor %}
         </div><!-- /.col-svy -->
@@ -54,7 +54,7 @@
     <div class="tab-pane" id="enc-rep-tab" role="tabpanel" aria-labelledby="encounter-reported-tab">
       <div class="row mt-2" id="row-enc-rep">
         <div class="col-12" id="col-enc-rep">
-          {% for enc in object.encounters_reported.all %}
+          {% for enc in encounters %}
           {% include enc.card_template with object=enc %}
           {% endfor %}
         </div><!-- /.col-enc -->
@@ -94,22 +94,26 @@
         L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
     });
     var survey_start = L.geoJson(
-      {{ object.reported_surveys.all|geojsonfeature:"label:start_location"|safe }},
+      {{ surveys|geojsonfeature:"label:start_location"|safe }},
       { style: pointstyle, pointToLayer: ptl_svs, onEachFeature: oef_wideTT }
     );
     survey_start.addTo(map);
     var survey_end = L.geoJson(
-      {{ object.reported_surveys.all|geojsonfeature:"label:end_location"|safe }},
+      {{ surveys|geojsonfeature:"label:end_location"|safe }},
       { style: pointstyle, pointToLayer: ptl_sve, onEachFeature: oef_wideTT }
     );
     survey_end.addTo(map);
     var enc_layer = L.geoJson(
-      {{ object.encounters_reported.all|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
+      {{ encounters|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
       { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_llwideTT }
     );
     enc_layer.addTo(map);
-  var group = new L.featureGroup([survey_start, survey_end, enc_layer]);
-  map.fitBounds(group.getBounds());
+    var group = new L.featureGroup([survey_start, survey_end, enc_layer]);
+    map.fitBounds(group.getBounds());
+
+    $(".zoom-map").click(function() {
+      map.flyTo([this.dataset.lat, this.dataset.lon], 18, {animate: true});
+    });
   };
   </script>
   {% endblock %}

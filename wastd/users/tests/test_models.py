@@ -7,9 +7,9 @@ class TestUser(TestCase):
         self.user = self.make_user()
 
     def test__str__(self):
-        self.assertEqual(
-            self.user.__str__(),
-            'testuser')
+        self.assertTrue(
+            self.user.username in self.user.__str__()
+        )
 
     def test_get_absolute_url(self):
         self.assertEqual(

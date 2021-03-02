@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wastd.observations.models &mdash; WAStD 0.50.0 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.50.1 documentation</title>
   
 
   
@@ -2004,7 +2004,7 @@
     <span class="k">def</span> <span class="nf">leaflet_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A string for Leaflet map marker titles. Cache me as field.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">when</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">when</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">when</span><span class="p">,</span>  <span class="c1">#,.astimezone(tz.tzlocal()).strftime(&quot;%Y-%m-%d %H:%M %Z&quot;),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_encounter_type_display</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 

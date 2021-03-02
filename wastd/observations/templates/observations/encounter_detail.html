@@ -7,7 +7,7 @@
   width: 350px; /* narrower popup */
   padding: -10px;  /* fix close button position */
 }
-.leaflet-tooltip { width: 200px; word-wrap: break-word; }
+.leaflet-tooltip { width: 300px; word-wrap: break-word; }
 </style>
 {% endblock %}
 
@@ -48,8 +48,13 @@
         </div>
 
         <div class="card-text">
-            <i class="oi oi-person" aria-hidden="true"></i>&nbsp;
-              {{ object.observer }}
+            <i class="oi oi-eye" aria-hidden="true"></i>&nbsp;
+            <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer }}</a>
+        </div>
+
+        <div class="card-text">
+            <i class="oi oi-tablet" aria-hidden="true"></i>&nbsp;
+            <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
         </div>
 
             {% block obsdetails %}

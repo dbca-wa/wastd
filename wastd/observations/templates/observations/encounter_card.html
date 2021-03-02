@@ -12,8 +12,11 @@
       <span class="oi oi-tags" aria-hidden="true"></span>
       {{ object.get_encounter_type_display }}
 
-      <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
-      {{ object.observer }}
+      <span class="oi oi-eye" title="Observed by" aria-hidden="true"></span>
+      <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer }}</a>
+
+      <span class="oi oi-tablet" title="Reported by" aria-hidden="true"></span>
+      <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
 
       <span class="float-right">
         {% include "observations/toggle_details.html" with object=object %}

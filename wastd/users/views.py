@@ -52,9 +52,32 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
     # slug_url_kwarg = "username"
 
     def get_context_data(self, **kwargs):
+        from wastd.observations.models import Survey, Encounter, Observation
         context = super(UserDetailView, self).get_context_data(**kwargs)
         context['collapse_details'] = False
+        context['surveys'] = Survey.objects.filter(reporter_id=self.kwargs["pk"]).prefetch_related("encounter_set", "reporter", "area", "site")
+        context['encounters'] = Encounter.objects.filter(reporter_id=self.kwargs["pk"]).prefetch_related("observer", "reporter", "area", "site")
         return context
+
+    def get_object(self):
+        """Get Object by pk."""
+        obj = User.objects.filter(
+            pk=self.kwargs.get("pk")
+        ).prefetch_related(
+            # "reported_surveys",
+            # "encounters_observed",
+            # "encounters_observed__reporter",
+            # "encounters_observed__observer",
+            # "encounters_reported",
+            # "encounters_reported__reporter",
+            # "encounters_reported__observer",
+            # "encounters_reported__area",
+            # "encounters_reported__site",
+
+        ).first()
+        if not obj:
+            raise Http404  # pragma: no cover
+        return obj
 
 
 class UserRedirectView(LoginRequiredMixin, RedirectView):
