@@ -10,7 +10,7 @@
       <span class="float-right">
         {% include "observations/toggle_details.html" with object=object %}
         {% include "shared/admin_qa.html" with object=object label=True hide_details=False %}
-        <a href="{% url 'users:user-merge' %}" title="Merge this user profile into another one">
+        <a href="{% url 'users:user-merge-old' old_pk=object.pk %}" title="Merge this user profile into another one">
           <span class="badge badge-warning">
             <span class="oi oi-pencil text-success" aria-hidden="true"></span>
             Merge
@@ -23,19 +23,19 @@
   <div class="{% if collapse_details == True %}collapse{% else %}{% endif %}" id="details{{ object.id }}">
   <div class="card-body">
     <div class="card-text">
-      <span class="oi oi-person" title="Aliases" aria-hidden="true"></span> {{ object.aliases | default:"-" }}
+      <span class="oi oi-person" title="Aliases" aria-hidden="true"></span> {{ object.aliases|default:"-" }}
     </div>
     <div class="card-text">
-      <span class="oi oi-comment-square" title="Role" aria-hidden="true"></span> {{ object.role }}
+      <span class="oi oi-comment-square" title="Role" aria-hidden="true"></span> {{ object.role|default:"-" }}
     </div>
     <div class="card-text">
-      <span class="oi oi-briefcase" title="Affiliation" aria-hidden="true"></span> {{ object.affiliation }}
+      <span class="oi oi-briefcase" title="Affiliation" aria-hidden="true"></span> {{ object.affiliation|default:"-" }}
     </div>
     <div class="card-text">
-      <span class="oi oi-envelope-closed" aria-hidden="true"></span> {{ user.email }}
+      <span class="oi oi-envelope-closed" aria-hidden="true"></span> {{ user.email|default:"-" }}
     </div>
     <div class="card-text">
-      <span class="oi oi-phone" aria-hidden="true"></span> {{ user.phone }}
+      <span class="oi oi-phone" aria-hidden="true"></span> {{ user.phone|default:"-" }}
     </div>
 
     <div class="card-text">

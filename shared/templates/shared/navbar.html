@@ -34,16 +34,28 @@
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">Animal Encounter flavours</h6>
               <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?health=alive"
+                 title="Browse, filter and search all encounters with healthy animals">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Healthy Animals</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?health=alive&health=alive-injured"
+                 title="Browse, filter and search all encounters with both healthy and injured animals">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Alive Animals</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?health=dead-edible&health=dead-organs-intact&health=dead-advanced&health=dead-mummified&health=dead-disarticulated"
+                 title="Browse, filter and search all encounters with dead animals">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Dead Animals</span>
+              </a>
+              <a class="dropdown-item"
                  href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging"
                  title="Browse, filter and search all Turtle Tagging encounters">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-left">Nesting turtles</span>
-              </a>
-              <a class="dropdown-item"
-                 href="{% url 'observations:animalencounter-list' %}?checked_for_injuries=present"
-                 title="Browse, filter and search all encounters with injured turtles, including tagging and strandings">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Injured Turtles</span>
               </a>
               <a class="dropdown-item"
                  href="{% url 'observations:animalencounter-list' %}?checked_for_flipper_tags=present"
@@ -141,9 +153,15 @@
 
               <a class="dropdown-item"
                  href="{% url 'observations:turtlenestencounter-list' %}?species=cheloniidae-fam"
-                 title="Browse, filter and search nests with fan angles">
+                 title="Review tracks with uncertain species ID">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 Tracks with uncertain species ID
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:turtlenestencounter-list' %}?nest_type=track-unsure"
+                 title="Review nests with uncertain nesting success">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                Nests with uncertain nesting success
               </a>
 
             </div>
@@ -168,10 +186,16 @@
                 View Marine Wildlife Incidents map
               </a>
               <a class="dropdown-item"
-                 href="{% url 'observations:animalencounter-list' %}?checked_for_injuries=present"
+                 href="{% url 'observations:animalencounter-list' %}?health=alive-injured"
                  title="Browse, filter and search all encounters with injured animals">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Browse Marine Wildlife Incidents</span>
+                <span class="align-left">Injured Animals</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'observations:animalencounter-list' %}?health=dead-edible&health=dead-organs-intact&health=dead-advanced&health=dead-mummified&health=dead-disarticulated"
+                 title="Browse, filter and search all encounters with dead animals">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Dead Animals</span>
               </a>
             </div>
             <!-- TODO add live rescues and mortalities -->
@@ -184,7 +208,7 @@
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <span class="oi oi-signpost" aria-hidden="true"></span>
             Surveys
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-surveys">
@@ -192,7 +216,7 @@
                  href="{% url 'observations:survey-list' %}?production=true"
                  title="Browse, filter and search all Surveys - production surveys pre-selected">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Production Surveys</span>
+                <span class="align-left">Browse production Surveys</span>
               </a>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">QA shortlists</h6>
@@ -200,7 +224,7 @@
                  href="{% url 'observations:survey-list' %}?production=false"
                  title="Browse, filter and search all Surveys - training surveys pre-selected">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Training Surveys</span>
+                <span class="align-left">Browse training Surveys</span>
               </a>
 
             </div>
@@ -218,10 +242,10 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-users">
               <a class="dropdown-item"
-                 href="{% url 'users:user-list' %}"
-                 title="Browse, filter and search all Users">
+                 href="{% url 'users:user-list' %}?is_active=true"
+                 title="Browse, filter and search all active Users">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Browse all Users</span>
+                <span class="align-left">Browse active Users</span>
               </a>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">QA operations</h6>
@@ -230,6 +254,12 @@
                  title="Merge duplicate User Profiles">
                 <span class="oi oi-people" aria-hidden="true"></span>
                 <span class="align-left">Merge Profiles</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'users:user-list' %}?is_active=false"
+                 title="Browse, filter and search all Users marked as duplicates or deleted">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Browse inactive Users</span>
               </a>
 
             </div>

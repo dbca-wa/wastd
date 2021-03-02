@@ -108,9 +108,11 @@ class MergeView(FormView):
 
     def form_valid(self, form):
         """Transfer user, show result as success message, return to new user's detail."""
-        msg = transfer_user(form.cleaned_data["old"], form.cleaned_data["new"])
+        old = form.cleaned_data["old"]
+        new = form.cleaned_data["new"]
+        msg = transfer_user(old, new)
         messages.success(self.request, msg)
-        self.success_url = reverse("users:user-detail", kwargs={"pk": form.cleaned_data["new"].pk})
+        self.success_url = reverse("users:user-detail", kwargs={"pk": new.pk})
         return super().form_valid(form)
 
 

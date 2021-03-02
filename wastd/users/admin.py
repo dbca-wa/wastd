@@ -42,9 +42,9 @@ class MyUserAdmin(AuthUserAdmin):
     form = MyUserChangeForm
     add_form = MyUserCreationForm
     fieldsets = (
-        ("User Profile", {"fields": ("name", "nickname", "aliases", "role", "phone")}),
+        ("User Profile", {"fields": ("name", "nickname", "aliases", "role", "affiliation", "phone")}),
     ) + AuthUserAdmin.fieldsets
-    list_filter = ("is_superuser", "is_staff")
+    list_filter = ("is_superuser", "is_staff", "is_active")
     list_display = (
         "username",
         "name",
@@ -54,7 +54,8 @@ class MyUserAdmin(AuthUserAdmin):
         "phone",
         "email",
         "is_superuser",
-        "is_staff"
+        "is_staff",
+        "is_active"
     )
     search_fields = [
         "username__icontains",
@@ -62,14 +63,7 @@ class MyUserAdmin(AuthUserAdmin):
         "nickname__icontains",
         "aliases__icontains",
         "role__icontains",
+        "affiliation__icontains",
         "email__icontains",
         "phone__icontains"
     ]
-
-    def merge_user(self, request, queryset):
-        logger.info("[SurveyAdmin.merge_user] called")
-        return render(request,
-                      'admin/merge_user.html',
-                      context={})
-
-    merge_user.short_description = "Merge User"

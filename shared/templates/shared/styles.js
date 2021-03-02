@@ -90,9 +90,21 @@ function oef(feature, layer) {
     // layer.on({mouseover: highlightFeature, click: resetHighlight});
 }
 
+function oef_wideTT(feature, layer) {
+    layer.bindTooltip(feature.properties.label, {className: 'leaflet-tooltip-wide'});
+    layer.bindPopup(feature.properties.as_html);
+    // layer.on({mouseover: highlightFeature, click: resetHighlight});
+}
+
 /* Actions taken on each feature: title, popup, info preview */
 function oef_ll(feature, layer) {
     layer.bindTooltip(feature.properties.leaflet_title);
+    layer.bindPopup(feature.properties.as_html);
+    // layer.on({mouseover: highlightFeature, click: resetHighlight});
+}
+
+function oef_llwideTT(feature, layer) {
+    layer.bindTooltip(feature.properties.leaflet_title, {className: 'leaflet-tooltip-wide'});
     layer.bindPopup(feature.properties.as_html);
     // layer.on({mouseover: highlightFeature, click: resetHighlight});
 }
