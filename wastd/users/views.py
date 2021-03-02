@@ -55,8 +55,24 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
         from wastd.observations.models import Survey, Encounter, Observation
         context = super(UserDetailView, self).get_context_data(**kwargs)
         context['collapse_details'] = False
-        context['surveys'] = Survey.objects.filter(reporter_id=self.kwargs["pk"]).prefetch_related("encounter_set", "reporter", "area", "site")
-        context['encounters'] = Encounter.objects.filter(reporter_id=self.kwargs["pk"]).prefetch_related("observer", "reporter", "area", "site")
+        context['surveys'] = Survey.objects.filter(
+            reporter_id=self.kwargs["pk"]
+        ).prefetch_related(
+            "encounter_set",
+            "reporter",
+            "area",
+            "site",
+            "encounter_set__observations"
+        )
+        context['encounters'] = Encounter.objects.filter(
+            reporter_id=self.kwargs["pk"]
+        ).prefetch_related(
+            "observer",
+            "reporter",
+            "area",
+            "site",
+            "observations"
+        )
         return context
 
     def get_object(self):
