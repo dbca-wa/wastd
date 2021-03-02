@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wastd.observations.models &mdash; WAStD 0.50.4 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.50.5 documentation</title>
   
 
   
@@ -1822,6 +1822,7 @@
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Survey&quot;</span><span class="p">),</span>
+        <span class="c1"># related_name=&#39;encounters&#39;, # clashes with Survey.encounters property</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The survey during which this encounter happened.&quot;</span><span class="p">),)</span>
 
     <span class="n">area</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
