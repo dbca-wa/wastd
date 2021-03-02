@@ -61,5 +61,6 @@ class TestUserUpdateView(BaseUserTestCase):
 
     def test_transfer_user(self):
         """Test transferring all objects owned by a user to another."""
-        with self.assertRaises(NotImplementedError):
-            transfer_user(self.user, self.user2)
+
+        transfer_user(self.user, self.user2)
+        self.assertEqual(self.user.encounters_reported.count(), 0)

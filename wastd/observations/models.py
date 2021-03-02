@@ -1843,7 +1843,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
         return "{0} {1} {2}".format(
-            self.when or '',
+            "" if not self.when else self.when,  #,.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
             self.get_encounter_type_display(),
             self.name or '')
 

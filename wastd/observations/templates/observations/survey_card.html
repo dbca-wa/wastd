@@ -14,7 +14,7 @@
       {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i' }}
 
       <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
-      {{ object.reporter }}
+      <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
 
       <span class="oi oi-spreadsheet" title="Encounters linked: {{ object.encounter_set.count }}" aria-hidden="true"></span>
       {{ object.encounter_set.count }}
