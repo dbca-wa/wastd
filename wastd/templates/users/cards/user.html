@@ -15,12 +15,14 @@
         {% else %}
         <span class="badge badge-danger" title="Inactive user profile marked as duplicate or deleted">Inactive</span>
         {% endif %}
+        {% if request.user.is_staff %}
         <a href="{% url 'users:user-merge-old' old_pk=object.pk %}" title="Merge this user profile into another one">
           <span class="badge badge-warning">
             <span class="oi oi-pencil text-success" aria-hidden="true"></span>
             Merge
           </span>
         </a>
+        {% endif %}
       </span>
     </h6>
   </div>

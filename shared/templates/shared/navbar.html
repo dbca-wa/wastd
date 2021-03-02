@@ -248,6 +248,27 @@
                 <span class="align-left">Browse active Users</span>
               </a>
               <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">QA shortlists</h6>
+              <a class="dropdown-item"
+                 href="{% url 'users:user-list' %}?is_active=false"
+                 title="Browse, filter and search all Users marked as duplicates or deleted">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Inactive Users</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'users:user-list' %}?name=%2C&is_active=true"
+                 title="Users with a comma in the name were made from team lists and need to be merged">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Users from teams (comma)</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'users:user-list' %}?username=and_&is_active=true"
+                 title="Users with an 'and' in the name were made from team lists and need to be merged">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Users from teams (and)</span>
+              </a>
+              {% if request.user.is_staff %}
+              <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">QA operations</h6>
               <a class="dropdown-item"
                  href="{% url 'users:user-merge' %}"
@@ -255,12 +276,7 @@
                 <span class="oi oi-people" aria-hidden="true"></span>
                 <span class="align-left">Merge Profiles</span>
               </a>
-              <a class="dropdown-item"
-                 href="{% url 'users:user-list' %}?is_active=false"
-                 title="Browse, filter and search all Users marked as duplicates or deleted">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
-                <span class="align-left">Browse inactive Users</span>
-              </a>
+              {% endif %}
 
             </div>
           </li>
