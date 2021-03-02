@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wastd.users.views &mdash; WAStD 0.46.0 documentation</title>
+  <title>wastd.users.views &mdash; WAStD 0.50.0 documentation</title>
   
 
   
@@ -24,7 +24,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -58,7 +57,7 @@
             
             
               <div class="version">
-                0.46
+                0.5
               </div>
             
           
@@ -163,21 +162,60 @@
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;User views.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">unicode_literals</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">export_download.views</span> <span class="kn">import</span> <span class="n">ResourceDownloadMixin</span>
 
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">messages</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth.mixins</span> <span class="kn">import</span> <span class="n">LoginRequiredMixin</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">RedirectView</span><span class="p">,</span> <span class="n">UpdateView</span>
-
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">RedirectView</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">,</span> <span class="n">FormView</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
 <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">MergeForm</span>
+<span class="kn">from</span> <span class="nn">.filters</span> <span class="kn">import</span> <span class="n">UserFilter</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">transfer_user</span>
+<span class="kn">from</span> <span class="nn">shared.views</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ListViewBreadcrumbMixin</span><span class="p">,</span>
+    <span class="n">DetailViewBreadcrumbMixin</span>
+<span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="UserDetailView"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserDetailView">[docs]</a><span class="k">class</span> <span class="nc">UserDetailView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="UserListView"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserListView">[docs]</a><span class="k">class</span> <span class="nc">UserListView</span><span class="p">(</span><span class="n">ListViewBreadcrumbMixin</span><span class="p">,</span> <span class="n">ResourceDownloadMixin</span><span class="p">,</span> <span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;User list view.&quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;pages/default_list.html&#39;</span>
+    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">filter_class</span> <span class="o">=</span> <span class="n">UserFilter</span>
+    <span class="c1"># resource_class = SurveyResource</span>
+
+<div class="viewcode-block" id="UserListView.get_context_data"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserListView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">UserListView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;collapse_details&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;list_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">UserFilter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+
+<div class="viewcode-block" id="UserListView.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">UserListView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">UserFilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">qs</span></div></div>
+
+
+<div class="viewcode-block" id="UserDetailView"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserDetailView">[docs]</a><span class="k">class</span> <span class="nc">UserDetailView</span><span class="p">(</span><span class="n">DetailViewBreadcrumbMixin</span><span class="p">,</span> <span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;User detail view.&quot;&quot;&quot;</span>
 
     <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
     <span class="c1"># These next two lines tell the view to index lookups by username</span>
-    <span class="n">slug_field</span> <span class="o">=</span> <span class="s2">&quot;username&quot;</span>
-    <span class="n">slug_url_kwarg</span> <span class="o">=</span> <span class="s2">&quot;username&quot;</span></div>
+    <span class="c1"># slug_field = &quot;username&quot;</span>
+    <span class="c1"># slug_url_kwarg = &quot;username&quot;</span>
+
+<div class="viewcode-block" id="UserDetailView.get_context_data"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">UserDetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;collapse_details&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
 
 
 <div class="viewcode-block" id="UserRedirectView"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserRedirectView">[docs]</a><span class="k">class</span> <span class="nc">UserRedirectView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">RedirectView</span><span class="p">):</span>
@@ -187,8 +225,7 @@
 
 <div class="viewcode-block" id="UserRedirectView.get_redirect_url"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserRedirectView.get_redirect_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_redirect_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get redirect url: user detail.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;users:detail&quot;</span><span class="p">,</span>
-                       <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">})</span></div></div>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;users:user-detail&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span></div></div>
 
 
 <div class="viewcode-block" id="UserUpdateView"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserUpdateView">[docs]</a><span class="k">class</span> <span class="nc">UserUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">):</span>
@@ -201,61 +238,62 @@
 
     <span class="c1"># send the user back to their own page after a successful update</span>
 <div class="viewcode-block" id="UserUpdateView.get_success_url"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserUpdateView.get_success_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_success_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Success url: uer detail.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;users:detail&quot;</span><span class="p">,</span>
-                       <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">})</span></div>
+        <span class="sd">&quot;&quot;&quot;Success url: user detail.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;users:user-detail&quot;</span><span class="p">,</span>
+                       <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">}</span>
+                       <span class="p">)</span></div>
 
 <div class="viewcode-block" id="UserUpdateView.get_object"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserUpdateView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Only get the User record for the user making the request.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="UserListView"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.UserListView">[docs]</a><span class="k">class</span> <span class="nc">UserListView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;User list view.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MergeView"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.MergeView">[docs]</a><span class="k">class</span> <span class="nc">MergeView</span><span class="p">(</span><span class="n">FormView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Merge any two User profiles.&quot;&quot;&quot;</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;pages/default_form.html&#39;</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">MergeForm</span>
 
-    <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
-    <span class="c1"># These next two lines tell the view to index lookups by username</span>
-    <span class="n">slug_field</span> <span class="o">=</span> <span class="s2">&quot;username&quot;</span>
-    <span class="n">slug_url_kwarg</span> <span class="o">=</span> <span class="s2">&quot;username&quot;</span></div>
+<div class="viewcode-block" id="MergeView.get_initial"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.MergeView.get_initial">[docs]</a>    <span class="k">def</span> <span class="nf">get_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set initial user choices to old or new user if provided.</span>
+
+<span class="sd">        This View can be used and populated from three URLs,</span>
+<span class="sd">        providing no User PK, only the old, or both User PKs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">initial</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_initial</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;old_pk&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;old&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;old_pk&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;new_pk&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;new_pk&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">initial</span></div>
+
+<div class="viewcode-block" id="MergeView.form_valid"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.MergeView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transfer user, show result as success message, return to new user&#39;s detail.&quot;&quot;&quot;</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;old&quot;</span><span class="p">]</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;new&quot;</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">transfer_user</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;users:user-detail&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="n">new</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="transfer_user"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.transfer_user">[docs]</a><span class="k">def</span> <span class="nf">transfer_user</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Transfer all objects relating to a user to another user.</span>
+<div class="viewcode-block" id="merge_users"><a class="viewcode-back" href="../../../developers.html#wastd.users.views.merge_users">[docs]</a><span class="k">def</span> <span class="nf">merge_users</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">old_pk</span><span class="p">,</span> <span class="n">new_pk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Merge two users.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">old_pk</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;User with PK </span><span class="si">{0}</span><span class="s2"> not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_pk</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">new_pk</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;User with PK </span><span class="si">{0}</span><span class="s2"> not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_pk</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
-<span class="sd">    Transfers all FK fields to User from old to new:</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">transfer_user</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
-<span class="sd">    * u.reporter.all()</span>
-<span class="sd">    * u.observer.al()</span>
-<span class="sd">    * u.morphometric_handler.all()</span>
-<span class="sd">    * u.morphometric_recorder.all()</span>
-<span class="sd">    * u.tag_handler.all()</span>
-<span class="sd">    * u.tag_recorder.all()</span>
-<span class="sd">    * u.revision_set.all()</span>
-<span class="sd">    * u.statelog_set.all()</span>
-<span class="sd">    * u.expedition_team.all()</span>
-<span class="sd">    * u.surveyend_set.all()</span>
-<span class="sd">    * u.survey_set.all()</span>
-<span class="sd">    * u.survey_team.all()</span>
-<span class="sd">    * u.fileattachment_set.all()</span>
-<span class="sd">    * u.document_set.all()</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;transfer_user needs to be implemented&quot;</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">reporter</span><span class="o">=</span><span class="n">old</span><span class="p">):</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">reporter</span> <span class="o">=</span> <span class="n">new</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">observer</span><span class="o">=</span><span class="n">old</span><span class="p">):</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">observer</span> <span class="o">=</span> <span class="n">new</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">old</span><span class="o">.</span><span class="n">survey_set</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">reporter</span> <span class="o">=</span> <span class="n">new</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">old</span><span class="o">.</span><span class="n">surveyend_set</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">reporter</span> <span class="o">=</span> <span class="n">new</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;users:user-detail&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="n">new</span><span class="o">.</span><span class="n">pk</span><span class="p">}))</span></div>
 </pre></div>
 
            </div>

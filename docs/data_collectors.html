@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Data collectors &mdash; WAStD 0.46.0 documentation</title>
+  <title>Data collectors &mdash; WAStD 0.50.0 documentation</title>
   
 
   
@@ -24,7 +24,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -58,7 +57,7 @@
             
             
               <div class="version">
-                0.46
+                0.5
               </div>
             
           
@@ -164,6 +163,8 @@
   <div class="section" id="data-collectors">
 <h1>Data collectors<a class="headerlink" href="#data-collectors" title="Permalink to this headline">¶</a></h1>
 <p>NOTE this chapter has been split up (content duplicated) into the data collection chapters for admins and collectors.</p>
+<div class="section" id="design-considerations-for-translating-datasheets-to-digital-forms">
+<h2>Design considerations for translating datasheets to digital forms<a class="headerlink" href="#design-considerations-for-translating-datasheets-to-digital-forms" title="Permalink to this headline">¶</a></h2>
 <p>Each field in the data sheets has been, and should be questioned:</p>
 <ul class="simple">
 <li><p>Is this information used in any of the analytical outputs?</p></li>
@@ -173,7 +174,7 @@ used to identify a resighted, untagged animal?</p></li>
 <li><p>Will anyone in the foreseeable future require this information?</p></li>
 </ul>
 <div class="section" id="turtle-tracks-or-nests">
-<span id="data-capture-tracks"></span><h2>Turtle tracks or nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline">¶</a></h2>
+<span id="data-capture-tracks"></span><h3>Turtle tracks or nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline">¶</a></h3>
 <p>Turtle track counts can be collected on mobile app (OpenDataKit, ODK),
 or on paper data sheets (backup if ODK unavailable).</p>
 <p>Tracks can be recorded individually (preferred) or tallied over beach sections.</p>
@@ -194,10 +195,10 @@ beaches, where the geo-referencing of individual tracks is not possible within
 the available survey time. However, individual track counts (<em>nest</em> or <em>speed run</em>)
 are preferred.</p></li>
 </ul>
+</div>
+</div>
 <div class="section" id="mobile-data-collection-using-open-data-kit">
-<h3>Mobile data collection using Open Data Kit<a class="headerlink" href="#mobile-data-collection-using-open-data-kit" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="admin-first-time-setup">
-<h4>Admin: First time setup<a class="headerlink" href="#admin-first-time-setup" title="Permalink to this headline">¶</a></h4>
+<h2>Mobile data collection using Open Data Kit<a class="headerlink" href="#mobile-data-collection-using-open-data-kit" title="Permalink to this headline">¶</a></h2>
 <p>These steps have to be run once by the ODK admin per device while online.
 Less than 10 MB will be downloaded.
 These steps can also be run by an interested data collector on their own Android
@@ -224,9 +225,6 @@ or risk data loss (e.g. “delete forms”).</p></li>
 <strong>always use your own credentials</strong> in General Settings &gt; Username/Password
 to collect data. Failure to do so <strong>will</strong> result in data loss, data corruption and
 loss of attribution.</p>
-</div>
-<div class="section" id="admin-prepare-devices-pre-field-trip">
-<h4>Admin: Prepare devices pre field trip<a class="headerlink" href="#admin-prepare-devices-pre-field-trip" title="Permalink to this headline">¶</a></h4>
 <p>For each device before a field trip, while still within WiFi:</p>
 <ul class="simple">
 <li><p>Install ODK Collect, configure:</p></li>
@@ -239,9 +237,6 @@ loss of attribution.</p>
 to username / password only.
 Do so at your own discretion (through Admin Settings) to reduce possible confusion
 and user errors.</p>
-</div>
-<div class="section" id="collector-prepare-devices-pre-survey">
-<h4>Collector: Prepare devices pre survey<a class="headerlink" href="#collector-prepare-devices-pre-survey" title="Permalink to this headline">¶</a></h4>
 <p>Ideally, the admin handing out the Android device will double-check these settings
 together with the data collector.</p>
 <ul class="simple">
@@ -259,9 +254,6 @@ GPS on only during surveys, WiFi on only during data upload.</p></li>
 E.g., the username <cite>stephen_king</cite> is not correct if spelled <cite>Stephen_King</cite>,
 <cite>StephenK</cite>, <cite>stephen king</cite>, <cite>stephen-king</cite> or <cite>stephenking</cite>.</p>
 <a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png"><img alt="Track Count work flow" src="https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png" /></a>
-</div>
-<div class="section" id="collector-collect-speed-run-data">
-<h4>Collector: Collect “speed run” data<a class="headerlink" href="#collector-collect-speed-run-data" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Walk along the high water mark on the beach until you encounter either
 an unmarked inbound track (“uptrack”) or unmarked outbound hatchling tracks.</p></li>
@@ -301,9 +293,6 @@ This gives the field supervisors a chance to review and possibly determine speci
 <p>This form will take a trained operator about 13 taps and swipes over about 15 seconds
 plus the time to take a photo.</p>
 <p>Repeat for each track.</p>
-</div>
-<div class="section" id="collect-nest-data">
-<h4>Collect “nest” data<a class="headerlink" href="#collect-nest-data" title="Permalink to this headline">¶</a></h4>
 <p>Look for both tracks (crossing your path) and nests (may be inland).</p>
 <p><strong>Track</strong> same screen as uptrack up to photo of track. Resuming from track type:</p>
 <ul class="simple">
@@ -375,18 +364,12 @@ and barcode scanners can mistakenly OCR the logger ID (from plain text).</p></li
 Enter straight carapace length in mm, straight carapace width in mm and weight in grams.</p>
 <p>This is the end of the form. Proceed to the next track or nest and repeat.</p>
 <p>At the end of the survey, turn off location services, and hand the device back to the admin.</p>
-</div>
-<div class="section" id="admin-review-data">
-<h4>Admin: Review data<a class="headerlink" href="#admin-review-data" title="Permalink to this headline">¶</a></h4>
 <p>“Edit Saved Form” lists all unfinalized forms pending review and species / nest ID:</p>
 <ul class="simple">
 <li><p>Tap once to view read-only, tap again to edit</p></li>
 <li><p>review and update data (e.g. species ID)</p></li>
 <li><p>save and mark as finalized.</p></li>
 </ul>
-</div>
-<div class="section" id="admin-upload-data">
-<h4>Admin: Upload data<a class="headerlink" href="#admin-upload-data" title="Permalink to this headline">¶</a></h4>
 <p>When surveys are done in locations where the device can return to the comforts
 of WiFi and power points daily, data can be uploaded directly to the clearinghouse.</p>
 <ul class="simple">
@@ -403,9 +386,6 @@ storage media). With the mobile device connected and “MTP file transfer” ena
 ODK data is located in either internal or SD storage in <code class="docutils literal notranslate"><span class="pre">odk/instances</span></code>.
 Each form will be stored in a separate folder, containing both the filled in form
 as XML file, and all related pictures and media.</p>
-</div>
-<div class="section" id="where-s-the-data-now">
-<h4>Where’s the data now?<a class="headerlink" href="#where-s-the-data-now" title="Permalink to this headline">¶</a></h4>
 <p>ODK Collect uploads data to the configured ODK Aggregate clearinghouse.
 In our case, this is <a class="reference external" href="https://dpaw-data.appspot.com/">https://dpaw-data.appspot.com/</a>.
 Data collectors will have received credentials to login, which are the credentials
@@ -426,11 +406,8 @@ to the initial submission on ODK Aggregate.</p>
 examples.</p>
 <p>The final analysis (in development at the time of writing) will consume
 curated data through the WAStD API.</p>
-</div>
-</div>
-</div>
 <div class="section" id="turtle-stranding">
-<span id="itp-stranding-report"></span><h2>Turtle Stranding<a class="headerlink" href="#turtle-stranding" title="Permalink to this headline">¶</a></h2>
+<span id="itp-stranding-report"></span><h3>Turtle Stranding<a class="headerlink" href="#turtle-stranding" title="Permalink to this headline">¶</a></h3>
 <p>Setup the device as described above and select the latest “Turtle Stranding” form
 in “Get blank forms”.</p>
 <p>The expected work flow is:</p>
@@ -455,12 +432,12 @@ challenge, taking a photo is invaluable, in that it cannot be taken at a later
 time, and it preserves valuable and volatile information.</p>
 </div>
 <div class="section" id="lessons-learnt-from-paper-based-field-data-collection">
-<span id="lessons-learnt-paper-based-data-capture"></span><h2>Lessons learnt from paper-based field data collection<a class="headerlink" href="#lessons-learnt-from-paper-based-field-data-collection" title="Permalink to this headline">¶</a></h2>
+<span id="lessons-learnt-paper-based-data-capture"></span><h3>Lessons learnt from paper-based field data collection<a class="headerlink" href="#lessons-learnt-from-paper-based-field-data-collection" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
 <div class="section" id="scenario-1-two-tags-applied-both-tags-recorded-incorrectly">
-<h3>Scenario 1: Two tags applied, both tags recorded incorrectly<a class="headerlink" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly" title="Permalink to this headline">¶</a></h3>
+<h2>Scenario 1: Two tags applied, both tags recorded incorrectly<a class="headerlink" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly" title="Permalink to this headline">¶</a></h2>
 <p>One turtle is encountered in two subsequent nights by two separate teams.</p>
-<div class="section" id="night-1">
-<h4>Night 1<a class="headerlink" href="#night-1" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Data entry operators “Tim” and “Natalie” were in a rush, tagged turtle with tag “WB7326”, but
 recorded next tag “WB7330” on tag dispenser as “applied new”.</p></li>
@@ -472,9 +449,6 @@ for the package of the just applied tag “…755” and recorded “…470” i
 as “applied new”.</p></li>
 <li><p>Team 1 measure CCL</p></li>
 </ul>
-</div>
-<div class="section" id="night-2">
-<h4>Night 2<a class="headerlink" href="#night-2" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Second team “Spud” and “Coral” encounter the same turtle with left flipper tag</p></li>
 </ul>
@@ -486,9 +460,6 @@ as “applied new”.</p></li>
 <li><p>They apply and record another flipper tag “WB7384” on right flipper</p></li>
 <li><p>They measure CCL and CCW</p></li>
 </ul>
-</div>
-<div class="section" id="the-aftermath">
-<h4>The aftermath<a class="headerlink" href="#the-aftermath" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Team leader “Spud” wants to lookup tag history “WB7326”, suspecting the turtle
 might originate from different nesting location, based on the fact that the
@@ -515,21 +486,18 @@ on datasheet 1 is also incorrect. The curator therefore assumes that the PIT
 tag ID of datasheet 2 is correct and adjusts datasheet 1 to report PIT tag ID
 “…755”.</p></li>
 </ul>
-</div>
-</div>
-</div>
 <div class="section" id="lessons-learnt-from-mobile-field-data-collection">
-<h2>Lessons learnt from mobile field data collection<a class="headerlink" href="#lessons-learnt-from-mobile-field-data-collection" title="Permalink to this headline">¶</a></h2>
+<h3>Lessons learnt from mobile field data collection<a class="headerlink" href="#lessons-learnt-from-mobile-field-data-collection" title="Permalink to this headline">¶</a></h3>
 <p>The choice of methodology can be driven by time availability.</p>
 <p>Example: Teams are dropped off on remote beaches and have too little time to
 identify and individually record turtle tracks (on paper or on mobile).
 In this case, a tally was kept on paper forms, as no specialised mobile app for
 tally observations was available yet.</p>
+</div>
+</div>
 <div class="section" id="devices-shoot-out">
-<h3>Devices shoot-out<a class="headerlink" href="#devices-shoot-out" title="Permalink to this headline">¶</a></h3>
+<h2>Devices shoot-out<a class="headerlink" href="#devices-shoot-out" title="Permalink to this headline">¶</a></h2>
 <p>Hands-on field testing at Thevenard and Barrow Islands Nov/Dec 2016.</p>
-<div class="section" id="general-notes">
-<h4>General notes<a class="headerlink" href="#general-notes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>There are not many rugged cases available for low end, older or exotic devices</p></li>
 <li><p>$70 charger with 6 USB outlets replaces the Great Charger Kelp Forest</p></li>
@@ -538,9 +506,6 @@ tally observations was available yet.</p>
 <li><p>$5 whiteboards plus whiteboard marker, placed in geotagged photo of any random
 observation are the best way to capture opportunistic observations</p></li>
 </ul>
-</div>
-<div class="section" id="samsung-galaxy-s2-9-7">
-<h4>Samsung Galaxy S2 9.7”<a class="headerlink" href="#samsung-galaxy-s2-9-7" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>$700 device, $150 rugged case, $50 64GB SD</p></li>
 <li><p>Office sleeves available in store, rugged cases only available online</p></li>
@@ -554,9 +519,6 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>(-) Larger size (A4 page) requires two hands to hold</p></li>
 <li><p>(-) too expensive to distribute widely or use in extreme conditions</p></li>
 </ul>
-</div>
-<div class="section" id="samsung-galaxy-s2-8">
-<h4>Samsung Galaxy S2 8”<a class="headerlink" href="#samsung-galaxy-s2-8" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>$550 device, $150 rugged case, $50 64GB SD</p></li>
 <li><p>Fits in 8” sleeve, can be balanced on one hand while operating with other.</p></li>
@@ -565,9 +527,6 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>32 GB internal storage is still plenty for data collection.</p></li>
 <li><p>(-) still too expensive to distribute widely or use in extreme conditions.</p></li>
 </ul>
-</div>
-<div class="section" id="samsung-galaxy-tab-a-7">
-<h4>Samsung Galaxy Tab A 7”<a class="headerlink" href="#samsung-galaxy-tab-a-7" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>$160 device, $30 plastic shell, $50 64GB SD</p></li>
 <li><p>Fits in 7” sleeve, large trouser pocket, can be held securely in one hand.</p></li>
@@ -577,9 +536,6 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>(-) 8GB internal storage is too small to collect data.</p></li>
 <li><p>(-) Android 5.1.1 means external SD chip does not format as internal storage.</p></li>
 </ul>
-</div>
-<div class="section" id="lenovo-tab-3-7-tb3-730f">
-<h4>Lenovo Tab 3 7” TB3-730F<a class="headerlink" href="#lenovo-tab-3-7-tb3-730f" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>$100 device, $50 64GB SD</p></li>
 <li><p>No cover in store, but device is splash-resistant.</p></li>
@@ -587,9 +543,6 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>Very fast GPS fix, faster than Samsung S2, slower than a Moto G4+ phone.</p></li>
 <li><p>Best cost-benefit for handing out in bulk.</p></li>
 </ul>
-</div>
-<div class="section" id="moto-g4-plus-phone">
-<h4>Moto G4 Plus phone<a class="headerlink" href="#moto-g4-plus-phone" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>$400 device, $4 plastic shell, $50 SD</p></li>
 <li><p>Very good mid-range 5” Android phone</p></li>
@@ -598,9 +551,6 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>Data collection works nicely</p></li>
 <li><p>Good option for work phone for front-line staff at time of writing (Dec 2016)</p></li>
 </ul>
-</div>
-<div class="section" id="general-observations">
-<h4>General observations<a class="headerlink" href="#general-observations" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>All devices were daylight-readable.</p></li>
 <li><p>All devices had sufficient battery life to support hours of data collection.</p></li>
@@ -610,20 +560,17 @@ daylight, sweaty fingers, flying sand.</p></li>
 <li><p>Best low-cost field device: Lenovo Tab 3. Runner-up: Samsung S2 8”.</p></li>
 <li><p>Strong case against Galaxy Tab A (slow GPS, low internal storage, old OS version).</p></li>
 </ul>
-</div>
-</div>
-</div>
 <div class="section" id="cost-benefit-analysis-for-digital-data-collection">
-<span id="cost-benefit-analysis-digital-data-capture"></span><h2>Cost-benefit analysis for digital data collection<a class="headerlink" href="#cost-benefit-analysis-for-digital-data-collection" title="Permalink to this headline">¶</a></h2>
+<span id="cost-benefit-analysis-digital-data-capture"></span><h3>Cost-benefit analysis for digital data collection<a class="headerlink" href="#cost-benefit-analysis-for-digital-data-collection" title="Permalink to this headline">¶</a></h3>
 <p>The following diagram is also shown at <a class="reference internal" href="business_analysts.html#dm-data-entry"><span class="std std-ref">IT processes along the Data life cycle</span></a>.</p>
 <a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png"><img alt="Turtle data flow, ideal state" src="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png" /></a>
 <p>Digital data collection provides systematic advantages over paper-based
 data collection, as it skips several work-intensive, error-prone steps
 in the data life cycle.</p>
+</div>
+</div>
 <div class="section" id="paper-based-data-collection">
-<h3>Paper-based data collection<a class="headerlink" href="#paper-based-data-collection" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="filling-in-a-paper-data-sheet">
-<h4>Filling in a paper data sheet<a class="headerlink" href="#filling-in-a-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+<h2>Paper-based data collection<a class="headerlink" href="#paper-based-data-collection" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Error sources: typos, illegible or rushed handwriting, invalid values, fields
 incorrectly filled or skipped.</p></li>
@@ -631,21 +578,14 @@ incorrectly filled or skipped.</p></li>
 GPS, PIT tag reader, barcodes for samples etc.</p></li>
 <li><p>Associating media to records is labourious and error-prone</p></li>
 </ul>
-</div>
-<div class="section" id="digitising-a-paper-data-sheet">
-<h4>Digitising a paper data sheet<a class="headerlink" href="#digitising-a-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
 <p>Data collected on paper has to be read (interpreting handwriting correctly),
 mentally mapped from datasheet to electronic form, and typed off (correctly) by
 the data entry operator.</p>
-</div>
-<div class="section" id="proof-reading-a-digital-record-against-paper-data-sheet">
-<h4>Proof-reading a digital record against paper data sheet<a class="headerlink" href="#proof-reading-a-digital-record-against-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
 <p>A second person, acting as proofreader, has to reproduce the same mental effort
 to map the paper data sheet to the electronic form and correct any errors they find.</p>
 </div>
-</div>
 <div class="section" id="digital-data-collection">
-<h3>Digital data collection<a class="headerlink" href="#digital-data-collection" title="Permalink to this headline">¶</a></h3>
+<h2>Digital data collection<a class="headerlink" href="#digital-data-collection" title="Permalink to this headline">¶</a></h2>
 <p>Digital forms can offer dropdown menus with pre-defined values to reduce sources
 of error.</p>
 <p>Digital data capture devices can reliably and easily record and associate
@@ -656,7 +596,6 @@ pressure, sleep deprivation and harsh environmental conditions.</p>
 and error-prone steps requiring human interaction.
 In addition, the data is available to QA straight away, possibly creating a
 tighter error-checking loop.</p>
-</div>
 </div>
 </div>
 

@@ -3,8 +3,8 @@ Data QA
 =======
 This section addresses QA operators, who have two jobs:
 
-* Proofreading: compare data sheets to entered data
-* Subject matter expertise: making sense of the data
+* Proofreading: Sharp eyes compare data sheets to entered data and decide when a digital record is equivalent to the written paper datasheet.
+* Curating: Subject matter experts make sense of the data and decide when a record is trustworthy.
 
 Proofreading
 ============
@@ -30,7 +30,7 @@ Data release
 This section addresses data publishers, who authorise data release (mark records
 as "publication ready") or embargo data (to prevent publication).
 
-The transition "Publish Encounter" will mark the record as "published", but not
+The transition "Publish Encounter" will mark the record as ready to be "published", but not
 actually release information to the general public. The flag serves simply to
 mark a record as "ready to publish".
 This transition can be reversed with "Embargo Encounter", which will push the record

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; WAStD 0.46.0 documentation</title>
+  <title>Index &mdash; WAStD 0.50.0 documentation</title>
   
 
   
@@ -24,7 +24,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -58,7 +57,7 @@
             
             
               <div class="version">
-                0.46
+                0.5
               </div>
             
           
@@ -195,6 +194,8 @@
         <li><a href="developers.html#wastd.observations.models.Survey.absolute_admin_url">(wastd.observations.models.Survey property)</a>
 </li>
       </ul></li>
+      <li><a href="developers.html#wastd.observations.admin.SurveyAdmin.actions">actions (wastd.observations.admin.SurveyAdmin attribute)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.AnimalEncounter.activity">activity (wastd.observations.models.AnimalEncounter attribute)</a>
 </li>
       <li><a href="developers.html#wastd.users.admin.MyUserAdmin.add_form">add_form (wastd.users.admin.MyUserAdmin attribute)</a>
@@ -219,23 +220,47 @@
 </li>
       <li><a href="developers.html#wastd.observations.admin.AnimalEncounterAdmin">AnimalEncounterAdmin (class in wastd.observations.admin)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterCreate">AnimalEncounterCreate (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterDetail">AnimalEncounterDetail (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterList">AnimalEncounterList (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTable">AnimalEncounterTable (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTable.Meta">AnimalEncounterTable.Meta (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView">AnimalEncounterTableView (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterUpdate">AnimalEncounterUpdate (class in wastd.observations.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.Area">Area (class in wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.area">area (wastd.observations.models.Encounter attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.models.Survey.area">(wastd.observations.models.Survey attribute)</a>
 </li>
-      <li><a href="developers.html#wastd.observations.admin.ObservationAdminMixin.area">area() (wastd.observations.admin.ObservationAdminMixin method)</a>
-</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developers.html#wastd.observations.admin.ObservationAdminMixin.area">area() (wastd.observations.admin.ObservationAdminMixin method)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.Area.DoesNotExist">Area.DoesNotExist</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Area.MultipleObjectsReturned">Area.MultipleObjectsReturned</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.area_id">area_id (wastd.observations.models.Encounter attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.models.Survey.area_id">(wastd.observations.models.Survey attribute)</a>
 </li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.Area.area_type">area_type (wastd.observations.models.Area attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.admin.AreaAdmin">AreaAdmin (class in wastd.observations.admin)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.admin.AreaFilter">AreaFilter (class in wastd.observations.admin)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Area.AREATYPE_CHOICES">AREATYPE_CHOICES (wastd.observations.models.Area attribute)</a>
 </li>
@@ -266,6 +291,16 @@
       <ul>
         <li><a href="developers.html#wastd.observations.models.MediaAttachment.attachment">(wastd.observations.models.MediaAttachment attribute)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.attachment">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="developers.html#wastd.observations.models.Survey.attachments">attachments (wastd.observations.models.Survey attribute)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTable.Meta.attrs">attrs (wastd.observations.views.AnimalEncounterTable.Meta attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.EncounterTable.Meta.attrs">(wastd.observations.views.EncounterTable.Meta attribute)</a>
+</li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.admin.EncounterAdmin.autocomplete_fields">autocomplete_fields (wastd.observations.admin.EncounterAdmin attribute)</a>
 </li>
@@ -275,6 +310,12 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTable.base_columns">base_columns (wastd.observations.views.AnimalEncounterTable attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.EncounterTable.base_columns">(wastd.observations.views.EncounterTable attribute)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.users.admin.MyUserChangeForm.base_fields">base_fields (wastd.users.admin.MyUserChangeForm attribute)</a>
 
       <ul>
@@ -291,10 +332,10 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleHatchlingEmergenceObservation.bearing_to_water_degrees">bearing_to_water_degrees (wastd.observations.models.TurtleHatchlingEmergenceObservation attribute)</a>
 </li>
-      <li><a href="developers.html#wastd.observations.models.AnimalEncounter.behaviour">behaviour (wastd.observations.models.AnimalEncounter attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developers.html#wastd.observations.models.AnimalEncounter.behaviour">behaviour (wastd.observations.models.AnimalEncounter attribute)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.TurtleMorphometricObservation.body_depth_accuracy">body_depth_accuracy (wastd.observations.models.TurtleMorphometricObservation attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleMorphometricObservation.body_depth_mm">body_depth_mm (wastd.observations.models.TurtleMorphometricObservation attribute)</a>
@@ -322,6 +363,8 @@
       <li><a href="developers.html#wastd.observations.models.AnimalEncounter.card_template">card_template() (wastd.observations.models.AnimalEncounter method)</a>
 
       <ul>
+        <li><a href="developers.html#wastd.observations.models.Encounter.card_template">(wastd.observations.models.Encounter method)</a>
+</li>
         <li><a href="developers.html#wastd.observations.models.LineTransectEncounter.card_template">(wastd.observations.models.LineTransectEncounter method)</a>
 </li>
         <li><a href="developers.html#wastd.observations.models.LoggerEncounter.card_template">(wastd.observations.models.LoggerEncounter method)</a>
@@ -366,11 +409,15 @@
 </li>
         <li><a href="developers.html#wastd.observations.admin.LightSourceObservationObservationInline.classes">(wastd.observations.admin.LightSourceObservationObservationInline attribute)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationInline.classes">(wastd.observations.admin.LoggerObservationInline attribute)</a>
+</li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionInline.classes">(wastd.observations.admin.ManagementActionInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.MediaAttachmentInline.classes">(wastd.observations.admin.MediaAttachmentInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.NestTagObservationInline.classes">(wastd.observations.admin.NestTagObservationInline attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.SurveyMediaAttachmentInline.classes">(wastd.observations.admin.SurveyMediaAttachmentInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.TagObservationInline.classes">(wastd.observations.admin.TagObservationInline attribute)</a>
 </li>
@@ -399,6 +446,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.users.admin.MyUserCreationForm.clean_username">clean_username() (wastd.users.admin.MyUserCreationForm method)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.models.Survey.close_duplicates">close_duplicates() (wastd.observations.models.Survey method)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.close_survey_duplicates">close_survey_duplicates() (in module wastd.observations.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.TurtleHatchlingEmergenceObservation.cloud_cover_at_emergence">cloud_cover_at_emergence (wastd.observations.models.TurtleHatchlingEmergenceObservation attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleHatchlingEmergenceObservation.cloud_cover_at_emergence_known">cloud_cover_at_emergence_known (wastd.observations.models.TurtleHatchlingEmergenceObservation attribute)</a>
@@ -425,6 +476,10 @@
         <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.comments">(wastd.observations.models.TurtleNestObservation attribute)</a>
 </li>
       </ul></li>
+      <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.context_filter_name">context_filter_name (wastd.observations.views.PagedFilteredTableView attribute)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.models.Encounter.create_url">create_url() (wastd.observations.models.Encounter class method)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.Encounter.crs">crs() (wastd.observations.models.Encounter property)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleMorphometricObservation.curved_carapace_length_accuracy">curved_carapace_length_accuracy (wastd.observations.models.TurtleMorphometricObservation attribute)</a>
@@ -497,14 +552,14 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.Area.derived_northern_extent">derived_northern_extent() (wastd.observations.models.Area property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.PathToSea.description">description (wastd.observations.models.PathToSea attribute)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.models.TurtleDamageObservation.description">(wastd.observations.models.TurtleDamageObservation attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.Survey.device_id">device_id (wastd.observations.models.Survey attribute)</a>
 
       <ul>
@@ -548,6 +603,8 @@
       <li><a href="developers.html#wastd.observations.models.DugongMorphometricObservation.MultipleObjectsReturned">DugongMorphometricObservation.MultipleObjectsReturned</a>
 </li>
       <li><a href="developers.html#wastd.observations.admin.DugongMorphometricObservationInline">DugongMorphometricObservationInline (class in wastd.observations.admin)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.models.Survey.duplicate_surveys">duplicate_surveys() (wastd.observations.models.Survey property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -641,14 +698,24 @@
 </li>
       <li><a href="developers.html#wastd.observations.admin.EncounterAdmin">EncounterAdmin (class in wastd.observations.admin)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.EncounterDetail">EncounterDetail (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.EncounterList">EncounterList (class in wastd.observations.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.SiteVisit.encounters">encounters() (wastd.observations.models.SiteVisit property)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.models.Survey.encounters">(wastd.observations.models.Survey property)</a>
 </li>
       </ul></li>
+      <li><a href="developers.html#wastd.observations.views.EncounterTable">EncounterTable (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.EncounterTable.Meta">EncounterTable.Meta (class in wastd.observations.views)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developers.html#wastd.observations.views.EncounterTableView">EncounterTableView (class in wastd.observations.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.Survey.end_comments">end_comments (wastd.observations.models.Survey attribute)</a>
 
       <ul>
@@ -687,6 +754,12 @@
       </ul></li>
       <li><a href="developers.html#wastd.users.admin.MyUserCreationForm.error_message">error_message (wastd.users.admin.MyUserCreationForm attribute)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTable.Meta.exclude">exclude (wastd.observations.views.AnimalEncounterTable.Meta attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.EncounterTable.Meta.exclude">(wastd.observations.views.EncounterTable.Meta attribute)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.Expedition">Expedition (class in wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.FieldMediaAttachment.expedition">expedition (wastd.observations.models.FieldMediaAttachment attribute)</a>
@@ -716,11 +789,15 @@
 </li>
         <li><a href="developers.html#wastd.observations.admin.LightSourceObservationObservationInline.extra">(wastd.observations.admin.LightSourceObservationObservationInline attribute)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationInline.extra">(wastd.observations.admin.LoggerObservationInline attribute)</a>
+</li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionInline.extra">(wastd.observations.admin.ManagementActionInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.MediaAttachmentInline.extra">(wastd.observations.admin.MediaAttachmentInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.NestTagObservationInline.extra">(wastd.observations.admin.NestTagObservationInline attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.SurveyMediaAttachmentInline.extra">(wastd.observations.admin.SurveyMediaAttachmentInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.TagObservationInline.extra">(wastd.observations.admin.TagObservationInline attribute)</a>
 </li>
@@ -753,6 +830,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.TurtleNestEncounter.fan_angles_measured">fan_angles_measured (wastd.observations.models.TurtleNestEncounter attribute)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.admin.AreaFilter.field_choices">field_choices() (wastd.observations.admin.AreaFilter method)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.admin.SiteFilter.field_choices">(wastd.observations.admin.SiteFilter method)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.FieldMediaAttachment">FieldMediaAttachment (class in wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.FieldMediaAttachment.DoesNotExist">FieldMediaAttachment.DoesNotExist</a>
@@ -786,6 +869,30 @@
       <ul>
         <li><a href="developers.html#wastd.observations.models.MediaAttachment.filepath">(wastd.observations.models.MediaAttachment property)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.filepath">(wastd.observations.models.SurveyMediaAttachment property)</a>
+</li>
+      </ul></li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.filter_class">filter_class (wastd.observations.views.AnimalEncounterList attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView.filter_class">(wastd.observations.views.AnimalEncounterTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterList.filter_class">(wastd.observations.views.EncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterTableView.filter_class">(wastd.observations.views.EncounterTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterList.filter_class">(wastd.observations.views.LineTransectEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterList.filter_class">(wastd.observations.views.LoggerEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.filter_class">(wastd.observations.views.PagedFilteredTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyList.filter_class">(wastd.observations.views.SurveyList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterList.filter_class">(wastd.observations.views.TurtleNestEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.UserListView.filter_class">(wastd.users.views.UserListView attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -815,12 +922,42 @@
         <li><a href="developers.html#wastd.users.admin.MyUserAdmin.form">(wastd.users.admin.MyUserAdmin attribute)</a>
 </li>
       </ul></li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterCreate.form_class">form_class (wastd.observations.views.AnimalEncounterCreate attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterUpdate.form_class">(wastd.observations.views.AnimalEncounterUpdate attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.MergeView.form_class">(wastd.users.views.MergeView attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterCreate.form_valid">form_valid() (wastd.observations.views.AnimalEncounterCreate method)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterUpdate.form_valid">(wastd.observations.views.AnimalEncounterUpdate method)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.MergeView.form_valid">(wastd.users.views.MergeView method)</a>
+</li>
+      </ul></li>
+      <li><a href="developers.html#wastd.observations.admin.EncounterAdmin.formfield_for_foreignkey">formfield_for_foreignkey() (wastd.observations.admin.EncounterAdmin method)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.admin.SurveyAdmin.formfield_for_foreignkey">(wastd.observations.admin.SurveyAdmin method)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.admin.AreaAdmin.formfield_overrides">formfield_overrides (wastd.observations.admin.AreaAdmin attribute)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.admin.EncounterAdmin.formfield_overrides">(wastd.observations.admin.EncounterAdmin attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.SurveyAdmin.formfield_overrides">(wastd.observations.admin.SurveyAdmin attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView.formhelper_class">formhelper_class (wastd.observations.views.AnimalEncounterTableView attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.EncounterTableView.formhelper_class">(wastd.observations.views.EncounterTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.formhelper_class">(wastd.observations.views.PagedFilteredTableView attribute)</a>
 </li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.admin.EncounterAdmin.fsm_field">fsm_field (wastd.observations.admin.EncounterAdmin attribute)</a>
@@ -881,6 +1018,44 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleHatchlingEmergenceObservation.get_cloud_cover_at_emergence_known_display">get_cloud_cover_at_emergence_known_display() (wastd.observations.models.TurtleHatchlingEmergenceObservation method)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterCreate.get_context_data">get_context_data() (wastd.observations.views.AnimalEncounterCreate method)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterDetail.get_context_data">(wastd.observations.views.AnimalEncounterDetail method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.get_context_data">(wastd.observations.views.AnimalEncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterUpdate.get_context_data">(wastd.observations.views.AnimalEncounterUpdate method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterDetail.get_context_data">(wastd.observations.views.EncounterDetail method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterList.get_context_data">(wastd.observations.views.EncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.HomeView.get_context_data">(wastd.observations.views.HomeView method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterDetail.get_context_data">(wastd.observations.views.LineTransectEncounterDetail method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterList.get_context_data">(wastd.observations.views.LineTransectEncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterDetail.get_context_data">(wastd.observations.views.LoggerEncounterDetail method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterList.get_context_data">(wastd.observations.views.LoggerEncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.get_context_data">(wastd.observations.views.PagedFilteredTableView method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyDetail.get_context_data">(wastd.observations.views.SurveyDetail method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyList.get_context_data">(wastd.observations.views.SurveyList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterDetail.get_context_data">(wastd.observations.views.TurtleNestEncounterDetail method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterList.get_context_data">(wastd.observations.views.TurtleNestEncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.UserDetailView.get_context_data">(wastd.users.views.UserDetailView method)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.UserListView.get_context_data">(wastd.users.views.UserListView method)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.TurtleMorphometricObservation.get_curved_carapace_length_accuracy_display">get_curved_carapace_length_accuracy_display() (wastd.observations.models.TurtleMorphometricObservation method)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleMorphometricObservation.get_curved_carapace_length_min_accuracy_display">get_curved_carapace_length_min_accuracy_display() (wastd.observations.models.TurtleMorphometricObservation method)</a>
@@ -943,6 +1118,8 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.AnimalEncounter.get_health_display">get_health_display() (wastd.observations.models.AnimalEncounter method)</a>
 </li>
+      <li><a href="developers.html#wastd.users.views.MergeView.get_initial">get_initial() (wastd.users.views.MergeView method)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.Encounter.get_latex">get_latex() (wastd.observations.models.Encounter method)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.LightSourceObservation.get_light_source_type_display">get_light_source_type_display() (wastd.observations.models.LightSourceObservation method)</a>
@@ -974,7 +1151,11 @@
       <ul>
         <li><a href="developers.html#wastd.observations.models.MediaAttachment.get_media_type_display">(wastd.observations.models.MediaAttachment method)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.get_media_type_display">(wastd.observations.models.SurveyMediaAttachment method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.TrackTallyObservation.get_nest_age_display">get_nest_age_display() (wastd.observations.models.TrackTallyObservation method)</a>
 
       <ul>
@@ -983,8 +1164,6 @@
       </ul></li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.get_nest_position_display">get_nest_position_display() (wastd.observations.models.TurtleNestObservation method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.TurtleNestEncounter.get_nest_tagged_display">get_nest_tagged_display() (wastd.observations.models.TurtleNestEncounter method)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TrackTallyObservation.get_nest_type_display">get_nest_type_display() (wastd.observations.models.TrackTallyObservation method)</a>
@@ -1028,6 +1207,8 @@
 </li>
         <li><a href="developers.html#wastd.observations.admin.LoggerEncounterAdmin.get_queryset">(wastd.observations.admin.LoggerEncounterAdmin method)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationAdmin.get_queryset">(wastd.observations.admin.LoggerObservationAdmin method)</a>
+</li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionAdmin.get_queryset">(wastd.observations.admin.ManagementActionAdmin method)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.MediaAttachmentAdmin.get_queryset">(wastd.observations.admin.MediaAttachmentAdmin method)</a>
@@ -1052,6 +1233,24 @@
 </li>
         <li><a href="developers.html#wastd.observations.admin.TurtleNestObservationAdmin.get_queryset">(wastd.observations.admin.TurtleNestObservationAdmin method)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.get_queryset">(wastd.observations.views.AnimalEncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterList.get_queryset">(wastd.observations.views.EncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.HomeView.get_queryset">(wastd.observations.views.HomeView method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterList.get_queryset">(wastd.observations.views.LineTransectEncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterList.get_queryset">(wastd.observations.views.LoggerEncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.get_queryset">(wastd.observations.views.PagedFilteredTableView method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyList.get_queryset">(wastd.observations.views.SurveyList method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterList.get_queryset">(wastd.observations.views.TurtleNestEncounterList method)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.UserListView.get_queryset">(wastd.users.views.UserListView method)</a>
+</li>
       </ul></li>
       <li><a href="developers.html#wastd.users.views.UserRedirectView.get_redirect_url">get_redirect_url() (wastd.users.views.UserRedirectView method)</a>
 </li>
@@ -1073,6 +1272,8 @@
         <li><a href="developers.html#wastd.observations.models.Survey.get_source_display">(wastd.observations.models.Survey method)</a>
 </li>
         <li><a href="developers.html#wastd.observations.models.SurveyEnd.get_source_display">(wastd.observations.models.SurveyEnd method)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.get_source_display">(wastd.observations.models.SurveyMediaAttachment method)</a>
 </li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.models.AnimalEncounter.get_species_display">get_species_display() (wastd.observations.models.AnimalEncounter method)</a>
@@ -1099,6 +1300,8 @@
 </li>
       <li><a href="developers.html#wastd.users.views.UserUpdateView.get_success_url">get_success_url() (wastd.users.views.UserUpdateView method)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.get_table">get_table() (wastd.observations.views.PagedFilteredTableView method)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.TagObservation.get_tag_location_display">get_tag_location_display() (wastd.observations.models.TagObservation method)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TagObservation.get_tag_type_display">get_tag_type_display() (wastd.observations.models.TagObservation method)</a>
@@ -1117,8 +1320,12 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.SiteVisitStartEnd.get_type_display">get_type_display() (wastd.observations.models.SiteVisitStartEnd method)</a>
 </li>
-      <li><a href="developers.html#wastd.observations.models.Encounter.guess_area">guess_area() (wastd.observations.models.Encounter property)</a>
+      <li><a href="developers.html#wastd.observations.models.guess_area">guess_area() (in module wastd.observations.models)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.models.Encounter.guess_area">(wastd.observations.models.Encounter property)</a>
 </li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.guess_site">guess_site() (in module wastd.observations.models)</a>
 
       <ul>
@@ -1163,6 +1370,8 @@
         <li><a href="developers.html#wastd.observations.models.TurtleMorphometricObservation.handler_id">(wastd.observations.models.TurtleMorphometricObservation attribute)</a>
 </li>
       </ul></li>
+      <li><a href="developers.html#wastd.observations.models.Survey.has_duplicates">has_duplicates() (wastd.observations.models.Survey property)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.hatching_success">hatching_success() (wastd.observations.models.TurtleNestObservation property)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleHatchlingEmergenceObservation.hatchling_emergence_time">hatchling_emergence_time (wastd.observations.models.TurtleHatchlingEmergenceObservation attribute)</a>
@@ -1199,6 +1408,8 @@
         <li><a href="developers.html#wastd.observations.models.TagObservation.history_url">(wastd.observations.models.TagObservation property)</a>
 </li>
       </ul></li>
+      <li><a href="developers.html#wastd.observations.views.HomeView">HomeView (class in wastd.observations.views)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1224,17 +1435,21 @@
 </li>
         <li><a href="developers.html#wastd.observations.models.SurveyEnd.id">(wastd.observations.models.SurveyEnd attribute)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.id">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
+</li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.admin.ImageThumbnailFileInput">ImageThumbnailFileInput (class in wastd.observations.admin)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.import_odka_view">import_odka_view() (in module wastd.observations.views)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.Encounter.inferred_name">inferred_name() (wastd.observations.models.Encounter property)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.models.LoggerEncounter.inferred_name">(wastd.observations.models.LoggerEncounter property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.admin.AnimalEncounterAdmin.inlines">inlines (wastd.observations.admin.AnimalEncounterAdmin attribute)</a>
 
       <ul>
@@ -1341,6 +1556,10 @@
 </li>
       <li><a href="developers.html#wastd.observations.admin.LineTransectEncounterAdmin">LineTransectEncounterAdmin (class in wastd.observations.admin)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.LineTransectEncounterDetail">LineTransectEncounterDetail (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.LineTransectEncounterList">LineTransectEncounterList (class in wastd.observations.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.admin.AnimalEncounterAdmin.list_display">list_display (wastd.observations.admin.AnimalEncounterAdmin attribute)</a>
 
       <ul>
@@ -1355,6 +1574,8 @@
         <li><a href="developers.html#wastd.observations.admin.LineTransectEncounterAdmin.list_display">(wastd.observations.admin.LineTransectEncounterAdmin attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.LoggerEncounterAdmin.list_display">(wastd.observations.admin.LoggerEncounterAdmin attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationAdmin.list_display">(wastd.observations.admin.LoggerObservationAdmin attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionAdmin.list_display">(wastd.observations.admin.ManagementActionAdmin attribute)</a>
 </li>
@@ -1399,6 +1620,8 @@
         <li><a href="developers.html#wastd.observations.admin.LightSourceObservationAdmin.list_filter">(wastd.observations.admin.LightSourceObservationAdmin attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.LoggerEncounterAdmin.list_filter">(wastd.observations.admin.LoggerEncounterAdmin attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationAdmin.list_filter">(wastd.observations.admin.LoggerObservationAdmin attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionAdmin.list_filter">(wastd.observations.admin.ManagementActionAdmin attribute)</a>
 </li>
@@ -1521,6 +1744,10 @@
 </li>
       <li><a href="developers.html#wastd.observations.admin.LoggerEncounterAdmin">LoggerEncounterAdmin (class in wastd.observations.admin)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.LoggerEncounterDetail">LoggerEncounterDetail (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.LoggerEncounterList">LoggerEncounterList (class in wastd.observations.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.LoggerObservation">LoggerObservation (class in wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Observation.loggerobservation">loggerobservation (wastd.observations.models.Observation attribute)</a>
@@ -1528,6 +1755,10 @@
       <li><a href="developers.html#wastd.observations.models.LoggerObservation.DoesNotExist">LoggerObservation.DoesNotExist</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.LoggerObservation.MultipleObjectsReturned">LoggerObservation.MultipleObjectsReturned</a>
+</li>
+      <li><a href="developers.html#wastd.observations.admin.LoggerObservationAdmin">LoggerObservationAdmin (class in wastd.observations.admin)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.admin.LoggerObservationInline">LoggerObservationInline (class in wastd.observations.admin)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TemperatureLoggerSettings.logging_interval">logging_interval (wastd.observations.models.TemperatureLoggerSettings attribute)</a>
 </li>
@@ -1626,6 +1857,10 @@
 </li>
         <li><a href="developers.html#wastd.observations.admin.LoggerEncounterAdmin.media">(wastd.observations.admin.LoggerEncounterAdmin property)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationAdmin.media">(wastd.observations.admin.LoggerObservationAdmin property)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationInline.media">(wastd.observations.admin.LoggerObservationInline property)</a>
+</li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionAdmin.media">(wastd.observations.admin.ManagementActionAdmin property)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionInline.media">(wastd.observations.admin.ManagementActionInline property)</a>
@@ -1641,6 +1876,8 @@
         <li><a href="developers.html#wastd.observations.admin.ObservationAdminMixin.media">(wastd.observations.admin.ObservationAdminMixin property)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.SurveyAdmin.media">(wastd.observations.admin.SurveyAdmin property)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.SurveyMediaAttachmentInline.media">(wastd.observations.admin.SurveyMediaAttachmentInline property)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.TagObservationAdmin.media">(wastd.observations.admin.TagObservationAdmin property)</a>
 </li>
@@ -1691,18 +1928,22 @@
         <li><a href="developers.html#wastd.users.admin.MyUserCreationForm.media">(wastd.users.admin.MyUserCreationForm property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.FieldMediaAttachment.media_type">media_type (wastd.observations.models.FieldMediaAttachment attribute)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.models.MediaAttachment.media_type">(wastd.observations.models.MediaAttachment attribute)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.media_type">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.FieldMediaAttachment.MEDIA_TYPE_CHOICES">MEDIA_TYPE_CHOICES (wastd.observations.models.FieldMediaAttachment attribute)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.models.MediaAttachment.MEDIA_TYPE_CHOICES">(wastd.observations.models.MediaAttachment attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.MEDIA_TYPE_CHOICES">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
 </li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.models.MediaAttachment">MediaAttachment (class in wastd.observations.models)</a>
@@ -1717,6 +1958,10 @@
 </li>
       <li><a href="developers.html#wastd.observations.admin.MediaAttachmentInline">MediaAttachmentInline (class in wastd.observations.admin)</a>
 </li>
+      <li><a href="developers.html#wastd.users.views.merge_users">merge_users() (in module wastd.users.views)</a>
+</li>
+      <li><a href="developers.html#wastd.users.views.MergeView">MergeView (class in wastd.users.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.admin.DispatchRecordInline.model">model (wastd.observations.admin.DispatchRecordInline attribute)</a>
 
       <ul>
@@ -1728,11 +1973,15 @@
 </li>
         <li><a href="developers.html#wastd.observations.admin.LightSourceObservationObservationInline.model">(wastd.observations.admin.LightSourceObservationObservationInline attribute)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationInline.model">(wastd.observations.admin.LoggerObservationInline attribute)</a>
+</li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionInline.model">(wastd.observations.admin.ManagementActionInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.MediaAttachmentInline.model">(wastd.observations.admin.MediaAttachmentInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.NestTagObservationInline.model">(wastd.observations.admin.NestTagObservationInline attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.SurveyMediaAttachmentInline.model">(wastd.observations.admin.SurveyMediaAttachmentInline attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.TagObservationInline.model">(wastd.observations.admin.TagObservationInline attribute)</a>
 </li>
@@ -1756,6 +2005,46 @@
 </li>
         <li><a href="developers.html#wastd.observations.admin.TurtleNestObservationInline.model">(wastd.observations.admin.TurtleNestObservationInline attribute)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterCreate.model">(wastd.observations.views.AnimalEncounterCreate attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterDetail.model">(wastd.observations.views.AnimalEncounterDetail attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.model">(wastd.observations.views.AnimalEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterTable.Meta.model">(wastd.observations.views.AnimalEncounterTable.Meta attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView.model">(wastd.observations.views.AnimalEncounterTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterUpdate.model">(wastd.observations.views.AnimalEncounterUpdate attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterDetail.model">(wastd.observations.views.EncounterDetail attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterList.model">(wastd.observations.views.EncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterTable.Meta.model">(wastd.observations.views.EncounterTable.Meta attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterTableView.model">(wastd.observations.views.EncounterTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.HomeView.model">(wastd.observations.views.HomeView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterDetail.model">(wastd.observations.views.LineTransectEncounterDetail attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterList.model">(wastd.observations.views.LineTransectEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterDetail.model">(wastd.observations.views.LoggerEncounterDetail attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterList.model">(wastd.observations.views.LoggerEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.model">(wastd.observations.views.PagedFilteredTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyDetail.model">(wastd.observations.views.SurveyDetail attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyList.model">(wastd.observations.views.SurveyList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterDetail.model">(wastd.observations.views.TurtleNestEncounterDetail attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterList.model">(wastd.observations.views.TurtleNestEncounterList attribute)</a>
+</li>
         <li><a href="developers.html#wastd.users.admin.MyUserChangeForm.Meta.model">(wastd.users.admin.MyUserChangeForm.Meta attribute)</a>
 </li>
         <li><a href="developers.html#wastd.users.admin.MyUserCreationForm.Meta.model">(wastd.users.admin.MyUserCreationForm.Meta attribute)</a>
@@ -1776,6 +2065,8 @@
         <li><a href="developers.html#module-wastd.observations.models">wastd.observations.models</a>
 </li>
         <li><a href="developers.html#module-wastd.observations.tests">wastd.observations.tests</a>
+</li>
+        <li><a href="developers.html#module-wastd.observations.views">wastd.observations.views</a>
 </li>
         <li><a href="developers.html#module-wastd.users.admin">wastd.users.admin</a>
 </li>
@@ -1854,6 +2145,8 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.no_depredated_eggs">no_depredated_eggs (wastd.observations.models.TurtleNestObservation attribute)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.models.Survey.no_duplicates">no_duplicates() (wastd.observations.models.Survey property)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.no_egg_shells">no_egg_shells (wastd.observations.models.TurtleNestObservation attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.no_emerged">no_emerged() (wastd.observations.models.TurtleNestObservation property)</a>
@@ -1898,6 +2191,8 @@
         <li><a href="developers.html#wastd.observations.models.Survey.objects">(wastd.observations.models.Survey attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.models.SurveyEnd.objects">(wastd.observations.models.SurveyEnd attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.objects">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
 </li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.models.Observation">Observation (class in wastd.observations.models)</a>
@@ -2012,6 +2307,30 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView">PagedFilteredTableView (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.paginate_by">paginate_by (wastd.observations.views.AnimalEncounterList attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView.paginate_by">(wastd.observations.views.AnimalEncounterTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterList.paginate_by">(wastd.observations.views.EncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterTableView.paginate_by">(wastd.observations.views.EncounterTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterList.paginate_by">(wastd.observations.views.LineTransectEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterList.paginate_by">(wastd.observations.views.LoggerEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.paginate_by">(wastd.observations.views.PagedFilteredTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyList.paginate_by">(wastd.observations.views.SurveyList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterList.paginate_by">(wastd.observations.views.TurtleNestEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.UserListView.paginate_by">(wastd.users.views.UserListView attribute)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.PathToSea.path_to_sea">path_to_sea (wastd.observations.models.PathToSea attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleHatchlingEmergenceObservation.path_to_sea_comments">path_to_sea_comments (wastd.observations.models.TurtleHatchlingEmergenceObservation attribute)</a>
@@ -2150,6 +2469,12 @@
         <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.polymorphic_super_sub_accessors_replaced">(wastd.observations.models.TurtleNestObservation attribute)</a>
 </li>
       </ul></li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterCreate.post">post() (wastd.observations.views.AnimalEncounterCreate method)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterUpdate.post">(wastd.observations.views.AnimalEncounterUpdate method)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.Encounter.primary_flipper_tag">primary_flipper_tag() (wastd.observations.models.Encounter property)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Survey.production">production (wastd.observations.models.Survey attribute)</a>
@@ -2161,6 +2486,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.admin.ObservationAdminMixin.readonly_fields">readonly_fields (wastd.observations.admin.ObservationAdminMixin attribute)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.reconstruct_surveys_view">reconstruct_surveys_view() (in module wastd.observations.views)</a>
 </li>
       <li><a href="developers.html#wastd.observations.admin.TagObservationAdmin.recorder">recorder (wastd.observations.admin.TagObservationAdmin attribute)</a>
 
@@ -2178,8 +2505,6 @@
         <li><a href="developers.html#wastd.observations.models.TurtleMorphometricObservation.recorder_id">(wastd.observations.models.TurtleMorphometricObservation attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.TemperatureLoggerSettings.recording_start">recording_start (wastd.observations.models.TemperatureLoggerSettings attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.related_encounters">related_encounters() (wastd.observations.models.Encounter property)</a>
@@ -2192,12 +2517,28 @@
         <li><a href="developers.html#wastd.observations.models.SurveyEnd.reporter">(wastd.observations.models.SurveyEnd attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.Encounter.reporter_id">reporter_id (wastd.observations.models.Encounter attribute)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.models.Survey.reporter_id">(wastd.observations.models.Survey attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.models.SurveyEnd.reporter_id">(wastd.observations.models.SurveyEnd attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.resource_class">resource_class (wastd.observations.views.AnimalEncounterList attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.EncounterList.resource_class">(wastd.observations.views.EncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterList.resource_class">(wastd.observations.views.LineTransectEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterList.resource_class">(wastd.observations.views.LoggerEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyList.resource_class">(wastd.observations.views.SurveyList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterList.resource_class">(wastd.observations.views.TurtleNestEncounterList attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2230,6 +2571,8 @@
         <li><a href="developers.html#wastd.observations.admin.LightSourceObservationAdmin.search_fields">(wastd.observations.admin.LightSourceObservationAdmin attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.LoggerEncounterAdmin.search_fields">(wastd.observations.admin.LoggerEncounterAdmin attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.LoggerObservationAdmin.search_fields">(wastd.observations.admin.LoggerObservationAdmin attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.ManagementActionAdmin.search_fields">(wastd.observations.admin.ManagementActionAdmin attribute)</a>
 </li>
@@ -2306,6 +2649,8 @@
       </ul></li>
       <li><a href="developers.html#wastd.observations.models.Expedition.site_visits">site_visits() (wastd.observations.models.Expedition property)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.admin.SiteFilter">SiteFilter (class in wastd.observations.admin)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.SiteVisit">SiteVisit (class in wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Expedition.sitevisit">sitevisit (wastd.observations.models.Expedition attribute)</a>
@@ -2320,20 +2665,6 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.SiteVisitStartEnd.MultipleObjectsReturned">SiteVisitStartEnd.MultipleObjectsReturned</a>
 </li>
-      <li><a href="developers.html#wastd.users.views.UserDetailView.slug_field">slug_field (wastd.users.views.UserDetailView attribute)</a>
-
-      <ul>
-        <li><a href="developers.html#wastd.users.views.UserListView.slug_field">(wastd.users.views.UserListView attribute)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="developers.html#wastd.users.views.UserDetailView.slug_url_kwarg">slug_url_kwarg (wastd.users.views.UserDetailView attribute)</a>
-
-      <ul>
-        <li><a href="developers.html#wastd.users.views.UserListView.slug_url_kwarg">(wastd.users.views.UserListView attribute)</a>
-</li>
-      </ul></li>
       <li><a href="developers.html#wastd.observations.models.Encounter.source">source (wastd.observations.models.Encounter attribute)</a>
 
       <ul>
@@ -2346,6 +2677,8 @@
         <li><a href="developers.html#wastd.observations.models.SurveyEnd.source">(wastd.observations.models.SurveyEnd attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.admin.EncounterAdmin.source_display">source_display() (wastd.observations.admin.EncounterAdmin method)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.source_id">source_id (wastd.observations.models.Encounter attribute)</a>
@@ -2371,6 +2704,8 @@
 </li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.models.Survey.start_comments">start_comments (wastd.observations.models.Survey attribute)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.models.Survey.start_date">start_date() (wastd.observations.models.Survey property)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.SiteVisit.start_location">start_location (wastd.observations.models.SiteVisit attribute)</a>
 
@@ -2398,17 +2733,9 @@
       </ul></li>
       <li><a href="developers.html#wastd.observations.admin.ObservationAdminMixin.status">status() (wastd.observations.admin.ObservationAdminMixin method)</a>
 </li>
-      <li><a href="developers.html#wastd.observations.models.Encounter.STATUS_CURATED">STATUS_CURATED (wastd.observations.models.Encounter attribute)</a>
-</li>
       <li><a href="developers.html#wastd.observations.admin.AnimalEncounterAdmin.status_display">status_display() (wastd.observations.admin.AnimalEncounterAdmin method)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.status_label">status_label() (wastd.observations.models.Encounter property)</a>
-</li>
-      <li><a href="developers.html#wastd.observations.models.Encounter.STATUS_NEW">STATUS_NEW (wastd.observations.models.Encounter attribute)</a>
-</li>
-      <li><a href="developers.html#wastd.observations.models.Encounter.STATUS_PROOFREAD">STATUS_PROOFREAD (wastd.observations.models.Encounter attribute)</a>
-</li>
-      <li><a href="developers.html#wastd.observations.models.Encounter.STATUS_PUBLISHED">STATUS_PUBLISHED (wastd.observations.models.Encounter attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleMorphometricObservation.straight_carapace_length_accuracy">straight_carapace_length_accuracy (wastd.observations.models.TurtleMorphometricObservation attribute)</a>
 </li>
@@ -2423,13 +2750,23 @@
       <li><a href="developers.html#wastd.observations.models.Survey">Survey (class in wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.survey">survey (wastd.observations.models.Encounter attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.survey">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
 </li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.Survey.DoesNotExist">Survey.DoesNotExist</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Survey.MultipleObjectsReturned">Survey.MultipleObjectsReturned</a>
 </li>
-      <li><a href="developers.html#wastd.observations.models.Encounter.survey_id">survey_id (wastd.observations.models.Encounter attribute)</a>
+      <li><a href="developers.html#wastd.observations.models.Area.survey_area">survey_area (wastd.observations.models.Area attribute)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.models.Encounter.survey_id">survey_id (wastd.observations.models.Encounter attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.survey_id">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.survey_media">survey_media() (in module wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.survey_post_save">survey_post_save() (in module wastd.observations.models)</a>
@@ -2440,6 +2777,8 @@
 </li>
       <li><a href="developers.html#wastd.observations.admin.SurveyAdmin">SurveyAdmin (class in wastd.observations.admin)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.SurveyDetail">SurveyDetail (class in wastd.observations.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.SurveyEnd">SurveyEnd (class in wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.SurveyEnd.DoesNotExist">SurveyEnd.DoesNotExist</a>
@@ -2448,12 +2787,30 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.Area.surveyend_set">surveyend_set (wastd.observations.models.Area attribute)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.SurveyList">SurveyList (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment">SurveyMediaAttachment (class in wastd.observations.models)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.DoesNotExist">SurveyMediaAttachment.DoesNotExist</a>
+</li>
+      <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.MultipleObjectsReturned">SurveyMediaAttachment.MultipleObjectsReturned</a>
+</li>
+      <li><a href="developers.html#wastd.observations.admin.SurveyMediaAttachmentInline">SurveyMediaAttachmentInline (class in wastd.observations.admin)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView.table_class">table_class (wastd.observations.views.AnimalEncounterTableView attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.EncounterTableView.table_class">(wastd.observations.views.EncounterTableView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.PagedFilteredTableView.table_class">(wastd.observations.views.PagedFilteredTableView attribute)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.NestTagObservation.tag_label">tag_label (wastd.observations.models.NestTagObservation attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.tag_lists">tag_lists() (wastd.observations.models.Encounter class method)</a>
@@ -2524,8 +2881,30 @@
 </li>
       <li><a href="developers.html#wastd.observations.admin.TemperatureLoggerSettingsInline">TemperatureLoggerSettingsInline (class in wastd.observations.admin)</a>
 </li>
-      <li><a href="developers.html#wastd.observations.admin.ImageThumbnailFileInput.template_name">template_name (wastd.observations.admin.ImageThumbnailFileInput attribute)</a>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView.template">template (wastd.observations.views.AnimalEncounterTableView attribute)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.admin.ImageThumbnailFileInput.template_name">template_name (wastd.observations.admin.ImageThumbnailFileInput attribute)</a>
+
+      <ul>
+        <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.template_name">(wastd.observations.views.AnimalEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.EncounterList.template_name">(wastd.observations.views.EncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.HomeView.template_name">(wastd.observations.views.HomeView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LineTransectEncounterList.template_name">(wastd.observations.views.LineTransectEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.LoggerEncounterList.template_name">(wastd.observations.views.LoggerEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.SurveyList.template_name">(wastd.observations.views.SurveyList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterList.template_name">(wastd.observations.views.TurtleNestEncounterList attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.MergeView.template_name">(wastd.users.views.MergeView attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.users.views.UserListView.template_name">(wastd.users.views.UserListView attribute)</a>
+</li>
+      </ul></li>
       <li><a href="developers.html#wastd.observations.models.TemperatureLoggerSettings.tested">tested (wastd.observations.models.TemperatureLoggerSettings attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.admin.MediaAttachmentAdmin.thumbnail">thumbnail() (wastd.observations.admin.MediaAttachmentAdmin method)</a>
@@ -2533,11 +2912,15 @@
       <ul>
         <li><a href="developers.html#wastd.observations.models.MediaAttachment.thumbnail">(wastd.observations.models.MediaAttachment property)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.thumbnail">(wastd.observations.models.SurveyMediaAttachment property)</a>
+</li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.models.FieldMediaAttachment.title">title (wastd.observations.models.FieldMediaAttachment attribute)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.models.MediaAttachment.title">(wastd.observations.models.MediaAttachment attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.title">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
 </li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.models.TrackTallyObservation">TrackTallyObservation (class in wastd.observations.models)</a>
@@ -2548,6 +2931,8 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.TrackTallyObservation.MultipleObjectsReturned">TrackTallyObservation.MultipleObjectsReturned</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.admin.TrackTallyObservationAdmin">TrackTallyObservationAdmin (class in wastd.observations.admin)</a>
 </li>
       <li><a href="developers.html#wastd.observations.admin.TrackTallyObservationInline">TrackTallyObservationInline (class in wastd.observations.admin)</a>
@@ -2560,12 +2945,8 @@
         <li><a href="developers.html#wastd.observations.models.Survey.transect">(wastd.observations.models.Survey attribute)</a>
 </li>
       </ul></li>
-      <li><a href="developers.html#wastd.users.views.transfer_user">transfer_user() (in module wastd.users.views)</a>
-</li>
       <li><a href="developers.html#wastd.observations.models.TurtleDamageObservation">TurtleDamageObservation (class in wastd.observations.models)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.Observation.turtledamageobservation">turtledamageobservation (wastd.observations.models.Observation attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleDamageObservation.DoesNotExist">TurtleDamageObservation.DoesNotExist</a>
@@ -2646,6 +3027,10 @@
 </li>
       <li><a href="developers.html#wastd.observations.admin.TurtleNestEncounterAdmin">TurtleNestEncounterAdmin (class in wastd.observations.admin)</a>
 </li>
+      <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterDetail">TurtleNestEncounterDetail (class in wastd.observations.views)</a>
+</li>
+      <li><a href="developers.html#wastd.observations.views.TurtleNestEncounterList">TurtleNestEncounterList (class in wastd.observations.views)</a>
+</li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestObservation">TurtleNestObservation (class in wastd.observations.models)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Observation.turtlenestobservation">turtlenestobservation (wastd.observations.models.Observation attribute)</a>
@@ -2676,12 +3061,16 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="developers.html#wastd.users.views.UserDetailView">UserDetailView (class in wastd.users.views)</a>
+      <li><a href="developers.html#wastd.observations.views.update_names_view">update_names_view() (in module wastd.observations.views)</a>
 </li>
-      <li><a href="developers.html#wastd.users.views.UserListView">UserListView (class in wastd.users.views)</a>
+      <li><a href="developers.html#wastd.observations.models.Encounter.update_url">update_url() (wastd.observations.models.Encounter property)</a>
+</li>
+      <li><a href="developers.html#wastd.users.views.UserDetailView">UserDetailView (class in wastd.users.views)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developers.html#wastd.users.views.UserListView">UserListView (class in wastd.users.views)</a>
+</li>
       <li><a href="developers.html#wastd.users.views.UserRedirectView">UserRedirectView (class in wastd.users.views)</a>
 </li>
       <li><a href="developers.html#wastd.users.views.UserUpdateView">UserUpdateView (class in wastd.users.views)</a>
@@ -2714,12 +3103,21 @@
 </li>
       </ul></li>
       <li>
+    wastd.observations.views
+
+      <ul>
+        <li><a href="developers.html#module-wastd.observations.views">module</a>
+</li>
+      </ul></li>
+      <li>
     wastd.users.admin
 
       <ul>
         <li><a href="developers.html#module-wastd.users.admin">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     wastd.users.tests
 
@@ -2727,8 +3125,6 @@
         <li><a href="developers.html#module-wastd.users.tests">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     wastd.users.views
 

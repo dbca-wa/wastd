@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wastd.observations.models &mdash; WAStD 0.46.0 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.50.0 documentation</title>
   
 
   
@@ -24,7 +24,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -58,7 +57,7 @@
             
             
               <div class="version">
-                0.46
+                0.5
               </div>
             
           
@@ -188,9 +187,9 @@
 <span class="kn">import</span> <span class="nn">urllib</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">parser</span> <span class="k">as</span> <span class="n">dateparser</span>
+<span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">tz</span>
 
 <span class="kn">import</span> <span class="nn">slugify</span>
-<span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">tz</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.contrib.gis.db</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">geo_models</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
@@ -691,6 +690,7 @@
 
 <span class="n">OBSERVATION_COLOURS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">NA_VALUE</span><span class="p">:</span> <span class="s2">&quot;secondary&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="s2">&quot;secondary&quot;</span><span class="p">,</span>
     <span class="s2">&quot;absent&quot;</span><span class="p">:</span> <span class="s2">&quot;dark&quot;</span><span class="p">,</span>
     <span class="s2">&quot;present&quot;</span><span class="p">:</span> <span class="s2">&quot;primary&quot;</span><span class="p">,</span>
     <span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="s2">&quot;primary&quot;</span><span class="p">,</span>
@@ -796,9 +796,9 @@
 
 <div class="viewcode-block" id="survey_media"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.survey_media">[docs]</a><span class="k">def</span> <span class="nf">survey_media</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return an upload path for survey media.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-    <span class="k">return</span> <span class="s1">&#39;survey/</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">survey</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">survey</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">return</span> <span class="s1">&#39;survey/</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">survey</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
 
 <span class="c1"># Spatial models -------------------------------------------------------------#</span>
@@ -1174,7 +1174,7 @@
         <span class="k">return</span> <span class="n">force_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attachment</span><span class="o">.</span><span class="n">file</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Survey"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Survey">[docs]</a><span class="k">class</span> <span class="nc">Survey</span><span class="p">(</span><span class="n">QualityControlMixin</span><span class="p">,</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="Survey"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Survey">[docs]</a><span class="k">class</span> <span class="nc">Survey</span><span class="p">(</span><span class="n">QualityControlMixin</span><span class="p">,</span> <span class="n">UrlsMixin</span><span class="p">,</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A visit to one site by a team of field workers collecting data.&quot;&quot;&quot;</span>
 
     <span class="n">source</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
@@ -1196,6 +1196,14 @@
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Device ID&quot;</span><span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The ID of the recording device, if available.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
+    <span class="n">area</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Area</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Surveyed Area&quot;</span><span class="p">),</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;survey_area&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The general area this survey took place in.&quot;</span><span class="p">),</span> <span class="p">)</span>
+
     <span class="n">site</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">Area</span><span class="p">,</span>
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
@@ -1215,6 +1223,7 @@
         <span class="n">User</span><span class="p">,</span>
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_DEFAULT</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">TSC_ADMIN_USER</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;reported_surveys&quot;</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Recorded by&quot;</span><span class="p">),</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
@@ -1321,7 +1330,7 @@
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
 
-        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start_location&quot;</span><span class="p">,</span> <span class="s2">&quot;start_time&quot;</span><span class="p">]</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-start_time&quot;</span><span class="p">,</span> <span class="p">]</span>
         <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1330,11 +1339,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">make_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;Survey </span><span class="si">{0}</span><span class="s2"> of </span><span class="si">{1}</span><span class="s2"> from </span><span class="si">{2}</span><span class="s2"> to </span><span class="si">{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">return</span> <span class="s2">&quot;Survey </span><span class="si">{0}</span><span class="s2"> of </span><span class="si">{1}</span><span class="s2"> from </span><span class="si">{2}</span><span class="s2"> </span><span class="si">{3}</span><span class="s2">-</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
             <span class="s2">&quot;unknown site&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M %Z&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">))</span>
+            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> &quot;</span><span class="p">),</span>
+            <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M %Z&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">absolute_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1349,12 +1359,13 @@
     <span class="k">def</span> <span class="nf">encounters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the QuerySet of all Encounters within this SiteVisit unless it&#39;s a training run.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">production</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.models.survey.encounters] Not a production survey, skipping.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.models.survey.encounters] No end_time set, can&#39;t filter Encounters&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.models.survey.encounters] No end_time set, can&#39;t filter Encounters.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.models.survey.encounters] No site set, can&#39;t filter Encounters&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.models.survey.encounters] No site set, can&#39;t filter Encounters.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
@@ -1362,15 +1373,113 @@
                 <span class="n">when__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
                 <span class="n">when__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[Survey.encounters] </span><span class="si">{0}</span><span class="s2"> found </span><span class="si">{1}</span><span class="s2"> Encounters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
-            <span class="k">return</span> <span class="n">e</span></div>
+            <span class="k">return</span> <span class="n">e</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start_date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The calendar date of the survey&#39;s start time in the local timezone.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">duplicate_surveys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A queryset of other surveys on the same date and site with intersecting durations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Survey</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">site</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="p">,</span>
+            <span class="n">start_time__date</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_date</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
+            <span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>  <span class="c1"># surveys starting after self</span>
+            <span class="n">start_time__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>  <span class="c1"># surveys ending before self</span>
+            <span class="n">end_time__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">no_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The number of duplicate surveys.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">duplicate_surveys</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Whether there are duplicate surveys.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_duplicates</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Survey.close_duplicates"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Survey.close_duplicates">[docs]</a>    <span class="k">def</span> <span class="nf">close_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark this Survey as the only production survey, others as training and adopt all Encounters.</span>
+
+
+<span class="sd">        Data import of Surveys reconstructed from SVS and SVE, adjusting site bondaries,</span>
+<span class="sd">        and previous import algorithms, can cause duplicate Surveys to be created.</span>
+
+<span class="sd">        The QA operator needs to identify duplicates, mark each as &quot;not production&quot; (=training, testing, or duplicate),</span>
+<span class="sd">        set this Survey as &quot;production&quot;, then save each of them and set to &quot;curated&quot;.</span>
+
+<span class="sd">        Duplicate Surveys are recognized by an overlap of place and time. They can however extend longer individually,</span>
+<span class="sd">        so that duplicates can contain Encounters outside the duration of the production Survey.</span>
+<span class="sd">        The remaining production Survey needs to adjust its start and end time to include all Encounters of all closed</span>
+<span class="sd">        duplicate surveys.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">survey_pks</span> <span class="o">=</span> <span class="p">[</span><span class="n">survey</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">survey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">duplicate_surveys</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span>
+        <span class="n">all_encounters</span> <span class="o">=</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">survey_id__in</span><span class="o">=</span><span class="n">survey_pks</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Closing </span><span class="si">{0}</span><span class="s2"> duplicate(s) of Survey </span><span class="si">{1}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">survey_pks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+
+        <span class="c1"># All duplicate Surveys shall be closed (not production) and own no Encounters</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">duplicate_surveys</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Closing Survey </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">production</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">QualityControlMixin</span><span class="o">.</span><span class="n">STATUS_CURATED</span><span class="p">:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">curate</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">actor</span> <span class="ow">or</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># From all Encounters (if any), adjust duration</span>
+        <span class="k">if</span> <span class="n">all_encounters</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">earliest_enc</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">when</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">all_encounters</span><span class="p">])</span>
+            <span class="n">earliest_buffered</span> <span class="o">=</span> <span class="n">earliest_enc</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+            <span class="n">latest_enc</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">when</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">all_encounters</span><span class="p">])</span>
+            <span class="n">latest_buffered</span> <span class="o">=</span> <span class="n">latest_enc</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{0}</span><span class="s2"> combined Encounters were found from duplicates between </span><span class="si">{1}</span><span class="s2"> and </span><span class="si">{2}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">all_encounters</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span>
+                <span class="n">earliest_enc</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M %Z&quot;</span><span class="p">),</span>
+                <span class="n">latest_enc</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M %Z&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">earliest_enc</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; Adjusted Survey start time from </span><span class="si">{0}</span><span class="s2"> to 30 mins before earliest Encounter, </span><span class="si">{1}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M %Z&quot;</span><span class="p">),</span>
+                    <span class="n">earliest_buffered</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M %Z&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">earliest_buffered</span>
+            <span class="k">if</span> <span class="n">latest_enc</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; Adjusted Survey end time from </span><span class="si">{0}</span><span class="s2"> to 30 mins after latest Encounter, </span><span class="si">{1}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M %Z&quot;</span><span class="p">),</span>
+                    <span class="n">latest_buffered</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M %Z&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">latest_buffered</span>
+
+        <span class="c1"># This Survey is the production survey owning all Encounters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">production</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">QualityControlMixin</span><span class="o">.</span><span class="n">STATUS_CURATED</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">curate</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">actor</span> <span class="ow">or</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span></div></div>
+
+<div class="viewcode-block" id="guess_area"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.guess_area">[docs]</a><span class="k">def</span> <span class="nf">guess_area</span><span class="p">(</span><span class="n">survey_instance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the first Area containing the start_location or None.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">survey_instance</span><span class="o">.</span><span class="n">start_location</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_LOCALITY</span><span class="p">,</span>
+            <span class="n">geom__contains</span><span class="o">=</span><span class="n">survey_instance</span><span class="o">.</span><span class="n">start_location</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="guess_site"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.guess_site">[docs]</a><span class="k">def</span> <span class="nf">guess_site</span><span class="p">(</span><span class="n">survey_instance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the first Area containing the start_location or None.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">survey_instance</span><span class="o">.</span><span class="n">start_location</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
         <span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">,</span>
         <span class="n">geom__contains</span><span class="o">=</span><span class="n">survey_instance</span><span class="o">.</span><span class="n">start_location</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
-
 
 <div class="viewcode-block" id="claim_end_points"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.claim_end_points">[docs]</a><span class="k">def</span> <span class="nf">claim_end_points</span><span class="p">(</span><span class="n">survey_instance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Claim SurveyEnd.</span>
@@ -1426,8 +1535,10 @@
         <span class="n">instance</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">dateparser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">dateparser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">Survey</span><span class="o">.</span><span class="n">STATUS_NEW</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">site</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">site</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">site</span> <span class="o">=</span> <span class="n">guess_site</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">area</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="n">guess_area</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">Survey</span><span class="o">.</span><span class="n">STATUS_NEW</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
         <span class="n">claim_end_points</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">==</span> <span class="n">instance</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="n">initial_duration_hrs</span><span class="p">):</span>
@@ -1519,7 +1630,8 @@
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Class options.&quot;&quot;&quot;</span>
-
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Survey&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Surveys&quot;</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;end_location&quot;</span><span class="p">,</span> <span class="s2">&quot;end_time&quot;</span><span class="p">]</span>
         <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
 
@@ -1542,6 +1654,78 @@
             <span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">,</span>
             <span class="n">geom__contains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_location</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span> <span class="k">else</span> <span class="n">candidates</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SurveyMediaAttachment"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.SurveyMediaAttachment">[docs]</a><span class="k">class</span> <span class="nc">SurveyMediaAttachment</span><span class="p">(</span><span class="n">LegacySourceMixin</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A media attachment to a Survey, e.g. start or end photos.&quot;&quot;&quot;</span>
+
+    <span class="n">MEDIA_TYPE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;data_sheet&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Data sheet&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;communication&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Communication record&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;photograph&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Photograph&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Other&#39;</span><span class="p">)),</span> <span class="p">)</span>
+
+    <span class="n">survey</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Survey</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Survey&quot;</span><span class="p">),</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;attachments&#39;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;The Survey this attachment belongs to.&quot;</span><span class="p">),)</span>
+
+    <span class="n">media_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Attachment type&quot;</span><span class="p">),</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">MEDIA_TYPE_CHOICES</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;photograph&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;What is the attached file about?&quot;</span><span class="p">),)</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Attachment name&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Give the attachment a representative name.&quot;</span><span class="p">),)</span>
+
+    <span class="n">attachment</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FileField</span><span class="p">(</span>
+        <span class="n">upload_to</span><span class="o">=</span><span class="n">survey_media</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;File attachment&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Upload the file.&quot;</span><span class="p">),)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class opts.&quot;&quot;&quot;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Survey Media Attachment&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s2">&quot;Media </span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> for </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">survey</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">survey</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filepath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The path to attached file.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fpath</span> <span class="o">=</span> <span class="n">force_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attachment</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+            <span class="n">fpath</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">fpath</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span>
+                <span class="s1">&#39;&lt;a href=&quot;</span><span class="si">{0}</span><span class="s1">&quot; target=&quot;_&quot; rel=&quot;nofollow&quot; &#39;</span>
+                <span class="s1">&#39;title=&quot;Click to view full screen in new browser tab&quot;&gt;&#39;</span>
+                <span class="s1">&#39;&lt;img src=&quot;</span><span class="si">{0}</span><span class="s1">&quot; alt=&quot;</span><span class="si">{1}</span><span class="s1"> </span><span class="si">{2}</span><span class="s1">&quot; style=&quot;height:100px;&quot;&gt;&lt;/img&gt;&#39;</span>
+                <span class="s1">&#39;&lt;/a&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attachment</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_media_type_display</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+                <span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
 <span class="c1"># Utilities ------------------------------------------------------------------#</span>
@@ -1584,11 +1768,6 @@
 <span class="sd">    Changes to the QA status, as wells as versions of the data are logged to</span>
 <span class="sd">    preserve the data lineage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">STATUS_NEW</span> <span class="o">=</span> <span class="s1">&#39;new&#39;</span>
-    <span class="n">STATUS_PROOFREAD</span> <span class="o">=</span> <span class="s1">&#39;proofread&#39;</span>
-    <span class="n">STATUS_CURATED</span> <span class="o">=</span> <span class="s1">&#39;curated&#39;</span>
-    <span class="n">STATUS_PUBLISHED</span> <span class="o">=</span> <span class="s1">&#39;published&#39;</span>
 
     <span class="n">LOCATION_DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;1000&quot;</span>
     <span class="n">LOCATION_ACCURACY_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
@@ -1677,12 +1856,6 @@
                     <span class="s2">&quot;a newly allocated ID if left blank. Delete and save &quot;</span>
                     <span class="s2">&quot;to regenerate this ID.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
-    <span class="c1"># status = FSMField(</span>
-    <span class="c1">#     db_index=True,</span>
-    <span class="c1">#     default=QualityControlMixin.STATUS_NEW,</span>
-    <span class="c1">#     choices=QualityControlMixin.STATUS_CHOICES,</span>
-    <span class="c1">#     verbose_name=_(&quot;QA Status&quot;))</span>
-
     <span class="n">where</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">PointField</span><span class="p">(</span>
         <span class="n">srid</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Observed at&quot;</span><span class="p">),</span>
@@ -1721,7 +1894,7 @@
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_DEFAULT</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">TSC_ADMIN_USER</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Observed by&quot;</span><span class="p">),</span>
-        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;observer&quot;</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;encounters_observed&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
             <span class="s2">&quot;The person who encountered the subject, and executed any measurements. &quot;</span>
             <span class="s2">&quot;The observer is the source of measurement bias.&quot;</span><span class="p">))</span>
@@ -1731,7 +1904,7 @@
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_DEFAULT</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">TSC_ADMIN_USER</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Recorded by&quot;</span><span class="p">),</span>
-        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;reporter&quot;</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;encounters_reported&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
             <span class="s2">&quot;The person who wrote the initial data sheet in the field. &quot;</span>
             <span class="s2">&quot;The reporter is the source of handwriting and spelling errors. &quot;</span><span class="p">))</span>
@@ -1783,11 +1956,23 @@
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># URLs</span>
+    <span class="c1"># Override create and update until we have front end forms</span>
+<div class="viewcode-block" id="Encounter.create_url"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.create_url">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create url. Default: app:model-create.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;admin:</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">_add&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update url. Redirects to admin update URL, as we don&#39;t have a front end form yet.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_admin_url</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">absolute_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the absolute admin change URL.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;admin:</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">_change&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="p">])</span>
 
 <div class="viewcode-block" id="Encounter.make_rest_listurl"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.make_rest_listurl">[docs]</a>    <span class="k">def</span> <span class="nf">make_rest_listurl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the API list URL in given format (default: JSON).</span>
@@ -1811,6 +1996,10 @@
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Derived properties</span>
+<div class="viewcode-block" id="Encounter.card_template"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.card_template">[docs]</a>    <span class="k">def</span> <span class="nf">card_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;observations/encounter_card.html&#39;</span></div>
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">leaflet_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A string for Leaflet map marker titles. Cache me as field.&quot;&quot;&quot;</span>
@@ -2519,6 +2708,7 @@
 
     <span class="n">transect</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">LineStringField</span><span class="p">(</span>
         <span class="n">srid</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span>
+        <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Transect line&quot;</span><span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The line transect as LineString in WGS84&quot;</span><span class="p">))</span>
 
@@ -4131,7 +4321,7 @@
 
 
 <div class="viewcode-block" id="LoggerObservation"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.LoggerObservation">[docs]</a><span class="k">class</span> <span class="nc">LoggerObservation</span><span class="p">(</span><span class="n">Observation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A logger is oobserved during an Encounter.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;A logger is observed during an Encounter.&quot;&quot;&quot;</span>
     <span class="n">LOGGER_TYPE_DEFAULT</span> <span class="o">=</span> <span class="s1">&#39;temperature-logger&#39;</span>
     <span class="n">LOGGER_TYPE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">LOGGER_TYPE_DEFAULT</span><span class="p">,</span> <span class="s1">&#39;Temperature Logger&#39;</span><span class="p">),</span>
@@ -4168,7 +4358,7 @@
         <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Logger ID&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The ID of a logger must be unique within the tag type.&quot;</span><span class="p">),)</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The ID of a logger must be unique within the tag type.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">comments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Comment&quot;</span><span class="p">),</span>
