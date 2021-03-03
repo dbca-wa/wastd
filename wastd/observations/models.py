@@ -1261,15 +1261,17 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         """
         survey_pks = [survey.pk for survey in self.duplicate_surveys.all()] + [self.pk]
         all_encounters = Encounter.objects.filter(survey_id__in=survey_pks)
-        msg = "Closing {0} duplicate(s) of Survey {1}.".format(len(survey_pks) - 1, self.pk)
+        curator = actor if actor else User.objects.get(pk=1)
+        msg = "Closing {0} duplicate(s) of Survey {1} as {2}.".format(len(survey_pks) - 1, self.pk, curator)
 
         # All duplicate Surveys shall be closed (not production) and own no Encounters
         for d in self.duplicate_surveys.all():
-            logger.debug("Closing Survey {0}".format(d.pk))
+            logger.debug("Closing Survey {0} with actor {1}".format(d.pk, curator))
             d.production = False
             d.save()
             if d.status != QualityControlMixin.STATUS_CURATED:
-                d.curate(by=actor or User.objects.get(pk=1))
+                d.curate(by=curator)
+                d.save()
         # From all Encounters (if any), adjust duration
         if all_encounters.count() > 0:
             earliest_enc = min([e.when for e in all_encounters])
@@ -1297,7 +1299,9 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         self.production = True
         self.save()
         if self.status != QualityControlMixin.STATUS_CURATED:
-            self.curate(by=actor or User.objects.get(pk=1))
+            self.curate(by=curator)
+            self.save()
+            print(self.status)
 
         logger.info(msg)
         return msg

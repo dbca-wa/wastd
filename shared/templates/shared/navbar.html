@@ -262,10 +262,16 @@
                 <span class="align-left">Users from teams (comma)</span>
               </a>
               <a class="dropdown-item"
-                 href="{% url 'users:user-list' %}?username=and_&is_active=true"
+                 href="{% url 'users:user-list' %}?username=_and_&is_active=true"
                  title="Users with an 'and' in the name were made from team lists and need to be merged">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span>
                 <span class="align-left">Users from teams (and)</span>
+              </a>
+              <a class="dropdown-item"
+                 href="{% url 'users:user-list' %}?name=%26&is_active=true"
+                 title="Users with an ampersand in the name were made from team lists and need to be merged">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <span class="align-left">Users from teams (ampersand)</span>
               </a>
               {% if request.user.is_staff %}
               <div class="dropdown-divider"></div>
