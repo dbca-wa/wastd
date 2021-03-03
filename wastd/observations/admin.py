@@ -944,7 +944,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         ('area', AreaFilter),
         ('site', SiteFilter),
         'status',
-        # 'observer', 'reporter',
+        'observer',
+        'reporter',
 
         'location_accuracy',
         'encounter_type',
@@ -975,26 +976,32 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = ['area', 'site', 'survey', 'observer', 'reporter', ]
-    # observer = forms.ChoiceField(
-    #     widget=ModelSelect2Widget(
-    #         model=get_user_model(),
-    #         search_fields=[
-    #             "username__icontains",
-    #             "name__icontains",
-    #             "role__icontains",
-    #             "email__icontains"]
-    #     )
-    # )
-    # reporter = forms.ChoiceField(
-    #     widget=ModelSelect2Widget(
-    #         model=get_user_model(),
-    #         search_fields=[
-    #             "username__icontains",
-    #             "name__icontains",
-    #             "role__icontains",
-    #             "email__icontains"]
-    #     )
-    # )
+    observer = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=get_user_model(),
+            search_fields=[
+                "pk__icontains",
+                "username__icontains",
+                "name__icontains",
+                "aliases__icontains",
+                "role__icontains",
+                "affiliation__icontains",
+                "email__icontains"]
+        )
+    )
+    reporter = forms.ChoiceField(
+        widget=ModelSelect2Widget(
+            model=get_user_model(),
+            search_fields=[
+                "pk__icontains",
+                "username__icontains",
+                "name__icontains",
+                "aliases__icontains",
+                "role__icontains",
+                "affiliation__icontains",
+                "email__icontains"]
+        )
+    )
     # area = forms.ChoiceField(
     #     widget=ModelSelect2Widget(
     #         model=Area,

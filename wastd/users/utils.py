@@ -73,6 +73,7 @@ def transfer_user(old, new):
 
     # ------------------------------------------------------------------------#
     # Transfer FK and M2M
+    # Alternatively, one could use the model API to programmatically find FKs
     for x in old.encounters_reported.all():
         x.reporter = new
         x.save()
@@ -126,6 +127,7 @@ def transfer_user(old, new):
     old_details = [old.username, old.name]
     combined_aliases = list(set(new_aliases + old_aliases + old_details))
     new.aliases = ", ".join([x for x in combined_aliases if x != ""])
+    new.is_active = True # So we can revert an incorrect Uer merge
 
     # Role is too messy to deduplicate
     if old.role and old.role != "":

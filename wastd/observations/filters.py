@@ -136,6 +136,8 @@ class EncounterFilter(FilterSet):
             'site',
             'when',
             'where',
+            'reporter',
+            'observer',
             'encounter_type',
             'source',
         ]

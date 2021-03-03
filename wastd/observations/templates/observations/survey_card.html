@@ -81,7 +81,7 @@
       {% if object.attachments %}
       {% for a in object.attachments.all %}
       <div class="card shadow-lg">
-        <img src="{{ a.attachment.url }}"
+        <img src="{% if a.attachment %}{{ a.attachment.url }}{% endif %}"
           class="card-img-top" alt="{{ a.title }}">
         <div class="card-body">
           <p class="card-text">{{ a.title }}</p>
