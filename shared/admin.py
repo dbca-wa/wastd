@@ -2,7 +2,10 @@
 """Shared admin."""
 from __future__ import unicode_literals
 
+from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.gis.db import models as geo_models
+from django.db import models
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from django_fsm_log.admin import StateLogInline
@@ -22,6 +25,31 @@ LEAFLET_WIDGET_ATTRS = {
 }
 LEAFLET_SETTINGS = {'widget': LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS)}
 
+
+class CustomStateLogInline(StateLogInline):
+    """Custom StateLogInline."""
+
+    classes = ('grp-collapse', 'grp-closed', 'wide', 'extrapretty', )
+
+
+class AdminImageWidget(AdminFileWidget):
+
+    def render(self, name, value, attrs=None, renderer=None):
+        output = []
+
+        if value and getattr(value, "url", None):
+            image_url = value.url
+            file_name = str(value)
+
+            output.append(
+                f' <a href="{image_url}" target="_blank">'
+                f'  <img src="{image_url}" alt="{file_name}" width="150" height="150" '
+                f'style="object-fit: cover;"/> </a>')
+
+        output.append(super(AdminFileWidget, self).render(name, value, attrs, renderer))
+        return mark_safe(u''.join(output))
+
+
 FORMFIELD_OVERRIDES = {
     geo_models.PointField: LEAFLET_SETTINGS,
     geo_models.MultiPointField: LEAFLET_SETTINGS,
@@ -29,13 +57,9 @@ FORMFIELD_OVERRIDES = {
     geo_models.MultiLineStringField: LEAFLET_SETTINGS,
     geo_models.PolygonField: LEAFLET_SETTINGS,
     geo_models.MultiPolygonField: LEAFLET_SETTINGS,
+    models.ImageField: {'widget': AdminImageWidget},
+    models.FileField: {'widget': AdminImageWidget}
 }
-
-
-class CustomStateLogInline(StateLogInline):
-    """Custom StateLogInline."""
-
-    classes = ('grp-collapse', 'grp-closed', 'wide', 'extrapretty', )
 
 
 class CodeLabelDescriptionAdmin(VersionAdmin):

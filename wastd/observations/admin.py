@@ -68,20 +68,13 @@ class SiteFilter(RelatedFieldListFilter):
         return field.get_choices(include_blank=False, limit_choices_to={'area_type': Area.AREATYPE_SITE})
 
 
-
-class ImageThumbnailFileInput(ff.ClearableFileInput):
-    """Image thumbnail admin."""
-
-    template_name = 'floppyforms/image_thumbnail.html'
-
-
 class MediaAttachmentInline(admin.TabularInline):
     """TabularInlineAdmin for MediaAttachment."""
 
     extra = 0
     model = MediaAttachment
     classes = ('grp-collapse grp-open',)
-    widgets = {'attachment': ImageThumbnailFileInput}  # seems inactive
+    formfield_overrides = FORMFIELD_OVERRIDES
 
 
 class TagObservationInline(admin.TabularInline):
@@ -227,12 +220,14 @@ class LoggerObservationInline(admin.TabularInline):
     model = LoggerObservation
     classes = ('grp-collapse grp-open',)
 
+
 class SurveyMediaAttachmentInline(admin.TabularInline):
     """Admin for SurveyMediaAttachment."""
 
     extra = 0
     model = SurveyMediaAttachment
     classes = ('grp-collapse grp-open',)
+    formfield_overrides = FORMFIELD_OVERRIDES
 
 
 class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
@@ -273,6 +268,7 @@ class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
             search_fields=["name__icontains", ]
         )
     )
+    formfield_overrides = FORMFIELD_OVERRIDES
 
     def area(self, obj):
         """Make data source readable."""
@@ -363,6 +359,7 @@ class MediaAttachmentAdmin(ObservationAdminMixin):
     )
     search_fields = ('title', )
     # readonly_fields = ('thumbnail',)
+    formfield_overrides = FORMFIELD_OVERRIDES
 
     def get_queryset(self, request):
         return super(
@@ -841,7 +838,7 @@ class FieldMediaAttachmentInline(admin.TabularInline):
     extra = 0
     model = FieldMediaAttachment
     classes = ('grp-collapse grp-open',)
-    widgets = {'attachment': ImageThumbnailFileInput}  # seems inactive
+    formfield_overrides = FORMFIELD_OVERRIDES
 
 
 @admin.register(Survey)

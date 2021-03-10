@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wastd.observations.models &mdash; WAStD 0.50.7 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.50.8 documentation</title>
   
 
   
@@ -1422,15 +1422,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">survey_pks</span> <span class="o">=</span> <span class="p">[</span><span class="n">survey</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">survey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">duplicate_surveys</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span>
         <span class="n">all_encounters</span> <span class="o">=</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">survey_id__in</span><span class="o">=</span><span class="n">survey_pks</span><span class="p">)</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Closing </span><span class="si">{0}</span><span class="s2"> duplicate(s) of Survey </span><span class="si">{1}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">survey_pks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="n">curator</span> <span class="o">=</span> <span class="n">actor</span> <span class="k">if</span> <span class="n">actor</span> <span class="k">else</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Closing </span><span class="si">{0}</span><span class="s2"> duplicate(s) of Survey </span><span class="si">{1}</span><span class="s2"> as </span><span class="si">{2}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">survey_pks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">curator</span><span class="p">)</span>
 
         <span class="c1"># All duplicate Surveys shall be closed (not production) and own no Encounters</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">duplicate_surveys</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Closing Survey </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Closing Survey </span><span class="si">{0}</span><span class="s2"> with actor </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">curator</span><span class="p">))</span>
             <span class="n">d</span><span class="o">.</span><span class="n">production</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">d</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">QualityControlMixin</span><span class="o">.</span><span class="n">STATUS_CURATED</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">curate</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">actor</span> <span class="ow">or</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">curate</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">curator</span><span class="p">)</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="c1"># From all Encounters (if any), adjust duration</span>
         <span class="k">if</span> <span class="n">all_encounters</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">earliest_enc</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">when</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">all_encounters</span><span class="p">])</span>
@@ -1458,7 +1460,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">production</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">QualityControlMixin</span><span class="o">.</span><span class="n">STATUS_CURATED</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">curate</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">actor</span> <span class="ow">or</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">curate</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">curator</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">msg</span></div></div>

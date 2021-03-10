@@ -38,6 +38,7 @@ class FastAreaSerializer(ModelSerializer):
 
 class SurveySerializer(GeoFeatureModelSerializer):
     reporter = FastUserSerializer(many=False)
+    area = FastAreaSerializer(many=False)
     site = FastAreaSerializer(many=False)
     status = ReadOnlyField()
     start_photo = FileField(required=False)
@@ -51,12 +52,14 @@ class SurveySerializer(GeoFeatureModelSerializer):
 
 class FastSurveySerializer(ModelSerializer):
     reporter = FastUserSerializer(many=False, read_only=True)
+    area = FastAreaSerializer(many=False, read_only=True)
     site = FastAreaSerializer(many=False, read_only=True)
 
     class Meta:
         model = models.Survey
         fields = [
             "id",
+            "area",
             "site",
             "start_time",
             "end_time",
@@ -72,6 +75,7 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
     """A special Serializer for SurveyMediaAttachment to handle file uploads."""
 
     attachment = FileField(required=True)
+    survey = FastSurveySerializer(read_only=True)
 
     class Meta:
         model = models.SurveyMediaAttachment
@@ -85,99 +89,94 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
             'attachment'
         )
 
-    # TODO
+    def validate(self, data):
+        """Raise ValidateError on missing Survey.
 
-    #     def validate(self, data):
-    #     """Raise ValidateError on missing Encounter (encounter PK or source & source_id value).
-    #     """
-    #     if 'survey_id' not in self.initial_data and (
-    #         'survey_source' not in self.initial_data and
-    #         'survey_source_id' not in self.initial_data
-    #     ):
-    #         raise ValidationError(
-    #             'Survey reference is required, either as encounter_id or as '
-    #             'encounter_source and encounter_source_id.'
-    #         )
-    #     if 'encounter_id' in self.initial_data:
-    #         if not models.Encounter.objects.filter(pk=self.initial_data['encounter_id']).exists():
-    #             raise ValidationError(
-    #                 'Encounter {} does not exist.'.format(self.initial_data['encounter_id'])
-    #             )
-    #     if 'encounter_source' in self.initial_data and 'encounter_source_id' in self.initial_data:
-    #         if not models.Encounter.objects.filter(
-    #             source=self.initial_data['encounter_source'],
-    #             source_id=self.initial_data['encounter_source_id']
-    #         ).exists():
-    #             raise ValidationError(
-    #                 'Encounter with source {} and source_id {} does not exist.'.format(
-    #                     self.initial_data['encounter_source'],
-    #                     self.initial_data['encounter_source_id'])
-    #             )
-    #     return data
+           Fields sent:
+           "source", "source_id", "survey_source_id", "survey_end_source_id",
+           "media_type", "title", "attachment"
+        """
 
-    # def create(self, validated_data):
-    #     """Create one new object, resolve Encounter from either PK or source & source_id.
-    #     """
+        survey_found = False
+        has_source = 'survey_source' in self.initial_data and self.initial_data["survey_source"] != 'NA'
+        has_source_id = 'survey_source_id' in self.initial_data and self.initial_data["survey_source_id"] != 'NA'
+        has_end_source_id = 'survey_end_source_id' in self.initial_data and self.initial_data[
+            "survey_end_source_id"] != 'NA'
+        if (has_source and has_source_id and
+                models.Survey.objects.filter(
+                    source=self.initial_data['survey_source'],
+                    source_id=self.initial_data['survey_source_id']
+                ).exists()):
+            survey_found = True
 
-    #     if 'encounter_id' in self.initial_data:
-    #         validated_data['encounter'] = models.Encounter.objects.get(
-    #             pk=self.initial_data['encounter_id'])
-    #     else:
-    #         validated_data['encounter'] = models.Encounter.objects.get(
-    #             source=self.initial_data['encounter_source'],
-    #             source_id=self.initial_data['encounter_source_id'])
-    #     return self.Meta.model.objects.create(**validated_data)
+        if (has_source and has_end_source_id and
+                models.Survey.objects.filter(
+                    source=self.initial_data['survey_source'],
+                    end_source_id=self.initial_data['survey_end_source_id']
+                ).exists()):
+            survey_found = True
+        if survey_found == False:
+            raise ValidationError(
+                'Survey does not exist with source {0}, source_id {1} and end_source_id {2}'.format(
+                    self.initial_data['survey_source'],
+                    self.initial_data['survey_source_id'],
+                    self.initial_data['survey_end_source_id']
+                )
+            )
 
-    # def save(self):
-    #     """Override the save method in order to prevent 'duplicate' instances being created by
-    #     the API endpoints. We override save in order to avoid duplicate by either create or update.
-    #     """
-    #     # logger.info(str(self.validated_data))
-    #     # unique_data = {
-    #     #     source: self.validated_data["source"],
-    #     #     source_id: self.validated_data["source_id"]
-    #     # }
+        return data
 
-    #     if 'encounter' in self.initial_data:
-    #         self.validated_data['encounter'] = models.Encounter.objects.get(
-    #             pk=self.initial_data['encounter']
-    #         )
-    #     else:
-    #         self.validated_data['encounter'] = models.Encounter.objects.get(
-    #             source = self.initial_data["encounter_source"],
-    #             source_id = self.initial_data["encounter_source_id"]
-    #             )
-    #     # import ipdb; ipdb.set_trace()
-    #     # Gate check: we want to ensure that duplicate objects are not created.
-    #     duplicates = self.Meta.model.objects.filter(
-    #         source = self.initial_data["source"],
-    #         source_id = self.initial_data["source_id"]
-    #     )
-    #     if duplicates.exists():
-    #         if duplicates.count() == 1:
-    #             # TODO: work out how we might return HTTP status 200 instead of 201.
-    #             # Update existing record: breaks file upload paths! bad!
-    #             # logger.info(f"Updating existing record {str(self.validated_data)}")
-    #             # duplicates.update(**self.validated_data)
-    #             # duplicates.first().save()
+    def create(self, validated_data):
+        """Create one new object, resolve Survey from survey_source and
+           either survey_source_id or survey_end_source_id.
+        """
 
-    #             # return self.Meta.model.objects.get(
-    #             #     source = self.initial_data["source"],
-    #             #     source_id = self.initial_data["source_id"])
-    #             # simpler:
-    #             return duplicates.first()
-    #         else:
-    #             # Passed-in data matches >1 existing instance, so raise a validation error.
-    #             raise ValidationError("{}: existing duplicate(s) with {} ".format(
-    #                 self.Meta.model._meta.label, str(**self.validated_data)
-    #             ))
-    #     else:
-    #         # Create the new, unique instance.
-    #         return self.Meta.model.objects.create(**self.validated_data)
+        if 'survey_source_id' in self.initial_data:
+            validated_data['survey'] = models.Survey.objects.get(
+                source=self.initial_data['survey_source'],
+                source_id=self.initial_data['survey_source_id'])
+        else:
+            validated_data['survey'] = models.Survey.objects.get(
+                end_source=self.initial_data['survey_source'],
+                end_source_id=self.initial_data['survey_end_source_id'])
+        return self.Meta.model.objects.create(**validated_data)
+
+    def save(self):
+        """Override the save method in order to prevent 'duplicate' instances being created by
+           the API endpoints. We override save in order to avoid duplicate by either create or update.
+        """
+
+        if 'survey_source_id' in self.initial_data:
+            self.validated_data['survey'] = models.Survey.objects.get(
+                source=self.initial_data['survey_source'],
+                source_id=self.initial_data['survey_source_id'])
+        else:
+            self.validated_data['survey'] = models.Survey.objects.get(
+                end_source=self.initial_data['survey_source'],
+                end_source_id=self.initial_data['survey_end_source_id'])
+
+        # Gate check: we want to ensure that duplicate objects are not created.
+        duplicates = self.Meta.model.objects.filter(
+            source = self.initial_data["source"],
+            source_id = self.initial_data["source_id"]
+        )
+        if duplicates.exists():
+            if duplicates.count() == 1:
+                return duplicates.first()
+            else:
+                # Passed-in data matches >1 existing instance, so raise a validation error.
+                raise ValidationError("{}: existing duplicate(s) with {} ".format(
+                    self.Meta.model._meta.label, str(**self.validated_data)
+                ))
+        else:
+            # Create the new, unique instance.
+            return self.Meta.model.objects.create(**self.validated_data)
 
 # ----------------------------------------------------------------------------#
 # Encounter
 # ----------------------------------------------------------------------------#
+
+
 class EncounterSerializer(GeoFeatureModelSerializer):
     """Encounter serializer.
     """
@@ -336,7 +335,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
             "cause_of_death_confidence",
             "absolute_admin_url",  # "photographs", "tx_logs",
             # "observation_set",
-            )
+        )
         geo_field = "where"
         id_field = "source_id"
 
@@ -527,14 +526,14 @@ class ObservationSerializer(ModelSerializer):
             )
         else:
             self.validated_data['encounter'] = models.Encounter.objects.get(
-                source = self.initial_data["encounter_source"],
-                source_id = self.initial_data["encounter_source_id"]
-                )
+                source=self.initial_data["encounter_source"],
+                source_id=self.initial_data["encounter_source_id"]
+            )
         # import ipdb; ipdb.set_trace()
         # Gate check: we want to ensure that duplicate objects are not created.
         duplicates = self.Meta.model.objects.filter(
-            source = self.initial_data["source"],
-            source_id = self.initial_data["source_id"]
+            source=self.initial_data["source"],
+            source_id=self.initial_data["source_id"]
         )
         if duplicates.exists():
             if duplicates.count() == 1:

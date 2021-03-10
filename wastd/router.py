@@ -7,6 +7,9 @@ router = DefaultRouter()
 router.register("users", users_api.UserViewSet)
 router.register("area", observations_api.AreaViewSet)
 router.register("surveys", observations_api.SurveyViewSet)
+router.register(
+    "survey-media-attachments",
+    observations_api.SurveyMediaAttachmentViewSet)
 
 # Encounters
 router.register(
@@ -41,11 +44,6 @@ router.register(
 router.register(
     "media-attachments",
     observations_api.MediaAttachmentViewSet)
-
-# TODO
-# router.register(
-#     "survey-media-attachments",
-#     observations_api.SurveyMediaAttachmentViewSet)
 
 # Animal Observations
 router.register(

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wastd.observations.admin &mdash; WAStD 0.50.7 documentation</title>
+  <title>wastd.observations.admin &mdash; WAStD 0.50.8 documentation</title>
   
 
   
@@ -1105,7 +1105,8 @@
         <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">AreaFilter</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="n">SiteFilter</span><span class="p">),</span>
         <span class="s1">&#39;status&#39;</span><span class="p">,</span>
-        <span class="c1"># &#39;observer&#39;, &#39;reporter&#39;,</span>
+        <span class="s1">&#39;observer&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reporter&#39;</span><span class="p">,</span>
 
         <span class="s1">&#39;location_accuracy&#39;</span><span class="p">,</span>
         <span class="s1">&#39;encounter_type&#39;</span><span class="p">,</span>
@@ -1136,26 +1137,32 @@
     <span class="n">form</span> <span class="o">=</span> <span class="n">s2form</span><span class="p">(</span><span class="n">Encounter</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">S2ATTRS</span><span class="p">)</span>
     <span class="n">formfield_overrides</span> <span class="o">=</span> <span class="n">FORMFIELD_OVERRIDES</span>
     <span class="n">autocomplete_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="p">]</span>
-    <span class="c1"># observer = forms.ChoiceField(</span>
-    <span class="c1">#     widget=ModelSelect2Widget(</span>
-    <span class="c1">#         model=get_user_model(),</span>
-    <span class="c1">#         search_fields=[</span>
-    <span class="c1">#             &quot;username__icontains&quot;,</span>
-    <span class="c1">#             &quot;name__icontains&quot;,</span>
-    <span class="c1">#             &quot;role__icontains&quot;,</span>
-    <span class="c1">#             &quot;email__icontains&quot;]</span>
-    <span class="c1">#     )</span>
-    <span class="c1"># )</span>
-    <span class="c1"># reporter = forms.ChoiceField(</span>
-    <span class="c1">#     widget=ModelSelect2Widget(</span>
-    <span class="c1">#         model=get_user_model(),</span>
-    <span class="c1">#         search_fields=[</span>
-    <span class="c1">#             &quot;username__icontains&quot;,</span>
-    <span class="c1">#             &quot;name__icontains&quot;,</span>
-    <span class="c1">#             &quot;role__icontains&quot;,</span>
-    <span class="c1">#             &quot;email__icontains&quot;]</span>
-    <span class="c1">#     )</span>
-    <span class="c1"># )</span>
+    <span class="n">observer</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">ModelSelect2Widget</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">get_user_model</span><span class="p">(),</span>
+            <span class="n">search_fields</span><span class="o">=</span><span class="p">[</span>
+                <span class="s2">&quot;pk__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;username__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;aliases__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;role__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;affiliation__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;email__icontains&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">reporter</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">ModelSelect2Widget</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">get_user_model</span><span class="p">(),</span>
+            <span class="n">search_fields</span><span class="o">=</span><span class="p">[</span>
+                <span class="s2">&quot;pk__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;username__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;aliases__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;role__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;affiliation__icontains&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;email__icontains&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
     <span class="c1"># area = forms.ChoiceField(</span>
     <span class="c1">#     widget=ModelSelect2Widget(</span>
     <span class="c1">#         model=Area,</span>

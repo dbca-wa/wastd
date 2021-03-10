@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer documentation &mdash; WAStD 0.50.7 documentation</title>
+  <title>Developer documentation &mdash; WAStD 0.50.8 documentation</title>
   
 
   
@@ -5906,7 +5906,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.AnimalEncounterAdmin.list_filter">
-<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source',</span> <span class="pre">'taxon',</span> <span class="pre">'species',</span> <span class="pre">'health',</span> <span class="pre">'cause_of_death',</span> <span class="pre">'cause_of_death_confidence',</span> <span class="pre">'maturity',</span> <span class="pre">'sex',</span> <span class="pre">'habitat',</span> <span class="pre">'nesting_event',</span> <span class="pre">'checked_for_injuries',</span> <span class="pre">'scanned_for_pit_tags',</span> <span class="pre">'checked_for_flipper_tags')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source',</span> <span class="pre">'taxon',</span> <span class="pre">'species',</span> <span class="pre">'health',</span> <span class="pre">'cause_of_death',</span> <span class="pre">'cause_of_death_confidence',</span> <span class="pre">'maturity',</span> <span class="pre">'sex',</span> <span class="pre">'habitat',</span> <span class="pre">'nesting_event',</span> <span class="pre">'checked_for_injuries',</span> <span class="pre">'scanned_for_pit_tags',</span> <span class="pre">'checked_for_flipper_tags')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -6133,7 +6133,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.EncounterAdmin.list_filter">
-<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source')</span></em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source')</span></em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -6150,6 +6150,16 @@ admin site. This is used by changelist_view.</p>
 <dl class="py method">
 <dt id="wastd.observations.admin.EncounterAdmin.media">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="wastd.observations.admin.EncounterAdmin.observer">
+<code class="sig-name descname"><span class="pre">observer</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.observer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="wastd.observations.admin.EncounterAdmin.reporter">
+<code class="sig-name descname"><span class="pre">reporter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.reporter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -6425,7 +6435,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.LoggerEncounterAdmin.list_filter">
-<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source',</span> <span class="pre">'logger_type',</span> <span class="pre">'deployment_status')</span></em><a class="headerlink" href="#wastd.observations.admin.LoggerEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source',</span> <span class="pre">'logger_type',</span> <span class="pre">'deployment_status')</span></em><a class="headerlink" href="#wastd.observations.admin.LoggerEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -7543,7 +7553,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.TurtleNestEncounterAdmin.list_filter">
-<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source',</span> <span class="pre">'nest_age',</span> <span class="pre">'nest_type',</span> <span class="pre">'species',</span> <span class="pre">'habitat',</span> <span class="pre">'disturbance',</span> <span class="pre">'nest_tagged',</span> <span class="pre">'logger_found',</span> <span class="pre">'eggs_counted',</span> <span class="pre">'hatchlings_measured',</span> <span class="pre">'fan_angles_measured')</span></em><a class="headerlink" href="#wastd.observations.admin.TurtleNestEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source',</span> <span class="pre">'nest_age',</span> <span class="pre">'nest_type',</span> <span class="pre">'species',</span> <span class="pre">'habitat',</span> <span class="pre">'disturbance',</span> <span class="pre">'nest_tagged',</span> <span class="pre">'logger_found',</span> <span class="pre">'eggs_counted',</span> <span class="pre">'hatchlings_measured',</span> <span class="pre">'fan_angles_measured')</span></em><a class="headerlink" href="#wastd.observations.admin.TurtleNestEncounterAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
