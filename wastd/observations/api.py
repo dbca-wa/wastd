@@ -66,6 +66,8 @@ class SurveyFilter(FilterSet):
         model = models.Survey
         fields = {
             "id": "__all__",
+            "area": "__all__",
+            "site": "__all__",
             "start_time": "__all__",
             "end_time": "__all__",
             "start_comments": "__all__",
@@ -87,11 +89,26 @@ class SurveyViewSet(BatchUpsertViewSet):
 
     All filters are available on all fields except location and team.
     """
-    queryset = models.Survey.objects.all().prefetch_related("reporter", "site", "team")
+    queryset = models.Survey.objects.all().prefetch_related("reporter", "area", "site", "team")
     serializer_class = serializers.SurveySerializer
     filter_class = SurveyFilter
     pagination_class = MyGeoJsonPagination  # provides top level features
     model = models.Survey
+
+
+class SurveyMediaAttachmentViewSet(ModelViewSet):
+    """Binary media (photos, datasheet PDFs etc) of Surveys.
+
+    Can be many per Survey.
+
+    [Admin](/admin/observations/survey-media-attachments/)
+    """
+    queryset = models.SurveyMediaAttachment.objects.all().prefetch_related(
+        "survey__reporter", "survey__site", "survey__area")
+    serializer_class = serializers.SurveyMediaAttachmentSerializer
+    pagination_class = MyGeoJsonPagination
+    parser_classes = [FormParser, MultiPartParser]
+    model = models.SurveyMediaAttachment
 
 
 class EncounterFilter(FilterSet):
@@ -101,6 +118,7 @@ class EncounterFilter(FilterSet):
         model = models.Encounter
         fields = {
             "source": ["iexact", "icontains"],
+            "area": "__all__",
             "site": "__all__",
             "survey": "__all__",
             "location_accuracy": ["iexact", "icontains"],
@@ -587,24 +605,6 @@ class MediaAttachmentViewSet(ModelViewSet):
     pagination_class = MyGeoJsonPagination
     parser_classes = [FormParser, MultiPartParser]
     model = models.MediaAttachment
-
-
-# TODO
-# class SurveyMediaAttachmentViewSet(ModelViewSet):
-#     """Binary media (photos, datasheet PDFs etc) with Survey details.
-
-#     Can be many per Survey.
-#     [Admin](/admin/observations/survey-media-attachments/)
-#     """
-#     queryset = models.SurveyMediaAttachment.objects.all().prefetch_related(
-#         # "encounter__observer", "encounter__reporter",
-#         # "encounter__survey", "encounter__survey__reporter",
-#         "survey__site", #"encounter__area",
-#     )
-#     serializer_class = serializers.SurveyMediaAttachmentSerializer
-#     pagination_class = MyGeoJsonPagination
-#     parser_classes = [FormParser, MultiPartParser]
-#     model = models.SurveyMediaAttachment
 
 
 class TagObservationViewSet(ObservationBatchUpsertViewSet):
