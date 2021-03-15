@@ -1272,6 +1272,10 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
             if d.status != QualityControlMixin.STATUS_CURATED:
                 d.curate(by=curator)
                 d.save()
+            for a in d.attachments.all():
+                a.survey = self
+                a.save()
+
         # From all Encounters (if any), adjust duration
         if all_encounters.count() > 0:
             earliest_enc = min([e.when for e in all_encounters])

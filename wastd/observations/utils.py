@@ -110,11 +110,14 @@ def reconstruct_missing_surveys(buffer_mins=30):
             row['datetime']['min'] - bfr,
             row['datetime']['max'] + bfr
         ))
+        ste = Area.objects.get(id=idx[1])
         s = Survey.objects.create(
             source="reconstructed",
-            site=Area.objects.get(id=idx[1]),
+            site=ste,
+            start_location = ste.centroid,
             start_time=row['datetime']['min'] - bfr,
             end_time=row['datetime']['max'] + bfr,
+            end_location = ste.centroid,
             reporter=row['reporter']['first'],
             start_comments="[QA][AUTO] Reconstructed by WAStD from TurtleNestEncounters without surveys."
         )
