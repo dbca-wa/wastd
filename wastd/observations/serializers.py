@@ -97,7 +97,6 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
            "media_type", "title", "attachment"
         """
 
-        survey_found = False
         has_source = 'survey_source' in self.initial_data and self.initial_data["survey_source"] != 'NA'
         has_source_id = 'survey_source_id' in self.initial_data and self.initial_data["survey_source_id"] != 'NA'
         has_end_source_id = 'survey_end_source_id' in self.initial_data and self.initial_data[
@@ -107,22 +106,25 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
                     source=self.initial_data['survey_source'],
                     source_id=self.initial_data['survey_source_id']
                 ).exists()):
-            survey_found = True
+            data['survey'] = models.Survey.objects.get(
+                    source=self.initial_data['survey_source'],
+                    source_id=self.initial_data['survey_source_id']
+                )
 
-        if (has_source and has_end_source_id and
+        elif (has_source and has_end_source_id and
                 models.Survey.objects.filter(
                     source=self.initial_data['survey_source'],
                     end_source_id=self.initial_data['survey_end_source_id']
                 ).exists()):
-            survey_found = True
-        if survey_found == False:
-            raise ValidationError(
-                'Survey does not exist with source {0}, source_id {1} and end_source_id {2}'.format(
-                    self.initial_data['survey_source'],
-                    self.initial_data['survey_source_id'],
-                    self.initial_data['survey_end_source_id']
+            data['survey'] = models.Survey.objects.get(
+                    source=self.initial_data['survey_source'],
+                    end_source_id=self.initial_data['survey_end_source_id']
                 )
-            )
+
+        else:
+            msg = 'Survey does not exist: \nInitial data: {}'.format(self.initial_data)
+            logger.info(msg)
+            raise ValidationError(msg)
 
         return data
 
@@ -130,35 +132,15 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
         """Create one new object, resolve Survey from survey_source and
            either survey_source_id or survey_end_source_id.
         """
-
-        if 'survey_source_id' in self.initial_data:
-            validated_data['survey'] = models.Survey.objects.get(
-                source=self.initial_data['survey_source'],
-                source_id=self.initial_data['survey_source_id'])
-        else:
-            validated_data['survey'] = models.Survey.objects.get(
-                end_source=self.initial_data['survey_source'],
-                end_source_id=self.initial_data['survey_end_source_id'])
         return self.Meta.model.objects.create(**validated_data)
 
     def save(self):
         """Override the save method in order to prevent 'duplicate' instances being created by
            the API endpoints. We override save in order to avoid duplicate by either create or update.
         """
-
-        if 'survey_source_id' in self.initial_data:
-            self.validated_data['survey'] = models.Survey.objects.get(
-                source=self.initial_data['survey_source'],
-                source_id=self.initial_data['survey_source_id'])
-        else:
-            self.validated_data['survey'] = models.Survey.objects.get(
-                end_source=self.initial_data['survey_source'],
-                end_source_id=self.initial_data['survey_end_source_id'])
-
-        # Gate check: we want to ensure that duplicate objects are not created.
         duplicates = self.Meta.model.objects.filter(
-            source = self.initial_data["source"],
-            source_id = self.initial_data["source_id"]
+            source=self.initial_data["source"],
+            source_id=self.initial_data["source_id"]
         )
         if duplicates.exists():
             if duplicates.count() == 1:
