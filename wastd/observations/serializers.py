@@ -619,6 +619,11 @@ class ManagementActionSerializer(ObservationSerializer):
 
 class TurtleMorphometricObservationSerializer(ObservationSerializer):
 
+    handler_id = IntegerField(write_only=True)
+    handler = FastUserSerializer(read_only=True)
+    recorder_id = IntegerField(write_only=True)
+    recorder = FastUserSerializer(read_only=True)
+
     class Meta:
         model = models.TurtleMorphometricObservation
         fields = (
@@ -650,8 +655,10 @@ class TurtleMorphometricObservationSerializer(ObservationSerializer):
             "body_depth_accuracy",
             "body_weight_g",
             "body_weight_accuracy",
-            "handler",
-            "recorder",
+            'handler',
+            'handler_id',
+            'recorder',
+            'recorder_id',
         )
 
 
