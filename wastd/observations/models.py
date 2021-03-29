@@ -3521,7 +3521,7 @@ class TurtleNestObservation(Observation):
     This model supports data sheets for:
 
     * Turtle nest observation during tagging
-    * Turtle nest excavation a few days after hatching
+    * Turtle nest excavation after hatching
 
     Egg count is done as total, plus categories of nest contents following
     "Determining Clutch Size and Hatching Success, Jeffrey D. Miller,
@@ -3529,17 +3529,19 @@ class TurtleNestObservation(Observation):
     IUCN Marine Turtle Specialist Group, 1999.
     """
 
-    nest_position = models.CharField(
-        max_length=300,
-        default="unknown",
-        verbose_name=_("Beach position"),
-        choices=BEACH_POSITION_CHOICES,
-        help_text=_("The position of the nest on the beach."), )
+    # This is duplicated in TNE.habitat, removing here.
+    # nest_position = models.CharField(
+    #     max_length=300,
+    #     default="unknown",
+    #     verbose_name=_("Beach position"),
+    #     choices=BEACH_POSITION_CHOICES,
+    #     help_text=_("The position of the nest on the beach."), )
 
     eggs_laid = models.BooleanField(
         verbose_name=_("Did the turtle lay eggs?"),
         default=False,
-        help_text=_("Did round, white objects leave the turtle's butt?"), )
+        # help_text=_("Did round, white objects leave the turtle's butt?"),
+        )
 
     egg_count = models.PositiveIntegerField(
         verbose_name=_("Total number of eggs laid"),
@@ -3686,7 +3688,7 @@ class TurtleNestObservation(Observation):
                 no_unhatched_term + no_depredated_eggs)
         """
         if (self.egg_count_calculated == 0):
-            return 0
+            return
         else:
             return round(100 * (self.no_egg_shells or 0) / self.egg_count_calculated, 2)
 
@@ -3702,7 +3704,7 @@ class TurtleNestObservation(Observation):
                 no_unhatched_term + no_depredated_eggs)
         """
         if (self.egg_count_calculated == 0):
-            return 0
+            return
         else:
             return round(100 * (
                 (self.no_egg_shells or 0) -

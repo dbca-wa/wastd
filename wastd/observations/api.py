@@ -806,7 +806,6 @@ class TurtleNestObservationViewSet(ObservationBatchUpsertViewSet):
         "encounter__site",
         "encounter__encounter_type",
         "encounter__status",
-        "nest_position",
         "eggs_laid",
     ]
     search_fields = ("comments", )

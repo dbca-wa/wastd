@@ -698,7 +698,7 @@ class TurtleNestDisturbanceObservationSerializer(ObservationSerializer):
 
 class TurtleNestObservationSerializer(ObservationSerializer):
 
-    # encounter = TurtleNestEncounterSerializer(read_only=True)
+    encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.TurtleNestObservation
@@ -707,9 +707,10 @@ class TurtleNestObservationSerializer(ObservationSerializer):
             "source",
             "source_id",
             "encounter",
-            'nest_position',
+            # 'nest_position',
             'eggs_laid',
             'egg_count',
+            'egg_count_calculated',
             'hatching_success',
             'emergence_success',
             'no_egg_shells',
