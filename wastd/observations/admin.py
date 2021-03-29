@@ -570,15 +570,15 @@ class TurtleNestObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleNestObservation."""
 
     list_display = ObservationAdminMixin.LIST_FIRST + (
-        'nest_position', 'eggs_laid', 'egg_count',
+        'eggs_laid', 'egg_count', 'egg_count_calculated',
         'hatching_success', 'emergence_success',
-        'no_egg_shells', 'no_live_hatchlings_neck_of_nest', 'no_live_hatchlings',
-        'no_dead_hatchlings', 'no_undeveloped_eggs',
+        'no_egg_shells', 'no_live_hatchlings_neck_of_nest',
+        'no_live_hatchlings', 'no_dead_hatchlings', 'no_undeveloped_eggs',
         'no_unhatched_eggs', 'no_unhatched_term', 'no_depredated_eggs',
         'nest_depth_top', 'nest_depth_bottom',
     ) + ObservationAdminMixin.LIST_LAST
     list_filter = ObservationAdminMixin.LIST_FILTER + \
-        ('nest_position', 'eggs_laid',)
+        ('eggs_laid',)
 
     def get_queryset(self, request):
         return super(
