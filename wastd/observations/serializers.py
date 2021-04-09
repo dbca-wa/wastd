@@ -106,20 +106,20 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
                     source=self.initial_data['survey_source'],
                     source_id=self.initial_data['survey_source_id']
                 ).exists()):
-            data['survey'] = models.Survey.objects.get(
+            data['survey'] = models.Survey.objects.filter(
                     source=self.initial_data['survey_source'],
                     source_id=self.initial_data['survey_source_id']
-                )
+                ).first()
 
         elif (has_source and has_end_source_id and
                 models.Survey.objects.filter(
                     source=self.initial_data['survey_source'],
                     end_source_id=self.initial_data['survey_end_source_id']
                 ).exists()):
-            data['survey'] = models.Survey.objects.get(
+            data['survey'] = models.Survey.objects.filter(
                     source=self.initial_data['survey_source'],
                     end_source_id=self.initial_data['survey_end_source_id']
-                )
+                ).first()
 
         else:
             msg = 'Survey does not exist: \nInitial data: {}'.format(self.initial_data)
@@ -561,6 +561,11 @@ class MediaAttachmentSerializer(ObservationSerializer):
 
 class TagObservationSerializer(ObservationSerializer):
 
+    # This would break if a Tag is encountered stand-alone,
+    # e.g. during inventory management actions such as
+    # handing out a bag of tags to a field team pre-season.
+    # encounter = AnimalEncounterSerializer(read_only=True)
+
     handler_id = IntegerField(write_only=True)
     handler = FastUserSerializer(read_only=True)
     recorder_id = IntegerField(write_only=True)
@@ -587,7 +592,7 @@ class TagObservationSerializer(ObservationSerializer):
 
 class NestTagObservationSerializer(ObservationSerializer):
 
-    # encounter = TurtleNestEncounterSerializer(read_only=True)
+    encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.NestTagObservation
@@ -619,6 +624,8 @@ class ManagementActionSerializer(ObservationSerializer):
 
 
 class TurtleMorphometricObservationSerializer(ObservationSerializer):
+
+    encounter = AnimalEncounterSerializer(read_only=True)
 
     handler_id = IntegerField(write_only=True)
     handler = FastUserSerializer(read_only=True)
@@ -665,7 +672,7 @@ class TurtleMorphometricObservationSerializer(ObservationSerializer):
 
 class HatchlingMorphometricObservationSerializer(ObservationSerializer):
 
-    # encounter = TurtleNestEncounterSerializer(read_only=True)
+    encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.HatchlingMorphometricObservation
@@ -733,7 +740,7 @@ class TurtleNestObservationSerializer(ObservationSerializer):
 
 class TurtleHatchlingEmergenceObservationSerializer(ObservationSerializer):
 
-    # encounter = TurtleNestEncounterSerializer(read_only=True)
+    encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.TurtleHatchlingEmergenceObservation
@@ -760,6 +767,8 @@ class TurtleHatchlingEmergenceObservationSerializer(ObservationSerializer):
 
 class TurtleHatchlingEmergenceOutlierObservationSerializer(ObservationSerializer):
 
+    encounter = TurtleNestEncounterSerializer(read_only=True)
+
     class Meta:
         model = models.TurtleHatchlingEmergenceOutlierObservation
         fields = (
@@ -774,6 +783,8 @@ class TurtleHatchlingEmergenceOutlierObservationSerializer(ObservationSerializer
 
 
 class LightSourceObservationSerializer(ObservationSerializer):
+
+    encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.LightSourceObservation
@@ -790,6 +801,8 @@ class LightSourceObservationSerializer(ObservationSerializer):
 
 class TurtleDamageObservationSerializer(ObservationSerializer):
 
+    encounter = AnimalEncounterSerializer(read_only=True)
+
     class Meta:
         model = models.TurtleDamageObservation
         fields = (
@@ -804,6 +817,8 @@ class TurtleDamageObservationSerializer(ObservationSerializer):
         )
 
 class TrackTallyObservationSerializer(ObservationSerializer):
+
+    encounter = LineTransectEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.TrackTallyObservation
@@ -820,6 +835,8 @@ class TrackTallyObservationSerializer(ObservationSerializer):
 
 
 class TurtleNestDisturbanceTallyObservationSerializer(ObservationSerializer):
+
+    encounter = LineTransectEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.TurtleNestDisturbanceTallyObservation
@@ -900,6 +917,8 @@ class LoggerObservationSerializer(ObservationSerializer):
 
 
 class DugongMorphometricObservationSerializer(ObservationSerializer):
+
+    encounter = AnimalEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.DugongMorphometricObservation
