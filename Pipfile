@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Django = "==3.1.7"
+Django = ">=3.2"
 django-extensions = ">=3.1.1"
 django-adminactions = "*"
 django-grappelli = "*"

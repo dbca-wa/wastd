@@ -44,7 +44,7 @@ DJANGO_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'grappelli.dashboard',
+    # 'grappelli.dashboard',   # Bug https://github.com/sehmaschine/django-grappelli/issues/957
     'grappelli',
     'django.contrib.admin',
     'django.contrib.postgres',
@@ -156,6 +156,10 @@ MIGRATION_MODULES = {
     'sites': 'wastd.contrib.sites.migrations'
 }
 
+
+# Django 3.2
+# https://docs.djangoproject.com/en/3.2/releases/3.2/#customizing-type-of-auto-created-primary-keys
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # CACHES
 # ------------------------------------------------------------------------------
