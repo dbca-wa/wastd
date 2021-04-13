@@ -44,7 +44,7 @@ DJANGO_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'grappelli.dashboard',   # Bug https://github.com/sehmaschine/django-grappelli/issues/957
+    'grappelli.dashboard',   # Bug https://github.com/sehmaschine/django-grappelli/issues/957
     'grappelli',
     'django.contrib.admin',
     'django.contrib.postgres',

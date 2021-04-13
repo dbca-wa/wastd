@@ -7,7 +7,6 @@ name = "pypi"
 Django = ">=3.2"
 django-extensions = ">=3.1.1"
 django-adminactions = "*"
-django-grappelli = "*"
 djangorestframework = "*"
 djangorestframework-gis = "==0.17.0"
 djangorestframework-csv = "==2.1.0"
@@ -111,4 +110,8 @@ ref = "master"
 
 [packages.mommy_spatial_generators]
 git = "https://github.com/sigma-geosistemas/mommy_spatial_generators.git"
+editable = true
+
+[packages.django-grappelli]
+git = "https://github.com/Goldziher/django-grappelli.git"
 editable = true
