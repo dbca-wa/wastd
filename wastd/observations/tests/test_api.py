@@ -260,7 +260,7 @@ class ObservationSerializerTests(EncounterSerializerTests):
         resp = self.client.post(
             url,
             {
-                'comments': 'Device ID 91c7fbd10d6f294b\nDug up, but crab prints obscured cause',
+                'comments': 'Posting a TNDO without Encounter reference should fail.',
                 'disturbance_cause': 'unknown',
                 'disturbance_cause_confidence': 'guess',
                 'disturbance_severity': 'partly',
@@ -272,7 +272,7 @@ class ObservationSerializerTests(EncounterSerializerTests):
             url,
             {
                 'encounter': self.encounter.pk,
-                'comments': 'Device ID 91c7fbd10d6f294b\nDug up, but crab prints obscured cause',
+                'comments': 'Posting a TNDO without source/source_id should fail.',
                 'disturbance_cause': 'unknown',
                 'disturbance_cause_confidence': 'guess',
                 'disturbance_severity': 'partly',
