@@ -15,23 +15,25 @@
 {% block encounterdetails %}
     <!-- Checked for... -->
     <div class="row">
-        <span class="oi oi-eye"></span>&nbsp;
-        Damage  {{ o.checked_for_injuries}} <i class="{{ o.checked_for_injuries|fa_observation_icon }}"></i>
-        PIT tags {{ o.scanned_for_pit_tags }} <i class="{{ o.scanned_for_pit_tags|fa_observation_icon }}"></i>
-        Flipper tags {{ o.checked_for_flipper_tags }} <i class="{{ o.checked_for_flipper_tags|fa_observation_icon }}"></i>
+        <span class="oi oi-flash"></span>&nbsp;Damage {{ o.checked_for_injuries }}
+    </div>
+    <div class="row">
+        <span class="oi oi-tags"></span>&nbsp;PIT tags {{ o.scanned_for_pit_tags }}
+    </div>
+    <div class="row">
+        <span class="oi oi-tags"></span>&nbsp;Flipper tags {{ o.checked_for_flipper_tags }}
     </div>
     {% if o.behaviour %}
-        <div class="row">
-            <span class="oi oi-comment-square"></span>&nbsp;
-            {{ o.behaviour }}
-        </div>
+    <div class="row">
+        <span class="oi oi-comment-square"></span>&nbsp;{{ o.behaviour|safe }}
+    </div>
     {% endif %}
     {% if o.cause_of_death != "na" %}
-        <div class="row">
-            <span class="oi oi-medical-cross"></span>&nbsp;
-            {{ o.get_cause_of_death_display }}
-            ({{ o.get_cause_of_death_confidence_display }})
-        </div>
+    <div class="row">
+        <span class="oi oi-medical-cross"></span>&nbsp;
+        {{ o.get_cause_of_death_display }}
+        ({{ o.get_cause_of_death_confidence_display }})
+    </div>
     {% endif %}
 {% endblock %}
 {% endwith %}
