@@ -15,6 +15,7 @@
     <strong>Health status:</strong> {{ object.get_health_display }}<br>
     <strong>Sex:</strong> {{ object.get_sex_display }}<br>
     <strong>Maturity:</strong> {{ object.get_maturity_display }}<br>
+    <strong>Behaviour:</strong> {{ object.behaviour|safe|default:"-" }}<br>
   {% endblock %}
 
 

@@ -31,22 +31,23 @@
 
 <!-- Time and location -->
 <div class="row">
-  <span class="oi oi-calendar"></span>
-  {{ o.when|date:"r" }}
-  <span class="oi oi-globe"></span>
+  <span class="oi oi-calendar"></span>&nbsp;{{ o.when|date:"r" }}
+</div>
+<div class="row">
+  <span class="oi oi-globe"></span>&nbsp;
       Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
-      ({{ o.crs }}) &plusmn; {{ o.location_accuracy }} m WGS 84
+      ({{ o.crs }}) &plusmn; {{ o.location_accuracy_m }} m WGS 84
 </div>
 
-<!-- Observer -->
+<!-- Observer/reporter -->
 <div class="row">
-  <span class="oi oi-eye"></span>
+  <span class="oi oi-eye"></span>&nbsp;
   <a href="mailto:{{ o.observer.email }}"
-  title="Send email to {{ o.observer.fullname }}">{{ o.observer.name }}</a>
+  title="Send email to observer {{ o.observer.fullname }}">{{ o.observer.name }}</a>&nbsp;
 
-  <span class="oi oi-chat"></span>
+  <span class="oi oi-copywriting"></span>&nbsp;
   <a href="mailto:{{ o.reporter.email }}"
-  title="Send email to {{ o.reporter.fullname }}">{{ o.reporter.name }}</a>
+  title="Send email to reporter {{ o.reporter.fullname }}">{{ o.reporter.name }}</a>
 </div><!-- /.row -->
 
 {% block headlines %}{% endblock %}

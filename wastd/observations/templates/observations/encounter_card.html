@@ -1,5 +1,5 @@
 {% load observations %}
-<div class="card col-12 shadow-lg">
+<div class="card col-12 shadow-lg mb-1">
   <div class="card-header">
     <span class="float-right">{% block title_labels %}{% endblock title_labels %}</span>
     <h5 class="card-title">
@@ -32,7 +32,7 @@
   <div class="card-body">
     <div class="card-text">
       <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
-      {{ object.comments | default:"-" }}
+      {{ object.comments|safe|default:"-" }}
     </div>
     {% for obs in object.observation_set.all %}
     <div class="card-text ml-3">

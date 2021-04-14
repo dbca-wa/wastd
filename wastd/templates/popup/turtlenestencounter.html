@@ -16,7 +16,7 @@
 {% if o.comments %}
 <div class="row">
     <span class="oi oi-comment-square"></span>&nbsp;
-    {{ o.comments }}
+    {{ o.comments|safe }}
 </div>
 {% endif %}
 {% endblock %}
