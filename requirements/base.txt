@@ -54,7 +54,7 @@ django-compressor==2.4
 django-confy==1.0.4
 django-coverage-plugin==1.8.0
 django-crispy-forms==1.11.2
-django-debug-toolbar==3.2
+django-debug-toolbar==3.2.1
 django-easy-select2==1.5.7
 django-environ==0.4.5
 django-export-download==0.2.3
