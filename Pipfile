@@ -97,6 +97,7 @@ graphviz = "*"
 tblib = "*"
 fabric3 = "*"
 sphinx = "*"
+django = ">=3.2"
 
 [dev-packages]
 

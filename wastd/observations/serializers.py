@@ -592,7 +592,7 @@ class TagObservationSerializer(ObservationSerializer):
 
 class NestTagObservationSerializer(ObservationSerializer):
 
-    encounter = TurtleNestEncounterSerializer(read_only=True)
+    # encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.NestTagObservation
@@ -705,7 +705,7 @@ class TurtleNestDisturbanceObservationSerializer(ObservationSerializer):
 
 class TurtleNestObservationSerializer(ObservationSerializer):
 
-    encounter = TurtleNestEncounterSerializer(read_only=True)
+    # encounter = TurtleNestEncounterSerializer(read_only=True)
 
     class Meta:
         model = models.TurtleNestObservation
