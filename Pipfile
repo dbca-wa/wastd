@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Django = ">=3.2"
+Django = "<3.2"
 django-extensions = ">=3.1.1"
 django-adminactions = "*"
 djangorestframework = "*"
@@ -97,7 +97,6 @@ graphviz = "*"
 tblib = "*"
 fabric3 = "*"
 sphinx = "*"
-django = ">=3.2"
 
 [dev-packages]
 
