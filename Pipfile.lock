@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4705f885c592b6b87569f8a7a1639d3c2f42755e2154a887ee7ee366c0aaec5d"
+            "sha256": "2efa19dbbe5b72419e951cbd9d07d6a348921283af206fd22bf85fdc7cf15d73"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -109,17 +109,17 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:5d62261ceb8e5b8fd4df1b91464a9000550d4caa454241794fa126c6e04d5b69",
-                "sha256:f7447d84c3e1381bb3cc61ceb360dab47e91ebd133725dbd6d98946f11e234d3"
+                "sha256:2783947ec34dd84fc36093e8fc8a9a24679cf912a97bc9a0c47f4966ed059a29",
+                "sha256:6b4a79691a48740816f03c4cb1e8ef46f8335ad2019d9c4a95da73eb5cb98f05"
             ],
-            "version": "==1.17.50"
+            "version": "==1.17.57"
         },
         "botocore": {
             "hashes": [
-                "sha256:a621a4bf60a1197c7ebd8ed0badac8282e36e0cee7241831a099200983ff7c49",
-                "sha256:f6c2bfae21eaa4e4f75fc5f48b22b16831356755bfb58516219ee11d74070220"
+                "sha256:ae4ac72921f23d35ad54a5fb0989fc00c6fff8a39e24f26128b9315cc6209fec",
+                "sha256:fa430bc773363a3d332c11c55bd8c0c0a5819d576121eb6990528a1bdaa89bcd"
             ],
-            "version": "==1.20.50"
+            "version": "==1.20.57"
         },
         "cached-property": {
             "hashes": [
@@ -332,10 +332,10 @@
         },
         "decorator": {
             "hashes": [
-                "sha256:d9f2d2863183a3c0df05f4b786f2e6b8752c093b3547a558f287bf3022fd2bf4",
-                "sha256:f2e71efb39412bfd23d878e896a51b07744f2e2250b2e87d158e76828c5ae202"
+                "sha256:6f201a6c4dac3d187352661f508b9364ec8091217442c9478f1f83c003a0f060",
+                "sha256:945d84890bb20cc4a2f4a31fc4311c0c473af65ea318617f13a7257c9a58bc98"
             ],
-            "version": "==5.0.6"
+            "version": "==5.0.7"
         },
         "defusedxml": {
             "hashes": [
@@ -481,11 +481,11 @@
         },
         "django-debug-toolbar": {
             "hashes": [
-                "sha256:84e2607d900dbd571df0a2acf380b47c088efb787dce9805aefeb407341961d2",
-                "sha256:9e5a25d0c965f7e686f6a8ba23613ca9ca30184daa26487706d4829f5cfb697a"
+                "sha256:a5ff2a54f24bf88286f9872836081078f4baa843dc3735ee88524e89f8821e33",
+                "sha256:e759e63e3fe2d3110e0e519639c166816368701eab4a47fed75d7de7018467b9"
             ],
             "index": "pypi",
-            "version": "==3.2"
+            "version": "==3.2.1"
         },
         "django-easy-select2": {
             "hashes": [
@@ -511,11 +511,11 @@
         },
         "django-extensions": {
             "hashes": [
-                "sha256:081828e985485662f62a22340c1506e37989d14b927652079a5b7cd84a82368b",
-                "sha256:17f85f4dcdd5eea09b8c4f0bad8f0370bf2db6d03e61b431fa7103fee29888de"
+                "sha256:50de8977794a66a91575dd40f87d5053608f679561731845edbd325ceeb387e3",
+                "sha256:5f0fea7bf131ca303090352577a9e7f8bfbf5489bd9d9c8aea9401db28db34a0"
             ],
             "index": "pypi",
-            "version": "==3.1.2"
+            "version": "==3.1.3"
         },
         "django-extra-fields": {
             "hashes": [
@@ -570,11 +570,11 @@
         },
         "django-geojson": {
             "hashes": [
-                "sha256:08c88b157e3e1bcb2f0a4a98c03e2644eb5292d34710ac308e94c247b17731ab",
-                "sha256:6ac95c390f9f863e49330191d14301449ee8cadef9a4846a51e258e32af951e6"
+                "sha256:374a89500b222c1f561d4bc218c99a80877aac8b8cd9f0b48439549abd784980",
+                "sha256:c895500ca6045560135dd0a67acb91d51a7692727362b31106abc01918f5f34d"
             ],
             "index": "pypi",
-            "version": "==3.1.0"
+            "version": "==3.2.0"
         },
         "django-graphql-extensions": {
             "hashes": [
@@ -594,7 +594,8 @@
         },
         "django-grappelli": {
             "editable": true,
-            "git": "https://github.com/Goldziher/django-grappelli.git"
+            "git": "https://github.com/Goldziher/django-grappelli.git",
+            "ref": "8542daa0bf6bd615a214664176d78681fd120187"
         },
         "django-import-export": {
             "hashes": [
@@ -612,11 +613,11 @@
         },
         "django-leaflet": {
             "hashes": [
-                "sha256:3cf1bc8a0e41d22651541ad5b5e2a8f2c6a13a603728883cd332daf785b37250",
-                "sha256:b530960242fe7718572b23976dd6037823dd478335c22c4434931335acf88bdd"
+                "sha256:934bcc9ce87d339f75fa37076ed5267cf3927558e592dd43c4da5ab515a0318a",
+                "sha256:dec0812e50c9bbb28a2967f18201b7bda5fd7ae7b7897fb1923a28769bbd01d9"
             ],
             "index": "pypi",
-            "version": "==0.27.1"
+            "version": "==0.28.0"
         },
         "django-map-widgets": {
             "hashes": [
@@ -644,11 +645,11 @@
         },
         "django-phonenumber-field": {
             "hashes": [
-                "sha256:1eb7af3a108744665f7c3939d38aa15b3728c57d13d45d656b0a2aa11e8cdc3c",
-                "sha256:adb46905cc4ecb19d8494424e1c4352f24946bb472340a2a17257d44bf8228e6"
+                "sha256:48724ba235ee8248a474204faa0934c5baf9536f429859d05cb131fbd6b1c695",
+                "sha256:9eda963ac15b363393f677cc084efd45c3bd97bb5a0cdb4a06409ac99e05dd4b"
             ],
             "index": "pypi",
-            "version": "==5.0.0"
+            "version": "==5.1.0"
         },
         "django-polymorphic": {
             "hashes": [
@@ -699,11 +700,11 @@
         },
         "django-select2": {
             "hashes": [
-                "sha256:26b4c59cbeba57aea1737187b930a83c8070788286b4236b13f7873c01b32684",
-                "sha256:e56bfe3074d6b87524c5dbc139884c18c74a5e7324d66f0b93e42b6012ea0dc0"
+                "sha256:8c54984bb931d842eab6a46d1b427c6883e5f5347529cda27dcd942fb37d87b9",
+                "sha256:dd091342e99436818b3fa98783ae6c24fb2a0cbc37ebd3faa0aef68422b6e416"
             ],
             "index": "pypi",
-            "version": "==7.7.0"
+            "version": "==7.7.1"
         },
         "django-settings-export": {
             "hashes": [
@@ -863,10 +864,10 @@
         },
         "faker": {
             "hashes": [
-                "sha256:225314932de94c282b096f6c3aac32db50119922747ac09a8350310da44241e5",
-                "sha256:fe4bc214ba448ca52b20a0ee0ed16ded3e1ddce7874f2a95cd321d21e2e388d9"
+                "sha256:14edeced0492f1516df2e8c73bd9cc02307ad89bf2b46c2c3b46b2f595ae6d24",
+                "sha256:1cc03528930fd26570077b05bd02da0625eb87b7ba192ea5c448284beb77149b"
             ],
-            "version": "==8.0.0"
+            "version": "==8.1.1"
         },
         "gprof2dot": {
             "hashes": [
@@ -1554,10 +1555,10 @@
         },
         "s3transfer": {
             "hashes": [
-                "sha256:5d48b1fd2232141a9d5fb279709117aaba506cacea7f86f11bc392f06bfa8fc2",
-                "sha256:c5dadf598762899d8cfaecf68eba649cd25b0ce93b6c954b156aaa3eed160547"
+                "sha256:9b3752887a2880690ce628bc263d6d13a3864083aeacff4890c1c9839a5eb0bc",
+                "sha256:cb022f4b16551edebbb31a377d3f09600dbada7363d8c5db7976e7f47732e1b2"
             ],
-            "version": "==0.3.6"
+            "version": "==0.4.2"
         },
         "sentry-sdk": {
             "hashes": [

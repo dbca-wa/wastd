@@ -2945,6 +2945,8 @@ class TagObservation(Observation):
         default=BODY_PART_DEFAULT,
         help_text=_("Where is the tag attached, or the sample taken from?"),)
 
+    # tag_fix TODO
+
     name = models.CharField(
         max_length=1000,
         verbose_name=_("Tag ID"),
