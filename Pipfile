@@ -30,7 +30,7 @@ xmltodict = "==0.12.0"
 django-allauth = ">=0.42.0"
 dbca-utils = "==1.1.1"
 django-background-tasks = "==1.2.5"
-Fabric3 = "==1.14.post1"
+Fabric3 = "*"
 gunicorn = "==20.0.4"
 uWSGI = "==2.0.19.1"
 python-memcached = "*"
@@ -38,7 +38,7 @@ django-confy = ">=1.0.4"
 django-environ = "==0.4.5"
 Unipath = "==1.1"
 pandas = ">=1.0.5"
-Sphinx = ">=1.6.1"
+Sphinx = "*"
 pydot = "==1.4.1"
 sphinx-rtd-theme = "*"
 django-anymail = "*"
@@ -95,8 +95,8 @@ pytest-sugar = "*"
 model-mommy = "*"
 graphviz = "*"
 tblib = "*"
-fabric3 = "*"
-sphinx = "*"
+docker-squash = "*"
+django-grappelli = ">=2.15.1"
 
 [dev-packages]
 
@@ -110,8 +110,4 @@ ref = "master"
 
 [packages.mommy_spatial_generators]
 git = "https://github.com/sigma-geosistemas/mommy_spatial_generators.git"
-editable = true
-
-[packages.django-grappelli]
-git = "https://github.com/Goldziher/django-grappelli.git"
 editable = true
