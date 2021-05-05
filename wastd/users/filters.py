@@ -41,4 +41,5 @@ class UserFilter(FilterSet):
             'date_joined',
             'last_login',
             'is_superuser',
+            'alive'
         ]

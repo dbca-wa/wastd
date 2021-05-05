@@ -85,6 +85,12 @@ class User(AbstractUser):
                     "Spaces are accepted but will be removed on saving."),
     )
 
+    alive = models.BooleanField(
+        verbose_name=_('Alive'),
+        default=True,
+        help_text=_("Deceased users should not be attempted to be contacted.")
+    )
+
     class Meta:
         """Class opts."""
 

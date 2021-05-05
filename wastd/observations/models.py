@@ -599,6 +599,7 @@ NEST_DAMAGE_CHOICES = (
     ("cyclone", "(Cy)clone disturbance"),
     ("dingo", "(Di)ngo predation"),
     ("dog", "(Do)g predation"),
+    ("cat", "(Ca)t predation"),
     ("fox", "(F)ox predation"),
     ("goanna", "(G)oanna predation"),
     ("human", "(Hu)man"),
