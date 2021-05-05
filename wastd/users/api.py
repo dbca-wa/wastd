@@ -20,7 +20,8 @@ class UserSerializer(ModelSerializer):
             "affiliation",
             "email",
             "phone",
-            "is_active"
+            "is_active",
+            "alive"
         )
 
 
@@ -37,7 +38,7 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     uid_field = "pk"
     model = User
-    filterset_fields = ['username', 'nickname', 'email', 'aliases', 'phone', 'is_active']
+    filterset_fields = ['username', 'nickname', 'email', 'aliases', 'phone', 'is_active', 'alive']
 
     def get_queryset(self):
         queryset = User.objects.all()

@@ -41,6 +41,7 @@ class SurveySerializer(GeoFeatureModelSerializer):
     area = FastAreaSerializer(many=False)
     site = FastAreaSerializer(many=False)
     status = ReadOnlyField()
+    absolute_admin_url = ReadOnlyField()
     start_photo = FileField(required=False)
     end_photo = FileField(required=False)
 

@@ -6,7 +6,7 @@
       {{ object.name }}
     </h5>
     <h6 class="card-title text-muted">
-      {{ object.pk }} {{ object.username }}
+      {{ object.pk }} {{ object.username }} {% if not object.alive %}<sup>&#8224;</sup>{% endif %}
       <span class="float-right">
         {% include "observations/toggle_details.html" with object=object %}
         {% include "shared/admin_qa.html" with object=object label=True hide_details=False %}
