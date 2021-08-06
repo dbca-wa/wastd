@@ -26,8 +26,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 d = os.path.abspath('.')
 dot_env = os.path.join(str(d), '.env')
 if os.path.exists(dot_env):
-    confy.read_environment_file(dot_env)            # Must precede dj_static imports.
-    # print("wsgi.py: .env found at {0}".format(dot_env))
+    confy.read_environment_file(dot_env)           # Must precede dj_static imports.
 else:
     print("wsgi.py: .env missing at {0}, ignoring.".format(dot_env))
 

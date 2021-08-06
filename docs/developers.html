@@ -1,23 +1,31 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Developer documentation &mdash; WAStD 0.50.8 documentation</title>
+  <title>Developer documentation &mdash; WAStD 0.52.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -28,10 +36,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Application maintainers" href="maintainers.html" /> 
@@ -58,7 +62,7 @@
             
             
               <div class="version">
-                0.5
+                0.52
               </div>
             
           
@@ -75,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -132,6 +137,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -166,18 +172,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Developer documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/developers.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -3408,6 +3416,10 @@ set this Survey as “production”, then save each of them and set to “curate
 so that duplicates can contain Encounters outside the duration of the production Survey.
 The remaining production Survey needs to adjust its start and end time to include all Encounters of all closed
 duplicate surveys.</p>
+<p>The production Survey adopts all Encounters within its spatial bounds.
+Encounters outside its spatial bounds can occur if the Survey site was adjusted manually.
+These will be orphaned after this operation, and can be adopted either by saving an adjacent survey,
+or running “adopt orphaned encounters”.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3441,7 +3453,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py method">
 <dt id="wastd.observations.models.Survey.encounters">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">encounters</span></code><a class="headerlink" href="#wastd.observations.models.Survey.encounters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the QuerySet of all Encounters within this SiteVisit unless it’s a training run.</p>
+<dd><p>Return the QuerySet of all Encounters within this Survey unless it’s a training run.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -5554,7 +5566,7 @@ object the first time, the query is executed.</p>
 <p>This model supports data sheets for:</p>
 <ul class="simple">
 <li><p>Turtle nest observation during tagging</p></li>
-<li><p>Turtle nest excavation a few days after hatching</p></li>
+<li><p>Turtle nest excavation after hatching</p></li>
 </ul>
 <p>Egg count is done as total, plus categories of nest contents following
 “Determining Clutch Size and Hatching Success, Jeffrey D. Miller,
@@ -5630,11 +5642,6 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wastd.observations.models.TurtleNestObservation.get_nest_position_display">
-<code class="sig-name descname"><span class="pre">get_nest_position_display</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">nest_position&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.TurtleNestObservation.get_nest_position_display" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="wastd.observations.models.TurtleNestObservation.hatching_success">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">hatching_success</span></code><a class="headerlink" href="#wastd.observations.models.TurtleNestObservation.hatching_success" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the hatching success as percentage [0..100].</p>
@@ -5656,13 +5663,6 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt id="wastd.observations.models.TurtleNestObservation.nest_depth_top">
 <code class="sig-name descname"><span class="pre">nest_depth_top</span></code><a class="headerlink" href="#wastd.observations.models.TurtleNestObservation.nest_depth_top" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="wastd.observations.models.TurtleNestObservation.nest_position">
-<code class="sig-name descname"><span class="pre">nest_position</span></code><a class="headerlink" href="#wastd.observations.models.TurtleNestObservation.nest_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -5952,7 +5952,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.AreaAdmin.formfield_overrides">
-<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.AreaAdmin.formfield_overrides" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.ImageField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.FileField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.AreaAdmin.formfield_overrides" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -6100,7 +6100,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.EncounterAdmin.formfield_overrides">
-<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.formfield_overrides" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.ImageField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.FileField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.EncounterAdmin.formfield_overrides" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -6190,6 +6190,11 @@ admin site. This is used by changelist_view.</p>
 <code class="sig-name descname"><span class="pre">extra</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#wastd.observations.admin.FieldMediaAttachmentInline.extra" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="wastd.observations.admin.FieldMediaAttachmentInline.formfield_overrides">
+<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.ImageField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.FileField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.FieldMediaAttachmentInline.formfield_overrides" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="wastd.observations.admin.FieldMediaAttachmentInline.media">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#wastd.observations.admin.FieldMediaAttachmentInline.media" title="Permalink to this definition">¶</a></dt>
@@ -6200,11 +6205,6 @@ admin site. This is used by changelist_view.</p>
 <code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#wastd.observations.admin.FieldMediaAttachmentInline.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#wastd.observations.models.FieldMediaAttachment" title="wastd.observations.models.FieldMediaAttachment"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.FieldMediaAttachment</span></code></a></p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt id="wastd.observations.admin.FieldMediaAttachmentInline.widgets">
-<code class="sig-name descname"><span class="pre">widgets</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'attachment':</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.ImageThumbnailFileInput'&gt;}</span></em><a class="headerlink" href="#wastd.observations.admin.FieldMediaAttachmentInline.widgets" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -6267,23 +6267,6 @@ admin site. This is used by changelist_view.</p>
 <code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#wastd.observations.admin.HatchlingMorphometricObservationInline.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#wastd.observations.models.HatchlingMorphometricObservation" title="wastd.observations.models.HatchlingMorphometricObservation"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.HatchlingMorphometricObservation</span></code></a></p>
 </dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="wastd.observations.admin.ImageThumbnailFileInput">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wastd.observations.admin.</span></code><code class="sig-name descname"><span class="pre">ImageThumbnailFileInput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/admin.html#ImageThumbnailFileInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.admin.ImageThumbnailFileInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">floppyforms.widgets.ClearableFileInput</span></code></p>
-<p>Image thumbnail admin.</p>
-<dl class="py method">
-<dt id="wastd.observations.admin.ImageThumbnailFileInput.media">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#wastd.observations.admin.ImageThumbnailFileInput.media" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="wastd.observations.admin.ImageThumbnailFileInput.template_name">
-<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'floppyforms/image_thumbnail.html'</span></em><a class="headerlink" href="#wastd.observations.admin.ImageThumbnailFileInput.template_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -6590,6 +6573,11 @@ admin site. This is used by changelist_view.</p>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wastd.observations.admin.</span></code><code class="sig-name descname"><span class="pre">MediaAttachmentAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/admin.html#MediaAttachmentAdmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.admin.MediaAttachmentAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wastd.observations.admin.ObservationAdminMixin" title="wastd.observations.admin.ObservationAdminMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.admin.ObservationAdminMixin</span></code></a></p>
 <p>Admin for MediaAttachment.</p>
+<dl class="py attribute">
+<dt id="wastd.observations.admin.MediaAttachmentAdmin.formfield_overrides">
+<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.ImageField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.FileField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.MediaAttachmentAdmin.formfield_overrides" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="wastd.observations.admin.MediaAttachmentAdmin.get_queryset">
 <code class="sig-name descname"><span class="pre">get_queryset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/admin.html#MediaAttachmentAdmin.get_queryset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.admin.MediaAttachmentAdmin.get_queryset" title="Permalink to this definition">¶</a></dt>
@@ -6639,6 +6627,11 @@ admin site. This is used by changelist_view.</p>
 <code class="sig-name descname"><span class="pre">extra</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#wastd.observations.admin.MediaAttachmentInline.extra" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="wastd.observations.admin.MediaAttachmentInline.formfield_overrides">
+<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.ImageField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.FileField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.MediaAttachmentInline.formfield_overrides" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="wastd.observations.admin.MediaAttachmentInline.media">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#wastd.observations.admin.MediaAttachmentInline.media" title="Permalink to this definition">¶</a></dt>
@@ -6649,11 +6642,6 @@ admin site. This is used by changelist_view.</p>
 <code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#wastd.observations.admin.MediaAttachmentInline.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#wastd.observations.models.MediaAttachment" title="wastd.observations.models.MediaAttachment"><code class="xref py py-class docutils literal notranslate"><span class="pre">wastd.observations.models.MediaAttachment</span></code></a></p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt id="wastd.observations.admin.MediaAttachmentInline.widgets">
-<code class="sig-name descname"><span class="pre">widgets</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'attachment':</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.ImageThumbnailFileInput'&gt;}</span></em><a class="headerlink" href="#wastd.observations.admin.MediaAttachmentInline.widgets" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -6774,6 +6762,11 @@ admin site. This is used by changelist_view.</p>
 <dd><p>A link to the encounter.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="wastd.observations.admin.ObservationAdminMixin.formfield_overrides">
+<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.ImageField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.FileField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.formfield_overrides" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="wastd.observations.admin.ObservationAdminMixin.latitude">
 <code class="sig-name descname"><span class="pre">latitude</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/admin.html#ObservationAdminMixin.latitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.admin.ObservationAdminMixin.latitude" title="Permalink to this definition">¶</a></dt>
@@ -6865,7 +6858,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.SurveyAdmin.formfield_overrides">
-<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.SurveyAdmin.formfield_overrides" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.ImageField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.FileField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.SurveyAdmin.formfield_overrides" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -6918,6 +6911,11 @@ admin site. This is used by changelist_view.</p>
 <dl class="py attribute">
 <dt id="wastd.observations.admin.SurveyMediaAttachmentInline.extra">
 <code class="sig-name descname"><span class="pre">extra</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#wastd.observations.admin.SurveyMediaAttachmentInline.extra" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="wastd.observations.admin.SurveyMediaAttachmentInline.formfield_overrides">
+<code class="sig-name descname"><span class="pre">formfield_overrides</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPointField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.LineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiLineStringField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.PolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.contrib.gis.db.models.fields.MultiPolygonField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;leaflet.forms.widgets.LeafletWidget</span> <span class="pre">object&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.ImageField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;},</span> <span class="pre">&lt;class</span> <span class="pre">'django.db.models.fields.files.FileField'&gt;:</span> <span class="pre">{'widget':</span> <span class="pre">&lt;class</span> <span class="pre">'shared.admin.AdminImageWidget'&gt;}}</span></em><a class="headerlink" href="#wastd.observations.admin.SurveyMediaAttachmentInline.formfield_overrides" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -7588,12 +7586,12 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.TurtleNestObservationAdmin.list_display">
-<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">('pk',</span> <span class="pre">'area',</span> <span class="pre">'site',</span> <span class="pre">'latitude',</span> <span class="pre">'longitude',</span> <span class="pre">'date',</span> <span class="pre">'nest_position',</span> <span class="pre">'eggs_laid',</span> <span class="pre">'egg_count',</span> <span class="pre">'hatching_success',</span> <span class="pre">'emergence_success',</span> <span class="pre">'no_egg_shells',</span> <span class="pre">'no_live_hatchlings_neck_of_nest',</span> <span class="pre">'no_live_hatchlings',</span> <span class="pre">'no_dead_hatchlings',</span> <span class="pre">'no_undeveloped_eggs',</span> <span class="pre">'no_unhatched_eggs',</span> <span class="pre">'no_unhatched_term',</span> <span class="pre">'no_depredated_eggs',</span> <span class="pre">'nest_depth_top',</span> <span class="pre">'nest_depth_bottom',</span> <span class="pre">'encounter_link',</span> <span class="pre">'encounter_status')</span></em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">('pk',</span> <span class="pre">'area',</span> <span class="pre">'site',</span> <span class="pre">'latitude',</span> <span class="pre">'longitude',</span> <span class="pre">'date',</span> <span class="pre">'eggs_laid',</span> <span class="pre">'egg_count',</span> <span class="pre">'egg_count_calculated',</span> <span class="pre">'hatching_success',</span> <span class="pre">'emergence_success',</span> <span class="pre">'no_egg_shells',</span> <span class="pre">'no_live_hatchlings_neck_of_nest',</span> <span class="pre">'no_live_hatchlings',</span> <span class="pre">'no_dead_hatchlings',</span> <span class="pre">'no_undeveloped_eggs',</span> <span class="pre">'no_unhatched_eggs',</span> <span class="pre">'no_unhatched_term',</span> <span class="pre">'no_depredated_eggs',</span> <span class="pre">'nest_depth_top',</span> <span class="pre">'nest_depth_bottom',</span> <span class="pre">'encounter_link',</span> <span class="pre">'encounter_status')</span></em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="wastd.observations.admin.TurtleNestObservationAdmin.list_filter">
-<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('encounter__area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('encounter__site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'encounter__status',</span> <span class="pre">'encounter__encounter_type',</span> <span class="pre">'nest_position',</span> <span class="pre">'eggs_laid')</span></em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('encounter__area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('encounter__site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'encounter__status',</span> <span class="pre">'encounter__encounter_type',</span> <span class="pre">'eggs_laid')</span></em><a class="headerlink" href="#wastd.observations.admin.TurtleNestObservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -7661,7 +7659,7 @@ The following sections document the remaining modules for completeness’ sake.<
 
 <dl class="py attribute">
 <dt id="wastd.users.admin.MyUserAdmin.fieldsets">
-<code class="sig-name descname"><span class="pre">fieldsets</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('User</span> <span class="pre">Profile',</span> <span class="pre">{'fields':</span> <span class="pre">('name',</span> <span class="pre">'nickname',</span> <span class="pre">'aliases',</span> <span class="pre">'role',</span> <span class="pre">'affiliation',</span> <span class="pre">'phone')}),</span> <span class="pre">(None,</span> <span class="pre">{'fields':</span> <span class="pre">('username',</span> <span class="pre">'password')}),</span> <span class="pre">('Personal</span> <span class="pre">info',</span> <span class="pre">{'fields':</span> <span class="pre">('first_name',</span> <span class="pre">'last_name',</span> <span class="pre">'email')}),</span> <span class="pre">('Permissions',</span> <span class="pre">{'fields':</span> <span class="pre">('is_active',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_superuser',</span> <span class="pre">'groups',</span> <span class="pre">'user_permissions')}),</span> <span class="pre">('Important</span> <span class="pre">dates',</span> <span class="pre">{'fields':</span> <span class="pre">('last_login',</span> <span class="pre">'date_joined')}))</span></em><a class="headerlink" href="#wastd.users.admin.MyUserAdmin.fieldsets" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">fieldsets</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('User</span> <span class="pre">Profile',</span> <span class="pre">{'fields':</span> <span class="pre">('name',</span> <span class="pre">'nickname',</span> <span class="pre">'aliases',</span> <span class="pre">'role',</span> <span class="pre">'affiliation',</span> <span class="pre">'phone',</span> <span class="pre">'alive')}),</span> <span class="pre">(None,</span> <span class="pre">{'fields':</span> <span class="pre">('username',</span> <span class="pre">'password')}),</span> <span class="pre">('Personal</span> <span class="pre">info',</span> <span class="pre">{'fields':</span> <span class="pre">('first_name',</span> <span class="pre">'last_name',</span> <span class="pre">'email')}),</span> <span class="pre">('Permissions',</span> <span class="pre">{'fields':</span> <span class="pre">('is_active',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_superuser',</span> <span class="pre">'groups',</span> <span class="pre">'user_permissions')}),</span> <span class="pre">('Important</span> <span class="pre">dates',</span> <span class="pre">{'fields':</span> <span class="pre">('last_login',</span> <span class="pre">'date_joined')}))</span></em><a class="headerlink" href="#wastd.users.admin.MyUserAdmin.fieldsets" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -7672,12 +7670,12 @@ The following sections document the remaining modules for completeness’ sake.<
 
 <dl class="py attribute">
 <dt id="wastd.users.admin.MyUserAdmin.list_display">
-<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">('username',</span> <span class="pre">'name',</span> <span class="pre">'nickname',</span> <span class="pre">'aliases',</span> <span class="pre">'role',</span> <span class="pre">'phone',</span> <span class="pre">'email',</span> <span class="pre">'is_superuser',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_active')</span></em><a class="headerlink" href="#wastd.users.admin.MyUserAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">('username',</span> <span class="pre">'name',</span> <span class="pre">'nickname',</span> <span class="pre">'aliases',</span> <span class="pre">'role',</span> <span class="pre">'phone',</span> <span class="pre">'email',</span> <span class="pre">'is_superuser',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_active',</span> <span class="pre">'alive')</span></em><a class="headerlink" href="#wastd.users.admin.MyUserAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="wastd.users.admin.MyUserAdmin.list_filter">
-<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">('is_superuser',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_active')</span></em><a class="headerlink" href="#wastd.users.admin.MyUserAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">('is_superuser',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_active',</span> <span class="pre">'alive')</span></em><a class="headerlink" href="#wastd.users.admin.MyUserAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -7710,7 +7708,7 @@ The following sections document the remaining modules for completeness’ sake.<
 
 <dl class="py attribute">
 <dt id="wastd.users.admin.MyUserChangeForm.base_fields">
-<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'affiliation':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'aliases':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'date_joined':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'email':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'first_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'groups':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_active':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_staff':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_superuser':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_login':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'nickname':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'password':</span> <span class="pre">&lt;django.contrib.auth.forms.ReadOnlyPasswordHashField</span> <span class="pre">object&gt;,</span> <span class="pre">'phone':</span> <span class="pre">&lt;phonenumber_field.formfields.PhoneNumberField</span> <span class="pre">object&gt;,</span> <span class="pre">'role':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'user_permissions':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.contrib.auth.forms.UsernameField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#wastd.users.admin.MyUserChangeForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'affiliation':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'aliases':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'alive':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'date_joined':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'email':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'first_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'groups':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_active':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_staff':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_superuser':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_login':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'nickname':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'password':</span> <span class="pre">&lt;django.contrib.auth.forms.ReadOnlyPasswordHashField</span> <span class="pre">object&gt;,</span> <span class="pre">'phone':</span> <span class="pre">&lt;phonenumber_field.formfields.PhoneNumberField</span> <span class="pre">object&gt;,</span> <span class="pre">'role':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'user_permissions':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.contrib.auth.forms.UsernameField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#wastd.users.admin.MyUserChangeForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -8729,27 +8727,28 @@ Ideally, all requirements from the detailed requirements analysis find their cou
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="maintainers.html" class="btn btn-neutral float-left" title="Application maintainers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="maintainers.html" class="btn btn-neutral float-left" title="Application maintainers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016-2020 DBCA
+        &#169; Copyright 2016-2020 DBCA.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -8757,7 +8756,6 @@ Ideally, all requirements from the detailed requirements analysis find their cou
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

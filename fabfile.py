@@ -3,18 +3,23 @@
 
 Convenience wrapper for often used operations.
 """
-from fabric.api import env, local  # settings, cd, run
-from fabric.colors import green, yellow  # red
 import confy
-from confy import env as confyenv
-try:
-    confy.read_environment_file(".env")
-except:
-    pass
+import os
+# from fabric.api import env, local  # settings, cd, run
+from fabric.api import cd, run, sudo, local
+from fabric.colors import green, yellow, red
+from fabric.contrib.files import exists, upload_template
 
-# from fabric.contrib.files import exists, upload_template
+confy.read_environment_file()
+e = os.environ
 
-env.hosts = ['localhost', ]
+# import confy
+# from confy import env as confyenv
+# try:
+#     confy.read_environment_file(".env")
+# except:
+#     pass
+# env.hosts = ['localhost', ]
 
 
 def clean():
@@ -25,7 +30,7 @@ def clean():
 
 
 def pip():
-    """Install python requirements."""
+    """Install python requirements. Alternatively, use Pipenv."""
     local("pip install -r requirements/base.txt")
 
 
@@ -56,6 +61,7 @@ def deploy():
 def shell():
     """Open a shell_plus."""
     local('python manage.py shell_plus')
+
 
 def rundev():
     """Runserver with dev settings."""
@@ -100,13 +106,15 @@ def test():
     local('coveralls')
     print(green("Completed running tests and reporting test coverage."))
 
+
 def ptest():
     """Run parallel test suite without coverage."""
     print(yellow("Running parallel tests..."))
     local('python manage.py test --settings=config.settings.test '
-            '--parallel 4 --keepdb -v 2 ',
+          '--parallel 4 --keepdb -v 2 ',
           shell='/bin/bash')
     print(green("Completed running tests."))
+
 
 def doc():
     """Compile docs, draw data models and transitions."""
@@ -114,33 +122,35 @@ def doc():
           "cd docs_source && make clean && "
           "make html && cd ..")
 
+
 def dbuild():
     """Build Docker image."""
-    ver = confyenv("WASTD_RELEASE", default="0.1.0")
-    print(yellow("Building docker images with tag latest and {0}...".format(ver)))
+    print(yellow("Building docker images with tag latest and {WASTD_RELEASE}...".format(**e)))
     local("rm logs/wastd.log && touch logs/wastd.log")
-    local("docker build -t dbcawa/wastd -t dbcawa/wastd:{0} .".format(ver))
+    local("docker build -t dbcawa/wastd -t dbcawa/wastd:{WASTD_RELEASE} .".format(**e))
+
 
 def dpush():
     """Push Docker image to Dockerhub. Requires `docker login`."""
     print(yellow("Pushing docker images to DockerHub..."))
     local("docker push dbcawa/wastd")
 
+
 def docker():
     """Build and push docker images."""
     dbuild()
     dpush()
-    ver = confyenv("WASTD_RELEASE", default="0.1.0")
     print(green(
         "Updated Docker images are available on DockerHub "
-        "as dbcawa/wastd:latest and dbcawa/wastd:{0}".format(ver)))
+        "as dbcawa/wastd:latest and dbcawa/wastd:{WASTD_RELEASE}".format(**e)))
+
 
 def tag():
     """Tag code with WASTD_RELEASE and push to GitHub."""
-    ver = confyenv("WASTD_RELEASE", default="0.1.0")
-    local("git tag -a {0} -m '{0}'".format(ver))
-    local("git push origin {0}".format(ver))
-    print(green("Code tagged as {0} and pushed to GitHub.".format(ver)))
+    local("git tag -a {WASTD_RELEASE} -m '{WASTD_RELEASE}'".format(**e))
+    local("git push origin {WASTD_RELEASE}".format(**e))
+    print(green("Code tagged as {WASTD_RELEASE} and pushed to GitHub.".format(**e)))
+
 
 def release():
     """Make release: doc, tag, docker."""

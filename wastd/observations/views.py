@@ -49,6 +49,9 @@ from wastd.observations.resources import (
     LineTransectEncounterResource,
     LoggerEncounterResource
 )
+
+from wastd.observations import admin
+
 from wastd.observations.tasks import import_odka, update_names, reconstruct_surveys
 
 @csrf_exempt
@@ -237,6 +240,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         context['list_filter'] = EncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
+        context['model_admin'] = admin.EncounterAdmin
         return context
 
     def get_queryset(self):
@@ -278,6 +282,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
         context = super(AnimalEncounterList, self).get_context_data(**kwargs)
         context['list_filter'] = AnimalEncounterFilter(
             self.request.GET, queryset=self.get_queryset())
+        context['model_admin'] = admin.AnimalEncounterAdmin
         return context
 
     def get_queryset(self):
@@ -373,6 +378,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
         context['list_filter'] = TurtleNestEncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
+        context['model_admin'] = admin.TurtleNestEncounterAdmin
         return context
 
     def get_queryset(self):
@@ -404,6 +410,7 @@ class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, 
         context['list_filter'] = LineTransectEncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
+        context['model_admin'] = admin.LineTransectEncounterAdmin
         return context
 
     def get_queryset(self):
@@ -435,6 +442,7 @@ class LoggerEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
         context['list_filter'] = LoggerEncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
+        context['model_admin'] = admin.LoggerEncounterAdmin
         return context
 
     def get_queryset(self):

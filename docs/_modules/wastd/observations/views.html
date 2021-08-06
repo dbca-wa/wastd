@@ -1,23 +1,31 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>wastd.observations.views &mdash; WAStD 0.50.8 documentation</title>
+  <title>wastd.observations.views &mdash; WAStD 0.52.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -28,10 +36,6 @@
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
@@ -57,7 +61,7 @@
             
             
               <div class="version">
-                0.5
+                0.52
               </div>
             
           
@@ -74,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -101,6 +106,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -135,11 +141,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -210,6 +218,9 @@
     <span class="n">LineTransectEncounterResource</span><span class="p">,</span>
     <span class="n">LoggerEncounterResource</span>
 <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">wastd.observations</span> <span class="kn">import</span> <span class="n">admin</span>
+
 <span class="kn">from</span> <span class="nn">wastd.observations.tasks</span> <span class="kn">import</span> <span class="n">import_odka</span><span class="p">,</span> <span class="n">update_names</span><span class="p">,</span> <span class="n">reconstruct_surveys</span>
 
 <div class="viewcode-block" id="import_odka_view"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.import_odka_view">[docs]</a><span class="nd">@csrf_exempt</span>
@@ -398,6 +409,7 @@
         <span class="n">context</span><span class="p">[</span><span class="s1">&#39;list_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EncounterFilter</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
         <span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;model_admin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">EncounterAdmin</span>
         <span class="k">return</span> <span class="n">context</span></div>
 
 <div class="viewcode-block" id="EncounterList.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.EncounterList.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -439,6 +451,7 @@
         <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AnimalEncounterList</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">context</span><span class="p">[</span><span class="s1">&#39;list_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">AnimalEncounterFilter</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">())</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;model_admin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">AnimalEncounterAdmin</span>
         <span class="k">return</span> <span class="n">context</span></div>
 
 <div class="viewcode-block" id="AnimalEncounterList.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.AnimalEncounterList.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -534,6 +547,7 @@
         <span class="n">context</span><span class="p">[</span><span class="s1">&#39;list_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TurtleNestEncounterFilter</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
         <span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;model_admin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">TurtleNestEncounterAdmin</span>
         <span class="k">return</span> <span class="n">context</span></div>
 
 <div class="viewcode-block" id="TurtleNestEncounterList.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.TurtleNestEncounterList.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -565,6 +579,7 @@
         <span class="n">context</span><span class="p">[</span><span class="s1">&#39;list_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LineTransectEncounterFilter</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
         <span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;model_admin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">LineTransectEncounterAdmin</span>
         <span class="k">return</span> <span class="n">context</span></div>
 
 <div class="viewcode-block" id="LineTransectEncounterList.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.LineTransectEncounterList.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -596,6 +611,7 @@
         <span class="n">context</span><span class="p">[</span><span class="s1">&#39;list_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LoggerEncounterFilter</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
         <span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;model_admin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">LoggerEncounterAdmin</span>
         <span class="k">return</span> <span class="n">context</span></div>
 
 <div class="viewcode-block" id="LoggerEncounterList.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.LoggerEncounterList.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -624,20 +640,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016-2020 DBCA
+        &#169; Copyright 2016-2020 DBCA.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -645,7 +666,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
