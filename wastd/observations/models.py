@@ -1208,8 +1208,9 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
             logger.info("[wastd.observations.models.survey.encounters] No site set, can't filter Encounters.")
             return None
         else:
+            # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/geoquerysets/#coveredby
             e = Encounter.objects.filter(
-                where__contained=self.site.geom,
+                where__converedby=self.site.geom,
                 when__gte=self.start_time,
                 when__lte=self.end_time)
             logger.info("[Survey.encounters] {0} found {1} Encounters".format(self, len(e)))
@@ -1332,7 +1333,7 @@ def guess_area(survey_instance):
     else:
         return Area.objects.filter(
             area_type=Area.AREATYPE_LOCALITY,
-            geom__contains=survey_instance.start_location).first()
+            geom__covers=survey_instance.start_location).first()
 
 def guess_site(survey_instance):
     """Return the first Area containing the start_location or None."""
@@ -1341,7 +1342,7 @@ def guess_site(survey_instance):
     else:
         return Area.objects.filter(
         area_type=Area.AREATYPE_SITE,
-        geom__contains=survey_instance.start_location).first()
+        geom__covers=survey_instance.start_location).first()
 
 def claim_end_points(survey_instance):
     """Claim SurveyEnd.
@@ -1517,7 +1518,7 @@ class SurveyEnd(geo_models.Model):
         """Return the first Area containing the start_location or None."""
         candidates = Area.objects.filter(
             area_type=Area.AREATYPE_SITE,
-            geom__contains=self.end_location)
+            geom__covers=self.end_location)
         return None if not candidates else candidates.first()
 
 
@@ -1983,7 +1984,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         """Return the first Area containing the start_location or None."""
         candidates = Area.objects.filter(
             area_type=Area.AREATYPE_SITE,
-            geom__contains=self.where)
+            geom__covers=self.where)
         return None if not candidates else candidates.first()
 
     @property
@@ -1991,7 +1992,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         """Return the first Area containing the start_location or None."""
         candidates = Area.objects.filter(
             area_type=Area.AREATYPE_LOCALITY,
-            geom__contains=self.where)
+            geom__covers=self.where)
         return None if not candidates else candidates.first()
 
     def set_name(self, name):
