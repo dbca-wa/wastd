@@ -6,6 +6,9 @@ Data consumers
 
 This chapter addresses data consumers.
 
+
+
+
 For humans: GUI
 ===============
 This section documents the graphical user interface (GUI).

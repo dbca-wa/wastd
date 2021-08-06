@@ -1197,7 +1197,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
 
     @property
     def encounters(self):
-        """Return the QuerySet of all Encounters within this SiteVisit unless it's a training run."""
+        """Return the QuerySet of all Encounters within this Survey unless it's a training run."""
         if not self.production:
             logger.info("[wastd.observations.models.survey.encounters] Not a production survey, skipping.")
             return None
@@ -1259,6 +1259,11 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         so that duplicates can contain Encounters outside the duration of the production Survey.
         The remaining production Survey needs to adjust its start and end time to include all Encounters of all closed
         duplicate surveys.
+
+        The production Survey adopts all Encounters within its spatial bounds.
+        Encounters outside its spatial bounds can occur if the Survey site was adjusted manually.
+        These will be orphaned after this operation, and can be adopted either by saving an adjacent survey,
+        or running "adopt orphaned encounters".
         """
         survey_pks = [survey.pk for survey in self.duplicate_surveys.all()] + [self.pk]
         all_encounters = Encounter.objects.filter(survey_id__in=survey_pks)
@@ -1307,6 +1312,15 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
             self.curate(by=curator)
             self.save()
             print(self.status)
+
+        # ...except cuckoo Encounters
+        if all_encounters.count() > 0:
+            cuckoo_encounters = all_encounters.exclude(site__pk=self.site.pk)
+            for e in cuckoo_encounters:
+                e.site = None
+                e.survey = None
+                e.save()
+            msg += " Evicted {0} cuckoo Encounters observed outside the site.".format(cuckoo_encounters.count())
 
         logger.info(msg)
         return msg
@@ -1372,6 +1386,7 @@ def claim_encounters(survey_instance):
     enc = survey_instance.encounters
     if enc:
         enc.update(survey=survey_instance)
+        enc.update(site=survey_instance.site)
         logger.info("[wastd.observations.models.claim_encounters] "
                     "Survey {0} claimed {1} Encounters".format(survey_instance, len(enc)))
 
@@ -1404,6 +1419,8 @@ def survey_pre_save(sender, instance, buffer_mins=30, initial_duration_hrs = 6, 
         instance.end_comments = msg
         logger.info(msg)
     instance.label = instance.make_label
+    # if not instance.survey:
+    #     instance.survey = guess_survey(instance)
 
 
 @receiver(post_save, sender=Survey)
@@ -1784,7 +1801,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
     class Meta:
         """Class options."""
 
-        ordering = ["when", "where"]
+        ordering = ["-when", "where"]
         unique_together = ("source", "source_id")
         index_together = [
             ["when", "where"],

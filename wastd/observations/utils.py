@@ -127,7 +127,7 @@ def reconstruct_missing_surveys(buffer_mins=30):
                     len(missing_surveys), tne.count()))
 
     tne = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)
-    logger.info("[QA][reconstruct_missing_surveys] Remaining orphans witout survey: {0}".format(tne.count()))
+    logger.info("[QA][reconstruct_missing_surveys] Remaining orphans without survey: {0}".format(tne.count()))
 
     return None
 

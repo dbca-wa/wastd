@@ -37,7 +37,7 @@ For each team collecting data at the same time:
 
 Admin: Create offline background imagery
 ========================================
-* Use QGIS 3.14 or higher
+* Use latest QGIS (3.18 or higher)
 * Add ArcGIS Map Service as title "ESRI World Imagery" and with URL
   https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer
 * Add "High Resolution 30cm imagery" and zoom to target location (e.g. Thevenard Island)
@@ -67,16 +67,21 @@ Admin: First time setup
 These steps have to be run once per new tablet.
 They are the minimum steps to provide a production ready data collection tablet.
 
-Setup the tablet
-----------------
+Setup the tablet - first time
+-----------------------------
+This protocol should be followed before a tablet is taken out into the field when set up fresh.
 
 * Start fully charged, plug into charger to lengthen screen timeout
 * Language: English / Australia
-* Wifi: do not use DBCA's Wongi, use guest.dbca.wa.gov.au
+* Check out some info to get started: select all
+* Wifi: do not use DBCA's Wongi, use guest.dbca.wa.gov.au.
+* Checking for updates: wait out.
+* Copy apps and data: don't.
 * Sign into a work-only Google account - all tablets handed out from turtle program are linked to wa.turtles@gmail.com.
   If you are not Florian Mayer, use your own work-only Google account.
-* Skip restore from backup.
+* Google assistant: no thanks
 * Google services: untick "help improve..." options. Keep "Back up apps etc" and "Location services" option.
+* Skip screen lock.
 * Skip creating a Lenovo/Samsung account. The "Start using your new device" button is hidden under the keyboard. Press "Back" to minimize keyboard.
 * Update Android apps if prompted and address any notifications.
 
@@ -87,10 +92,10 @@ Device settings:
 
 App settings:
 
-* Camera: Open app, enable location capture, so that all photos are geo-referenced with
+* Camera: Open app, enable location tags, so that all photos are geo-referenced with
   the coordinates they were taken at. This turns the camera into a generic
   data collection form (image, time, location).
-* Google Photos: open app, settings, auto-backup all photos in "high resolution" (about 2MP) to Google Photos.
+* Google Photos: open app, settings, auto-backup all photos in "high quality" (about 2MP) to Google Photos.
 
 Setup the tablet after a season
 -------------------------------
@@ -98,12 +103,23 @@ This section is for administrators updating tablets for a new field season.
 
 * Fully charge tablets
 * Turn on tablets, apply all available system updates:
-
-  * Settings > Software > Check for updates (or follow notifications).
-  * There can be multiple big (>1GB, new Android version) and smaller (~200MB security patches) updates.
+  * Settings > Display > Font size and style: set to 5 of 8; timeout: 2 minutes
+  * Settings > General Management > Date and time: automatic date and time, time zone GMT+08 (Perth), 24 hour format
+  * Settings > Software update > Check for updates, download and install (or follow notifications).
+  * There can be multiple big (>1GB, new Android version) and smaller (~200MB security patches) updates. Repeat until latest versions.
 * Google Play: update all apps, ODK Collect first.
 * Scan new QR code as and when instructed.
-* Delete and re-create all home screen widgets.
+* Delete and re-create all home screen widgets. (Could be safe to keep in 2021, pending testing)
+
+
+Setup the tablet - before field season
+--------------------------------------
+This protocol should be followed before a tablet is taken out into the field when coming out of storage.
+
+* Charge fully, turn on.
+* Settings > System update > check for update > install if any available. Repeat until up to date.
+* Google Play > My apps > Update all.
+*
 
 
 Setup ODK Collect from QR code

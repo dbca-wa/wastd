@@ -1,4 +1,4 @@
-{% load observations %}
+{% load observations bootstrap4 fsm_admin %}
 <div class="card col-12 shadow-lg mb-1">
   <div class="card-header">
     <span class="float-right">{% block title_labels %}{% endblock title_labels %}</span>
@@ -21,15 +21,17 @@
       <span class="float-right">
         {% include "observations/toggle_details.html" with object=object %}
         {% include "shared/admin_qa.html" with label=True %}
-        <span class="oi oi-map-marker zoom-map text-warning"
+        <!-- span class="oi oi-map-marker zoom-map text-warning"
           data-lon="{{ object.longitude }}" data-lat="{{ object.latitude }}"
           title="Show on map" aria-hidden="true"></span>
-        </span>
+        </span -->
     </h6>
   </div>
 
   <div class="collapse" id="details{{ object.id }}">
   <div class="card-body">
+
+
     <div class="card-text">
       <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
       {{ object.comments|safe|default:"-" }}
@@ -55,15 +57,32 @@
     {% endif %}
   </div>
 
-  <!--
   <div class="card-footer">
     <div class="row">
       <div class="col-12">
-        Footer content
+         <span class="float-right">
+        {# {% include "observations/toggle_details.html" with object=object %} #}
+        {% include "shared/admin_qa.html" with label=True %}
+        </span>
+
+     {% for t in object.get_available_status_transitions %}
+      <!--
+      {'method': <function shared.models.QualityControlMixin.curate(self, by=None)>,
+        'source': 'new',
+        'target': 'curated',
+        'on_error': None,
+        'conditions': [<function shared.models.QualityControlMixin.can_curate(self)>],
+        'permission': None,
+        'custom': {'verbose': 'Accept as trustworthy',
+         'explanation': 'This record is deemed trustworthy.',
+         'notify': True}
+      -->
+      <!-- TODO method must call transition-->
+      <a href="" title="{{ t.custom.verbose }}"><span class="badge badge-success">{{ t.custom.verbose }}</span></a>
+     {% endfor %}
       </div>
     </div>
   </div>
-  -->
 
   </div><!-- /#details{{ object.id }} -->
 </div><!-- /.card -->

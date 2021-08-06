@@ -1,23 +1,31 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Index &mdash; WAStD 0.50.8 documentation</title>
+  <title>Index &mdash; WAStD 0.52.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -28,10 +36,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -57,7 +61,7 @@
             
             
               <div class="version">
-                0.5
+                0.52
               </div>
             
           
@@ -74,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -101,6 +106,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -135,18 +141,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Index</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
         
       </li>
     
@@ -890,12 +898,12 @@
         <li><a href="developers.html#wastd.users.views.UserListView.filter_class">(wastd.users.views.UserListView attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.Expedition.finished_on">finished_on (wastd.observations.models.Expedition attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.admin.EncounterAdmin.FIRST_COLS">FIRST_COLS (wastd.observations.admin.EncounterAdmin attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.NestTagObservation.flipper_tag_id">flipper_tag_id (wastd.observations.models.NestTagObservation attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.flipper_tags">flipper_tags() (wastd.observations.models.Encounter property)</a>
@@ -945,7 +953,17 @@
       <ul>
         <li><a href="developers.html#wastd.observations.admin.EncounterAdmin.formfield_overrides">(wastd.observations.admin.EncounterAdmin attribute)</a>
 </li>
+        <li><a href="developers.html#wastd.observations.admin.FieldMediaAttachmentInline.formfield_overrides">(wastd.observations.admin.FieldMediaAttachmentInline attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.MediaAttachmentAdmin.formfield_overrides">(wastd.observations.admin.MediaAttachmentAdmin attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.MediaAttachmentInline.formfield_overrides">(wastd.observations.admin.MediaAttachmentInline attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.ObservationAdminMixin.formfield_overrides">(wastd.observations.admin.ObservationAdminMixin attribute)</a>
+</li>
         <li><a href="developers.html#wastd.observations.admin.SurveyAdmin.formfield_overrides">(wastd.observations.admin.SurveyAdmin attribute)</a>
+</li>
+        <li><a href="developers.html#wastd.observations.admin.SurveyMediaAttachmentInline.formfield_overrides">(wastd.observations.admin.SurveyMediaAttachmentInline attribute)</a>
 </li>
       </ul></li>
       <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView.formhelper_class">formhelper_class (wastd.observations.views.AnimalEncounterTableView attribute)</a>
@@ -1158,8 +1176,6 @@
         <li><a href="developers.html#wastd.observations.models.TurtleNestEncounter.get_nest_age_display">(wastd.observations.models.TurtleNestEncounter method)</a>
 </li>
       </ul></li>
-      <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.get_nest_position_display">get_nest_position_display() (wastd.observations.models.TurtleNestObservation method)</a>
-</li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestEncounter.get_nest_tagged_display">get_nest_tagged_display() (wastd.observations.models.TurtleNestEncounter method)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TrackTallyObservation.get_nest_type_display">get_nest_type_display() (wastd.observations.models.TrackTallyObservation method)</a>
@@ -1438,18 +1454,16 @@
         <li><a href="developers.html#wastd.observations.models.SurveyMediaAttachment.id">(wastd.observations.models.SurveyMediaAttachment attribute)</a>
 </li>
       </ul></li>
-      <li><a href="developers.html#wastd.observations.admin.ImageThumbnailFileInput">ImageThumbnailFileInput (class in wastd.observations.admin)</a>
-</li>
       <li><a href="developers.html#wastd.observations.views.import_odka_view">import_odka_view() (in module wastd.observations.views)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.Encounter.inferred_name">inferred_name() (wastd.observations.models.Encounter property)</a>
 
       <ul>
         <li><a href="developers.html#wastd.observations.models.LoggerEncounter.inferred_name">(wastd.observations.models.LoggerEncounter property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.admin.AnimalEncounterAdmin.inlines">inlines (wastd.observations.admin.AnimalEncounterAdmin attribute)</a>
 
       <ul>
@@ -1847,8 +1861,6 @@
 </li>
         <li><a href="developers.html#wastd.observations.admin.HatchlingMorphometricObservationInline.media">(wastd.observations.admin.HatchlingMorphometricObservationInline property)</a>
 </li>
-        <li><a href="developers.html#wastd.observations.admin.ImageThumbnailFileInput.media">(wastd.observations.admin.ImageThumbnailFileInput property)</a>
-</li>
         <li><a href="developers.html#wastd.observations.admin.LightSourceObservationAdmin.media">(wastd.observations.admin.LightSourceObservationAdmin property)</a>
 </li>
         <li><a href="developers.html#wastd.observations.admin.LightSourceObservationObservationInline.media">(wastd.observations.admin.LightSourceObservationObservationInline property)</a>
@@ -2111,8 +2123,6 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.nest_depth_top">nest_depth_top (wastd.observations.models.TurtleNestObservation attribute)</a>
 </li>
-      <li><a href="developers.html#wastd.observations.models.TurtleNestObservation.nest_position">nest_position (wastd.observations.models.TurtleNestObservation attribute)</a>
-</li>
       <li><a href="developers.html#wastd.observations.models.TurtleNestEncounter.nest_tagged">nest_tagged (wastd.observations.models.TurtleNestEncounter attribute)</a>
 </li>
       <li><a href="developers.html#wastd.observations.models.TrackTallyObservation.nest_type">nest_type (wastd.observations.models.TrackTallyObservation attribute)</a>
@@ -2133,10 +2143,10 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.NestTagObservation.MultipleObjectsReturned">NestTagObservation.MultipleObjectsReturned</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.models.nesttagobservation_pre_save">nesttagobservation_pre_save() (in module wastd.observations.models)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developers.html#wastd.observations.admin.NestTagObservationAdmin">NestTagObservationAdmin (class in wastd.observations.admin)</a>
 </li>
       <li><a href="developers.html#wastd.observations.admin.NestTagObservationInline">NestTagObservationInline (class in wastd.observations.admin)</a>
@@ -2891,11 +2901,9 @@
 </li>
       <li><a href="developers.html#wastd.observations.views.AnimalEncounterTableView.template">template (wastd.observations.views.AnimalEncounterTableView attribute)</a>
 </li>
-      <li><a href="developers.html#wastd.observations.admin.ImageThumbnailFileInput.template_name">template_name (wastd.observations.admin.ImageThumbnailFileInput attribute)</a>
+      <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.template_name">template_name (wastd.observations.views.AnimalEncounterList attribute)</a>
 
       <ul>
-        <li><a href="developers.html#wastd.observations.views.AnimalEncounterList.template_name">(wastd.observations.views.AnimalEncounterList attribute)</a>
-</li>
         <li><a href="developers.html#wastd.observations.views.EncounterList.template_name">(wastd.observations.views.EncounterList attribute)</a>
 </li>
         <li><a href="developers.html#wastd.observations.views.HomeView.template_name">(wastd.observations.views.HomeView attribute)</a>
@@ -3146,12 +3154,6 @@
 </li>
       <li><a href="developers.html#wastd.observations.models.Encounter.where">where (wastd.observations.models.Encounter attribute)</a>
 </li>
-      <li><a href="developers.html#wastd.observations.admin.FieldMediaAttachmentInline.widgets">widgets (wastd.observations.admin.FieldMediaAttachmentInline attribute)</a>
-
-      <ul>
-        <li><a href="developers.html#wastd.observations.admin.MediaAttachmentInline.widgets">(wastd.observations.admin.MediaAttachmentInline attribute)</a>
-</li>
-      </ul></li>
       <li><a href="developers.html#wastd.observations.models.Encounter.wkt">wkt() (wastd.observations.models.Encounter property)</a>
 </li>
   </ul></td>
@@ -3163,20 +3165,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016-2020 DBCA
+        &#169; Copyright 2016-2020 DBCA.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -3184,7 +3191,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

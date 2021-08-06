@@ -1,23 +1,31 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Data collection administrators &mdash; WAStD 0.50.8 documentation</title>
+  <title>Data collection administrators &mdash; WAStD 0.52.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -28,10 +36,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data collection training" href="data_collection_training.html" />
@@ -59,7 +63,7 @@
             
             
               <div class="version">
-                0.5
+                0.52
               </div>
             
           
@@ -76,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -90,8 +95,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#admin-prepare-field-packs">Admin: Prepare field packs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#admin-create-offline-background-imagery">Admin: Create offline background imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#admin-first-time-setup">Admin: First time setup</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#setup-the-tablet">Setup the tablet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-the-tablet-first-time">Setup the tablet - first time</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#setup-the-tablet-after-a-season">Setup the tablet after a season</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-the-tablet-before-field-season">Setup the tablet - before field season</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#setup-odk-collect-from-qr-code">Setup ODK Collect from QR code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#distribute-offline-background-imagery">Distribute offline background imagery</a></li>
 </ul>
@@ -132,6 +138,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -166,18 +173,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Data collection administrators</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/data_collection/data_collection_admin.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -229,7 +238,7 @@ and the data collectors (staff and volunteers).</p>
 <div class="section" id="admin-create-offline-background-imagery">
 <h2>Admin: Create offline background imagery<a class="headerlink" href="#admin-create-offline-background-imagery" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Use QGIS 3.14 or higher</p></li>
+<li><p>Use latest QGIS (3.18 or higher)</p></li>
 <li><p>Add ArcGIS Map Service as title “ESRI World Imagery” and with URL
 <a class="reference external" href="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer">https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</a></p></li>
 <li><p>Add “High Resolution 30cm imagery” and zoom to target location (e.g. Thevenard Island)</p></li>
@@ -257,16 +266,21 @@ Input parameters:
 <h2>Admin: First time setup<a class="headerlink" href="#admin-first-time-setup" title="Permalink to this headline">¶</a></h2>
 <p>These steps have to be run once per new tablet.
 They are the minimum steps to provide a production ready data collection tablet.</p>
-<div class="section" id="setup-the-tablet">
-<h3>Setup the tablet<a class="headerlink" href="#setup-the-tablet" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="setup-the-tablet-first-time">
+<h3>Setup the tablet - first time<a class="headerlink" href="#setup-the-tablet-first-time" title="Permalink to this headline">¶</a></h3>
+<p>This protocol should be followed before a tablet is taken out into the field when set up fresh.</p>
 <ul class="simple">
 <li><p>Start fully charged, plug into charger to lengthen screen timeout</p></li>
 <li><p>Language: English / Australia</p></li>
-<li><p>Wifi: do not use DBCA’s Wongi, use guest.dbca.wa.gov.au</p></li>
+<li><p>Check out some info to get started: select all</p></li>
+<li><p>Wifi: do not use DBCA’s Wongi, use guest.dbca.wa.gov.au.</p></li>
+<li><p>Checking for updates: wait out.</p></li>
+<li><p>Copy apps and data: don’t.</p></li>
 <li><p>Sign into a work-only Google account - all tablets handed out from turtle program are linked to <a class="reference external" href="mailto:wa&#46;turtles&#37;&#52;&#48;gmail&#46;com">wa<span>&#46;</span>turtles<span>&#64;</span>gmail<span>&#46;</span>com</a>.
 If you are not Florian Mayer, use your own work-only Google account.</p></li>
-<li><p>Skip restore from backup.</p></li>
+<li><p>Google assistant: no thanks</p></li>
 <li><p>Google services: untick “help improve…” options. Keep “Back up apps etc” and “Location services” option.</p></li>
+<li><p>Skip screen lock.</p></li>
 <li><p>Skip creating a Lenovo/Samsung account. The “Start using your new device” button is hidden under the keyboard. Press “Back” to minimize keyboard.</p></li>
 <li><p>Update Android apps if prompted and address any notifications.</p></li>
 </ul>
@@ -277,10 +291,10 @@ If you are not Florian Mayer, use your own work-only Google account.</p></li>
 </ul>
 <p>App settings:</p>
 <ul class="simple">
-<li><p>Camera: Open app, enable location capture, so that all photos are geo-referenced with
+<li><p>Camera: Open app, enable location tags, so that all photos are geo-referenced with
 the coordinates they were taken at. This turns the camera into a generic
 data collection form (image, time, location).</p></li>
-<li><p>Google Photos: open app, settings, auto-backup all photos in “high resolution” (about 2MP) to Google Photos.</p></li>
+<li><p>Google Photos: open app, settings, auto-backup all photos in “high quality” (about 2MP) to Google Photos.</p></li>
 </ul>
 </div>
 <div class="section" id="setup-the-tablet-after-a-season">
@@ -288,15 +302,24 @@ data collection form (image, time, location).</p></li>
 <p>This section is for administrators updating tablets for a new field season.</p>
 <ul class="simple">
 <li><p>Fully charge tablets</p></li>
-<li><p>Turn on tablets, apply all available system updates:</p>
-<ul>
-<li><p>Settings &gt; Software &gt; Check for updates (or follow notifications).</p></li>
-<li><p>There can be multiple big (&gt;1GB, new Android version) and smaller (~200MB security patches) updates.</p></li>
-</ul>
-</li>
+<li><p>Turn on tablets, apply all available system updates:
+* Settings &gt; Display &gt; Font size and style: set to 5 of 8; timeout: 2 minutes
+* Settings &gt; General Management &gt; Date and time: automatic date and time, time zone GMT+08 (Perth), 24 hour format
+* Settings &gt; Software update &gt; Check for updates, download and install (or follow notifications).
+* There can be multiple big (&gt;1GB, new Android version) and smaller (~200MB security patches) updates. Repeat until latest versions.</p></li>
 <li><p>Google Play: update all apps, ODK Collect first.</p></li>
 <li><p>Scan new QR code as and when instructed.</p></li>
-<li><p>Delete and re-create all home screen widgets.</p></li>
+<li><p>Delete and re-create all home screen widgets. (Could be safe to keep in 2021, pending testing)</p></li>
+</ul>
+</div>
+<div class="section" id="setup-the-tablet-before-field-season">
+<h3>Setup the tablet - before field season<a class="headerlink" href="#setup-the-tablet-before-field-season" title="Permalink to this headline">¶</a></h3>
+<p>This protocol should be followed before a tablet is taken out into the field when coming out of storage.</p>
+<ul class="simple">
+<li><p>Charge fully, turn on.</p></li>
+<li><p>Settings &gt; System update &gt; check for update &gt; install if any available. Repeat until up to date.</p></li>
+<li><p>Google Play &gt; My apps &gt; Update all.</p></li>
+<li></li>
 </ul>
 </div>
 <div class="section" id="setup-odk-collect-from-qr-code">
@@ -516,29 +539,29 @@ Some older forms may be available for download - this is to allow import to WASt
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="data_collection_training.html" class="btn btn-neutral float-right" title="Data collection training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="data_collection_overview.html" class="btn btn-neutral float-left" title="Data collection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="data_collection_training.html" class="btn btn-neutral float-right" title="Data collection training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="data_collection_overview.html" class="btn btn-neutral float-left" title="Data collection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016-2020 DBCA
+        &#169; Copyright 2016-2020 DBCA.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -546,7 +569,6 @@ Some older forms may be available for download - this is to allow import to WASt
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

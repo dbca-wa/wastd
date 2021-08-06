@@ -1,7 +1,21 @@
 {% extends "pages/base.html" %}
 {% load django_tables2 crispy_forms_tags leaflet_tags %}
+
+{% block stylesheets %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/grappelli_change_form.css' %}">
 {% leaflet_css plugins="ALL" %}
-{% leaflet_js plugins="ALL" %}
+{% include 'shared/leaflet_css.html' %}
+
+<!-- Fix missing favicon -->
+<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{% include 'shared/leaflet_js.html' %}
+{% leaflet_js =plugins="ALL" %}
+{% endblock %}
 
 {% block content %}
 <div class="popupimage">
