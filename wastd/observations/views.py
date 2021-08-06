@@ -77,7 +77,7 @@ def update_names_view(request):
 @csrf_exempt
 def reconstruct_surveys_view(request):
     """Import all available ODK-Aggregate forms."""
-    capture_message("[wastd.observations.views.reconstruct_surveys_view] Rreconstructing surveys.", level="error")
+    capture_message("[wastd.observations.views.reconstruct_surveys_view] Reconstructing surveys.", level="error")
     msg = reconstruct_surveys.now()
     messages.success(request, msg)
     capture_message(msg, level="error")
