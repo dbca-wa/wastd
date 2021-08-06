@@ -1210,7 +1210,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         else:
             # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/geoquerysets/#coveredby
             e = Encounter.objects.filter(
-                where__converedby=self.site.geom,
+                where__coveredby=self.site.geom,
                 when__gte=self.start_time,
                 when__lte=self.end_time)
             logger.info("[Survey.encounters] {0} found {1} Encounters".format(self, len(e)))
@@ -1312,17 +1312,19 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         if self.status != QualityControlMixin.STATUS_CURATED:
             self.curate(by=curator)
             self.save()
-            print(self.status)
+            # print(self.status)
 
         # ...except cuckoo Encounters
-        if all_encounters.count() > 0:
-            cuckoo_encounters = all_encounters.exclude(site__pk=self.site.pk)
+        if all_encounters.count() > 0 and self.site is not None:
+            cuckoo_encounters = all_encounters.exclude(where__coveredby=self.site.geom)
             for e in cuckoo_encounters:
                 e.site = None
                 e.survey = None
                 e.save()
             msg += " Evicted {0} cuckoo Encounters observed outside the site.".format(cuckoo_encounters.count())
 
+        # Post-save runs claim_encounters
+        self.save()
         logger.info(msg)
         return msg
 
