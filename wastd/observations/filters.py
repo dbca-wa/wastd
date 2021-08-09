@@ -8,6 +8,7 @@ from django.contrib.gis.db import models as geo_models
 from django.utils.translation import ugettext_lazy as _
 from django_filters import FilterSet
 from django_filters.filters import (  # noqa
+    DateFilter,  # DateTimeFilter,
     BooleanFilter, CharFilter, RangeFilter,
     ChoiceFilter, MultipleChoiceFilter,
     ModelChoiceFilter, ModelMultipleChoiceFilter)
@@ -46,7 +47,7 @@ class SurveyFilter(FilterSet):
     area = ModelChoiceFilter(
         label="Locality",
         queryset=Area.objects.filter(
-            area_type__in=[Area.AREATYPE_LOCALITY,]
+            area_type__in=[Area.AREATYPE_LOCALITY, ]
         ).order_by(
             "-northern_extent",
             "name"
@@ -56,12 +57,18 @@ class SurveyFilter(FilterSet):
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(
-            area_type__in=[Area.AREATYPE_SITE,]
+            area_type__in=[Area.AREATYPE_SITE, ]
         ).order_by(
             "-northern_extent",
             "name"
         ),
         # method='taxa_occurring_in_area'
+    )
+
+    survey_date = DateFilter(
+        field_name="start_time",
+        lookup_expr="date",
+        label="Exact survey date (YYYY-mm-dd)"
     )
 
     # duplicates = BooleanFilter(
@@ -70,7 +77,7 @@ class SurveyFilter(FilterSet):
     # )
 
     class Meta:
-        """Options for EncounterFilter."""
+        """Options for SurveyFilter."""
         model = Survey
         filter_overrides = FILTER_OVERRIDES
         fields = [
@@ -99,7 +106,6 @@ class SurveyFilter(FilterSet):
         ]
 
 
-
 class EncounterFilter(FilterSet):
     """Encounter Filter.
 
@@ -108,7 +114,7 @@ class EncounterFilter(FilterSet):
     area = ModelChoiceFilter(
         label="Locality",
         queryset=Area.objects.filter(
-            area_type__in=[Area.AREATYPE_LOCALITY,]
+            area_type__in=[Area.AREATYPE_LOCALITY, ]
         ).order_by(
             "-northern_extent",
             "name"
@@ -118,12 +124,18 @@ class EncounterFilter(FilterSet):
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(
-            area_type__in=[Area.AREATYPE_SITE,]
+            area_type__in=[Area.AREATYPE_SITE, ]
         ).order_by(
             "-northern_extent",
             "name"
         ),
         # method='taxa_occurring_in_area'
+    )
+
+    encounter_date = DateFilter(
+        field_name="when",
+        lookup_expr="date",
+        label="Exact encounter date (YYYY-mm-dd)"
     )
 
     class Meta:
@@ -145,7 +157,7 @@ class EncounterFilter(FilterSet):
 
 class AnimalEncounterFilter(EncounterFilter):
 
-    health = MultipleChoiceFilter(choices = HEALTH_CHOICES)
+    health = MultipleChoiceFilter(choices=HEALTH_CHOICES)
 
     class Meta(EncounterFilter.Meta):
 
