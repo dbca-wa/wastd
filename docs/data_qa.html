@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Data QA &mdash; WAStD 0.52.1 documentation</title>
+  <title>Data QA &mdash; WAStD 0.52.8 documentation</title>
   
 
   
@@ -108,6 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#qa-survey-end-time">QA Survey end time</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#populate-team">Populate team</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#add-missing-surveys">Add missing surveys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#close-duplicate-surveys">Close duplicate Surveys</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#add-missing-users">Add missing users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#curate-records-from-training-days">Curate records from training days</a></li>
 </ul>
@@ -262,24 +263,26 @@ QA operators (coordinators) have to:</p>
 <h3>Flag training surveys<a class="headerlink" href="#flag-training-surveys" title="Permalink to this headline">¶</a></h3>
 <p>Surveys can be marked as training surveys by unticking the “production” checkbox.
 This allows to exclude training data from analysis.</p>
-<p>Remember to “Save and continue editing”, “proofread” and “curate” the record to
-protect it from being overwritten with the original data.</p>
+<p>Remember to “curate” an edited record to protect it from being overwritten with the original data.</p>
 </div>
 <div class="section" id="double-check-reporter-names">
 <h3>Double-check reporter names<a class="headerlink" href="#double-check-reporter-names" title="Permalink to this headline">¶</a></h3>
 <p>Filter the Survey list to each of your sites, compare “reported by” with “comments at start”.
 WAStD leaves QA messages. Surveys requiring QA will have a “NEEDS QA” remark.</p>
+<p>In addition, review the “QA Users” report, which lists all non-exact matches of username vs WAStD accounts.
+Follow instructions within to add any misspellings of existing WAStD Users as their alias.
+The next reporting run will pick up User aliases and match them better.</p>
 </div>
 <div class="section" id="qa-survey-end-time">
 <h3>QA Survey end time<a class="headerlink" href="#qa-survey-end-time" title="Permalink to this headline">¶</a></h3>
 <p>The end time can be incorrect for two reasons:</p>
 <ul class="simple">
-<li><p>If the data collector forgot to capture a Site Visit End, WAStD will guess the end time.</p></li>
+<li><p>If the data collector forgot to capture a Site Visit End, WAStD will guess the end time
+as 30 minutes after the last Encounter.</p></li>
 <li><p>If WAStD’s heuristic picked the wrong Site Visit End (likely in absence of the right one),
 the Survey’s “end” fields will be populated, but likely wrong.</p></li>
 </ul>
-<p>In the first case, WAStD leaves a “Needs QA” remark in the “Comments at finish” regarding “Survey end guessed”,
-try to set the end time to a more realistic time.</p>
+<p>In the first case, WAStD labels Surveys with “End time reconstructed”.</p>
 <p>Where a Survey’s <code class="docutils literal notranslate"><span class="pre">device_id</span></code> differs from <code class="docutils literal notranslate"><span class="pre">end_device_id</span></code>, the data collectors either have
 switched to the backup device, or WAStD has mismatched the Site Visit End.
 Similarly, a different <code class="docutils literal notranslate"><span class="pre">[guess_user]</span></code> comment in the Survey’s <code class="docutils literal notranslate"><span class="pre">start_comments</span></code> and <code class="docutils literal notranslate"><span class="pre">end_comments</span></code>
@@ -299,9 +302,17 @@ It is not necessary to “proofread” and “curate” unchanged records.</p>
 </div>
 <div class="section" id="add-missing-surveys">
 <h3>Add missing surveys<a class="headerlink" href="#add-missing-surveys" title="Permalink to this headline">¶</a></h3>
-<p>This currently is a job for the admin: Pivot Encounters without a survey by site and date
-and extract earliest and latest Encounter. Buffer by a few minutes, extract Encounter’s reporter,
-and create missing surveys.</p>
+<p>An admin can re-save all Surveys in batch to adopt any stray Encounters.</p>
+<p>An admin can then run “Curators &gt; Reconstruct missing Surveys”.
+This will create surveys for bundles of Encounters at known sites.</p>
+</div>
+<div class="section" id="close-duplicate-surveys">
+<h3>Close duplicate Surveys<a class="headerlink" href="#close-duplicate-surveys" title="Permalink to this headline">¶</a></h3>
+<p>Find the “QA duplicate Surveys” table in the report.
+This table lists all combinations of site and dates on which more than one Survey exist.
+Open each link, decide on which Survey to make production, then hit “make production”.
+If duplicate Surveys are missed, make sure their duration overlaps.
+Adjust start or end time of the missed duplicated, then mark the “good” one as the production Survey again.</p>
 </div>
 <div class="section" id="add-missing-users">
 <h3>Add missing users<a class="headerlink" href="#add-missing-users" title="Permalink to this headline">¶</a></h3>

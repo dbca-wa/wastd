@@ -89,6 +89,7 @@ Device settings:
 
 * Date & time: Set time zone to AWST (GMT+08)
 * Security: do not configure any screen lock (leave as is)
+* Keyboard: Whenever the keyboard is open, tap the settings cogwheel and resize it at the uper edge to be as large as possible. Increase font size too.
 
 App settings:
 

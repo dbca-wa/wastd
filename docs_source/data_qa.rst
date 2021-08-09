@@ -82,24 +82,27 @@ Flag training surveys
 Surveys can be marked as training surveys by unticking the "production" checkbox.
 This allows to exclude training data from analysis.
 
-Remember to "Save and continue editing", "proofread" and "curate" the record to
-protect it from being overwritten with the original data.
+Remember to "curate" an edited record to protect it from being overwritten with the original data.
 
 Double-check reporter names
 ---------------------------
 Filter the Survey list to each of your sites, compare "reported by" with "comments at start".
 WAStD leaves QA messages. Surveys requiring QA will have a "NEEDS QA" remark.
 
+In addition, review the "QA Users" report, which lists all non-exact matches of username vs WAStD accounts.
+Follow instructions within to add any misspellings of existing WAStD Users as their alias.
+The next reporting run will pick up User aliases and match them better.
+
 QA Survey end time
 ------------------
 The end time can be incorrect for two reasons:
 
-* If the data collector forgot to capture a Site Visit End, WAStD will guess the end time.
+* If the data collector forgot to capture a Site Visit End, WAStD will guess the end time
+  as 30 minutes after the last Encounter.
 * If WAStD's heuristic picked the wrong Site Visit End (likely in absence of the right one),
   the Survey's "end" fields will be populated, but likely wrong.
 
-In the first case, WAStD leaves a "Needs QA" remark in the "Comments at finish" regarding "Survey end guessed",
-try to set the end time to a more realistic time.
+In the first case, WAStD labels Surveys with "End time reconstructed".
 
 Where a Survey's ``device_id`` differs from ``end_device_id``, the data collectors either have
 switched to the backup device, or WAStD has mismatched the Site Visit End.
@@ -123,9 +126,19 @@ It is not necessary to "proofread" and "curate" unchanged records.
 
 Add missing surveys
 -------------------
-This currently is a job for the admin: Pivot Encounters without a survey by site and date
-and extract earliest and latest Encounter. Buffer by a few minutes, extract Encounter's reporter,
-and create missing surveys.
+An admin can re-save all Surveys in batch to adopt any stray Encounters.
+
+An admin can then run "Curators > Reconstruct missing Surveys".
+This will create surveys for bundles of Encounters at known sites.
+
+
+Close duplicate Surveys
+-----------------------
+Find the "QA duplicate Surveys" table in the report.
+This table lists all combinations of site and dates on which more than one Survey exist.
+Open each link, decide on which Survey to make production, then hit "make production".
+If duplicate Surveys are missed, make sure their duration overlaps.
+Adjust start or end time of the missed duplicated, then mark the "good" one as the production Survey again.
 
 Add missing users
 -----------------

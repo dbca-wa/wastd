@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>wastd.observations.models &mdash; WAStD 0.52.1 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.52.8 documentation</title>
   
 
   
@@ -1377,8 +1377,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.models.survey.encounters] No site set, can&#39;t filter Encounters.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># https://docs.djangoproject.com/en/3.2/ref/contrib/gis/geoquerysets/#coveredby</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">where__contained</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
+                <span class="n">where__coveredby</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
                 <span class="n">when__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
                 <span class="n">when__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[Survey.encounters] </span><span class="si">{0}</span><span class="s2"> found </span><span class="si">{1}</span><span class="s2"> Encounters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
@@ -1480,17 +1481,19 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">QualityControlMixin</span><span class="o">.</span><span class="n">STATUS_CURATED</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">curate</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">curator</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+            <span class="c1"># print(self.status)</span>
 
         <span class="c1"># ...except cuckoo Encounters</span>
-        <span class="k">if</span> <span class="n">all_encounters</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">cuckoo_encounters</span> <span class="o">=</span> <span class="n">all_encounters</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">site__pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">all_encounters</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cuckoo_encounters</span> <span class="o">=</span> <span class="n">all_encounters</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">where__coveredby</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">geom</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">cuckoo_encounters</span><span class="p">:</span>
                 <span class="n">e</span><span class="o">.</span><span class="n">site</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">e</span><span class="o">.</span><span class="n">survey</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">e</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
             <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; Evicted </span><span class="si">{0}</span><span class="s2"> cuckoo Encounters observed outside the site.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cuckoo_encounters</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
 
+        <span class="c1"># Post-save runs claim_encounters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">msg</span></div></div>
 
@@ -1501,7 +1504,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
             <span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_LOCALITY</span><span class="p">,</span>
-            <span class="n">geom__contains</span><span class="o">=</span><span class="n">survey_instance</span><span class="o">.</span><span class="n">start_location</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
+            <span class="n">geom__covers</span><span class="o">=</span><span class="n">survey_instance</span><span class="o">.</span><span class="n">start_location</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="guess_site"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.guess_site">[docs]</a><span class="k">def</span> <span class="nf">guess_site</span><span class="p">(</span><span class="n">survey_instance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the first Area containing the start_location or None.&quot;&quot;&quot;</span>
@@ -1510,7 +1513,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
         <span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">,</span>
-        <span class="n">geom__contains</span><span class="o">=</span><span class="n">survey_instance</span><span class="o">.</span><span class="n">start_location</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
+        <span class="n">geom__covers</span><span class="o">=</span><span class="n">survey_instance</span><span class="o">.</span><span class="n">start_location</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="claim_end_points"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.claim_end_points">[docs]</a><span class="k">def</span> <span class="nf">claim_end_points</span><span class="p">(</span><span class="n">survey_instance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Claim SurveyEnd.</span>
@@ -1686,7 +1689,7 @@
         <span class="sd">&quot;&quot;&quot;Return the first Area containing the start_location or None.&quot;&quot;&quot;</span>
         <span class="n">candidates</span> <span class="o">=</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
             <span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">,</span>
-            <span class="n">geom__contains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_location</span><span class="p">)</span>
+            <span class="n">geom__covers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_location</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span> <span class="k">else</span> <span class="n">candidates</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
 
 
@@ -2152,7 +2155,7 @@
         <span class="sd">&quot;&quot;&quot;Return the first Area containing the start_location or None.&quot;&quot;&quot;</span>
         <span class="n">candidates</span> <span class="o">=</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
             <span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">,</span>
-            <span class="n">geom__contains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="p">)</span>
+            <span class="n">geom__covers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span> <span class="k">else</span> <span class="n">candidates</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -2160,7 +2163,7 @@
         <span class="sd">&quot;&quot;&quot;Return the first Area containing the start_location or None.&quot;&quot;&quot;</span>
         <span class="n">candidates</span> <span class="o">=</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
             <span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_LOCALITY</span><span class="p">,</span>
-            <span class="n">geom__contains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="p">)</span>
+            <span class="n">geom__covers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span> <span class="k">else</span> <span class="n">candidates</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Encounter.set_name"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.set_name">[docs]</a>    <span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
