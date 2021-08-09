@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Data consumers" href="data_consumers.html" />
-    <link rel="prev" title="Data curators" href="data_curators.html" /> 
+    <link rel="prev" title="Data entry" href="data_entry.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -92,27 +92,28 @@
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_overview.html">Data collection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection training</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_curators.html">Data curators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_entry.html">Data entry</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data QA</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#proofreading">Proofreading</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#curating-data">Curating data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-release">Data release</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-qa-for-turtle-track-census">Data QA for turtle track census</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#data-release">Data release</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#data-qa-for-turtle-track-census">Data QA for turtle track census</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#qa-tracks-with-uncertain-species">QA tracks with uncertain species</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#data-flow-of-surveys">Data flow of surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#flag-training-surveys">Flag training surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#double-check-reporter-names">Double-check reporter names</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#qa-survey-end-time">QA Survey end time</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#populate-team">Populate team</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#add-missing-surveys">Add missing surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#close-duplicate-surveys">Close duplicate Surveys</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#add-missing-users">Add missing users</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#curate-records-from-training-days">Curate records from training days</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#qa-levels">QA levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#productivity-tips">Productivity tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qa-tracks-with-uncertain-species">QA tracks with uncertain species</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unsure-if-nest">Unsure if nest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-flow-of-surveys">Data flow of surveys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flag-training-surveys">Flag training surveys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#double-check-reporter-names">Double-check reporter names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#merge-duplicate-user-profiles">Merge duplicate User profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qa-survey-end-time">QA Survey end time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#populate-team">Populate team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-missing-surveys">Add missing surveys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#close-duplicate-surveys">Close duplicate Surveys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-missing-users">Add missing users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#curate-records-from-training-days">Curate records from training days</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
@@ -191,11 +192,7 @@
             
   <div class="section" id="data-qa">
 <h1>Data QA<a class="headerlink" href="#data-qa" title="Permalink to this headline">¶</a></h1>
-<p>This section addresses QA operators, who have two jobs:</p>
-<ul class="simple">
-<li><p>Proofreading: Sharp eyes compare data sheets to entered data and decide when a digital record is equivalent to the written paper datasheet.</p></li>
-<li><p>Curating: Subject matter experts make sense of the data and decide when a record is trustworthy.</p></li>
-</ul>
+<p>This section addresses the following steps:</p>
 <div class="section" id="proofreading">
 <h2>Proofreading<a class="headerlink" href="#proofreading" title="Permalink to this headline">¶</a></h2>
 <p>A literate data QA operator can proofread data by simply comparing attached files
@@ -204,7 +201,7 @@ If errors are found, data can be updated - WAStD will retain the edit history.
 Once the record is deemed “Proofread”, the QA operator clicks the transition
 “Proofread Encounter”.
 This step can be reverted by clicking the transition “Require Proofreading Encounter”.
-WAStD will keep track of each transition.</p>
+WAStD will keep an audit log of each transition.</p>
 </div>
 <div class="section" id="curating-data">
 <h2>Curating data<a class="headerlink" href="#curating-data" title="Permalink to this headline">¶</a></h2>
@@ -214,10 +211,9 @@ evident from attached pictures, data sheet and communications records, the trans
 “Curate Encounter” will mark the encounter as “curated”.
 The transition can be reversed with “Flag Encounter”.</p>
 </div>
-</div>
 <div class="section" id="data-release">
-<h1>Data release<a class="headerlink" href="#data-release" title="Permalink to this headline">¶</a></h1>
-<p>This section addresses data publishers, who authorise data release (mark records
+<h2>Data release<a class="headerlink" href="#data-release" title="Permalink to this headline">¶</a></h2>
+<p>A qualified operator can authorise data release (mark records
 as “publication ready”) or embargo data (to prevent publication).</p>
 <p>The transition “Publish Encounter” will mark the record as ready to be “published”, but not
 actually release information to the general public. The flag serves simply to
@@ -225,20 +221,45 @@ mark a record as “ready to publish”.
 This transition can be reversed with “Embargo Encounter”, which will push the record
 back to “curated”.</p>
 <div class="section" id="data-qa-for-turtle-track-census">
-<h2>Data QA for turtle track census<a class="headerlink" href="#data-qa-for-turtle-track-census" title="Permalink to this headline">¶</a></h2>
+<h3>Data QA for turtle track census<a class="headerlink" href="#data-qa-for-turtle-track-census" title="Permalink to this headline">¶</a></h3>
 <p>This section addresses the regional turtle monitoring program coordinators, who
 conduct training and supervise volunteer data collection.</p>
+</div>
+</div>
+<div class="section" id="qa-levels">
+<h2>QA levels<a class="headerlink" href="#qa-levels" title="Permalink to this headline">¶</a></h2>
+<p>What does “new”, “proofread”, and “curated” mean and do? Two things: It primarily protects human edits to records from repeated data imports, which may skip or update existing but unchanged (“new”) records. It furthermore shows the confidence we have in the record’s completeness, correctness, and consistency.</p>
+<p>However, the majority of records don’t require any QA edits, and for now remain “new”.
+We could but do not yet batch-curate existing records (per season and locality) after QA by the respective data custodian.
+Reports currently include records of all QA levels.
+A log of QA is kept on the <a class="reference external" href="https://dbcawa.atlassian.net/wiki/spaces/TG/pages/932184080/Turtle+Nesting+Data+QA+log">Confluence Wiki</a>.</p>
+</div>
+<div class="section" id="productivity-tips">
+<h2>Productivity tips<a class="headerlink" href="#productivity-tips" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving. * Close tabs by middle-click on tab header or Ctrl+w.</p></li>
+<li><p>Collapse WAStD form sections by clicking on the blue header, e.g. collapse “Encounter”.</p></li>
+<li><p>“Curate” includes saving the record. No need to “Save and continue editing”.</p></li>
+</ul>
+</div>
 <div class="section" id="qa-tracks-with-uncertain-species">
-<h3>QA tracks with uncertain species<a class="headerlink" href="#qa-tracks-with-uncertain-species" title="Permalink to this headline">¶</a></h3>
-<p>Open WAStD’s menu “Nests and Tracks” &gt; QA shortlists &gt; Tracks with uncertain species ID &gt; <a class="reference external" href="https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?species=cheloniidae-fam">https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?species=cheloniidae-fam</a>
-Then filter to your “Locality” Ningaloo (and hit “filter”): <a class="reference external" href="https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?area=56&amp;species=cheloniidae-fam">https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?area=56&amp;species=cheloniidae-fam</a></p>
-<p>Go through these ~80 records, expand details to reveal photos (if any were taken).
-Where you can tell the species from the photos, hit the green QA pencil, change the species, leave a comment if you like, and directly “curate” the TurtleNestEncounter.
-Where you can’t tell the species, what would you like to do with the species? Leave species at “unknown turtle” and curate? (This way we could exclude those “confirmed unrecoverable” records from the QA shortlist.)
-QA links open in new tabs to preserve your position in the track/nest record list.</p>
+<h2>QA tracks with uncertain species<a class="headerlink" href="#qa-tracks-with-uncertain-species" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Nests and Tracks &gt; Tracks with <a class="reference external" href="https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?species=cheloniidae-fam)">uncertain species ID</a>, filter to your location, bookmark.</p></li>
+<li><p>Review each record, update from photos as far as possible, curate.</p></li>
+<li><p>Take notes on systematic errors by individual users or entire programs. Provide these as feedback and re-train as appropriate.</p></li>
+</ul>
+</div>
+<div class="section" id="unsure-if-nest">
+<h2>Unsure if nest<a class="headerlink" href="#unsure-if-nest" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Nests and Tracks &gt; <a class="reference external" href="https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?nest_type=track-unsure">Nests with uncertain nesting success</a> &gt; filter to your location, bookmark.</p></li>
+<li><p>Review each record, update from photos as far as possible, curate.</p></li>
+<li><p>Take notes on systematic errors by individual users or entire programs. Provide these as feedback and re-train as appropriate.</p></li>
+</ul>
 </div>
 <div class="section" id="data-flow-of-surveys">
-<h3>Data flow of surveys<a class="headerlink" href="#data-flow-of-surveys" title="Permalink to this headline">¶</a></h3>
+<h2>Data flow of surveys<a class="headerlink" href="#data-flow-of-surveys" title="Permalink to this headline">¶</a></h2>
 <p>WAStD creates or updates (if existing) one
 <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/survey/">Survey</a>
 for each recorded “Site Visit Start”.
@@ -253,28 +274,39 @@ and links them to itself. This link can be seen in the Encounters’ field “su
 <p>Since data collection unavoidably lossy and incomplete due to human error,
 QA operators (coordinators) have to:</p>
 <ul class="simple">
-<li><p>Flag training surveys (to exclude their corresponding Encounters from analysis)</p></li>
-<li><p>Double-check reporter names to QA WAStD’s automated name matching</p></li>
-<li><p>Populate “team” from “comments at start” (to allow estimating volunteer hours)</p></li>
-<li><p>QA “survey end time” and set to a realistic time where guessed (to allow estimating volunteer hours)</p></li>
+<li><p>Flag training surveys (to exclude their corresponding Encounters from analysis).</p></li>
+<li><p>Double-check reporter names to QA WAStD’s automated name matching.</p></li>
+<li><p>Populate “team” from “comments at start” (to allow estimating volunteer hours).</p></li>
+<li><p>QA “survey end time” and set to a realistic time where guessed (to allow estimating volunteer hours).</p></li>
 </ul>
 </div>
 <div class="section" id="flag-training-surveys">
-<h3>Flag training surveys<a class="headerlink" href="#flag-training-surveys" title="Permalink to this headline">¶</a></h3>
+<h2>Flag training surveys<a class="headerlink" href="#flag-training-surveys" title="Permalink to this headline">¶</a></h2>
 <p>Surveys can be marked as training surveys by unticking the “production” checkbox.
 This allows to exclude training data from analysis.</p>
 <p>Remember to “curate” an edited record to protect it from being overwritten with the original data.</p>
 </div>
 <div class="section" id="double-check-reporter-names">
-<h3>Double-check reporter names<a class="headerlink" href="#double-check-reporter-names" title="Permalink to this headline">¶</a></h3>
+<h2>Double-check reporter names<a class="headerlink" href="#double-check-reporter-names" title="Permalink to this headline">¶</a></h2>
 <p>Filter the Survey list to each of your sites, compare “reported by” with “comments at start”.
 WAStD leaves QA messages. Surveys requiring QA will have a “NEEDS QA” remark.</p>
 <p>In addition, review the “QA Users” report, which lists all non-exact matches of username vs WAStD accounts.
 Follow instructions within to add any misspellings of existing WAStD Users as their alias.
 The next reporting run will pick up User aliases and match them better.</p>
 </div>
+<div class="section" id="merge-duplicate-user-profiles">
+<h2>Merge duplicate User profiles<a class="headerlink" href="#merge-duplicate-user-profiles" title="Permalink to this headline">¶</a></h2>
+<p>The data in WAStD has been imported from many different sources.
+Import routines have seen improvements, but have in the past created duplicate User profiles,
+or faithfully imported duplicate profiles from legacy sources.</p>
+<p>Users can be listed and viewed through the front end or the Data Curation Portal.
+The front end User detail pages contain linked Surveys and Encounters.
+Duplicate User profiles can be merged from Users &gt; Merge Profiles, or from the shortcut on each User’s detail card.</p>
+<p>Merging profiles will transfer all data linked against the old profile into the new profile, update the new profile (contact details if empty in new and populated on old profile), and add the old profile’s username, name, and aliases to the new profile’s aliases. This ensures that user matching will match the new profile against records named after the old profile.
+Finally, the old profile is marked as “not active”, but is retained.</p>
+</div>
 <div class="section" id="qa-survey-end-time">
-<h3>QA Survey end time<a class="headerlink" href="#qa-survey-end-time" title="Permalink to this headline">¶</a></h3>
+<h2>QA Survey end time<a class="headerlink" href="#qa-survey-end-time" title="Permalink to this headline">¶</a></h2>
 <p>The end time can be incorrect for two reasons:</p>
 <ul class="simple">
 <li><p>If the data collector forgot to capture a Site Visit End, WAStD will guess the end time
@@ -291,7 +323,7 @@ can indicate a mismatch.</p>
 <code class="docutils literal notranslate"><span class="pre">end_comments</span></code>, save and proofread. Set <code class="docutils literal notranslate"><span class="pre">end</span> <span class="pre">time</span></code> to a sensible time, ignore the end point.</p>
 </div>
 <div class="section" id="populate-team">
-<h3>Populate team<a class="headerlink" href="#populate-team" title="Permalink to this headline">¶</a></h3>
+<h2>Populate team<a class="headerlink" href="#populate-team" title="Permalink to this headline">¶</a></h2>
 <p>From “Comments at start” beginning after the [guess_user] QA message, the team is listed.
 Excluding the “reporter”, add all team members to the “team” field.</p>
 <p>This in combination with an accurate Survey end time assists to accurately estimate
@@ -301,13 +333,13 @@ and survey effort (hours on ground).</p>
 It is not necessary to “proofread” and “curate” unchanged records.</p>
 </div>
 <div class="section" id="add-missing-surveys">
-<h3>Add missing surveys<a class="headerlink" href="#add-missing-surveys" title="Permalink to this headline">¶</a></h3>
+<h2>Add missing surveys<a class="headerlink" href="#add-missing-surveys" title="Permalink to this headline">¶</a></h2>
 <p>An admin can re-save all Surveys in batch to adopt any stray Encounters.</p>
 <p>An admin can then run “Curators &gt; Reconstruct missing Surveys”.
 This will create surveys for bundles of Encounters at known sites.</p>
 </div>
 <div class="section" id="close-duplicate-surveys">
-<h3>Close duplicate Surveys<a class="headerlink" href="#close-duplicate-surveys" title="Permalink to this headline">¶</a></h3>
+<h2>Close duplicate Surveys<a class="headerlink" href="#close-duplicate-surveys" title="Permalink to this headline">¶</a></h2>
 <p>Find the “QA duplicate Surveys” table in the report.
 This table lists all combinations of site and dates on which more than one Survey exist.
 Open each link, decide on which Survey to make production, then hit “make production”.
@@ -315,7 +347,7 @@ If duplicate Surveys are missed, make sure their duration overlaps.
 Adjust start or end time of the missed duplicated, then mark the “good” one as the production Survey again.</p>
 </div>
 <div class="section" id="add-missing-users">
-<h3>Add missing users<a class="headerlink" href="#add-missing-users" title="Permalink to this headline">¶</a></h3>
+<h2>Add missing users<a class="headerlink" href="#add-missing-users" title="Permalink to this headline">¶</a></h2>
 <p>If a person is not listed in the dropdown menus, you might need to
 <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/users/user/add/">add a User</a> for that person.
 Use their <code class="docutils literal notranslate"><span class="pre">firstname_lastname</span></code> as username, select a password, save, then add the details.</p>
@@ -323,7 +355,7 @@ Use their <code class="docutils literal notranslate"><span class="pre">firstname
 the profile will miss the details</p>
 </div>
 <div class="section" id="curate-records-from-training-days">
-<h3>Curate records from training days<a class="headerlink" href="#curate-records-from-training-days" title="Permalink to this headline">¶</a></h3>
+<h2>Curate records from training days<a class="headerlink" href="#curate-records-from-training-days" title="Permalink to this headline">¶</a></h2>
 <p>For CBB on Oct 25:
 All Tracks/Nests:
 Open TurtleNestEncounters, filter to area and date.
@@ -341,11 +373,6 @@ Set species to Hatchback (if it’s a TNE), set disturbance cause to “training
 Open AnimalEncounters, filter to area and date.
 <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&amp;when__year=2020">https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&amp;when__year=2020</a> (no records for CBB Oct 25).
 Set species to hatchback and curate.</p>
-<p>Productivity tips:
-Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving. Close tabs by middle-click on tab header or Ctrl+w.
-Collapse WAStD form sections by clicking on the blue header, e.g. collapse “Encounter”.
-“Curate” includes saving the record. No need to “Save and continue editing”.</p>
-</div>
 </div>
 </div>
 
@@ -356,7 +383,7 @@ Collapse WAStD form sections by clicking on the blue header, e.g. collapse “En
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="data_consumers.html" class="btn btn-neutral float-right" title="Data consumers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="data_curators.html" class="btn btn-neutral float-left" title="Data curators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data_entry.html" class="btn btn-neutral float-left" title="Data entry" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

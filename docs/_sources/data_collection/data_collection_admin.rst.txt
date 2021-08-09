@@ -16,6 +16,14 @@ Tasks covered:
 * Prepare tablets for data collection
 * Receive tablets after data collection
 
+Quick notes
+-----------
+* It's worth to bring each tablet to WiFi or a phone hotspot after each data capture day. If that's not possible, it's worth downloading each tablet's data onto a laptop each day. (e.g. at Bungelup camp).
+* It's unadvisable to send out tablets with unsubmitted data to a new data capture campaign.
+* It's worth to replace any tablet with signs of impending hardware failure such as cracked screens, bulging batteries, or unusually long start-up times with a fresh tablet. The hardware failure rate depends highly on how devices are treated by end users (100% loss in some places where tablets are transported unprotected in a backpack together with hammers and metal stakes - unsurprisingly - to 2 out of 20 tablets lost over 3 years at Ningaloo)
+* It's worth to have two fully set up spare devices ready to go and procure a new device immediately each time an old one is retired.
+
+
 Admin: Getting started
 ======================
 * Admin's computer: set Chrome or Firefox as default browser
@@ -192,9 +200,23 @@ photos of tracks of unknown species for the following reasons:
 
 Prepare one length reference per data collection team.
 
+Training day: mixed real and duplicated training data
+=====================================================
+Sometimes, training and production surveys coincide.
+One tablet captures real data, multiple other tablets capture the same data in duplicate.
+Enumerators must train real data capture, but afterwards we want to be able to delete duplicates.
+
+The data capture coordinator must follow these steps:
+
+* Let users enter their full name as ODK Collect Username
+* Trainer: Take all but one tablet, update username to "Training"
+* Capture data as if it's all production. This creates duplicate Surveys and Encounters.
+* Let the data upload, and wait out the daily import to WAStD.
+* Find Surveys and Encounters, mark as "training" / "hatchback" / "not production" and curate.
+
 Collector: Collect data
 =======================
-Now the data collector will head out into the field and collect data following
+Under normal circumstances, the data collector will head out into the field and collect data following
 the protocols from the "Data collection training" chapter.
 The admin should be intimately acquainted with this chapter.
 
@@ -213,9 +235,6 @@ Delete unwanted repeating groups:
 
 * Tap and hold a group title bar, select "delete".
 
-TODO error "form not existing" - notify admin (Florian) to re-enable missing forms in ODK Aggregate,
-get blank form, then saved form is editable and uploadable again.
-
 If GPS point is missing, record GPS (which will be incorrect), note record datetime and other details, let form upload,
 let data import into WAStD, find record again (based on datetime and details), update location as appropriate.
 Mark record as "proofread".
@@ -223,7 +242,7 @@ Mark record as "proofread".
 Admin: Upload data
 ==================
 When surveys are done in locations where the device can return to the comforts
-of WiFi and power points daily, data can be uploaded directly to the clearinghouse.
+of WiFi and power points daily, data can be uploaded directly to ODK Central.
 
 * Settings: the correct username and password have been configured during device setup.
 * Turn on the WiFi hotspot or move into WiFi range.
@@ -237,7 +256,7 @@ Review each form and "save as finalized".
 When WiFi is not available daily, the admin needs to backup data by downloading
 it manually and keeping the downloaded data safe (multiple copies over separate
 storage media). With the mobile device connected and "MTP file transfer" enabled,
-ODK data is located in either internal or SD storage in ``odk/instances``.
+ODK data is located in internal storage in ``odk/instances``.
 Each form will be stored in a separate folder, containing both the filled in form
 as XML file, and all related pictures and media.
 
@@ -247,31 +266,16 @@ If data upload works at the end, no further steps have to be taken and the copy 
 
 Where's the data now?
 =====================
-ODK Collect uploads data to the specified ODK Aggregate clearinghouse.
-In our case, we run ODK Aggregate at
-`https://dpaw-data.appspot.com/ <https://dpaw-data.appspot.com/>`_.
+ODK Collect uploads data to the specified ODK Central clearinghouse.
+The data is ingested daily into WAStD.
 
-A synchronised copy of the data is streamed to Google Fusion Tables (GFT)
-for immediate visualization.
-A confidential link is shared with admins on request.
-DBCA staff can find the links to the data
-`here <https://confluence.dpaw.wa.gov.au/display/MSIM/ODK+data+views>`_.
-
-After each field trip, data from ODK Aggregate are exported (as JSON) and ingested into WAStD by the maintainer (FM).
-The process can be repeated; data that has been changed in WAStD and
-marked as "proofread" or even "curated" will not be overwritten.
-
-Once data are marked as "proofread" (or higher levels of QA) in WAStD,
-WAStD becomes the point of truth, as proofreading and curation (e.g.
-double-checking species ID based on submitted photos) can change the data compared to the initial submission on ODK Aggregate.
-
-Once data is ingested into WAStD, it is visible and accessible to DPaW staff at
-`https://strandings.dpaw.wa.gov.au/ <https://strandings.dpaw.wa.gov.au/>`_.
+Once data is ingested into WAStD, it is visible and accessible to DBCA staff at
+`https://wastd.dpaw.wa.gov.au/ <https://wastd.dpaw.wa.gov.au/>`_.
 See chapter "Data consumers" for working examples.
 
-The final analysis consumes curated data through the WAStD API using the R package
-``wastdR``. Working examples can be found at the
-`wastdr documentation <https://parksandwildlife.github.io/wastdr/index.html>`_.
+The final analysis exports all data through the WAStD API using the R package
+`etlTurtleNesting <https://github.com/dbca-wa/etlTurtleNesting>`_ and publishes
+reports and data products to SharePoint.
 
 Admin: Update forms
 ===================

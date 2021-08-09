@@ -1,33 +1,29 @@
 =======
 Data QA
 =======
-This section addresses QA operators, who have two jobs:
-
-* Proofreading: Sharp eyes compare data sheets to entered data and decide when a digital record is equivalent to the written paper datasheet.
-* Curating: Subject matter experts make sense of the data and decide when a record is trustworthy.
+This section addresses the following steps:
 
 Proofreading
-============
+------------
 A literate data QA operator can proofread data by simply comparing attached files
 to the information present.
 If errors are found, data can be updated - WAStD will retain the edit history.
 Once the record is deemed "Proofread", the QA operator clicks the transition
 "Proofread Encounter".
 This step can be reverted by clicking the transition "Require Proofreading Encounter".
-WAStD will keep track of each transition.
+WAStD will keep an audit log of each transition.
 
 Curating data
-=============
+-------------
 A subject matter expert can review records and e.g. confirm species identification.
 Once the expert is satisfied that the record represents accurately the case as
 evident from attached pictures, data sheet and communications records, the transition
 "Curate Encounter" will mark the encounter as "curated".
 The transition can be reversed with "Flag Encounter".
 
-============
 Data release
-============
-This section addresses data publishers, who authorise data release (mark records
+------------
+A qualified operator can authorise data release (mark records
 as "publication ready") or embargo data (to prevent publication).
 
 The transition "Publish Encounter" will mark the record as ready to be "published", but not
@@ -36,22 +32,37 @@ mark a record as "ready to publish".
 This transition can be reversed with "Embargo Encounter", which will push the record
 back to "curated".
 
-
 Data QA for turtle track census
 ===============================
 This section addresses the regional turtle monitoring program coordinators, who
 conduct training and supervise volunteer data collection.
 
+QA levels
+----------
+What does "new", "proofread", and "curated" mean and do? Two things: It primarily protects human edits to records from repeated data imports, which may skip or update existing but unchanged ("new") records. It furthermore shows the confidence we have in the record's completeness, correctness, and consistency.
+
+However, the majority of records don't require any QA edits, and for now remain "new".
+We could but do not yet batch-curate existing records (per season and locality) after QA by the respective data custodian.
+Reports currently include records of all QA levels.
+A log of QA is kept on the `Confluence Wiki <https://dbcawa.atlassian.net/wiki/spaces/TG/pages/932184080/Turtle+Nesting+Data+QA+log>`_.
+
+Productivity tips
+-----------------
+* Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving. * Close tabs by middle-click on tab header or Ctrl+w.
+* Collapse WAStD form sections by clicking on the blue header, e.g. collapse "Encounter".
+* "Curate" includes saving the record. No need to "Save and continue editing".
+
 QA tracks with uncertain species
 --------------------------------
-Open WAStD's menu "Nests and Tracks" > QA shortlists > Tracks with uncertain species ID > https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?species=cheloniidae-fam
-Then filter to your "Locality" Ningaloo (and hit "filter"): https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?area=56&species=cheloniidae-fam
+* Nests and Tracks > Tracks with `uncertain species ID <https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?species=cheloniidae-fam)>`_, filter to your location, bookmark.
+* Review each record, update from photos as far as possible, curate.
+* Take notes on systematic errors by individual users or entire programs. Provide these as feedback and re-train as appropriate.
 
-Go through these ~80 records, expand details to reveal photos (if any were taken).
-Where you can tell the species from the photos, hit the green QA pencil, change the species, leave a comment if you like, and directly "curate" the TurtleNestEncounter.
-Where you can't tell the species, what would you like to do with the species? Leave species at "unknown turtle" and curate? (This way we could exclude those "confirmed unrecoverable" records from the QA shortlist.)
-QA links open in new tabs to preserve your position in the track/nest record list.
-
+Unsure if nest
+--------------
+* Nests and Tracks > `Nests with uncertain nesting success <https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?nest_type=track-unsure>`_ > filter to your location, bookmark.
+* Review each record, update from photos as far as possible, curate.
+* Take notes on systematic errors by individual users or entire programs. Provide these as feedback and re-train as appropriate.
 
 Data flow of surveys
 --------------------
@@ -72,10 +83,10 @@ and links them to itself. This link can be seen in the Encounters' field "survey
 Since data collection unavoidably lossy and incomplete due to human error,
 QA operators (coordinators) have to:
 
-* Flag training surveys (to exclude their corresponding Encounters from analysis)
-* Double-check reporter names to QA WAStD's automated name matching
-* Populate "team" from "comments at start" (to allow estimating volunteer hours)
-* QA "survey end time" and set to a realistic time where guessed (to allow estimating volunteer hours)
+* Flag training surveys (to exclude their corresponding Encounters from analysis).
+* Double-check reporter names to QA WAStD's automated name matching.
+* Populate "team" from "comments at start" (to allow estimating volunteer hours).
+* QA "survey end time" and set to a realistic time where guessed (to allow estimating volunteer hours).
 
 Flag training surveys
 ---------------------
@@ -92,6 +103,19 @@ WAStD leaves QA messages. Surveys requiring QA will have a "NEEDS QA" remark.
 In addition, review the "QA Users" report, which lists all non-exact matches of username vs WAStD accounts.
 Follow instructions within to add any misspellings of existing WAStD Users as their alias.
 The next reporting run will pick up User aliases and match them better.
+
+Merge duplicate User profiles
+-----------------------------
+The data in WAStD has been imported from many different sources.
+Import routines have seen improvements, but have in the past created duplicate User profiles,
+or faithfully imported duplicate profiles from legacy sources.
+
+Users can be listed and viewed through the front end or the Data Curation Portal.
+The front end User detail pages contain linked Surveys and Encounters.
+Duplicate User profiles can be merged from Users > Merge Profiles, or from the shortcut on each User's detail card.
+
+Merging profiles will transfer all data linked against the old profile into the new profile, update the new profile (contact details if empty in new and populated on old profile), and add the old profile's username, name, and aliases to the new profile's aliases. This ensures that user matching will match the new profile against records named after the old profile.
+Finally, the old profile is marked as "not active", but is retained.
 
 QA Survey end time
 ------------------
@@ -131,7 +155,6 @@ An admin can re-save all Surveys in batch to adopt any stray Encounters.
 An admin can then run "Curators > Reconstruct missing Surveys".
 This will create surveys for bundles of Encounters at known sites.
 
-
 Close duplicate Surveys
 -----------------------
 Find the "QA duplicate Surveys" table in the report.
@@ -151,8 +174,6 @@ the profile will miss the details
 
 Curate records from training days
 ---------------------------------
-
-
 
 For CBB on Oct 25:
 All Tracks/Nests:
@@ -175,8 +196,5 @@ Open AnimalEncounters, filter to area and date.
 https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&when__year=2020 (no records for CBB Oct 25).
 Set species to hatchback and curate.
 
-Productivity tips:
-Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving. Close tabs by middle-click on tab header or Ctrl+w.
-Collapse WAStD form sections by clicking on the blue header, e.g. collapse "Encounter".
-"Curate" includes saving the record. No need to "Save and continue editing".
+
 

@@ -1,7 +1,7 @@
 =============
-Data curators
+Data entry
 =============
-This chapter addresses data curators, who enter and maintain the data.
+This chapter addresses data curators, who enter, proofread and curate data from sources like paper datasheets and email.
 
 WAStD's data model is built around the concept of an AnimalEncounter, which is
 the physical encounter of an observer an an animal at one point in time and space,
@@ -295,7 +295,7 @@ Cetacean Strandings
 ===================
 The data currently lives in another departmental Strandings database.
 
-Cetacean Stranding data (rudimentary):
+Cetacean Stranding data (if they were entered into WAStD):
 
 * Create a `new AnimalEncounter <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/>`_.
 * Media Attachments following instructions above
@@ -304,7 +304,7 @@ Cetacean Stranding data (rudimentary):
 
 Turtle Tagging
 ==============
-The data currently lives in WAMTRAM 2.
+The production data currently live in WAMTRAM 2. Migration is underway.
 
 Turtle Tagging data:
 
@@ -366,57 +366,11 @@ Create a `new LoggerEncounter <https://strandings.dpaw.wa.gov.au/admin/observati
 * If logger was deployed, resighted, or retrieved, add one "Temperature logger deployment" section.
 * If logger was downloaded, add one Media attachment for each downloaded file and attach the file.
 
-====================
+
 Data upload from ODK
 ====================
-All electronically captured data from ODK is imported in a scripted and automated process
-using the R package `etlTurtleNesting <https://github.com/dbca-wa/etlTurtleNesting>`_.
+WAStD still supports the import of electronically captured data from ODK Aggregate.
 
-Export files
-============
-Note: This section is outdated.
-
-On the ODK Aggregate server `https://dpaw-data.appspot.com/ <https://dpaw-data.appspot.com/>`_:
-
-* Form Management > Forms List > for each form: Export > JSON
-* Submissions > Exported Submissions > Download files.
-
-Transfer the files via gateway server to prod::
-
-  florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr data kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd
-  florianm@kens-xenmate-dev ~/wastd $ rsync -Pavvr data aws-eco-001:/mnt/projects/wastd
-
-On the production server, run::
-
-    fab shell
-    from wastd.observations.utils import *
-
-    import_odk("data/latest/Track_Tally_0_5_results.json", flavour="odk-tally05")
-    #import_odk('data/latest/Track_or_Treat_0_26_results.json', flavour="odk-tt026")
-    import_odk('data/latest/Track_or_Treat_0_31_results.json', flavour="odk-tt031")
-    import_odk('data/latest/Track_or_Treat_0_35_results.json', flavour="odk-tt036")
-    import_odk('data/latest/Track_or_Treat_0_36_results.json', flavour="odk-tt036")
-    import_odk('data/latest/Fox_Sake_0_3_results.json', flavour="odk-fs03")
-
-
-    # TODO:
-    # MWI, TS 0.8, 0.9
-
-This process contains three manual steps for each form,
-which at the current churn rate of forms (and corresponding import routines)
-is the most efficient solution.
-
-The downloaded JSON files contain all data (excluding images, which are linked
-via URLs) and provide an additional backup.
-
-
-.. note:: Fun fact, one could download the JSON from ODK Aggregate directly to the production server,
-  substituting the respective URL to the JSON export::
-      export ODKUN="my-odk-username"
-      export ODKPW="my-odk-password"
-
-      curl -u $ODKUN:$ODKPW -o data/latest/tt036.json https://dpaw-data.appspot.com/view/...
-
-  A better way might be to pursue reading the data from the ODK-A API, and writing to the WAStD API.
-  This simplified process could be fully automated and run either on the prod server or locally.
-
+All electronically captured data from the newer ODK Central are imported in a scripted
+and automated process using the R package `etlTurtleNesting <https://github.com/dbca-wa/etlTurtleNesting>`_.
+All data flow through the WAStD API.

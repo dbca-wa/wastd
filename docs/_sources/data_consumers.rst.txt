@@ -6,8 +6,20 @@ Data consumers
 
 This chapter addresses data consumers.
 
+There are four principal ways to export data:
+
+* Data export from GUI: filter to taste, hit "CSV" top right.
+* Data export from Data Curation Portal: filter to location and date, select all, bottom left menu "export to CSV", choose settings, export.
+* Data export from API: see wastdr vignette `Accessing WAStD Data <https://dbca-wa.github.io/wastdr/articles/access.html>`_.
+* Automated reporting: Latest date-stamped `folder on SharePoint <https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports>`_ or as shared with you through MS Teams.
+  * Bookmark all "Turtle data" SharePoint sites to find them `here <https://dpaw.sharepoint.com/_layouts/15/sharepoint.aspx>`_
+
+Additional data export pathways for admins:
+* Shell: Rancher > pod > shell > fab shell > iPython session.
+* Database: Rancher > pod > shell > ./manage.py db_shell > psql session.
 
 
+The remainder of this page is the older documentation, pending an update of links.
 
 For humans: GUI
 ===============
@@ -16,15 +28,12 @@ This section documents the graphical user interface (GUI).
 The GUI aims to give easy to digest insight to managers with
 defined questions, and to allow the query and export of data.
 
-There are four ways of viewing data: on a map, as a data table, (only with special
-privileges:) through the admin interface ("backstage"), and through the API preview.
 
 Map
 ---
-**Getting there** https://strandings.dpaw.wa.gov.au/
-or click on "WA Strandings Database WAStD"
+**Getting there** https://wastd.dpaw.wa.gov.au/
 
-**Accessible to** all Parks & Wildlife staff
+**Accessible to** all DBCA staff
 
 WAStD's homepage displays (currently all) records on a map.
 
@@ -42,7 +51,7 @@ history.
 
 Data
 ----
-**Getting there** https://strandings.dpaw.wa.gov.au/animal-encounters/ or click on "Data"
+**Getting there** https://wastd.dpaw.wa.gov.au/animal-encounters/ or click on "Data"
 
 **Accessible to** all Parks & Wildlife staff
 
@@ -51,7 +60,7 @@ Currently, this part is in devlopment and does not offer all commodities yet.
 
 Backstage
 ---------
-**Getting there** https://strandings.dpaw.wa.gov.au/admin/ or click on "Backstage"
+**Getting there** https://wastd.dpaw.wa.gov.au/admin/ or click on "Backstage"
 
 **Accessible to** authorised Parks & Wildlife staff of group "data entry"
 
@@ -59,17 +68,17 @@ Authorised users belonging to WAStD's "data entry" group can access the admin
 interface under the "backstage" tab.
 
 Strandings and tagging encounters are located under
-`Animal Encounters <https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/>`_.
+`Animal Encounters <https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/>`_.
 
 Many questions can be answered with a simple combination of filter criteria, e.g.:
 
 * How many strandings were there in 2015? Select year 2015 in the date facet (top
   left), and "Observation type" stranding in the Filter dropdown (top right).
-  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&when__year=2016
+  https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&when__year=2016
 * How many strandings were suspected boat strikes?
-  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&encounter_type__exact=stranding
+  https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&encounter_type__exact=stranding
 * How many Flatback turtles were stranded in 2016?
-  https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&species__exact=Natator+depressus&when__year=2016
+  https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&species__exact=Natator+depressus&when__year=2016
 
 The result of any combination of filter criteria is a list of Animal Encounters,
 which can be exported to XLS or CSV:
@@ -82,7 +91,7 @@ which can be exported to XLS or CSV:
 
 API preview
 -----------
-**Getting there** https://strandings.dpaw.wa.gov.au/api/1/ or click on "API"
+**Getting there** https://wastd.dpaw.wa.gov.au/api/1/ or click on "API"
 
 **Accessible to** DPaW intranet
 
@@ -134,7 +143,7 @@ transforming the nested document structure into flat table structures.
 
 .. First code example::
 ..
-..     https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv
+..     https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv
 ..
 .. This API call will download all AnimalEncounters as flat CSV file. Currently,
 .. that CSV file is really weird. We've got a team of highly trained monkeys working
@@ -150,32 +159,32 @@ This section shows examples of filtering data server-side through URL parameters
 All stranding encounters (anything that's not "alive and healthy") as web page,
 JSON::
 
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health!=alive
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health!=alive
+    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health!=alive
+    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health!=alive
 
 All tagging encounters (anything that's exactly "alive and healthy") as web page,
 JSON, or CSV::
 
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health=alive
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health=alive
+    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health=alive
+    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health=alive
 
 The known history of a flipper tag::
 
-    https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA67541
+    https://wastd.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA67541
 
 All encounters with one animal ("WA96394")::
 
-    https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541
+    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541
 
 All encounters with animals which names start with "WA9" (note the ``__startswith``
 has to be inserted manually)::
 
-    https://strandings.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA6*
+    https://wastd.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA6*
 
 All of these filter queries (anything after the "?") also work through the data curation portal::
 
-    https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
-    https://strandings.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA67541
+    https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
+    https://wastd.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA67541
 
 Any filter combination, if found useful, can be bookmarked.
 
@@ -251,7 +260,7 @@ If you install Dropbox, it will create a directory/folder in your ``HOME``. We'l
 On a desktop computer or on the tablet:
 
 * Download the data from WAStD: e.g. Tracks and nests at Cable Beach Broome:
-  Save `https://strandings.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&format=json <https://strandings.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&format=json>`_
+  Save `https://wastd.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&format=json <https://wastd.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&format=json>`_
   as a file called ``nests.geojson``.
   If you have WAStD open in your browser (and are authenticated), the API should not ask for authentication.
 * Create the subfolders ``HOME/Dropbox/Apps/MapIt`` and move ``nests.geojson`` there.
