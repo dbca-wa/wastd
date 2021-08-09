@@ -105,13 +105,13 @@ The journey so far:
 
 What is where
 =============
-`WAStD <https://wastd.dbca.wa.gov.au/>`_ - DBCA staff login
-`WAStD data curation portal <https://wastd.dbca.wa.gov.au/>`_ > Curators > Data Curation Portal - privileged DBCA staff
-`WAStD docs <https://wastd.dbca.wa.gov.au/>`_ > Manual - public
-`Turtle Monitoring Program Coordinator docs - <https://dbcawa.atlassian.net/wiki/spaces/TG/pages/16974134/Turtle+Program+Collaborations>`_ - DBCA and external authorised users
-`2021 Reports <https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports>`_ - daily added reports, data exports, and QA products - DBCA staff login
-`Turtle Nesting metadata on data catalogue <https://data.dbca.wa.gov.au/dataset/turtle-tracks>`_ - pending update. DBCA intranet.
-`Turtle Tagging metadata on data catalogue <https://data.dbca.wa.gov.au/dataset/wa-marine-turtle-tagging-database-wamtram-2>`_ - pending update. DBCA intranet.
+* `WAStD <https://wastd.dbca.wa.gov.au/>`_ - DBCA staff login
+* `WAStD data curation portal <https://wastd.dbca.wa.gov.au/>`_ > Curators > Data Curation Portal - privileged DBCA staff
+* `WAStD docs <https://wastd.dbca.wa.gov.au/>`_ > Manual - public
+* `Turtle Monitoring Program Coordinator docs - <https://dbcawa.atlassian.net/wiki/spaces/TG/pages/16974134/Turtle+Program+Collaborations>`_ - DBCA and external authorised users
+* `2021 Reports <https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports>`_ - daily added reports, data exports, and QA products - DBCA staff login
+* `Turtle Nesting metadata on data catalogue <https://data.dbca.wa.gov.au/dataset/turtle-tracks>`_ - pending update. DBCA intranet.
+* `Turtle Tagging metadata on data catalogue <https://data.dbca.wa.gov.au/dataset/wa-marine-turtle-tagging-database-wamtram-2>`_ - pending update. DBCA intranet.
 
 .. toctree::
    :maxdepth: 3
