@@ -18,6 +18,11 @@ Additional data export pathways for admins:
 * Shell: Rancher > pod > shell > fab shell > iPython session.
 * Database: Rancher > pod > shell > ./manage.py db_shell > psql session.
 
+The main avenue for data consumers are the value-added and well documented reports.
+The reports contain an up to date explanation of all exported data products,
+as well as maps and summary tables.
+Most of the insights and summaries a data consumer might want will be in the reports.
+
 
 The remainder of this page is the older documentation, pending an update of links.
 
@@ -53,25 +58,30 @@ Data
 ----
 **Getting there** https://wastd.dpaw.wa.gov.au/animal-encounters/ or click on "Data"
 
-**Accessible to** all Parks & Wildlife staff
+**Accessible to** all DBCA staff
 
 The "Data" tab offers the capacity to filter and view data.
 Currently, this part is in devlopment and does not offer all commodities yet.
 
-Backstage
----------
-**Getting there** https://wastd.dpaw.wa.gov.au/admin/ or click on "Backstage"
+Data Curation Portal
+--------------------
+**Getting there** https://wastd.dpaw.wa.gov.au/admin/ or click on "Data Curation Portal"
 
 **Accessible to** authorised Parks & Wildlife staff of group "data entry"
 
-Authorised users belonging to WAStD's "data entry" group can access the admin
-interface under the "backstage" tab.
+Authorised users (those belonging to WAStD's "data entry" User group)
+can access the Data Curation Portal interface under the "Data Curators" tab.
 
 Strandings and tagging encounters are located under
 `Animal Encounters <https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/>`_.
 
 Many questions can be answered with a simple combination of filter criteria, e.g.:
 
+Examples:
+* AnimalEncounters https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/
+* Filter to Locality and date
+* E.g. AE at Caravan Park https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=142
+* Encounters added before areas/sites were changed/added need to be re-saved to pick up the area/site they're now in
 * How many strandings were there in 2015? Select year 2015 in the date facet (top
   left), and "Observation type" stranding in the Filter dropdown (top right).
   https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&when__year=2016
@@ -80,20 +90,29 @@ Many questions can be answered with a simple combination of filter criteria, e.g
 * How many Flatback turtles were stranded in 2016?
   https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&species__exact=Natator+depressus&when__year=2016
 
-The result of any combination of filter criteria is a list of Animal Encounters,
-which can be exported to XLS or CSV:
+Download filtered list of enc/AE/TNE etc:
+* Select all (if more filtered than the initial 100 records that fit on one page, hit "Select all XXX records")
+* Bottom menu: export to CSV > Go
+* Settings:
+  * Read full instructions at https://django-adminactions.readthedocs.io/en/latest/actions.html#export-as-csv
+  * Header: select
+  * Delimiter: `,`
+  * Quoting: `All`
+  * Quotechar: `"`
+  * Escape char: `\`
+  * Datetime format: `Y-m-d g:i:s O` or to your liking
+  * Date format: `Y-m-d`
+  * Time format: `g:i:s`
+  * Columns: Hold Shift key and de-select e.g. Latex and HTML
+* Alternative: Export to XLS, Header yes, Use display (whether to export human-readable displayed labels or URL-safe database values).
 
-* Select all (checkbox in table header)
-* Admin actions (bottom left): Export to XLS / CSV (choose) > Go
-* Options: header (includes header row), use display (uses human-readable labels
-  instead of terse yet legible database values), columns (deselect the voluminous
-  HTML representation) > Export > XLS / CSV is downloaded.
+The issue `here <https://github.com/dbca-wa/wastd/issues/340>`_ discusses the necessity of quoting and escaping special characters.
 
 API preview
 -----------
 **Getting there** https://wastd.dpaw.wa.gov.au/api/1/ or click on "API"
 
-**Accessible to** DPaW intranet
+**Accessible to** DBCA intranet
 
 Data analysts will likely want to cut out the manual filter and download process described
 above, and consume (filtered) data programmatically. This can be done with the API.
@@ -126,68 +145,7 @@ Working examples:
 * Reading all Animal Observations into a data.frame in R
 * Uploading one Animal Observation from R and Python
 
-The following examples will only work on the DPaW intranet, as the API sits behind
-the Departmental firewall (intranet only) until the Single-Sign-On authentication
-will work without browsers.
-
-API > JSON > table
-------------------
-To get started, clone the turtle script `Github repo
-<https://github.com/parksandwildlife/turtle-scripts>`_ in your
-`RStudio Server <https://rstudio.dpaw.wa.gov.au/>`_.
-
-The workbooks show real-life use cases of downloading data as JSON from the API,
-transforming the nested document structure into flat table structures.
-
-
-
-.. First code example::
-..
-..     https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=csv
-..
-.. This API call will download all AnimalEncounters as flat CSV file. Currently,
-.. that CSV file is really weird. We've got a team of highly trained monkeys working
-.. on a fix.
-.. Nested relationships (e.g. all Observation subgroups) are represented as prefix
-.. to column names.
-
-
-API parameters
---------------
-This section shows examples of filtering data server-side through URL parameters.
-
-All stranding encounters (anything that's not "alive and healthy") as web page,
-JSON::
-
-    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health!=alive
-    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health!=alive
-
-All tagging encounters (anything that's exactly "alive and healthy") as web page,
-JSON, or CSV::
-
-    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&health=alive
-    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&health=alive
-
-The known history of a flipper tag::
-
-    https://wastd.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&name=WA67541
-
-All encounters with one animal ("WA96394")::
-
-    https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541
-
-All encounters with animals which names start with "WA9" (note the ``__startswith``
-has to be inserted manually)::
-
-    https://wastd.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA6*
-
-All of these filter queries (anything after the "?") also work through the data curation portal::
-
-    https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
-    https://wastd.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&name=WA67541
-
-Any filter combination, if found useful, can be bookmarked.
-
+See the R package `wastdr <https://dbca-wa.github.io/wastdr/>`_ for working examples.
 
 Data Analysis
 =============

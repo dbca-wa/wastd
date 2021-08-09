@@ -98,15 +98,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#for-humans-gui">For humans: GUI</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#map">Map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#data">Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#backstage">Backstage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-curation-portal">Data Curation Portal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#api-preview">API preview</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#for-machines-api">For machines: API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#api-json-table">API &gt; JSON &gt; table</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#api-parameters">API parameters</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#for-machines-api">For machines: API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-analysis">Data Analysis</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#tag-life-cycle">Tag life cycle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#animal-life-cycle">Animal life cycle</a></li>
@@ -206,6 +202,10 @@
 <p>Additional data export pathways for admins:
 * Shell: Rancher &gt; pod &gt; shell &gt; fab shell &gt; iPython session.
 * Database: Rancher &gt; pod &gt; shell &gt; ./manage.py db_shell &gt; psql session.</p>
+<p>The main avenue for data consumers are the value-added and well documented reports.
+The reports contain an up to date explanation of all exported data products,
+as well as maps and summary tables.
+Most of the insights and summaries a data consumer might want will be in the reports.</p>
 <p>The remainder of this page is the older documentation, pending an update of links.</p>
 <div class="section" id="for-humans-gui">
 <h2>For humans: GUI<a class="headerlink" href="#for-humans-gui" title="Permalink to this headline">¶</a></h2>
@@ -229,42 +229,62 @@ history.</p>
 <div class="section" id="data">
 <h3>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h3>
 <p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/animal-encounters/">https://wastd.dpaw.wa.gov.au/animal-encounters/</a> or click on “Data”</p>
-<p><strong>Accessible to</strong> all Parks &amp; Wildlife staff</p>
+<p><strong>Accessible to</strong> all DBCA staff</p>
 <p>The “Data” tab offers the capacity to filter and view data.
 Currently, this part is in devlopment and does not offer all commodities yet.</p>
 </div>
-<div class="section" id="backstage">
-<h3>Backstage<a class="headerlink" href="#backstage" title="Permalink to this headline">¶</a></h3>
-<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/">https://wastd.dpaw.wa.gov.au/admin/</a> or click on “Backstage”</p>
+<div class="section" id="data-curation-portal">
+<h3>Data Curation Portal<a class="headerlink" href="#data-curation-portal" title="Permalink to this headline">¶</a></h3>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/">https://wastd.dpaw.wa.gov.au/admin/</a> or click on “Data Curation Portal”</p>
 <p><strong>Accessible to</strong> authorised Parks &amp; Wildlife staff of group “data entry”</p>
-<p>Authorised users belonging to WAStD’s “data entry” group can access the admin
-interface under the “backstage” tab.</p>
+<p>Authorised users (those belonging to WAStD’s “data entry” User group)
+can access the Data Curation Portal interface under the “Data Curators” tab.</p>
 <p>Strandings and tagging encounters are located under
 <a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/">Animal Encounters</a>.</p>
 <p>Many questions can be answered with a simple combination of filter criteria, e.g.:</p>
+<p>Examples:
+* AnimalEncounters <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/">https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/</a>
+* Filter to Locality and date
+* E.g. AE at Caravan Park <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=142">https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=142</a>
+* Encounters added before areas/sites were changed/added need to be re-saved to pick up the area/site they’re now in
+* How many strandings were there in 2015? Select year 2015 in the date facet (top</p>
+<blockquote>
+<div><p>left), and “Observation type” stranding in the Filter dropdown (top right).
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016</a></p>
+</div></blockquote>
 <ul class="simple">
-<li><p>How many strandings were there in 2015? Select year 2015 in the date facet (top
-left), and “Observation type” stranding in the Filter dropdown (top right).
-<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016</a></p></li>
 <li><p>How many strandings were suspected boat strikes?
 <a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;encounter_type__exact=stranding">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;encounter_type__exact=stranding</a></p></li>
 <li><p>How many Flatback turtles were stranded in 2016?
 <a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;species__exact=Natator+depressus&amp;when__year=2016">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;species__exact=Natator+depressus&amp;when__year=2016</a></p></li>
 </ul>
-<p>The result of any combination of filter criteria is a list of Animal Encounters,
-which can be exported to XLS or CSV:</p>
-<ul class="simple">
-<li><p>Select all (checkbox in table header)</p></li>
-<li><p>Admin actions (bottom left): Export to XLS / CSV (choose) &gt; Go</p></li>
-<li><p>Options: header (includes header row), use display (uses human-readable labels
-instead of terse yet legible database values), columns (deselect the voluminous
-HTML representation) &gt; Export &gt; XLS / CSV is downloaded.</p></li>
+<p>Download filtered list of enc/AE/TNE etc:
+* Select all (if more filtered than the initial 100 records that fit on one page, hit “Select all XXX records”)
+* Bottom menu: export to CSV &gt; Go
+* Settings:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Read full instructions at <a class="reference external" href="https://django-adminactions.readthedocs.io/en/latest/actions.html#export-as-csv">https://django-adminactions.readthedocs.io/en/latest/actions.html#export-as-csv</a></p></li>
+<li><p>Header: select</p></li>
+<li><p>Delimiter: <cite>,</cite></p></li>
+<li><p>Quoting: <cite>All</cite></p></li>
+<li><p>Quotechar: <cite>“</cite></p></li>
+<li><p>Escape char: <a href="#id2"><span class="problematic" id="id3">`</span></a>`</p></li>
+<li><p>Datetime format: <cite>Y-m-d g:i:s O</cite> or to your liking</p></li>
+<li><p>Date format: <cite>Y-m-d</cite></p></li>
+<li><p>Time format: <cite>g:i:s</cite></p></li>
+<li><p>Columns: Hold Shift key and de-select e.g. Latex and HTML</p></li>
 </ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>Alternative: Export to XLS, Header yes, Use display (whether to export human-readable displayed labels or URL-safe database values).</p></li>
+</ul>
+<p>The issue <a class="reference external" href="https://github.com/dbca-wa/wastd/issues/340">here</a> discusses the necessity of quoting and escaping special characters.</p>
 </div>
 <div class="section" id="api-preview">
 <h3>API preview<a class="headerlink" href="#api-preview" title="Permalink to this headline">¶</a></h3>
 <p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/api/1/">https://wastd.dpaw.wa.gov.au/api/1/</a> or click on “API”</p>
-<p><strong>Accessible to</strong> DPaW intranet</p>
+<p><strong>Accessible to</strong> DBCA intranet</p>
 <p>Data analysts will likely want to cut out the manual filter and download process described
 above, and consume (filtered) data programmatically. This can be done with the API.
 WAStD’s API features a human-readable preview with the same filters as the “backstage”
@@ -291,51 +311,7 @@ frameworks like R or Python.</p>
 <li><p>Reading all Animal Observations into a data.frame in R</p></li>
 <li><p>Uploading one Animal Observation from R and Python</p></li>
 </ul>
-<p>The following examples will only work on the DPaW intranet, as the API sits behind
-the Departmental firewall (intranet only) until the Single-Sign-On authentication
-will work without browsers.</p>
-<div class="section" id="api-json-table">
-<h3>API &gt; JSON &gt; table<a class="headerlink" href="#api-json-table" title="Permalink to this headline">¶</a></h3>
-<p>To get started, clone the turtle script <a class="reference external" href="https://github.com/parksandwildlife/turtle-scripts">Github repo</a> in your
-<a class="reference external" href="https://rstudio.dpaw.wa.gov.au/">RStudio Server</a>.</p>
-<p>The workbooks show real-life use cases of downloading data as JSON from the API,
-transforming the nested document structure into flat table structures.</p>
-</div>
-<div class="section" id="api-parameters">
-<h3>API parameters<a class="headerlink" href="#api-parameters" title="Permalink to this headline">¶</a></h3>
-<p>This section shows examples of filtering data server-side through URL parameters.</p>
-<p>All stranding encounters (anything that’s not “alive and healthy”) as web page,
-JSON:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&amp;health!=alive
-https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&amp;health!=alive
-</pre></div>
-</div>
-<p>All tagging encounters (anything that’s exactly “alive and healthy”) as web page,
-JSON, or CSV:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&amp;health=alive
-https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&amp;health=alive
-</pre></div>
-</div>
-<p>The known history of a flipper tag:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&amp;name=WA67541
-</pre></div>
-</div>
-<p>All encounters with one animal (“WA96394”):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541
-</pre></div>
-</div>
-<p>All encounters with animals which names start with “WA9” (note the <code class="docutils literal notranslate"><span class="pre">__startswith</span></code>
-has to be inserted manually):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA6*
-</pre></div>
-</div>
-<p>All of these filter queries (anything after the “?”) also work through the data curation portal:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
-https://wastd.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&amp;name=WA67541
-</pre></div>
-</div>
-<p>Any filter combination, if found useful, can be bookmarked.</p>
-</div>
+<p>See the R package <a class="reference external" href="https://dbca-wa.github.io/wastdr/">wastdr</a> for working examples.</p>
 </div>
 <div class="section" id="data-analysis">
 <h2>Data Analysis<a class="headerlink" href="#data-analysis" title="Permalink to this headline">¶</a></h2>
