@@ -32,13 +32,8 @@ mark a record as "ready to publish".
 This transition can be reversed with "Embargo Encounter", which will push the record
 back to "curated".
 
-Data QA for turtle track census
-===============================
-This section addresses the regional turtle monitoring program coordinators, who
-conduct training and supervise volunteer data collection.
-
 QA levels
-----------
+==========
 What does "new", "proofread", and "curated" mean and do? Two things: It primarily protects human edits to records from repeated data imports, which may skip or update existing but unchanged ("new") records. It furthermore shows the confidence we have in the record's completeness, correctness, and consistency.
 
 However, the majority of records don't require any QA edits, and for now remain "new".
@@ -47,23 +42,54 @@ Reports currently include records of all QA levels.
 A log of QA is kept on the `Confluence Wiki <https://dbcawa.atlassian.net/wiki/spaces/TG/pages/932184080/Turtle+Nesting+Data+QA+log>`_.
 
 Productivity tips
------------------
+=================
 * Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving. * Close tabs by middle-click on tab header or Ctrl+w.
 * Collapse WAStD form sections by clicking on the blue header, e.g. collapse "Encounter".
 * "Curate" includes saving the record. No need to "Save and continue editing".
 
-QA tracks with uncertain species
---------------------------------
-* Nests and Tracks > Tracks with `uncertain species ID <https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?species=cheloniidae-fam)>`_, filter to your location, bookmark.
-* Review each record, update from photos as far as possible, curate.
-* Take notes on systematic errors by individual users or entire programs. Provide these as feedback and re-train as appropriate.
+Users
+=====
 
-Unsure if nest
---------------
-* Nests and Tracks > `Nests with uncertain nesting success <https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?nest_type=track-unsure>`_ > filter to your location, bookmark.
-* Review each record, update from photos as far as possible, curate.
-* Take notes on systematic errors by individual users or entire programs. Provide these as feedback and re-train as appropriate.
+Double-check reporter names
+---------------------------
+Filter the Survey list to each of your sites, compare "reported by" with "comments at start".
+WAStD leaves QA messages. Surveys requiring QA will have a "NEEDS QA" remark.
 
+In addition, review the "QA Users" report, which lists all non-exact matches of username vs WAStD accounts.
+Follow instructions within to add any misspellings of existing WAStD Users as their alias.
+The next reporting run will pick up User aliases and match them better.
+
+Merge duplicate User profiles
+-----------------------------
+The data in WAStD has been imported from many different sources.
+Import routines have seen improvements, but have in the past created duplicate User profiles,
+or faithfully imported duplicate profiles from legacy sources.
+
+Users can be listed and viewed through the front end or the Data Curation Portal.
+The front end User detail pages contain linked Surveys and Encounters.
+Duplicate User profiles can be merged from Users > Merge Profiles, or from the shortcut on each User's detail card.
+
+Merging profiles will transfer all data linked against the old profile into the new profile, update the new profile (contact details if empty in new and populated on old profile), and add the old profile's username, name, and aliases to the new profile's aliases. This ensures that user matching will match the new profile against records named after the old profile.
+Finally, the old profile is marked as "not active", but is retained.
+
+Add missing users
+-----------------
+At the beginning of the field season, send a spreadsheet of new data enumerators to the admin as per the "QA users" report.
+The spreadsheet must contain the following columns:
+* name: The full given and surname, as they will write it in the "Username". E.g. "Florian Mayer".
+  Roberts and Josephs have to decide whether they're Bob and Joe once and stick with it. Longer is often better.
+* email: A valid email address without any further markup. E.g. "Florian.Mayer@email.com".
+* phone: A valid phone number, formatted as text, and with the international prefix. E.g. "+61414123456".
+
+If a person is not listed in the dropdown menus, you might need to
+`add a User <https://wastd.dbca.wa.gov.au/admin/users/user/add/>`_ for that person.
+Use their ``firstname_lastname`` as username, select a password, save, then add the details.
+
+WAStD will create a new user profile at first login for each DBCA staff member, but
+the profile will miss the details.
+
+Surveys
+=======
 Data flow of surveys
 --------------------
 WAStD creates or updates (if existing) one
@@ -95,27 +121,18 @@ This allows to exclude training data from analysis.
 
 Remember to "curate" an edited record to protect it from being overwritten with the original data.
 
-Double-check reporter names
----------------------------
-Filter the Survey list to each of your sites, compare "reported by" with "comments at start".
-WAStD leaves QA messages. Surveys requiring QA will have a "NEEDS QA" remark.
+Populate team
+-------------
+This section describes the field "Team" in a Survey.
+From "Comments at start" beginning after the [guess_user] QA message, the team is listed.
+Excluding the "reporter", add all team members to the "team" field.
 
-In addition, review the "QA Users" report, which lists all non-exact matches of username vs WAStD accounts.
-Follow instructions within to add any misspellings of existing WAStD Users as their alias.
-The next reporting run will pick up User aliases and match them better.
+This in combination with an accurate Survey end time assists to accurately estimate
+the volunteer hours (hours on ground times number of volunteers)
+and survey effort (hours on ground).
 
-Merge duplicate User profiles
------------------------------
-The data in WAStD has been imported from many different sources.
-Import routines have seen improvements, but have in the past created duplicate User profiles,
-or faithfully imported duplicate profiles from legacy sources.
-
-Users can be listed and viewed through the front end or the Data Curation Portal.
-The front end User detail pages contain linked Surveys and Encounters.
-Duplicate User profiles can be merged from Users > Merge Profiles, or from the shortcut on each User's detail card.
-
-Merging profiles will transfer all data linked against the old profile into the new profile, update the new profile (contact details if empty in new and populated on old profile), and add the old profile's username, name, and aliases to the new profile's aliases. This ensures that user matching will match the new profile against records named after the old profile.
-Finally, the old profile is marked as "not active", but is retained.
+**Note** Remember to "curate" each updated record to protect it from being overwritten with the original data.
+It is not necessary to "proofread" and "curate" unchanged records.
 
 QA Survey end time
 ------------------
@@ -136,17 +153,6 @@ can indicate a mismatch.
 In the case of a mismatched Site Visit End, simply delete the incorrect information from the Survey's
 ``end_comments``, save and proofread. Set ``end time`` to a sensible time, ignore the end point.
 
-Populate team
--------------
-From "Comments at start" beginning after the [guess_user] QA message, the team is listed.
-Excluding the "reporter", add all team members to the "team" field.
-
-This in combination with an accurate Survey end time assists to accurately estimate
-the volunteer hours (hours on ground times number of volunteers)
-and survey effort (hours on ground).
-
-**Note** Remember to "curate" each updated record to protect it from being overwritten with the original data.
-It is not necessary to "proofread" and "curate" unchanged records.
 
 Add missing surveys
 -------------------
@@ -163,14 +169,22 @@ Open each link, decide on which Survey to make production, then hit "make produc
 If duplicate Surveys are missed, make sure their duration overlaps.
 Adjust start or end time of the missed duplicated, then mark the "good" one as the production Survey again.
 
-Add missing users
------------------
-If a person is not listed in the dropdown menus, you might need to
-`add a User <https://wastd.dbca.wa.gov.au/admin/users/user/add/>`_ for that person.
-Use their ``firstname_lastname`` as username, select a password, save, then add the details.
 
-WAStD will create a new user profile at first login for each DBCA staff member, but
-the profile will miss the details
+Encounters
+==========
+
+QA tracks with uncertain species
+--------------------------------
+* Nests and Tracks > Tracks with `uncertain species ID <https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?species=cheloniidae-fam)>`_, filter to your location, bookmark.
+* Review each record, update from photos as far as possible, curate.
+* Take notes on systematic errors by individual users or entire programs. Provide these as feedback and re-train as appropriate.
+
+Unsure if nest
+--------------
+* Nests and Tracks > `Nests with uncertain nesting success <https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?nest_type=track-unsure>`_ > filter to your location, bookmark.
+* Review each record, update from photos as far as possible, curate.
+* Take notes on systematic errors by individual users or entire programs. Provide these as feedback and re-train as appropriate.
+
 
 Curate records from training days
 ---------------------------------
