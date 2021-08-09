@@ -92,10 +92,8 @@
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_overview.html">Data collection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection training</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_curators.html">Data curators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_curators.html#data-upload-from-odk">Data upload from ODK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_entry.html">Data entry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_qa.html#data-release">Data release</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data consumers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#for-humans-gui">For humans: GUI</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#map">Map</a></li>
@@ -197,18 +195,27 @@
   <div class="section" id="data-consumers">
 <span id="id1"></span><h1>Data consumers<a class="headerlink" href="#data-consumers" title="Permalink to this headline">¶</a></h1>
 <p>This chapter addresses data consumers.</p>
+<p>There are four principal ways to export data:</p>
+<ul class="simple">
+<li><p>Data export from GUI: filter to taste, hit “CSV” top right.</p></li>
+<li><p>Data export from Data Curation Portal: filter to location and date, select all, bottom left menu “export to CSV”, choose settings, export.</p></li>
+<li><p>Data export from API: see wastdr vignette <a class="reference external" href="https://dbca-wa.github.io/wastdr/articles/access.html">Accessing WAStD Data</a>.</p></li>
+<li><p>Automated reporting: Latest date-stamped <a class="reference external" href="https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&amp;id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports">folder on SharePoint</a> or as shared with you through MS Teams.
+* Bookmark all “Turtle data” SharePoint sites to find them <a class="reference external" href="https://dpaw.sharepoint.com/_layouts/15/sharepoint.aspx">here</a></p></li>
+</ul>
+<p>Additional data export pathways for admins:
+* Shell: Rancher &gt; pod &gt; shell &gt; fab shell &gt; iPython session.
+* Database: Rancher &gt; pod &gt; shell &gt; ./manage.py db_shell &gt; psql session.</p>
+<p>The remainder of this page is the older documentation, pending an update of links.</p>
 <div class="section" id="for-humans-gui">
 <h2>For humans: GUI<a class="headerlink" href="#for-humans-gui" title="Permalink to this headline">¶</a></h2>
 <p>This section documents the graphical user interface (GUI).</p>
 <p>The GUI aims to give easy to digest insight to managers with
 defined questions, and to allow the query and export of data.</p>
-<p>There are four ways of viewing data: on a map, as a data table, (only with special
-privileges:) through the admin interface (“backstage”), and through the API preview.</p>
 <div class="section" id="map">
 <h3>Map<a class="headerlink" href="#map" title="Permalink to this headline">¶</a></h3>
-<p><strong>Getting there</strong> <a class="reference external" href="https://strandings.dpaw.wa.gov.au/">https://strandings.dpaw.wa.gov.au/</a>
-or click on “WA Strandings Database WAStD”</p>
-<p><strong>Accessible to</strong> all Parks &amp; Wildlife staff</p>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/">https://wastd.dpaw.wa.gov.au/</a></p>
+<p><strong>Accessible to</strong> all DBCA staff</p>
 <p>WAStD’s homepage displays (currently all) records on a map.</p>
 <p>Encounters of any kind are displayed as place markers.
 Click on any record to see a popup with a summary and links to view- more details.</p>
@@ -221,28 +228,28 @@ history.</p>
 </div>
 <div class="section" id="data">
 <h3>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h3>
-<p><strong>Getting there</strong> <a class="reference external" href="https://strandings.dpaw.wa.gov.au/animal-encounters/">https://strandings.dpaw.wa.gov.au/animal-encounters/</a> or click on “Data”</p>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/animal-encounters/">https://wastd.dpaw.wa.gov.au/animal-encounters/</a> or click on “Data”</p>
 <p><strong>Accessible to</strong> all Parks &amp; Wildlife staff</p>
 <p>The “Data” tab offers the capacity to filter and view data.
 Currently, this part is in devlopment and does not offer all commodities yet.</p>
 </div>
 <div class="section" id="backstage">
 <h3>Backstage<a class="headerlink" href="#backstage" title="Permalink to this headline">¶</a></h3>
-<p><strong>Getting there</strong> <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/">https://strandings.dpaw.wa.gov.au/admin/</a> or click on “Backstage”</p>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/">https://wastd.dpaw.wa.gov.au/admin/</a> or click on “Backstage”</p>
 <p><strong>Accessible to</strong> authorised Parks &amp; Wildlife staff of group “data entry”</p>
 <p>Authorised users belonging to WAStD’s “data entry” group can access the admin
 interface under the “backstage” tab.</p>
 <p>Strandings and tagging encounters are located under
-<a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/">Animal Encounters</a>.</p>
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/">Animal Encounters</a>.</p>
 <p>Many questions can be answered with a simple combination of filter criteria, e.g.:</p>
 <ul class="simple">
 <li><p>How many strandings were there in 2015? Select year 2015 in the date facet (top
 left), and “Observation type” stranding in the Filter dropdown (top right).
-<a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016">https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016</a></p></li>
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016</a></p></li>
 <li><p>How many strandings were suspected boat strikes?
-<a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;encounter_type__exact=stranding">https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;encounter_type__exact=stranding</a></p></li>
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;encounter_type__exact=stranding">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;encounter_type__exact=stranding</a></p></li>
 <li><p>How many Flatback turtles were stranded in 2016?
-<a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;species__exact=Natator+depressus&amp;when__year=2016">https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;species__exact=Natator+depressus&amp;when__year=2016</a></p></li>
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;species__exact=Natator+depressus&amp;when__year=2016">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;species__exact=Natator+depressus&amp;when__year=2016</a></p></li>
 </ul>
 <p>The result of any combination of filter criteria is a list of Animal Encounters,
 which can be exported to XLS or CSV:</p>
@@ -256,7 +263,7 @@ HTML representation) &gt; Export &gt; XLS / CSV is downloaded.</p></li>
 </div>
 <div class="section" id="api-preview">
 <h3>API preview<a class="headerlink" href="#api-preview" title="Permalink to this headline">¶</a></h3>
-<p><strong>Getting there</strong> <a class="reference external" href="https://strandings.dpaw.wa.gov.au/api/1/">https://strandings.dpaw.wa.gov.au/api/1/</a> or click on “API”</p>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/api/1/">https://wastd.dpaw.wa.gov.au/api/1/</a> or click on “API”</p>
 <p><strong>Accessible to</strong> DPaW intranet</p>
 <p>Data analysts will likely want to cut out the manual filter and download process described
 above, and consume (filtered) data programmatically. This can be done with the API.
@@ -299,32 +306,32 @@ transforming the nested document structure into flat table structures.</p>
 <p>This section shows examples of filtering data server-side through URL parameters.</p>
 <p>All stranding encounters (anything that’s not “alive and healthy”) as web page,
 JSON:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&amp;health!=alive
-https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&amp;health!=alive
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&amp;health!=alive
+https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&amp;health!=alive
 </pre></div>
 </div>
 <p>All tagging encounters (anything that’s exactly “alive and healthy”) as web page,
 JSON, or CSV:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&amp;health=alive
-https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&amp;health=alive
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=api&amp;health=alive
+https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?format=jsonp&amp;health=alive
 </pre></div>
 </div>
 <p>The known history of a flipper tag:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&amp;name=WA67541
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&amp;name=WA67541
 </pre></div>
 </div>
 <p>All encounters with one animal (“WA96394”):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541
 </pre></div>
 </div>
 <p>All encounters with animals which names start with “WA9” (note the <code class="docutils literal notranslate"><span class="pre">__startswith</span></code>
 has to be inserted manually):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://strandings.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA6*
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/api/1/encounters/?name__startswith=WA6*
 </pre></div>
 </div>
 <p>All of these filter queries (anything after the “?”) also work through the data curation portal:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
-https://strandings.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&amp;name=WA67541
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?health__exact=alive
+https://wastd.dpaw.wa.gov.au/admin/observations/tagobservation/?tag_type=flipper-tag&amp;name=WA67541
 </pre></div>
 </div>
 <p>Any filter combination, if found useful, can be bookmarked.</p>
@@ -448,7 +455,7 @@ to the same tablet and login with your account.</p></li>
 <p>On a desktop computer or on the tablet:</p>
 <ul class="simple">
 <li><p>Download the data from WAStD: e.g. Tracks and nests at Cable Beach Broome:
-Save <a class="reference external" href="https://strandings.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&amp;format=json">https://strandings.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&amp;format=json</a>
+Save <a class="reference external" href="https://wastd.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&amp;format=json">https://wastd.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&amp;format=json</a>
 as a file called <code class="docutils literal notranslate"><span class="pre">nests.geojson</span></code>.
 If you have WAStD open in your browser (and are authenticated), the API should not ask for authentication.</p></li>
 <li><p>Create the subfolders <code class="docutils literal notranslate"><span class="pre">HOME/Dropbox/Apps/MapIt</span></code> and move <code class="docutils literal notranslate"><span class="pre">nests.geojson</span></code> there.</p></li>

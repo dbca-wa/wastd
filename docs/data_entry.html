@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Data curators &mdash; WAStD 0.52.8 documentation</title>
+  <title>Data entry &mdash; WAStD 0.52.8 documentation</title>
   
 
   
@@ -92,7 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_overview.html">Data collection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection training</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Data curators</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data entry</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#turtle-tracks-or-nests">Turtle Tracks or Nests</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#section-encounter">Section “Encounter”</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#section-nest">Section “Nest”</a></li>
@@ -122,14 +122,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#tag-returns">Tag returns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#turtle-tracks">Turtle Tracks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#temperature-loggers">Temperature Loggers</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#data-upload-from-odk">Data upload from ODK</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#export-files">Export files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-upload-from-odk">Data upload from ODK</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_qa.html#data-release">Data release</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
@@ -185,13 +181,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Data curators</li>
+      <li>Data entry</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/data_curators.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/data_entry.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -204,9 +200,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="data-curators">
-<h1>Data curators<a class="headerlink" href="#data-curators" title="Permalink to this headline">¶</a></h1>
-<p>This chapter addresses data curators, who enter and maintain the data.</p>
+  <div class="section" id="data-entry">
+<h1>Data entry<a class="headerlink" href="#data-entry" title="Permalink to this headline">¶</a></h1>
+<p>This chapter addresses data curators, who enter, proofread and curate data from sources like paper datasheets and email.</p>
 <p>WAStD’s data model is built around the concept of an AnimalEncounter, which is
 the physical encounter of an observer an an animal at one point in time and space,
 during which different kinds of observations and measurements are made.
@@ -490,7 +486,7 @@ precicely in the same version that is in the case folder.</p></li>
 <div class="section" id="cetacean-strandings">
 <h2>Cetacean Strandings<a class="headerlink" href="#cetacean-strandings" title="Permalink to this headline">¶</a></h2>
 <p>The data currently lives in another departmental Strandings database.</p>
-<p>Cetacean Stranding data (rudimentary):</p>
+<p>Cetacean Stranding data (if they were entered into WAStD):</p>
 <ul class="simple">
 <li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/">new AnimalEncounter</a>.</p></li>
 <li><p>Media Attachments following instructions above</p></li>
@@ -500,7 +496,7 @@ precicely in the same version that is in the case folder.</p></li>
 </div>
 <div class="section" id="turtle-tagging">
 <h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this headline">¶</a></h2>
-<p>The data currently lives in WAMTRAM 2.</p>
+<p>The production data currently live in WAMTRAM 2. Migration is underway.</p>
 <p>Turtle Tagging data:</p>
 <ul class="simple">
 <li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/">new AnimalEncounter</a>.</p></li>
@@ -562,58 +558,12 @@ a “thank you” email including the known history of the animal.</p>
 <li><p>If logger was downloaded, add one Media attachment for each downloaded file and attach the file.</p></li>
 </ul>
 </div>
-</div>
 <div class="section" id="data-upload-from-odk">
-<h1>Data upload from ODK<a class="headerlink" href="#data-upload-from-odk" title="Permalink to this headline">¶</a></h1>
-<p>All electronically captured data from ODK is imported in a scripted and automated process
-using the R package <a class="reference external" href="https://github.com/dbca-wa/etlTurtleNesting">etlTurtleNesting</a>.</p>
-<div class="section" id="export-files">
-<h2>Export files<a class="headerlink" href="#export-files" title="Permalink to this headline">¶</a></h2>
-<p>Note: This section is outdated.</p>
-<p>On the ODK Aggregate server <a class="reference external" href="https://dpaw-data.appspot.com/">https://dpaw-data.appspot.com/</a>:</p>
-<ul class="simple">
-<li><p>Form Management &gt; Forms List &gt; for each form: Export &gt; JSON</p></li>
-<li><p>Submissions &gt; Exported Submissions &gt; Download files.</p></li>
-</ul>
-<p>Transfer the files via gateway server to prod:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>florianm@kens-awesome-001:~/projects/dpaw/wastd⟫ rsync -Pavvr data kens-xenmate-dev:/home/CORPORATEICT/florianm/wastd
-florianm@kens-xenmate-dev ~/wastd $ rsync -Pavvr data aws-eco-001:/mnt/projects/wastd
-</pre></div>
-</div>
-<p>On the production server, run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fab</span> <span class="n">shell</span>
-<span class="kn">from</span> <span class="nn">wastd.observations.utils</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="n">import_odk</span><span class="p">(</span><span class="s2">&quot;data/latest/Track_Tally_0_5_results.json&quot;</span><span class="p">,</span> <span class="n">flavour</span><span class="o">=</span><span class="s2">&quot;odk-tally05&quot;</span><span class="p">)</span>
-<span class="c1">#import_odk(&#39;data/latest/Track_or_Treat_0_26_results.json&#39;, flavour=&quot;odk-tt026&quot;)</span>
-<span class="n">import_odk</span><span class="p">(</span><span class="s1">&#39;data/latest/Track_or_Treat_0_31_results.json&#39;</span><span class="p">,</span> <span class="n">flavour</span><span class="o">=</span><span class="s2">&quot;odk-tt031&quot;</span><span class="p">)</span>
-<span class="n">import_odk</span><span class="p">(</span><span class="s1">&#39;data/latest/Track_or_Treat_0_35_results.json&#39;</span><span class="p">,</span> <span class="n">flavour</span><span class="o">=</span><span class="s2">&quot;odk-tt036&quot;</span><span class="p">)</span>
-<span class="n">import_odk</span><span class="p">(</span><span class="s1">&#39;data/latest/Track_or_Treat_0_36_results.json&#39;</span><span class="p">,</span> <span class="n">flavour</span><span class="o">=</span><span class="s2">&quot;odk-tt036&quot;</span><span class="p">)</span>
-<span class="n">import_odk</span><span class="p">(</span><span class="s1">&#39;data/latest/Fox_Sake_0_3_results.json&#39;</span><span class="p">,</span> <span class="n">flavour</span><span class="o">=</span><span class="s2">&quot;odk-fs03&quot;</span><span class="p">)</span>
-
-
-<span class="c1"># TODO:</span>
-<span class="c1"># MWI, TS 0.8, 0.9</span>
-</pre></div>
-</div>
-<p>This process contains three manual steps for each form,
-which at the current churn rate of forms (and corresponding import routines)
-is the most efficient solution.</p>
-<p>The downloaded JSON files contain all data (excluding images, which are linked
-via URLs) and provide an additional backup.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Fun fact, one could download the JSON from ODK Aggregate directly to the production server,
-substituting the respective URL to the JSON export:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export ODKUN=&quot;my-odk-username&quot;
-export ODKPW=&quot;my-odk-password&quot;
-
-curl -u $ODKUN:$ODKPW -o data/latest/tt036.json https://dpaw-data.appspot.com/view/...
-</pre></div>
-</div>
-<p>A better way might be to pursue reading the data from the ODK-A API, and writing to the WAStD API.
-This simplified process could be fully automated and run either on the prod server or locally.</p>
-</div>
+<h2>Data upload from ODK<a class="headerlink" href="#data-upload-from-odk" title="Permalink to this headline">¶</a></h2>
+<p>WAStD still supports the import of electronically captured data from ODK Aggregate.</p>
+<p>All electronically captured data from the newer ODK Central are imported in a scripted
+and automated process using the R package <a class="reference external" href="https://github.com/dbca-wa/etlTurtleNesting">etlTurtleNesting</a>.
+All data flow through the WAStD API.</p>
 </div>
 </div>
 
