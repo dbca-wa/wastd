@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Django = "<3.2"
+Django = "==3.1.12"
 django-extensions = ">=3.1.1"
 django-adminactions = "*"
 djangorestframework = "*"
@@ -23,9 +23,6 @@ django-rest-swagger = ">=2.2.0"
 coreapi = "*"
 coreapi-cli = "*"
 pypandoc = ">=1.5"
-graphene-django = "*"
-django-graphql-extensions = "*"
-django-graphql-geojson = "*"
 xmltodict = "==0.12.0"
 django-allauth = ">=0.42.0"
 dbca-utils = "==1.1.1"
