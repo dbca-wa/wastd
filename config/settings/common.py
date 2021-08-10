@@ -9,6 +9,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 import os
+import csv
 import environ
 from confy import database, env
 import sentry_sdk
@@ -224,6 +225,17 @@ DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
 
 ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', '*,localhost').split(',')
 
+# CSV export via django_adminactions
+ADMINACTIONS_CSV_OPTIONS_DEFAULT = {
+    'date_format': 'Y-m-d',
+     'datetime_format': 'Y-m-d G:i:s O',
+     'time_format': 'G:i:s',
+     'header': True,
+     'quotechar': '"',
+     'quoting': csv.QUOTE_ALL,
+     'delimiter': ',',
+     'escapechar': '\\',
+}
 
 # Debug toolbar
 # ------------------------------------------------------------------------------
