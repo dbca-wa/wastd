@@ -73,7 +73,7 @@ THIRD_PARTY_APPS = (
     'django_fsm_log',               # Transition audit logs
     'fsm_admin',                    # Transitions in admin
     'reversion',                    # Version history, requires grappelli loaded
-    'graphene_django',              # GraphQL API
+    # 'graphene_django',              # GraphQL API
     'rest_framework',               # API
     'rest_framework.authtoken',     # API auth via token
     'rest_framework_gis',           # API spatial fields
