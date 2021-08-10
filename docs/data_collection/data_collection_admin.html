@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data collection training" href="data_collection_training.html" />
-    <link rel="prev" title="Data collection" href="data_collection_overview.html" /> 
+    <link rel="prev" title="WAStD - WA Sea Turtle and Strandings Database" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,7 +89,6 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="data_collection_overview.html">Data collection</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data collection administrators</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#quick-notes">Quick notes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#admin-getting-started">Admin: Getting started</a></li>
@@ -101,11 +100,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#setup-the-tablet-first-time">Setup the tablet - first time</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup-the-tablet-after-a-season">Setup the tablet after a season</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup-the-tablet-before-field-season">Setup the tablet - before field season</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-prepare-a-length-reference-pre-survey">Admin: Prepare a length reference pre survey</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup-odk-collect-from-qr-code">Setup ODK Collect from QR code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#distribute-offline-background-imagery">Distribute offline background imagery</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#providing-training">Providing training</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#admin-prepare-devices-pre-survey">Admin: Prepare devices pre survey</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#admin-prepare-a-length-reference-pre-survey">Admin: Prepare a length reference pre survey</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#training-day-mixed-real-and-duplicated-training-data">Training day: mixed real and duplicated training data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#collector-collect-data">Collector: Collect data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#admin-review-data">Admin: Review data</a></li>
@@ -124,6 +122,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection_training.html">Data collection training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection_overview.html">Data collection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_entry.html">Data entry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_qa.html">Data QA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_consumers.html">Data consumers</a></li>
@@ -247,6 +246,7 @@ and the data collectors (staff and volunteers).</p>
 <h3>Admin: Create offline background imagery<a class="headerlink" href="#admin-create-offline-background-imagery" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Use latest QGIS (3.18 or higher)</p></li>
+<li><p>Areas: Save <a class="reference external" href="https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&amp;format=json&amp;limit=1000">WAStD Areas</a> as areas.geojson, drag and drop into QGIS</p></li>
 <li><p>Add ArcGIS Map Service as title “ESRI World Imagery” and with URL
 <a class="reference external" href="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer">https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</a></p></li>
 <li><p>Add “High Resolution 30cm imagery” and zoom to target location (e.g. Thevenard Island)</p></li>
@@ -330,8 +330,36 @@ data collection form (image, time, location).</p></li>
 <li><p>Charge fully, turn on.</p></li>
 <li><p>Settings &gt; System update &gt; check for update &gt; install if any available. Repeat until up to date.</p></li>
 <li><p>Google Play &gt; My apps &gt; Update all.</p></li>
-<li></li>
 </ul>
+</div>
+<div class="section" id="admin-prepare-a-length-reference-pre-survey">
+<h2>Admin: Prepare a length reference pre survey<a class="headerlink" href="#admin-prepare-a-length-reference-pre-survey" title="Permalink to this headline">¶</a></h2>
+<p>For situations where the data collector is unsure of the turtle species causing a given turtle track,
+the data collection form offers to take a picture of the track for later review and species identification.
+Having a length reference in the photos helps the reviewer immensely with species identification.</p>
+<p>A simple and cheap length reference for tricky turtle tracks
+can be fabricated from a  foldable wooden rule (2m folding into 20cm segments),
+marked with goloured duct tape ($5 per roll) at the minimum and maximum track width
+for each turtle species expected to occur in the surveyed area.</p>
+<p>Tomato stick prototype:</p>
+<a class="reference external image-reference" href="https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3"><img alt="Turtle track length reference" src="https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3" /></a>
+<p>The reference can be simplified, e.g. if only green and flatback turtles are expected,
+a stick can be cut to the maximum flatback track width, with one marking for the
+minimum green track width.</p>
+<p>Additional length markings, e.g. intervals of 10cm, can be added as required.</p>
+<p>This method is preferred over the use of a measuring tape as length reference in
+photos of tracks of unknown species for the following reasons:</p>
+<ul class="simple">
+<li><p>A rigid rule will lay on top of sand ripples,
+while measuring tape will distort measurement by bending over them.</p></li>
+<li><p>The coloured, centimeter-wide markings on the rule will be visible at lower image quality
+than the millimeter-wide centimeter markings on a measuring tape.</p></li>
+<li><p>The coloured tape wraps around the rule and is thereby visible from any angle,
+while tape can flip over and hide its markings.</p></li>
+<li><p>By reducing length references to relevant lengths, cognitive load is taken off the data collector.
+One can simply read off the markings which species’ track width range a given track falls into.</p></li>
+</ul>
+<p>Prepare one length reference per data collection team.</p>
 </div>
 <div class="section" id="setup-odk-collect-from-qr-code">
 <h2>Setup ODK Collect from QR code<a class="headerlink" href="#setup-odk-collect-from-qr-code" title="Permalink to this headline">¶</a></h2>
@@ -360,40 +388,6 @@ select the correct reference layer (named after your location).</p></li>
 <h3>Providing training<a class="headerlink" href="#providing-training" title="Permalink to this headline">¶</a></h3>
 <p>Run all data collectors through the chapter “Data collection training” until they
 are competent and comfortable with the hardware and software.</p>
-</div>
-<div class="section" id="admin-prepare-devices-pre-survey">
-<h3>Admin: Prepare devices pre survey<a class="headerlink" href="#admin-prepare-devices-pre-survey" title="Permalink to this headline">¶</a></h3>
-<p>If the logistics allow, the admin handing out the Android device will execute the steps of
-<a class="reference internal" href="data_collection_training.html#dct-pre-survey"><span class="std std-ref">Preparing a device pre survey</span></a> together with the data collector.</p>
-</div>
-<div class="section" id="admin-prepare-a-length-reference-pre-survey">
-<h3>Admin: Prepare a length reference pre survey<a class="headerlink" href="#admin-prepare-a-length-reference-pre-survey" title="Permalink to this headline">¶</a></h3>
-<p>For situations where the data collector is unsure of the turtle species causing a given turtle track,
-the data collection form offers to take a picture of the track for later review and species identification.
-Having a length reference in the photos helps the reviewer immensely with species identification.</p>
-<p>A simple and cheap length reference for tricky turtle tracks
-can be fabricated from a  foldable wooden rule (2m folding into 20cm segments),
-marked with goloured duct tape ($5 per roll) at the minimum and maximum track width
-for each turtle species expected to occur in the surveyed area.</p>
-<p>Tomato stick prototype:</p>
-<a class="reference external image-reference" href="https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3"><img alt="Turtle track length reference" src="https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3" /></a>
-<p>The reference can be simplified, e.g. if only green and flatback turtles are expected,
-a stick can be cut to the maximum flatback track width, with one marking for the
-minimum green track width.</p>
-<p>Additional length markings, e.g. intervals of 10cm, can be added as required.</p>
-<p>This method is preferred over the use of a measuring tape as length reference in
-photos of tracks of unknown species for the following reasons:</p>
-<ul class="simple">
-<li><p>A rigid rule will lay on top of sand ripples,
-while measuring tape will distort measurement by bending over them.</p></li>
-<li><p>The coloured, centimeter-wide markings on the rule will be visible at lower image quality
-than the millimeter-wide centimeter markings on a measuring tape.</p></li>
-<li><p>The coloured tape wraps around the rule and is thereby visible from any angle,
-while tape can flip over and hide its markings.</p></li>
-<li><p>By reducing length references to relevant lengths, cognitive load is taken off the data collector.
-One can simply read off the markings which species’ track width range a given track falls into.</p></li>
-</ul>
-<p>Prepare one length reference per data collection team.</p>
 </div>
 <div class="section" id="training-day-mixed-real-and-duplicated-training-data">
 <h3>Training day: mixed real and duplicated training data<a class="headerlink" href="#training-day-mixed-real-and-duplicated-training-data" title="Permalink to this headline">¶</a></h3>
@@ -551,7 +545,7 @@ Some older forms may be available for download - this is to allow import to WASt
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="data_collection_training.html" class="btn btn-neutral float-right" title="Data collection training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="data_collection_overview.html" class="btn btn-neutral float-left" title="Data collection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="WAStD - WA Sea Turtle and Strandings Database" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
