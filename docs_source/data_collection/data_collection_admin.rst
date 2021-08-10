@@ -46,6 +46,7 @@ For each team collecting data at the same time:
 Admin: Create offline background imagery
 ========================================
 * Use latest QGIS (3.18 or higher)
+* Areas: Save `WAStD Areas <https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&format=json&limit=1000>`_ as areas.geojson, drag and drop into QGIS
 * Add ArcGIS Map Service as title "ESRI World Imagery" and with URL
   https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer
 * Add "High Resolution 30cm imagery" and zoom to target location (e.g. Thevenard Island)
@@ -128,43 +129,9 @@ This protocol should be followed before a tablet is taken out into the field whe
 * Charge fully, turn on.
 * Settings > System update > check for update > install if any available. Repeat until up to date.
 * Google Play > My apps > Update all.
-*
-
-
-Setup ODK Collect from QR code
-------------------------------
-Open ODK Collect. 2020 update: accept message to migrate forms to "private storage".
-
-If you were provided with a QR code, you can speed up the ODK Collect setup.
-
-* Settings (three dots top right) > Configure via QR code
-  (if asked, grant ODK Collect required permissions to access camera)
-* Update the username to a real name, e.g. "Florian Mayer".
-* Get blank forms on each tablet. This both prepares the tablets for field work,
-  and verifies username/password/server url.
-
-Distribute offline background imagery
--------------------------------------
-* You will be provided the background imagery files (extension ``.mbtiles``).
-* Connect each tablet via USB, unlock screen, confirm dialogue to allow file transfer on tablet.
-* Copy the mbtiles files into ``/Android/data/org.odk.collect.android/files/layers`` on each tablet.
-* You can provide multiple mbtiles. Mind available disk space (16GB ish) vs mbtiles size
-  (200-500MB each) vs storage for ODK records including media files (photos).
-* Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
-  select the correct reference layer (named after your location).
-
-Providing training
-==================
-Run all data collectors through the chapter "Data collection training" until they
-are competent and comfortable with the hardware and software.
-
-Admin: Prepare devices pre survey
-=================================
-If the logistics allow, the admin handing out the Android device will execute the steps of
-:ref:`dct-pre-survey` together with the data collector.
 
 Admin: Prepare a length reference pre survey
-============================================
+--------------------------------------------
 For situations where the data collector is unsure of the turtle species causing a given turtle track,
 the data collection form offers to take a picture of the track for later review and species identification.
 Having a length reference in the photos helps the reviewer immensely with species identification.
@@ -199,6 +166,34 @@ photos of tracks of unknown species for the following reasons:
   One can simply read off the markings which species' track width range a given track falls into.
 
 Prepare one length reference per data collection team.
+
+Setup ODK Collect from QR code
+------------------------------
+Open ODK Collect. 2020 update: accept message to migrate forms to "private storage".
+
+If you were provided with a QR code, you can speed up the ODK Collect setup.
+
+* Settings (three dots top right) > Configure via QR code
+  (if asked, grant ODK Collect required permissions to access camera)
+* Update the username to a real name, e.g. "Florian Mayer".
+* Get blank forms on each tablet. This both prepares the tablets for field work,
+  and verifies username/password/server url.
+
+Distribute offline background imagery
+-------------------------------------
+* You will be provided the background imagery files (extension ``.mbtiles``).
+* Connect each tablet via USB, unlock screen, confirm dialogue to allow file transfer on tablet.
+* Copy the mbtiles files into ``/Android/data/org.odk.collect.android/files/layers`` on each tablet.
+* You can provide multiple mbtiles. Mind available disk space (16GB ish) vs mbtiles size
+  (200-500MB each) vs storage for ODK records including media files (photos).
+* Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
+  select the correct reference layer (named after your location).
+
+Providing training
+==================
+Run all data collectors through the chapter "Data collection training" until they
+are competent and comfortable with the hardware and software.
+
 
 Training day: mixed real and duplicated training data
 =====================================================

@@ -116,9 +116,9 @@ What is where
 .. toctree::
    :maxdepth: 3
 
-   data_collection/data_collection_overview
    data_collection/data_collection_admin
    data_collection/data_collection_training
+   data_collection/data_collection_overview
    data_entry
    data_qa
    data_consumers
