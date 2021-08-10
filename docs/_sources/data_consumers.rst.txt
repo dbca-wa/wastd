@@ -93,20 +93,8 @@ Examples:
 Download filtered list of enc/AE/TNE etc:
 * Select all (if more filtered than the initial 100 records that fit on one page, hit "Select all XXX records")
 * Bottom menu: export to CSV > Go
-* Settings:
-  * Read full instructions at https://django-adminactions.readthedocs.io/en/latest/actions.html#export-as-csv
-  * Header: select
-  * Delimiter: `,`
-  * Quoting: `All`
-  * Quotechar: `"`
-  * Escape char: `\`
-  * Datetime format: `Y-m-d g:i:s O` or to your liking
-  * Date format: `Y-m-d`
-  * Time format: `g:i:s`
-  * Columns: Hold Shift key and de-select e.g. Latex and HTML
-* Alternative: Export to XLS, Header yes, Use display (whether to export human-readable displayed labels or URL-safe database values).
-
-The issue `here <https://github.com/dbca-wa/wastd/issues/340>`_ discusses the necessity of quoting and escaping special characters.
+* Settings: see <https://django-adminactions.readthedocs.io/en/latest/actions.html#export-as-csv>.
+  * Alternative: Export to XLS, Header yes, Use display (whether to export human-readable displayed labels or URL-safe database values).
 
 API preview
 -----------
