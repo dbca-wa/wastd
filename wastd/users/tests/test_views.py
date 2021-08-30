@@ -1,7 +1,7 @@
 from django.test import RequestFactory
 from test_plus.test import TestCase
 from .factories import UserFactory
-from ..views import UserRedirectView, UserUpdateView, transfer_user
+from ..views import UserRedirectView, UserUpdateView, transfer_user, change_user_for_area
 
 
 class BaseUserTestCase(TestCase):
@@ -65,4 +65,10 @@ class TestUserUpdateView(BaseUserTestCase):
         """Test transferring all objects owned by a user to another."""
 
         transfer_user(self.user, self.user2)
+        self.assertEqual(self.user.encounters_reported.count(), 0)
+
+    def test_transfer_area_user(self):
+        """Test transferring all objects owned by a user to another."""
+
+        change_user_for_area(self.user, self.user2)
         self.assertEqual(self.user.encounters_reported.count(), 0)

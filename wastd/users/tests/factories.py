@@ -12,3 +12,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'users.User'
         django_get_or_create = ('username', )
+
+class AreaFactory(factory.django.DjangoModelFactory):
+    name = factory.Sequence(lambda n: 'area-{0}'.format(n))

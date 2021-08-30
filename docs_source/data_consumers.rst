@@ -6,22 +6,24 @@ Data consumers
 
 This chapter addresses data consumers.
 
-There are four principal ways to export data:
+There are four principal ways to access data and derived data products from WAStD:
 
-* Data export from GUI: filter to taste, hit "CSV" top right.
-* Data export from Data Curation Portal: filter to location and date, select all, bottom left menu "export to CSV", choose settings, export.
+* Data export from GUI: filter to taste, hit "CSV" or "XLS" on the top right.
+* Data export from Data Curation Portal: filter to location and date, select all, bottom left menu "export to CSV", export.
 * Data export from API: see wastdr vignette `Accessing WAStD Data <https://dbca-wa.github.io/wastdr/articles/access.html>`_.
 * Automated reporting: Latest date-stamped `folder on SharePoint <https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports>`_ or as shared with you through MS Teams.
-  * Bookmark all "Turtle data" SharePoint sites to find them `here <https://dpaw.sharepoint.com/_layouts/15/sharepoint.aspx>`_
+
+Tip: Bookmark all "Turtle data" SharePoint sites to find them `here <https://dpaw.sharepoint.com/_layouts/15/sharepoint.aspx>`_
 
 Additional data export pathways for admins:
 * Shell: Rancher > pod > shell > fab shell > iPython session.
 * Database: Rancher > pod > shell > ./manage.py db_shell > psql session.
 
 The main avenue for data consumers are the value-added and well documented reports.
-The reports contain an up to date explanation of all exported data products,
-as well as maps and summary tables.
+The reports contain an up to date explanation of all exported data products, as well as maps and summary tables.
 Most of the insights and summaries a data consumer might want will be in the reports.
+
+
 
 
 The remainder of this page is the older documentation, pending an update of links.

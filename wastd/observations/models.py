@@ -1396,34 +1396,63 @@ def claim_encounters(survey_instance):
 
 @receiver(pre_save, sender=Survey)
 def survey_pre_save(sender, instance, buffer_mins=30, initial_duration_hrs = 6, *args, **kwargs):
-    """Survey: Claim site, end point, adjust end time if encounters already claimed."""
+    """Survey pre-save: sanity check and data cleaning.
+
+    If a start or end time are given as string, they are parsed into a native datetime object.
+    If site or area are blank, they will be guessed via spatial overlap with known locations.
+
+    If the end time is not given or earlier than the start time (mostly due to data import errors), the
+    end time will be adjusted to ``initial_duration_hrs`` after the start time.
+    This will give the ``post_save`` signal an opportunity to ``claim_encounters``.
+
+    If the end time is exactly ``initial_duration_hrs`` later than the start time, it
+    will be adjusted to ``buffer_mins`` after the last encounter within.
+    """
+    msg = ""
     if type(instance.start_time) == str:
         instance.start_time = dateparser.parse(instance.start_time)
     if type(instance.end_time) == str:
         instance.end_time = dateparser.parse(instance.end_time)
+
     if not instance.site:
         instance.site = guess_site(instance)
     if not instance.area:
         instance.area = guess_area(instance)
-    if instance.status == Survey.STATUS_NEW and not instance.end_time:
-        claim_end_points(instance)
+
+    # Deprecated: Survey is now reconstructed during ETL before upload,
+    # not from SVS and SVE in WAStD any more
+    # if instance.status == Survey.STATUS_NEW and not instance.end_time:
+    #     claim_end_points(instance)
+
+    if not instance.end_time:
+        instance.end_time = instance.start_time + timedelta(hours = initial_duration_hrs)
+        msg += (
+            "[survey_pre_save] End time was missing, "
+            "adjusted to {} hours after start time\n".format(initial_duration_hrs))
+
+    if instance.end_time < instance.start_time:
+        instance.end_time = instance.start_time + timedelta(hours = initial_duration_hrs)
+        msg += (
+            "[survey_pre_save] End time was before start time, "
+            "adjusted to {} hours after start time\n".format(initial_duration_hrs))
+
     if instance.end_time == instance.start_time + timedelta(hours=initial_duration_hrs):
         et = instance.end_time
         if instance.encounters:
             instance.end_time = instance.encounters.last().when + timedelta(minutes=buffer_mins)
-            msg = ("[survey_pre_save] End time adjusted from {0} to {1}, "
+            msg += ("[survey_pre_save] End time adjusted from {0} to {1}, "
                    "{2} minutes after last of {3} encounters.").format(
                 et, instance.end_time, buffer_mins, len(instance.encounters))
         else:
             instance.end_time = instance.start_time + timedelta(hours=initial_duration_hrs)
-            msg = ("[survey_pre_save] End time adjusted from {0} to {1}, "
+            msg += ("[survey_pre_save] End time adjusted from {0} to {1}, "
                    "{2} hours after the start of the survey. "
                    "No encounters found.").format(et, instance.end_time, initial_duration_hrs)
-        instance.end_comments = msg
+
+    if msg != "":
+        instance.end_comments = instance.end_comments + msg
         logger.info(msg)
     instance.label = instance.make_label
-    # if not instance.survey:
-    #     instance.survey = guess_survey(instance)
 
 
 @receiver(post_save, sender=Survey)

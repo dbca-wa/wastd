@@ -4,6 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Fieldset, Row, Field, ButtonHolder, Submit, LayoutObject, HTML
 
 from .models import User
+from wastd.observations.models import Area
 from .utils import transfer_user
 from .widgets import UserWidget
 
@@ -32,6 +33,46 @@ class MergeForm(forms.Form):
                 Fieldset(
                     'Merge Duplicate User Profiles',
                     Field('old'),
+                    Field('new'),
+                    ),
+                Div(
+                    self.save_button,
+                    self.cancel_button,
+                    # css_class='offset-sm-4 offset-md-3 offset-lg-2',
+                )
+            ),
+        )
+
+
+class TransferForm(forms.Form):
+    old = forms.ModelChoiceField(
+        label="Transfer data incorrectly linked to User",
+        queryset = User.objects.all(),
+        widget=UserWidget()
+    )
+    area = forms.ModelChoiceField(
+        label="Restrict data transfer to Area",
+        queryset = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
+    )
+    new = forms.ModelChoiceField(
+        label="Transfer data to User",
+        queryset = User.objects.all(),
+        widget=UserWidget()
+    )
+    save_button = Submit('save', 'Transfer data', css_class='btn-lg')
+    cancel_button = Submit('cancel', 'Cancel', css_class='btn-secondary')
+
+    def __init__(self, *args, **kwargs):
+        """Initialize the form with a custom layout and a crispy_forms helper."""
+        super(TransferForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                Fieldset(
+                    'Transfer data to another user',
+                    Field('old'),
+                    Field('area'),
                     Field('new'),
                     ),
                 Div(
