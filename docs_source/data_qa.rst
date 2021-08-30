@@ -88,6 +88,18 @@ Use their ``firstname_lastname`` as username, select a password, save, then add 
 WAStD will create a new user profile at first login for each DBCA staff member, but
 the profile will miss the details.
 
+Transfer data across users
+--------------------------
+Sometimes, the data import takes a wrong guess at a username, and ends up importing
+data against the wrong user profile, typically in an area where the guessed user
+has not worked.
+
+A data curator can transfer all data from one user across to another user through
+Menu > Users > Transfer data.
+
+On success, a diagnostic message and the profile of the new user will be shown.
+If the new user has a lot of data to their name, the user detail page will load a bit slower.
+
 Surveys
 =======
 Data flow of surveys

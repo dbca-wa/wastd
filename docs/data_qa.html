@@ -107,7 +107,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#double-check-reporter-names">Double-check reporter names</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#merge-duplicate-user-profiles">Merge duplicate User profiles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#add-missing-users">Add missing users</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#add-missing-users">Add missing users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transfer-data-across-users">Transfer data across users</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#surveys">Surveys</a></li>
 </ul>
 </li>
@@ -285,6 +286,16 @@ The spreadsheet must contain the following columns:
 Use their <code class="docutils literal notranslate"><span class="pre">firstname_lastname</span></code> as username, select a password, save, then add the details.</p>
 <p>WAStD will create a new user profile at first login for each DBCA staff member, but
 the profile will miss the details.</p>
+</div>
+<div class="section" id="transfer-data-across-users">
+<h2>Transfer data across users<a class="headerlink" href="#transfer-data-across-users" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes, the data import takes a wrong guess at a username, and ends up importing
+data against the wrong user profile, typically in an area where the guessed user
+has not worked.</p>
+<p>A data curator can transfer all data from one user across to another user through
+Menu &gt; Users &gt; Transfer data.</p>
+<p>On success, a diagnostic message and the profile of the new user will be shown.
+If the new user has a lot of data to their name, the user detail page will load a bit slower.</p>
 <div class="section" id="surveys">
 <h3>Surveys<a class="headerlink" href="#surveys" title="Permalink to this headline">¶</a></h3>
 </div>
