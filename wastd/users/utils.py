@@ -24,8 +24,12 @@ def transfer_user(old, new):
 
     * ``msg`` <str> A summary message.
     """
-
-    # TODO gate check for obj not found or old==new
+    # Gate checks ------------------------------------------------------------#
+    if old == new:
+        msg = ("Same user, nothing to do. "
+               "Only two different user profiles can be merged.")
+        logger.info(msg)
+        return msg
 
     # ------------------------------------------------------------------------#
     # Stocktake before merge
@@ -176,6 +180,100 @@ def transfer_user(old, new):
         new.statelog_set.count(),
         )
     )
+
+    logger.info(msg)
+    return msg
+
+
+def change_user_for_area(old, new, area):
+    """Transfer all data within one area to another user.
+
+    This function has side effects:
+    * It updates all FK and M2M from one user to another for a subset of data.
+    * It sends logger.info messages.
+
+    Arguments:
+
+    * ``old`` :model:`users.User` The user which was incorrectly assigned.
+    * ``new`` :model:`users.User` The user to transfer the data to.
+    * ``area`` :model:`observations.Area` The Area of type Locality in which to transfer data from old to new user.
+
+    The relevant data is linked via FKs from User and Area.
+
+    Return:
+
+    * ``msg`` <str> A summary message.
+    """
+
+    # Gate checks ------------------------------------------------------------#
+    if old == new:
+        msg = ("Same user, nothing to do. "
+              "If you wanted to transfer data from one to another user, "
+              "choose two different users.")
+        logger.info(msg)
+        return msg
+
+    if not area:
+        msg = ("No area selected, nothing to do. "
+              "A locality is required.")
+        logger.info(msg)
+        return msg
+
+    # ------------------------------------------------------------------------#
+    # Stocktake before transfer
+    msg = (
+        "Data transferred from User {} to {} in Area {}. "
+        "{} Encounters observed, {} Encounters reported, "
+        "{} Surveys started, {} Surveys teamed, "
+        "{} morph recorded, {} morph handled, "
+        "{} tags recorded, {} tags handled.".format(
+            old, new, area,
+            old.encounters_reported.filter(area=area).count(),
+            old.encounters_observed.filter(area=area).count(),
+            old.reported_surveys.filter(area=area).count(),
+            old.survey_team.filter(area=area).count(),
+            old.morphometric_recorder.filter(encounter__area=area).count(),
+            old.morphometric_handler.filter(encounter__area=area).count(),
+            old.tag_recorder.filter(encounter__area=area).count(),
+            old.tag_handler.filter(encounter__area=area).count(),
+        )
+    )
+
+    # ------------------------------------------------------------------------#
+    # Transfer FK and M2M
+    # Alternatively, one could use the model API to programmatically find FKs
+    for x in old.encounters_reported.filter(area=area):
+        x.reporter = new
+        x.save()
+
+    for x in old.encounters_observed.filter(area=area):
+        x.observer = new
+        x.save()
+
+    for x in old.reported_surveys.filter(area=area):
+        x.reporter = new
+        x.save()
+
+    for x in old.morphometric_recorder.filter(encounter__area=area):
+        x.recorder = new
+        x.save()
+
+    for x in old.morphometric_handler.filter(encounter__area=area):
+        x.handler = new
+        x.save()
+
+    for x in old.tag_recorder.filter(encounter__area=area):
+        x.recorder = new
+        x.save()
+
+    for x in old.tag_handler.filter(encounter__area=area):
+        x.handler = new
+        x.save()
+
+    for svy in old.survey_team.filter(area=area):
+        svy.team.remove(old)
+        svy.team.add(new)
+        svy.save()
 
     logger.info(msg)
     return msg

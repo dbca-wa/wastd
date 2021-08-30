@@ -14,7 +14,9 @@ WAStD - WA Sea Turtle and Strandings Database
 .. image:: https://img.shields.io/badge/License-MIT-green.svg
      :target: https://opensource.org/licenses/MIT
      :alt: MIT License
-
+.. image:: https://img.shields.io/github/issues/dbca-wa/wastd
+     :target: https://github.com/dbca-wa/wastd/issues/
+     :alt: GitHub issues
 
 ========
 Overview

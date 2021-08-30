@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Data consumers &mdash; WAStD 0.52.8 documentation</title>
+  <title>Data consumers &mdash; WAStD 0.53.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                0.52
+                0.53
               </div>
             
           
@@ -191,20 +194,19 @@
   <div class="section" id="data-consumers">
 <span id="id1"></span><h1>Data consumers<a class="headerlink" href="#data-consumers" title="Permalink to this headline">¶</a></h1>
 <p>This chapter addresses data consumers.</p>
-<p>There are four principal ways to export data:</p>
+<p>There are four principal ways to access data and derived data products from WAStD:</p>
 <ul class="simple">
-<li><p>Data export from GUI: filter to taste, hit “CSV” top right.</p></li>
-<li><p>Data export from Data Curation Portal: filter to location and date, select all, bottom left menu “export to CSV”, choose settings, export.</p></li>
+<li><p>Data export from GUI: filter to taste, hit “CSV” or “XLS” on the top right.</p></li>
+<li><p>Data export from Data Curation Portal: filter to location and date, select all, bottom left menu “export to CSV”, export.</p></li>
 <li><p>Data export from API: see wastdr vignette <a class="reference external" href="https://dbca-wa.github.io/wastdr/articles/access.html">Accessing WAStD Data</a>.</p></li>
-<li><p>Automated reporting: Latest date-stamped <a class="reference external" href="https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&amp;id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports">folder on SharePoint</a> or as shared with you through MS Teams.
-* Bookmark all “Turtle data” SharePoint sites to find them <a class="reference external" href="https://dpaw.sharepoint.com/_layouts/15/sharepoint.aspx">here</a></p></li>
+<li><p>Automated reporting: Latest date-stamped <a class="reference external" href="https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&amp;id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports">folder on SharePoint</a> or as shared with you through MS Teams.</p></li>
 </ul>
+<p>Tip: Bookmark all “Turtle data” SharePoint sites to find them <a class="reference external" href="https://dpaw.sharepoint.com/_layouts/15/sharepoint.aspx">here</a></p>
 <p>Additional data export pathways for admins:
 * Shell: Rancher &gt; pod &gt; shell &gt; fab shell &gt; iPython session.
 * Database: Rancher &gt; pod &gt; shell &gt; ./manage.py db_shell &gt; psql session.</p>
 <p>The main avenue for data consumers are the value-added and well documented reports.
-The reports contain an up to date explanation of all exported data products,
-as well as maps and summary tables.
+The reports contain an up to date explanation of all exported data products, as well as maps and summary tables.
 Most of the insights and summaries a data consumer might want will be in the reports.</p>
 <p>The remainder of this page is the older documentation, pending an update of links.</p>
 <div class="section" id="for-humans-gui">

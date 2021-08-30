@@ -96,9 +96,12 @@ This protocol should be followed before a tablet is taken out into the field whe
 
 Device settings:
 
-* Date & time: Set time zone to AWST (GMT+08)
-* Security: do not configure any screen lock (leave as is)
+* General Management > Date & time: Set time zone to AWST (GMT+08), 24 hour format, auto time and timezone from network.
+* General Management > Keyboard: auto replace off, font size larger, keyboard size large.
+* Display: set screen timeout to 2 minutes.
+* Security: do not configure any screen lock (leave as is).
 * Keyboard: Whenever the keyboard is open, tap the settings cogwheel and resize it at the uper edge to be as large as possible. Increase font size too.
+* General Management > About Tablet: update device name to shortcode (e.g. NTP01), get serial number for the tablet register `<https://dbcawa.atlassian.net/wiki/spaces/TG/pages/896827488/Tablet+register>`_.
 
 App settings:
 
@@ -169,21 +172,20 @@ Prepare one length reference per data collection team.
 
 Setup ODK Collect from QR code
 ------------------------------
-Open ODK Collect. 2020 update: accept message to migrate forms to "private storage".
-
-If you were provided with a QR code, you can speed up the ODK Collect setup.
+Open ODK Collect.
 
 * Settings (three dots top right) > Configure via QR code
   (if asked, grant ODK Collect required permissions to access camera)
 * Update the username to a real name, e.g. "Florian Mayer".
-* Get blank forms on each tablet. This both prepares the tablets for field work,
-  and verifies username/password/server url.
+  Initially, use the coordintator's (your) name.
+* Set camera to medium / 2048px
+* set guidance to yes - collapsed
 
 Distribute offline background imagery
 -------------------------------------
 * You will be provided the background imagery files (extension ``.mbtiles``).
 * Connect each tablet via USB, unlock screen, confirm dialogue to allow file transfer on tablet.
-* Copy the mbtiles files into ``/Android/data/org.odk.collect.android/files/layers`` on each tablet.
+* Copy the mbtiles files into ``/Android/data/org.odk.collect.android/file/projects/<project hash>/layers`` on each tablet.
 * You can provide multiple mbtiles. Mind available disk space (16GB ish) vs mbtiles size
   (200-500MB each) vs storage for ODK records including media files (photos).
 * Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
@@ -193,7 +195,6 @@ Providing training
 ==================
 Run all data collectors through the chapter "Data collection training" until they
 are competent and comfortable with the hardware and software.
-
 
 Training day: mixed real and duplicated training data
 =====================================================

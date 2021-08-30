@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>wastd.observations.models &mdash; WAStD 0.52.8 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.53.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
@@ -61,7 +64,7 @@
             
             
               <div class="version">
-                0.52
+                0.53
               </div>
             
           
@@ -1563,34 +1566,63 @@
 
 <div class="viewcode-block" id="survey_pre_save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.survey_pre_save">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">Survey</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">survey_pre_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">buffer_mins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">initial_duration_hrs</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Survey: Claim site, end point, adjust end time if encounters already claimed.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Survey pre-save: sanity check and data cleaning.</span>
+
+<span class="sd">    If a start or end time are given as string, they are parsed into a native datetime object.</span>
+<span class="sd">    If site or area are blank, they will be guessed via spatial overlap with known locations.</span>
+
+<span class="sd">    If the end time is not given or earlier than the start time (mostly due to data import errors), the</span>
+<span class="sd">    end time will be adjusted to ``initial_duration_hrs`` after the start time.</span>
+<span class="sd">    This will give the ``post_save`` signal an opportunity to ``claim_encounters``.</span>
+
+<span class="sd">    If the end time is exactly ``initial_duration_hrs`` later than the start time, it</span>
+<span class="sd">    will be adjusted to ``buffer_mins`` after the last encounter within.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">dateparser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">dateparser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">site</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">site</span> <span class="o">=</span> <span class="n">guess_site</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">area</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="n">guess_area</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">Survey</span><span class="o">.</span><span class="n">STATUS_NEW</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
-        <span class="n">claim_end_points</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+    <span class="c1"># Deprecated: Survey is now reconstructed during ETL before upload,</span>
+    <span class="c1"># not from SVS and SVE in WAStD any more</span>
+    <span class="c1"># if instance.status == Survey.STATUS_NEW and not instance.end_time:</span>
+    <span class="c1">#     claim_end_points(instance)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span> <span class="o">=</span> <span class="n">initial_duration_hrs</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="s2">&quot;[survey_pre_save] End time was missing, &quot;</span>
+            <span class="s2">&quot;adjusted to </span><span class="si">{}</span><span class="s2"> hours after start time</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">initial_duration_hrs</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">&lt;</span> <span class="n">instance</span><span class="o">.</span><span class="n">start_time</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span> <span class="o">=</span> <span class="n">initial_duration_hrs</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="s2">&quot;[survey_pre_save] End time was before start time, &quot;</span>
+            <span class="s2">&quot;adjusted to </span><span class="si">{}</span><span class="s2"> hours after start time</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">initial_duration_hrs</span><span class="p">))</span>
+
     <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">==</span> <span class="n">instance</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="n">initial_duration_hrs</span><span class="p">):</span>
         <span class="n">et</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span>
         <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">encounters</span><span class="p">:</span>
             <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">encounters</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">when</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">buffer_mins</span><span class="p">)</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;[survey_pre_save] End time adjusted from </span><span class="si">{0}</span><span class="s2"> to </span><span class="si">{1}</span><span class="s2">, &quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;[survey_pre_save] End time adjusted from </span><span class="si">{0}</span><span class="s2"> to </span><span class="si">{1}</span><span class="s2">, &quot;</span>
                    <span class="s2">&quot;</span><span class="si">{2}</span><span class="s2"> minutes after last of </span><span class="si">{3}</span><span class="s2"> encounters.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">et</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">,</span> <span class="n">buffer_mins</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">encounters</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="n">initial_duration_hrs</span><span class="p">)</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;[survey_pre_save] End time adjusted from </span><span class="si">{0}</span><span class="s2"> to </span><span class="si">{1}</span><span class="s2">, &quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;[survey_pre_save] End time adjusted from </span><span class="si">{0}</span><span class="s2"> to </span><span class="si">{1}</span><span class="s2">, &quot;</span>
                    <span class="s2">&quot;</span><span class="si">{2}</span><span class="s2"> hours after the start of the survey. &quot;</span>
                    <span class="s2">&quot;No encounters found.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">et</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">,</span> <span class="n">initial_duration_hrs</span><span class="p">)</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">end_comments</span> <span class="o">=</span> <span class="n">msg</span>
+
+    <span class="k">if</span> <span class="n">msg</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">end_comments</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_comments</span> <span class="o">+</span> <span class="n">msg</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="n">instance</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">make_label</span></div>
-    <span class="c1"># if not instance.survey:</span>
-    <span class="c1">#     instance.survey = guess_survey(instance)</span>
 
 
 <div class="viewcode-block" id="survey_post_save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.survey_post_save">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">Survey</span><span class="p">)</span>

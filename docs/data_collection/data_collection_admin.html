@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Data collection administrators &mdash; WAStD 0.52.8 documentation</title>
+  <title>Data collection administrators &mdash; WAStD 0.53.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                0.52
+                0.53
               </div>
             
           
@@ -296,9 +299,12 @@ If you are not Florian Mayer, use your own work-only Google account.</p></li>
 </ul>
 <p>Device settings:</p>
 <ul class="simple">
-<li><p>Date &amp; time: Set time zone to AWST (GMT+08)</p></li>
-<li><p>Security: do not configure any screen lock (leave as is)</p></li>
+<li><p>General Management &gt; Date &amp; time: Set time zone to AWST (GMT+08), 24 hour format, auto time and timezone from network.</p></li>
+<li><p>General Management &gt; Keyboard: auto replace off, font size larger, keyboard size large.</p></li>
+<li><p>Display: set screen timeout to 2 minutes.</p></li>
+<li><p>Security: do not configure any screen lock (leave as is).</p></li>
 <li><p>Keyboard: Whenever the keyboard is open, tap the settings cogwheel and resize it at the uper edge to be as large as possible. Increase font size too.</p></li>
+<li><p>General Management &gt; About Tablet: update device name to shortcode (e.g. NTP01), get serial number for the tablet register <a class="reference external" href="https://dbcawa.atlassian.net/wiki/spaces/TG/pages/896827488/Tablet+register">https://dbcawa.atlassian.net/wiki/spaces/TG/pages/896827488/Tablet+register</a>.</p></li>
 </ul>
 <p>App settings:</p>
 <ul class="simple">
@@ -363,14 +369,14 @@ One can simply read off the markings which species’ track width range a given 
 </div>
 <div class="section" id="setup-odk-collect-from-qr-code">
 <h2>Setup ODK Collect from QR code<a class="headerlink" href="#setup-odk-collect-from-qr-code" title="Permalink to this headline">¶</a></h2>
-<p>Open ODK Collect. 2020 update: accept message to migrate forms to “private storage”.</p>
-<p>If you were provided with a QR code, you can speed up the ODK Collect setup.</p>
+<p>Open ODK Collect.</p>
 <ul class="simple">
 <li><p>Settings (three dots top right) &gt; Configure via QR code
 (if asked, grant ODK Collect required permissions to access camera)</p></li>
-<li><p>Update the username to a real name, e.g. “Florian Mayer”.</p></li>
-<li><p>Get blank forms on each tablet. This both prepares the tablets for field work,
-and verifies username/password/server url.</p></li>
+<li><p>Update the username to a real name, e.g. “Florian Mayer”.
+Initially, use the coordintator’s (your) name.</p></li>
+<li><p>Set camera to medium / 2048px</p></li>
+<li><p>set guidance to yes - collapsed</p></li>
 </ul>
 </div>
 <div class="section" id="distribute-offline-background-imagery">
@@ -378,7 +384,7 @@ and verifies username/password/server url.</p></li>
 <ul class="simple">
 <li><p>You will be provided the background imagery files (extension <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code>).</p></li>
 <li><p>Connect each tablet via USB, unlock screen, confirm dialogue to allow file transfer on tablet.</p></li>
-<li><p>Copy the mbtiles files into <code class="docutils literal notranslate"><span class="pre">/Android/data/org.odk.collect.android/files/layers</span></code> on each tablet.</p></li>
+<li><p>Copy the mbtiles files into <code class="docutils literal notranslate"><span class="pre">/Android/data/org.odk.collect.android/file/projects/&lt;project</span> <span class="pre">hash&gt;/layers</span></code> on each tablet.</p></li>
 <li><p>You can provide multiple mbtiles. Mind available disk space (16GB ish) vs mbtiles size
 (200-500MB each) vs storage for ODK records including media files (photos).</p></li>
 <li><p>Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
