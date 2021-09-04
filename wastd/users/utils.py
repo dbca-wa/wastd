@@ -1,6 +1,7 @@
 import logging
 
 from .models import User
+from wastd.observations.models import Area
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +132,7 @@ def transfer_user(old, new):
     old_details = [old.username, old.name]
     combined_aliases = list(set(new_aliases + old_aliases + old_details))
     new.aliases = ", ".join([x for x in combined_aliases if x != ""])
-    new.is_active = True # So we can revert an incorrect Uer merge
+    new.is_active = True # So we can revert an incorrect User merge
 
     # Role is too messy to deduplicate
     if old.role and old.role != "":

@@ -13,6 +13,8 @@ from .models import User
 from .forms import (MergeForm, TransferForm)
 from .filters import UserFilter
 from .utils import transfer_user, change_user_for_area
+from wastd.observations.models import Area
+
 from shared.views import (
     ListViewBreadcrumbMixin,
     DetailViewBreadcrumbMixin
