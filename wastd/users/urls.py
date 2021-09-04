@@ -30,6 +30,7 @@ urlpatterns = [
 
     path('<int:old_pk>/transfer/<int:new_pk>/area/<int:area_pk>', views.transfer_user_view, name='user-transfer-auto'),
     path('<int:old_pk>/transfer/<int:new_pk>/', views.TransferView.as_view(), name='user-transfer-both'),
+    path('<int:old_pk>/transfer-at/<int:area_pk>/', views.TransferView.as_view(), name='user-transfer-area'),
     path('<int:old_pk>/transfer/', views.TransferView.as_view(), name='user-transfer-old'),
 
     path('<int:pk>/', views.UserDetailView.as_view(), name='user-detail'),
