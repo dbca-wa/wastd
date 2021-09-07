@@ -1,14 +1,13 @@
 .. _data-collection-training:
 
-========================
-Data collection training
-========================
+======================================
+Data collection protocols and training
+======================================
 
 This chapter provides the training resources for prospective data collectors.
 
-* Hardware: Android devices (tablets, phablets, phones), current default: Lenovo Tab3 7"
+* Hardware: Android devices (tablets, phablets, phones), current default: Samsung Tab A 8"
 * Software: ODK Collect
-
 
 .. _dct-pre-survey:
 
@@ -38,15 +37,15 @@ E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
 
 Device checkout Broome - Cable Beach
 ------------------------------------
-* There are two tablets (and one hotspot providing WiFi to the tablets) on a charger.
-* Disconnect both tablets from the charger.
+* There are six tablets (and one hotspot providing WiFi to the tablets) on a charger.
+* Disconnect the tablets from the charger.
 * Turn one on (to collect data), one off (as backup).
 * Take the tablets and the collection backpack out.
 
 Device checkin Broome - Cable Beach
 -----------------------------------
 * Deposit the collection backpack.
-* Connect both tablets to the charger.
+* Connect all tablets to the charger.
 * Any tablets with data on them should be kept running.
 * Any tablets which weren't used at all can be kept powered off.
 
@@ -360,6 +359,28 @@ challenge, taking a photo is invaluable, in that it cannot be taken at a later
 time, and it preserves valuable and volatile information.
 
 
+.. dct-turtle-tagging:
+
+Turtle Tagging
+==============
+Field coordinator tasks:
+
+* Make sure tablets are set to not auto-upload.
+* Have a volunteer number datasheets in consecutive numbers before handing them out into field packs.
+* Make sure that paper datasheets are backfilled the next morning.
+* Coordinate with WAStD maintainer on data/QA/form issues if needed daily.
+
+Training focus:
+
+* Handling of tablets: Only ever in your hand, in the neoprene sleeve, or on the charger. Mind sand and moisture. Keep the sleeve sand free.
+* Explain: Form is squashed into minimal number of screens to streamline and make robust the data entry process at the cost of some repetition and some blank fields. Form handles both night time tagging and in-water turtle captures, the latter will have to suffer skipping some nest related fields in one screen.
+* Explain data capture modes. Practice backfilling. Point out guidance hint on data capture mode.
+* Explain signed degrees.
+* Explain: if no PIT tags, swipe past PIT screen.
+* Explain: PIT/Flipper tag status only applies if a tag is recorded (in tag ID).
+* If there are more tags or samples than the form provides for, there is a repeat group to add the rest coming later.
+* Biopsy location provides identifiable mark (biopsy scar) to help reconstruct turtle identities.
+
 Training beach
 ==============
 Welcome to the training beach! Let's apply the protocols to a (nearly realistic)
@@ -376,7 +397,7 @@ You'll need:
 
 
 * Collect as many records as you wish on any place outside the actual nesting beaches.
-* Use the species "Hatchback turtle (Corolla corolla)" when training.
+* Use the species "Hatchback turtle (Corolla corolla)" and any available options indicating training/testing when conducting training on an actual nesting beach.
 
 Training walk-through
 ---------------------
