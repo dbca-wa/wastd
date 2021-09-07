@@ -5,8 +5,7 @@ Data collection administrators
 ==============================
 
 This chapter provides all required knowledge for data collection admins.
-The admins form a bridge between the ODK data maintainer (Florian Mayer)
-and the data collectors (staff and volunteers).
+The admins (regional turtle monitoring program coordinators) form a bridge between the ODK data maintainer (Florian Mayer) and the data collectors (staff and volunteers).
 
 Tasks covered:
 
@@ -23,11 +22,11 @@ Quick notes
 * It's worth to replace any tablet with signs of impending hardware failure such as cracked screens, bulging batteries, or unusually long start-up times with a fresh tablet. The hardware failure rate depends highly on how devices are treated by end users (100% loss in some places where tablets are transported unprotected in a backpack together with hammers and metal stakes - unsurprisingly - to 2 out of 20 tablets lost over 3 years at Ningaloo)
 * It's worth to have two fully set up spare devices ready to go and procure a new device immediately each time an old one is retired.
 
-
 Admin: Getting started
 ======================
 * Admin's computer: set Chrome or Firefox as default browser
-* Bookmark TSC
+* Bookmark WAStD
+* Bookmark the data shares (`DBCA Turtle Data<https://dpaw.sharepoint.com/teams/TurtleData/Shared%20Documents/Forms/AllItems.aspx?newTargetListUrl=%2Fteams%2FTurtleData%2FShared%20Documents&viewpath=%2Fteams%2FTurtleData%2FShared%20Documents%2FForms%2FAllItems%2Easpx&viewid=6a7b751c%2Da55b%2D43df%2Da2d3%2D19bc9080710a&id=%2Fteams%2FTurtleData%2FShared%20Documents%2FGeneral>`_)
 
 Admin: Prepare field packs
 ==========================
@@ -43,8 +42,8 @@ For each team collecting data at the same time:
 * Turtle track ID guide
 * Predator track ID guide
 
-Admin: Create offline background imagery
-========================================
+GIS: Create offline background imagery
+======================================
 * Use latest QGIS (3.18 or higher)
 * Areas: Save `WAStD Areas <https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&format=json&limit=1000>`_ as areas.geojson, drag and drop into QGIS
 * Add ArcGIS Map Service as title "ESRI World Imagery" and with URL
@@ -70,8 +69,8 @@ Example log:
   'QUALITY' : 75, 'TILE_FORMAT' : 0, 'ZOOM_MAX' : 20, 'ZOOM_MIN' : 5 }
 
 
-Admin: First time setup
-=======================
+Admin: Setup tablets
+====================
 
 These steps have to be run once per new tablet.
 They are the minimum steps to provide a production ready data collection tablet.
@@ -110,76 +109,12 @@ App settings:
   data collection form (image, time, location).
 * Google Photos: open app, settings, auto-backup all photos in "high quality" (about 2MP) to Google Photos.
 
-Setup the tablet after a season
--------------------------------
-This section is for administrators updating tablets for a new field season.
+ODK Collect settings:
 
-* Fully charge tablets
-* Turn on tablets, apply all available system updates:
-  * Settings > Display > Font size and style: set to 5 of 8; timeout: 2 minutes
-  * Settings > General Management > Date and time: automatic date and time, time zone GMT+08 (Perth), 24 hour format
-  * Settings > Software update > Check for updates, download and install (or follow notifications).
-  * There can be multiple big (>1GB, new Android version) and smaller (~200MB security patches) updates. Repeat until latest versions.
-* Google Play: update all apps, ODK Collect first.
-* Scan new QR code as and when instructed.
-* Delete and re-create all home screen widgets. (Could be safe to keep in 2021, pending testing)
-
-
-Setup the tablet - before field season
---------------------------------------
-This protocol should be followed before a tablet is taken out into the field when coming out of storage.
-
-* Charge fully, turn on.
-* Settings > System update > check for update > install if any available. Repeat until up to date.
-* Google Play > My apps > Update all.
-
-Admin: Prepare a length reference pre survey
---------------------------------------------
-For situations where the data collector is unsure of the turtle species causing a given turtle track,
-the data collection form offers to take a picture of the track for later review and species identification.
-Having a length reference in the photos helps the reviewer immensely with species identification.
-
-A simple and cheap length reference for tricky turtle tracks
-can be fabricated from a  foldable wooden rule (2m folding into 20cm segments),
-marked with goloured duct tape ($5 per roll) at the minimum and maximum track width
-for each turtle species expected to occur in the surveyed area.
-
-Tomato stick prototype:
-
-.. image:: https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
-    :target: https://photos.app.goo.gl/lc6kjZMTrPlpjCoG3
-    :alt: Turtle track length reference
-
-The reference can be simplified, e.g. if only green and flatback turtles are expected,
-a stick can be cut to the maximum flatback track width, with one marking for the
-minimum green track width.
-
-Additional length markings, e.g. intervals of 10cm, can be added as required.
-
-This method is preferred over the use of a measuring tape as length reference in
-photos of tracks of unknown species for the following reasons:
-
-* A rigid rule will lay on top of sand ripples,
-  while measuring tape will distort measurement by bending over them.
-* The coloured, centimeter-wide markings on the rule will be visible at lower image quality
-  than the millimeter-wide centimeter markings on a measuring tape.
-* The coloured tape wraps around the rule and is thereby visible from any angle,
-  while tape can flip over and hide its markings.
-* By reducing length references to relevant lengths, cognitive load is taken off the data collector.
-  One can simply read off the markings which species' track width range a given track falls into.
-
-Prepare one length reference per data collection team.
-
-Setup ODK Collect from QR code
-------------------------------
-Open ODK Collect.
-
-* Settings (three dots top right) > Configure via QR code
-  (if asked, grant ODK Collect required permissions to access camera)
-* Update the username to a real name, e.g. "Florian Mayer".
-  Initially, use the coordintator's (your) name.
+* Settings > Configure via QR code (if asked, grant ODK Collect required permissions to access camera)
+* Update the username to a real name, e.g. "Florian Mayer". Initially, use the coordintator's (your) name.
 * Set camera to medium / 2048px
-* set guidance to yes - collapsed
+* Set guidance to yes - collapsed
 
 Distribute offline background imagery
 -------------------------------------
@@ -191,9 +126,48 @@ Distribute offline background imagery
 * Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
   select the correct reference layer (named after your location).
 
+Update the tablet before a season
+---------------------------------
+This section is for administrators updating tablets for a new field season.
+
+* Fully charge tablets.
+* Verify that the system time is correct.
+* Turn on tablets, apply all available system updates: Settings > Software update > Check for updates, download and install (or follow notifications).
+* There can be multiple big (>1GB, new Android version) and smaller (~200MB security patches) updates. Repeat until latest versions.
+* Google Play: update all apps, ODK Collect first.
+* Scan new QR code into ODK Collect as and when instructed.
+* Test all home screen widgets. Delete and re-create any stale widgets linking to incorrect forms.
+
+Admin: Prepare a length reference pre survey
+--------------------------------------------
+For situations where the data collector is unsure of the turtle species causing a given turtle track,
+the data collection form offers to take a picture of the track for later review and species identification.
+Having a length reference in the photos helps the reviewer immensely with species identification.
+
+A simple and cheap length reference for tricky turtle tracks can be fabricated from a  foldable wooden rule (2m folding into 20cm segments),
+marked with coloured duct tape ($5 per roll) at the minimum and maximum track width for each turtle species expected to occur in the surveyed area.
+
+The reference can be simplified, e.g. if only green and flatback turtles are expected,
+a stick can be cut to the maximum flatback track width, with one marking for the
+minimum green track width.
+
+Additional length markings, e.g. intervals of 10cm, can be added as required.
+
+This method is preferred over the use of a measuring tape as length reference in
+photos of tracks of unknown species for the following reasons:
+
+* A rigid rule will lay on top of sand ripples, while measuring tape will distort measurement by bending over them.
+* The coloured, centimeter-wide markings on the rule will be visible at lower image quality
+  than the millimeter-wide centimeter markings on a measuring tape.
+* The coloured tape wraps around the rule and is thereby visible from any angle, while tape can flip over and hide its markings.
+* By reducing length references to relevant lengths, cognitive load is taken off the data collector.
+  One can simply read off the markings which species' track width range a given track falls into.
+
+Prepare one length reference per data collection team.
+
 Providing training
 ==================
-Run all data collectors through the chapter "Data collection training" until they
+Run all data collectors through the chapter "Data collection protocols and training" until they
 are competent and comfortable with the hardware and software.
 
 Training day: mixed real and duplicated training data
@@ -218,10 +192,7 @@ The admin should be intimately acquainted with this chapter.
 
 Admin: Review data
 ==================
-**Note** In 2018, we have configured ODK Collect to never leave forms unfinalized,
-so this section applies up to season 2017-18.
-
-"Edit Saved Form" lists all unfinalized forms pending review and species / nest ID:
+"Edit Saved Form" lists all unfinalized forms pending review.
 
 * Tap once to view read-only, tap again to edit
 * review and update data (e.g. species ID)
@@ -266,74 +237,9 @@ ODK Collect uploads data to the specified ODK Central clearinghouse.
 The data is ingested daily into WAStD.
 
 Once data is ingested into WAStD, it is visible and accessible to DBCA staff at
-`https://wastd.dpaw.wa.gov.au/ <https://wastd.dpaw.wa.gov.au/>`_.
-See chapter "Data consumers" for working examples.
+`https://wastd.dbca.wa.gov.au/ <https://wastd.dbca.wa.gov.au/>`_.
+See chapter "Data consumers" for working examples to access data in WAStD.
 
 The final analysis exports all data through the WAStD API using the R package
 `etlTurtleNesting <https://github.com/dbca-wa/etlTurtleNesting>`_ and publishes
-reports and data products to SharePoint.
-
-Admin: Update forms
-===================
-From time to time the forms might be updated.
-In this case, all data collection admins (and volunteers using their private devices) will be notified,
-and each of their tablets need to run through the following steps:
-
-* ODK Collect > Get blank form > (the new forms should already be selected, e.g. Track or Treat 0.36) > Get selected forms
-* ODK Collect > Delete saved form > Blank forms > select the old form (e.g. Track or Treat 0.35) > delete
-* Once all tablets are updated, notify the maintainer (Florian Mayer).
-* Once all devices are updated, the old form version can be retired.
-
-Admin: Form versions and change log
-===================================
-Always use the latest available version of a form.
-Some older forms may be available for download - this is to allow import to WAStD.
-
-Process to upgrade:
-
-* Send all unsent saved forms
-* Delete saved form > both Saved forms / Blank forms: Delete all
-* Get blank form > get latest version of each form
-
-Site Visit Start
-----------------
-* 0.3 (2018-08-01) Capture team
-* 0.2 (2017-11-16) Auto-capture device ID
-
-Site Visit End
---------------
-* 0.2 (2017-11-16) Auto-capture device ID
-
-Turtle Track or Nest / "Track or Treat"
----------------------------------------
-* 0.54 Renamed ToT 0.53 to clarify its purpose. Re-worded the nest tag section.
-* 0.53 Add predator "cat"
-* 0.52
-* 0.51 (2018-01-29) Bug fix: cloud cover now includes 0 (clear sky)
-* 0.50 (2018-01-27) Add informative prompts for missing required fields, simplify bearing measurements (hand-held compass only)
-* 0.49 (2018-01-18)
-* 0.47 (2017-12-05)
-* 0.46 (2017-12-01)
-* 0.45 (2017-11-19)
-* 0.44 (2017-10-31) Add fan angles (early version)
-...
-* Turtle Track or Nest 1.3 (2021 in prep) Logger: add deployment status
-
-Turtle Tagging
---------------
-* 0.3 (2018-01-29) Manual location capture uses map widget (needs to be online to show background maps)
-* 0.2 (2018-01-29) Allow capturing location as "here" or manual entry (if not on site) - animal first encountered at, nest location
-
-
-Predator or Disturbance / "Fox Sake"
-------------------------------------
-* Predator or Dustirbance 1.0 - renamed FS0.4 to make form name more palatable to a broader audience.
-* 0.4 Add predator "cat"
-* 0.3
-
-Marine Wildlife Incident
-------------------------
-* 0.6 (2018-01-29) Allow capturing location as "here" or manual entry (if not on site)
-
-
-
+reports and data products to SharePoint folders shared with the intended audiences.
