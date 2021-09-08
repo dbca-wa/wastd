@@ -41,7 +41,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Data collection" href="data_collection_overview.html" />
+    <link rel="next" title="Data collection development" href="data_collection_overview.html" />
     <link rel="prev" title="Data collection administrators" href="data_collection_admin.html" /> 
 </head>
 
@@ -111,7 +111,21 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#marine-wildlife-incident-turtle-stranding">Marine Wildlife Incident (Turtle Stranding)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#turtle-tagging">Turtle Tagging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#turtle-tagging">Turtle Tagging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#assumptions">Assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#form-workflow">Form workflow</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#prepare-devices-for-tagging">Prepare devices for tagging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#early-in-day">Early in day</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#checking-out-tablets">Checking out tablets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#in-situ-tagging-night">In situ: Tagging night</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#next-morning">Next morning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#after-import-and-qa">After import and QA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#minimum-odk-record">Minimum ODK record</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backfill-paper-to-odk">Backfill paper to ODK</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#training-beach">Training beach</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#training-walk-through">Training walk-through</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pre-survey">0 Pre survey</a></li>
@@ -134,7 +148,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data_collection_overview.html">Data collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection_overview.html">Data collection development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_entry.html">Data entry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_qa.html">Data QA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_consumers.html">Data consumers</a></li>
@@ -214,9 +228,11 @@
   <div class="section" id="data-collection-protocols-and-training">
 <span id="data-collection-training"></span><h1>Data collection protocols and training<a class="headerlink" href="#data-collection-protocols-and-training" title="Permalink to this headline">¶</a></h1>
 <p>This chapter provides the training resources for prospective data collectors.</p>
+<p>Tasks covered:</p>
 <ul class="simple">
-<li><p>Hardware: Android devices (tablets, phablets, phones), current default: Samsung Tab A 8”</p></li>
-<li><p>Software: ODK Collect</p></li>
+<li><p>Prepare devices pre survey as a data collector</p></li>
+<li><p>Protocols for data capture, form by form</p></li>
+<li><p>Training beach: <a class="reference internal" href="#dct-training-beach"><span class="std std-ref">Training beach</span></a></p></li>
 </ul>
 <div class="section" id="preparing-a-device-pre-survey">
 <span id="dct-pre-survey"></span><h2>Preparing a device pre survey<a class="headerlink" href="#preparing-a-device-pre-survey" title="Permalink to this headline">¶</a></h2>
@@ -574,9 +590,126 @@ time, and it preserves valuable and volatile information.</p>
 <li><p>If there are more tags or samples than the form provides for, there is a repeat group to add the rest coming later.</p></li>
 <li><p>Biopsy location provides identifiable mark (biopsy scar) to help reconstruct turtle identities.</p></li>
 </ul>
+<div class="section" id="assumptions">
+<h3>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Minimal ODK record is good enough if taken just before or right after tagging</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>auto-time close enough</p></li>
+<li><p>location able to capture next to nest</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Minimal ODK record links to datasheet via datasheet ID</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Datasheet ID can be hand-written on datasheet or pre-allocated and printed on sticker</p></li>
+<li><p>Datasheet ID is ephemeral and does not need to be unique beyond field team</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>Reasons for not backfilling form directly after tagging:</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>other turtles need tagging right now</p></li>
+<li><p>dark night, preserve night vision</p></li>
+<li><p>rain, can’t use tablet</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>Backfilling of paper datasheet happens in ODK Collect. The goal is to reproduce the written data on the paper datasheet faithfully.</p></li>
+<li><p>QA happens after import into WAStD, assisted by dedicated QA reports.</p></li>
+</ol>
+</div>
+<div class="section" id="form-workflow">
+<h3>Form workflow<a class="headerlink" href="#form-workflow" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="prepare-devices-for-tagging">
+<h4>Prepare devices for tagging<a class="headerlink" href="#prepare-devices-for-tagging" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="early-in-day">
+<h4>Early in day<a class="headerlink" href="#early-in-day" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple">
+<li><p>Ensure tablet is fully charged</p></li>
+</ol>
+</div>
+<div class="section" id="checking-out-tablets">
+<h4>Checking out tablets<a class="headerlink" href="#checking-out-tablets" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple" start="2">
+<li><p>Do a Soundcheck - Update username</p></li>
+<li><p>Turn off auto-send for tagging. You can only edit finalized forms while they are not yet uploaded.</p></li>
+</ol>
+</div>
+<div class="section" id="in-situ-tagging-night">
+<h4>In situ: Tagging night<a class="headerlink" href="#in-situ-tagging-night" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple" start="4">
+<li><p>Site Visit Start when on site. Exactly one SVS per site and date.</p></li>
+<li><p>Turtle Tagging for tagged turtles, Turtle Track or Nest for missed turtles. Backfill forms if time and brain space allow.</p></li>
+<li><p>Site Visit End when finishing up for the night.</p></li>
+</ol>
+<p>Tagging modes:</p>
+<ol class="arabic simple">
+<li><p>Turtle encountered while nesting.</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>MinODK while egg laying (waiting phase)</p></li>
+<li><p>tagging on paper during hot phase.</p></li>
+<li><p>Backfill when possible. Don’t bother with datasheet photo.</p></li>
+<li><p>If backfilling during night, leave unfinalized.</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Turtle encountered while returning to water.</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Tagging on paper (hot phase)</p></li>
+<li><p>capture MinODK record in situ once turtle is gone</p></li>
+<li><p>backfill if time permits</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>ODK unavailable.</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>All data on paper. GPS in handheld.</p></li>
+<li><p>Backfill and choose data capture mode “New record”.</p></li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="next-morning">
+<h4>Next morning<a class="headerlink" href="#next-morning" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple" start="7">
+<li><p>Backfill ODK: Go through “Edit saved forms”, open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).</p></li>
+<li><p>Send finalized forms. Leave tablets in “manual upload mode”.</p></li>
+<li><p>Enter data into WAMTRAM.</p></li>
+</ol>
+</div>
+<div class="section" id="after-import-and-qa">
+<h4>After import and QA<a class="headerlink" href="#after-import-and-qa" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple" start="9">
+<li><p>WAStD: QA typos. Mark changed records as “curated” to prevent data loss. QA reports will assist finding records that need review. We will learn from QA and improve QA helpers this season.</p></li>
+</ol>
+</div>
+<div class="section" id="minimum-odk-record">
+<h4>Minimum ODK record<a class="headerlink" href="#minimum-odk-record" title="Permalink to this headline">¶</a></h4>
+<p>Minimum record in ODK form “Turtle Tagging” with a nest location, timestamp, the username, and datasheet ID.
+Save form as “non finalized” and name after datasheet ID.</p>
+</div>
+<div class="section" id="backfill-paper-to-odk">
+<h4>Backfill paper to ODK<a class="headerlink" href="#backfill-paper-to-odk" title="Permalink to this headline">¶</a></h4>
+<p>Backfill the ODK record from the paper datasheet.
+Find record in “Edit saved forms”, choose data capture mode “continue here”, once light allows photograph paper datasheet, save as finalized. Let record upload.</p>
+</div>
+</div>
 </div>
 <div class="section" id="training-beach">
-<h2>Training beach<a class="headerlink" href="#training-beach" title="Permalink to this headline">¶</a></h2>
+<span id="dct-training-beach"></span><h2>Training beach<a class="headerlink" href="#training-beach" title="Permalink to this headline">¶</a></h2>
 <p>Welcome to the training beach! Let’s apply the protocols to a (nearly realistic)
 data collection scenario.</p>
 <p>You’ll need:</p>
@@ -745,7 +878,7 @@ unusal environmental conditions.</p></li>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="data_collection_overview.html" class="btn btn-neutral float-right" title="Data collection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="data_collection_overview.html" class="btn btn-neutral float-right" title="Data collection development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="data_collection_admin.html" class="btn btn-neutral float-left" title="Data collection administrators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

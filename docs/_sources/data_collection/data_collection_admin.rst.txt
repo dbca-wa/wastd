@@ -26,7 +26,7 @@ Admin: Getting started
 ======================
 * Admin's computer: set Chrome or Firefox as default browser
 * Bookmark WAStD
-* Bookmark the data shares (`DBCA Turtle Data<https://dpaw.sharepoint.com/teams/TurtleData/Shared%20Documents/Forms/AllItems.aspx?newTargetListUrl=%2Fteams%2FTurtleData%2FShared%20Documents&viewpath=%2Fteams%2FTurtleData%2FShared%20Documents%2FForms%2FAllItems%2Easpx&viewid=6a7b751c%2Da55b%2D43df%2Da2d3%2D19bc9080710a&id=%2Fteams%2FTurtleData%2FShared%20Documents%2FGeneral>`_)
+* Bookmark the data shares (`DBCA Turtle Data <https://dpaw.sharepoint.com/teams/TurtleData/Shared%20Documents/Forms/AllItems.aspx?newTargetListUrl=%2Fteams%2FTurtleData%2FShared%20Documents&viewpath=%2Fteams%2FTurtleData%2FShared%20Documents%2FForms%2FAllItems%2Easpx&viewid=6a7b751c%2Da55b%2D43df%2Da2d3%2D19bc9080710a&id=%2Fteams%2FTurtleData%2FShared%20Documents%2FGeneral>`_)
 
 Admin: Prepare field packs
 ==========================
@@ -79,19 +79,35 @@ Setup the tablet - first time
 -----------------------------
 This protocol should be followed before a tablet is taken out into the field when set up fresh.
 
-* Start fully charged, plug into charger to lengthen screen timeout
+* Start fully charged.
 * Language: English / Australia
-* Check out some info to get started: select all
+* Check out some info to get started: select EULA, privacy policy, leave diagnostic and marketing off.
 * Wifi: do not use DBCA's Wongi, use guest.dbca.wa.gov.au.
 * Checking for updates: wait out.
 * Copy apps and data: don't.
 * Sign into a work-only Google account - all tablets handed out from turtle program are linked to wa.turtles@gmail.com.
   If you are not Florian Mayer, use your own work-only Google account.
-* Google assistant: no thanks
+* Google assistant: More > No thanks
 * Google services: untick "help improve..." options. Keep "Back up apps etc" and "Location services" option.
 * Skip screen lock.
-* Skip creating a Lenovo/Samsung account. The "Start using your new device" button is hidden under the keyboard. Press "Back" to minimize keyboard.
+* Skip creating a vendor (Samsung) account. Finish.
 * Update Android apps if prompted and address any notifications.
+* Let the system ste itself up, this can take a few minutes.
+
+Home screen:
+
+* Delete all widgets from the home screen.
+* Make the task bar contain: Camera, Google Photos, Google Play Store, Settings. Delete others shortcuts.
+
+App settings:
+
+* Camera: Open app, enable location tags, so that all photos are geo-referenced with
+  the coordinates they were taken at. This turns the camera into a generic
+  data collection form (image, time, location).
+* Google Photos: open app, settings, auto-backup all photos in "high quality" (about 2MP) to Google Photos.
+* Google Play: Install ODK Collect. Add ODK Collect shortcut to home screen top left.
+* Settings > Software update > Download and install. Repeat until updated to latest. This step can take a while.
+
 
 Device settings:
 
@@ -102,12 +118,7 @@ Device settings:
 * Keyboard: Whenever the keyboard is open, tap the settings cogwheel and resize it at the uper edge to be as large as possible. Increase font size too.
 * General Management > About Tablet: update device name to shortcode (e.g. NTP01), get serial number for the tablet register `<https://dbcawa.atlassian.net/wiki/spaces/TG/pages/896827488/Tablet+register>`_.
 
-App settings:
 
-* Camera: Open app, enable location tags, so that all photos are geo-referenced with
-  the coordinates they were taken at. This turns the camera into a generic
-  data collection form (image, time, location).
-* Google Photos: open app, settings, auto-backup all photos in "high quality" (about 2MP) to Google Photos.
 
 ODK Collect settings:
 
@@ -138,7 +149,7 @@ This section is for administrators updating tablets for a new field season.
 * Scan new QR code into ODK Collect as and when instructed.
 * Test all home screen widgets. Delete and re-create any stale widgets linking to incorrect forms.
 
-Admin: Prepare a length reference pre survey
+Prepare a length reference pre survey
 --------------------------------------------
 For situations where the data collector is unsure of the turtle species causing a given turtle track,
 the data collection form offers to take a picture of the track for later review and species identification.
@@ -171,7 +182,7 @@ Run all data collectors through the chapter "Data collection protocols and train
 are competent and comfortable with the hardware and software.
 
 Training day: mixed real and duplicated training data
-=====================================================
+-----------------------------------------------------
 Sometimes, training and production surveys coincide.
 One tablet captures real data, multiple other tablets capture the same data in duplicate.
 Enumerators must train real data capture, but afterwards we want to be able to delete duplicates.
@@ -195,8 +206,8 @@ Admin: Review data
 "Edit Saved Form" lists all unfinalized forms pending review.
 
 * Tap once to view read-only, tap again to edit
-* review and update data (e.g. species ID)
-* mark as finalized and save.
+* Review and update data (e.g. species ID)
+* Mark as finalized and save.
 
 Delete unwanted repeating groups:
 
@@ -223,13 +234,10 @@ Review each form and "save as finalized".
 When WiFi is not available daily, the admin needs to backup data by downloading
 it manually and keeping the downloaded data safe (multiple copies over separate
 storage media). With the mobile device connected and "MTP file transfer" enabled,
-ODK data is located in internal storage in ``odk/instances``.
+ODK data is located in internal storage in ``/Android/data/org.odk.collect.android/``.
 Each form will be stored in a separate folder, containing both the filled in form
 as XML file, and all related pictures and media.
 
-Simplest backup: periodically take a copy of ``odk/instances``.
-If data upload works at the end, no further steps have to be taken and the copy of
-``odk/instances`` can be archived.
 
 Where's the data now?
 =====================
