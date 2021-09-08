@@ -1,8 +1,8 @@
-===============
-Data collection
-===============
+===========================
+Data collection development
+===========================
 
-This chapter provides an entrypoint to all documentation on the data collection process.
+This chapter provides information for developers of data collection forms and protocols.
 
 Are you a volunteer or staff data collector?
 All you need to know is written at :ref:`data-collection-training`,
