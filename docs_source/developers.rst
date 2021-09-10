@@ -1,6 +1,7 @@
-=======================
+.. _dev-docs:
+***********************
 Developer documentation
-=======================
+***********************
 
 This chapter is targetted at developers and those who would like to understand
 the underlying data model.
@@ -40,7 +41,6 @@ WAStD can add new instances of ``Observation``.
 
 
 .. _data-model:
-
 Data model
 ==========
 WAStD is designed to handle biological

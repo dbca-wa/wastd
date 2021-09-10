@@ -93,7 +93,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection protocols and training</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_overview.html">Data collection development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_development.html">Data collection development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_entry.html">Data entry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
@@ -106,7 +106,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#observationgroup">ObservationGroup</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#data-model">Data model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Data model</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-wastd.observations.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.models</span></code> Module</a></li>
 </ul>
 </li>
@@ -120,12 +120,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-wastd.users.admin"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.users.admin</span></code> Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-wastd.users.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.users.views</span></code> Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#wastd-observations-app"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations</span></code> app</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-wastd.observations.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-wastd.observations.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.views</span></code> Module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#project-delivery-ticking-the-boxes">Project delivery: ticking the boxes</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#project-delivery-ticking-the-boxes">Project delivery: ticking the boxes</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#wa-strandings-and-wa-sea-turtles">WA Strandings and WA Sea Turtles</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#observations">Observations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#users">Users</a></li>
@@ -234,8 +234,8 @@ WAStD can add new instances of <code class="docutils literal notranslate"><span 
 </ul>
 </div>
 </div>
-<div class="section" id="data-model">
-<span id="id1"></span><h2>Data model<a class="headerlink" href="#data-model" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h2>Data model<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>WAStD is designed to handle biological
 observations of any kind which happen during an encounter.</p>
 <p>Both Encounters and Observations are polymorphic (database table inheritance)
@@ -8713,11 +8713,8 @@ adopt all Encounters from all duplicate surveys, and adjust its duration.</p>
 <dd><p>Import all available ODK-Aggregate forms.</p>
 </dd></dl>
 
-</div>
-</div>
-</div>
 <div class="section" id="project-delivery-ticking-the-boxes">
-<h1>Project delivery: ticking the boxes<a class="headerlink" href="#project-delivery-ticking-the-boxes" title="Permalink to this headline">¶</a></h1>
+<h4>Project delivery: ticking the boxes<a class="headerlink" href="#project-delivery-ticking-the-boxes" title="Permalink to this headline">¶</a></h4>
 <p>This chapter closes the development circle by pairing functional requirements with
 corresponding functional, unit and view tests.
 The tests are documented inline with the requirements they cover; the documentation
@@ -8755,6 +8752,9 @@ Ideally, all requirements from the detailed requirements analysis find their cou
 </dl>
 </li>
 </ul>
+</div>
+</div>
+</div>
 <div class="section" id="wa-strandings-and-wa-sea-turtles">
 <h2>WA Strandings and WA Sea Turtles<a class="headerlink" href="#wa-strandings-and-wa-sea-turtles" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="observations">

@@ -1,10 +1,26 @@
-=======
+.. _dq-qa:
+*******
 Data QA
-=======
-This section addresses the following steps:
+*******
 
-Proofreading
-------------
+This chapter contains
+
+* an explanation of QA levels and how WAStD audits QA decisions: (:ref:`dq-qa-levels`),
+* the places where QA operators interact with data (:ref:`dq-qa-links`), and
+* the protocols for data QA (:ref:`dq-qa-protocols`).
+
+.. _dq-qa-levels:
+QA levels
+=========
+WAStD keeps track of trust in the veracity of records as QA levels.
+The QA levels and transitions between them are discussed next.
+
+New
+---
+Manually entered as well as automatically imported records are marked as "new".
+
+Proofreading: new > proofread
+-----------------------------
 A literate data QA operator can proofread data by simply comparing attached files
 to the information present.
 If errors are found, data can be updated - WAStD will retain the edit history.
@@ -13,40 +29,67 @@ Once the record is deemed "Proofread", the QA operator clicks the transition
 This step can be reverted by clicking the transition "Require Proofreading Encounter".
 WAStD will keep an audit log of each transition.
 
-Curating data
--------------
+Curating data: new/proofread > curated
+--------------------------------------
 A subject matter expert can review records and e.g. confirm species identification.
 Once the expert is satisfied that the record represents accurately the case as
 evident from attached pictures, data sheet and communications records, the transition
 "Curate Encounter" will mark the encounter as "curated".
-The transition can be reversed with "Flag Encounter".
 
-Data release
-------------
+Curated records are not overwritten by data imports.
+Curated records are considered "accepted" but sensitive records.
+
+
+Flagging for review: curated > flagged
+--------------------------------------
+Curated records can be flagged for review. These records require another look by a
+subject matter expert, and then can either be "curated" or "rejected".
+
+Reject: flagged > rejected
+--------------------------
+Records can be marked as untrustworthy and irrecoverable by rejecting them.
+
+Data release: curated > published
+---------------------------------
 A qualified operator can authorise data release (mark records
 as "publication ready") or embargo data (to prevent publication).
 
 The transition "Publish Encounter" will mark the record as ready to be "published", but not
-actually release information to the general public. The flag serves simply to
-mark a record as "ready to publish".
-This transition can be reversed with "Embargo Encounter", which will push the record
-back to "curated".
+actually release information to the general public.
+This QA level serves simply to mark a record as "ready to publish".
+This transition can be reversed with "Embargo Encounter", which will push the record back to "curated".
 
-QA levels
-==========
-What does "new", "proofread", and "curated" mean and do? Two things: It primarily protects human edits to records from repeated data imports, which may skip or update existing but unchanged ("new") records. It furthermore shows the confidence we have in the record's completeness, correctness, and consistency.
-
-However, the majority of records don't require any QA edits, and for now remain "new".
+QA log
+------
+The majority of records don't require any QA edits, and for now remain "new".
 We could but do not yet batch-curate existing records (per season and locality) after QA by the respective data custodian.
 Reports currently include records of all QA levels.
 A log of QA is kept on the `Confluence Wiki <https://dbcawa.atlassian.net/wiki/spaces/TG/pages/932184080/Turtle+Nesting+Data+QA+log>`_.
 
-Productivity tips
-=================
-* Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving. * Close tabs by middle-click on tab header or Ctrl+w.
-* Collapse WAStD form sections by clicking on the blue header, e.g. collapse "Encounter".
-* "Curate" includes saving the record. No need to "Save and continue editing".
+.. _dq-qa-links:
+QA entrypoints
+==============
 
+The main entrypoint for QA are the reports and data products which are disseminated through file shares.
+In 2021, these are SharePoint shares, containing dated folders with the daily full data snapshots and QA products.
+They contain:
+
+* ROOKERY.html - a top level interactive report which explains and visualises the data exports. The report also contains QA shortlists. Review and follow instructions within.
+* ROOKERY/.csv - a folder named after the respective rookery with all raw and processed data exports, most of them as CSV.
+* qa_users.html - a QA report on user mapping. Review and follow instructions within.
+* qa_sites.html - a QA report on site boundaries. Review and follow instructions within.
+
+Individual QA sections contain links to specific pages in WAStD (or a specific combination of filters), together with a detailed protocol.
+
+Productivity tips
+-----------------
+* Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving.
+* Close tabs by middle-click on tab header or Ctrl+w.
+* In the WAStD data curation portal:
+  * Collapse WAStD form sections by clicking on the blue header, e.g. collapse "Encounter".
+  * "Curate" includes saving the record. No need to "Save and continue editing".
+
+.. _dq-qa-protocols:
 Users
 =====
 
@@ -100,6 +143,8 @@ Menu > Users > Transfer data.
 On success, a diagnostic message and the profile of the new user will be shown.
 If the new user has a lot of data to their name, the user detail page will load a bit slower.
 
+The reports list all users who have submitted data, and offers links for each to transfer data to another user in case the user was incorrectly mapped.
+
 Surveys
 =======
 Data flow of surveys
@@ -128,8 +173,9 @@ QA operators (coordinators) have to:
 
 Flag training surveys
 ---------------------
-Surveys can be marked as training surveys by unticking the "production" checkbox.
-This allows to exclude training data from analysis.
+Surveys can be marked as training surveys by unticking the "production" checkbox in the data curation portal.
+Training surveys are excluded from analysis.
+Marking a survey as training does not change the linked encounters.
 
 Remember to "curate" an edited record to protect it from being overwritten with the original data.
 
