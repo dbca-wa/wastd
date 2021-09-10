@@ -1,6 +1,7 @@
-===============
+.. _data-collectors:
+***************
 Data collectors
-===============
+***************
 
 NOTE this chapter has been split up (content duplicated) into the data collection chapters for admins and collectors.
 

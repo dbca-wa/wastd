@@ -1,8 +1,8 @@
-.. _data-collection-training:
+.. _dc-protocols:
 
-======================================
+**************************************
 Data collection protocols and training
-======================================
+**************************************
 
 This chapter provides the training resources for prospective data collectors.
 
@@ -65,15 +65,22 @@ Device checkin Kimberley - Anna Plains
 * Make sure all tablets are switched off.
 * Connect tablets to solar powered battery pack or to backup battery packs.
 
-TODO Device locations Karratha WPTP
------------------------------------
+Devices Karratha WPTP
+---------------------
+* Maintained by WPTP
+* Two devices in locked box at Yacht Club Wickham for Cape Lambert
+* Two devices in locked box at DBCA Karratha for Cleaverille
+* Two spares at DBCA Karratha
 
-TODO link to field kit
+Devices Rosemary Island
+-----------------------
+* Six devices live at DBCA Karratha and are taken on field trips to Rosemary Island.
 
-Collecting turtle data
-======================
 
-This section runs through all possible scenarios of turtle data collection.
+Turtle Nesting Census
+=====================
+
+This section runs through all possible scenarios of using the form Turtle Track or Nest.
 The data collector should already be trained to recognise species from tracks, as well as
 identify turtle nests and body pits.
 
@@ -83,7 +90,7 @@ Data collection protocol overview
 Marine wildlife incidents, such as turtle strandings, are always recorded on a case-by-case basis.
 Tracks can be recorded individually (preferred) or tallied over beach sections.
 
-* Every device must be updated with the main data collector's name.
+* Every device must be updated with the main data collector's name as username.
 * All site visits are started with a ``Site Visit Start``
 * *Nest* counts: walking in a straight line along the high water mark, each
   uptrack is followed to its apex, where the presence or absence of a nest
@@ -106,6 +113,22 @@ counts can be modified:
   the available survey time. However, individual track counts (*nest* or *speed run*)
   are preferred.
 * All site visits are ended with a ``Site Visit End``. You **should** take a photo.
+
+Protocol Morning Track count
+----------------------------
+* Soundcheck before leaving camp and WiFi
+* SVS once per site and day
+* Track or Nest / Dist or Pred / MWI as encountered
+* SVE once per site and day
+
+Protocol Night Tagging
+----------------------
+* Soundcheck before leaving camp and WiFi, set tablets to night mode and dark ODK theme
+* SVS once per site and day
+* Track or Nest for each missed turtle
+* Paper datasheet for each tagged turtle (THV/DEL: ODK form Turtle Tagging)
+* SVE once per site and day
+
 
 Track count work flow
 ---------------------
@@ -487,7 +510,7 @@ Training walk-through
 * Never save using the floppy symbol.
 * Never back out with "back" key and "save form".
 * The only valid way out of a form is to swipe right until "save and exit" is reached.
-* Training data should be recorded either outside of nesting beaches, or use "Hatchback turtle".
+* Training data should be recorded either outside of nesting beaches, or use "Hatchback turtle", or with tablets set to not auto-upload and the trainer deleting the submissions before sending.
 
 0 Pre survey
 ^^^^^^^^^^^^

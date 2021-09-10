@@ -1,8 +1,8 @@
 .. _data-consumers:
 
-==============
+**************
 Data consumers
-==============
+**************
 
 This chapter addresses data consumers.
 

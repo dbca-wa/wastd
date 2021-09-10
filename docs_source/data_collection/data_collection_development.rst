@@ -1,6 +1,8 @@
-===========================
+.. _dc-dev:
+
+***************************
 Data collection development
-===========================
+***************************
 
 This chapter provides information for developers of data collection forms and protocols.
 

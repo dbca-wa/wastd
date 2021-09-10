@@ -120,7 +120,7 @@ What is where
 
    data_collection/data_collection_admin
    data_collection/data_collection_training
-   data_collection/data_collection_overview
+   data_collection/data_collection_development
    data_entry
    data_qa
    data_consumers

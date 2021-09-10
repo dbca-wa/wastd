@@ -1,6 +1,7 @@
-=============
+.. _data-entry:
+**********
 Data entry
-=============
+**********
 This chapter addresses data curators, who enter, proofread and curate data from sources like paper datasheets and email.
 
 WAStD's data model is built around the concept of an AnimalEncounter, which is

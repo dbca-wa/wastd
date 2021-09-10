@@ -1,6 +1,7 @@
-=======================
+.. _app-maintainers:
+***********************
 Application maintainers
-=======================
+***********************
 This chapter addresses the maintainers of WAStD.
 
 Release
