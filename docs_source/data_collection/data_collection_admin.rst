@@ -19,7 +19,7 @@ Quick notes:
 
 * It's worth to bring each tablet to WiFi or a phone hotspot after each data capture day. If that's not possible, it's worth downloading each tablet's data onto a laptop each day. (e.g. at Bungelup camp).
 * It's unadvisable to send out tablets with unsubmitted data to a new data capture campaign.
-* It's worth to replace any tablet with signs of impending hardware failure such as cracked screens, bulging batteries, or unusually long start-up times with a fresh tablet. The hardware failure rate depends highly on how devices are treated by end users (100% loss in some places where tablets are transported unprotected in a backpack together with hammers and metal stakes - unsurprisingly - to 2 out of 20 tablets lost over 3 years at Ningaloo)
+* It's worth to replace any tablet with signs of impending hardware failure such as cracked screens, bulging batteries, or unusually long start-up times with a fresh tablet. The hardware failure rate depends highly on how devices are treated by end users (compare 100% loss in some places where tablets are transported unprotected in a backpack together with hammers and metal stakes - unsurprisingly - to only 2 out of 20 tablets lost over 3 years at Ningaloo)
 * It's worth to have two fully set up spare devices ready to go and procure a new device immediately each time an old one is retired.
 
 Admin: Getting started
@@ -47,16 +47,18 @@ GIS: Create offline background imagery
 This step is executed by a GIS trained operator whenever site boundaries in WAStD are updated or sites are added.
 
 * Use latest QGIS (3.18 or higher)
-* Areas: Save `WAStD Areas <https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&format=json&limit=1000>`_ as areas.geojson, drag and drop into QGIS
+* Areas: Save `WAStD Areas <https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&format=json&limit=1000>`_
+  as areas.geojson, drag and drop into QGIS
 * Add ArcGIS Map Service as title "ESRI World Imagery" and with URL
-  https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer
+  ``https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer``
 * Add "High Resolution 30cm imagery" and zoom to target location (e.g. Thevenard Island)
 * Change Project CRS to WGS84 (EPSG:4326)
 * Open QGIS Processing Toolbox > Raster tools > Generate XYZ tiles (MBTiles)
 * Run with settings:
+
   * Extent: draw on map
   * DPI 96
-  * Zoom max 20, min 5. Figure out max zoom vs max avail zoom of ESRI imagery.
+  * Zoom max 19, min 0. Figure out max zoom vs max avail zoom of ESRI imagery.
   * Format png
   * save to file (e.g. THV.mbtiles) with extension ``.mbtiles``
 * Repeat for each program's location and distribute resulting files to local coordinators.
@@ -64,11 +66,12 @@ This step is executed by a GIS trained operator whenever site boundaries in WASt
 Example log:
 
   Algorithm 'Generate XYZ tiles (MBTiles)' starting…
+
   Input parameters:
   { 'BACKGROUND_COLOR' : QColor(0, 0, 0, 0), 'DPI' : 96,
   'EXTENT' : '113.488658367,114.279178912,-22.808838676,-21.702109913 [EPSG:4326]',
   'METATILESIZE' : 4, 'OUTPUT_FILE' : '/home/florianm/projects/GIS/NIN.mbtiles',
-  'QUALITY' : 75, 'TILE_FORMAT' : 0, 'ZOOM_MAX' : 20, 'ZOOM_MIN' : 5 }
+  'QUALITY' : 75, 'TILE_FORMAT' : 0, 'ZOOM_MAX' : 19, 'ZOOM_MIN' : 0 }
 
 The resulting ``.mbtiles`` files are distributed to the data collection admins in charge of maintaining devices,
 who then distribute the updated ``.mbtiles`` files onto each of their devices.
@@ -91,12 +94,12 @@ This protocol should be followed before a tablet is taken out into the field whe
 * Skip screen lock.
 * Skip creating a vendor (Samsung) account. Finish.
 * Update Android apps if prompted and address any notifications.
-* Let the system ste itself up, this can take a few minutes.
+* Let the system set itself up, this can take a few minutes.
 
 Home screen:
 
 * Delete all widgets from the home screen.
-* Make the task bar contain: Camera, Google Photos, Google Play Store, Settings. Delete others shortcuts.
+* Make the task bar contain in this order: Camera, Google Photos, Google Play Store, Settings. Delete other shortcuts.
 
 App settings:
 
@@ -251,3 +254,6 @@ and chapter :ref:`dq-qa` for a full guidance on QA protocols.
 The final analysis exports all data through the WAStD API using the R package
 `etlTurtleNesting <https://github.com/dbca-wa/etlTurtleNesting>`_ and publishes
 reports and data products to SharePoint folders shared with the intended audiences.
+
+The SharePoint folders correspond to Teams groups "TurtleData" and others.
+You will be invited to these groups if you are permitted to access the data.

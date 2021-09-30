@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Django = "==3.1.12"
+Django = "==3.1.13"
 django-extensions = ">=3.1.1"
 django-adminactions = "*"
 djangorestframework = "*"
@@ -62,7 +62,7 @@ django-phonenumber-field = "*"
 django-mptt = "==0.11.0"
 django-tables2 = "*"
 django-export-download = "*"
-Pillow = ">=7.1.0"
+Pillow = ">=8.3.2"
 psycopg2-binary = "==2.8.6"
 unicode-slugify = "*"
 django-autoslug = "*"
