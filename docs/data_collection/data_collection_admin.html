@@ -201,7 +201,7 @@ The admins (regional turtle monitoring program coordinators) form a bridge betwe
 <ul class="simple">
 <li><p>It’s worth to bring each tablet to WiFi or a phone hotspot after each data capture day. If that’s not possible, it’s worth downloading each tablet’s data onto a laptop each day. (e.g. at Bungelup camp).</p></li>
 <li><p>It’s unadvisable to send out tablets with unsubmitted data to a new data capture campaign.</p></li>
-<li><p>It’s worth to replace any tablet with signs of impending hardware failure such as cracked screens, bulging batteries, or unusually long start-up times with a fresh tablet. The hardware failure rate depends highly on how devices are treated by end users (100% loss in some places where tablets are transported unprotected in a backpack together with hammers and metal stakes - unsurprisingly - to 2 out of 20 tablets lost over 3 years at Ningaloo)</p></li>
+<li><p>It’s worth to replace any tablet with signs of impending hardware failure such as cracked screens, bulging batteries, or unusually long start-up times with a fresh tablet. The hardware failure rate depends highly on how devices are treated by end users (compare 100% loss in some places where tablets are transported unprotected in a backpack together with hammers and metal stakes - unsurprisingly - to only 2 out of 20 tablets lost over 3 years at Ningaloo)</p></li>
 <li><p>It’s worth to have two fully set up spare devices ready to go and procure a new device immediately each time an old one is retired.</p></li>
 </ul>
 <div class="section" id="admin-getting-started">
@@ -232,28 +232,32 @@ The admins (regional turtle monitoring program coordinators) form a bridge betwe
 <p>This step is executed by a GIS trained operator whenever site boundaries in WAStD are updated or sites are added.</p>
 <ul class="simple">
 <li><p>Use latest QGIS (3.18 or higher)</p></li>
-<li><p>Areas: Save <a class="reference external" href="https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&amp;format=json&amp;limit=1000">WAStD Areas</a> as areas.geojson, drag and drop into QGIS</p></li>
+<li><p>Areas: Save <a class="reference external" href="https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&amp;format=json&amp;limit=1000">WAStD Areas</a>
+as areas.geojson, drag and drop into QGIS</p></li>
 <li><p>Add ArcGIS Map Service as title “ESRI World Imagery” and with URL
-<a class="reference external" href="https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer">https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</a></p></li>
+<code class="docutils literal notranslate"><span class="pre">https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</span></code></p></li>
 <li><p>Add “High Resolution 30cm imagery” and zoom to target location (e.g. Thevenard Island)</p></li>
 <li><p>Change Project CRS to WGS84 (EPSG:4326)</p></li>
 <li><p>Open QGIS Processing Toolbox &gt; Raster tools &gt; Generate XYZ tiles (MBTiles)</p></li>
-<li><p>Run with settings:
-* Extent: draw on map
-* DPI 96
-* Zoom max 20, min 5. Figure out max zoom vs max avail zoom of ESRI imagery.
-* Format png
-* save to file (e.g. THV.mbtiles) with extension <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code></p></li>
+<li><p>Run with settings:</p>
+<ul>
+<li><p>Extent: draw on map</p></li>
+<li><p>DPI 96</p></li>
+<li><p>Zoom max 19, min 0. Figure out max zoom vs max avail zoom of ESRI imagery.</p></li>
+<li><p>Format png</p></li>
+<li><p>save to file (e.g. THV.mbtiles) with extension <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code></p></li>
+</ul>
+</li>
 <li><p>Repeat for each program’s location and distribute resulting files to local coordinators.</p></li>
 </ul>
 <p>Example log:</p>
 <blockquote>
-<div><p>Algorithm ‘Generate XYZ tiles (MBTiles)’ starting…
-Input parameters:
+<div><p>Algorithm ‘Generate XYZ tiles (MBTiles)’ starting…</p>
+<p>Input parameters:
 { ‘BACKGROUND_COLOR’ : QColor(0, 0, 0, 0), ‘DPI’ : 96,
 ‘EXTENT’ : ‘113.488658367,114.279178912,-22.808838676,-21.702109913 [EPSG:4326]’,
 ‘METATILESIZE’ : 4, ‘OUTPUT_FILE’ : ‘/home/florianm/projects/GIS/NIN.mbtiles’,
-‘QUALITY’ : 75, ‘TILE_FORMAT’ : 0, ‘ZOOM_MAX’ : 20, ‘ZOOM_MIN’ : 5 }</p>
+‘QUALITY’ : 75, ‘TILE_FORMAT’ : 0, ‘ZOOM_MAX’ : 19, ‘ZOOM_MIN’ : 0 }</p>
 </div></blockquote>
 <p>The resulting <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code> files are distributed to the data collection admins in charge of maintaining devices,
 who then distribute the updated <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code> files onto each of their devices.</p>
@@ -275,12 +279,12 @@ If you are not Florian Mayer, use your own work-only Google account.</p></li>
 <li><p>Skip screen lock.</p></li>
 <li><p>Skip creating a vendor (Samsung) account. Finish.</p></li>
 <li><p>Update Android apps if prompted and address any notifications.</p></li>
-<li><p>Let the system ste itself up, this can take a few minutes.</p></li>
+<li><p>Let the system set itself up, this can take a few minutes.</p></li>
 </ul>
 <p>Home screen:</p>
 <ul class="simple">
 <li><p>Delete all widgets from the home screen.</p></li>
-<li><p>Make the task bar contain: Camera, Google Photos, Google Play Store, Settings. Delete others shortcuts.</p></li>
+<li><p>Make the task bar contain in this order: Camera, Google Photos, Google Play Store, Settings. Delete other shortcuts.</p></li>
 </ul>
 <p>App settings:</p>
 <ul class="simple">
@@ -428,6 +432,8 @@ and chapter <span class="xref std std-ref">dq-qa</span> for a full guidance on Q
 <p>The final analysis exports all data through the WAStD API using the R package
 <a class="reference external" href="https://github.com/dbca-wa/etlTurtleNesting">etlTurtleNesting</a> and publishes
 reports and data products to SharePoint folders shared with the intended audiences.</p>
+<p>The SharePoint folders correspond to Teams groups “TurtleData” and others.
+You will be invited to these groups if you are permitted to access the data.</p>
 </div>
 </div>
 
