@@ -39,7 +39,7 @@ diff-match-patch==20200713
 distlib==0.3.0
 distro==1.4.0
 dj-static==0.0.6
-Django==3.1.12
+Django==3.1.13
 django-adminactions==1.13.0
 django-ajax-selects==1.9.1
 django-allauth==0.45.0
