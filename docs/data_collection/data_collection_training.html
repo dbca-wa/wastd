@@ -1,77 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Data collection protocols and training &mdash; WAStD 0.53.2 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data collection development" href="data_collection_development.html" />
     <link rel="prev" title="Data collection administrators" href="data_collection_admin.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> WAStD
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 0.53
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,18 +39,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data collection protocols and training</a><ul>
@@ -116,6 +65,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#marine-wildlife-incident-turtle-stranding">Marine Wildlife Incident (Turtle Stranding)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#turtle-tagging">Turtle Tagging</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#assumptions">Assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#minimal-viable-record">Minimal viable record</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#form-workflow">Form workflow</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#prepare-devices-for-tagging">Prepare devices for tagging</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#early-in-day">Early in day</a></li>
@@ -143,6 +93,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#signs-of-disturbance-or-predation">9 Signs of disturbance or predation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dead-turtle">10 Dead turtle</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#a-noteworthy-find">11 A noteworthy find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#turtle-nesting">12 Turtle (nesting)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#survey-end">12 Survey end</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#return-device">13 Return device</a></li>
 </ul>
@@ -162,73 +113,32 @@
 <li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">WAStD</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Data collection protocols and training</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/data_collection/data_collection_training.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="data-collection-protocols-and-training">
-<span id="dc-protocols"></span><h1>Data collection protocols and training<a class="headerlink" href="#data-collection-protocols-and-training" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="data-collection-protocols-and-training">
+<span id="dc-protocols"></span><h1>Data collection protocols and training<a class="headerlink" href="#data-collection-protocols-and-training" title="Permalink to this headline"></a></h1>
 <p>This chapter provides the training resources for prospective data collectors.</p>
 <p>Tasks covered:</p>
 <ul class="simple">
@@ -236,8 +146,8 @@
 <li><p>Protocols for data capture, form by form</p></li>
 <li><p>Training beach: <a class="reference internal" href="#dct-training-beach"><span class="std std-ref">Training beach</span></a></p></li>
 </ul>
-<div class="section" id="preparing-a-device-pre-survey">
-<span id="dct-pre-survey"></span><h2>Preparing a device pre survey<a class="headerlink" href="#preparing-a-device-pre-survey" title="Permalink to this headline">¶</a></h2>
+<section id="preparing-a-device-pre-survey">
+<span id="dct-pre-survey"></span><h2>Preparing a device pre survey<a class="headerlink" href="#preparing-a-device-pre-survey" title="Permalink to this headline"></a></h2>
 <p>Run through this section every time before heading out to collect data.
 Ideally, the admin handing out the Android device will double-check these settings
 together with the data collector.</p>
@@ -264,63 +174,66 @@ exact spelling would be greatly appreciated.
 Exact spelling includes capitalisation, interpunctuation and whitespace.
 E.g., the username <cite>stephen_king</cite> is not correct if spelled <cite>Stephen_King</cite>,
 <cite>StephenK</cite>, <cite>stephen king</cite>, <cite>stephen-king</cite> or <cite>stephenking</cite>.</p>
-<div class="section" id="device-checkout-broome-cable-beach">
-<h3>Device checkout Broome - Cable Beach<a class="headerlink" href="#device-checkout-broome-cable-beach" title="Permalink to this headline">¶</a></h3>
+<section id="device-checkout-broome-cable-beach">
+<h3>Device checkout Broome - Cable Beach<a class="headerlink" href="#device-checkout-broome-cable-beach" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>There are six tablets (and one hotspot providing WiFi to the tablets) on a charger.</p></li>
 <li><p>Disconnect the tablets from the charger.</p></li>
 <li><p>Turn one on (to collect data), one off (as backup).</p></li>
 <li><p>Take the tablets and the collection backpack out.</p></li>
 </ul>
-</div>
-<div class="section" id="device-checkin-broome-cable-beach">
-<h3>Device checkin Broome - Cable Beach<a class="headerlink" href="#device-checkin-broome-cable-beach" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="device-checkin-broome-cable-beach">
+<h3>Device checkin Broome - Cable Beach<a class="headerlink" href="#device-checkin-broome-cable-beach" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Deposit the collection backpack.</p></li>
 <li><p>Connect all tablets to the charger.</p></li>
 <li><p>Any tablets with data on them should be kept running.</p></li>
 <li><p>Any tablets which weren’t used at all can be kept powered off.</p></li>
 </ul>
-</div>
-<div class="section" id="device-checkout-kimberley-anna-plains">
-<h3>Device checkout Kimberley - Anna Plains<a class="headerlink" href="#device-checkout-kimberley-anna-plains" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="device-checkout-kimberley-anna-plains">
+<h3>Device checkout Kimberley - Anna Plains<a class="headerlink" href="#device-checkout-kimberley-anna-plains" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>There are four switched off tablets on power packs.</p></li>
 <li><p>Disconnect the tablets and take two for each data collection team.</p></li>
 <li><p>When at the data collection site, switch on one tablet, turn off WiFi, turn on GPS, connect to car charger (cigarette lighter socket).</p></li>
 <li><p>Switch off tablet after site visit.</p></li>
 </ul>
-</div>
-<div class="section" id="device-checkin-kimberley-anna-plains">
-<h3>Device checkin Kimberley - Anna Plains<a class="headerlink" href="#device-checkin-kimberley-anna-plains" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="device-checkin-kimberley-anna-plains">
+<h3>Device checkin Kimberley - Anna Plains<a class="headerlink" href="#device-checkin-kimberley-anna-plains" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Make sure all tablets are switched off.</p></li>
 <li><p>Connect tablets to solar powered battery pack or to backup battery packs.</p></li>
 </ul>
-</div>
-<div class="section" id="devices-karratha-wptp">
-<h3>Devices Karratha WPTP<a class="headerlink" href="#devices-karratha-wptp" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="devices-karratha-wptp">
+<h3>Devices Karratha WPTP<a class="headerlink" href="#devices-karratha-wptp" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Maintained by WPTP</p></li>
 <li><p>Two devices in locked box at Yacht Club Wickham for Cape Lambert</p></li>
 <li><p>Two devices in locked box at DBCA Karratha for Cleaverille</p></li>
 <li><p>Two spares at DBCA Karratha</p></li>
 </ul>
-</div>
-<div class="section" id="devices-rosemary-island">
-<h3>Devices Rosemary Island<a class="headerlink" href="#devices-rosemary-island" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="devices-rosemary-island">
+<h3>Devices Rosemary Island<a class="headerlink" href="#devices-rosemary-island" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Six devices live at DBCA Karratha and are taken on field trips to Rosemary Island.</p></li>
+<li><p>During turtle tagging, exactly one SVS (start of evening shift) and one SVE
+(end of morning or last shift) must be captured per beach and per night.</p></li>
+<li><p>Multiple tablets can capture data during that survey on that beach.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="turtle-nesting-census">
-<h2>Turtle Nesting Census<a class="headerlink" href="#turtle-nesting-census" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="turtle-nesting-census">
+<h2>Turtle Nesting Census<a class="headerlink" href="#turtle-nesting-census" title="Permalink to this headline"></a></h2>
 <p>This section runs through all possible scenarios of using the form Turtle Track or Nest.
 The data collector should already be trained to recognise species from tracks, as well as
 identify turtle nests and body pits.</p>
-<div class="section" id="data-collection-protocol-overview">
-<h3>Data collection protocol overview<a class="headerlink" href="#data-collection-protocol-overview" title="Permalink to this headline">¶</a></h3>
+<section id="data-collection-protocol-overview">
+<h3>Data collection protocol overview<a class="headerlink" href="#data-collection-protocol-overview" title="Permalink to this headline"></a></h3>
 <p>Marine wildlife incidents, such as turtle strandings, are always recorded on a case-by-case basis.
 Tracks can be recorded individually (preferred) or tallied over beach sections.</p>
 <ul class="simple">
@@ -348,18 +261,18 @@ the available survey time. However, individual track counts (<em>nest</em> or <e
 are preferred.</p></li>
 <li><p>All site visits are ended with a <code class="docutils literal notranslate"><span class="pre">Site</span> <span class="pre">Visit</span> <span class="pre">End</span></code>. You <strong>should</strong> take a photo.</p></li>
 </ul>
-</div>
-<div class="section" id="protocol-morning-track-count">
-<h3>Protocol Morning Track count<a class="headerlink" href="#protocol-morning-track-count" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="protocol-morning-track-count">
+<h3>Protocol Morning Track count<a class="headerlink" href="#protocol-morning-track-count" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Soundcheck before leaving camp and WiFi</p></li>
 <li><p>SVS once per site and day</p></li>
 <li><p>Track or Nest / Dist or Pred / MWI as encountered</p></li>
 <li><p>SVE once per site and day</p></li>
 </ul>
-</div>
-<div class="section" id="protocol-night-tagging">
-<h3>Protocol Night Tagging<a class="headerlink" href="#protocol-night-tagging" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="protocol-night-tagging">
+<h3>Protocol Night Tagging<a class="headerlink" href="#protocol-night-tagging" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Soundcheck before leaving camp and WiFi, set tablets to night mode and dark ODK theme</p></li>
 <li><p>SVS once per site and day</p></li>
@@ -367,13 +280,13 @@ are preferred.</p></li>
 <li><p>Paper datasheet for each tagged turtle (THV/DEL: ODK form Turtle Tagging)</p></li>
 <li><p>SVE once per site and day</p></li>
 </ul>
-</div>
-<div class="section" id="track-count-work-flow">
-<h3>Track count work flow<a class="headerlink" href="#track-count-work-flow" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="track-count-work-flow">
+<h3>Track count work flow<a class="headerlink" href="#track-count-work-flow" title="Permalink to this headline"></a></h3>
 <a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png"><img alt="Track Count work flow" src="https://www.lucidchart.com/publicSegments/view/14429a0a-bc5c-4bbb-8bd1-527294874920/image.png" /></a>
-</div>
-<div class="section" id="protocol-speed-run-track-count">
-<h3>Protocol “speed run” track count<a class="headerlink" href="#protocol-speed-run-track-count" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="protocol-speed-run-track-count">
+<h3>Protocol “speed run” track count<a class="headerlink" href="#protocol-speed-run-track-count" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Walk along the high water mark on the beach until you encounter either
 an unmarked inbound track (“uptrack”) or unmarked outbound hatchling tracks.</p></li>
@@ -421,9 +334,9 @@ This gives the field supervisors a chance to review and possibly determine speci
 <p>This form will take a trained operator about 13 taps and swipes over
 about 15 seconds plus the time to take a photo.</p>
 <p>Repeat for each track / nest.</p>
-</div>
-<div class="section" id="protocol-nest-counts">
-<h3>Protocol “nest counts”<a class="headerlink" href="#protocol-nest-counts" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="protocol-nest-counts">
+<h3>Protocol “nest counts”<a class="headerlink" href="#protocol-nest-counts" title="Permalink to this headline"></a></h3>
 <p>This protocol is the preferred protocol and includes the steps of “speed run”.</p>
 <p>Look for both tracks (crossing your path) and nests (may be inland).</p>
 <p><strong>Track</strong> same screen as uptrack up to photo of track. Resuming from track type:</p>
@@ -495,9 +408,9 @@ and barcode scanners can mistakenly OCR the logger ID (from plain text).</p></li
 </ul>
 <p><strong>Hatchling measurement</strong>
 Enter straight carapace length in mm, straight carapace width in mm and weight in grams.</p>
-</div>
-<div class="section" id="protocol-fan-angles">
-<h3>Protocol “fan angles”<a class="headerlink" href="#protocol-fan-angles" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="protocol-fan-angles">
+<h3>Protocol “fan angles”<a class="headerlink" href="#protocol-fan-angles" title="Permalink to this headline"></a></h3>
 <p>This protocol measures hatchling tracks. The operator will require a hand-held compass
 (and knowledge how to use it), a length reference (e.g. wooden folding ruler).</p>
 <p>If you come across hatchling tracks but cannot locate the nest they hatched from, ignore them and proceed the survey.</p>
@@ -575,10 +488,10 @@ take a picture of light source or general direction of source.</p></li>
 <p>You have reached the end of protocol “Fan angles”.
 Circle nest with your foot to mark as observed.
 Drag a line with your foot across the hatchling tracks above the high water mark.</p>
-</div>
-</div>
-<div class="section" id="marine-wildlife-incident-turtle-stranding">
-<span id="dct-stranding-report"></span><h2>Marine Wildlife Incident (Turtle Stranding)<a class="headerlink" href="#marine-wildlife-incident-turtle-stranding" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="marine-wildlife-incident-turtle-stranding">
+<span id="dct-stranding-report"></span><h2>Marine Wildlife Incident (Turtle Stranding)<a class="headerlink" href="#marine-wildlife-incident-turtle-stranding" title="Permalink to this headline"></a></h2>
 <p>Setup the device as described above and select the latest “Marine Wildlife Incident”
 form in “Get blank forms”.</p>
 <p>The expected work flow is:</p>
@@ -601,20 +514,21 @@ operator’s choice of available options.</p>
 <p>Although taking several photos next to a decomposing animal may pose an olfactory
 challenge, taking a photo is invaluable, in that it cannot be taken at a later
 time, and it preserves valuable and volatile information.</p>
-</div>
-<div class="section" id="turtle-tagging">
-<h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="turtle-tagging">
+<h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this headline"></a></h2>
 <p>Field coordinator tasks:</p>
 <ul class="simple">
 <li><p>Make sure tablets are set to not auto-upload.</p></li>
 <li><p>Have a volunteer number datasheets in consecutive numbers before handing them out into field packs.</p></li>
-<li><p>Make sure that paper datasheets are backfilled the next morning.</p></li>
+<li><p>Make sure that paper datasheets are backfilled the next morning. Take photos of Biopsy sample IDs.</p></li>
 <li><p>Coordinate with WAStD maintainer on data/QA/form issues if needed daily.</p></li>
 </ul>
 <p>Training focus:</p>
 <ul class="simple">
 <li><p>Handling of tablets: Only ever in your hand, in the neoprene sleeve, or on the charger. Mind sand and moisture. Keep the sleeve sand free.</p></li>
 <li><p>Explain: Form is squashed into minimal number of screens to streamline and make robust the data entry process at the cost of some repetition and some blank fields. Form handles both night time tagging and in-water turtle captures, the latter will have to suffer skipping some nest related fields in one screen.</p></li>
+<li><p>Data entry: voice to text works well for PIT and flipper tag numbers.</p></li>
 <li><p>Explain data capture modes. Practice backfilling. Point out guidance hint on data capture mode.</p></li>
 <li><p>Explain signed degrees.</p></li>
 <li><p>Explain: if no PIT tags, swipe past PIT screen.</p></li>
@@ -622,8 +536,8 @@ time, and it preserves valuable and volatile information.</p>
 <li><p>If there are more tags or samples than the form provides for, there is a repeat group to add the rest coming later.</p></li>
 <li><p>Biopsy location provides identifiable mark (biopsy scar) to help reconstruct turtle identities.</p></li>
 </ul>
-<div class="section" id="assumptions">
-<h3>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this headline">¶</a></h3>
+<section id="assumptions">
+<h3>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this headline"></a></h3>
 <ol class="arabic simple">
 <li><p>Minimal ODK record is good enough if taken just before or right after tagging</p></li>
 </ol>
@@ -656,27 +570,37 @@ time, and it preserves valuable and volatile information.</p>
 <li><p>Backfilling of paper datasheet happens in ODK Collect. The goal is to reproduce the written data on the paper datasheet faithfully.</p></li>
 <li><p>QA happens after import into WAStD, assisted by dedicated QA reports.</p></li>
 </ol>
-</div>
-<div class="section" id="form-workflow">
-<h3>Form workflow<a class="headerlink" href="#form-workflow" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="prepare-devices-for-tagging">
-<h4>Prepare devices for tagging<a class="headerlink" href="#prepare-devices-for-tagging" title="Permalink to this headline">¶</a></h4>
-</div>
-<div class="section" id="early-in-day">
-<h4>Early in day<a class="headerlink" href="#early-in-day" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="minimal-viable-record">
+<h3>Minimal viable record<a class="headerlink" href="#minimal-viable-record" title="Permalink to this headline"></a></h3>
+<p>The minimal viable record includes:</p>
+<ul class="simple">
+<li><p>Location and time of nesting</p></li>
+<li><p>PIT tags, flipper tags, biopsy, turtle details (species etc), datasheet photo.</p></li>
+</ul>
+<p>Even if other turtles are getting away without being processed,
+the minimal record needs to be taken for each processed turtle.</p>
+</section>
+<section id="form-workflow">
+<h3>Form workflow<a class="headerlink" href="#form-workflow" title="Permalink to this headline"></a></h3>
+<section id="prepare-devices-for-tagging">
+<h4>Prepare devices for tagging<a class="headerlink" href="#prepare-devices-for-tagging" title="Permalink to this headline"></a></h4>
+</section>
+<section id="early-in-day">
+<h4>Early in day<a class="headerlink" href="#early-in-day" title="Permalink to this headline"></a></h4>
 <ol class="arabic simple">
 <li><p>Ensure tablet is fully charged</p></li>
 </ol>
-</div>
-<div class="section" id="checking-out-tablets">
-<h4>Checking out tablets<a class="headerlink" href="#checking-out-tablets" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="checking-out-tablets">
+<h4>Checking out tablets<a class="headerlink" href="#checking-out-tablets" title="Permalink to this headline"></a></h4>
 <ol class="arabic simple" start="2">
 <li><p>Do a Soundcheck - Update username</p></li>
 <li><p>Turn off auto-send for tagging. You can only edit finalized forms while they are not yet uploaded.</p></li>
 </ol>
-</div>
-<div class="section" id="in-situ-tagging-night">
-<h4>In situ: Tagging night<a class="headerlink" href="#in-situ-tagging-night" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="in-situ-tagging-night">
+<h4>In situ: Tagging night<a class="headerlink" href="#in-situ-tagging-night" title="Permalink to this headline"></a></h4>
 <ol class="arabic simple" start="4">
 <li><p>Site Visit Start when on site. Exactly one SVS per site and date.</p></li>
 <li><p>Turtle Tagging for tagged turtles, Turtle Track or Nest for missed turtles. Backfill forms if time and brain space allow.</p></li>
@@ -713,35 +637,37 @@ time, and it preserves valuable and volatile information.</p>
 <li><p>Backfill and choose data capture mode “New record”.</p></li>
 </ol>
 </div></blockquote>
-</div>
-<div class="section" id="next-morning">
-<h4>Next morning<a class="headerlink" href="#next-morning" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="next-morning">
+<h4>Next morning<a class="headerlink" href="#next-morning" title="Permalink to this headline"></a></h4>
 <ol class="arabic simple" start="7">
+<li><p>Return tablets to charger, place datasheets and biopsy samples with respective tablet.
+The coordinator clearly labels the drop-off area with a sign saying “Drop off for tablets, datasheets, biopsy samples”.</p></li>
 <li><p>Backfill ODK: Go through “Edit saved forms”, open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).</p></li>
 <li><p>Send finalized forms. Leave tablets in “manual upload mode”.</p></li>
 <li><p>Enter data into WAMTRAM.</p></li>
 </ol>
-</div>
-<div class="section" id="after-import-and-qa">
-<h4>After import and QA<a class="headerlink" href="#after-import-and-qa" title="Permalink to this headline">¶</a></h4>
-<ol class="arabic simple" start="9">
+</section>
+<section id="after-import-and-qa">
+<h4>After import and QA<a class="headerlink" href="#after-import-and-qa" title="Permalink to this headline"></a></h4>
+<ol class="arabic simple" start="11">
 <li><p>WAStD: QA typos. Mark changed records as “curated” to prevent data loss. QA reports will assist finding records that need review. We will learn from QA and improve QA helpers this season.</p></li>
 </ol>
-</div>
-<div class="section" id="minimum-odk-record">
-<h4>Minimum ODK record<a class="headerlink" href="#minimum-odk-record" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="minimum-odk-record">
+<h4>Minimum ODK record<a class="headerlink" href="#minimum-odk-record" title="Permalink to this headline"></a></h4>
 <p>Minimum record in ODK form “Turtle Tagging” with a nest location, timestamp, the username, and datasheet ID.
 Save form as “non finalized” and name after datasheet ID.</p>
-</div>
-<div class="section" id="backfill-paper-to-odk">
-<h4>Backfill paper to ODK<a class="headerlink" href="#backfill-paper-to-odk" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="backfill-paper-to-odk">
+<h4>Backfill paper to ODK<a class="headerlink" href="#backfill-paper-to-odk" title="Permalink to this headline"></a></h4>
 <p>Backfill the ODK record from the paper datasheet.
 Find record in “Edit saved forms”, choose data capture mode “continue here”, once light allows photograph paper datasheet, save as finalized. Let record upload.</p>
-</div>
-</div>
-</div>
-<div class="section" id="training-beach">
-<span id="dct-training-beach"></span><h2>Training beach<a class="headerlink" href="#training-beach" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+</section>
+<section id="training-beach">
+<span id="dct-training-beach"></span><h2>Training beach<a class="headerlink" href="#training-beach" title="Permalink to this headline"></a></h2>
 <p>Welcome to the training beach! Let’s apply the protocols to a (nearly realistic)
 data collection scenario.</p>
 <p>You’ll need:</p>
@@ -754,8 +680,8 @@ data collection scenario.</p>
 <li><p>Collect as many records as you wish on any place outside the actual nesting beaches.</p></li>
 <li><p>Use the species “Hatchback turtle (Corolla corolla)” and any available options indicating training/testing when conducting training on an actual nesting beach.</p></li>
 </ul>
-<div class="section" id="training-walk-through">
-<h3>Training walk-through<a class="headerlink" href="#training-walk-through" title="Permalink to this headline">¶</a></h3>
+<section id="training-walk-through">
+<h3>Training walk-through<a class="headerlink" href="#training-walk-through" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Note on all forms: swipe right until done, leave “Mark as finalized” on, “Save and exit”.</p></li>
 <li><p>Never save using the floppy symbol.</p></li>
@@ -763,8 +689,8 @@ data collection scenario.</p>
 <li><p>The only valid way out of a form is to swipe right until “save and exit” is reached.</p></li>
 <li><p>Training data should be recorded either outside of nesting beaches, or use “Hatchback turtle”, or with tablets set to not auto-upload and the trainer deleting the submissions before sending.</p></li>
 </ul>
-<div class="section" id="pre-survey">
-<h4>0 Pre survey<a class="headerlink" href="#pre-survey" title="Permalink to this headline">¶</a></h4>
+<section id="pre-survey">
+<h4>0 Pre survey<a class="headerlink" href="#pre-survey" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Battery full?</p></li>
 <li><p>WiFi off (if saving battery)</p></li>
@@ -772,9 +698,9 @@ data collection scenario.</p>
 <li><p>Set your <strong>ODK Collect username</strong>:
 ODK Settings &gt; General Settings &gt; User and device identity &gt; Form metadata &gt; Username &gt; Your given name and surname, e.g. “Florian Mayer”.</p></li>
 </ul>
-</div>
-<div class="section" id="site-visit-start">
-<h4>1 Site visit start<a class="headerlink" href="#site-visit-start" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="site-visit-start">
+<h4>1 Site visit start<a class="headerlink" href="#site-visit-start" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Form “Site Visit Start” when “feet in the sand, eyes open”.</p></li>
 <li><p>Location: can be done anywhere on beach - feet in the sand.</p></li>
@@ -791,48 +717,48 @@ Omit your own name, as it already is recorded through the ODK username.</p></li>
 <li><p>Mention in comment if this is a training run, or if there were any
 unusal environmental conditions.</p></li>
 </ul>
-</div>
-<div class="section" id="fox-track">
-<h4>2 Fox track<a class="headerlink" href="#fox-track" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="fox-track">
+<h4>2 Fox track<a class="headerlink" href="#fox-track" title="Permalink to this headline"></a></h4>
 <p>Any disturbance or sign of predation.</p>
 <ul class="simple">
 <li><p>Fox sake</p></li>
 </ul>
-</div>
-<div class="section" id="track-without-nest">
-<h4>3 Track without nest<a class="headerlink" href="#track-without-nest" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="track-without-nest">
+<h4>3 Track without nest<a class="headerlink" href="#track-without-nest" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Track or Treat, track without nest</p></li>
 </ul>
-</div>
-<div class="section" id="track-with-nest">
-<h4>4 Track with nest<a class="headerlink" href="#track-with-nest" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="track-with-nest">
+<h4>4 Track with nest<a class="headerlink" href="#track-with-nest" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Track or Treat, track with nest</p></li>
 </ul>
-</div>
-<div class="section" id="track-unsure-if-nest">
-<h4>5 Track, unsure if nest<a class="headerlink" href="#track-unsure-if-nest" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="track-unsure-if-nest">
+<h4>5 Track, unsure if nest<a class="headerlink" href="#track-unsure-if-nest" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Track or Treat, track unsure if nest</p></li>
 </ul>
-</div>
-<div class="section" id="nest-without-track">
-<h4>6 Nest without track<a class="headerlink" href="#nest-without-track" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="nest-without-track">
+<h4>6 Nest without track<a class="headerlink" href="#nest-without-track" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Track or Treat, nest, unhatched, no track</p></li>
 </ul>
-</div>
-<div class="section" id="nest-without-track-predated">
-<h4>7 Nest without track, predated<a class="headerlink" href="#nest-without-track-predated" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="nest-without-track-predated">
+<h4>7 Nest without track, predated<a class="headerlink" href="#nest-without-track-predated" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Track or Treat, nest, unhatched, no track</p></li>
 <li><p>Disturbed or predated: yes</p></li>
 <li><p>Add new “Disturbance observation” group for each disturbance</p></li>
 </ul>
-</div>
-<div class="section" id="hatched-nest-predated">
-<h4>8 Hatched nest, predated<a class="headerlink" href="#hatched-nest-predated" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="hatched-nest-predated">
+<h4>8 Hatched nest, predated<a class="headerlink" href="#hatched-nest-predated" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Track or Treat, nest, hatched</p></li>
 <li><p>Disturbed or predated: yes</p></li>
@@ -846,21 +772,21 @@ unusal environmental conditions.</p></li>
 <li><p>Pretend we’ve found and measured a few hatchlings</p></li>
 <li><p>Pretend we’ve found and measured hatchling tracks (fan angles)</p></li>
 </ul>
-</div>
-<div class="section" id="signs-of-disturbance-or-predation">
-<h4>9 Signs of disturbance or predation<a class="headerlink" href="#signs-of-disturbance-or-predation" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="signs-of-disturbance-or-predation">
+<h4>9 Signs of disturbance or predation<a class="headerlink" href="#signs-of-disturbance-or-predation" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Fox sake: human-made disturbance (e.g. vehicle tracks)</p></li>
 </ul>
-</div>
-<div class="section" id="dead-turtle">
-<h4>10 Dead turtle<a class="headerlink" href="#dead-turtle" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="dead-turtle">
+<h4>10 Dead turtle<a class="headerlink" href="#dead-turtle" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Marine wildlife incident</p></li>
 </ul>
-</div>
-<div class="section" id="a-noteworthy-find">
-<h4>11 A noteworthy find<a class="headerlink" href="#a-noteworthy-find" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="a-noteworthy-find">
+<h4>11 A noteworthy find<a class="headerlink" href="#a-noteworthy-find" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Write on a whiteboard what we’re looking at and include as label</p></li>
 <li><p>Include wooden folding ruler as length reference</p></li>
@@ -869,9 +795,25 @@ unusal environmental conditions.</p></li>
 <li><p>Notify coordinators about noteworthy find</p></li>
 <li><p>“There should be a form for it, or it’s not what we’re looking for”</p></li>
 </ul>
-</div>
-<div class="section" id="survey-end">
-<h4>12 Survey end<a class="headerlink" href="#survey-end" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="turtle-nesting">
+<h4>12 Turtle (nesting)<a class="headerlink" href="#turtle-nesting" title="Permalink to this headline"></a></h4>
+<p>TODO: add tranining scenarios here for Turtle Tagging 3.0</p>
+<ul class="simple">
+<li><p>One turtle, enough time: full digital mode.</p></li>
+<li><p>One turtle, rushed, hybrid: Min ODK, paper, backfill.</p></li>
+<li><p>Pure paper. Backfill.</p></li>
+<li><p>Many turtles. What’s the minimal viable record?</p></li>
+</ul>
+<p>Training turtles:</p>
+<ul class="simple">
+<li><p>A minimal turtle - just minimal PIT and flipper tags.</p></li>
+<li><p>A turtle with one extra (biopsy, nest tag, damage, nest logger, etc.) - explain details for each group.</p></li>
+<li><p>A turtle “the works”.</p></li>
+</ul>
+</section>
+<section id="survey-end">
+<h4>12 Survey end<a class="headerlink" href="#survey-end" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Site visit end: “feet in the sand, eyes off”.</p></li>
 <li><p>Take a photo facing back towards surveyed area.</p></li>
@@ -879,9 +821,9 @@ unusal environmental conditions.</p></li>
 <li><p>Location: The end point can be taken anywhere on the just surveyed beach - “feet in the sand”.</p></li>
 <li><p>Time: <strong>must</strong> be taken when survey effort is ended - “eyes off”.</p></li>
 </ul>
-</div>
-<div class="section" id="return-device">
-<h4>13 Return device<a class="headerlink" href="#return-device" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="return-device">
+<h4>13 Return device<a class="headerlink" href="#return-device" title="Permalink to this headline"></a></h4>
 <p>Returning to an office (WiFi and wall power):</p>
 <ul class="simple">
 <li><p>GPS can stay on</p></li>
@@ -899,57 +841,48 @@ unusal environmental conditions.</p></li>
 <li><p>WiFi on</p></li>
 <li><p>Device stays on (so it can auto-upload data)</p></li>
 </ul>
-</div>
-</div>
-</div>
-</div>
+<p>Returning after tagging (THV, DEL: WiFi hotspot, wall power):</p>
+<ul class="simple">
+<li><p>Leave tablets at “no auto-upload”</p></li>
+<li><p>Backfill datasheets, proofread until happy</p></li>
+<li><p>“Send finalized forms”</p></li>
+<li><p>Await ingest to WAStD</p></li>
+<li><p>Review QA reports</p></li>
+</ul>
+</section>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="data_collection_development.html" class="btn btn-neutral float-right" title="Data collection development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="data_collection_admin.html" class="btn btn-neutral float-left" title="Data collection administrators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data_collection_development.html" class="btn btn-neutral float-right" title="Data collection development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2016-2020 DBCA.
-
-    </p>
+    <p>&#169; Copyright 2016-2020 DBCA.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
