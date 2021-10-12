@@ -1,77 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Data entry &mdash; WAStD 0.53.2 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Data QA" href="data_qa.html" />
     <link rel="prev" title="Data collection development" href="data_collection/data_collection_development.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> WAStD
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 0.53
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,18 +39,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection protocols and training</a></li>
@@ -137,73 +86,32 @@
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">WAStD</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Data entry</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/data_entry.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="id1">
-<h1>Data entry<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="id1">
+<h1>Data entry<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h1>
 <p>This chapter addresses data curators, who enter, proofread and curate data from sources like paper datasheets and email.</p>
 <p>WAStD’s data model is built around the concept of an AnimalEncounter, which is
 the physical encounter of an observer an an animal at one point in time and space,
@@ -222,13 +130,13 @@ The encounter can incur any range of additional observations of the species or c
 the location, or the surroundings.</p>
 <p>The following sections will instruct data curators how to enter data from
 supported data sources into WAStD.</p>
-<div class="section" id="turtle-tracks-or-nests">
-<h2>Turtle Tracks or Nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline">¶</a></h2>
+<section id="turtle-tracks-or-nests">
+<h2>Turtle Tracks or Nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline"></a></h2>
 <p>If data is not captured via the digital forms, it is still possible to enter data manually.</p>
 <p>With data curator access, open the [data curation portal](<a class="reference external" href="https://tsc.dbca.wa.gov.au/admin/">https://tsc.dbca.wa.gov.au/admin/</a>)
 and [add a new TurtleNestEncounter](<a class="reference external" href="https://tsc.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/">https://tsc.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/</a>).</p>
-<div class="section" id="section-encounter">
-<h3>Section “Encounter”<a class="headerlink" href="#section-encounter" title="Permalink to this headline">¶</a></h3>
+<section id="section-encounter">
+<h3>Section “Encounter”<a class="headerlink" href="#section-encounter" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Area: ignore, will be chosen based on location</p></li>
 <li><p>Surveyed site: ignore, will be chosen based on location</p></li>
@@ -253,26 +161,26 @@ and [add a new TurtleNestEncounter](<a class="reference external" href="https://
 <li><p>Data source: Direct entry or paper datasheet.</p></li>
 <li><p>Source ID: leave blank.</p></li>
 </ul>
-</div>
-<div class="section" id="section-nest">
-<h3>Section “Nest”<a class="headerlink" href="#section-nest" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="section-nest">
+<h3>Section “Nest”<a class="headerlink" href="#section-nest" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Enter data as per datasheet, then hit “Save and continue editing”.</p></li>
 <li><p>Note that source ID is now set, reflecting the data entered above.</p></li>
 <li><p>Review the “observed at” location and correct if necessary. Hand-written GPS coordinates are often wrong.</p></li>
 </ul>
-</div>
-<div class="section" id="section-media-attachments">
-<h3>Section “Media Attachments”<a class="headerlink" href="#section-media-attachments" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="section-media-attachments">
+<h3>Section “Media Attachments”<a class="headerlink" href="#section-media-attachments" title="Permalink to this headline"></a></h3>
 <p>“Add another” and upload the scanned datasheet (as PDF). “Save and continue editing”.</p>
-</div>
-<div class="section" id="other-sections">
-<h3>Other sections<a class="headerlink" href="#other-sections" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="other-sections">
+<h3>Other sections<a class="headerlink" href="#other-sections" title="Permalink to this headline"></a></h3>
 <p>Add as required. “Save and continue editing”.</p>
-</div>
-</div>
-<div class="section" id="turtle-strandings">
-<span id="itp-stranding-curation"></span><h2>Turtle Strandings<a class="headerlink" href="#turtle-strandings" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="turtle-strandings">
+<span id="itp-stranding-curation"></span><h2>Turtle Strandings<a class="headerlink" href="#turtle-strandings" title="Permalink to this headline"></a></h2>
 <p>Digitising a stranding record consists of five steps:</p>
 <ul class="simple">
 <li><p>Converting legacy files,</p></li>
@@ -282,8 +190,8 @@ record identifier (record ID),</p></li>
 <li><p>uploading the files to WAStD, and</p></li>
 <li><p>extracting remaining information from the files into WAStD.</p></li>
 </ul>
-<div class="section" id="convert-legacy-files">
-<h3>Convert legacy files<a class="headerlink" href="#convert-legacy-files" title="Permalink to this headline">¶</a></h3>
+<section id="convert-legacy-files">
+<h3>Convert legacy files<a class="headerlink" href="#convert-legacy-files" title="Permalink to this headline"></a></h3>
 <p>Reports of Turtle Strandings typically arrive as a mixture of files, which
 include:</p>
 <ul class="simple">
@@ -293,8 +201,8 @@ include:</p>
 </ul>
 <p>Convert all original files to non-proprietary formats, such as PDF, images,
 or plain text, separating duplicate information into a subfolder “duplicates”.</p>
-<div class="section" id="emails">
-<h4>Emails<a class="headerlink" href="#emails" title="Permalink to this headline">¶</a></h4>
+<section id="emails">
+<h4>Emails<a class="headerlink" href="#emails" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Emails saved as Outlook <em>.msg</em>: open with Outlook (requires Windows OS),
 save attachments (data sheet, images) separately, then save email as plain text.</p></li>
@@ -305,24 +213,24 @@ thread and redact content as follows:</p></li>
 <li><p>Delete blank lines within emails.</p></li>
 <li><p>Insert three blank lines between emails.</p></li>
 </ul>
-</div>
-<div class="section" id="printed-documents">
-<h4>Printed documents<a class="headerlink" href="#printed-documents" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="printed-documents">
+<h4>Printed documents<a class="headerlink" href="#printed-documents" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Paper forms: scan to PDF, make sure the quality is readable enough.</p></li>
 <li><p>Printed photos: scan to jpg, one file per photo.</p></li>
 </ul>
-</div>
-<div class="section" id="electronic-documents">
-<h4>Electronic documents<a class="headerlink" href="#electronic-documents" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="electronic-documents">
+<h4>Electronic documents<a class="headerlink" href="#electronic-documents" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>All documents need to be saved as txt (if plain text is sufficient) or PDF (if
 formatting is important).</p></li>
 <li><p>Save photos embedded in MS Word documents separately as jpg.</p></li>
 </ul>
-</div>
-<div class="section" id="photographs">
-<h4>Photographs<a class="headerlink" href="#photographs" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="photographs">
+<h4>Photographs<a class="headerlink" href="#photographs" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Switch on geotagging before taking phone pictures to include a GPS stamp in the
 image file metadata.</p></li>
@@ -342,10 +250,10 @@ image file metadata.</p></li>
 <li><p>all other documents as PDF,</p></li>
 <li><p>legacy versions in subfolder “duplicates”.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="wastd-minimal-record-and-identifier">
-<h3>WAStD minimal record and identifier<a class="headerlink" href="#wastd-minimal-record-and-identifier" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="wastd-minimal-record-and-identifier">
+<h3>WAStD minimal record and identifier<a class="headerlink" href="#wastd-minimal-record-and-identifier" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/">new AnimalEncounter</a>.</p></li>
 <li><p><strong>Observed at</strong> refers to the location of the encounter with the animal.</p></li>
@@ -372,9 +280,9 @@ This ID will be the link between paper forms, digital files and WAStD records.</
 and health, this auto-generated source ID will not be unique, and WAStD will
 show an error.
 In this case, make the source ID unique by appending a running number (e.g. <code class="docutils literal notranslate"><span class="pre">-1</span></code>).</p>
-</div>
-<div class="section" id="rename-legacy-files-using-wastd-record-identifier">
-<h3>Rename legacy files using WAStD record identifier<a class="headerlink" href="#rename-legacy-files-using-wastd-record-identifier" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="rename-legacy-files-using-wastd-record-identifier">
+<h3>Rename legacy files using WAStD record identifier<a class="headerlink" href="#rename-legacy-files-using-wastd-record-identifier" title="Permalink to this headline"></a></h3>
 <p>Now that we have a source ID, turn to the files for a moment.</p>
 <p>Store the original files (scanned data sheets, pictures, emails)
 in a new folder in a backed up location using WAStD’s auto-generated source ID
@@ -392,9 +300,9 @@ containing:</p></li>
 <p>This naming convention will ensure that each file can be associated with the
 corresponding record in WAStD even without the context of being attached to a
 WAStD record, or being located in an appropriately named folder.</p>
-</div>
-<div class="section" id="upload-files">
-<h3>Upload files<a class="headerlink" href="#upload-files" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="upload-files">
+<h3>Upload files<a class="headerlink" href="#upload-files" title="Permalink to this headline"></a></h3>
 <p>It is very important to rename the files <strong>before</strong> uploading them, in order to
 preserve the new filename (containing the source ID) in the uploaded file name.</p>
 <p>This is important, as downloaded files will only be identified by their filename.
@@ -411,9 +319,9 @@ in map popups, e.g.:</p>
 <li><p>photo total top</p></li>
 <li><p>photo head side</p></li>
 </ul>
-</div>
-<div class="section" id="information-extraction">
-<h3>Information extraction<a class="headerlink" href="#information-extraction" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="information-extraction">
+<h3>Information extraction<a class="headerlink" href="#information-extraction" title="Permalink to this headline"></a></h3>
 <p>Add subsequent sections if relevant information is given in the original
 data sheet or communication records:</p>
 <ul class="simple">
@@ -438,9 +346,9 @@ the tag).</p>
 <li><p>Physical Sample</p></li>
 <li><p>Other</p></li>
 </ul>
-</div>
-<div class="section" id="turtle-morphometric-observations">
-<h3>Turtle Morphometric Observations<a class="headerlink" href="#turtle-morphometric-observations" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="turtle-morphometric-observations">
+<h3>Turtle Morphometric Observations<a class="headerlink" href="#turtle-morphometric-observations" title="Permalink to this headline"></a></h3>
 <p>The measurement accuracy is set based on informed guesses:</p>
 <ul class="simple">
 <li><p>If the datasheet was filled in by a trained vet or core turtle staff, it’s to
@@ -459,9 +367,9 @@ handwriting.</p>
 <p>After adding these data to the Encounter, save the Encounter (twice to update
 the map popup) and refresh WAStD’s home page to see a summary as popup on the
 Encounter’s place marker.</p>
-</div>
-<div class="section" id="updating-an-existing-stranding-record">
-<h3>Updating an existing stranding record<a class="headerlink" href="#updating-an-existing-stranding-record" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="updating-an-existing-stranding-record">
+<h3>Updating an existing stranding record<a class="headerlink" href="#updating-an-existing-stranding-record" title="Permalink to this headline"></a></h3>
 <p>Place the new files into the new case folders (named after WAStD’s source ID for
 that record) following above defined file standards. Prefix the filenames with
 the source ID, then upload them to the corresponding record in WAStD.</p>
@@ -473,9 +381,9 @@ the new source ID. Lastly, rename and reupload all files to propagate the new so
 into filenames and file URLs.
 This extra step is extremely important to keep shared identifiers on files and
 electronic records in sync.</p>
-</div>
-<div class="section" id="outcome">
-<h3>Outcome<a class="headerlink" href="#outcome" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="outcome">
+<h3>Outcome<a class="headerlink" href="#outcome" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p><strong>Point of truth</strong> is the record in WAStD, which is the most comprehensive and most
 accessible source of information related to a stranding.</p></li>
@@ -483,10 +391,10 @@ accessible source of information related to a stranding.</p></li>
 in standard formats, following the source ID naming convention, and be uploaded
 precicely in the same version that is in the case folder.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="cetacean-strandings">
-<h2>Cetacean Strandings<a class="headerlink" href="#cetacean-strandings" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="cetacean-strandings">
+<h2>Cetacean Strandings<a class="headerlink" href="#cetacean-strandings" title="Permalink to this headline"></a></h2>
 <p>The data currently lives in another departmental Strandings database.</p>
 <p>Cetacean Stranding data (if they were entered into WAStD):</p>
 <ul class="simple">
@@ -495,9 +403,9 @@ precicely in the same version that is in the case folder.</p></li>
 <li><p>CetaceanMorphometricObservation (TODO)</p></li>
 <li><p>CetaceanDagameObservation (TODO)</p></li>
 </ul>
-</div>
-<div class="section" id="turtle-tagging">
-<h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="turtle-tagging">
+<h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this headline"></a></h2>
 <p>The production data currently live in WAMTRAM 2. Migration is underway.</p>
 <p>Turtle Tagging data:</p>
 <ul class="simple">
@@ -510,9 +418,9 @@ precicely in the same version that is in the case folder.</p></li>
 <li><p>Turtle Nest Observations</p></li>
 <li><p>Management Actions</p></li>
 </ul>
-</div>
-<div class="section" id="tag-returns">
-<h2>Tag returns<a class="headerlink" href="#tag-returns" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="tag-returns">
+<h2>Tag returns<a class="headerlink" href="#tag-returns" title="Permalink to this headline"></a></h2>
 <p>When TOs harvest and eat a tagged turtle, they return the tags to the Department.</p>
 <p>Tag Return data:</p>
 <ul class="simple">
@@ -521,9 +429,9 @@ precicely in the same version that is in the case folder.</p></li>
 </ul>
 <p>If the person returning the tag is not a departmental staff member, send them
 a “thank you” email including the known history of the animal.</p>
-</div>
-<div class="section" id="turtle-tracks">
-<h2>Turtle Tracks<a class="headerlink" href="#turtle-tracks" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="turtle-tracks">
+<h2>Turtle Tracks<a class="headerlink" href="#turtle-tracks" title="Permalink to this headline"></a></h2>
 <p>Turtle Track Tally data in WAStD:</p>
 <ul class="simple">
 <li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/">new (simple) Encounter</a>.</p></li>
@@ -537,9 +445,9 @@ a “thank you” email including the known history of the animal.</p>
 <li><p>Add MediaAttachments for each photo.</p></li>
 </ul>
 <p><strong>Note</strong> Data collected with mobile apps are ingested automatically.</p>
-</div>
-<div class="section" id="temperature-loggers">
-<h2>Temperature Loggers<a class="headerlink" href="#temperature-loggers" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="temperature-loggers">
+<h2>Temperature Loggers<a class="headerlink" href="#temperature-loggers" title="Permalink to this headline"></a></h2>
 <p>The following life cycle stages are supported for Hobo Temperature Loggers:</p>
 <ul class="simple">
 <li><p>programmed (with settings “start date” and “logging interval”)</p></li>
@@ -559,62 +467,45 @@ a “thank you” email including the known history of the animal.</p>
 <li><p>If logger was deployed, resighted, or retrieved, add one “Temperature logger deployment” section.</p></li>
 <li><p>If logger was downloaded, add one Media attachment for each downloaded file and attach the file.</p></li>
 </ul>
-</div>
-<div class="section" id="data-upload-from-odk">
-<h2>Data upload from ODK<a class="headerlink" href="#data-upload-from-odk" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="data-upload-from-odk">
+<h2>Data upload from ODK<a class="headerlink" href="#data-upload-from-odk" title="Permalink to this headline"></a></h2>
 <p>WAStD still supports the import of electronically captured data from ODK Aggregate.</p>
 <p>All electronically captured data from the newer ODK Central are imported in a scripted
 and automated process using the R package <a class="reference external" href="https://github.com/dbca-wa/etlTurtleNesting">etlTurtleNesting</a>.
 All data flow through the WAStD API.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="data_qa.html" class="btn btn-neutral float-right" title="Data QA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="data_collection/data_collection_development.html" class="btn btn-neutral float-left" title="Data collection development" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data_qa.html" class="btn btn-neutral float-right" title="Data QA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2016-2020 DBCA.
-
-    </p>
+    <p>&#169; Copyright 2016-2020 DBCA.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

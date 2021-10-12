@@ -75,6 +75,9 @@ Devices Karratha WPTP
 Devices Rosemary Island
 -----------------------
 * Six devices live at DBCA Karratha and are taken on field trips to Rosemary Island.
+* During turtle tagging, exactly one SVS (start of evening shift) and one SVE
+  (end of morning or last shift) must be captured per beach and per night.
+* Multiple tablets can capture data during that survey on that beach.
 
 
 Turtle Nesting Census
@@ -394,13 +397,14 @@ Field coordinator tasks:
 
 * Make sure tablets are set to not auto-upload.
 * Have a volunteer number datasheets in consecutive numbers before handing them out into field packs.
-* Make sure that paper datasheets are backfilled the next morning.
+* Make sure that paper datasheets are backfilled the next morning. Take photos of Biopsy sample IDs.
 * Coordinate with WAStD maintainer on data/QA/form issues if needed daily.
 
 Training focus:
 
 * Handling of tablets: Only ever in your hand, in the neoprene sleeve, or on the charger. Mind sand and moisture. Keep the sleeve sand free.
 * Explain: Form is squashed into minimal number of screens to streamline and make robust the data entry process at the cost of some repetition and some blank fields. Form handles both night time tagging and in-water turtle captures, the latter will have to suffer skipping some nest related fields in one screen.
+* Data entry: voice to text works well for PIT and flipper tag numbers.
 * Explain data capture modes. Practice backfilling. Point out guidance hint on data capture mode.
 * Explain signed degrees.
 * Explain: if no PIT tags, swipe past PIT screen.
@@ -423,6 +427,17 @@ Assumptions
 4. Backfilling of paper datasheet happens in ODK Collect. The goal is to reproduce the written data on the paper datasheet faithfully.
 5. QA happens after import into WAStD, assisted by dedicated QA reports.
 
+Minimal viable record
+----------------------
+The minimal viable record includes:
+
+* Location and time of nesting
+* PIT tags, flipper tags, biopsy, turtle details (species etc), datasheet photo.
+
+.. TODO turtle team to verify minimal viable record
+
+Even if other turtles are getting away without being processed,
+the minimal record needs to be taken for each processed turtle.
 
 
 Form workflow
@@ -462,16 +477,15 @@ Tagging modes:
 
 Next morning
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-7. Backfill ODK: Go through "Edit saved forms", open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).
-8. Send finalized forms. Leave tablets in "manual upload mode".
-9. Enter data into WAMTRAM.
+7. Return tablets to charger, place datasheets and biopsy samples with respective tablet.
+   The coordinator clearly labels the drop-off area with a sign saying "Drop off for tablets, datasheets, biopsy samples".
+8. Backfill ODK: Go through "Edit saved forms", open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).
+9. Send finalized forms. Leave tablets in "manual upload mode".
+10. Enter data into WAMTRAM.
 
 After import and QA
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-9. WAStD: QA typos. Mark changed records as "curated" to prevent data loss. QA reports will assist finding records that need review. We will learn from QA and improve QA helpers this season.
-
-
-
+11. WAStD: QA typos. Mark changed records as "curated" to prevent data loss. QA reports will assist finding records that need review. We will learn from QA and improve QA helpers this season.
 
 Minimum ODK record
 ^^^^^^^^^^^^^^^^^^
@@ -596,6 +610,24 @@ Depending on whether your program records these events:
 * Notify coordinators about noteworthy find
 * "There should be a form for it, or it's not what we're looking for"
 
+
+
+12 Turtle (nesting)
+^^^^^^^^^^^^^^^^^^^
+TODO: add tranining scenarios here for Turtle Tagging 3.0
+
+* One turtle, enough time: full digital mode.
+* One turtle, rushed, hybrid: Min ODK, paper, backfill.
+* Pure paper. Backfill.
+* Many turtles. What's the minimal viable record?
+
+Training turtles:
+
+* A minimal turtle - just minimal PIT and flipper tags.
+* A turtle with one extra (biopsy, nest tag, damage, nest logger, etc.) - explain details for each group.
+* A turtle "the works".
+
+
 12 Survey end
 ^^^^^^^^^^^^^
 * Site visit end: "feet in the sand, eyes off".
@@ -622,3 +654,11 @@ Returning to a deposit box (WiFi, portable battery):
 * GPS off
 * WiFi on
 * Device stays on (so it can auto-upload data)
+
+Returning after tagging (THV, DEL: WiFi hotspot, wall power):
+
+* Leave tablets at "no auto-upload"
+* Backfill datasheets, proofread until happy
+* "Send finalized forms"
+* Await ingest to WAStD
+* Review QA reports

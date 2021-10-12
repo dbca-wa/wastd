@@ -1,77 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Data collection development &mdash; WAStD 0.53.2 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data entry" href="../data_entry.html" />
     <link rel="prev" title="Data collection protocols and training" href="data_collection_training.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> WAStD
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 0.53
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,18 +39,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection_training.html">Data collection protocols and training</a></li>
@@ -143,73 +92,32 @@
 <li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">WAStD</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Data collection development</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/data_collection/data_collection_development.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="data-collection-development">
-<span id="dc-dev"></span><h1>Data collection development<a class="headerlink" href="#data-collection-development" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="data-collection-development">
+<span id="dc-dev"></span><h1>Data collection development<a class="headerlink" href="#data-collection-development" title="Permalink to this headline"></a></h1>
 <p>This chapter provides information for developers of data collection forms and protocols.</p>
 <p>Are you a volunteer or staff data collector?
 All you need to know is written at <span class="xref std std-ref">data-collection-training</span>,
@@ -218,8 +126,8 @@ but feel free to read more of this documentation.</p>
 (tablets), training data collectors, and uploading the data?
 Read <span class="xref std std-ref">data-collection-admin</span>.</p>
 <p>Are you a solution architect, developer or business analyst? Then read on.</p>
-<div class="section" id="solution-architecture-and-infrastructure">
-<h2>Solution architecture and infrastructure<a class="headerlink" href="#solution-architecture-and-infrastructure" title="Permalink to this headline">¶</a></h2>
+<section id="solution-architecture-and-infrastructure">
+<h2>Solution architecture and infrastructure<a class="headerlink" href="#solution-architecture-and-infrastructure" title="Permalink to this headline"></a></h2>
 <p>This section provides a condensed overview of the information management infrastructure behind our digital data collection process.</p>
 <ul class="simple">
 <li><p>Forms are built using the form builder software
@@ -249,14 +157,14 @@ from the collected data.</p></li>
 <p>The following diagram is also shown at <a class="reference internal" href="../business_analysts.html#dm-data-entry"><span class="std std-ref">IT processes along the Data life cycle</span></a>.</p>
 <a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png"><img alt="Turtle data flow, ideal state" src="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png" /></a>
 <a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png"><img alt="Turtle data flow, current state" src="https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png" /></a>
-</div>
-<div class="section" id="lessons-learnt-from-paper-based-field-data-collection">
-<span id="lessons-learnt-paper-based-data-capture"></span><h2>Lessons learnt from paper-based field data collection<a class="headerlink" href="#lessons-learnt-from-paper-based-field-data-collection" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="scenario-1-two-tags-applied-both-tags-recorded-incorrectly">
-<h3>Scenario 1: Two tags applied, both tags recorded incorrectly<a class="headerlink" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="lessons-learnt-from-paper-based-field-data-collection">
+<span id="lessons-learnt-paper-based-data-capture"></span><h2>Lessons learnt from paper-based field data collection<a class="headerlink" href="#lessons-learnt-from-paper-based-field-data-collection" title="Permalink to this headline"></a></h2>
+<section id="scenario-1-two-tags-applied-both-tags-recorded-incorrectly">
+<h3>Scenario 1: Two tags applied, both tags recorded incorrectly<a class="headerlink" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly" title="Permalink to this headline"></a></h3>
 <p>One turtle is encountered in two subsequent nights by two separate teams.</p>
-<div class="section" id="night-1">
-<h4>Night 1<a class="headerlink" href="#night-1" title="Permalink to this headline">¶</a></h4>
+<section id="night-1">
+<h4>Night 1<a class="headerlink" href="#night-1" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Data entry operators “Tim” and “Natalie” were in a rush, tagged turtle with tag “WB7326”, but
 recorded next tag “WB7330” on tag dispenser as “applied new”.</p></li>
@@ -268,9 +176,9 @@ for the package of the just applied tag “…755” and recorded “…470” i
 as “applied new”.</p></li>
 <li><p>Team 1 measure CCL</p></li>
 </ul>
-</div>
-<div class="section" id="night-2">
-<h4>Night 2<a class="headerlink" href="#night-2" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="night-2">
+<h4>Night 2<a class="headerlink" href="#night-2" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Second team “Spud” and “Coral” encounter the same turtle with left flipper tag</p></li>
 </ul>
@@ -282,9 +190,9 @@ as “applied new”.</p></li>
 <li><p>They apply and record another flipper tag “WB7384” on right flipper</p></li>
 <li><p>They measure CCL and CCW</p></li>
 </ul>
-</div>
-<div class="section" id="the-aftermath">
-<h4>The aftermath<a class="headerlink" href="#the-aftermath" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="the-aftermath">
+<h4>The aftermath<a class="headerlink" href="#the-aftermath" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Team leader “Spud” wants to lookup tag history “WB7326”, suspecting the turtle
 might originate from different nesting location, based on the fact that the
@@ -311,19 +219,19 @@ on datasheet 1 is also incorrect. The curator therefore assumes that the PIT
 tag ID of datasheet 2 is correct and adjusts datasheet 1 to report PIT tag ID
 “…755”.</p></li>
 </ul>
-</div>
-</div>
-</div>
-<div class="section" id="lessons-learnt-from-mobile-field-data-collection">
-<h2>Lessons learnt from mobile field data collection<a class="headerlink" href="#lessons-learnt-from-mobile-field-data-collection" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+</section>
+<section id="lessons-learnt-from-mobile-field-data-collection">
+<h2>Lessons learnt from mobile field data collection<a class="headerlink" href="#lessons-learnt-from-mobile-field-data-collection" title="Permalink to this headline"></a></h2>
 <p>The choice of methodology can be driven by time availability.</p>
 <p>Example: Teams are dropped off on remote beaches and have too little time to
 identify and individually record turtle tracks (on paper or on mobile).
 In this case, a tally was kept on paper forms, as no specialised mobile app for
 tally observations was available yet. Now such a form has been built.</p>
-</div>
-<div class="section" id="gps-location-and-wifi">
-<span id="geolocation-and-wifi"></span><h2>GPS location and WiFi<a class="headerlink" href="#gps-location-and-wifi" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="gps-location-and-wifi">
+<span id="geolocation-and-wifi"></span><h2>GPS location and WiFi<a class="headerlink" href="#gps-location-and-wifi" title="Permalink to this headline"></a></h2>
 <p>Android devices can set the location mode (System settings) to use WiFi + network + GPS, WiFi + network only, or GPS only.</p>
 <p>A particularity of the guest WiFi network used for all tablets on DBCA campuses is that this WiFi network
 does NOT provide a geolocation at all. If a tablet is therefore set to location mode “WiFi + GPS” and used
@@ -334,12 +242,12 @@ tablets must have a clear view of the sky.</p>
 <p>All devices get a good GPS signal on beaches outside of WiFi range, independent on location mode.</p>
 <p>This insight was derived from testing devices in the field (beaches from Ningaloo, Karratha to Broome)
 and DBCA offices (Exmouth, Karratha, Broome, Perth) and non-DBCA locations over seveal months.</p>
-</div>
-<div class="section" id="devices-shoot-out">
-<span id="device-shootout"></span><h2>Devices shoot-out<a class="headerlink" href="#devices-shoot-out" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="devices-shoot-out">
+<span id="device-shootout"></span><h2>Devices shoot-out<a class="headerlink" href="#devices-shoot-out" title="Permalink to this headline"></a></h2>
 <p>Hands-on field testing at Thevenard and Barrow Islands Nov/Dec 2016.</p>
-<div class="section" id="general-notes">
-<h3>General notes<a class="headerlink" href="#general-notes" title="Permalink to this headline">¶</a></h3>
+<section id="general-notes">
+<h3>General notes<a class="headerlink" href="#general-notes" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>There are not many rugged cases available for low end, older or exotic devices</p></li>
 <li><p>$70 charger with 6 USB outlets replaces the Great Charger Kelp Forest</p></li>
@@ -348,9 +256,9 @@ and DBCA offices (Exmouth, Karratha, Broome, Perth) and non-DBCA locations over 
 <li><p>$5 whiteboards plus whiteboard marker, placed in geotagged photo of any random
 observation are the best way to capture opportunistic observations</p></li>
 </ul>
-</div>
-<div class="section" id="samsung-galaxy-s2-9-7">
-<h3>Samsung Galaxy S2 9.7”<a class="headerlink" href="#samsung-galaxy-s2-9-7" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="samsung-galaxy-s2-9-7">
+<h3>Samsung Galaxy S2 9.7”<a class="headerlink" href="#samsung-galaxy-s2-9-7" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>$700 device, $150 rugged case, $50 64GB SD</p></li>
 <li><p>Office sleeves available in store, rugged cases only available online</p></li>
@@ -365,9 +273,9 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>(-) too expensive to distribute widely or use in extreme conditions</p></li>
 <li><p>(-) compass bearing measurements vary wildly between four identical devices</p></li>
 </ul>
-</div>
-<div class="section" id="samsung-galaxy-s2-8">
-<h3>Samsung Galaxy S2 8”<a class="headerlink" href="#samsung-galaxy-s2-8" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="samsung-galaxy-s2-8">
+<h3>Samsung Galaxy S2 8”<a class="headerlink" href="#samsung-galaxy-s2-8" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>$550 device, $150 rugged case, $50 64GB SD</p></li>
 <li><p>Fits in 8” sleeve, can be balanced on one hand while operating with other.</p></li>
@@ -376,9 +284,9 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>32 GB internal storage is still plenty for data collection.</p></li>
 <li><p>(-) still too expensive to distribute widely or use in extreme conditions.</p></li>
 </ul>
-</div>
-<div class="section" id="samsung-galaxy-tab-a-7">
-<h3>Samsung Galaxy Tab A 7”<a class="headerlink" href="#samsung-galaxy-tab-a-7" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="samsung-galaxy-tab-a-7">
+<h3>Samsung Galaxy Tab A 7”<a class="headerlink" href="#samsung-galaxy-tab-a-7" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>$160 device, $30 plastic shell, $50 64GB SD</p></li>
 <li><p>Fits in 7” sleeve, large trouser pocket, can be held securely in one hand.</p></li>
@@ -391,9 +299,9 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>(-) 8GB internal storage is too small to collect data.</p></li>
 <li><p>(-) Android 5.1.1 means external SD chip does not format as internal storage.</p></li>
 </ul>
-</div>
-<div class="section" id="lenovo-tab-3-7-tb3-730f">
-<h3>Lenovo Tab 3 7” TB3-730F<a class="headerlink" href="#lenovo-tab-3-7-tb3-730f" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="lenovo-tab-3-7-tb3-730f">
+<h3>Lenovo Tab 3 7” TB3-730F<a class="headerlink" href="#lenovo-tab-3-7-tb3-730f" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>$100 device, $50 64GB SD</p></li>
 <li><p>No cover in store, but device is splash-resistant.</p></li>
@@ -402,9 +310,9 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>Best cost-benefit for handing out in bulk.</p></li>
 <li><p>(-) Being phased out as of early 2018, replaced by TB-7304F.</p></li>
 </ul>
-</div>
-<div class="section" id="lenovo-tab-7-essential-tb-7304f">
-<h3>Lenovo Tab 7 Essential TB-7304F<a class="headerlink" href="#lenovo-tab-7-essential-tb-7304f" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="lenovo-tab-7-essential-tb-7304f">
+<h3>Lenovo Tab 7 Essential TB-7304F<a class="headerlink" href="#lenovo-tab-7-essential-tb-7304f" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Successor to the TB3-730F.</p></li>
 <li><p>Beautiful performance, low price.</p></li>
@@ -412,9 +320,9 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>Cheap rugged case options available on eBay.</p></li>
 <li><p>(-) Being phased out as of late 2018, replaced by (GPS-less = useless) TB7104F.</p></li>
 </ul>
-</div>
-<div class="section" id="lenovo-tab-e7">
-<h3>Lenovo Tab E7<a class="headerlink" href="#lenovo-tab-e7" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="lenovo-tab-e7">
+<h3>Lenovo Tab E7<a class="headerlink" href="#lenovo-tab-e7" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Successor to the TB-7304F.</p></li>
 <li><ol class="upperroman simple" start="30">
@@ -423,9 +331,9 @@ observation are the best way to capture opportunistic observations</p></li>
 </li>
 <li><p>Cannot use for ODK Collect.</p></li>
 </ul>
-</div>
-<div class="section" id="moto-g4-plus-phone">
-<h3>Moto G4 Plus phone<a class="headerlink" href="#moto-g4-plus-phone" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="moto-g4-plus-phone">
+<h3>Moto G4 Plus phone<a class="headerlink" href="#moto-g4-plus-phone" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>$400 device, $4 plastic shell, $50 SD</p></li>
 <li><p>Cheap rugged case options available on eBay.</p></li>
@@ -435,18 +343,18 @@ observation are the best way to capture opportunistic observations</p></li>
 <li><p>Data collection works nicely</p></li>
 <li><p>Good option for work phone for front-line staff at time of writing (Dec 2016)</p></li>
 </ul>
-</div>
-<div class="section" id="moto-g6-phone">
-<h3>Moto G6 phone<a class="headerlink" href="#moto-g6-phone" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="moto-g6-phone">
+<h3>Moto G6 phone<a class="headerlink" href="#moto-g6-phone" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>$388 in 2018.</p></li>
 <li><p>Successor to Moto G4/G4+.</p></li>
 <li><p>Cheap rugged case options available on eBay.</p></li>
 <li><p>Works perfectly fine with ODK Collect.</p></li>
 </ul>
-</div>
-<div class="section" id="general-observations">
-<h3>General observations<a class="headerlink" href="#general-observations" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="general-observations">
+<h3>General observations<a class="headerlink" href="#general-observations" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>All devices were daylight-readable.</p></li>
 <li><p>Screen protectors, especially the non-sticky plastic sheets from rugged cases,
@@ -463,17 +371,17 @@ Hold them in your own shade when operating and out of the sun when not.</p></li>
 <li><p>Strong case against Galaxy Tab A (slow GPS, low internal storage,
 old OS version) and of course devices without GPS chip.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="cost-benefit-analysis-for-digital-data-collection">
-<span id="cost-benefit-analysis-digital-data-capture"></span><h2>Cost-benefit analysis for digital data collection<a class="headerlink" href="#cost-benefit-analysis-for-digital-data-collection" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="cost-benefit-analysis-for-digital-data-collection">
+<span id="cost-benefit-analysis-digital-data-capture"></span><h2>Cost-benefit analysis for digital data collection<a class="headerlink" href="#cost-benefit-analysis-for-digital-data-collection" title="Permalink to this headline"></a></h2>
 <p>Digital data collection provides systematic advantages over paper-based
 data collection, as it skips several work-intensive, error-prone steps
 in the data life cycle.</p>
-<div class="section" id="paper-based-data-collection">
-<h3>Paper-based data collection<a class="headerlink" href="#paper-based-data-collection" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="filling-in-a-paper-data-sheet">
-<h4>Filling in a paper data sheet<a class="headerlink" href="#filling-in-a-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+<section id="paper-based-data-collection">
+<h3>Paper-based data collection<a class="headerlink" href="#paper-based-data-collection" title="Permalink to this headline"></a></h3>
+<section id="filling-in-a-paper-data-sheet">
+<h4>Filling in a paper data sheet<a class="headerlink" href="#filling-in-a-paper-data-sheet" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Error sources: typos, illegible or rushed handwriting, invalid values, fields
 incorrectly filled or skipped.</p></li>
@@ -481,21 +389,21 @@ incorrectly filled or skipped.</p></li>
 GPS, PIT tag reader, barcodes for samples etc.</p></li>
 <li><p>Associating media to records is labourious and error-prone</p></li>
 </ul>
-</div>
-<div class="section" id="digitising-a-paper-data-sheet">
-<h4>Digitising a paper data sheet<a class="headerlink" href="#digitising-a-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="digitising-a-paper-data-sheet">
+<h4>Digitising a paper data sheet<a class="headerlink" href="#digitising-a-paper-data-sheet" title="Permalink to this headline"></a></h4>
 <p>Data collected on paper has to be read (interpreting handwriting correctly),
 mentally mapped from datasheet to electronic form, and typed off (correctly) by
 the data entry operator.</p>
-</div>
-<div class="section" id="proof-reading-a-digital-record-against-paper-data-sheet">
-<h4>Proof-reading a digital record against paper data sheet<a class="headerlink" href="#proof-reading-a-digital-record-against-paper-data-sheet" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="proof-reading-a-digital-record-against-paper-data-sheet">
+<h4>Proof-reading a digital record against paper data sheet<a class="headerlink" href="#proof-reading-a-digital-record-against-paper-data-sheet" title="Permalink to this headline"></a></h4>
 <p>A second person, acting as proofreader, has to reproduce the same mental effort
 to map the paper data sheet to the electronic form and correct any errors they find.</p>
-</div>
-</div>
-<div class="section" id="digital-data-collection">
-<h3>Digital data collection<a class="headerlink" href="#digital-data-collection" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="digital-data-collection">
+<h3>Digital data collection<a class="headerlink" href="#digital-data-collection" title="Permalink to this headline"></a></h3>
 <p>Digital forms can offer dropdown menus with pre-defined values to reduce sources
 of error.</p>
 <p>Digital data capture devices can reliably and easily record and associate
@@ -506,9 +414,9 @@ pressure, sleep deprivation and harsh environmental conditions.</p>
 and error-prone steps requiring human interaction.
 In addition, the data is available to QA straight away, possibly creating a
 tighter error-checking loop.</p>
-</div>
-<div class="section" id="re-thinking-datasheets">
-<h3>Re-thinking datasheets<a class="headerlink" href="#re-thinking-datasheets" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="re-thinking-datasheets">
+<h3>Re-thinking datasheets<a class="headerlink" href="#re-thinking-datasheets" title="Permalink to this headline"></a></h3>
 <p>Each field in the data sheets has been, and should continue to be questioned:</p>
 <ul class="simple">
 <li><p>Is this information used in any of the analytical outputs?</p></li>
@@ -517,56 +425,39 @@ tighter error-checking loop.</p>
 used to identify a resighted, untagged animal?</p></li>
 <li><p>Will anyone in the foreseeable future require this information?</p></li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../data_entry.html" class="btn btn-neutral float-right" title="Data entry" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="data_collection_training.html" class="btn btn-neutral float-left" title="Data collection protocols and training" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../data_entry.html" class="btn btn-neutral float-right" title="Data entry" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2016-2020 DBCA.
-
-    </p>
+    <p>&#169; Copyright 2016-2020 DBCA.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

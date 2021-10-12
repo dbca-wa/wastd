@@ -1,75 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Data collectors &mdash; WAStD 0.53.2 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> WAStD
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 0.53
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -77,18 +37,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection protocols and training</a></li>
@@ -103,76 +52,35 @@
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">WAStD</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Data collectors</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/data_collectors.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="id1">
-<h1>Data collectors<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="id1">
+<h1>Data collectors<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h1>
 <p>NOTE this chapter has been split up (content duplicated) into the data collection chapters for admins and collectors.</p>
-<div class="section" id="design-considerations-for-translating-datasheets-to-digital-forms">
-<h2>Design considerations for translating datasheets to digital forms<a class="headerlink" href="#design-considerations-for-translating-datasheets-to-digital-forms" title="Permalink to this headline">¶</a></h2>
+<section id="design-considerations-for-translating-datasheets-to-digital-forms">
+<h2>Design considerations for translating datasheets to digital forms<a class="headerlink" href="#design-considerations-for-translating-datasheets-to-digital-forms" title="Permalink to this headline"></a></h2>
 <p>Each field in the data sheets has been, and should be questioned:</p>
 <ul class="simple">
 <li><p>Is this information used in any of the analytical outputs?</p></li>
@@ -181,8 +89,8 @@
 used to identify a resighted, untagged animal?</p></li>
 <li><p>Will anyone in the foreseeable future require this information?</p></li>
 </ul>
-<div class="section" id="turtle-tracks-or-nests">
-<span id="data-capture-tracks"></span><h3>Turtle tracks or nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline">¶</a></h3>
+<section id="turtle-tracks-or-nests">
+<span id="data-capture-tracks"></span><h3>Turtle tracks or nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline"></a></h3>
 <p>Turtle track counts can be collected on mobile app (OpenDataKit, ODK),
 or on paper data sheets (backup if ODK unavailable).</p>
 <p>Tracks can be recorded individually (preferred) or tallied over beach sections.</p>
@@ -203,10 +111,10 @@ beaches, where the geo-referencing of individual tracks is not possible within
 the available survey time. However, individual track counts (<em>nest</em> or <em>speed run</em>)
 are preferred.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="mobile-data-collection-using-open-data-kit">
-<h2>Mobile data collection using Open Data Kit<a class="headerlink" href="#mobile-data-collection-using-open-data-kit" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="mobile-data-collection-using-open-data-kit">
+<h2>Mobile data collection using Open Data Kit<a class="headerlink" href="#mobile-data-collection-using-open-data-kit" title="Permalink to this headline"></a></h2>
 <p>These steps have to be run once by the ODK admin per device while online.
 Less than 10 MB will be downloaded.
 These steps can also be run by an interested data collector on their own Android
@@ -414,8 +322,8 @@ to the initial submission on ODK Aggregate.</p>
 examples.</p>
 <p>The final analysis (in development at the time of writing) will consume
 curated data through the WAStD API.</p>
-<div class="section" id="turtle-stranding">
-<span id="itp-stranding-report"></span><h3>Turtle Stranding<a class="headerlink" href="#turtle-stranding" title="Permalink to this headline">¶</a></h3>
+<section id="turtle-stranding">
+<span id="itp-stranding-report"></span><h3>Turtle Stranding<a class="headerlink" href="#turtle-stranding" title="Permalink to this headline"></a></h3>
 <p>Setup the device as described above and select the latest “Turtle Stranding” form
 in “Get blank forms”.</p>
 <p>The expected work flow is:</p>
@@ -438,13 +346,13 @@ operator’s choice of available options.</p>
 <p>Although taking several photos next to a decomposing animal may pose an olfactory
 challenge, taking a photo is invaluable, in that it cannot be taken at a later
 time, and it preserves valuable and volatile information.</p>
-</div>
-<div class="section" id="lessons-learnt-from-paper-based-field-data-collection">
-<span id="lessons-learnt-paper-based-data-capture"></span><h3>Lessons learnt from paper-based field data collection<a class="headerlink" href="#lessons-learnt-from-paper-based-field-data-collection" title="Permalink to this headline">¶</a></h3>
-</div>
-</div>
-<div class="section" id="scenario-1-two-tags-applied-both-tags-recorded-incorrectly">
-<h2>Scenario 1: Two tags applied, both tags recorded incorrectly<a class="headerlink" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="lessons-learnt-from-paper-based-field-data-collection">
+<span id="lessons-learnt-paper-based-data-capture"></span><h3>Lessons learnt from paper-based field data collection<a class="headerlink" href="#lessons-learnt-from-paper-based-field-data-collection" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="scenario-1-two-tags-applied-both-tags-recorded-incorrectly">
+<h2>Scenario 1: Two tags applied, both tags recorded incorrectly<a class="headerlink" href="#scenario-1-two-tags-applied-both-tags-recorded-incorrectly" title="Permalink to this headline"></a></h2>
 <p>One turtle is encountered in two subsequent nights by two separate teams.</p>
 <ul class="simple">
 <li><p>Data entry operators “Tim” and “Natalie” were in a rush, tagged turtle with tag “WB7326”, but
@@ -494,17 +402,17 @@ on datasheet 1 is also incorrect. The curator therefore assumes that the PIT
 tag ID of datasheet 2 is correct and adjusts datasheet 1 to report PIT tag ID
 “…755”.</p></li>
 </ul>
-<div class="section" id="lessons-learnt-from-mobile-field-data-collection">
-<h3>Lessons learnt from mobile field data collection<a class="headerlink" href="#lessons-learnt-from-mobile-field-data-collection" title="Permalink to this headline">¶</a></h3>
+<section id="lessons-learnt-from-mobile-field-data-collection">
+<h3>Lessons learnt from mobile field data collection<a class="headerlink" href="#lessons-learnt-from-mobile-field-data-collection" title="Permalink to this headline"></a></h3>
 <p>The choice of methodology can be driven by time availability.</p>
 <p>Example: Teams are dropped off on remote beaches and have too little time to
 identify and individually record turtle tracks (on paper or on mobile).
 In this case, a tally was kept on paper forms, as no specialised mobile app for
 tally observations was available yet.</p>
-</div>
-</div>
-<div class="section" id="devices-shoot-out">
-<h2>Devices shoot-out<a class="headerlink" href="#devices-shoot-out" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="devices-shoot-out">
+<h2>Devices shoot-out<a class="headerlink" href="#devices-shoot-out" title="Permalink to this headline"></a></h2>
 <p>Hands-on field testing at Thevenard and Barrow Islands Nov/Dec 2016.</p>
 <ul class="simple">
 <li><p>There are not many rugged cases available for low end, older or exotic devices</p></li>
@@ -568,17 +476,17 @@ daylight, sweaty fingers, flying sand.</p></li>
 <li><p>Best low-cost field device: Lenovo Tab 3. Runner-up: Samsung S2 8”.</p></li>
 <li><p>Strong case against Galaxy Tab A (slow GPS, low internal storage, old OS version).</p></li>
 </ul>
-<div class="section" id="cost-benefit-analysis-for-digital-data-collection">
-<span id="cost-benefit-analysis-digital-data-capture"></span><h3>Cost-benefit analysis for digital data collection<a class="headerlink" href="#cost-benefit-analysis-for-digital-data-collection" title="Permalink to this headline">¶</a></h3>
+<section id="cost-benefit-analysis-for-digital-data-collection">
+<span id="cost-benefit-analysis-digital-data-capture"></span><h3>Cost-benefit analysis for digital data collection<a class="headerlink" href="#cost-benefit-analysis-for-digital-data-collection" title="Permalink to this headline"></a></h3>
 <p>The following diagram is also shown at <a class="reference internal" href="business_analysts.html#dm-data-entry"><span class="std std-ref">IT processes along the Data life cycle</span></a>.</p>
 <a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png"><img alt="Turtle data flow, ideal state" src="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png" /></a>
 <p>Digital data collection provides systematic advantages over paper-based
 data collection, as it skips several work-intensive, error-prone steps
 in the data life cycle.</p>
-</div>
-</div>
-<div class="section" id="paper-based-data-collection">
-<h2>Paper-based data collection<a class="headerlink" href="#paper-based-data-collection" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="paper-based-data-collection">
+<h2>Paper-based data collection<a class="headerlink" href="#paper-based-data-collection" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>Error sources: typos, illegible or rushed handwriting, invalid values, fields
 incorrectly filled or skipped.</p></li>
@@ -591,9 +499,9 @@ mentally mapped from datasheet to electronic form, and typed off (correctly) by
 the data entry operator.</p>
 <p>A second person, acting as proofreader, has to reproduce the same mental effort
 to map the paper data sheet to the electronic form and correct any errors they find.</p>
-</div>
-<div class="section" id="digital-data-collection">
-<h2>Digital data collection<a class="headerlink" href="#digital-data-collection" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="digital-data-collection">
+<h2>Digital data collection<a class="headerlink" href="#digital-data-collection" title="Permalink to this headline"></a></h2>
 <p>Digital forms can offer dropdown menus with pre-defined values to reduce sources
 of error.</p>
 <p>Digital data capture devices can reliably and easily record and associate
@@ -604,51 +512,35 @@ pressure, sleep deprivation and harsh environmental conditions.</p>
 and error-prone steps requiring human interaction.
 In addition, the data is available to QA straight away, possibly creating a
 tighter error-checking loop.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2016-2020 DBCA.
-
-    </p>
+    <p>&#169; Copyright 2016-2020 DBCA.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
