@@ -23,7 +23,7 @@ together with the data collector.
 
 * Settings > General Settings > User and device identity > Form metadata > Username:
   * This username will be recorded during data collection -
-    we need this so we can say "thank you".
+    we need this so we can say "thank you" and improve training for users making repeated mistakes.
   * Type your full given and surname as it is shown e.g. on your driver's license.
   * Separate your given name and surname with a whitespace (not . or _)
   * No middle names
@@ -36,7 +36,7 @@ together with the data collector.
 **Note** While a typo in the username will not break anything (but make our life harder),
 exact spelling would be greatly appreciated.
 Exact spelling includes capitalisation, interpunctuation and whitespace.
-E.g., the username `stephen_king` is not correct if spelled `Stephen_King`,
+E.g., the username `Stephen King` is not correct if spelled `Stephen_King`,
 `StephenK`, `stephen king`, `stephen-king` or `stephenking`.
 
 Device checkout Broome - Cable Beach
@@ -67,17 +67,22 @@ Device checkin Kimberley - Anna Plains
 
 Devices Karratha WPTP
 ---------------------
-* Maintained by WPTP
-* Two devices in locked box at Yacht Club Wickham for Cape Lambert
-* Two devices in locked box at DBCA Karratha for Cleaverille
-* Two spares at DBCA Karratha
+* Maintained and stored at the DBCA Karratha office.
+* Two devices in locked box at Yacht Club Wickham for Cape Lambert.
+* Two devices in locked box at DBCA Karratha for Cleaverille.
+* Two spares at DBCA Karratha.
+
+Devices Rio Tinto Cape Lambert
+------------------------------
+* Two devices are maintained and stored at the DBCA Karratha office.
 
 Devices Rosemary Island
 -----------------------
-* Six devices live at DBCA Karratha and are taken on field trips to Rosemary Island.
+* Six devices * Maintained and stored at the DBCA Karratha office and are taken on field trips to Rosemary Island.
 * During turtle tagging, exactly one SVS (start of evening shift) and one SVE
   (end of morning or last shift) must be captured per beach and per night.
 * Multiple tablets can capture data during that survey on that beach.
+* Beach 3-5 (one site) must always be surveyed together. Exactly one SVS and SVE per visit to Beach 3-5 must be recorded.
 
 
 Turtle Nesting Census
@@ -185,7 +190,8 @@ keep "Mark form as finalized" ticked and "Save Form and Exit".
 **If tablets are left unsupervised** E.g. West Pilbara, Cable Beach - simply save and let it upload.
 Supervisors will QA the data later.
 
-**If a supervisor regularly checks the devices** De-select "Mark form as finalized" and "Save Form and Exit".
+**If a supervisor regularly wants to proofread submissions pre-upload on the devices**
+De-select "Mark form as finalized" and "Save Form and Exit".
 This gives the field supervisors a chance to review and possibly determine species ID
 (based on the photo taken) before uploading.
 
@@ -429,15 +435,28 @@ Assumptions
 
 Minimal viable record
 ----------------------
+Both the ODK form "Turtle Tagging" and the paper datasheet allow to capture more data than needed to be
+compatible with any detail level of data capture.
+On busy nesting nights, there can be several turtles competing for the same tagging team's time.
+In this case, the team needs to commit to one turtle for processing, and record the minimum viable record, then move on to the next turtle.
+
 The minimal viable record includes:
 
 * Location and time of nesting
-* PIT tags, flipper tags, biopsy, turtle details (species etc), datasheet photo.
-
-.. TODO turtle team to verify minimal viable record
+* PIT tags
+* Flipper tags
+* Turtle details (species etc)
 
 Even if other turtles are getting away without being processed,
-the minimal record needs to be taken for each processed turtle.
+the minimal record must to be taken for each processed turtle.
+
+The nice-to-have record includes the above plus:
+
+* One biopsy for already biopsied turtles (a wishlist of flipper tags to biopsy will be handed out)
+* CCL
+* Any significant damages which impact nesting success (e.g. flipper amputation impedes digging) or
+  are recognizable (larger deformities, e.g. healed shark bites if carapace, sat tag harness scars).
+
 
 
 Form workflow
@@ -450,26 +469,26 @@ Early in day
 
 Checking out tablets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2. Do a Soundcheck - Update username
-3. Turn off auto-send for tagging. You can only edit finalized forms while they are not yet uploaded.
+2. Do a Soundcheck if willing - Update username at least
+3. Verify auto-send is turned off for tagging. You can only edit finalized forms while they are not yet uploaded.
 
 In situ: Tagging night
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-4. Site Visit Start when on site. Exactly one SVS per site and date.
+4. Site Visit Start when on site. Exactly one SVS per site and date. THV: two sites (north / south beach), DEL: one site (entire island).
 5. Turtle Tagging for tagged turtles, Turtle Track or Nest for missed turtles. Backfill forms if time and brain space allow.
 6. Site Visit End when finishing up for the night.
 
 Tagging modes:
 
 1. Turtle encountered while nesting.
-  a. MinODK while egg laying (waiting phase)
+  a. Hybrid Step 1 while egg laying (waiting phase).
   b. tagging on paper during hot phase.
-  c. Backfill when possible. Don't bother with datasheet photo.
+  c. Backfill when possible via Hybrid Step 2. Don't bother with datasheet photo, leave for better light conditions in the morning.
   d. If backfilling during night, leave unfinalized.
 2. Turtle encountered while returning to water.
-  a. Tagging on paper (hot phase)
-  b. capture MinODK record in situ once turtle is gone
-  c. backfill if time permits
+  a. Tagging on paper (hot phase).
+  b. capture Hybrid Step 1 record in situ once turtle is gone.
+  c. backfill if time permits via Hybrid Step 2.
 3. ODK unavailable.
   a. All data on paper. GPS in handheld.
   b. Backfill and choose data capture mode "New record".
@@ -479,7 +498,7 @@ Next morning
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 7. Return tablets to charger, place datasheets and biopsy samples with respective tablet.
    The coordinator clearly labels the drop-off area with a sign saying "Drop off for tablets, datasheets, biopsy samples".
-8. Backfill ODK: Go through "Edit saved forms", open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).
+8. Backfill ODK via Hybrid Step 2: Go through "Edit saved forms", open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).
 9. Send finalized forms. Leave tablets in "manual upload mode".
 10. Enter data into WAMTRAM.
 
@@ -489,12 +508,12 @@ After import and QA
 
 Minimum ODK record
 ^^^^^^^^^^^^^^^^^^
-Minimum record in ODK form "Turtle Tagging" with a nest location, timestamp, the username, and datasheet ID.
+Minimum record in ODK form "Turtle Tagging" via Hybrid Step 1 with a nest location, timestamp, the username, and datasheet ID.
 Save form as "non finalized" and name after datasheet ID.
 
 Backfill paper to ODK
 ^^^^^^^^^^^^^^^^^^^^^
-Backfill the ODK record from the paper datasheet.
+Backfill the ODK record from the paper datasheet via Hybrid Step 2.
 Find record in "Edit saved forms", choose data capture mode "continue here", once light allows photograph paper datasheet, save as finalized. Let record upload.
 
 
