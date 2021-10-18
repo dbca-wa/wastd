@@ -22,22 +22,22 @@ Ideally, the admin handing out the Android device will double-check these settin
 together with the data collector.
 
 * Settings > General Settings > User and device identity > Form metadata > Username:
-  * This username will be recorded during data collection -
-    we need this so we can say "thank you" and improve training for users making repeated mistakes.
+
+  * This username will be recorded during data collection.
+  * We record the username to improve training for users making repeated mistakes, to generate certificates, for QA and reporting.
   * Type your full given and surname as it is shown e.g. on your driver's license.
   * Separate your given name and surname with a whitespace (not . or _)
   * No middle names
 * **Battery** Make sure the battery is full before you head out.
-  Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
-  GPS on only during surveys, WiFi on only during data upload.
-* **Length reference** A stick with markings for the minimum and maximum track width
+* **Length reference** A wooden folding ruler with markings for the minimum and maximum track width
   for each expected species.
 
-**Note** While a typo in the username will not break anything (but make our life harder),
+**Note** While a typo in the username will not break anything (but make data import harder),
 exact spelling would be greatly appreciated.
 Exact spelling includes capitalisation, interpunctuation and whitespace.
 E.g., the username `Stephen King` is not correct if spelled `Stephen_King`,
 `StephenK`, `stephen king`, `stephen-king` or `stephenking`.
+The name should match the name given in the volunteer list.
 
 Device checkout Broome - Cable Beach
 ------------------------------------
@@ -78,7 +78,7 @@ Devices Rio Tinto Cape Lambert
 
 Devices Rosemary Island
 -----------------------
-* Six devices * Maintained and stored at the DBCA Karratha office and are taken on field trips to Rosemary Island.
+* Six devices maintained and stored at the DBCA Karratha office and are taken on field trips to Rosemary Island.
 * During turtle tagging, exactly one SVS (start of evening shift) and one SVE
   (end of morning or last shift) must be captured per beach and per night.
 * Multiple tablets can capture data during that survey on that beach.
@@ -376,9 +376,11 @@ The expected work flow is:
 * A field officer discovers a stranded animal during a patrol.
 * In both cases, the field officer carries a mobile device with ODK Collect and
   the latest "Turtle Stranding" form.
-* The field officer fills in the form while attending to the stranded animal.
+* The field officer fills in the form while attending to the stranded animal, or a
+  DBCA staff member fills the form while not on site. The location can be captured with
+  either a GPS point (Start Geopoint), or an offline capable map for off-site entry.
 * All freshly dead turtles (D1 and D2) should be frozen and sent to Perth
-  (Erina Young) for a necropsy.
+  for a necropsy.
 
 The form should be self-explanatory. Some fields default to the "not assessed / NA"
 option, however effort should be untertaken to determine the correct option.
@@ -386,14 +388,13 @@ option, however effort should be untertaken to determine the correct option.
 Photographs are very important, in that they allow data curators to verify the field
 operator's choice of available options.
 
-If possible, photographs should be taken in landscape format.
-
-The habitat photo should be taken from about 10 m distance to the animal.
-
 Although taking several photos next to a decomposing animal may pose an olfactory
 challenge, taking a photo is invaluable, in that it cannot be taken at a later
 time, and it preserves valuable and volatile information.
 
+If possible, photographs should be taken in landscape format.
+
+The habitat photo should be taken from about 10 to 20 m distance to the animal to include enough of the surroundings.
 
 .. dct-turtle-tagging:
 
@@ -410,13 +411,14 @@ Training focus:
 
 * Handling of tablets: Only ever in your hand, in the neoprene sleeve, or on the charger. Mind sand and moisture. Keep the sleeve sand free.
 * Explain: Form is squashed into minimal number of screens to streamline and make robust the data entry process at the cost of some repetition and some blank fields. Form handles both night time tagging and in-water turtle captures, the latter will have to suffer skipping some nest related fields in one screen.
-* Data entry: voice to text works well for PIT and flipper tag numbers.
+* Data entry: voice to text works well for PIT and flipper tag numbers. PIT numbers are only valid without whitespace.
+* Data entry corrections: hold and swipe the space bar to slowly move the cursor. This is useful to e.g. delete whitespace from PIT tag numbers.
 * Explain data capture modes. Practice backfilling. Point out guidance hint on data capture mode.
-* Explain signed degrees.
+* Explain signed degrees (where is the minus on the numberpad).
 * Explain: if no PIT tags, swipe past PIT screen.
-* Explain: PIT/Flipper tag status only applies if a tag is recorded (in tag ID).
+* Explain: PIT/Flipper tag status only applies if a tag is recorded (in tag ID). Empty tag ID means no tag.
 * If there are more tags or samples than the form provides for, there is a repeat group to add the rest coming later.
-* Biopsy location provides identifiable mark (biopsy scar) to help reconstruct turtle identities.
+* Biopsy location provides data on position of an identifiable mark (biopsy scar) to help reconstruct turtle identities.
 
 Assumptions
 -----------
@@ -556,51 +558,52 @@ Training walk-through
 1 Site visit start
 ^^^^^^^^^^^^^^^^^^
 * Form "Site Visit Start" when "feet in the sand, eyes open".
-* Location: can be done anywhere on beach - feet in the sand.
-* Time: **must** be done before any other record is created.
+* Username: read-only view of what's currently set. If wrong, exit form, update username, open form again.
+* Field "Other data collectors in survey": add other data collectors apart from
+  yourself with full name, separated by commas.
+  Eg.: "Sarah McDonald, Marissa Speirs"
+  Omit your own name, as it already is recorded through the ODK username.
+* Location: capture a point anywhere on correct beach. Read guidance text of map widget.
+* Time: SVS **must** be captured before any other record is created.
 * Photo: **should** always be taken.
   May be valuable later on - high opportunity cost not to take a photo!
   The photo can show environmental conditions (wind, past rain) which may lead
   to under-detection of tracks. The photo also could show anything that might be
   relevant to other questions in the future.
-* Field "Other data collectors in survey": add other data collectors apart from
-  yourself with full name, separated by commas.
-  Eg.: "Sarah McDonald, Marissa Speirs"
-  Omit your own name, as it already is recorded through the ODK username.
-* Mention in comment if this is a training run, or if there were any
+* Mention in comment if this is a training run (if you must capture an SVS on a nesting beach), or if there were any
   unusal environmental conditions.
 
 2 Fox track
 ^^^^^^^^^^^
 Any disturbance or sign of predation.
 
-* Fox sake
+* Disturbance or predator
 
 3 Track without nest
 ^^^^^^^^^^^^^^^^^^^^
-* Track or Treat, track without nest
+* Turtle Track or Nest, track without nest
 
 4 Track with nest
 ^^^^^^^^^^^^^^^^^
-* Track or Treat, track with nest
+* Turtle Track or Nest, track with nest
 
 5 Track, unsure if nest
 ^^^^^^^^^^^^^^^^^^^^^^^
-* Track or Treat, track unsure if nest
+* Turtle Track or Nest, track unsure if nest
 
 6 Nest without track
 ^^^^^^^^^^^^^^^^^^^^
-* Track or Treat, nest, unhatched, no track
+* Turtle Track or Nest, nest, unhatched, no track
 
 7 Nest without track, predated
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* Track or Treat, nest, unhatched, no track
+* Turtle Track or Nest, nest, unhatched, no track
 * Disturbed or predated: yes
 * Add new "Disturbance observation" group for each disturbance
 
 8 Hatched nest, predated
 ^^^^^^^^^^^^^^^^^^^^^^^^
-* Track or Treat, nest, hatched
+* Turtle Track or Nest, nest, hatched
 * Disturbed or predated: yes
 * Add new "Disturbance observation" group for each disturbance: A dialogue will pop up allowing to add a "Disturbance observation" until you decline, allowing to add as many disturbances as you wish.
 
@@ -614,7 +617,7 @@ Depending on whether your program records these events:
 
 9 Signs of disturbance or predation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* Fox sake: human-made disturbance (e.g. vehicle tracks)
+* Disturbance or predation: human-made disturbance (e.g. vehicle tracks)
 
 10 Dead turtle
 ^^^^^^^^^^^^^^
@@ -627,18 +630,16 @@ Depending on whether your program records these events:
 * Take a photo in landscape orientation of your find, including length reference and label
 * Photo will auto-upload to Google Photos where coordinators can access them
 * Notify coordinators about noteworthy find
-* "There should be a form for it, or it's not what we're looking for"
-
-
+* Remember: "There should be a form for it, or it's not what we're looking for"
 
 12 Turtle (nesting)
 ^^^^^^^^^^^^^^^^^^^
-TODO: add tranining scenarios here for Turtle Tagging 3.0
+Tranining scenarios for form Turtle Tagging:
 
 * One turtle, enough time: full digital mode.
-* One turtle, rushed, hybrid: Min ODK, paper, backfill.
+* One turtle, rushed, hybrid: Hybrid step 1, paper, backfill in Hybrid step 2.
 * Pure paper. Backfill.
-* Many turtles. What's the minimal viable record?
+* Many turtles. Minimal viable record, Hybrid mode.
 
 Training turtles:
 
@@ -646,14 +647,13 @@ Training turtles:
 * A turtle with one extra (biopsy, nest tag, damage, nest logger, etc.) - explain details for each group.
 * A turtle "the works".
 
-
 12 Survey end
 ^^^^^^^^^^^^^
-* Site visit end: "feet in the sand, eyes off".
+* Site visit end
+* Location can be a point anywhere in the correct site.
+* Time: is auto-recorded, **must** be taken when survey effort is ended - "eyes off".
 * Take a photo facing back towards surveyed area.
-* Any new reasons impacting data collection? Photo, comment.
-* Location: The end point can be taken anywhere on the just surveyed beach - "feet in the sand".
-* Time: **must** be taken when survey effort is ended - "eyes off".
+* Any new reasons impacting data collection? Comment.
 
 13 Return device
 ^^^^^^^^^^^^^^^^
@@ -664,7 +664,6 @@ Returning to an office (WiFi and wall power):
 
 Returning to a deposit box (no WiFi, portable battery):
 
-* GPS off
 * Device off
 * Plugin battery to charge device
 

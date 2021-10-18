@@ -152,29 +152,26 @@
 <p>Run through this section every time before heading out to collect data.
 Ideally, the admin handing out the Android device will double-check these settings
 together with the data collector.</p>
-<ul>
-<li><p>Settings &gt; General Settings &gt; User and device identity &gt; Form metadata &gt; Username:
-* This username will be recorded during data collection -</p>
-<blockquote>
-<div><p>we need this so we can say “thank you” and improve training for users making repeated mistakes.</p>
-</div></blockquote>
 <ul class="simple">
+<li><p>Settings &gt; General Settings &gt; User and device identity &gt; Form metadata &gt; Username:</p>
+<ul>
+<li><p>This username will be recorded during data collection.</p></li>
+<li><p>We record the username to improve training for users making repeated mistakes, to generate certificates, for QA and reporting.</p></li>
 <li><p>Type your full given and surname as it is shown e.g. on your driver’s license.</p></li>
 <li><p>Separate your given name and surname with a whitespace (not . or _)</p></li>
 <li><p>No middle names</p></li>
 </ul>
 </li>
-<li><p><strong>Battery</strong> Make sure the battery is full before you head out.
-Screen and GPS are hungry hippos. Toggle WiFi and GPS depending on situation:
-GPS on only during surveys, WiFi on only during data upload.</p></li>
-<li><p><strong>Length reference</strong> A stick with markings for the minimum and maximum track width
+<li><p><strong>Battery</strong> Make sure the battery is full before you head out.</p></li>
+<li><p><strong>Length reference</strong> A wooden folding ruler with markings for the minimum and maximum track width
 for each expected species.</p></li>
 </ul>
-<p><strong>Note</strong> While a typo in the username will not break anything (but make our life harder),
+<p><strong>Note</strong> While a typo in the username will not break anything (but make data import harder),
 exact spelling would be greatly appreciated.
 Exact spelling includes capitalisation, interpunctuation and whitespace.
 E.g., the username <cite>Stephen King</cite> is not correct if spelled <cite>Stephen_King</cite>,
-<cite>StephenK</cite>, <cite>stephen king</cite>, <cite>stephen-king</cite> or <cite>stephenking</cite>.</p>
+<cite>StephenK</cite>, <cite>stephen king</cite>, <cite>stephen-king</cite> or <cite>stephenking</cite>.
+The name should match the name given in the volunteer list.</p>
 <section id="device-checkout-broome-cable-beach">
 <h3>Device checkout Broome - Cable Beach<a class="headerlink" href="#device-checkout-broome-cable-beach" title="Permalink to this headline"></a></h3>
 <ul class="simple">
@@ -227,7 +224,7 @@ E.g., the username <cite>Stephen King</cite> is not correct if spelled <cite>Ste
 <section id="devices-rosemary-island">
 <h3>Devices Rosemary Island<a class="headerlink" href="#devices-rosemary-island" title="Permalink to this headline"></a></h3>
 <ul class="simple">
-<li><p>Six devices * Maintained and stored at the DBCA Karratha office and are taken on field trips to Rosemary Island.</p></li>
+<li><p>Six devices maintained and stored at the DBCA Karratha office and are taken on field trips to Rosemary Island.</p></li>
 <li><p>During turtle tagging, exactly one SVS (start of evening shift) and one SVE
 (end of morning or last shift) must be captured per beach and per night.</p></li>
 <li><p>Multiple tablets can capture data during that survey on that beach.</p></li>
@@ -510,19 +507,21 @@ the report and inspects the stranded animal personally.</p></li>
 <li><p>A field officer discovers a stranded animal during a patrol.</p></li>
 <li><p>In both cases, the field officer carries a mobile device with ODK Collect and
 the latest “Turtle Stranding” form.</p></li>
-<li><p>The field officer fills in the form while attending to the stranded animal.</p></li>
+<li><p>The field officer fills in the form while attending to the stranded animal, or a
+DBCA staff member fills the form while not on site. The location can be captured with
+either a GPS point (Start Geopoint), or an offline capable map for off-site entry.</p></li>
 <li><p>All freshly dead turtles (D1 and D2) should be frozen and sent to Perth
-(Erina Young) for a necropsy.</p></li>
+for a necropsy.</p></li>
 </ul>
 <p>The form should be self-explanatory. Some fields default to the “not assessed / NA”
 option, however effort should be untertaken to determine the correct option.</p>
 <p>Photographs are very important, in that they allow data curators to verify the field
 operator’s choice of available options.</p>
-<p>If possible, photographs should be taken in landscape format.</p>
-<p>The habitat photo should be taken from about 10 m distance to the animal.</p>
 <p>Although taking several photos next to a decomposing animal may pose an olfactory
 challenge, taking a photo is invaluable, in that it cannot be taken at a later
 time, and it preserves valuable and volatile information.</p>
+<p>If possible, photographs should be taken in landscape format.</p>
+<p>The habitat photo should be taken from about 10 to 20 m distance to the animal to include enough of the surroundings.</p>
 </section>
 <section id="turtle-tagging">
 <h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this headline"></a></h2>
@@ -537,13 +536,14 @@ time, and it preserves valuable and volatile information.</p>
 <ul class="simple">
 <li><p>Handling of tablets: Only ever in your hand, in the neoprene sleeve, or on the charger. Mind sand and moisture. Keep the sleeve sand free.</p></li>
 <li><p>Explain: Form is squashed into minimal number of screens to streamline and make robust the data entry process at the cost of some repetition and some blank fields. Form handles both night time tagging and in-water turtle captures, the latter will have to suffer skipping some nest related fields in one screen.</p></li>
-<li><p>Data entry: voice to text works well for PIT and flipper tag numbers.</p></li>
+<li><p>Data entry: voice to text works well for PIT and flipper tag numbers. PIT numbers are only valid without whitespace.</p></li>
+<li><p>Data entry corrections: hold and swipe the space bar to slowly move the cursor. This is useful to e.g. delete whitespace from PIT tag numbers.</p></li>
 <li><p>Explain data capture modes. Practice backfilling. Point out guidance hint on data capture mode.</p></li>
-<li><p>Explain signed degrees.</p></li>
+<li><p>Explain signed degrees (where is the minus on the numberpad).</p></li>
 <li><p>Explain: if no PIT tags, swipe past PIT screen.</p></li>
-<li><p>Explain: PIT/Flipper tag status only applies if a tag is recorded (in tag ID).</p></li>
+<li><p>Explain: PIT/Flipper tag status only applies if a tag is recorded (in tag ID). Empty tag ID means no tag.</p></li>
 <li><p>If there are more tags or samples than the form provides for, there is a repeat group to add the rest coming later.</p></li>
-<li><p>Biopsy location provides identifiable mark (biopsy scar) to help reconstruct turtle identities.</p></li>
+<li><p>Biopsy location provides data on position of an identifiable mark (biopsy scar) to help reconstruct turtle identities.</p></li>
 </ul>
 <section id="assumptions">
 <h3>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this headline"></a></h3>
@@ -725,18 +725,19 @@ ODK Settings &gt; General Settings &gt; User and device identity &gt; Form metad
 <h4>1 Site visit start<a class="headerlink" href="#site-visit-start" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Form “Site Visit Start” when “feet in the sand, eyes open”.</p></li>
-<li><p>Location: can be done anywhere on beach - feet in the sand.</p></li>
-<li><p>Time: <strong>must</strong> be done before any other record is created.</p></li>
+<li><p>Username: read-only view of what’s currently set. If wrong, exit form, update username, open form again.</p></li>
+<li><p>Field “Other data collectors in survey”: add other data collectors apart from
+yourself with full name, separated by commas.
+Eg.: “Sarah McDonald, Marissa Speirs”
+Omit your own name, as it already is recorded through the ODK username.</p></li>
+<li><p>Location: capture a point anywhere on correct beach. Read guidance text of map widget.</p></li>
+<li><p>Time: SVS <strong>must</strong> be captured before any other record is created.</p></li>
 <li><p>Photo: <strong>should</strong> always be taken.
 May be valuable later on - high opportunity cost not to take a photo!
 The photo can show environmental conditions (wind, past rain) which may lead
 to under-detection of tracks. The photo also could show anything that might be
 relevant to other questions in the future.</p></li>
-<li><p>Field “Other data collectors in survey”: add other data collectors apart from
-yourself with full name, separated by commas.
-Eg.: “Sarah McDonald, Marissa Speirs”
-Omit your own name, as it already is recorded through the ODK username.</p></li>
-<li><p>Mention in comment if this is a training run, or if there were any
+<li><p>Mention in comment if this is a training run (if you must capture an SVS on a nesting beach), or if there were any
 unusal environmental conditions.</p></li>
 </ul>
 </section>
@@ -744,37 +745,37 @@ unusal environmental conditions.</p></li>
 <h4>2 Fox track<a class="headerlink" href="#fox-track" title="Permalink to this headline"></a></h4>
 <p>Any disturbance or sign of predation.</p>
 <ul class="simple">
-<li><p>Fox sake</p></li>
+<li><p>Disturbance or predator</p></li>
 </ul>
 </section>
 <section id="track-without-nest">
 <h4>3 Track without nest<a class="headerlink" href="#track-without-nest" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Track or Treat, track without nest</p></li>
+<li><p>Turtle Track or Nest, track without nest</p></li>
 </ul>
 </section>
 <section id="track-with-nest">
 <h4>4 Track with nest<a class="headerlink" href="#track-with-nest" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Track or Treat, track with nest</p></li>
+<li><p>Turtle Track or Nest, track with nest</p></li>
 </ul>
 </section>
 <section id="track-unsure-if-nest">
 <h4>5 Track, unsure if nest<a class="headerlink" href="#track-unsure-if-nest" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Track or Treat, track unsure if nest</p></li>
+<li><p>Turtle Track or Nest, track unsure if nest</p></li>
 </ul>
 </section>
 <section id="nest-without-track">
 <h4>6 Nest without track<a class="headerlink" href="#nest-without-track" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Track or Treat, nest, unhatched, no track</p></li>
+<li><p>Turtle Track or Nest, nest, unhatched, no track</p></li>
 </ul>
 </section>
 <section id="nest-without-track-predated">
 <h4>7 Nest without track, predated<a class="headerlink" href="#nest-without-track-predated" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Track or Treat, nest, unhatched, no track</p></li>
+<li><p>Turtle Track or Nest, nest, unhatched, no track</p></li>
 <li><p>Disturbed or predated: yes</p></li>
 <li><p>Add new “Disturbance observation” group for each disturbance</p></li>
 </ul>
@@ -782,7 +783,7 @@ unusal environmental conditions.</p></li>
 <section id="hatched-nest-predated">
 <h4>8 Hatched nest, predated<a class="headerlink" href="#hatched-nest-predated" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Track or Treat, nest, hatched</p></li>
+<li><p>Turtle Track or Nest, nest, hatched</p></li>
 <li><p>Disturbed or predated: yes</p></li>
 <li><p>Add new “Disturbance observation” group for each disturbance: A dialogue will pop up allowing to add a “Disturbance observation” until you decline, allowing to add as many disturbances as you wish.</p></li>
 </ul>
@@ -798,7 +799,7 @@ unusal environmental conditions.</p></li>
 <section id="signs-of-disturbance-or-predation">
 <h4>9 Signs of disturbance or predation<a class="headerlink" href="#signs-of-disturbance-or-predation" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Fox sake: human-made disturbance (e.g. vehicle tracks)</p></li>
+<li><p>Disturbance or predation: human-made disturbance (e.g. vehicle tracks)</p></li>
 </ul>
 </section>
 <section id="dead-turtle">
@@ -815,17 +816,17 @@ unusal environmental conditions.</p></li>
 <li><p>Take a photo in landscape orientation of your find, including length reference and label</p></li>
 <li><p>Photo will auto-upload to Google Photos where coordinators can access them</p></li>
 <li><p>Notify coordinators about noteworthy find</p></li>
-<li><p>“There should be a form for it, or it’s not what we’re looking for”</p></li>
+<li><p>Remember: “There should be a form for it, or it’s not what we’re looking for”</p></li>
 </ul>
 </section>
 <section id="turtle-nesting">
 <h4>12 Turtle (nesting)<a class="headerlink" href="#turtle-nesting" title="Permalink to this headline"></a></h4>
-<p>TODO: add tranining scenarios here for Turtle Tagging 3.0</p>
+<p>Tranining scenarios for form Turtle Tagging:</p>
 <ul class="simple">
 <li><p>One turtle, enough time: full digital mode.</p></li>
-<li><p>One turtle, rushed, hybrid: Min ODK, paper, backfill.</p></li>
+<li><p>One turtle, rushed, hybrid: Hybrid step 1, paper, backfill in Hybrid step 2.</p></li>
 <li><p>Pure paper. Backfill.</p></li>
-<li><p>Many turtles. What’s the minimal viable record?</p></li>
+<li><p>Many turtles. Minimal viable record, Hybrid mode.</p></li>
 </ul>
 <p>Training turtles:</p>
 <ul class="simple">
@@ -837,11 +838,11 @@ unusal environmental conditions.</p></li>
 <section id="survey-end">
 <h4>12 Survey end<a class="headerlink" href="#survey-end" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Site visit end: “feet in the sand, eyes off”.</p></li>
+<li><p>Site visit end</p></li>
+<li><p>Location can be a point anywhere in the correct site.</p></li>
+<li><p>Time: is auto-recorded, <strong>must</strong> be taken when survey effort is ended - “eyes off”.</p></li>
 <li><p>Take a photo facing back towards surveyed area.</p></li>
-<li><p>Any new reasons impacting data collection? Photo, comment.</p></li>
-<li><p>Location: The end point can be taken anywhere on the just surveyed beach - “feet in the sand”.</p></li>
-<li><p>Time: <strong>must</strong> be taken when survey effort is ended - “eyes off”.</p></li>
+<li><p>Any new reasons impacting data collection? Comment.</p></li>
 </ul>
 </section>
 <section id="return-device">
@@ -853,7 +854,6 @@ unusal environmental conditions.</p></li>
 </ul>
 <p>Returning to a deposit box (no WiFi, portable battery):</p>
 <ul class="simple">
-<li><p>GPS off</p></li>
 <li><p>Device off</p></li>
 <li><p>Plugin battery to charge device</p></li>
 </ul>
