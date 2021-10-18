@@ -205,6 +205,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
             # "tx_logs"
         )
         geo_field = "where"
+        id_field = "pk"
 
 
 class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
@@ -266,6 +267,7 @@ class FastEncounterSerializer(EncounterSerializer):
             "site",
             "survey",
         )
+        id_field = "pk"
 
 
 class AnimalEncounterSerializer(EncounterSerializer):
@@ -321,7 +323,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
             # "observation_set",
         )
         geo_field = "where"
-        id_field = "source_id"
+        id_field = "pk"
 
 
 class TurtleNestEncounterSerializer(EncounterSerializer):
@@ -367,6 +369,7 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
             # "observation_set",
         )
         geo_field = "where"
+        id_field = "pk"
 
 
 class LoggerEncounterSerializer(EncounterSerializer):
@@ -401,6 +404,7 @@ class LoggerEncounterSerializer(EncounterSerializer):
             # "observation_set",
         )
         geo_field = "where"
+        id_field = "pk"
 
 
 class LineTransectEncounterSerializer(EncounterSerializer):
@@ -433,6 +437,7 @@ class LineTransectEncounterSerializer(EncounterSerializer):
             "absolute_admin_url",
         )
         geo_field = "where"
+        id_field = "pk"
 
 
 # ----------------------------------------------------------------------------#
@@ -441,11 +446,8 @@ class LineTransectEncounterSerializer(EncounterSerializer):
 class ObservationSerializer(ModelSerializer):
     """
     A serializer class for an Observation model associated with an Encounter.
-    Should also be resuable for serializing other model classes that inherit from
-    Observation.
 
-    TODO Make writeable, avoid duplicates, avoid losing QA edits:
-    https://github.com/dbca-wa/wastd/issues/297
+    Re-usable for serializing other model classes that inherit from Observation.
     """
     encounter = EncounterSerializer(read_only=True)
 
