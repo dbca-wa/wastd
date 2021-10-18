@@ -565,6 +565,8 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                 )
             )
 
+            logger.debug("Refused: {0}".format(str(to_refuse)))
+
             # import ipdb; ipdb.set_trace()
 
             # Hammertime
