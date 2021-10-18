@@ -649,7 +649,9 @@ Training turtles:
 
 12 Survey end
 ^^^^^^^^^^^^^
-* Site visit end
+* Form: Site visit end.
+* SVE can be recorded on any device.
+* We assume no survey is longer than 8h - we merge the corresponding endpoints (SVE) to the SVE on same site and within 8h.
 * Location can be a point anywhere in the correct site.
 * Time: is auto-recorded, **must** be taken when survey effort is ended - "eyes off".
 * Take a photo facing back towards surveyed area.
