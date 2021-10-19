@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data collection administrators &mdash; WAStD 0.53.3 documentation</title>
+  <title>Data collection administrators &mdash; WAStD 0.53.5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -139,21 +139,22 @@ The admins (regional turtle monitoring program coordinators) form a bridge betwe
 <h2>GIS: Create offline background imagery<a class="headerlink" href="#gis-create-offline-background-imagery" title="Permalink to this headline"></a></h2>
 <p>This step is executed by a GIS trained operator whenever site boundaries in WAStD are updated or sites are added.</p>
 <ul class="simple">
-<li><p>Use latest QGIS (3.18 or higher)</p></li>
+<li><p>Use latest QGIS (3.18 or higher).</p></li>
 <li><p>Areas: Save <a class="reference external" href="https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&amp;format=json&amp;limit=1000">WAStD Areas</a>
-as areas.geojson, drag and drop into QGIS</p></li>
+as areas.geojson, drag and drop into QGIS.</p></li>
 <li><p>Add ArcGIS Map Service as title “ESRI World Imagery” and with URL
-<code class="docutils literal notranslate"><span class="pre">https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</span></code></p></li>
-<li><p>Add “High Resolution 30cm imagery” and zoom to target location (e.g. Thevenard Island)</p></li>
-<li><p>Change Project CRS to WGS84 (EPSG:4326)</p></li>
-<li><p>Open QGIS Processing Toolbox &gt; Raster tools &gt; Generate XYZ tiles (MBTiles)</p></li>
+<code class="docutils literal notranslate"><span class="pre">https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</span></code>, add “High Resolution 30cm imagery”.</p></li>
+<li><p>Add OpenStreetMap XYZ as base layer, bu tbe aware some tiles don’t load properly, leaving blank mbtiles.</p></li>
+<li><p>Alternatively add Google Hybrid as combined satellite and vector reference layers.</p></li>
+<li><p>Change Project CRS to WGS84 (EPSG:4326).</p></li>
+<li><p>Open QGIS Processing Toolbox &gt; Raster tools &gt; Generate XYZ tiles (MBTiles).</p></li>
 <li><p>Run with settings:</p>
 <ul>
-<li><p>Extent: draw on map</p></li>
+<li><p>Extent: draw on map or take from previously established extents</p></li>
 <li><p>DPI 96</p></li>
 <li><p>Zoom max 19, min 0. Figure out max zoom vs max avail zoom of ESRI imagery.</p></li>
-<li><p>Format png</p></li>
-<li><p>save to file (e.g. THV.mbtiles) with extension <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code></p></li>
+<li><p>Format jpg (png is 4 times bigger)</p></li>
+<li><p>save to file with a descriptive name (e.g. Thevenard.mbtiles) with extension <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code></p></li>
 </ul>
 </li>
 <li><p>Repeat for each program’s location and distribute resulting files to local coordinators.</p></li>
@@ -164,15 +165,16 @@ as areas.geojson, drag and drop into QGIS</p></li>
 <p>Input parameters:
 { ‘BACKGROUND_COLOR’ : QColor(0, 0, 0, 0), ‘DPI’ : 96,
 ‘EXTENT’ : ‘113.488658367,114.279178912,-22.808838676,-21.702109913 [EPSG:4326]’,
-‘METATILESIZE’ : 4, ‘OUTPUT_FILE’ : ‘/home/florianm/projects/GIS/NIN.mbtiles’,
-‘QUALITY’ : 75, ‘TILE_FORMAT’ : 0, ‘ZOOM_MAX’ : 19, ‘ZOOM_MIN’ : 0 }</p>
+‘METATILESIZE’ : 4, ‘OUTPUT_FILE’ : ‘/home/florianm/projects/GIS/CapeRange.mbtiles’,
+‘QUALITY’ : 75, ‘TILE_FORMAT’ : 1, ‘ZOOM_MAX’ : 19, ‘ZOOM_MIN’ : 0 }</p>
 </div></blockquote>
 <p>The resulting <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code> files are distributed to the data collection admins in charge of maintaining devices,
 who then distribute the updated <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code> files onto each of their devices.</p>
 </section>
 <section id="setup-the-tablet-first-time">
 <h2>Setup the tablet - first time<a class="headerlink" href="#setup-the-tablet-first-time" title="Permalink to this headline"></a></h2>
-<p>This protocol should be followed before a tablet is taken out into the field when set up fresh.</p>
+<p>This protocol sets up an entirely new device.
+These instructions are up to date with Android 11 (2021), but likely to outdate with newer Android and hardware versions.</p>
 <ul class="simple">
 <li><p>Start fully charged.</p></li>
 <li><p>Language: English / Australia</p></li>
@@ -191,7 +193,7 @@ If you are not Florian Mayer, use your own work-only Google account.</p></li>
 </ul>
 <p>Home screen:</p>
 <ul class="simple">
-<li><p>Delete all widgets from the home screen.</p></li>
+<li><p>Delete all widgets from the home screen (search, time, weather etc.).</p></li>
 <li><p>Make the task bar contain in this order: Camera, Google Photos, Google Play Store, Settings. Delete other shortcuts.</p></li>
 </ul>
 <p>App settings:</p>
@@ -199,9 +201,9 @@ If you are not Florian Mayer, use your own work-only Google account.</p></li>
 <li><p>Camera: Open app, enable location tags, so that all photos are geo-referenced with
 the coordinates they were taken at. This turns the camera into a generic
 data collection form (image, time, location).</p></li>
-<li><p>Google Photos: open app, settings, auto-backup all photos in “high quality” (about 2MP) to Google Photos.</p></li>
+<li><p>Google Photos: open app, settings, auto-backup all photos in reduced resolution (“storage saver”, about 2MP) to Google Photos.</p></li>
 <li><p>Google Play: Install ODK Collect. Add ODK Collect shortcut to home screen top left.</p></li>
-<li><p>Settings &gt; Software update &gt; Download and install. Repeat until updated to latest. This step can take a while.</p></li>
+<li><p>Settings &gt; Software update &gt; Download and install. Repeat until updated to latest. This step can take a while. Do this with multiple tablets at once.</p></li>
 </ul>
 <p>Device settings:</p>
 <ul class="simple">
@@ -211,7 +213,8 @@ data collection form (image, time, location).</p></li>
 </ul>
 <p>ODK Collect settings:</p>
 <ul class="simple">
-<li><p>Settings &gt; Configure via QR code (if asked, grant ODK Collect required permissions to access camera)</p></li>
+<li><p>Settings &gt; Configure via QR code (if asked, grant ODK Collect required permissions to access camera).</p></li>
+<li><p>If the QR code is fresh from ODK Central, some adjustments have to be made.</p></li>
 <li><p>Form mgmt:
 * delete sent
 * Camera image size: medium (2048px)
