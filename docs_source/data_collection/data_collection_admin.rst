@@ -46,21 +46,22 @@ GIS: Create offline background imagery
 --------------------------------------
 This step is executed by a GIS trained operator whenever site boundaries in WAStD are updated or sites are added.
 
-* Use latest QGIS (3.18 or higher)
+* Use latest QGIS (3.18 or higher).
 * Areas: Save `WAStD Areas <https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&format=json&limit=1000>`_
-  as areas.geojson, drag and drop into QGIS
+  as areas.geojson, drag and drop into QGIS.
 * Add ArcGIS Map Service as title "ESRI World Imagery" and with URL
-  ``https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer``
-* Add "High Resolution 30cm imagery" and zoom to target location (e.g. Thevenard Island)
-* Change Project CRS to WGS84 (EPSG:4326)
-* Open QGIS Processing Toolbox > Raster tools > Generate XYZ tiles (MBTiles)
+  ``https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer``, add "High Resolution 30cm imagery".
+* Add OpenStreetMap XYZ as base layer, bu tbe aware some tiles don't load properly, leaving blank mbtiles.
+* Alternatively add Google Hybrid as combined satellite and vector reference layers.
+* Change Project CRS to WGS84 (EPSG:4326).
+* Open QGIS Processing Toolbox > Raster tools > Generate XYZ tiles (MBTiles).
 * Run with settings:
 
-  * Extent: draw on map
+  * Extent: draw on map or take from previously established extents
   * DPI 96
   * Zoom max 19, min 0. Figure out max zoom vs max avail zoom of ESRI imagery.
-  * Format png
-  * save to file (e.g. THV.mbtiles) with extension ``.mbtiles``
+  * Format jpg (png is 4 times bigger)
+  * save to file with a descriptive name (e.g. Thevenard.mbtiles) with extension ``.mbtiles``
 * Repeat for each program's location and distribute resulting files to local coordinators.
 
 Example log:
@@ -70,8 +71,8 @@ Example log:
   Input parameters:
   { 'BACKGROUND_COLOR' : QColor(0, 0, 0, 0), 'DPI' : 96,
   'EXTENT' : '113.488658367,114.279178912,-22.808838676,-21.702109913 [EPSG:4326]',
-  'METATILESIZE' : 4, 'OUTPUT_FILE' : '/home/florianm/projects/GIS/NIN.mbtiles',
-  'QUALITY' : 75, 'TILE_FORMAT' : 0, 'ZOOM_MAX' : 19, 'ZOOM_MIN' : 0 }
+  'METATILESIZE' : 4, 'OUTPUT_FILE' : '/home/florianm/projects/GIS/CapeRange.mbtiles',
+  'QUALITY' : 75, 'TILE_FORMAT' : 1, 'ZOOM_MAX' : 19, 'ZOOM_MIN' : 0 }
 
 The resulting ``.mbtiles`` files are distributed to the data collection admins in charge of maintaining devices,
 who then distribute the updated ``.mbtiles`` files onto each of their devices.
@@ -79,7 +80,8 @@ who then distribute the updated ``.mbtiles`` files onto each of their devices.
 
 Setup the tablet - first time
 -----------------------------
-This protocol should be followed before a tablet is taken out into the field when set up fresh.
+This protocol sets up an entirely new device.
+These instructions are up to date with Android 11 (2021), but likely to outdate with newer Android and hardware versions.
 
 * Start fully charged.
 * Language: English / Australia
@@ -98,7 +100,7 @@ This protocol should be followed before a tablet is taken out into the field whe
 
 Home screen:
 
-* Delete all widgets from the home screen.
+* Delete all widgets from the home screen (search, time, weather etc.).
 * Make the task bar contain in this order: Camera, Google Photos, Google Play Store, Settings. Delete other shortcuts.
 
 App settings:
@@ -106,9 +108,9 @@ App settings:
 * Camera: Open app, enable location tags, so that all photos are geo-referenced with
   the coordinates they were taken at. This turns the camera into a generic
   data collection form (image, time, location).
-* Google Photos: open app, settings, auto-backup all photos in "high quality" (about 2MP) to Google Photos.
+* Google Photos: open app, settings, auto-backup all photos in reduced resolution ("storage saver", about 2MP) to Google Photos.
 * Google Play: Install ODK Collect. Add ODK Collect shortcut to home screen top left.
-* Settings > Software update > Download and install. Repeat until updated to latest. This step can take a while.
+* Settings > Software update > Download and install. Repeat until updated to latest. This step can take a while. Do this with multiple tablets at once.
 
 
 Device settings:
@@ -120,7 +122,8 @@ Device settings:
 
 ODK Collect settings:
 
-* Settings > Configure via QR code (if asked, grant ODK Collect required permissions to access camera)
+* Settings > Configure via QR code (if asked, grant ODK Collect required permissions to access camera).
+* If the QR code is fresh from ODK Central, some adjustments have to be made.
 * Form mgmt:
   * delete sent
   * Camera image size: medium (2048px)
