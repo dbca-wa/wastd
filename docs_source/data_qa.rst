@@ -270,8 +270,8 @@ Set species to hatchback and curate.
 
 
 
-Backfilling tracks from paper datasheets
-========================================
+Backfill Paper Datasheets
+=========================
 
 Some field trips were confused between capturing data on paper or digitally.
 These may have paper records of tracks which need to be backfilled into WAStD.
@@ -321,3 +321,4 @@ Protocol:
     * Tally
   * Save and continue editing, review.
   * Save and add another, repeat until done.
+  * When done, as admin run "Curators > Reconstruct missing surveys".
