@@ -270,3 +270,54 @@ Set species to hatchback and curate.
 
 
 
+Backfilling tracks from paper datasheets
+========================================
+
+Some field trips were confused between capturing data on paper or digitally.
+These may have paper records of tracks which need to be backfilled into WAStD.
+
+Since the paper datasheets did not record coordinates for individual tracks, we backfill them as TrackTallies (LineTransectEncounters).
+
+Protocol:
+
+* Find paper records for one day. These might contain:
+
+  * Track count datasheets for missed tracks during night tagging.
+  * Track count datasheets for morning surveys (missed tracks after night tagging).
+  * Datasheets for night tagging - ignored here as we only backfill tracks.
+* Determine whether the paper record has already been entered (digitally or typed in by hand):
+
+  * Review plain Encounters for that night at that location, e.g. `TNE DEL 2017 <https://wastd.dbca.wa.gov.au/admin/observations/encounter/?area__id__exact=143&when__year=2017>`_ shows only December records from 2017-12-09.
+  * Review Surveys, e.g. `Surveys DEL 2017 <https://wastd.dbca.wa.gov.au/admin/observations/survey/?area__id__exact=143&start_time__year=2017>`_
+* If you are sure that no data has been entered yet, enter records from paper as follows.
+* Assumption: Consider missed tracks during tagging and morning tracks from after tagging as one TrackTally.
+* Fill in a new TrackTally sheet by going through the original datasheets. Mark it clearly as "summary of original datasheets".
+* Backfill the TrackTally as a ` New LineTransectEncounter (LTE) <https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/>`_.
+
+  * Area, Surveyed Site, Survey: leave blank, will be auto-filled.
+  * Observed at: select one point within the surveyed site.
+    E.g. for Delambre ``{"type":"Point","coordinates":[117.07911,-20.460469]}``
+  * Location acc: GPS.
+  * Loc acc m: 10.
+  * Observed on: click current date, then change the date (by then in correct formatting) to the desired date. Use calendar date.
+    E.g. for the virtual TrackTally after the night of 27-28/11/2017, it's the calendar date of the morning after, 28/11/2017.
+    E.g. ``28/11/2017`` with time ``06:00``.
+  * Observed by: Use the field leader's name.
+  * Data source: leave at "Direct entry".
+  * Source ID: leave blank, will be auto-filled.
+  * Transect line: Capture one good track tally geotrace and re-use in other LTE. In layers, turn on WAStD Sites.
+    Draw a line along the surveyed coastline staying on the sandy bits as far as possible.
+    E.g. for Delambre: ``{"type":"LineString","coordinates":[[117.079024,-20.460389,0],[117.077157,-20.463284,0],[117.074883,-20.46646,0],[117.072737,-20.461113,0],[117.072179,-20.458439,0],[117.071943,-20.457072,0]]}``
+  * Save and continue editing.
+  * Scan all datasheets and attach as MediaAttachments.
+  * Summarise tracks from datasheets by Species, track type (track with or without nest), count.
+    Add each as Turtle Track Tally Observations to the LTE, e.g.:
+
+    * Data source: Direct entry
+    * Source ID: leave as is
+    * Species
+    * Age: Fresh
+    * Type: either ``track with nest`` or ``track without nest``, ``hatched nest``
+    * Tally
+  * Save and continue editing, review.
+  * Save and add another, repeat until done.
