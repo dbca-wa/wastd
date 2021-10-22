@@ -292,7 +292,7 @@ Protocol:
 * If you are sure that no data has been entered yet, enter records from paper as follows.
 * Assumption: Consider missed tracks during tagging and morning tracks from after tagging as one TrackTally.
 * Fill in a new TrackTally sheet by going through the original datasheets. Mark it clearly as "summary of original datasheets".
-* Backfill the TrackTally as a ` New LineTransectEncounter (LTE) <https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/>`_.
+* Backfill the TrackTally as a `New LineTransectEncounter <https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/>`_.
 
   * Area, Surveyed Site, Survey: leave blank, will be auto-filled.
   * Observed at: select one point within the surveyed site.
