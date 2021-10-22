@@ -307,7 +307,7 @@ Protocol:
   * Source ID: leave blank, will be auto-filled.
   * Transect line: Capture one good track tally geotrace and re-use in other LTE. In layers, turn on WAStD Sites.
     Draw a line along the surveyed coastline staying on the sandy bits as far as possible.
-    E.g. for Delambre: ``{"type":"LineString","coordinates":[[117.079024,-20.460389,0],[117.077157,-20.463284,0],[117.074883,-20.46646,0],[117.072737,-20.461113,0],[117.072179,-20.458439,0],[117.071943,-20.457072,0]]}``
+    E.g. for Delambre: ``{"type":"LineString","coordinates":[[117.079024,-20.460389],[117.077157,-20.463284],[117.074883,-20.46646],[117.072737,-20.461113],[117.072179,-20.458439],[117.071943,-20.457072]]}``
   * Save and continue editing.
   * Scan all datasheets and attach as MediaAttachments.
   * Summarise tracks from datasheets by Species, track type (track with or without nest), count.
@@ -319,6 +319,6 @@ Protocol:
     * Age: Fresh
     * Type: either ``track with nest`` or ``track without nest``, ``hatched nest``
     * Tally
-  * Save and continue editing, review.
-  * Save and add another, repeat until done.
-  * When done, as admin run "Curators > Reconstruct missing surveys".
+  * Save and continue editing for each tally count to generate a new ``source_id``.
+  * Save and add another LineTransectEncounter, repeat until done.
+  * When done backfilling, as admin run "Curators > Reconstruct missing surveys".
