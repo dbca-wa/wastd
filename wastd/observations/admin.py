@@ -1263,6 +1263,7 @@ class LineTransectEncounterAdmin(EncounterAdmin):
                 'fields': ('transect', )
             }), )
     inlines = [
+        MediaAttachmentInline,
         TrackTallyObservationInline,
         TurtleNestDisturbanceTallyObservationInline,
         CustomStateLogInline
