@@ -2606,7 +2606,7 @@ class LineTransectEncounter(Encounter):
 
     transect = geo_models.LineStringField(
         srid=4326,
-        dim=3,
+        dim=2,
         verbose_name=_("Transect line"),
         help_text=_("The line transect as LineString in WGS84"))
 
