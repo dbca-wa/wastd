@@ -238,10 +238,6 @@ class ObservationAuditMixin(models.Model):
         abstract = True
 
 
-def make_source_id():
-    """Return a new uuid1."""
-    return uuid.uuid1()
-
 class LegacySourceMixin(models.Model):
     """Mixin class for Legacy source and source_id.
 
@@ -298,10 +294,10 @@ class LegacySourceMixin(models.Model):
 
     source_id = models.CharField(
         max_length=1000,
-        default=make_source_id,
+        default=uuid.uuid4,
         verbose_name=_("Source ID"),
         help_text=_("The ID of the record in the original source, "
-                    "if available, or a randomly generated UUID1."), )
+                    "if available, or a randomly generated UUID4."), )
 
     class Meta:
         """Class opts."""

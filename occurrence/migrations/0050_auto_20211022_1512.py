@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import shared.models
-
+import uuid
 
 class Migration(migrations.Migration):
 
@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='areaencounter',
             name='source_id',
-            field=models.CharField(default=shared.models.make_source_id, help_text='The ID of the record in the original source, if available, or a randomly generated UUID1.', max_length=1000, verbose_name='Source ID'),
+            field=models.CharField(default=uuid.uuid4, help_text='The ID of the record in the original source, if available, or a randomly generated UUID1.', max_length=1000, verbose_name='Source ID'),
         ),
     ]
