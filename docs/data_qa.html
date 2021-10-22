@@ -82,7 +82,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#curate-records-from-training-days">Curate records from training days</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#backfilling-tracks-from-paper-datasheets">Backfilling tracks from paper datasheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backfill-paper-datasheets">Backfill Paper Datasheets</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
@@ -365,8 +365,8 @@ Open AnimalEncounters, filter to area and date.
 Set species to hatchback and curate.</p>
 </section>
 </section>
-<section id="backfilling-tracks-from-paper-datasheets">
-<h2>Backfilling tracks from paper datasheets<a class="headerlink" href="#backfilling-tracks-from-paper-datasheets" title="Permalink to this headline"></a></h2>
+<section id="backfill-paper-datasheets">
+<h2>Backfill Paper Datasheets<a class="headerlink" href="#backfill-paper-datasheets" title="Permalink to this headline"></a></h2>
 <p>Some field trips were confused between capturing data on paper or digitally.
 These may have paper records of tracks which need to be backfilled into WAStD.</p>
 <p>Since the paper datasheets did not record coordinates for individual tracks, we backfill them as TrackTallies (LineTransectEncounters).</p>
@@ -419,6 +419,7 @@ Add each as Turtle Track Tally Observations to the LTE, e.g.:</p>
 </li>
 <li><p>Save and continue editing, review.</p></li>
 <li><p>Save and add another, repeat until done.</p></li>
+<li><p>When done, as admin run “Curators &gt; Reconstruct missing surveys”.</p></li>
 </ul>
 </li>
 </ul>
