@@ -975,7 +975,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     autocomplete_fields = ['area', 'site', 'survey', 'observer', 'reporter', ]
     observer = forms.ChoiceField(
         widget=ModelSelect2Widget(
-            model=get_user_model(),
+            queryset=get_user_model().objects.filter(is_active=True),
             search_fields=[
                 "pk__icontains",
                 "username__icontains",
@@ -988,7 +988,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     )
     reporter = forms.ChoiceField(
         widget=ModelSelect2Widget(
-            model=get_user_model(),
+            queryset=get_user_model().objects.filter(is_active=True),
             search_fields=[
                 "pk__icontains",
                 "username__icontains",
