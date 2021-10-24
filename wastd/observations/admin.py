@@ -18,7 +18,6 @@ from fsm_admin.mixins import FSMTransitionMixin
 # from wastd.observations.filters import LocationListFilter
 from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
-from shared.admin import CustomStateLogInline
 
 from wastd.observations.models import (
     AnimalEncounter,
@@ -52,7 +51,8 @@ from wastd.observations.models import (
     LoggerObservation
 )
 
-from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS
+from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
+from wastd.users.widgets import UserWidget
 
 TokenAdmin.raw_id_fields = ('user',)
 logger = logging.getLogger(__name__)
@@ -415,26 +415,8 @@ class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
         ()
     search_fields = ()
 
-    handler = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=get_user_model(),
-            search_fields=[
-                "username__icontains",
-                "name__icontains",
-                "role__icontains",
-                "email__icontains"]
-        )
-    )
-    recorder = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=get_user_model(),
-            search_fields=[
-                "username__icontains",
-                "name__icontains",
-                "role__icontains",
-                "email__icontains"]
-        )
-    )
+    handler = forms.ChoiceField(widget=UserWidget())
+    recorder = forms.ChoiceField(widget=UserWidget())
 
     def get_queryset(self, request):
         return super(
@@ -463,26 +445,8 @@ class TagObservationAdmin(ObservationAdminMixin):
         ('tag_type', 'tag_location',)
     search_fields = ('name', 'comments')
     # autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
-    handler = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=get_user_model(),
-            search_fields=[
-                "username__icontains",
-                "name__icontains",
-                "role__icontains",
-                "email__icontains"]
-        )
-    )
-    recorder = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            model=get_user_model(),
-            search_fields=[
-                "username__icontains",
-                "name__icontains",
-                "role__icontains",
-                "email__icontains"]
-        )
-    )
+    handler = forms.ChoiceField(widget=UserWidget())
+    recorder = forms.ChoiceField(widget=UserWidget())
 
     def type_display(self, obj):
         """Make tag type human readable."""
@@ -910,6 +874,8 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
             kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
         if db_field.name == "site":
             kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_SITE)
+        if db_field.name == "reporter":
+            kwargs["queryset"] = get_user_model().objects.filter(is_active=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -972,51 +938,9 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # select2 widgets for searchable dropdowns
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ['area', 'site', 'survey', 'observer', 'reporter', ]
-    observer = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            queryset=get_user_model().objects.filter(is_active=True),
-            search_fields=[
-                "pk__icontains",
-                "username__icontains",
-                "name__icontains",
-                "aliases__icontains",
-                "role__icontains",
-                "affiliation__icontains",
-                "email__icontains"]
-        )
-    )
-    reporter = forms.ChoiceField(
-        widget=ModelSelect2Widget(
-            queryset=get_user_model().objects.filter(is_active=True),
-            search_fields=[
-                "pk__icontains",
-                "username__icontains",
-                "name__icontains",
-                "aliases__icontains",
-                "role__icontains",
-                "affiliation__icontains",
-                "email__icontains"]
-        )
-    )
-    # area = forms.ChoiceField(
-    #     widget=ModelSelect2Widget(
-    #         model=Area,
-    #         search_fields=["name__icontains", ]
-    #     )
-    # )
-    # site = forms.ChoiceField(
-    #     widget=ModelSelect2Widget(
-    #         model=Area,
-    #         search_fields=["name__icontains", ]
-    #     )
-    # )
-    # survey = forms.ChoiceField(
-    #     widget=ModelSelect2Widget(
-    #         model=Survey,
-    #         search_fields=["site_name__icontains", "reporter__name__icontains", ]
-    #     )
-    # )
+    autocomplete_fields = ['area', 'site', 'survey', ]# 'observer', 'reporter', ]
+    observer = forms.ChoiceField(widget=UserWidget())
+    reporter = forms.ChoiceField(widget=UserWidget())
 
     # Django-fsm transitions config
     fsm_field = ['status', ]
@@ -1093,11 +1017,18 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     encounter_type_display.short_description = 'Encounter Type'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Restrict Area and Site options to Localities and Sites,
+        and Users to active profiles."""
         if db_field.name == "area":
             kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
         if db_field.name == "site":
             kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_SITE)
+        if db_field.name == "observer":
+            kwargs["queryset"] = get_user_model().objects.filter(is_active=True)
+        if db_field.name == "reporter":
+            kwargs["queryset"] = get_user_model().objects.filter(is_active=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 
 @admin.register(AnimalEncounter)

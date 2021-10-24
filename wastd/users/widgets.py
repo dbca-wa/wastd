@@ -8,26 +8,26 @@ from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 class UserWidget(ModelSelect2Widget):
     """User widget."""
 
-    model = get_user_model()
     queryset = get_user_model().objects.filter(is_active=True)
-    search_fields = [
-        "name__icontains",
-        "username__icontains",
-        "aliases__icontains",
-        "role__icontains",
-        "email__icontains"
-    ]
+    search_fields=[
+                "pk__icontains",
+                "username__icontains",
+                "name__icontains",
+                "aliases__icontains",
+                "role__icontains",
+                "affiliation__icontains",
+                "email__icontains"]
 
 
 class UserMultipleWidget(ModelSelect2MultipleWidget):
     """User widget."""
 
-    model = get_user_model()
     queryset = get_user_model().objects.filter(is_active=True)
-    search_fields = [
-        "name__icontains",
-        "username__icontains",
-        "aliases__icontains",
-        "role__icontains",
-        "email__icontains"
-    ]
+    search_fields=[
+                "pk__icontains",
+                "username__icontains",
+                "name__icontains",
+                "aliases__icontains",
+                "role__icontains",
+                "affiliation__icontains",
+                "email__icontains"]
