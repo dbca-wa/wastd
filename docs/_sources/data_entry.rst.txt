@@ -33,8 +33,8 @@ Turtle Tracks or Nests
 ======================
 If data is not captured via the digital forms, it is still possible to enter data manually.
 
-With data curator access, open the [data curation portal](https://tsc.dbca.wa.gov.au/admin/)
-and [add a new TurtleNestEncounter](https://tsc.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/).
+With data curator access, open the `Data curation portal <https://wastd.dbca.wa.gov.au/admin/>`_
+and `add a new TurtleNestEncounter <https://wastd.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/>`_.
 
 Section "Encounter"
 -------------------
@@ -74,6 +74,82 @@ Section "Media Attachments"
 Other sections
 --------------
 Add as required. "Save and continue editing".
+
+.. _itp-tracks-backfill:
+
+Backfill Tracks from Paper
+==========================
+
+Some field trips were confused between capturing data on paper or digitally.
+These may have paper records of tracks which need to be backfilled into WAStD.
+
+Since the paper datasheets did not record coordinates for individual tracks,
+we consider missed tracks during tagging and morning tracks from after tagging as one TrackTally
+and backfill these Track Tallies as LineTransectEncounters with TrackTallyObservations and MediaAttachments in WAStD.
+
+
+Protocol:
+
+* Find paper records for one day. These might contain:
+
+  * Track count datasheets for missed tracks during night tagging.
+  * Track count datasheets for morning surveys (missed tracks after night tagging).
+  * Datasheets for night tagging - ignored here as we only backfill tracks.
+* Determine whether the paper record has already been entered (digitally or typed in by hand):
+
+  * Review plain Encounters for that night at that location, e.g.
+    `Encounters at Delambre in 2017 <https://wastd.dbca.wa.gov.au/admin/observations/encounter/?area__id__exact=143&when__year=2017>`_ shows only December records from 2017-12-09 onwards.
+  * Review Surveys, e.g. `Surveys DEL 2017 <https://wastd.dbca.wa.gov.au/admin/observations/survey/?area__id__exact=143&start_time__year=2017>`_
+* If you are sure that no data has been entered yet, enter records from paper as follows.
+* Fill in a new TrackTally paper datasheet by going through the original datasheets.
+  Mark the sheet clearly as "summary of original datasheets".
+  This step will be the most time-intensive and error-prone step in the process.
+  Take the time and diligence to make sure the individual tracks are correctly tallied up.
+  Be aware that some tracks on the orignal paper datasheets are marked up as tallies of several tracks -
+  this is easy to miss.
+* With the TrackTally paper datasheet in hand, backfill the TrackTally as a
+  `new LineTransectEncounter <https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/>`_
+  and fill in the WAStD form as follows:
+
+  * Area, Surveyed Site, Survey: leave blank, they will be auto-filled. Locality and Site will be inferred
+    from the Transect.
+  * Observed at: select one point within the surveyed site.
+    E.g. for Delambre ``{"type":"Point","coordinates":[117.07911,-20.460469]}``
+  * Location acc: GPS.
+  * Loc acc m: 10.
+  * Observed on: click current date, then change the date (by then in correct formatting) to the desired date. Use calendar date.
+    E.g. for the virtual TrackTally after the night of 27-28/11/2017, it's the calendar date of the morning after, 28/11/2017.
+    E.g. ``28/11/2017`` with time ``06:00``.
+  * Observed by: Use the field leader's name.
+  * Data source: leave at "Direct entry".
+  * Source ID: leave blank, will be auto-filled.
+  * Transect line: Capture one good track tally geotrace and re-use in other LTE. In layers, turn on WAStD Sites.
+    Draw a line along the surveyed coastline staying on the sandy bits as far as possible.
+    E.g. for Delambre: ``{"type":"LineString","coordinates":[[117.079024,-20.460389],[117.077157,-20.463284],[117.074883,-20.46646],[117.072737,-20.461113],[117.072179,-20.458439],[117.071943,-20.457072]]}``
+  * Save and continue editing.
+  * Scan all datasheets:
+
+    * Sort Track counts first, tagging sheets last.
+    * Using the printer/scanner's batch input slot, scan all datasheets back and front for that day.
+    * Scan to PDF and let scanner send to email.
+    * Rename the PDF as ``YYYY-MM-DD_datasheets.pdf`` and attach as MediaAttachments.
+
+  * Summarise tracks from datasheets by Species, track type (track with or without nest), count.
+    Add each as Turtle Track Tally Observations to the LTE, e.g.:
+
+    * Data source: Direct entry
+    * Source ID: leave as is
+    * Species
+    * Age: Fresh
+    * Type: either ``track with nest`` or ``track without nest``, ``hatched nest``
+    * Tally
+  * Save and continue editing for each tally count to generate a new ``source_id``.
+    WAStD only generates a new ``source_id`` on page load, and adding more than one inline forms
+    like TrackTallyObservations will recycle the same ``source_id``
+    (which would be wrong, we want a fresh one for every inline form item).
+  * When done backfilling this TrackTally, hit ``Save and add another`` to add another TrackTally.
+  * When done backfilling all TrackTallies, as admin run "Curators > Reconstruct missing surveys" from the WAStD front page.
+    This will reconstruct surveys and link the TrackTallies (LineTransectEncounters) to its respective survey.
 
 .. _itp-stranding-curation:
 
