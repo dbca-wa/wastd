@@ -75,7 +75,7 @@ def set_sites():
 def reconstruct_missing_surveys(buffer_mins=30):
     """Create missing surveys.
 
-    Find TurtleNestEncounters with missing survey but existing site,
+    Find Encounters with missing survey but existing site,
     group by date and site, aggregate datetime ("when") into earliest and latest record,
     buffer earliest and latest record by given minutes (default: 30),
     create a Survey with aggregated data.
@@ -83,7 +83,7 @@ def reconstruct_missing_surveys(buffer_mins=30):
     Crosstab: See pandas
     """
     logger.info("[QA][reconstruct_missing_surveys] Rounding up the orphans...")
-    tne = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)
+    tne = Encounter.objects.exclude(site=None).filter(survey=None)
     logger.info("[QA][reconstruct_missing_surveys] Done. "
                 "Found {0} orphans witout survey.".format(tne.count()))
     logger.info("[QA][reconstruct_missing_surveys] Inferring missing survey data...")
@@ -119,14 +119,13 @@ def reconstruct_missing_surveys(buffer_mins=30):
             end_time=row['datetime']['max'] + bfr,
             end_location = ste.centroid,
             reporter=row['reporter']['first'],
-            start_comments="[QA][AUTO] Reconstructed by WAStD from TurtleNestEncounters without surveys."
+            start_comments="[QA][AUTO] Reconstructed by WAStD from Encounters without surveys."
         )
         s.save()
     logger.info("[QA][reconstruct_missing_surveys] Done. Created {0} surveys to "
-                "adopt {1} orphaned TurtleNestEncounters.".format(
-                    len(missing_surveys), tne.count()))
+                "adopt {1} orphaned Encounters.".format(len(missing_surveys), tne.count()))
 
-    tne = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)
+    tne = Encounter.objects.exclude(site=None).filter(survey=None)
     logger.info("[QA][reconstruct_missing_surveys] Remaining orphans without survey: {0}".format(tne.count()))
 
     return None
