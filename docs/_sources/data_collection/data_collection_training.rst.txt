@@ -124,18 +124,23 @@ counts can be modified:
 
 Protocol Morning Track count
 ----------------------------
-* Soundcheck before leaving camp and WiFi
-* SVS once per site and day
-* Track or Nest / Dist or Pred / MWI as encountered
-* SVE once per site and day
+* Before leaving camp and WiFi reception: Set tablets (if shared with night shift)
+  to day mode and light ODK theme. Optional: Soundcheck.
+* SVS once per site and day. Username must be correct, photo mandatory.
+* Track or Nest / Dist or Pred / MWI as encountered.
+* Special focus: Vehicle tracks within 5m of a nest are a nest disturbance.
+  Photo not enforced by form, but mandatory for each disturbance.
+* Each vehicle track should be captured separately as a Dist or Pred, in addition
+  to any nest it disturbs. Again, mandatory photo.
+* SVE once per site and day. Photo mandatory.
 
 Protocol Night Tagging
 ----------------------
-* Soundcheck before leaving camp and WiFi, set tablets to night mode and dark ODK theme
-* SVS once per site and day
-* Track or Nest for each missed turtle
-* Paper datasheet for each tagged turtle (THV/DEL: ODK form Turtle Tagging)
-* SVE once per site and day
+* Before leaving camp and WiFi reception: Set tablets to night mode and dark ODK theme. Optional: Soundcheck.
+* SVS once per site and day. Username must be correct.
+* Track or Nest for each missed turtle.
+* Paper datasheet for each tagged turtle (THV/DEL: ODK form Turtle Tagging).
+* SVE once per site and day.
 
 
 Track count work flow

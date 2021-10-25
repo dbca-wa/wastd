@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data entry &mdash; WAStD 0.54.4 documentation</title>
+  <title>Data entry &mdash; WAStD 0.54.6 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#other-sections">Other sections</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#backfill-tracks-from-paper">Backfill Tracks from Paper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#turtle-strandings">Turtle Strandings</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#convert-legacy-files">Convert legacy files</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#emails">Emails</a></li>
@@ -133,8 +134,8 @@ supported data sources into WAStD.</p>
 <section id="turtle-tracks-or-nests">
 <h2>Turtle Tracks or Nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline"></a></h2>
 <p>If data is not captured via the digital forms, it is still possible to enter data manually.</p>
-<p>With data curator access, open the [data curation portal](<a class="reference external" href="https://tsc.dbca.wa.gov.au/admin/">https://tsc.dbca.wa.gov.au/admin/</a>)
-and [add a new TurtleNestEncounter](<a class="reference external" href="https://tsc.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/">https://tsc.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/</a>).</p>
+<p>With data curator access, open the <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/">Data curation portal</a>
+and <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/">add a new TurtleNestEncounter</a>.</p>
 <section id="section-encounter">
 <h3>Section “Encounter”<a class="headerlink" href="#section-encounter" title="Permalink to this headline"></a></h3>
 <ul class="simple">
@@ -178,6 +179,86 @@ and [add a new TurtleNestEncounter](<a class="reference external" href="https://
 <h3>Other sections<a class="headerlink" href="#other-sections" title="Permalink to this headline"></a></h3>
 <p>Add as required. “Save and continue editing”.</p>
 </section>
+</section>
+<section id="backfill-tracks-from-paper">
+<span id="itp-tracks-backfill"></span><h2>Backfill Tracks from Paper<a class="headerlink" href="#backfill-tracks-from-paper" title="Permalink to this headline"></a></h2>
+<p>Some field trips were confused between capturing data on paper or digitally.
+These may have paper records of tracks which need to be backfilled into WAStD.</p>
+<p>Since the paper datasheets did not record coordinates for individual tracks,
+we consider missed tracks during tagging and morning tracks from after tagging as one TrackTally
+and backfill these Track Tallies as LineTransectEncounters with TrackTallyObservations and MediaAttachments in WAStD.</p>
+<p>Protocol:</p>
+<ul class="simple">
+<li><p>Find paper records for one day. These might contain:</p>
+<ul>
+<li><p>Track count datasheets for missed tracks during night tagging.</p></li>
+<li><p>Track count datasheets for morning surveys (missed tracks after night tagging).</p></li>
+<li><p>Datasheets for night tagging - ignored here as we only backfill tracks.</p></li>
+</ul>
+</li>
+<li><p>Determine whether the paper record has already been entered (digitally or typed in by hand):</p>
+<ul>
+<li><p>Review plain Encounters for that night at that location, e.g.
+<a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/encounter/?area__id__exact=143&amp;when__year=2017">Encounters at Delambre in 2017</a> shows only December records from 2017-12-09 onwards.</p></li>
+<li><p>Review Surveys, e.g. <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/survey/?area__id__exact=143&amp;start_time__year=2017">Surveys DEL 2017</a></p></li>
+</ul>
+</li>
+<li><p>If you are sure that no data has been entered yet, enter records from paper as follows.</p></li>
+<li><p>Fill in a new TrackTally paper datasheet by going through the original datasheets.
+Mark the sheet clearly as “summary of original datasheets”.
+This step will be the most time-intensive and error-prone step in the process.
+Take the time and diligence to make sure the individual tracks are correctly tallied up.
+Be aware that some tracks on the orignal paper datasheets are marked up as tallies of several tracks -
+this is easy to miss.</p></li>
+<li><p>With the TrackTally paper datasheet in hand, backfill the TrackTally as a
+<a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/">new LineTransectEncounter</a>
+and fill in the WAStD form as follows:</p>
+<ul>
+<li><p>Area, Surveyed Site, Survey: leave blank, they will be auto-filled. Locality and Site will be inferred
+from the Transect.</p></li>
+<li><p>Observed at: select one point within the surveyed site.
+E.g. for Delambre <code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[117.07911,-20.460469]}</span></code></p></li>
+<li><p>Location acc: GPS.</p></li>
+<li><p>Loc acc m: 10.</p></li>
+<li><p>Observed on: click current date, then change the date (by then in correct formatting) to the desired date. Use calendar date.
+E.g. for the virtual TrackTally after the night of 27-28/11/2017, it’s the calendar date of the morning after, 28/11/2017.
+E.g. <code class="docutils literal notranslate"><span class="pre">28/11/2017</span></code> with time <code class="docutils literal notranslate"><span class="pre">06:00</span></code>.</p></li>
+<li><p>Observed by: Use the field leader’s name.</p></li>
+<li><p>Data source: leave at “Direct entry”.</p></li>
+<li><p>Source ID: leave blank, will be auto-filled.</p></li>
+<li><p>Transect line: Capture one good track tally geotrace and re-use in other LTE. In layers, turn on WAStD Sites.
+Draw a line along the surveyed coastline staying on the sandy bits as far as possible.
+E.g. for Delambre: <code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:&quot;LineString&quot;,&quot;coordinates&quot;:[[117.079024,-20.460389],[117.077157,-20.463284],[117.074883,-20.46646],[117.072737,-20.461113],[117.072179,-20.458439],[117.071943,-20.457072]]}</span></code></p></li>
+<li><p>Save and continue editing.</p></li>
+<li><p>Scan all datasheets:</p>
+<ul>
+<li><p>Sort Track counts first, tagging sheets last.</p></li>
+<li><p>Using the printer/scanner’s batch input slot, scan all datasheets back and front for that day.</p></li>
+<li><p>Scan to PDF and let scanner send to email.</p></li>
+<li><p>Rename the PDF as <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD_datasheets.pdf</span></code> and attach as MediaAttachments.</p></li>
+</ul>
+</li>
+<li><p>Summarise tracks from datasheets by Species, track type (track with or without nest), count.
+Add each as Turtle Track Tally Observations to the LTE, e.g.:</p>
+<ul>
+<li><p>Data source: Direct entry</p></li>
+<li><p>Source ID: leave as is</p></li>
+<li><p>Species</p></li>
+<li><p>Age: Fresh</p></li>
+<li><p>Type: either <code class="docutils literal notranslate"><span class="pre">track</span> <span class="pre">with</span> <span class="pre">nest</span></code> or <code class="docutils literal notranslate"><span class="pre">track</span> <span class="pre">without</span> <span class="pre">nest</span></code>, <code class="docutils literal notranslate"><span class="pre">hatched</span> <span class="pre">nest</span></code></p></li>
+<li><p>Tally</p></li>
+</ul>
+</li>
+<li><p>Save and continue editing for each tally count to generate a new <code class="docutils literal notranslate"><span class="pre">source_id</span></code>.
+WAStD only generates a new <code class="docutils literal notranslate"><span class="pre">source_id</span></code> on page load, and adding more than one inline forms
+like TrackTallyObservations will recycle the same <code class="docutils literal notranslate"><span class="pre">source_id</span></code>
+(which would be wrong, we want a fresh one for every inline form item).</p></li>
+<li><p>When done backfilling this TrackTally, hit <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">add</span> <span class="pre">another</span></code> to add another TrackTally.</p></li>
+<li><p>When done backfilling all TrackTallies, as admin run “Curators &gt; Reconstruct missing surveys” from the WAStD front page.
+This will reconstruct surveys and link the TrackTallies (LineTransectEncounters) to its respective survey.</p></li>
+</ul>
+</li>
+</ul>
 </section>
 <section id="turtle-strandings">
 <span id="itp-stranding-curation"></span><h2>Turtle Strandings<a class="headerlink" href="#turtle-strandings" title="Permalink to this headline"></a></h2>
