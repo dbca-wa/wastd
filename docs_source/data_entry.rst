@@ -89,6 +89,9 @@ and backfill these Track Tallies as LineTransectEncounters with TrackTallyObserv
 
 Protocol:
 
+Scan paper datasheets
+---------------------
+
 * Find paper records for one day. These might contain:
 
   * Track count datasheets for missed tracks during night tagging.
@@ -104,6 +107,10 @@ Protocol:
   * Sort Track counts first, tagging sheets last in each day's batch of datasheets.
   * Using the printer/scanner's batch input slot, scan all datasheets back and front for that day into a single PDF.
   * Once transferred to your local computer, rename the PDFs as ``YYYY-MM-DD_datasheets.pdf``.
+
+Summarise Tracks into TrackTallies
+----------------------------------
+
 * With the TrackTally paper datasheet in hand or on screen, 
   fill in a new TrackTally paper datasheet by going through the original datasheets.
   
@@ -112,6 +119,9 @@ Protocol:
   * Take the time and diligence to make sure the individual tracks are correctly tallied up.
   * Be aware that some tracks on the original paper datasheets are marked up as tallies of several tracks,
     or are annotated on the side.
+
+Create WAStD LineTransectEncounters from TrackTallies
+-----------------------------------------------------
 
 * Next, backfill the TrackTally as a
   `new LineTransectEncounter <https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/>`_:
@@ -135,7 +145,7 @@ Protocol:
   * Add the number of required TrackTallyObservations, one for each tally number, 
       via ``Add another Turtle Track Tally Observation``.
   * For each TrackTallyObservation, fill in the following fields:
-  
+
     * ``Data source``: Leave at ``Direct entry``.
     * ``Source ID``: Leave the auto-generated ID, but append a running number, e.g. ``1``, ``2``, ``3``, etc. to create unique IDs.
       The system generates the same ID for multiple TrackTallyObservations if added without a ``Save and continue editing``.

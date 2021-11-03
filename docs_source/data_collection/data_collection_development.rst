@@ -1,18 +1,18 @@
 .. _dc-dev:
 
-***************************
+===========================
 Data collection development
-***************************
+===========================
 
 This chapter provides information for developers of data collection forms and protocols.
 
 Are you a volunteer or staff data collector?
-All you need to know is written at :ref:`data-collection-training`,
+All you need to know is written at :ref:`dc-training`,
 but feel free to read more of this documentation.
 
 Are you a data collection admin in charge of maintaining collection devices
 (tablets), training data collectors, and uploading the data?
-Read :ref:`data-collection-admin`.
+Read :ref:`dc-admin`.
 
 
 Are you a solution architect, developer or business analyst? Then read on.
@@ -23,31 +23,31 @@ Solution architecture and infrastructure
 This section provides a condensed overview of the information management infrastructure behind our digital data collection process.
 
 * Forms are built using the form builder software
-  `ODK Build <https://opendatakit.org/use/build/>`_,
-  hosted `here <http://build.opendatakit.org/>`_.
+  `ODK Build <https://docs.getodk.org/form-design-intro/#drag-and-drop-form-creation>`_ 
+  at `build.getodk.org <http://build.getodk.org/>`_.
 * Forms are pushed from ODK Build to an instance of the data
   clearinghouse software
-  `ODK Aggregate <https://opendatakit.org/use/aggregate/>`_,
-  deployed `here <http://dpaw-data.appspot.com/>`_.
+  `ODK Central <https://docs.getodk.org/central-intro/>`_ 
+  at `odkc.dbca.wa.gov.au <https://odkc.dbca.wa.gov.au/>`_.
 * Mobile Android devices (tablets, phablets, smartphones) running
   the data collection software
-  `ODK Collect <https://opendatakit.org/use/collect/>`_
+  `ODK Collect <https://docs.getodk.org/collect-intro/>`_
   are configured to load data collection forms from
-  `DBCA's ODK Aggregate server <http://dpaw-data.appspot.com/>`_,
+  `DBCA's ODK Central server <https://odkc.dbca.wa.gov.au/>`_,
   collect data (offline capable), and submit collected data back to
-  DBCA's ODK Aggregate server.
+  DBCA's ODK Central server.
 * The data manager (Florian Mayer) uploads data from DBCA's
-  ODK Aggregate server to the WA Sea Turtle Database
-  `WAStD <https://tsc.dpaw.wa.gov.au/>`_.
+  ODK Central server to the WA Sea Turtle Database
+  `WAStD <https://wastd.dpaw.wa.gov.au/>`_.
 * Data anlysts access the WAStD API e.g. using the R package
-  `wastdR <https://parksandwildlife.github.io/wastdr/>`_ to produce insight
+  `wastdR <https://dbcawa.github.io/wastdr/>`_ to produce insight
   from the collected data.
 * Insight is disseminated through the
-  `DBCA data catalogue <https://data.dpaw.wa.gov.au/>`_ and other internal or public platforms.
+  `DBCA data catalogue <https://data.dbca.wa.gov.au/>`_ and other internal or public platforms.
 
 See also :ref:`business-process-turtle-tracks`.
 
-The following diagram is also shown at :ref:`dm-data-entry`.
+The following diagram is also shown at :ref:`data-entry`.
 
 .. image:: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
     :target: https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png
@@ -82,8 +82,7 @@ Night 1
 
 Night 2
 ^^^^^^^
-* Second team "Spud" and "Coral" encounter the same turtle with left flipper tag
- "WB7326"
+* Second team "Spud" and "Coral" encounter the same turtle with left flipper tag "WB7326"
 * They scan for PIT tag, find and record "...755"
 * They apply and record another flipper tag "WB7384" on right flipper
 * They measure CCL and CCW

@@ -687,3 +687,52 @@ Returning after tagging (THV, DEL: WiFi hotspot, wall power):
 * "Send finalized forms"
 * Await ingest to WAStD
 * Review QA reports
+
+Flight case running sheet
+=========================
+
+WiFi hotspot
+------------
+* WiFi credentials: ______________________
+* Change hotspot settings:
+
+  * Connect a laptop to the WiFi hotspot
+  * Open `http://m.home/ `_
+  * Admin password: ______________________
+  * Changing the WiFi name and password will log the laptop out, you will need to log back in with the new WiFi credentials.
+* The WiFi hotspot can connect max 10 devices. E.g. 8 tablets, two laptops.
+
+Tablets: Android
+----------------
+* System upgrade 1 week before field trip: Settings
+* App update: Play Store > Account (user icon top right) > Manage apps
+* Navigation: home, back, apps
+* Google account credentials: wa.census@gmail.com, password ______________________
+
+ODK Collect
+-----------
+* Reset protocol:
+ 
+  * Project settings > reset > delete all settings (keep maps)
+  * Scan this QR code: (insert QR code)
+  * Download forms (auto)
+  * Delete and re-create all form shortcut widgets
+
+Data capture focus
+------------------
+Focus training on:
+* Correct username
+* SVS with point inside correct site
+* Photos (landscape format) whereever possible with length reference (yardstick) well visible
+* Unknown species or nest: unsure, swipe forward, take photo, swipe back, enter best guess, swipe forward (photos present but now hidden)
+
+Data entry
+----------
+* No auto-send because tagging backfilling
+* Send finalized once proofread
+
+Devices
+-------
+* On charger, in neoprene pouch, or in hand
+* Port plugs
+* Clean sleeves and pouches daily to keep sand free
