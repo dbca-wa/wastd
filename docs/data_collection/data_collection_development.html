@@ -120,41 +120,41 @@
 <span id="dc-dev"></span><h1>Data collection development<a class="headerlink" href="#data-collection-development" title="Permalink to this headline"></a></h1>
 <p>This chapter provides information for developers of data collection forms and protocols.</p>
 <p>Are you a volunteer or staff data collector?
-All you need to know is written at <span class="xref std std-ref">data-collection-training</span>,
+All you need to know is written at <span class="xref std std-ref">dc-training</span>,
 but feel free to read more of this documentation.</p>
 <p>Are you a data collection admin in charge of maintaining collection devices
 (tablets), training data collectors, and uploading the data?
-Read <span class="xref std std-ref">data-collection-admin</span>.</p>
+Read <a class="reference internal" href="data_collection_admin.html#dc-admin"><span class="std std-ref">Data collection administrators</span></a>.</p>
 <p>Are you a solution architect, developer or business analyst? Then read on.</p>
 <section id="solution-architecture-and-infrastructure">
 <h2>Solution architecture and infrastructure<a class="headerlink" href="#solution-architecture-and-infrastructure" title="Permalink to this headline"></a></h2>
 <p>This section provides a condensed overview of the information management infrastructure behind our digital data collection process.</p>
 <ul class="simple">
 <li><p>Forms are built using the form builder software
-<a class="reference external" href="https://opendatakit.org/use/build/">ODK Build</a>,
-hosted <a class="reference external" href="http://build.opendatakit.org/">here</a>.</p></li>
+<a class="reference external" href="https://docs.getodk.org/form-design-intro/#drag-and-drop-form-creation">ODK Build</a>
+at <a class="reference external" href="http://build.getodk.org/">build.getodk.org</a>.</p></li>
 <li><p>Forms are pushed from ODK Build to an instance of the data
 clearinghouse software
-<a class="reference external" href="https://opendatakit.org/use/aggregate/">ODK Aggregate</a>,
-deployed <a class="reference external" href="http://dpaw-data.appspot.com/">here</a>.</p></li>
+<a class="reference external" href="https://docs.getodk.org/central-intro/">ODK Central</a>
+at <a class="reference external" href="https://odkc.dbca.wa.gov.au/">odkc.dbca.wa.gov.au</a>.</p></li>
 <li><p>Mobile Android devices (tablets, phablets, smartphones) running
 the data collection software
-<a class="reference external" href="https://opendatakit.org/use/collect/">ODK Collect</a>
+<a class="reference external" href="https://docs.getodk.org/collect-intro/">ODK Collect</a>
 are configured to load data collection forms from
-<a class="reference external" href="http://dpaw-data.appspot.com/">DBCA’s ODK Aggregate server</a>,
+<a class="reference external" href="https://odkc.dbca.wa.gov.au/">DBCA’s ODK Central server</a>,
 collect data (offline capable), and submit collected data back to
-DBCA’s ODK Aggregate server.</p></li>
+DBCA’s ODK Central server.</p></li>
 <li><p>The data manager (Florian Mayer) uploads data from DBCA’s
-ODK Aggregate server to the WA Sea Turtle Database
-<a class="reference external" href="https://tsc.dpaw.wa.gov.au/">WAStD</a>.</p></li>
+ODK Central server to the WA Sea Turtle Database
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/">WAStD</a>.</p></li>
 <li><p>Data anlysts access the WAStD API e.g. using the R package
-<a class="reference external" href="https://parksandwildlife.github.io/wastdr/">wastdR</a> to produce insight
+<a class="reference external" href="https://dbcawa.github.io/wastdr/">wastdR</a> to produce insight
 from the collected data.</p></li>
 <li><p>Insight is disseminated through the
-<a class="reference external" href="https://data.dpaw.wa.gov.au/">DBCA data catalogue</a> and other internal or public platforms.</p></li>
+<a class="reference external" href="https://data.dbca.wa.gov.au/">DBCA data catalogue</a> and other internal or public platforms.</p></li>
 </ul>
 <p>See also <a class="reference internal" href="../business_analysts.html#business-process-turtle-tracks"><span class="std std-ref">Business Process Turtle Tracks</span></a>.</p>
-<p>The following diagram is also shown at <a class="reference internal" href="../business_analysts.html#dm-data-entry"><span class="std std-ref">IT processes along the Data life cycle</span></a>.</p>
+<p>The following diagram is also shown at <span class="xref std std-ref">data-entry</span>.</p>
 <a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png"><img alt="Turtle data flow, ideal state" src="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png" /></a>
 <a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png"><img alt="Turtle data flow, current state" src="https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png" /></a>
 </section>
@@ -180,12 +180,7 @@ as “applied new”.</p></li>
 <section id="night-2">
 <h4>Night 2<a class="headerlink" href="#night-2" title="Permalink to this headline"></a></h4>
 <ul class="simple">
-<li><p>Second team “Spud” and “Coral” encounter the same turtle with left flipper tag</p></li>
-</ul>
-<blockquote>
-<div><p>“WB7326”</p>
-</div></blockquote>
-<ul class="simple">
+<li><p>Second team “Spud” and “Coral” encounter the same turtle with left flipper tag “WB7326”</p></li>
 <li><p>They scan for PIT tag, find and record “…755”</p></li>
 <li><p>They apply and record another flipper tag “WB7384” on right flipper</p></li>
 <li><p>They measure CCL and CCW</p></li>

@@ -82,6 +82,16 @@
 <li class="toctree-l3"><a class="reference internal" href="#curate-records-from-training-days">Curate records from training days</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#data-surgery">Data surgery</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#change-wastd-sites">Change WAStD sites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#step-1-update-wastd-sites">Step 1: Update WAStD sites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-2-update-wastd-encounters-and-surveys">Step 2: Update WAStD Encounters and surveys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-3-reconstruct-missing-surveys">Step 3: Reconstruct missing surveys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-4-run-reports-to-review-outcome">Step 4: Run reports to review Outcome</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
@@ -117,15 +127,15 @@
            <div itemprop="articleBody">
              
   <section id="data-qa">
-<h1>Data QA<a class="headerlink" href="#data-qa" title="Permalink to this headline"></a></h1>
+<span id="dq-qa"></span><h1>Data QA<a class="headerlink" href="#data-qa" title="Permalink to this headline"></a></h1>
 <p>This chapter contains</p>
 <ul class="simple">
-<li><p>an explanation of QA levels and how WAStD audits QA decisions: (<span class="xref std std-ref">dq-qa-levels</span>),</p></li>
-<li><p>the places where QA operators interact with data (<span class="xref std std-ref">dq-qa-links</span>), and</p></li>
-<li><p>the protocols for data QA (<span class="xref std std-ref">dq-qa-protocols</span>).</p></li>
+<li><p>an explanation of QA levels and how WAStD audits QA decisions: (<a class="reference internal" href="#dq-qa-levels"><span class="std std-ref">QA levels</span></a>),</p></li>
+<li><p>the places where QA operators interact with data (<a class="reference internal" href="#dq-qa-links"><span class="std std-ref">QA entrypoints</span></a>), and</p></li>
+<li><p>the protocols for data QA (<a class="reference internal" href="#dq-qa-protocols"><span class="std std-ref">Users</span></a>).</p></li>
 </ul>
 <section id="qa-levels">
-<h2>QA levels<a class="headerlink" href="#qa-levels" title="Permalink to this headline"></a></h2>
+<span id="dq-qa-levels"></span><h2>QA levels<a class="headerlink" href="#qa-levels" title="Permalink to this headline"></a></h2>
 <p>WAStD keeps track of trust in the veracity of records as QA levels.
 The QA levels and transitions between them are discussed next.</p>
 <section id="new">
@@ -178,7 +188,7 @@ A log of QA is kept on the <a class="reference external" href="https://dbcawa.at
 </section>
 </section>
 <section id="qa-entrypoints">
-<h2>QA entrypoints<a class="headerlink" href="#qa-entrypoints" title="Permalink to this headline"></a></h2>
+<span id="dq-qa-links"></span><h2>QA entrypoints<a class="headerlink" href="#qa-entrypoints" title="Permalink to this headline"></a></h2>
 <p>The main entrypoint for QA are the reports and data products which are disseminated through file shares.
 In 2021, these are SharePoint shares, containing dated folders with the daily full data snapshots and QA products.
 They contain:</p>
@@ -201,7 +211,7 @@ They contain:</p>
 </section>
 </section>
 <section id="users">
-<h2>Users<a class="headerlink" href="#users" title="Permalink to this headline"></a></h2>
+<span id="dq-qa-protocols"></span><h2>Users<a class="headerlink" href="#users" title="Permalink to this headline"></a></h2>
 <section id="double-check-reporter-names">
 <h3>Double-check reporter names<a class="headerlink" href="#double-check-reporter-names" title="Permalink to this headline"></a></h3>
 <p>Filter the Survey list to each of your sites, compare “reported by” with “comments at start”.
@@ -224,12 +234,10 @@ Finally, the old profile is marked as “not active”, but is retained.</p>
 <section id="add-missing-users">
 <h3>Add missing users<a class="headerlink" href="#add-missing-users" title="Permalink to this headline"></a></h3>
 <p>At the beginning of the field season, send a spreadsheet of new data enumerators to the admin as per the “QA users” report.
-The spreadsheet must contain the following columns:
-* name: The full given and surname, as they will write it in the “Username”. E.g. “Florian Mayer”.</p>
-<blockquote>
-<div><p>Roberts and Josephs have to decide whether they’re Bob and Joe once and stick with it. Longer is often better.</p>
-</div></blockquote>
+The spreadsheet must contain the following columns:</p>
 <ul class="simple">
+<li><p>name: The full given and surname, as they will write it in the “Username”. E.g. “Florian Mayer”.
+Roberts and Josephs have to decide whether they’re Bob and Joe once and stick with it. Longer is often better.</p></li>
 <li><p>email: A valid email address without any further markup. E.g. “<a class="reference external" href="mailto:Florian&#46;Mayer&#37;&#52;&#48;email&#46;com">Florian<span>&#46;</span>Mayer<span>&#64;</span>email<span>&#46;</span>com</a>”.</p></li>
 <li><p>phone: A valid phone number, formatted as text, and with the international prefix. E.g. “+61414123456”.</p></li>
 </ul>
@@ -362,6 +370,54 @@ Set species to Hatchback (if it’s a TNE), set disturbance cause to “training
 Open AnimalEncounters, filter to area and date.
 <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&amp;when__year=2020">https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&amp;when__year=2020</a> (no records for CBB Oct 25).
 Set species to hatchback and curate.</p>
+</section>
+</section>
+<section id="data-surgery">
+<span id="id1"></span><h2>Data surgery<a class="headerlink" href="#data-surgery" title="Permalink to this headline"></a></h2>
+<section id="change-wastd-sites">
+<h3>Change WAStD sites<a class="headerlink" href="#change-wastd-sites" title="Permalink to this headline"></a></h3>
+<p>Example: Thevenard was split into North and South beach, we want to re-introduce the Thevenard Tagging area.</p>
+<section id="step-1-update-wastd-sites">
+<h4>Step 1: Update WAStD sites<a class="headerlink" href="#step-1-update-wastd-sites" title="Permalink to this headline"></a></h4>
+<ul class="simple">
+<li><p>Areas: Save <a class="reference external" href="https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&amp;format=json&amp;limit=1000">WAStD Areas</a>
+as areas.geojson, drag and drop into QGIS.</p></li>
+<li><p>Create new sites in QGIS, adjust old ones as needed.</p></li>
+<li><p>Copy the updated and  geometries from the GeoJSON file (as Polygon, not MultiPolygon) to WAStD sites.</p></li>
+</ul>
+</section>
+<section id="step-2-update-wastd-encounters-and-surveys">
+<h4>Step 2: Update WAStD Encounters and surveys<a class="headerlink" href="#step-2-update-wastd-encounters-and-surveys" title="Permalink to this headline"></a></h4>
+<ul>
+<li><p>The new Tagging area (pk=20) takes over parts of Thevenard North (pk=28) and Thevenard South (pk=29).</p></li>
+<li><p>We need to reset the “site” field of all Encounters in Thevenard Tagging which are not yet linked to Thevenard Tagging.</p></li>
+<li><p>Next, we need to reset the “site” field of all Surveys at Area (WAStD: Locality) Thevenard (pk=17).
+This adopts Encounters within and expels Encounters outside. Encounters in the new Tagging site will have no Survey for now.</p></li>
+<li><p>Rancher &gt; WAStD pod &gt; Shell &gt; <code class="docutils literal notranslate"><span class="pre">fab</span> <span class="pre">shell</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">where__contained</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">geom</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="n">t</span><span class="p">):</span>
+  <span class="n">e</span><span class="o">.</span><span class="n">site</span><span class="o">=</span><span class="kc">None</span>
+  <span class="n">e</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">Survey</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">area</span><span class="o">=</span><span class="mi">17</span><span class="p">):</span>
+  <span class="n">s</span><span class="o">.</span><span class="n">site</span> <span class="o">=</span> <span class="kc">None</span>
+  <span class="n">s</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>In our case, we’re reactivating a site that was previously deactivated and had Surveys linked to it via start location.</p>
+</section>
+<section id="step-3-reconstruct-missing-surveys">
+<h4>Step 3: Reconstruct missing surveys<a class="headerlink" href="#step-3-reconstruct-missing-surveys" title="Permalink to this headline"></a></h4>
+<p>As admin, run WAStD front-end menu Curators &gt; Reconstruct missing surveys.</p>
+</section>
+<section id="step-4-run-reports-to-review-outcome">
+<h4>Step 4: Run reports to review Outcome<a class="headerlink" href="#step-4-run-reports-to-review-outcome" title="Permalink to this headline"></a></h4>
+<p>Once reports are re-run, we will find any duplicate surveys and other problems to fix.</p>
+</section>
 </section>
 </section>
 </section>

@@ -52,7 +52,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#other-sections">Other sections</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#backfill-tracks-from-paper-track-tally">Backfill Tracks from Paper (Track Tally)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backfill-tracks-from-paper-track-tally">Backfill Tracks from Paper (Track Tally)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scan-paper-datasheets">Scan paper datasheets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summarise-tracks-into-tracktallies">Summarise Tracks into TrackTallies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-wastd-linetransectencounters-from-tracktallies">Create WAStD LineTransectEncounters from TrackTallies</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#turtle-strandings">Turtle Strandings</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#convert-legacy-files">Convert legacy files</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#emails">Emails</a></li>
@@ -188,6 +193,8 @@ These may have paper records of tracks which need to be backfilled into WAStD.</
 we consider missed tracks during tagging and morning tracks from after tagging as one TrackTally
 and backfill these Track Tallies as LineTransectEncounters with TrackTallyObservations and MediaAttachments in WAStD.</p>
 <p>Protocol:</p>
+<section id="scan-paper-datasheets">
+<h3>Scan paper datasheets<a class="headerlink" href="#scan-paper-datasheets" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Find paper records for one day. These might contain:</p>
 <ul>
@@ -210,6 +217,11 @@ and backfill these Track Tallies as LineTransectEncounters with TrackTallyObserv
 <li><p>Once transferred to your local computer, rename the PDFs as <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD_datasheets.pdf</span></code>.</p></li>
 </ul>
 </li>
+</ul>
+</section>
+<section id="summarise-tracks-into-tracktallies">
+<h3>Summarise Tracks into TrackTallies<a class="headerlink" href="#summarise-tracks-into-tracktallies" title="Permalink to this headline"></a></h3>
+<ul class="simple">
 <li><p>With the TrackTally paper datasheet in hand or on screen,
 fill in a new TrackTally paper datasheet by going through the original datasheets.</p>
 <ul>
@@ -220,6 +232,11 @@ fill in a new TrackTally paper datasheet by going through the original datasheet
 or are annotated on the side.</p></li>
 </ul>
 </li>
+</ul>
+</section>
+<section id="create-wastd-linetransectencounters-from-tracktallies">
+<h3>Create WAStD LineTransectEncounters from TrackTallies<a class="headerlink" href="#create-wastd-linetransectencounters-from-tracktallies" title="Permalink to this headline"></a></h3>
+<ul class="simple">
 <li><p>Next, backfill the TrackTally as a
 <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/">new LineTransectEncounter</a>:</p>
 <ul>
@@ -270,6 +287,7 @@ This will reconstruct surveys and link the TrackTallies (LineTransectEncounters)
 </ul>
 </li>
 </ul>
+</section>
 </section>
 <section id="turtle-strandings">
 <span id="itp-stranding-curation"></span><h2>Turtle Strandings<a class="headerlink" href="#turtle-strandings" title="Permalink to this headline"></a></h2>

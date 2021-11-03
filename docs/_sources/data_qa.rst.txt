@@ -1,4 +1,5 @@
 .. _dq-qa:
+
 *******
 Data QA
 *******
@@ -10,6 +11,7 @@ This chapter contains
 * the protocols for data QA (:ref:`dq-qa-protocols`).
 
 .. _dq-qa-levels:
+
 QA levels
 =========
 WAStD keeps track of trust in the veracity of records as QA levels.
@@ -67,6 +69,7 @@ Reports currently include records of all QA levels.
 A log of QA is kept on the `Confluence Wiki <https://dbcawa.atlassian.net/wiki/spaces/TG/pages/932184080/Turtle+Nesting+Data+QA+log>`_.
 
 .. _dq-qa-links:
+
 QA entrypoints
 ==============
 
@@ -90,6 +93,7 @@ Productivity tips
   * "Curate" includes saving the record. No need to "Save and continue editing".
 
 .. _dq-qa-protocols:
+
 Users
 =====
 
@@ -119,6 +123,7 @@ Add missing users
 -----------------
 At the beginning of the field season, send a spreadsheet of new data enumerators to the admin as per the "QA users" report.
 The spreadsheet must contain the following columns:
+
 * name: The full given and surname, as they will write it in the "Username". E.g. "Florian Mayer".
   Roberts and Josephs have to decide whether they're Bob and Joe once and stick with it. Longer is often better.
 * email: A valid email address without any further markup. E.g. "Florian.Mayer@email.com".
@@ -268,3 +273,49 @@ Open AnimalEncounters, filter to area and date.
 https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=19&when__year=2020 (no records for CBB Oct 25).
 Set species to hatchback and curate.
 
+
+.. _data_surgery:
+
+Data surgery
+============
+
+Change WAStD sites
+------------------
+
+Example: Thevenard was split into North and South beach, we want to re-introduce the Thevenard Tagging area.
+
+Step 1: Update WAStD sites
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Areas: Save `WAStD Areas <https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&format=json&limit=1000>`_
+  as areas.geojson, drag and drop into QGIS.
+* Create new sites in QGIS, adjust old ones as needed. 
+* Copy the updated and  geometries from the GeoJSON file (as Polygon, not MultiPolygon) to WAStD sites.
+
+Step 2: Update WAStD Encounters and surveys
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* The new Tagging area (pk=20) takes over parts of Thevenard North (pk=28) and Thevenard South (pk=29).
+* We need to reset the "site" field of all Encounters in Thevenard Tagging which are not yet linked to Thevenard Tagging.
+* Next, we need to reset the "site" field of all Surveys at Area (WAStD: Locality) Thevenard (pk=17). 
+  This adopts Encounters within and expels Encounters outside. Encounters in the new Tagging site will have no Survey for now.
+* Rancher > WAStD pod > Shell > ``fab shell`` 
+  ::
+    t = Area.objects.get(pk=20)
+
+    for e in Encounter.objects.filter(where__contained=t.geom).exclude(site=t):
+      e.site=None
+      e.save()
+      print(e) 
+    
+    for s in Survey.objects.filter(area=17):
+      s.site = None
+      s.save()
+
+In our case, we're reactivating a site that was previously deactivated and had Surveys linked to it via start location.
+
+Step 3: Reconstruct missing surveys
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+As admin, run WAStD front-end menu Curators > Reconstruct missing surveys.
+
+Step 4: Run reports to review Outcome
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Once reports are re-run, we will find any duplicate surveys and other problems to fix.
