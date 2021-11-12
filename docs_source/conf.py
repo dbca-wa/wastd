@@ -32,7 +32,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # IMPORTANT: use SINGLE quotes for the settings module
 os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.local'
 
-dot_env = os.path.join(os.getcwd(), '.env')
+ROOT_DIR = environ.Path(__file__) - 2  # (wastd/docs_source/conf.py - 2 = wastd/)
+dot_env = os.path.join(ROOT_DIR, '.env')
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
@@ -41,7 +42,7 @@ env = environ.Env(
 if os.path.exists(dot_env):
     environ.Env.read_env(dot_env)
 else:
-    print('manage.py: The .env file does not exist.')
+    print('Sphinx conf.py: The .env file does not exist at path {}.'.format(dot_env))
 
 
 DATABASES = {'default': env.db()}

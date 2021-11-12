@@ -13,7 +13,7 @@ env = environ.Env(
 if os.path.exists(dot_env):
     environ.Env.read_env(dot_env)
 else:
-    print('manage.py: The .env file does not exist.')
+    print('manage.py: The .env file does not exist at path {}.'.format(dot_env))
 
 
 if __name__ == '__main__':
