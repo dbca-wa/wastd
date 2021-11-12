@@ -554,6 +554,7 @@ Night tagging
     :alt: Night tagging
 
 When training:
+
 * Collect as many records as you wish on any place outside the actual nesting beaches.
 * Use the species "Hatchback turtle (Corolla corolla)" and any available options 
   indicating training/testing when conducting training on an actual nesting beach.
@@ -731,11 +732,11 @@ Tablets: Android
 * System upgrade 1 week before field trip: Settings
 * App update: Play Store > Account (user icon top right) > Manage apps
 * Navigation: home, back, apps
-* Google account credentials: wa.census@gmail.com, password ______________________
+* Google account credentials: wa.turtles@gmail.com, password ______________________
 
 ODK Collect
 -----------
-* Reset protocol:
+Reset protocol:
  
   * Project settings > reset > delete all settings (keep maps)
   * Scan this QR code: (insert QR code)
@@ -745,6 +746,7 @@ ODK Collect
 Data capture focus
 ------------------
 Focus training on:
+
 * Correct username
 * SVS with point inside correct site
 * Photos (landscape format) whereever possible with length reference (yardstick) well visible
