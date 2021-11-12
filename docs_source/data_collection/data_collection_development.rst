@@ -203,7 +203,7 @@ Lenovo Tab 3 7" TB3-730F
 * (-) Being phased out as of early 2018, replaced by TB-7304F.
 
 Lenovo Tab 7 Essential TB-7304F
----------------------
+-------------------------------
 * Successor to the TB3-730F.
 * Beautiful performance, low price.
 * Lives longer with silicone shell and screen protector.
@@ -234,6 +234,15 @@ Moto G6 phone
 * Works perfectly fine with ODK Collect.
 
 
+Samsung Galaxy Tab A 8" 2019
+----------------------------
+* Our winner and mainstay of our current device fleet.
+* Fast GPS.
+* Good battery life.
+* Good size.
+* Affordable: AUD 250 with AUD 30 Poetic silicone case and AUD 10 screen protector.
+* Night mode and sufficient display dimming for use at night.
+
 General observations
 --------------------
 * All devices were daylight-readable.
@@ -250,7 +259,6 @@ General observations
 * Best low-cost field device: Lenovo Tab 3. Runner-up: Samsung S2 8".
 * Strong case against Galaxy Tab A (slow GPS, low internal storage,
   old OS version) and of course devices without GPS chip.
-
 
 .. _cost-benefit-analysis-digital-data-capture:
 
