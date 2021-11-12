@@ -371,8 +371,7 @@ Drag a line with your foot across the hatchling tracks above the high water mark
 Marine Wildlife Incident (Turtle Stranding)
 ===========================================
 
-Setup the device as described above and select the latest "Marine Wildlife Incident"
-form in "Get blank forms".
+Setup the device as described above.
 
 The expected work flow is:
 
@@ -401,7 +400,7 @@ If possible, photographs should be taken in landscape format.
 
 The habitat photo should be taken from about 10 to 20 m distance to the animal to include enough of the surroundings.
 
-.. dct-turtle-tagging:
+.. _dct-turtle-tagging:
 
 Turtle Tagging
 ==============
@@ -427,31 +426,32 @@ Training focus:
 
 Assumptions
 -----------
-1. Minimal ODK record is good enough if taken just before or right after tagging
-  a. auto-time close enough
-  b. location able to capture next to nest
-2. Minimal ODK record links to datasheet via datasheet ID
-  a. Datasheet ID can be hand-written on datasheet or pre-allocated and printed on sticker
-  b. Datasheet ID is ephemeral and does not need to be unique beyond field team
-3. Reasons for not backfilling form directly after tagging:
-  a. other turtles need tagging right now
-  b. dark night, preserve night vision
-  c. rain, can't use tablet
-4. Backfilling of paper datasheet happens in ODK Collect. The goal is to reproduce the written data on the paper datasheet faithfully.
-5. QA happens after import into WAStD, assisted by dedicated QA reports.
+* Minimal ODK record is good enough if taken just before or right after tagging
+   * auto-time close enough
+   * location able to capture next to nest
+* Minimal ODK record links to datasheet via datasheet ID
+   * Datasheet ID can be hand-written on datasheet or pre-allocated and printed on sticker
+   * Datasheet ID is ephemeral and does not need to be unique beyond field team
+* Reasons for not backfilling form directly after tagging:
+   * other turtles need tagging right now
+   * dark night, preserve night vision
+   * rain, can't use tablet
+* Backfilling of paper datasheet happens in ODK Collect. The goal is to reproduce the written data on the paper datasheet faithfully.
+* QA happens after import into WAStD, assisted by dedicated QA reports.
 
 Minimal viable record
 ----------------------
 Both the ODK form "Turtle Tagging" and the paper datasheet allow to capture more data than needed to be
 compatible with any detail level of data capture.
 On busy nesting nights, there can be several turtles competing for the same tagging team's time.
-In this case, the team needs to commit to one turtle for processing, and record the minimum viable record, then move on to the next turtle.
+In this case, the team needs to commit to one turtle for processing, and record the minimum viable record, 
+then move on to the next turtle.
 
 The minimal viable record includes:
 
-* Location and time of nesting
-* PIT tags
-* Flipper tags
+* Location and time of nesting (Hybrid step 1 in tablet)
+* PIT tags (paper form)
+* Flipper tags (paper form)
 * Turtle details (species etc)
 
 Even if other turtles are getting away without being processed,
@@ -459,12 +459,13 @@ the minimal record must to be taken for each processed turtle.
 
 The nice-to-have record includes the above plus:
 
-* One biopsy for already biopsied turtles (a wishlist of flipper tags to biopsy will be handed out)
-* CCL
+* One biopsy if instructed to do so.
+* CCL (min for Flatbacks, max for Hawksbills).
 * Any significant damages which impact nesting success (e.g. flipper amputation impedes digging) or
-  are recognizable (larger deformities, e.g. healed shark bites if carapace, sat tag harness scars).
+  are recognizable (larger deformities, e.g. healed shark bites or propeller strike marks in carapace, 
+  sat tag harness scars).
 
-
+If time allows, any other data supported by paper or e-form can be captured.
 
 Form workflow
 -------------
@@ -472,57 +473,60 @@ Prepare devices for tagging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Early in day
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-1. Ensure tablet is fully charged
+* Ensure tablet is fully charged
 
 Checking out tablets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2. Do a Soundcheck if willing - Update username at least
-3. Verify auto-send is turned off for tagging. You can only edit finalized forms while they are not yet uploaded.
+* Do a Soundcheck if willing - Update username at least
+* Verify auto-send is turned off for tagging. You can only edit finalized forms while they are not yet uploaded.
 
 In situ: Tagging night
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-4. Site Visit Start when on site. Exactly one SVS per site and date. THV: two sites (north / south beach), DEL: one site (entire island).
-5. Turtle Tagging for tagged turtles, Turtle Track or Nest for missed turtles. Backfill forms if time and brain space allow.
-6. Site Visit End when finishing up for the night.
+* Site Visit Start when on site. Exactly one SVS per site and date. THV: two sites (north / south beach), DEL: one site (entire island).
+* Turtle Tagging for tagged turtles, Turtle Track or Nest for missed turtles. Backfill forms if time and brain space allow.
+* Site Visit End when finishing up for the night.
 
 Tagging modes:
 
-1. Turtle encountered while nesting.
-  a. Hybrid Step 1 while egg laying (waiting phase).
-  b. tagging on paper during hot phase.
-  c. Backfill when possible via Hybrid Step 2. Don't bother with datasheet photo, leave for better light conditions in the morning.
-  d. If backfilling during night, leave unfinalized.
-2. Turtle encountered while returning to water.
-  a. Tagging on paper (hot phase).
-  b. capture Hybrid Step 1 record in situ once turtle is gone.
-  c. backfill if time permits via Hybrid Step 2.
-3. ODK unavailable.
-  a. All data on paper. GPS in handheld.
-  b. Backfill and choose data capture mode "New record".
-
+* Turtle encountered while nesting.
+   * Hybrid Step 1 while egg laying (waiting phase).
+   * Tagging on paper during hot phase.
+   * Backfill when possible via Hybrid Step 2. Don't bother with datasheet photo, leave for better light conditions in the morning.
+   * If backfilling during night, leave unfinalized.
+* Turtle encountered while returning to water.
+   * Tagging on paper (hot phase).
+   * Capture Hybrid Step 1 record in situ once turtle is gone.
+   * Backfill if time permits via Hybrid Step 2.
+* ODK unavailable.
+   * All data on paper. GPS in handheld.
+   * Backfill and choose data capture mode "New record".
 
 Next morning
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-7. Return tablets to charger, place datasheets and biopsy samples with respective tablet.
-   The coordinator clearly labels the drop-off area with a sign saying "Drop off for tablets, datasheets, biopsy samples".
-8. Backfill ODK via Hybrid Step 2: Go through "Edit saved forms", open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).
-9. Send finalized forms. Leave tablets in "manual upload mode".
-10. Enter data into WAMTRAM.
+* Return tablets to charger, place datasheets and biopsy samples with respective tablet.
+  The coordinator clearly labels the drop-off area with a sign saying "Drop off for tablets, datasheets, biopsy samples".
+* Backfill ODK via Hybrid Step 2: Go through "Edit saved forms", open each, find corresponding datasheet, backfill remaining forms, proofread, photograph datasheets (needs daylight).
+* Send finalized forms. Leave tablets in "manual upload mode".
+* Enter data into WAStD.
 
 After import and QA
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-11. WAStD: QA typos. Mark changed records as "curated" to prevent data loss. QA reports will assist finding records that need review. We will learn from QA and improve QA helpers this season.
+* WAStD: QA typos. 
+* Mark changed records as "curated" to prevent data loss. 
+* QA reports will assist finding records that need review. 
+* We will learn from QA and improve QA helpers this season.
 
 Minimum ODK record
 ^^^^^^^^^^^^^^^^^^
-Minimum record in ODK form "Turtle Tagging" via Hybrid Step 1 with a nest location, timestamp, the username, and datasheet ID.
-Save form as "non finalized" and name after datasheet ID.
+* Minimum record in ODK form "Turtle Tagging" via Hybrid Step 1 with a nest location, timestamp, the username, and datasheet ID.
+* Save and exit form. The form will automatically include the datasheet ID in its name.
 
 Backfill paper to ODK
 ^^^^^^^^^^^^^^^^^^^^^
-Backfill the ODK record from the paper datasheet via Hybrid Step 2.
-Find record in "Edit saved forms", choose data capture mode "continue here", once light allows photograph paper datasheet, save as finalized. Let record upload.
-
+* Backfill the ODK record from the paper datasheet via Hybrid Step 2.
+* Find record by datasheet ID in "Edit saved forms", choose data capture mode "Hybrid Step 2"
+* Once light allows to photograph paper datasheet. 
+* Once all records from one tablet are backfilled, send finalized forms.
 
 .. _dct-training-beach:
 
@@ -536,31 +540,43 @@ You'll need:
 * A data collection device (smartphone or tablet) set up and ready to go
 * Knowledge of the protocols above
 
+Morning walk
+------------
+
 .. image:: https://www.lucidchart.com/publicSegments/view/97f2cc34-d19b-403d-a349-814390f3b6c4/image.png
     :target: https://www.lucidchart.com/publicSegments/view/97f2cc34-d19b-403d-a349-814390f3b6c4/image.png
-    :alt: Example nesting beach
+    :alt: Morning walks
 
+Night tagging
+-------------
+.. image:: https://lucid.app/publicSegments/view/0dd22dc0-3f75-4b73-a971-64da6537388a/image.png
+    :target: https://lucid.app/publicSegments/view/0dd22dc0-3f75-4b73-a971-64da6537388a/image.png
+    :alt: Night tagging
 
+When training:
 * Collect as many records as you wish on any place outside the actual nesting beaches.
-* Use the species "Hatchback turtle (Corolla corolla)" and any available options indicating training/testing when conducting training on an actual nesting beach.
+* Use the species "Hatchback turtle (Corolla corolla)" and any available options 
+  indicating training/testing when conducting training on an actual nesting beach.
+* Training coordinators: Alteratively, disable auto-upload and delete training records after training session.
 
 Training walk-through
 ---------------------
-* Note on all forms: swipe right until done, leave "Mark as finalized" on, "Save and exit".
-* Never save using the floppy symbol.
+* Note on all forms: swipe right or tap "next" until done, leave "Mark as finalized" on, "Save and exit".
+* Never save using the floppy symbol - this saves a half filled form we can't send.
 * Never back out with "back" key and "save form".
-* The only valid way out of a form is to swipe right until "save and exit" is reached.
-* Training data should be recorded either outside of nesting beaches, or use "Hatchback turtle", or with tablets set to not auto-upload and the trainer deleting the submissions before sending.
+* The only valid way out of a form is to swipe right until "save and exit" is reached to eventually send the form submission, 
+  or back out and "Ignore changes" to discard the form submission.
+* Training data should be recorded either outside of nesting beaches, or use "Hatchback turtle", 
+  or with tablets set to not auto-upload and the trainer deleting the submissions before sending.
 
 0 Pre survey
 ^^^^^^^^^^^^
 * Battery full?
-* WiFi off (if saving battery)
-* GPS on
 * Set your **ODK Collect username**:
-  ODK Settings > General Settings > User and device identity > Form metadata > Username > Your given name and surname, e.g. "Florian Mayer".
+  ODK Settings > User and device identity > Form metadata > Username > Your given name and surname, 
+  e.g. "Florian Mayer".
 
-1 Site visit start
+1 Site Visit Start
 ^^^^^^^^^^^^^^^^^^
 * Form "Site Visit Start" when "feet in the sand, eyes open".
 * Username: read-only view of what's currently set. If wrong, exit form, update username, open form again.
@@ -575,8 +591,8 @@ Training walk-through
   The photo can show environmental conditions (wind, past rain) which may lead
   to under-detection of tracks. The photo also could show anything that might be
   relevant to other questions in the future.
-* Mention in comment if this is a training run (if you must capture an SVS on a nesting beach), or if there were any
-  unusal environmental conditions.
+* Mention in comment if this is a training run (if you must capture an SVS on a nesting beach), \
+  or if there were any unusal environmental conditions.
 
 2 Fox track
 ^^^^^^^^^^^
@@ -652,7 +668,7 @@ Training turtles:
 * A turtle with one extra (biopsy, nest tag, damage, nest logger, etc.) - explain details for each group.
 * A turtle "the works".
 
-12 Survey end
+13 Survey end
 ^^^^^^^^^^^^^
 * Form: Site visit end.
 * SVE can be recorded on any device.
@@ -662,7 +678,7 @@ Training turtles:
 * Take a photo facing back towards surveyed area.
 * Any new reasons impacting data collection? Comment.
 
-13 Return device
+14 Return device
 ^^^^^^^^^^^^^^^^
 Returning to an office (WiFi and wall power):
 
@@ -697,10 +713,18 @@ WiFi hotspot
 * Change hotspot settings:
 
   * Connect a laptop to the WiFi hotspot
-  * Open `http://m.home/ `_
+  * Open ``http://m.home/`` in your browser
   * Admin password: ______________________
-  * Changing the WiFi name and password will log the laptop out, you will need to log back in with the new WiFi credentials.
-* The WiFi hotspot can connect max 10 devices. E.g. 8 tablets, two laptops.
+  * Changing the WiFi name and password will log the laptop out, 
+    you will need to log back in with the new WiFi credentials.
+* The WiFi hotspot can connect max 10 devices. E.g. 8 tablets, one field phone, one laptop.
+
+Field phone
+-----------
+* Phone number:
+* No screen lock
+* Contact Florian via WhatsApp 24/7 for any support questions. Replies usually during office hours.
+* Apps and shortcuts: WAStD documentation, weather/tide/safety apps, ODK Collect.
 
 Tablets: Android
 ----------------
@@ -728,11 +752,11 @@ Focus training on:
 
 Data entry
 ----------
-* No auto-send because tagging backfilling
-* Send finalized once proofread
+* No auto-send because tagging backfilling.
+* Send finalized once proofread.
 
 Devices
 -------
-* On charger, in neoprene pouch, or in hand
-* Port plugs
-* Clean sleeves and pouches daily to keep sand free
+* On charger, in neoprene pouch, or in hand.
+* Port plugs.
+* Clean silicone sleeves and neoprene pouches daily to keep sand free.
