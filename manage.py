@@ -1,12 +1,20 @@
 #!/usr/bin/env python
 import os
 import sys
-import confy
+import environ
 
 # These lines are required for interoperability between local and container environments.
 dot_env = os.path.join(os.getcwd(), '.env')
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
 if os.path.exists(dot_env):
-    confy.read_environment_file()
+    environ.Env.read_env(dot_env)
+else:
+    print('manage.py: The .env file does not exist.')
+
 
 if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')
