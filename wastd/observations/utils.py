@@ -5,6 +5,7 @@ import io
 import json
 # from plogger.debug import plogger.debug
 import logging
+import environ
 import os
 import shutil
 from datetime import datetime, timedelta
@@ -12,7 +13,6 @@ from datetime import datetime, timedelta
 import pandas
 import requests
 import xmltodict
-from confy import env
 from dateutil import parser
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -28,7 +28,7 @@ from wastd.observations.models import *
 
 # from django.utils.timezone import get_fixed_timezone, utc
 
-
+env = environ.Env()
 logger = logging.getLogger(__name__)
 
 

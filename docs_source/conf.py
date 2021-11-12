@@ -13,14 +13,13 @@ All configuration values have a default; values that are commented out
 serve to show the default.
 """
 from __future__ import unicode_literals
-
+import environ
 import os
 import sys
 
-import confy
-from confy import env
+
 import django
-from confy import database
+# from confy import database
 
 # -- Django configuration -------------------------------------------------
 # 1. Add Django ROOT_DIR to sys.path, so conf.py can discover django settings
@@ -32,12 +31,20 @@ sys.path.insert(0, os.path.abspath('..'))
 # which settings to use
 # IMPORTANT: use SINGLE quotes for the settings module
 os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.local'
-try:
-    confy.read_environment_file("../.env")
-except:
-    pass
 
-DATABASES = {'default': database.config()}
+dot_env = os.path.join(os.getcwd(), '.env')
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+if os.path.exists(dot_env):
+    environ.Env.read_env(dot_env)
+else:
+    print('manage.py: The .env file does not exist.')
+
+
+DATABASES = {'default': env.db()}
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 
@@ -88,7 +95,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'WAStD'
-copyright = u'2016-2020 DBCA'
+copyright = u'2016-2021 DBCA'
 author = u'Florian Mayer'
 
 # The version info for the project you're documenting, acts as replacement for

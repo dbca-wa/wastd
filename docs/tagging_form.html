@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turtle Tagging form design &mdash; WAStD 0.54.6 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> WAStD
+          </a>
+              <div class="version">
+                0.54
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection protocols and training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_development.html">Data collection development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_collection/thevenard.html">Data Collection Management Thevenard and Delambre</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_entry.html">Data entry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html#how-it-s-made-the-process">How it’s made - the process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html#reproducible-research">Reproducible Research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintainers.html">Application maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">WAStD</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Turtle Tagging form design</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tagging_form.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="turtle-tagging-form-design">
+<h1>Turtle Tagging form design<a class="headerlink" href="#turtle-tagging-form-design" title="Permalink to this headline"></a></h1>
+<p>Maintained by: Florian Mayer
+Consulted: Ryan Douglas, James Gee</p>
+<p>TODO merge comments and improvements from THV field testing and form development into this chapter.</p>
+<section id="form-design">
+<h2>Form design<a class="headerlink" href="#form-design" title="Permalink to this headline"></a></h2>
+<p>Is there a nest?</p>
+<p>Observed nesting success
+nest-with-eggs - Nest with eggs - witnessed eggs drop
+nest-without-eggs - Nest without eggs - witnessed aborted laying
+nest-unsure-of-eggs - Nest unsure of eggs - found covered up nest mound
+unsure-if-nest - Unsure if nest - can’t tell whether nest mound present or not
+no-nest - No nest - witnessed aborted nest or found track with no nest
+na - Did not check</p>
+<p>TagObs
+- Securely fixed YN
+- Barnacles</p>
+</section>
+<section id="field-testing-at-thevenard">
+<h2>Field testing at Thevenard<a class="headerlink" href="#field-testing-at-thevenard" title="Permalink to this headline"></a></h2>
+<p>TODO: distill the following field work log</p>
+<p>Turtle Tagging 2020
+Protocol
+Form updates
+Export forms from ODK Build to XForms XML.
+Edit XML
+Replace title &lt;h:title&gt;Turtle Tagging 1.3&lt;/h:title&gt; with &lt;h:title&gt;Turtle Tagging&lt;/h:title&gt;
+Replace &lt;data id=”<a href="#id1"><span class="problematic" id="id2">build_</span></a>…”&gt; with &lt;data id=”Turtle-Tagging” version=”<a href="#id3"><span class="problematic" id="id4">build_</span></a>…”&gt;
+Replace header with
+content_copy
+&lt;h:html xmlns=”http://www.w3.org/2002/xforms” xmlns:h=”http://www.w3.org/1999/xhtml” xmlns:xsd=”http://www.w3.org/2001/XMLSchema”</p>
+<blockquote>
+<div><p>xmlns:jr=”http://openrosa.org/javarosa” xmlns:ev=”http://www.w3.org/2001/xml-events” xmlns:odk=”http://www.opendatakit.org/xforms”&gt;</p>
+</div></blockquote>
+<p>Insert after
+content_copy
+&lt;observation_start_time/&gt;
+&lt;start_location/&gt;
+Insert after the &lt;itext&gt; nodes:
+content_copy
+&lt;bind nodeset=”/data/start_location” type=”geopoint” /&gt;&lt;odk:setgeopoint event=”odk-instance-first-load” ref=”/data/start_location” /&gt;
+Data capture
+Are we there yet?
+ODK &gt; Fill blank forms (e.g. Track or Nest) &gt; Map symbol &gt; offline map view plus saved forms and current position.
+View coordinates in decimal degrees:
+Go to hierarchy view &gt; group in read-only mode is decimal degrees.
+Data entry
+Review each tablet:</p>
+<p>Enter tagging data
+Upload all finalized forms
+Handle form upload errors: fix&amp;finalize stuck forms
+Prepare morning tablets: day mode; night tablets: night mode
+Put back on charger
+Fri 27 Nov
+Arrived on airport 1700, on island 1900, unpacked, dinner, introduction talks, tagging 2200-0100.</p>
+<p>Admin
+[x] update tablets: mbtiles, QR, no autosend, nightmode, SVS map widget
+[] ETL data</p>
+<p>Tagging
+[x] add r/o username
+[x] location typo “rightshoulder”
+[x] PIT location defaults PIT 1 left shoulder, PIT 2 right shoulder
+[x] PIT status : add “applied, no read, assumed dud”
+[x] Add tag scar to ft1 group
+[x] Add nest tag to nesting event group
+[x] damage type: add “scratches”
+[x] Clean up labels and hints
+[-] Cannot yet add start-geolocation - now can</p>
+<p>Experience
+11 taggers, 8 experienced, 3 new vollies
+5 tagging forms filled while shadowing two teams, 7 more forms missed from two other teams.
+There was enough staff to have a scribe per team handling the paper datasheet, plus one to two handlers to work on turtle.
+The scribe could have handled the tablet and datasheet.</p>
+<p>In some cases, there was often enough time to capture the initial record straight away.
+In other cases, a snap decision was made to tag a turtle, and sometimes GPS was cold, so the form lagged.
+Idea: add autolocation metadata to warm up GPS.</p>
+<p>After tagging, there was enough time to backfill ODK from paper. This also utilises fresh memory, sparks some conversation about tagging details and events, keeps taggers engaged and awake.</p>
+<p>The form can be navigated from the hierarchy view efficiently, so the flow of the form can be more tuned to the field data capture.</p>
+<p>Sat 28 Nov
+Morning walk. Up 0430, walk 0500-0830. Breakfast, shower, bed, sleep 1000-1400.
+Finalized and uploaded 5 tagging forms.
+Adjusted site bdy THV N/S to fish cleaning stn. Re-built and deployed mbtiles.
+Updated form TurtleTagging 1900-2400. No beach testing, too tired and still working on forms.</p>
+<p>Admin
+[x] Update site boundaries
+[x] Update all tablets with bg imagery
+[x] Asked ODK team for help on start-geopoint via ODK Slack</p>
+<p>Sun 29 Nov
+[x] 0700-1100 Got solution from ODK team. Add start-geopoint to Turtle Tagging and Turtle Track or Nest, test, roll out, notify custodians
+[-] Test tagging form with Sabrina
+[x] Update tagging form / protocol
+[x] 1900-2230 Test tagging form with teams</p>
+<p>Experience
+Team Anna Winkler, David Zaboj:</p>
+<p>plenty of time to backfill ODK form from datasheet,
+found readability of dimply backlit tablet (in full moon) superior to datasheet with head torch,
+found range of display brightness adequate (currently full moon),
+preferred entering numbers / tag IDs into tablet’s keyboard over hand writing on paper.
+Between 3 teams and ca 10 turtles processed, ca 1 minimal tagging form missed (pending team feedback).</p>
+<p>Mon 30 Nov
+1200-1500 Data entry test runs, feedback.</p>
+<p>Experience
+10 mins per form with discussions. 5 mins plain data entry.
+Anna Winkler, David Zaboj: 20 mins to backfill 2 datasheets, plus photograph 2 more already backfilled sheets.
+Christine Biesgen: 14:20-15:15, first backfilled form ever took 10 mins incl minimal instruction, second took 11 min.
+Jenna Hounslow, Len Estrade: 20 mins, each one datasheet, feedback discussion.
+Wrote up below change requests, in bed by 2100.</p>
+<p>Feedback
+Should re-order paper datasheet to follow tagging protocol (Meta, PIT, FT, Biopsy, Meas, Dmg, Nest)
+Consider cutting down both sheet and form to skip unused fields
+Damage known last, when turtle is returning to water
+Tasks
+Bigger tasks
+[] Make it somehow easier to fill in PIT Left, PIT Right, FT {1.3}{L1..R3}
+[] Update paper datasheet to follow tagging workflow and ODK form
+[] Add egg count datasheet to turtle tagging
+[] Annotate flatback schematic photo as image widget at dmg</p>
+<p>XML editing
+[] Turn verbose hints into “guidance” <a class="reference external" href="https://github.com/getodk/build/issues/238">https://github.com/getodk/build/issues/238</a></p>
+<p>content_copy</p>
+<p>Minimal record
+[x] ODK Reporter = ODK username = Datasheet data captured by = person entering data into the tablet.
+Handler = defaults to reporter, but edit to the person measuring and tagging. ODK form default “measured by” and “tag handled by” to Handler.
+[x] Re-ordered fields</p>
+<p>Screen PIT/Flipper tags
+Named to include default positions “PIT 1 - Left”, “PIT 2 - Right”, “PIT 3 - Extra”. This should capture the 99% use case including one dud.
+[x] Tag status: renamed “tag resighted” to include “tag” in the status to prevent confusion with “this is a resighted turtle”.
+We don’t want to use “old” and “new” tags as this could be confused with the age and condition of tags. A shiny, freshly applied tag, resighed a week later could be interpreted as “hey that looks pretty new”.
+[x] Tag scars: add “none” to prevent confusion.
+[] Enforce 15 character length PIT tag ID.</p>
+<p>Nesting event
+[x] Nest tag date: full date, defaults to start date. This prevents confusion at data entry and shows the date as already captured.
+[x] Nest tag ID hint: Do no include date here. The date shown just above will make this very obvious.</p>
+<p>Biopsy
+[x] Biopsy sample photo: typo fixed.
+[x] Biopsy sample location default to rear left flipper. Completely irrelevant.</p>
+<p>Additional sample
+[x] Additional sample photo of (delete biopsy) sample - deleted additional sample screen. We have “add tag or sample”, but don’t expect any extra taken.</p>
+<p>[x] Simplify nesting success - dropped superfluous option
+[x] add sample, status: add “dud”
+[x] turtle morph: simplify accuracy (drop 10cm? drop 1cm?) - removed altogether, import as accuracy nearest 5 mm.
+[x] species should toggle “flatback measurements” vs “hawksbill measurements” - not needed after taking out accuracy and being sorted by prio of measurements
+[x] PIT never goes into neck, remove option neck? - Could migrate into neck, therefore keep option.
+[x] Tag ID hint: capitalisation and whitespace don’t matter
+[x] dmg type: prefix with category, re-order alphabetically
+[x] turtle morph: add “plastron to tail tip”, “vent to tail tip”, “carapace to tail tip”
+[x] dataset image: force portrait? - Mentioned in hint but no way to force camera orientation.</p>
+<p>XPath wizardry
+[] Update form name to include whether nest or not, whether new or not</p>
+<p>Reporting
+[] Add summary to report: daily number of nests from tagging = animal encounters and missed tracks = tracks and morning tracks
+[] Expand in report: number of missed tracks at start of tagging, number of missed tracks during tagging. Bar chart y=no missed tracks, x=time of day, group=date. Map missed tracks, animation step per day, over sites, popups, marker label time, marker colour species.
+[] Create report for Hannah to go on website.</p>
+<p>Tue Dec 1
+Wrote up use cases start-geopoint and
+instanceName.
+Form updates.</p>
+<p>Use case Turtle Tagging in foraging grounds (Roebuck bay):</p>
+<p>Form “Turtle Sighting” &gt; turtle tagged &gt; unlocks “Turtle Tagging” screens (with Roebuck flavour and extras).
+Wed Dec 2
+1000-1500 Implemented ODK Build issues</p>
+<p>Quick wins
+Add guidance to Minimal Record: your current location is fine, you will backfill the actual nest location from your own records into the next screen,
+Guidance on minus sign at longitude
+Change option label “reclinched” to include “tag”
+Sort damage types alphabetically, make all category - kind
+Datasheet photo: hint: take in daylight next day
+Add to flipper tag screen option “seen but couldn’t read” with options from tag scars
+Barnacles - add field to flipper tag screen</p>
+<p>Later basket
+Improve workflow “enter manual coordinates”
+Make nest_location conditionally required: optional if capture_mode = manual.
+Tag status conflates tag lifecycle transition (before vs after) and actions taken on tag (reclinched)
+Font size of screen title is too small and the colour is too muted - should be better readable
+Can we update a media file to supply volunteer names to TT.xslx while keeping the same form version?
+Add pictorial images to options?
+Damage type - remove body part from damage type to simplify dmg type</p>
+<p>Training
+Explain how to enter the minus sign on the android keyboard on Samsung STM280
+Explain that for testing, made up data is fine. Only PIT tag numbers
+Explain that when backfilling manual location, your recorded location is still required to capture but will not be used.</p>
+<p>Feedback
+Paper datasheet in the howling wind is a massive hassle. Tablet is as fast as paper.</p>
+<p>Thu Dec 3
+Last day, last updates, confirmed that forms and methodology work.</p>
+<p>Fri Dec 4
+0500-0700 Morning walk to cross off tracks. Luke and Flo South, David Z North.
+0800 Pack and leave
+1000-1100 Ferry
+1100-1500 Onslow resport, migraine attack
+1500-2000 Flight back
+2100 Home</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2016-2021 DBCA.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

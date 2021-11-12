@@ -7,13 +7,17 @@ Local settings file.
 - Add Django Debug Toolbar
 - Add django-extensions as app
 """
-
+import environ
 import os
 import socket
 
-from confy import env
+# from confy import env
 
 from .common import *  # noqa
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+env = environ.Env()
 
 # Mail settings
 # ------------------------------------------------------------------------------

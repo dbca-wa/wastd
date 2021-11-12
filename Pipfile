@@ -1,7 +1,10 @@
 [[source]]
-url = "https://pypi.python.org/simple"
-verify_ssl = true
 name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+ipdb = "*"
 
 [packages]
 Django = "==3.1.13"
@@ -31,8 +34,7 @@ Fabric3 = "*"
 gunicorn = "==20.0.4"
 uWSGI = "==2.0.19.1"
 python-memcached = "*"
-django-confy = ">=1.0.4"
-django-environ = "==0.4.5"
+django-environ = "*"
 Unipath = "==1.1"
 pandas = ">=1.0.5"
 Sphinx = "*"
@@ -80,7 +82,6 @@ django-storages-redux = "==1.3.3"
 dj-static = "==0.0.6"
 django-silk = "*"
 django-debug-toolbar = "*"
-ipdb = "*"
 coveralls = "*"
 coverage = "*"
 django-coverage-plugin = "*"
@@ -94,17 +95,10 @@ graphviz = "*"
 tblib = "*"
 docker-squash = "*"
 django-grappelli = ">=2.15.1"
-
-[dev-packages]
+django-fixture-magic = {git = "https://github.com/davedash/django-fixture-magic.git", editable = true, ref = "master", version = "*"}
+mommy_spatial_generators = {git = "https://github.com/sigma-geosistemas/mommy_spatial_generators.git", editable = true, ref = "master", version = "*"}
+graphene-django = "*"
+django-graphql-geojson = "*"
 
 [requires]
 python_version = "3.8"
-
-[packages.django-fixture-magic]
-git = "https://github.com/davedash/django-fixture-magic.git"
-editable = true
-ref = "master"
-
-[packages.mommy_spatial_generators]
-git = "https://github.com/sigma-geosistemas/mommy_spatial_generators.git"
-editable = true

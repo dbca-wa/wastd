@@ -3,22 +3,25 @@
 
 Convenience wrapper for often used operations.
 """
-import confy
+import environ
 import os
 # from fabric.api import env, local  # settings, cd, run
 from fabric.api import cd, run, sudo, local
 from fabric.colors import green, yellow, red
 from fabric.contrib.files import exists, upload_template
 
-confy.read_environment_file()
-e = os.environ
 
-# import confy
-# from confy import env as confyenv
-# try:
-#     confy.read_environment_file(".env")
-# except:
-#     pass
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+# Set the project base directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 # env.hosts = ['localhost', ]
 
 

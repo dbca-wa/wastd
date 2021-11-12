@@ -11,13 +11,20 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 import os
 import csv
 import environ
-from confy import database, env
+# from confy import database, env
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from unipath import Path
 
-# import confy
-# confy.read_environment_file()
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False),
+    SENTRY_DSN=(str, ''),
+
+)
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 BASE_DIR = Path(__file__).ancestor(3)
@@ -53,6 +60,7 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'django_extensions',            # shell_plus and others
+    'environ',
     'fixture_magic',                # custom test fixtures
     'crispy_forms',                 # Form layouts
     'bootstrap4',                   # bootstrap4
@@ -223,7 +231,7 @@ SITE_CODE = env('SITE_CODE', default="TSC")
 
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
 
-ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', '*,localhost').split(',')
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS')
 
 # CSV export via django_adminactions
 ADMINACTIONS_CSV_OPTIONS_DEFAULT = {
@@ -275,7 +283,7 @@ MANAGERS = ADMINS
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {'default': database.config()}
+DATABASES = {'default': env.db()}
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 
@@ -793,7 +801,7 @@ GRAPPELLI_INDEX_DASHBOARD = 'shared.dashboard.AdminDashboard'
 
 # Error reporting
 WASTD_RELEASE = env("WASTD_RELEASE", default="master")
-if env('SENTRY_DSN', False):
+if env('SENTRY_DSN'):
     # RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
     sentry_sdk.init(
         env('SENTRY_DSN'),
