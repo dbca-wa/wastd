@@ -13,10 +13,10 @@ Start of trip
 
 Tablet brightness
 =================
-* Note: Tablets toggle dark mode and adaptive colour filter from sunset to sunrise. 
+* Note: Tablets are set to automtically toggle dark mode and adaptive colour filter from sunset to sunrise. 
   This impacts the system menu and notifications but can be changes through the system settings.
-* ODK Collect has to be changed manually from dark theme to light theme.
-* Tablet display brightness can be adjusted from the system menu (swipe down twice from top edge).
+* ODK Collect is set to follow the device theme, and therefore will toggle its own dark mode at night.
+* Tablet theme display brightness can be adjusted from the system menu (swipe down twice from top edge).
 * Find and record best combination of brightness/theme settings.
 
 Morning walks
