@@ -19,6 +19,24 @@ Tablet brightness
 * Tablet theme display brightness can be adjusted from the system menu (swipe down twice from top edge).
 * Find and record best combination of brightness/theme settings.
 
+Location maps
+=============
+.. image:: https://i.imgur.com/GGWlOeK.jpg
+    :target: https://i.imgur.com/GGWlOeK.jpg
+    :alt: Thevenard site map
+
+.. image:: https://i.imgur.com/60oBlwx.jpg
+    :target: https://i.imgur.com/60oBlwx.jpg
+    :alt: Thevenard Tagging Area
+
+.. image:: https://i.imgur.com/yqLBVrS.jpg
+    :target: https://i.imgur.com/yqLBVrS.jpg
+    :alt: Delambre site map
+
+.. image:: https://i.imgur.com/djFe8t3.jpg
+    :target: https://i.imgur.com/djFe8t3.jpg
+    :alt: Delambre Tagging Area
+
 Morning walks
 =============
 * Map printout in office with locations of start and end points (star pickets).

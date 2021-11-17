@@ -135,11 +135,13 @@ Distribute offline background imagery
 -------------------------------------
 * You will be provided the background imagery files (extension ``.mbtiles``).
 * Connect each tablet via USB, unlock screen, confirm dialogue to allow file transfer on tablet.
-* Copy the mbtiles files into ``/Android/data/org.odk.collect.android/file/projects/<project hash>/layers`` on each tablet.
-* You can provide multiple mbtiles. Mind available disk space (16GB ish) vs mbtiles size
-  (200-500MB each) vs storage for ODK records including media files (photos).
+* Copy the mbtiles files into ``/Android/data/org.odk.collect.android/file/layers`` on each tablet.
+  This makes them available across all ODK Collect projects.
+* You can provide multiple mbtiles. Mind available disk space vs mbtiles size
+  (30MB to 1GB+) vs storage for ODK records including media files (photos).
 * Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
   select the correct reference layer (named after your location).
+  This step will both select the correct layer for future use, and verify that the layer is available.
 
 Update the tablet before a season
 ---------------------------------

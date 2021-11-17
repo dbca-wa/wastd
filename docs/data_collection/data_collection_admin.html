@@ -229,11 +229,13 @@ data collection form (image, time, location).</p></li>
 <ul class="simple">
 <li><p>You will be provided the background imagery files (extension <code class="docutils literal notranslate"><span class="pre">.mbtiles</span></code>).</p></li>
 <li><p>Connect each tablet via USB, unlock screen, confirm dialogue to allow file transfer on tablet.</p></li>
-<li><p>Copy the mbtiles files into <code class="docutils literal notranslate"><span class="pre">/Android/data/org.odk.collect.android/file/projects/&lt;project</span> <span class="pre">hash&gt;/layers</span></code> on each tablet.</p></li>
-<li><p>You can provide multiple mbtiles. Mind available disk space (16GB ish) vs mbtiles size
-(200-500MB each) vs storage for ODK records including media files (photos).</p></li>
+<li><p>Copy the mbtiles files into <code class="docutils literal notranslate"><span class="pre">/Android/data/org.odk.collect.android/file/layers</span></code> on each tablet.
+This makes them available across all ODK Collect projects.</p></li>
+<li><p>You can provide multiple mbtiles. Mind available disk space vs mbtiles size
+(30MB to 1GB+) vs storage for ODK records including media files (photos).</p></li>
 <li><p>Open ODK Collect, Fill blank form, hit any map symbol next to the forms, tap the layers button,
-select the correct reference layer (named after your location).</p></li>
+select the correct reference layer (named after your location).
+This step will both select the correct layer for future use, and verify that the layer is available.</p></li>
 </ul>
 </section>
 <section id="update-the-tablet-before-a-season">
