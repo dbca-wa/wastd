@@ -28,7 +28,11 @@ from wastd.observations.models import *
 
 # from django.utils.timezone import get_fixed_timezone, utc
 
-env = environ.Env()
+env = environ.Env(
+    ODKA_URL=(str,''),
+    ODKA_UN=(str, ''),
+    ODKA_PW=(str, ''),
+)
 logger = logging.getLogger(__name__)
 
 

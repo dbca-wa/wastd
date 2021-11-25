@@ -818,12 +818,11 @@ GRAPPELLI_INDEX_DASHBOARD = 'shared.dashboard.AdminDashboard'
 # GRAPPELLI_ADMIN_TITLE = "Data Curation Portal"
 
 # Error reporting
-WASTD_RELEASE = env("WASTD_RELEASE", default="0.0.1")
 if env('SENTRY_DSN'):
     sentry_sdk.init(
         env('SENTRY_DSN'),
         integrations=[DjangoIntegration()],
-        release="wastd@{0}".format(WASTD_RELEASE)
+        release="wastd@{0}".format(env("WASTD_RELEASE"))
     )
 
 SETTINGS_EXPORT = [
