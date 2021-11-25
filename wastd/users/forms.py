@@ -22,7 +22,7 @@ class MergeForm(forms.Form):
         widget=UserWidget()
     )
     save_button = Submit('save', 'Merge User Profiles', css_class='btn-lg')
-    cancel_button = Submit('cancel', 'Cancel', css_class='btn-secondary')
+    cancel_button = HTML('<a class="btn btn-secondary" href="/">Cancel</a>')
 
     def __init__(self, *args, **kwargs):
         """Initialize the form with a custom layout and a crispy_forms helper."""
@@ -60,7 +60,7 @@ class TransferForm(forms.Form):
         widget=UserWidget()
     )
     save_button = Submit('save', 'Transfer data', css_class='btn-lg')
-    cancel_button = Submit('cancel', 'Cancel', css_class='btn-secondary')
+    cancel_button = HTML('<a class="btn btn-secondary" href="/">Cancel</a>')
 
     def __init__(self, *args, **kwargs):
         """Initialize the form with a custom layout and a crispy_forms helper."""
