@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wastd.observations.admin &mdash; WAStD 0.54.6 documentation</title>
+  <title>wastd.observations.admin &mdash; WAStD 0.54.7 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -642,7 +642,11 @@
     <span class="sd">&quot;&quot;&quot;Admin for NestTagObservation.&quot;&quot;&quot;</span>
 
     <span class="n">list_display</span> <span class="o">=</span> <span class="n">ObservationAdminMixin</span><span class="o">.</span><span class="n">LIST_FIRST</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="s1">&#39;tag_name&#39;</span><span class="p">,</span> <span class="s1">&#39;flipper_tag_id&#39;</span><span class="p">,</span> <span class="s1">&#39;date_nest_laid&#39;</span><span class="p">,</span> <span class="s1">&#39;tag_label&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;tag_name&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;flipper_tag_id&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;date_nest_laid&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;tag_label&#39;</span><span class="p">,</span>  
+        <span class="s1">&#39;comments&#39;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">+</span> <span class="n">ObservationAdminMixin</span><span class="o">.</span><span class="n">LIST_LAST</span>
     <span class="n">list_filter</span> <span class="o">=</span> <span class="n">ObservationAdminMixin</span><span class="o">.</span><span class="n">LIST_FILTER</span> <span class="o">+</span> \
         <span class="p">(</span><span class="s1">&#39;flipper_tag_id&#39;</span><span class="p">,</span> <span class="s1">&#39;tag_label&#39;</span><span class="p">,)</span>
@@ -652,7 +656,7 @@
 <div class="viewcode-block" id="NestTagObservationAdmin.tag_name"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.NestTagObservationAdmin.tag_name">[docs]</a>    <span class="k">def</span> <span class="nf">tag_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Nest tag name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span></div>
-    <span class="n">tag_name</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Nest Tag ID&#39;</span>
+    <span class="n">tag_name</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Complete Nest Tag&#39;</span>
 
 <div class="viewcode-block" id="NestTagObservationAdmin.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.NestTagObservationAdmin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span>
