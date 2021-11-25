@@ -135,9 +135,9 @@ def ptest():
 
 def dbuild():
     """Build Docker image."""
-    print(yellow("Building docker images with tag latest and {WASTD_RELEASE}...".format(env("WASTD_RELEASE"))))
+    print(yellow("Building docker images with tag latest and {}...".format(env("WASTD_RELEASE"))))
     local("rm logs/wastd.log && touch logs/wastd.log")
-    local("docker build -t dbcawa/wastd -t dbcawa/wastd:{WASTD_RELEASE} .".format(env("WASTD_RELEASE")))
+    local("docker build -t dbcawa/wastd -t dbcawa/wastd:{} .".format(env("WASTD_RELEASE")))
 
 
 def dpush():
@@ -152,14 +152,14 @@ def docker():
     dpush()
     print(green(
         "Updated Docker images are available on DockerHub "
-        "as dbcawa/wastd:latest and dbcawa/wastd:{WASTD_RELEASE}".format(env("WASTD_RELEASE"))))
+        "as dbcawa/wastd:latest and dbcawa/wastd:{}".format(env("WASTD_RELEASE"))))
 
 
 def tag():
     """Tag code with WASTD_RELEASE and push to GitHub."""
-    local("git tag -a {WASTD_RELEASE} -m '{WASTD_RELEASE}'".format(env("WASTD_RELEASE")))
-    local("git push origin {WASTD_RELEASE}".format(env["WASTD_RELEASE"]))
-    print(green("Code tagged as {WASTD_RELEASE} and pushed to GitHub.".format(env("WASTD_RELEASE"))))
+    local("git tag -a {0} -m '{0}'".format(env("WASTD_RELEASE")))
+    local("git push origin {}".format(env["WASTD_RELEASE"]))
+    print(green("Code tagged as {} and pushed to GitHub.".format(env("WASTD_RELEASE"))))
 
 
 def release():
