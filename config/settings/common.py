@@ -18,6 +18,7 @@ from unipath import Path
 
 env = environ.Env(
     # set casting, default value
+    DATABASE_URL=(str,''),
     DJANGO_DEBUG=(bool, False),
     SENTRY_DSN=(str, ''),
     DJANGO_SECRET_KEY=(str, 'changeme'),
