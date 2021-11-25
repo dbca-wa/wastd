@@ -1785,7 +1785,11 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         editable=False,
         blank=True, null=True,
         verbose_name=_("Animal Name"),
-        help_text=_("The animal's earliest associated flipper tag ID."),)
+        help_text=_(
+            "A unique identifier for the encountered subject,"
+            " e.g. in the case of AnimalEncounters, the animal's earliest associated flipper tag ID."
+            " Encounters with the same name are encounters of the same thing."
+            ),)
 
     observer = models.ForeignKey(
         User,
@@ -2100,9 +2104,9 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
 
     @property
     def flipper_tags(self):
-        """Return a queryset of Flipper Tag Observations."""
+        """Return a queryset of Flipper and PIT Tag Observations."""
         return self.observation_set.instance_of(TagObservation).filter(
-            tagobservation__tag_type='flipper-tag')
+            tagobservation__tag_type__in=['flipper-tag', 'pit-tag'])
 
     @property
     def primary_flipper_tag(self):

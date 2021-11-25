@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 """
 Django settings for WAStD project.
 
@@ -18,13 +18,26 @@ from unipath import Path
 
 env = environ.Env(
     # set casting, default value
-    DEBUG=(bool, False),
+    DJANGO_DEBUG=(bool, False),
     SENTRY_DSN=(str, ''),
-
+    DJANGO_SECRET_KEY=(str, 'changeme'),
+    OFFLINE = (bool, False),
+    DJANGO_PROFILING=(bool, False),
+    INTERNAL_IPS = (list, 'localhost, 127.0.0.1, ::1'.split(',')),
+    SITE_NAME = (str, "WA Sea Turtles and Strandings Database"),
+    SITE_TITLE = (str, "WAStD"),
+    SITE_CODE = (str, "WAStD"),
+    DEFAULT_USER_PASSWORD=(str, 'test123'),
+    DJANGO_ALLOWED_HOSTS=(str,"*, localhost"),
+    DJANGO_EMAIL_BACKEND=(str,'django.core.mail.backends.smtp.EmailBackend'),
+    EMAIL_HOST = (str, 'smtp.lan.fyi'),
+    EMAIL_PORT = (int, 25),
+    DEFAULT_FROM_EMAIL = (str, 'wastd-noreply@dbca.wa.gov.au'),
+    DJANGO_EMAIL_SUBJECT_PREFIX=(str, '[WAStD] '),
 )
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env')) # Populate env
 
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 BASE_DIR = Path(__file__).ancestor(3)
@@ -224,9 +237,9 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 # Branding
 # ------------------------------------------------------------------------------
 # https://github.com/jakubroztocil/django-settings-export
-SITE_NAME = env('SITE_NAME', default="Threatened Species and Communities")
-SITE_TITLE = env('SITE_TITLE', default="TSC")
-SITE_CODE = env('SITE_CODE', default="TSC")
+SITE_NAME = env('SITE_NAME', default="WA Sea Turtles and Strandings Database")
+SITE_TITLE = env('SITE_TITLE', default="WAStD")
+SITE_CODE = env('SITE_CODE', default="WAStD")
 
 
 DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
@@ -294,7 +307,8 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'Australia/Perth'
-DATE_FORMAT = '%d-%m-%Y'
+DATE_FORMAT = 'Y-m-d'
+DATETIME_FORMAT = 'Y-m-d H:M:S'
 DATE_INPUT_FORMATS = [
     '%d/%m/%Y',      # '25/10/2006'
     '%d/%m/%y',
@@ -800,9 +814,8 @@ GRAPPELLI_INDEX_DASHBOARD = 'shared.dashboard.AdminDashboard'
 # GRAPPELLI_ADMIN_TITLE = "Data Curation Portal"
 
 # Error reporting
-WASTD_RELEASE = env("WASTD_RELEASE", default="master")
+WASTD_RELEASE = env("WASTD_RELEASE", default="0.0.1")
 if env('SENTRY_DSN'):
-    # RAVEN_CONFIG = {'dsn': env('SENTRY_DSN')}
     sentry_sdk.init(
         env('SENTRY_DSN'),
         integrations=[DjangoIntegration()],
@@ -816,8 +829,6 @@ SETTINGS_EXPORT = [
     'BIOSYS_TSC_URL',
     'BIOSYS_UN',
     'BIOSYS_PW',
-    'ANIMALS_PK',
-    'PLANTS_PK',
     'OFFLINE',
     'WASTD_RELEASE',
     'DATA_ROOT'
