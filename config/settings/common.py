@@ -1,4 +1,4 @@
-    # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Django settings for WAStD project.
 
@@ -18,22 +18,22 @@ from unipath import Path
 
 env = environ.Env(
     # set casting, default value
-    DATABASE_URL=(str,''),
+    DATABASE_URL=(str, ''),
     DJANGO_DEBUG=(bool, False),
     SENTRY_DSN=(str, ''),
     DJANGO_SECRET_KEY=(str, 'changeme'),
-    OFFLINE = (bool, False),
+    OFFLINE=(bool, False),
     DJANGO_PROFILING=(bool, False),
-    INTERNAL_IPS = (list, 'localhost, 127.0.0.1, ::1'.split(',')),
-    SITE_NAME = (str, "WA Sea Turtles and Strandings Database"),
-    SITE_TITLE = (str, "WAStD"),
-    SITE_CODE = (str, "WAStD"),
+    INTERNAL_IPS=(list, 'localhost, 127.0.0.1, ::1'.split(',')),
+    SITE_NAME=(str, "WA Sea Turtles and Strandings Database"),
+    SITE_TITLE=(str, "WAStD"),
+    SITE_CODE=(str, "WAStD"),
     DEFAULT_USER_PASSWORD=(str, 'test123'),
-    DJANGO_ALLOWED_HOSTS=(str,"*, localhost"),
-    DJANGO_EMAIL_BACKEND=(str,'django.core.mail.backends.smtp.EmailBackend'),
-    EMAIL_HOST = (str, 'smtp.lan.fyi'),
-    EMAIL_PORT = (int, 25),
-    DEFAULT_FROM_EMAIL = (str, 'wastd-noreply@dbca.wa.gov.au'),
+    DJANGO_ALLOWED_HOSTS=(str, "*, localhost"),
+    DJANGO_EMAIL_BACKEND=(str, 'django.core.mail.backends.smtp.EmailBackend'),
+    EMAIL_HOST=(str, 'smtp.lan.fyi'),
+    EMAIL_PORT=(int, 25),
+    DEFAULT_FROM_EMAIL=(str, 'wastd-noreply@dbca.wa.gov.au'),
     ADMIN_USER=(int, 1),
     DJANGO_EMAIL_SUBJECT_PREFIX=(str, '[WAStD] '),
     MEMCACHED_URL=(str, '127.0.0.1:11211'),
@@ -43,7 +43,7 @@ env = environ.Env(
 
 WASTD_RELEASE = env('WASTD_RELEASE')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-environ.Env.read_env(os.path.join(BASE_DIR, '.env')) # Populate env
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))  # Populate env
 
 ROOT_DIR = environ.Path(__file__) - 3  # (wastd/config/settings/common.py - 3 = wastd/)
 BASE_DIR = Path(__file__).ancestor(3)
@@ -256,13 +256,13 @@ ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS')
 # CSV export via django_adminactions
 ADMINACTIONS_CSV_OPTIONS_DEFAULT = {
     'date_format': 'Y-m-d',
-     'datetime_format': 'Y-m-d G:i:s O',
-     'time_format': 'G:i:s',
-     'header': True,
-     'quotechar': '"',
-     'quoting': csv.QUOTE_ALL,
-     'delimiter': ',',
-     'escapechar': '\\',
+    'datetime_format': 'Y-m-d G:i:s O',
+    'time_format': 'G:i:s',
+    'header': True,
+    'quotechar': '"',
+    'quoting': csv.QUOTE_ALL,
+    'delimiter': ',',
+    'escapechar': '\\',
 }
 
 # Debug toolbar

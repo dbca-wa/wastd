@@ -497,6 +497,14 @@ HABITAT_WATER = ("lagoon-patch-reef", "lagoon-open-sand", "mangroves",
                  "reef-coral", "reef-crest-front-slope", "reef-flat",
                  "reef-seagrass-flats", "reef-rocky", "open-water", "harbour")
 
+NESTING_SUCCESS_CHOICES = (
+    (NA_VALUE, "NA"),
+    ("nest-with-eggs","Nest with eggs - witnessed egg drop"),
+    ("nest-unsure-of-eggs","Nest unsure of eggs - found covered up nest mound"),
+    ("unsure-if-nest","Unsure if nest - can't tell whether nest mound present or not"),
+    ("no-nest","No nest - witnessed aborted nest or found track with no nest"),
+)
+
 NEST_AGE_DEFAULT = "unknown"
 NEST_AGE_CHOICES = (
     ("old", "(O) old, made before last night"),
@@ -2272,12 +2280,24 @@ class AnimalEncounter(Encounter):
         default=NA_VALUE,
         help_text=_("The habitat in which the animal was encountered."), )
 
-    nesting_event = models.CharField(
+    # Populated from Turtle Tagging > nest_observed_nesting_success
+    nesting_event = models.CharField( # TODO rename to nesting_success
         max_length=300,
-        verbose_name=_("Nesting event"),
+        verbose_name=_("Nesting success"),
+        choices=NESTING_SUCCESS_CHOICES,
+        default=NA_VALUE,
+        help_text=_("What indication of nesting success was observed?"),)
+
+    # Populated from Turtle Tagging > nest_nesting_disturbed
+    # Behaviour:      Turtle Tagging > nesting_disturbance_cause
+    nesting_disturbed = models.CharField(
+        max_length=300,
+        verbose_name=_("Nesting disturbed"),
         choices=OBSERVATION_CHOICES,
         default=NA_VALUE,
-        help_text=_("Was the animal nesting?"),)
+        help_text=_(
+            "Was the nesting interrupted? "
+            "If so, specify disturbance in comments."),)
 
     laparoscopy = models.BooleanField(
         max_length=300,

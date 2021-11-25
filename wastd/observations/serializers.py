@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 # ----------------------------------------------------------------------------#
 # Areas, Surveys
 # ----------------------------------------------------------------------------#
+
+
 class AreaSerializer(GeoFeatureModelSerializer):
 
     class Meta:
@@ -108,9 +110,9 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
                     source_id=self.initial_data['survey_source_id']
                 ).exists()):
             data['survey'] = models.Survey.objects.filter(
-                    source=self.initial_data['survey_source'],
-                    source_id=self.initial_data['survey_source_id']
-                ).first()
+                source=self.initial_data['survey_source'],
+                source_id=self.initial_data['survey_source_id']
+            ).first()
 
         elif (has_source and has_end_source_id and
                 models.Survey.objects.filter(
@@ -118,9 +120,9 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
                     end_source_id=self.initial_data['survey_end_source_id']
                 ).exists()):
             data['survey'] = models.Survey.objects.filter(
-                    source=self.initial_data['survey_source'],
-                    end_source_id=self.initial_data['survey_end_source_id']
-                ).first()
+                source=self.initial_data['survey_source'],
+                end_source_id=self.initial_data['survey_end_source_id']
+            ).first()
 
         else:
             msg = 'Survey does not exist: \nInitial data: {}'.format(self.initial_data)
@@ -313,6 +315,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
             "habitat",
             "activity",
             "nesting_event",
+            "nesting_disturbed",
             "laparoscopy",
             "checked_for_injuries",
             "scanned_for_pit_tags",
@@ -818,6 +821,7 @@ class TurtleDamageObservationSerializer(ObservationSerializer):
             "damage_age",
             "description"
         )
+
 
 class TrackTallyObservationSerializer(ObservationSerializer):
 

@@ -563,10 +563,10 @@ class NestTagObservationAdmin(ObservationAdminMixin):
     """Admin for NestTagObservation."""
 
     list_display = ObservationAdminMixin.LIST_FIRST + (
-        'tag_name', 
-        'flipper_tag_id', 
-        'date_nest_laid', 
-        'tag_label',  
+        'tag_name',
+        'flipper_tag_id',
+        'date_nest_laid',
+        'tag_label',
         'comments',
     ) + ObservationAdminMixin.LIST_LAST
     list_filter = ObservationAdminMixin.LIST_FILTER + \
@@ -942,11 +942,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # select2 widgets for searchable dropdowns
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ['area', 'site', 'survey',]
+    autocomplete_fields = ['area', 'site', 'survey', ]
     # UserWidget excludes inactive users
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
-    readonly_fields=('name',)
+    readonly_fields = ('name',)
 
     # Django-fsm transitions config
     fsm_field = ['status', ]
@@ -1047,7 +1047,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-
 @admin.register(AnimalEncounter)
 class AnimalEncounterAdmin(EncounterAdmin):
     """Admin for AnimalEncounter."""
@@ -1058,30 +1057,46 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'cause_of_death', 'cause_of_death_confidence',
         'maturity_display', 'sex_display', 'behaviour',
         'habitat_display',
-        'nesting_event',
+        'nesting_event', 'nesting_disturbed',
         'checked_for_injuries',
         'scanned_for_pit_tags',
         'checked_for_flipper_tags',
     ) + EncounterAdmin.LAST_COLS
     list_select_related = ('area', 'site', 'survey', )
     list_filter = EncounterAdmin.list_filter + (
-        'taxon', 'species',
-        'health', 'cause_of_death', 'cause_of_death_confidence',
-        'maturity', 'sex', 'habitat',
+        'taxon',
+        'species',
+        'health',
+        'cause_of_death',
+        'cause_of_death_confidence',
+        'maturity',
+        'sex',
+        'habitat',
         'nesting_event',
+        'nesting_disturbed',
         'checked_for_injuries',
         'scanned_for_pit_tags',
-        'checked_for_flipper_tags', )
+        'checked_for_flipper_tags',
+        'laparoscopy',
+    )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
          {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-          'fields': ('taxon', 'species', 'maturity', 'sex',
-                     'activity', 'behaviour', 'habitat',
-                     'health', 'cause_of_death', 'cause_of_death_confidence',
-                     'nesting_event',
-                     'checked_for_injuries',
-                     'scanned_for_pit_tags',
-                     'checked_for_flipper_tags',)}), )
+          'fields': (
+             'taxon',
+             'species',
+             'maturity',
+             'sex',
+             'activity',
+             'behaviour',
+             'habitat',
+             'health', 'cause_of_death', 'cause_of_death_confidence',
+             'nesting_event', 'nesting_disturbed',
+             'checked_for_injuries',
+             'scanned_for_pit_tags',
+             'checked_for_flipper_tags',
+             'laparoscopy',
+         )}), )
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
