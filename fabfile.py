@@ -3,6 +3,7 @@
 
 Convenience wrapper for often used operations.
 """
+from config.settings.common import WASTD_RELEASE
 import environ
 import os
 # from fabric.api import env, local  # settings, cd, run
@@ -13,17 +14,28 @@ from fabric.contrib.files import exists, upload_template
 
 env = environ.Env(
     # set casting, default value
-    DEBUG=(bool, False)
+    DEBUG=(bool, False),
+    WASTD_RELEASE=(str, '0.0.1')
 )
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Set the project base directory
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+env_file = os.path.join(BASE_DIR, '.env')
+if os.path.exists(env_file):
+    environ.Env.read_env(env_file)
+    print(".env file found at {}".format(env_file))
+else:
+    print(".env file not found in BASE DIR {}".format(BASE_DIR))
 
 # env.hosts = ['localhost', ]
 
+def envtest():
+    print("BASE DIR: {}, Env vars: {}".format(BASE_DIR, env.__dict__))
+    print("WAStD RELEASE {}".format(env("WASTD_RELEASE")))
 
 def clean():
     """Delete .pyc, temp and swap files."""
@@ -116,11 +128,6 @@ def ptest():
     local('python manage.py test --settings=config.settings.test '
           '--parallel 4 --keepdb -v 2 ',
           shell='/bin/bash')
-    print(green("Completed running tests."))
-
-
-def doc():
-    """Compile docs, draw data models and transitions."""
     local("mkdir -p docs_source/_static && "
           "cd docs_source && make clean && "
           "make html && cd ..")
@@ -128,9 +135,9 @@ def doc():
 
 def dbuild():
     """Build Docker image."""
-    print(yellow("Building docker images with tag latest and {WASTD_RELEASE}...".format(**e)))
+    print(yellow("Building docker images with tag latest and {WASTD_RELEASE}...".format(env("WASTD_RELEASE"))))
     local("rm logs/wastd.log && touch logs/wastd.log")
-    local("docker build -t dbcawa/wastd -t dbcawa/wastd:{WASTD_RELEASE} .".format(**e))
+    local("docker build -t dbcawa/wastd -t dbcawa/wastd:{WASTD_RELEASE} .".format(env("WASTD_RELEASE")))
 
 
 def dpush():
@@ -145,14 +152,14 @@ def docker():
     dpush()
     print(green(
         "Updated Docker images are available on DockerHub "
-        "as dbcawa/wastd:latest and dbcawa/wastd:{WASTD_RELEASE}".format(**e)))
+        "as dbcawa/wastd:latest and dbcawa/wastd:{WASTD_RELEASE}".format(env("WASTD_RELEASE"))))
 
 
 def tag():
     """Tag code with WASTD_RELEASE and push to GitHub."""
-    local("git tag -a {WASTD_RELEASE} -m '{WASTD_RELEASE}'".format(**e))
-    local("git push origin {WASTD_RELEASE}".format(**e))
-    print(green("Code tagged as {WASTD_RELEASE} and pushed to GitHub.".format(**e)))
+    local("git tag -a {WASTD_RELEASE} -m '{WASTD_RELEASE}'".format(env("WASTD_RELEASE")))
+    local("git push origin {WASTD_RELEASE}".format(env["WASTD_RELEASE"]))
+    print(green("Code tagged as {WASTD_RELEASE} and pushed to GitHub.".format(env("WASTD_RELEASE"))))
 
 
 def release():

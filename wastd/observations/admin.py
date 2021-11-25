@@ -563,7 +563,11 @@ class NestTagObservationAdmin(ObservationAdminMixin):
     """Admin for NestTagObservation."""
 
     list_display = ObservationAdminMixin.LIST_FIRST + (
-        'tag_name', 'flipper_tag_id', 'date_nest_laid', 'tag_label',
+        'tag_name', 
+        'flipper_tag_id', 
+        'date_nest_laid', 
+        'tag_label',  
+        'comments',
     ) + ObservationAdminMixin.LIST_LAST
     list_filter = ObservationAdminMixin.LIST_FILTER + \
         ('flipper_tag_id', 'tag_label',)
@@ -573,7 +577,7 @@ class NestTagObservationAdmin(ObservationAdminMixin):
     def tag_name(self, obj):
         """Nest tag name."""
         return obj.name
-    tag_name.short_description = 'Nest Tag ID'
+    tag_name.short_description = 'Complete Nest Tag'
 
     def get_queryset(self, request):
         return super(
@@ -938,7 +942,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # select2 widgets for searchable dropdowns
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ['area', 'site', 'survey', ]# 'observer', 'reporter', ]
+    autocomplete_fields = ['area', 'site',] # 'survey', ]# 'observer', 'reporter', ]
+    survey = forms.ChoiceField()
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
 
