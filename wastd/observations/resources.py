@@ -8,6 +8,7 @@ from wastd.observations.models import (
     Survey
 )
 
+
 class SurveyResource(ModelResource):
     class Meta:
         model = Survey
@@ -83,12 +84,23 @@ class AnimalEncounterResource(ModelResource):
             'reporter__name',
             'encounter_type',
             'name',
-            'taxon',
-            'species',
-            'sex',
-            'maturity',
-            'health',
-            'checked_for_flipper_tags'
+            "taxon",
+            "species",
+            "health",
+            "sex",
+            "maturity",
+            "behaviour",
+            "habitat",
+            "activity",
+            "nesting_event",
+            "nesting_disturbed",
+            "laparoscopy",
+            "checked_for_injuries",
+            "scanned_for_pit_tags",
+            "checked_for_flipper_tags",
+            "cause_of_death",
+            "cause_of_death_confidence",
+            "absolute_admin_url",
         ]
 
 
@@ -176,4 +188,3 @@ class LineTransectEncounterResource(ModelResource):
             'encounter_type',
             'transect',
         ]
-
