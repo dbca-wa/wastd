@@ -11,24 +11,34 @@ Production Configurations.
 """
 from __future__ import absolute_import, unicode_literals
 
-# import os
+import os
 # from boto.s3.connection import OrdinaryCallingFormat, SubdomainCallingFormat
 # from django.utils import six
-from confy import env
+import environ
 
 from .common import *  # noqa
+
+env = environ.Env(
+    # set casting, default value
+    DJANGO_SECRET_KEY=(str, "CHANGEME"),
+    HTTP_X_FORWARDED_PROTO=(str, "https"),
+    DJANGO_SECURE=(bool, True),
+)
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env')) # Populate env
 
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Raises ImproperlyConfigured exception if DJANGO_SECRET_KEY not in os.environ
 # unless default is set
-SECRET_KEY = env('DJANGO_SECRET_KEY', default="CHANGEME")
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 
 # This ensures that Django will be able to detect a secure connection
 # properly on Heroku.
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = env('HTTP_X_FORWARDED_PROTO')
 # Use Whitenoise to serve static files
 # See: https://whitenoise.readthedocs.io/
 # WHITENOISE_MIDDLEWARE = ('whitenoise.middleware.WhiteNoiseMiddleware', )
@@ -40,19 +50,19 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # See https://docs.djangoproject.com/en/1.9/ref/middleware/#module-django.middleware.security
 # and https://docs.djangoproject.com/ja/1.9/howto/deployment/checklist/#run-manage-py-check-deploy
 # Allow non-SSO logins using prod settings but local hosting (http) with DJANGO_SECURE=False
-SECURE = env('DJANGO_SECURE', default=True)
+SECURE = env('DJANGO_SECURE')
 if SECURE:
     # set this to 60 seconds and then to 518400 when you can prove it works
     SECURE_HSTS_SECONDS = 60
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = env('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True)
-    SECURE_CONTENT_TYPE_NOSNIFF = env('DJANGO_SECURE_CONTENT_TYPE_NOSNIFF', default=True)
-    SECURE_BROWSER_XSS_FILTER = env('DJANGO_SECURE_BROWSER_XSS_FILTER', default=True)
-    SESSION_COOKIE_SECURE = env('DJANGO_SESSION_COOKIE_SECURE', default=True)
-    SESSION_COOKIE_HTTPONLY = env('DJANGO_SESSION_COOKIE_HTTPONLY', default=True)
-    SECURE_SSL_REDIRECT = env('DJANGO_SECURE_SSL_REDIRECT', default=False)
-    CSRF_COOKIE_SECURE = env('DJANGO_CSRF_COOKIE_SECURE', default=True)
-    CSRF_COOKIE_HTTPONLY = env('DJANGO_CSRF_COOKIE_HTTPONLY', default=True)
-    X_FRAME_OPTIONS = env('DJANGO_X_FRAME_OPTIONS', default='DENY')
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SECURE_SSL_REDIRECT = False
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+    X_FRAME_OPTIONS = 'DENY'
 
 # Session management
 # http://niwinz.github.io/django-redis/latest/#_configure_as_cache_backend

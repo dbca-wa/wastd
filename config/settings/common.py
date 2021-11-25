@@ -33,7 +33,10 @@ env = environ.Env(
     EMAIL_HOST = (str, 'smtp.lan.fyi'),
     EMAIL_PORT = (int, 25),
     DEFAULT_FROM_EMAIL = (str, 'wastd-noreply@dbca.wa.gov.au'),
+    ADMIN_USER=(int, 1),
     DJANGO_EMAIL_SUBJECT_PREFIX=(str, '[WAStD] '),
+    MEMCACHED_URL=(str, '127.0.0.1:11211'),
+    MEMCACHED_URL_SELECT2=(str, '127.0.0.1:11211'),
 )
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -208,11 +211,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # CACHES = {
 #     'default': {
 #         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': env('MEMCACHED_URL', default='127.0.0.1:11211'),
+#         'LOCATION': env('MEMCACHED_URL'),
 #     },
 #      'select2': {
 #         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': env('MEMCACHED_URL', default='127.0.0.1:11211'),
+#         'LOCATION': env('MEMCACHED_URL_SELECT2'),
 #     }
 # }
 
@@ -229,6 +232,7 @@ CACHES = {
 }
 
 SELECT2_CACHE_BACKEND = "select2"
+CACHE_PREFIX = 'select2_'
 
 # Data upload request size
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024
@@ -237,12 +241,12 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 # Branding
 # ------------------------------------------------------------------------------
 # https://github.com/jakubroztocil/django-settings-export
-SITE_NAME = env('SITE_NAME', default="WA Sea Turtles and Strandings Database")
-SITE_TITLE = env('SITE_TITLE', default="WAStD")
-SITE_CODE = env('SITE_CODE', default="WAStD")
+SITE_NAME = env('SITE_NAME')
+SITE_TITLE = env('SITE_TITLE')
+SITE_CODE = env('SITE_CODE')
 
 
-DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD', default='test123')
+DEFAULT_USER_PASSWORD = env('DEFAULT_USER_PASSWORD')
 
 ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS')
 
@@ -272,12 +276,11 @@ FIXTURE_DIRS = (str(APPS_DIR.path('fixtures')),)
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND',
-                    default='django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = env('EMAIL_HOST', default='smtp.lan.fyi')
-EMAIL_PORT = env('EMAIL_PORT', default=25)
-DEFAULT_FROM_EMAIL = 'tsc-noreply@dbca.wa.gov.au'
-EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[TSC] ')
+EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND')
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX')
 
 # Sentry email settings
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
@@ -286,9 +289,9 @@ SENTRY_ADMINS = ("Florian.Mayer@dbca.wa.gov.au",)
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = (("Florian Mayer", 'Florian.Mayer@dpaw.wa.gov.au'),)
+ADMINS = (("Florian Mayer", 'Florian.Mayer@dbca.wa.gov.au'),)
 
-TSC_ADMIN_USER = env("TSC_ADMIN_USER", default=1)
+TSC_ADMIN_USER = env("ADMIN_USER")
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
@@ -308,7 +311,7 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'Australia/Perth'
 DATE_FORMAT = 'Y-m-d'
-DATETIME_FORMAT = 'Y-m-d H:M:S'
+DATETIME_FORMAT = 'Y-m-d G:i:s T'
 DATE_INPUT_FORMATS = [
     '%d/%m/%Y',      # '25/10/2006'
     '%d/%m/%y',

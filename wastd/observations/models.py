@@ -1784,11 +1784,11 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         max_length=1000,
         editable=False,
         blank=True, null=True,
-        verbose_name=_("Animal Name"),
+        verbose_name=_("Encounter Subject Identifer"),
         help_text=_(
-            "A unique identifier for the encountered subject,"
-            " e.g. in the case of AnimalEncounters, the animal's earliest associated flipper tag ID."
-            " Encounters with the same name are encounters of the same thing."
+            "An automatically inferred read-only identifier for the encountered subject,"
+            " e.g. in the case of AnimalEncounters, the animal's earliest associated tag ID."
+            " Encounters with the same identifer are encounters of the same subject (e.g. the same turtle)."
             ),)
 
     observer = models.ForeignKey(
@@ -1983,7 +1983,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         return self.when
 
     def save(self, *args, **kwargs):
-        """Cache popup, encounter type and source ID.
+        """Cache expensive properties.
 
         The popup content changes when fields change, and is expensive to build.
         As it is required ofen and under performance-critical circumstances -
@@ -1999,6 +1999,8 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
 
         The encounter type is inferred from the type of attached Observations.
         This logic is overridden in subclasses.
+
+        The name is calculated from a complex lookup across associated TagObservations.
         """
         if not self.source_id:
             self.source_id = self.short_name

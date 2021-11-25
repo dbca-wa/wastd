@@ -3,7 +3,6 @@
 from __future__ import absolute_import, unicode_literals
 
 # from django import forms as django_forms
-import floppyforms as ff
 import logging
 from django import forms
 from django.contrib import admin
@@ -11,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.admin.filters import RelatedFieldListFilter
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
 # from easy_select2.widgets import Select2
@@ -921,7 +921,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
     # Columns for change_list, allow re-use and inserting fields
     FIRST_COLS = ('when', 'area', 'site', 'latitude', 'longitude',
-                  'location_accuracy', 'location_accuracy_m', 'name')
+                  'location_accuracy', 'location_accuracy_m', 'name_link')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
                  'status', 'encounter_type')  # 'survey',
     list_display = FIRST_COLS + LAST_COLS
@@ -942,10 +942,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # select2 widgets for searchable dropdowns
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ['area', 'site',] # 'survey', ]# 'observer', 'reporter', ]
-    survey = forms.ChoiceField()
+    autocomplete_fields = ['area', 'site', 'survey',]
+    # UserWidget excludes inactive users
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
+    readonly_fields=('name',)
 
     # Django-fsm transitions config
     fsm_field = ['status', ]
@@ -958,7 +959,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                 'fields': (
                     'area',
                     'site',
-                    'survey',
+                    # 'survey',
                     'where',
                     'location_accuracy',
                     'location_accuracy_m',
@@ -967,6 +968,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                     'reporter',
                     'source',
                     'source_id',
+                    'name',
                 )
             }
          ),
@@ -1000,6 +1002,16 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         ).prefetch_related(
             'observer', 'reporter', 'area', 'site',
         )
+
+    def name_link(self, obj):
+        """List other encounters with the same subject."""
+        return mark_safe(
+            '<a href="{0}?name={1}" target="_" rel="nofollow" '
+            'title="List all encounters with the same subject">{1}</a>'.format(
+                reverse("admin:observations_encounter_changelist"), obj.name))
+
+    name_link.short_description = 'Encounter History'
+    name_link.allow_tags = True
 
     def source_display(self, obj):
         """Make data source readable."""
