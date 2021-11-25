@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wastd.observations.admin &mdash; WAStD 0.54.7 documentation</title>
+  <title>wastd.observations.admin &mdash; WAStD 0.54.8 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -82,7 +82,6 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">unicode_literals</span>
 
 <span class="c1"># from django import forms as django_forms</span>
-<span class="kn">import</span> <span class="nn">floppyforms</span> <span class="k">as</span> <span class="nn">ff</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
@@ -90,6 +89,7 @@
 <span class="kn">from</span> <span class="nn">django.contrib.admin.filters</span> <span class="kn">import</span> <span class="n">RelatedFieldListFilter</span>
 <span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">mark_safe</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django_select2.forms</span> <span class="kn">import</span> <span class="n">ModelSelect2Widget</span>
 <span class="kn">from</span> <span class="nn">easy_select2</span> <span class="kn">import</span> <span class="n">select2_modelform</span> <span class="k">as</span> <span class="n">s2form</span>
 <span class="c1"># from easy_select2.widgets import Select2</span>
@@ -1000,7 +1000,7 @@
 
     <span class="c1"># Columns for change_list, allow re-use and inserting fields</span>
     <span class="n">FIRST_COLS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;when&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span>
-                  <span class="s1">&#39;location_accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;location_accuracy_m&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
+                  <span class="s1">&#39;location_accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;location_accuracy_m&#39;</span><span class="p">,</span> <span class="s1">&#39;name_link&#39;</span><span class="p">)</span>
     <span class="n">LAST_COLS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;source_display&#39;</span><span class="p">,</span> <span class="s1">&#39;source_id&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;encounter_type&#39;</span><span class="p">)</span>  <span class="c1"># &#39;survey&#39;,</span>
     <span class="n">list_display</span> <span class="o">=</span> <span class="n">FIRST_COLS</span> <span class="o">+</span> <span class="n">LAST_COLS</span>
@@ -1021,9 +1021,11 @@
     <span class="c1"># select2 widgets for searchable dropdowns</span>
     <span class="n">form</span> <span class="o">=</span> <span class="n">s2form</span><span class="p">(</span><span class="n">Encounter</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">S2ATTRS</span><span class="p">)</span>
     <span class="n">formfield_overrides</span> <span class="o">=</span> <span class="n">FORMFIELD_OVERRIDES</span>
-    <span class="n">autocomplete_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="p">]</span><span class="c1"># &#39;observer&#39;, &#39;reporter&#39;, ]</span>
+    <span class="n">autocomplete_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,]</span>
+    <span class="c1"># UserWidget excludes inactive users</span>
     <span class="n">observer</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">UserWidget</span><span class="p">())</span>
     <span class="n">reporter</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">UserWidget</span><span class="p">())</span>
+    <span class="n">readonly_fields</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,)</span>
 
     <span class="c1"># Django-fsm transitions config</span>
     <span class="n">fsm_field</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="p">]</span>
@@ -1036,7 +1038,7 @@
                 <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span>
                     <span class="s1">&#39;area&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;site&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;survey&#39;</span><span class="p">,</span>
+                    <span class="c1"># &#39;survey&#39;,</span>
                     <span class="s1">&#39;where&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;location_accuracy&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;location_accuracy_m&#39;</span><span class="p">,</span>
@@ -1045,6 +1047,7 @@
                     <span class="s1">&#39;reporter&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;source&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;source_id&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">}</span>
          <span class="p">),</span>
@@ -1078,6 +1081,16 @@
         <span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
             <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EncounterAdmin.name_link"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.EncounterAdmin.name_link">[docs]</a>    <span class="k">def</span> <span class="nf">name_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List other encounters with the same subject.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span>
+            <span class="s1">&#39;&lt;a href=&quot;</span><span class="si">{0}</span><span class="s1">?name=</span><span class="si">{1}</span><span class="s1">&quot; target=&quot;_&quot; rel=&quot;nofollow&quot; &#39;</span>
+            <span class="s1">&#39;title=&quot;List all encounters with the same subject&quot;&gt;</span><span class="si">{1}</span><span class="s1">&lt;/a&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:observations_encounter_changelist&quot;</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
+
+    <span class="n">name_link</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Encounter History&#39;</span>
+    <span class="n">name_link</span><span class="o">.</span><span class="n">allow_tags</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="EncounterAdmin.source_display"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.EncounterAdmin.source_display">[docs]</a>    <span class="k">def</span> <span class="nf">source_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Make data source readable.&quot;&quot;&quot;</span>

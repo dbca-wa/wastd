@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wastd.observations.models &mdash; WAStD 0.54.7 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.54.8 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -1863,8 +1863,12 @@
         <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
         <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Animal Name&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The animal&#39;s earliest associated flipper tag ID.&quot;</span><span class="p">),)</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Encounter Subject Identifer&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;An automatically inferred read-only identifier for the encountered subject,&quot;</span>
+            <span class="s2">&quot; e.g. in the case of AnimalEncounters, the animal&#39;s earliest associated tag ID.&quot;</span>
+            <span class="s2">&quot; Encounters with the same identifer are encounters of the same subject (e.g. the same turtle).&quot;</span>
+            <span class="p">),)</span>
 
     <span class="n">observer</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">User</span><span class="p">,</span>
@@ -2058,7 +2062,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">when</span>
 
 <div class="viewcode-block" id="Encounter.save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Cache popup, encounter type and source ID.</span>
+        <span class="sd">&quot;&quot;&quot;Cache expensive properties.</span>
 
 <span class="sd">        The popup content changes when fields change, and is expensive to build.</span>
 <span class="sd">        As it is required ofen and under performance-critical circumstances -</span>
@@ -2074,6 +2078,8 @@
 
 <span class="sd">        The encounter type is inferred from the type of attached Observations.</span>
 <span class="sd">        This logic is overridden in subclasses.</span>
+
+<span class="sd">        The name is calculated from a complex lookup across associated TagObservations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">short_name</span>
@@ -2179,9 +2185,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">flipper_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a queryset of Flipper Tag Observations.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return a queryset of Flipper and PIT Tag Observations.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_set</span><span class="o">.</span><span class="n">instance_of</span><span class="p">(</span><span class="n">TagObservation</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">tagobservation__tag_type</span><span class="o">=</span><span class="s1">&#39;flipper-tag&#39;</span><span class="p">)</span>
+            <span class="n">tagobservation__tag_type__in</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;flipper-tag&#39;</span><span class="p">,</span> <span class="s1">&#39;pit-tag&#39;</span><span class="p">])</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">primary_flipper_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

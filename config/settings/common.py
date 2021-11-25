@@ -38,8 +38,10 @@ env = environ.Env(
     DJANGO_EMAIL_SUBJECT_PREFIX=(str, '[WAStD] '),
     MEMCACHED_URL=(str, '127.0.0.1:11211'),
     MEMCACHED_URL_SELECT2=(str, '127.0.0.1:11211'),
+    WASTD_RELEASE=(str, '0.0.1'),
 )
 
+WASTD_RELEASE = env('WASTD_RELEASE')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 environ.Env.read_env(os.path.join(BASE_DIR, '.env')) # Populate env
 
