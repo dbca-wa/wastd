@@ -34,14 +34,5 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# d = os.path.abspath('.')
-# dot_env = os.path.join(str(d), '.env')
-# if os.path.exists(dot_env):
-    # environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-    # confy.read_environment_file(dot_env)           # Must precede dj_static imports.
-# else:
-    # print("wsgi.py: .env missing at {0}, ignoring.".format(dot_env))
-
-
 application = Cling(MediaCling(get_wsgi_application()))
 # application = WhiteNoise(get_wsgi_application())
