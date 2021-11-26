@@ -150,7 +150,7 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='c4)!ho4t^lsy0ozrnlqamjso@^n-ookiq
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE_FIRST = (
-    # 'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -158,7 +158,7 @@ MIDDLEWARE_FIRST = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 MIDDLEWARE_LAST = (
@@ -211,16 +211,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 #     }
 # }
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': env('MEMCACHED_URL'),
-    },
-     'select2': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': env('MEMCACHED_URL_SELECT2'),
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+#         'LOCATION': env('MEMCACHED_URL'),
+#     },
+#      'select2': {
+#         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+#         'LOCATION': env('MEMCACHED_URL_SELECT2'),
+#     }
+# }
 
 # CACHES = {
 #     "default": {
@@ -234,8 +234,30 @@ CACHES = {
 #     }
 # }
 
-SELECT2_CACHE_BACKEND = "default"
-CACHE_PREFIX = 'select2_'
+# https://github.com/django-pymemcache/django-pymemcache
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'djpymemcache.backend.PyMemcacheCache',
+#         'LOCATION': [env('MEMCACHED_URL'),],
+#     },
+#     'select2': {
+#         'BACKEND': 'djpymemcache.backend.PyMemcacheCache',
+#         'LOCATION': [env('MEMCACHED_URL_SELECT2'),],
+#     },
+# }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'default',
+    },
+    'select2': {
+       'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'select2',
+    },
+}
+SELECT2_CACHE_BACKEND = "select2"
+# CACHE_PREFIX = 'select2_'
 
 # Data upload request size
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024

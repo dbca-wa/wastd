@@ -1,11 +1,13 @@
 {% extends "pages/base.html" %}
-{% load static leaflet_tags geojson_tags %}
+{% load static leaflet_tags geojson_tags cache %}
 
+{% cache 600 maparea %}
 {% block map %}
 <div id="map">
     {% leaflet_map "wastdmap" callback="window.map_init" %}
 </div>
 {% endblock %}
+{% endcache %}
 
 {% block extrastyle %}
 <style>
