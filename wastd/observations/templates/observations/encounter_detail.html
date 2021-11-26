@@ -61,8 +61,10 @@
             {% endblock %}
 
         {% for obs in object.observation_set.all %}
+        <div class="col col-12">
           <div class="card-text">
             {{ obs.as_html|safe }}
+          </div>
           </div>
         {% endfor %}
 
@@ -96,7 +98,7 @@
 </div><!-- .row#row-occ-detail -->
 
 <div id="row-occ-extra">
-  <div class="col col-12 mb-2">
+  <div class="col col-12 mb-2 mt-2">
 
     {% block obscards %}
     {% endblock %}
