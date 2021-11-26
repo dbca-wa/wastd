@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """User widgets."""
 from django.contrib.auth import get_user_model
-
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 
 

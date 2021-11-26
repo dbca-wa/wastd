@@ -99,6 +99,8 @@ django-fixture-magic = {git = "https://github.com/davedash/django-fixture-magic.
 mommy_spatial_generators = {git = "https://github.com/sigma-geosistemas/mommy_spatial_generators.git", editable = true, ref = "master", version = "*"}
 graphene-django = "*"
 django-graphql-geojson = "*"
+pymemcache = "*"
+django-pymemcache = "*"
 
 [requires]
 python_version = "3.8"

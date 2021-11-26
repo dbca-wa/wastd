@@ -15,14 +15,14 @@ from adminactions import actions
 from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
-from graphene_django.views import GraphQLView
+# from graphene_django.views import GraphQLView
 
 from occurrence.models import CommunityAreaEncounter
 from wastd.router import router
 from wastd.observations import models as wastd_models
 from wastd.observations import views as wastd_views
 
-from api.schema import schema
+# from api.schema import schema
 
 # register all adminactions
 actions.add_to_site(site)
@@ -56,7 +56,7 @@ urlpatterns = [
     path('api-auth/', include(('rest_framework.urls', 'api-auth'), namespace='rest_framework')),
     path('api-token-auth/', drf_authviews.obtain_auth_token, name="api-auth"),
 
-    path('gql', GraphQLView.as_view(graphiql=True, schema=schema), name="gql-api"),
+    # path('gql', GraphQLView.as_view(graphiql=True, schema=schema), name="gql-api"),
 
     # Djgeojson
     path('observations.geojson', GeoJSONLayerView.as_view(
