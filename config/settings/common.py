@@ -36,8 +36,8 @@ env = environ.Env(
     DEFAULT_FROM_EMAIL=(str, 'wastd-noreply@dbca.wa.gov.au'),
     ADMIN_USER=(int, 1),
     DJANGO_EMAIL_SUBJECT_PREFIX=(str, '[WAStD] '),
-    MEMCACHED_URL=(str, '127.0.0.1:11211'),
-    MEMCACHED_URL_SELECT2=(str, '127.0.0.1:11211'),
+    MEMCACHED_URL=(str, 'memcached.default'),
+    MEMCACHED_URL_SELECT2=(str, 'memcached.default'),
     WASTD_RELEASE=(str, '0.0.1'),
 )
 
@@ -211,30 +211,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 #     }
 # }
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': env('MEMCACHED_URL'),
-#     },
-#      'select2': {
-#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': env('MEMCACHED_URL_SELECT2'),
-#     }
-# }
-
 CACHES = {
-    "default": {
-        # 'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        'LOCATION': 'django_cache_table'
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': env('MEMCACHED_URL'),
     },
-    "select2": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        'LOCATION': 'select2_cache_table'
+     'select2': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': env('MEMCACHED_URL_SELECT2'),
     }
 }
 
-SELECT2_CACHE_BACKEND = "select2"
+# CACHES = {
+#     "default": {
+#         # 'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#         "BACKEND": 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': ''
+#     },
+#     "select2": {
+#         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+#         'LOCATION': 'select2_cache_table'
+#     }
+# }
+
+SELECT2_CACHE_BACKEND = "default"
 CACHE_PREFIX = 'select2_'
 
 # Data upload request size
