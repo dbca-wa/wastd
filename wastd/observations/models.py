@@ -545,7 +545,12 @@ OBSERVATION_COLOURS = {
     False: "dark",
     True: "primary",
     "False": "dark",
-    "True": "primary"
+    "True": "primary",
+
+    "nest-with-eggs": "success",
+    "nest-unsure-of-eggs": "success",
+    "unsure-if-nest": "secondary",
+    "no-nest": "dark",
     }
 
 PHOTO_CHOICES = NA + (("see photos", "See attached photos for details"),)

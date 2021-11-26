@@ -8,6 +8,8 @@
 {% endblock %}
 
 {% block title_labels %}
+<span class="badge badge-{{ object.nesting_event|obs_colour }}"
+  title="Nesting success: {{ object.get_nesting_event_display }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}">lay</span>
 <span class="badge badge-{{ object.checked_for_injuries|obs_colour }}"
   title="Injuries: {{ object.get_checked_for_injuries_display }}">inj</span>
 <span class="badge badge-{{ object.scanned_for_pit_tags|obs_colour }}"

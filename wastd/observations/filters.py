@@ -171,6 +171,7 @@ class AnimalEncounterFilter(EncounterFilter):
             'activity',
             'habitat',
             'nesting_event',
+            'nesting_disturbed',
             'laparoscopy',
             'checked_for_injuries',
             'scanned_for_pit_tags',
