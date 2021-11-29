@@ -2017,8 +2017,9 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         """
         if not self.source_id:
             self.source_id = self.short_name
-        if (not self.name) and self.inferred_name:
-            self.name = self.inferred_name
+        # This is slow, use set_name() instead in bulk
+        # if (not self.name) and self.inferred_name:
+        #     self.name = self.inferred_name
         if not self.site:
             self.site = self.guess_site
         if not self.area:
@@ -2206,9 +2207,9 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         """Return the URLs of all attached photograph or none."""
         try:
             return list(
-                self.observation_set.instance_of(
-                    MediaAttachment).filter(
-                        mediaattachment__media_type="photograph"))
+                self.observation_set.instance_of(MediaAttachment)
+                    # .filter(mediaattachment__media_type="photograph") # only photos
+            )
         except BaseException:
             return None
 
