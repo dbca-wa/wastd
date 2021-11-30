@@ -959,7 +959,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                 'fields': (
                     'area',
                     'site',
-                    # 'survey',
+                    'survey',
                     'where',
                     'location_accuracy',
                     'location_accuracy_m',
