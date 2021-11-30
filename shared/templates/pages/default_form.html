@@ -3,6 +3,10 @@
 
 {% block content %}
 {% include 'shared/breadcrumbs.html' %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+crossorigin="anonymous"></script>
+{{ form.media.js }}
 <div class="container">
   <div class="row">
     <div class="col col-12 mb-3">
@@ -45,8 +49,5 @@
 {% endblock %}
 
 {% block extrajs %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-    integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
-    crossorigin="anonymous"></script>
-{{ form.media.js }}
+
 {% endblock extrajs %}

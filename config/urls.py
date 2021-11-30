@@ -65,6 +65,11 @@ urlpatterns = [
     path('areas.geojson', GeoJSONLayerView.as_view(
         model=wastd_models.Area, properties=('leaflet_title', 'as_html')
     ), name='areas-geojson'),
+    path('localities.geojson', GeoJSONLayerView.as_view(
+        model=wastd_models.Area,
+        queryset=wastd_models.Area.objects.filter(area_type=wastd_models.Area.AREATYPE_LOCALITY),
+        properties=('leaflet_title', 'as_html')
+    ), name='localities-geojson'),
     path('sites.geojson', GeoJSONLayerView.as_view(
         model=wastd_models.Area,
         queryset=wastd_models.Area.objects.filter(area_type=wastd_models.Area.AREATYPE_SITE),

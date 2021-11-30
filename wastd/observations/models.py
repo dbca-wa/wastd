@@ -504,6 +504,7 @@ NESTING_SUCCESS_CHOICES = (
     ("unsure-if-nest","Unsure if nest - can't tell whether nest mound present or not"),
     ("no-nest","No nest - witnessed aborted nest or found track with no nest"),
 )
+NESTING_PRESENT = ("nest-with-eggs", "nest-unsure-of-eggs")
 
 NEST_AGE_DEFAULT = "unknown"
 NEST_AGE_CHOICES = (
@@ -1995,39 +1996,28 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         """Return the full datetime of the Encounter."""
         return self.when
 
-    def save(self, *args, **kwargs):
-        """Cache expensive properties.
+    # def save(self, *args, **kwargs):
+    #     """Cache expensive properties.
 
-        The popup content changes when fields change, and is expensive to build.
-        As it is required ofen and under performance-critical circumstances -
-        populating the home screen with lots of popups - is is re-calculated
-        whenever the contents change (on save) rather when it is required for
-        display.
+    #     The popup content changes when fields change, and is expensive to build.
+    #     As it is required ofen and under performance-critical circumstances -
+    #     populating the home screen with lots of popups - is is re-calculated
+    #     whenever the contents change (on save) rather when it is required for
+    #     display.
 
-        The source ID will be auto-generated from ``short_name`` (if not set)
-        but is not guaranteed to be unique.
-        The User will be prompted to provide a unique source ID if necessary,
-        e.g. by appending a running number.
-        The source ID can be re-created by deleting it and re-saving the object.
+    #     The source ID will be auto-generated from ``short_name`` (if not set)
+    #     but is not guaranteed to be unique.
+    #     The User will be prompted to provide a unique source ID if necessary,
+    #     e.g. by appending a running number.
+    #     The source ID can be re-created by deleting it and re-saving the object.
 
-        The encounter type is inferred from the type of attached Observations.
-        This logic is overridden in subclasses.
+    #     The encounter type is inferred from the type of attached Observations.
+    #     This logic is overridden in subclasses.
 
-        The name is calculated from a complex lookup across associated TagObservations.
-        """
-        if not self.source_id:
-            self.source_id = self.short_name
-        # This is slow, use set_name() instead in bulk
-        # if (not self.name) and self.inferred_name:
-        #     self.name = self.inferred_name
-        if not self.site:
-            self.site = self.guess_site
-        if not self.area:
-            self.area = self.guess_area
-        self.encounter_type = self.get_encounter_type
-        self.as_html = self.get_popup()
-        self.as_latex = self.get_latex()
-        super(Encounter, self).save(*args, **kwargs)
+    #     The name is calculated from a complex lookup across associated TagObservations.
+    #     """
+
+    #     super(Encounter, self).save(*args, **kwargs)
 
     # Name -------------------------------------------------------------------#
     @property
@@ -2214,6 +2204,33 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
             return None
 
 
+@receiver(pre_save, sender=Encounter)
+def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
+    """Encounter pre_save: calculate expensive lookups.
+
+    Bulk updates or bulk creates will bypass these to be reconstructed later.
+    
+    * source_id: Set form short_name if empty
+    * area and site: Inferred from location (where) if empty
+    * encounter_type: Always from get_encounter_type
+    * as_html /as_latex: Always set from get_popup() and get_latex()
+    """
+    logger.info("[Encounter][pre_save] Start pre-save for Encounter {0}".format(instance.pk))
+    if not instance.source_id:
+        instance.source_id = instance.short_name
+    # This is slow, use set_name() instead in bulk
+    # if (not self.name) and self.inferred_name:
+    #     self.name = self.inferred_name
+    if not instance.site:
+        instance.site = instance.guess_site
+    if not instance.area:
+        instance.area = instance.guess_area
+    instance.encounter_type = instance.get_encounter_type
+    instance.as_html = instance.get_popup()
+    instance.as_latex = instance.get_latex()
+    logger.info("[Encounter][pre_save] Finish pre-save for Encounter {0}".format(instance.pk))
+
+
 class AnimalEncounter(Encounter):
     """The encounter of an animal of a species.
 
@@ -2286,7 +2303,8 @@ class AnimalEncounter(Encounter):
         default=NA_VALUE,
         help_text=_("The habitat in which the animal was encountered."), )
 
-    # Populated from Turtle Tagging > nest_observed_nesting_success
+    # ODK form Turtle Tagging > nest_observed_nesting_success
+    # W@ w2_data$enc$
     nesting_event = models.CharField( # TODO rename to nesting_success
         max_length=300,
         verbose_name=_("Nesting success"),
@@ -2380,7 +2398,7 @@ class AnimalEncounter(Encounter):
         excluded. Note that an animal encountered in water, or even a dead
         animal (whether that makes sense or not) can also be tagged.
         """
-        if self.nesting_event == "present":
+        if self.nesting_event in NESTING_PRESENT:
             return Encounter.ENCOUNTER_TAGGING
         elif self.health in DEATH_STAGES:
             return Encounter.ENCOUNTER_STRANDING
@@ -3109,6 +3127,13 @@ class TagObservation(Observation):
         return "{0}?q={1}".format(cl, urllib.parse.quote_plus(self.name))
 
 
+@receiver(pre_save, sender=TagObservation)
+def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
+    """TagObservation pre_save: sanitise tag_label, name Encounter after tag."""
+    if instance.encounter.status == Encounter.STATUS_NEW and instance.name:
+        instance.name = sanitize_tag_label(instance.name)
+
+
 class NestTagObservation(Observation):
     """Turtle Nest Tag Observation.
 
@@ -3192,7 +3217,7 @@ class NestTagObservation(Observation):
 
 @receiver(pre_save, sender=NestTagObservation)
 def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
-    """NestTagObservation pre_save: sanitise tag_label, name Encounter after tag."""
+    """NestTagObservation pre_save: sanitise tag_label, name unnamed Encounter after tag."""
     if instance.encounter.status == Encounter.STATUS_NEW and instance.tag_label:
         instance.tag_label = sanitize_tag_label(instance.tag_label)
     if instance.encounter.status == Encounter.STATUS_NEW and instance.flipper_tag_id:

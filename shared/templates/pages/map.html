@@ -48,7 +48,7 @@ function map_init(map, options) {
      * https://github.com/makinacorpus/django-geojson#geojson-layer-view
      * We'll use this method to load area polygons.
      */
-    $.getJSON("{% url 'areas-geojson' %}", function (data) {
+    $.getJSON("{% url 'localities-geojson' %}", function (data) {
         L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
     });
 
