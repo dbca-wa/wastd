@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wastd.observations.admin &mdash; WAStD 0.54.8 documentation</title>
+  <title>wastd.observations.admin &mdash; WAStD 0.56.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
             <a href="../../../index.html" class="icon icon-home"> WAStD
           </a>
               <div class="version">
-                0.54
+                0.56
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -642,10 +642,10 @@
     <span class="sd">&quot;&quot;&quot;Admin for NestTagObservation.&quot;&quot;&quot;</span>
 
     <span class="n">list_display</span> <span class="o">=</span> <span class="n">ObservationAdminMixin</span><span class="o">.</span><span class="n">LIST_FIRST</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="s1">&#39;tag_name&#39;</span><span class="p">,</span> 
-        <span class="s1">&#39;flipper_tag_id&#39;</span><span class="p">,</span> 
-        <span class="s1">&#39;date_nest_laid&#39;</span><span class="p">,</span> 
-        <span class="s1">&#39;tag_label&#39;</span><span class="p">,</span>  
+        <span class="s1">&#39;tag_name&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;flipper_tag_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;date_nest_laid&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;tag_label&#39;</span><span class="p">,</span>
         <span class="s1">&#39;comments&#39;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">+</span> <span class="n">ObservationAdminMixin</span><span class="o">.</span><span class="n">LIST_LAST</span>
     <span class="n">list_filter</span> <span class="o">=</span> <span class="n">ObservationAdminMixin</span><span class="o">.</span><span class="n">LIST_FILTER</span> <span class="o">+</span> \
@@ -1021,11 +1021,11 @@
     <span class="c1"># select2 widgets for searchable dropdowns</span>
     <span class="n">form</span> <span class="o">=</span> <span class="n">s2form</span><span class="p">(</span><span class="n">Encounter</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">S2ATTRS</span><span class="p">)</span>
     <span class="n">formfield_overrides</span> <span class="o">=</span> <span class="n">FORMFIELD_OVERRIDES</span>
-    <span class="n">autocomplete_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,]</span>
+    <span class="n">autocomplete_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="p">]</span>
     <span class="c1"># UserWidget excludes inactive users</span>
     <span class="n">observer</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">UserWidget</span><span class="p">())</span>
     <span class="n">reporter</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">UserWidget</span><span class="p">())</span>
-    <span class="n">readonly_fields</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,)</span>
+    <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,)</span>
 
     <span class="c1"># Django-fsm transitions config</span>
     <span class="n">fsm_field</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="p">]</span>
@@ -1038,7 +1038,7 @@
                 <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span>
                     <span class="s1">&#39;area&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;site&#39;</span><span class="p">,</span>
-                    <span class="c1"># &#39;survey&#39;,</span>
+                    <span class="s1">&#39;survey&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;where&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;location_accuracy&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;location_accuracy_m&#39;</span><span class="p">,</span>
@@ -1126,7 +1126,6 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">formfield_for_foreignkey</span><span class="p">(</span><span class="n">db_field</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
-
 <div class="viewcode-block" id="AnimalEncounterAdmin"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.AnimalEncounterAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">AnimalEncounter</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AnimalEncounterAdmin</span><span class="p">(</span><span class="n">EncounterAdmin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Admin for AnimalEncounter.&quot;&quot;&quot;</span>
@@ -1137,30 +1136,46 @@
         <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death_confidence&#39;</span><span class="p">,</span>
         <span class="s1">&#39;maturity_display&#39;</span><span class="p">,</span> <span class="s1">&#39;sex_display&#39;</span><span class="p">,</span> <span class="s1">&#39;behaviour&#39;</span><span class="p">,</span>
         <span class="s1">&#39;habitat_display&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span> <span class="s1">&#39;nesting_disturbed&#39;</span><span class="p">,</span>
         <span class="s1">&#39;checked_for_injuries&#39;</span><span class="p">,</span>
         <span class="s1">&#39;scanned_for_pit_tags&#39;</span><span class="p">,</span>
         <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">+</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">LAST_COLS</span>
     <span class="n">list_select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="p">)</span>
     <span class="n">list_filter</span> <span class="o">=</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">list_filter</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="s1">&#39;taxon&#39;</span><span class="p">,</span> <span class="s1">&#39;species&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;health&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death_confidence&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;maturity&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;habitat&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;taxon&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;species&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;health&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;cause_of_death_confidence&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;maturity&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sex&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;habitat&#39;</span><span class="p">,</span>
         <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;nesting_disturbed&#39;</span><span class="p">,</span>
         <span class="s1">&#39;checked_for_injuries&#39;</span><span class="p">,</span>
         <span class="s1">&#39;scanned_for_pit_tags&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;laparoscopy&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">fieldsets</span> <span class="o">=</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">fieldsets</span> <span class="o">+</span> <span class="p">(</span>
         <span class="p">(</span><span class="s1">&#39;Animal&#39;</span><span class="p">,</span>
          <span class="p">{</span><span class="s1">&#39;classes&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;grp-collapse&#39;</span><span class="p">,</span> <span class="s1">&#39;grp-open&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">,</span> <span class="s1">&#39;extrapretty&#39;</span><span class="p">),</span>
-          <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;taxon&#39;</span><span class="p">,</span> <span class="s1">&#39;species&#39;</span><span class="p">,</span> <span class="s1">&#39;maturity&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;activity&#39;</span><span class="p">,</span> <span class="s1">&#39;behaviour&#39;</span><span class="p">,</span> <span class="s1">&#39;habitat&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;health&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death_confidence&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;checked_for_injuries&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;scanned_for_pit_tags&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,)}),</span> <span class="p">)</span>
+          <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span>
+             <span class="s1">&#39;taxon&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;species&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;maturity&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;sex&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;activity&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;behaviour&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;habitat&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;health&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death_confidence&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span> <span class="s1">&#39;nesting_disturbed&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;checked_for_injuries&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;scanned_for_pit_tags&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;laparoscopy&#39;</span><span class="p">,</span>
+         <span class="p">)}),</span> <span class="p">)</span>
     <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">MediaAttachmentInline</span><span class="p">,</span>
         <span class="n">TagObservationInline</span><span class="p">,</span>
