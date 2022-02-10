@@ -145,8 +145,9 @@ def dbuild():
 
 def dpush():
     """Push Docker image to Dockerhub. Requires `docker login`."""
-    print(yellow("Pushing docker images to DockerHub..."))
+    print(yellow("Pushing docker images latest and {} to DockerHub...".format(WASTD_RELEASE)))
     local("docker push dbcawa/wastd")
+    local("docker push dbcawa/wastd:{}".format(WASTD_RELEASE))
 
 
 def docker():
