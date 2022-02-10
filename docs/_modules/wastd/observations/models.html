@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wastd.observations.models &mdash; WAStD 0.54.8 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.56.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
             <a href="../../../index.html" class="icon icon-home"> WAStD
           </a>
               <div class="version">
-                0.54
+                0.56
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -576,6 +576,15 @@
                  <span class="s2">&quot;reef-coral&quot;</span><span class="p">,</span> <span class="s2">&quot;reef-crest-front-slope&quot;</span><span class="p">,</span> <span class="s2">&quot;reef-flat&quot;</span><span class="p">,</span>
                  <span class="s2">&quot;reef-seagrass-flats&quot;</span><span class="p">,</span> <span class="s2">&quot;reef-rocky&quot;</span><span class="p">,</span> <span class="s2">&quot;open-water&quot;</span><span class="p">,</span> <span class="s2">&quot;harbour&quot;</span><span class="p">)</span>
 
+<span class="n">NESTING_SUCCESS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="n">NA_VALUE</span><span class="p">,</span> <span class="s2">&quot;NA&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;nest-with-eggs&quot;</span><span class="p">,</span><span class="s2">&quot;Nest with eggs - witnessed egg drop&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;nest-unsure-of-eggs&quot;</span><span class="p">,</span><span class="s2">&quot;Nest unsure of eggs - found covered up nest mound&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;unsure-if-nest&quot;</span><span class="p">,</span><span class="s2">&quot;Unsure if nest - can&#39;t tell whether nest mound present or not&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;no-nest&quot;</span><span class="p">,</span><span class="s2">&quot;No nest - witnessed aborted nest or found track with no nest&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">NESTING_PRESENT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;nest-with-eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;nest-unsure-of-eggs&quot;</span><span class="p">)</span>
+
 <span class="n">NEST_AGE_DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
 <span class="n">NEST_AGE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
     <span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="s2">&quot;(O) old, made before last night&quot;</span><span class="p">),</span>
@@ -616,7 +625,12 @@
     <span class="kc">False</span><span class="p">:</span> <span class="s2">&quot;dark&quot;</span><span class="p">,</span>
     <span class="kc">True</span><span class="p">:</span> <span class="s2">&quot;primary&quot;</span><span class="p">,</span>
     <span class="s2">&quot;False&quot;</span><span class="p">:</span> <span class="s2">&quot;dark&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;True&quot;</span><span class="p">:</span> <span class="s2">&quot;primary&quot;</span>
+    <span class="s2">&quot;True&quot;</span><span class="p">:</span> <span class="s2">&quot;primary&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;nest-with-eggs&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nest-unsure-of-eggs&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;unsure-if-nest&quot;</span><span class="p">:</span> <span class="s2">&quot;secondary&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;no-nest&quot;</span><span class="p">:</span> <span class="s2">&quot;dark&quot;</span><span class="p">,</span>
     <span class="p">}</span>
 
 <span class="n">PHOTO_CHOICES</span> <span class="o">=</span> <span class="n">NA</span> <span class="o">+</span> <span class="p">((</span><span class="s2">&quot;see photos&quot;</span><span class="p">,</span> <span class="s2">&quot;See attached photos for details&quot;</span><span class="p">),)</span>
@@ -763,6 +777,18 @@
         <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Area Name&quot;</span><span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The name of the area.&quot;</span><span class="p">),)</span>
+
+    <span class="n">w2_location_code</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;W2 Location Code&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The location code under which this area is known to the WAMTRAM turtle tagging database.&quot;</span><span class="p">),)</span>
+
+    <span class="n">w2_place_code</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;W2 Place Code&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The place code under which this area is known to the WAMTRAM turtle tagging database.&quot;</span><span class="p">),)</span>
 
     <span class="n">centroid</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">PointField</span><span class="p">(</span>
         <span class="n">srid</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span>
@@ -1529,7 +1555,7 @@
                    <span class="s2">&quot;No encounters found.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">et</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_time</span><span class="p">,</span> <span class="n">initial_duration_hrs</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">msg</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">end_comments</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">end_comments</span> <span class="o">+</span> <span class="n">msg</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">end_comments</span> <span class="o">=</span> <span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">end_comments</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">msg</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="n">instance</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">make_label</span></div>
 
@@ -2061,38 +2087,28 @@
         <span class="sd">&quot;&quot;&quot;Return the full datetime of the Encounter.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">when</span>
 
-<div class="viewcode-block" id="Encounter.save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Cache expensive properties.</span>
+    <span class="c1"># def save(self, *args, **kwargs):</span>
+    <span class="c1">#     &quot;&quot;&quot;Cache expensive properties.</span>
 
-<span class="sd">        The popup content changes when fields change, and is expensive to build.</span>
-<span class="sd">        As it is required ofen and under performance-critical circumstances -</span>
-<span class="sd">        populating the home screen with lots of popups - is is re-calculated</span>
-<span class="sd">        whenever the contents change (on save) rather when it is required for</span>
-<span class="sd">        display.</span>
+    <span class="c1">#     The popup content changes when fields change, and is expensive to build.</span>
+    <span class="c1">#     As it is required ofen and under performance-critical circumstances -</span>
+    <span class="c1">#     populating the home screen with lots of popups - is is re-calculated</span>
+    <span class="c1">#     whenever the contents change (on save) rather when it is required for</span>
+    <span class="c1">#     display.</span>
 
-<span class="sd">        The source ID will be auto-generated from ``short_name`` (if not set)</span>
-<span class="sd">        but is not guaranteed to be unique.</span>
-<span class="sd">        The User will be prompted to provide a unique source ID if necessary,</span>
-<span class="sd">        e.g. by appending a running number.</span>
-<span class="sd">        The source ID can be re-created by deleting it and re-saving the object.</span>
+    <span class="c1">#     The source ID will be auto-generated from ``short_name`` (if not set)</span>
+    <span class="c1">#     but is not guaranteed to be unique.</span>
+    <span class="c1">#     The User will be prompted to provide a unique source ID if necessary,</span>
+    <span class="c1">#     e.g. by appending a running number.</span>
+    <span class="c1">#     The source ID can be re-created by deleting it and re-saving the object.</span>
 
-<span class="sd">        The encounter type is inferred from the type of attached Observations.</span>
-<span class="sd">        This logic is overridden in subclasses.</span>
+    <span class="c1">#     The encounter type is inferred from the type of attached Observations.</span>
+    <span class="c1">#     This logic is overridden in subclasses.</span>
 
-<span class="sd">        The name is calculated from a complex lookup across associated TagObservations.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_id</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">source_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">short_name</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">inferred_name</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inferred_name</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">site</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guess_site</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guess_area</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">encounter_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_encounter_type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">as_html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_popup</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">as_latex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_latex</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Encounter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="c1">#     The name is calculated from a complex lookup across associated TagObservations.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+
+    <span class="c1">#     super(Encounter, self).save(*args, **kwargs)</span>
 
     <span class="c1"># Name -------------------------------------------------------------------#</span>
     <span class="nd">@property</span>
@@ -2191,7 +2207,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">primary_flipper_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the TagObservation of the primary flipper tag.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return the TagObservation of the primary (by location in animal) flipper or PIT tag.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flipper_tags</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;tagobservation__tag_location&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Encounter.tag_lists"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.tag_lists">[docs]</a>    <span class="nd">@classmethod</span>
@@ -2272,9 +2288,9 @@
         <span class="sd">&quot;&quot;&quot;Return the URLs of all attached photograph or none.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">observation_set</span><span class="o">.</span><span class="n">instance_of</span><span class="p">(</span>
-                    <span class="n">MediaAttachment</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                        <span class="n">mediaattachment__media_type</span><span class="o">=</span><span class="s2">&quot;photograph&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">observation_set</span><span class="o">.</span><span class="n">instance_of</span><span class="p">(</span><span class="n">MediaAttachment</span><span class="p">)</span>
+                    <span class="c1"># .filter(mediaattachment__media_type=&quot;photograph&quot;) # only photos</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -2351,12 +2367,25 @@
         <span class="n">default</span><span class="o">=</span><span class="n">NA_VALUE</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The habitat in which the animal was encountered.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
-    <span class="n">nesting_event</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+    <span class="c1"># ODK form Turtle Tagging &gt; nest_observed_nesting_success</span>
+    <span class="c1"># W@ w2_data$enc$</span>
+    <span class="n">nesting_event</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span> <span class="c1"># TODO rename to nesting_success</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nesting event&quot;</span><span class="p">),</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nesting success&quot;</span><span class="p">),</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">NESTING_SUCCESS_CHOICES</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">NA_VALUE</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;What indication of nesting success was observed?&quot;</span><span class="p">),)</span>
+
+    <span class="c1"># Populated from Turtle Tagging &gt; nest_nesting_disturbed</span>
+    <span class="c1"># Behaviour:      Turtle Tagging &gt; nesting_disturbance_cause</span>
+    <span class="n">nesting_disturbed</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nesting disturbed&quot;</span><span class="p">),</span>
         <span class="n">choices</span><span class="o">=</span><span class="n">OBSERVATION_CHOICES</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">NA_VALUE</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Was the animal nesting?&quot;</span><span class="p">),)</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;Was the nesting interrupted? &quot;</span>
+            <span class="s2">&quot;If so, specify disturbance in comments.&quot;</span><span class="p">),)</span>
 
     <span class="n">laparoscopy</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
@@ -2433,7 +2462,7 @@
 <span class="sd">        excluded. Note that an animal encountered in water, or even a dead</span>
 <span class="sd">        animal (whether that makes sense or not) can also be tagged.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_event</span> <span class="o">==</span> <span class="s2">&quot;present&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_event</span> <span class="ow">in</span> <span class="n">NESTING_PRESENT</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">ENCOUNTER_TAGGING</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">health</span> <span class="ow">in</span> <span class="n">DEATH_STAGES</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">ENCOUNTER_STRANDING</span>
@@ -2661,6 +2690,8 @@
         <span class="sd">&quot;&quot;&quot;Return the WGS 84 DD longitude.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="o">.</span><span class="n">x</span>
 
+    <span class="c1"># TODO def inferred_name(self): from first nest tag obs name</span>
+
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># URLs</span>
 <div class="viewcode-block" id="TurtleNestEncounter.get_absolute_url"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.TurtleNestEncounter.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2880,6 +2911,38 @@
 
 <div class="viewcode-block" id="LoggerEncounter.card_template"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.LoggerEncounter.card_template">[docs]</a>    <span class="k">def</span> <span class="nf">card_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;observations/loggerencounter_card.html&#39;</span></div></div>
+
+
+<span class="c1"># Encounter signals ----------------------------------------------------------#</span>
+<div class="viewcode-block" id="encounter_pre_save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.encounter_pre_save">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">Encounter</span><span class="p">)</span>
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">AnimalEncounter</span><span class="p">)</span>
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">TurtleNestEncounter</span><span class="p">)</span>
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">LineTransectEncounter</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">encounter_pre_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Encounter pre_save: calculate expensive lookups.</span>
+
+<span class="sd">    Bulk updates or bulk creates will bypass these to be reconstructed later.</span>
+<span class="sd">    </span>
+<span class="sd">    * source_id: Set form short_name if empty</span>
+<span class="sd">    * area and site: Inferred from location (where) if empty</span>
+<span class="sd">    * encounter_type: Always from get_encounter_type</span>
+<span class="sd">    * as_html /as_latex: Always set from get_popup() and get_latex()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[Encounter][pre_save] Start pre-save for Encounter </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">source_id</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">source_id</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">short_name</span>
+    <span class="c1"># This is slow, use set_name() instead in bulk</span>
+    <span class="c1"># if (not self.name) and self.inferred_name:</span>
+    <span class="c1">#     self.name = self.inferred_name</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">site</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">site</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">guess_site</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">area</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">guess_area</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">encounter_type</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">get_encounter_type</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">as_html</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">get_popup</span><span class="p">()</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">as_latex</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">get_latex</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[Encounter][pre_save] Finish pre-save for Encounter </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span></div>
+
 
 <span class="c1"># Observation models ---------------------------------------------------------#</span>
 <div class="viewcode-block" id="Observation"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Observation">[docs]</a><span class="k">class</span> <span class="nc">Observation</span><span class="p">(</span><span class="n">PolymorphicModel</span><span class="p">,</span> <span class="n">LegacySourceMixin</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
@@ -3162,6 +3225,13 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">?q=</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
 
 
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">TagObservation</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">nesttagobservation_pre_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;TagObservation pre_save: sanitise tag_label, name Encounter after tag.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">STATUS_NEW</span> <span class="ow">and</span> <span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">sanitize_tag_label</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="NestTagObservation"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.NestTagObservation">[docs]</a><span class="k">class</span> <span class="nc">NestTagObservation</span><span class="p">(</span><span class="n">Observation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Turtle Nest Tag Observation.</span>
 
@@ -3245,7 +3315,7 @@
 
 <div class="viewcode-block" id="nesttagobservation_pre_save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.nesttagobservation_pre_save">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">NestTagObservation</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">nesttagobservation_pre_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;NestTagObservation pre_save: sanitise tag_label, name Encounter after tag.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;NestTagObservation pre_save: sanitise tag_label, name unnamed Encounter after tag.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">STATUS_NEW</span> <span class="ow">and</span> <span class="n">instance</span><span class="o">.</span><span class="n">tag_label</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">tag_label</span> <span class="o">=</span> <span class="n">sanitize_tag_label</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">tag_label</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">STATUS_NEW</span> <span class="ow">and</span> <span class="n">instance</span><span class="o">.</span><span class="n">flipper_tag_id</span><span class="p">:</span>
