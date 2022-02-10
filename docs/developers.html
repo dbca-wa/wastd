@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Developer documentation &mdash; WAStD 0.56.0 documentation</title>
+  <title>Developer documentation &mdash; WAStD 0.56.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -5895,7 +5895,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.admin.AreaAdmin.list_display">
-<span class="sig-name descname"><span class="pre">list_display</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('area_type',</span> <span class="pre">'name',</span> <span class="pre">'northern_extent',</span> <span class="pre">'centroid')</span></em><a class="headerlink" href="#wastd.observations.admin.AreaAdmin.list_display" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">list_display</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('area_type',</span> <span class="pre">'name',</span> <span class="pre">'w2_location_code',</span> <span class="pre">'w2_place_code',</span> <span class="pre">'northern_extent',</span> <span class="pre">'centroid')</span></em><a class="headerlink" href="#wastd.observations.admin.AreaAdmin.list_display" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -5910,7 +5910,7 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.admin.AreaAdmin.search_fields">
-<span class="sig-name descname"><span class="pre">search_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('name__icontains',)</span></em><a class="headerlink" href="#wastd.observations.admin.AreaAdmin.search_fields" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">search_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('name__icontains',</span> <span class="pre">'w2_location_code__iexact',</span> <span class="pre">'w2_place_code__iexact')</span></em><a class="headerlink" href="#wastd.observations.admin.AreaAdmin.search_fields" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
