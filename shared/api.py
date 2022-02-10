@@ -156,7 +156,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         # Early exit 1: None value in unique data
         if None in unique_data.values():
-            msg = '[API][create_one] Skipping invalid data: {0} {1}'.format(
+            msg = '[API][create_one] Skipping invalid data missing unique values: {0} {1}'.format(
                 str(update_data), str(unique_data))
             logger.warning(msg)
             content = {"msg": msg}
