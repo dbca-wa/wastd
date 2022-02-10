@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Migration to Kubernetes &mdash; WAStD 0.56.0 documentation</title>
+  <title>Migration to Kubernetes &mdash; WAStD 0.56.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -375,23 +375,23 @@ something like:</p>
 </div>
 <p>The <a class="reference external" href="https://docs.docker.com/compose/#compose-documentation">Docker compose documentation</a> explains in detail what you can accomplish
 in the <cite>docker-compose.yml</cite> file, but an example configuration might look like this:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">database</span><span class="p">:</span>
-    <span class="nt">build</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database</span>
-<span class="nt">webapp</span><span class="p">:</span>
-    <span class="nt">build</span><span class="p">:</span> <span class="nt">webapp</span><span class="p">:</span>
-    <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/usr/bin/python3.4 manage.py runserver 0.0.0.0:8000</span> <span class="c1"># dev setting</span>
-    <span class="c1"># command: gunicorn -b 0.0.0.0:8000 wsgi:application # production setting</span>
-    <span class="nt">volumes</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">webapp/your_project_name:/path/to/container/workdir/</span>
-    <span class="nt">links</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">database</span>
-<span class="nt">webserver</span><span class="p">:</span>
-    <span class="nt">build</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">webserver</span>
-    <span class="nt">ports</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="s">&quot;80:80&quot;</span>
-        <span class="p p-Indicator">-</span> <span class="s">&quot;443:443&quot;</span>
-    <span class="nt">links</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">webapp</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">database</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database</span><span class="w"></span>
+<span class="nt">webapp</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="nt">webapp</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/usr/bin/python3.4 manage.py runserver 0.0.0.0:8000</span><span class="w"> </span><span class="c1"># dev setting</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># command: gunicorn -b 0.0.0.0:8000 wsgi:application # production setting</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp/your_project_name:/path/to/container/workdir/</span><span class="w"></span>
+<span class="w">    </span><span class="nt">links</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database</span><span class="w"></span>
+<span class="nt">webserver</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webserver</span><span class="w"></span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;80:80&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;443:443&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">links</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp</span><span class="w"></span>
 </pre></div>
 </div>
 <p>We’ll ignore the webserver for now (you’ll want to comment that part out while we do).
