@@ -21,6 +21,8 @@ class AreaSerializer(GeoFeatureModelSerializer):
             "pk",
             "area_type",
             "name",
+            "w2_location_code", 
+            "w2_place_code", 
             "geom",
             "northern_extent",
             "centroid",
