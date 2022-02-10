@@ -699,6 +699,18 @@ class Area(geo_models.Model):
         verbose_name=_("Area Name"),
         help_text=_("The name of the area."),)
 
+    w2_location_code = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("W2 Location Code"),
+        help_text=_("The location code under which this area is known to the WAMTRAM turtle tagging database."),)
+
+    w2_place_code = models.CharField(
+        max_length=100,
+        blank=True, null=True,
+        verbose_name=_("W2 Place Code"),
+        help_text=_("The place code under which this area is known to the WAMTRAM turtle tagging database."),)
+
     centroid = geo_models.PointField(
         srid=4326,
         editable=False,
@@ -1464,7 +1476,7 @@ def survey_pre_save(sender, instance, buffer_mins=30, initial_duration_hrs = 6, 
                    "No encounters found.").format(et, instance.end_time, initial_duration_hrs)
 
     if msg != "":
-        instance.end_comments = instance.end_comments + msg
+        instance.end_comments = (instance.end_comments or '') + msg
         logger.info(msg)
     instance.label = instance.make_label
 
@@ -2116,7 +2128,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
 
     @property
     def primary_flipper_tag(self):
-        """Return the TagObservation of the primary flipper tag."""
+        """Return the TagObservation of the primary (by location in animal) flipper or PIT tag."""
         return self.flipper_tags.order_by('tagobservation__tag_location').first()
 
     @classmethod
@@ -2202,33 +2214,6 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
             )
         except BaseException:
             return None
-
-
-@receiver(pre_save, sender=Encounter)
-def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
-    """Encounter pre_save: calculate expensive lookups.
-
-    Bulk updates or bulk creates will bypass these to be reconstructed later.
-    
-    * source_id: Set form short_name if empty
-    * area and site: Inferred from location (where) if empty
-    * encounter_type: Always from get_encounter_type
-    * as_html /as_latex: Always set from get_popup() and get_latex()
-    """
-    logger.info("[Encounter][pre_save] Start pre-save for Encounter {0}".format(instance.pk))
-    if not instance.source_id:
-        instance.source_id = instance.short_name
-    # This is slow, use set_name() instead in bulk
-    # if (not self.name) and self.inferred_name:
-    #     self.name = self.inferred_name
-    if not instance.site:
-        instance.site = instance.guess_site
-    if not instance.area:
-        instance.area = instance.guess_area
-    instance.encounter_type = instance.get_encounter_type
-    instance.as_html = instance.get_popup()
-    instance.as_latex = instance.get_latex()
-    logger.info("[Encounter][pre_save] Finish pre-save for Encounter {0}".format(instance.pk))
 
 
 class AnimalEncounter(Encounter):
@@ -2626,6 +2611,8 @@ class TurtleNestEncounter(Encounter):
         """Return the WGS 84 DD longitude."""
         return self.where.x
 
+    # TODO def inferred_name(self): from first nest tag obs name
+
     # -------------------------------------------------------------------------
     # URLs
     def get_absolute_url(self):
@@ -2845,6 +2832,38 @@ class LoggerEncounter(Encounter):
 
     def card_template(self):
         return 'observations/loggerencounter_card.html'
+
+
+# Encounter signals ----------------------------------------------------------#
+@receiver(pre_save, sender=Encounter)
+@receiver(pre_save, sender=AnimalEncounter)
+@receiver(pre_save, sender=TurtleNestEncounter)
+@receiver(pre_save, sender=LineTransectEncounter)
+def encounter_pre_save(sender, instance, *args, **kwargs):
+    """Encounter pre_save: calculate expensive lookups.
+
+    Bulk updates or bulk creates will bypass these to be reconstructed later.
+    
+    * source_id: Set form short_name if empty
+    * area and site: Inferred from location (where) if empty
+    * encounter_type: Always from get_encounter_type
+    * as_html /as_latex: Always set from get_popup() and get_latex()
+    """
+    logger.info("[Encounter][pre_save] Start pre-save for Encounter {0}".format(instance.pk))
+    if not instance.source_id:
+        instance.source_id = instance.short_name
+    # This is slow, use set_name() instead in bulk
+    # if (not self.name) and self.inferred_name:
+    #     self.name = self.inferred_name
+    if not instance.site:
+        instance.site = instance.guess_site
+    if not instance.area:
+        instance.area = instance.guess_area
+    instance.encounter_type = instance.get_encounter_type
+    instance.as_html = instance.get_popup()
+    instance.as_latex = instance.get_latex()
+    logger.info("[Encounter][pre_save] Finish pre-save for Encounter {0}".format(instance.pk))
+
 
 # Observation models ---------------------------------------------------------#
 class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
