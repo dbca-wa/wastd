@@ -887,9 +887,9 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 class AreaAdmin(admin.ModelAdmin):
     """Area admin."""
 
-    list_display = ("area_type", "name", "northern_extent", "centroid", )
+    list_display = ("area_type", "name", "w2_location_code", "w2_place_code", "northern_extent", "centroid", )
     list_filter = ("area_type", )
-    search_fields = ("name__icontains", )
+    search_fields = ("name__icontains", "w2_location_code__iexact", "w2_place_code__iexact",)
     form = s2form(Area, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
 
