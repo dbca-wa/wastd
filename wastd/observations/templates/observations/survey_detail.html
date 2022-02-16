@@ -125,12 +125,12 @@ function map_init(map, options) {
 
   /* Data loading */
   var survey_start = L.geoJson(
-    {{ object|geojsonfeature:"label:start_location"|safe }},
+    {{ object|geojsonfeature:"as_html,label:start_location"|safe }},
     { style: pointstyle, pointToLayer: ptl_svs, onEachFeature: oef }
   );
   survey_start.addTo(map);
   var survey_end = L.geoJson(
-    {{ object|geojsonfeature:"label:end_location"|safe }},
+    {{ object|geojsonfeature:"as_html,label:end_location"|safe }},
     { style: pointstyle, pointToLayer: ptl_sve, onEachFeature: oef }
   );
   survey_end.addTo(map);
