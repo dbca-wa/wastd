@@ -1,0 +1,24 @@
+{% load observations %}
+{% with original as o %}
+<!-- Heading -->
+<div class="row">
+    <h5>
+        {% block title %}
+        {{ o }}
+        <small>
+            {% if o.site.w2_location_code %} {{o.site.w2_location_code }}{% endif %}
+            {% if o.site.w2_place_code and o.site.w2_location_code %} / {% endif %}
+            {% if o.site.w2_place_code %}{{o.site.w2_place_code}}{% endif %}
+        </small>
+        {% endblock %}
+    <span class="pull-xs-right">
+        <a href="{{ o.absolute_admin_url }}"
+            class="btn btn-primary btn-sm"
+            target="_" title="Edit Survey {{ o }} in new tab">
+            <span class="oi oi-pencil"></span>
+            Edit
+        </a>
+    </span>
+    </h5>
+</div>
+{% endwith %}

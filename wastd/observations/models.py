@@ -1213,6 +1213,13 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
             "" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%H:%M %Z"))
 
     @property
+    def as_html(self):
+        """An HTML representation."""
+        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        # c = Context({"original": self})
+        return mark_safe(t.render({"original": self}))
+
+    @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
         return reverse('admin:{0}_{1}_change'.format(
