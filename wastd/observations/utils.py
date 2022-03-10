@@ -135,6 +135,15 @@ def reconstruct_missing_surveys(buffer_mins=30):
     return None
 
 
+def reconstruct_animal_names():
+    """Reconstruct names of Animals from their first allocated Flipper Tag in bulk.
+
+    WIP
+    """
+
+    tag_obs = TagObservation.objects.values("name", "status", "tag_location", "encounter_id", "id")
+    enc = {tag["encounter_id"]: tag for tag in tag_obs}
+
 def allocate_animal_names():
     """Reconstruct names of Animals from their first allocated Flipper Tag.
 

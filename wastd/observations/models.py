@@ -2618,7 +2618,14 @@ class TurtleNestEncounter(Encounter):
         """Return the WGS 84 DD longitude."""
         return self.where.x
 
-    # TODO def inferred_name(self): from first nest tag obs name
+    @property
+    def inferred_name(self):
+        """Return the first NestTag name or None."""
+        nest_tag = self.observation_set.instance_of(NestTagObservation).first()
+        if nest_tag:
+            return nest_tag.name
+        else:
+            return None
 
     # -------------------------------------------------------------------------
     # URLs
@@ -2666,6 +2673,10 @@ class LineTransectEncounter(Encounter):
         return "Line tx {0}".format(
             self.pk
         )
+
+    def inferred_name(self):
+        """Return an empty string."""
+        return ""
 
     @property
     def get_encounter_type(self):
@@ -2860,8 +2871,8 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
     if not instance.source_id:
         instance.source_id = instance.short_name
     # This is slow, use set_name() instead in bulk
-    # if (not self.name) and self.inferred_name:
-    #     self.name = self.inferred_name
+    if (not self.name) and self.inferred_name:
+        instance.name = instance.inferred_name
     if not instance.site:
         instance.site = instance.guess_site
     if not instance.area:
