@@ -2,6 +2,9 @@
 WAStD - WA Sea Turtle and Strandings Database
 =====================================================================
 
+.. image:: https://github.com/dbca-wa/wastd/actions/workflows/docker.yml/badge.svg
+     :target: https://github.com/dbca-wa/wastd/actions/workflows/docker.yml
+     :alt: Docker
 .. image:: https://github.com/dbca-wa/wastd/workflows/CodeQL/badge.svg?branch=master
      :target: https://github.com/dbca-wa/wastd/actions
      :alt: CodeQL
