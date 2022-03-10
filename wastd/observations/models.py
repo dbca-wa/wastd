@@ -2871,7 +2871,7 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
     if not instance.source_id:
         instance.source_id = instance.short_name
     # This is slow, use set_name() instead in bulk
-    if (not self.name) and self.inferred_name:
+    if (not instance.name) and instance.inferred_name:
         instance.name = instance.inferred_name
     if not instance.site:
         instance.site = instance.guess_site
