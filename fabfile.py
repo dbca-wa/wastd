@@ -161,8 +161,8 @@ def docker():
 
 def tag():
     """Tag code with WASTD_RELEASE and push to GitHub."""
-    local("git tag -a {0} -m '{0}'".format(WASTD_RELEASE))
-    local("git push origin {}".format(WASTD_RELEASE))
+    local("git tag -a 'v{0}' -m 'v{0}'".format(WASTD_RELEASE))
+    local("git push --tags")
     print(green("Code tagged as {} and pushed to GitHub.".format(WASTD_RELEASE)))
 
 
