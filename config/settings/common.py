@@ -125,9 +125,6 @@ LOCAL_APPS = (
     'wastd.users.apps.UsersConfig',
     'shared.apps.SharedConfig',
     'wastd.observations.apps.ObservationsConfig',
-    'occurrence.apps.OccurrenceConfig',
-    'taxonomy.apps.TaxonomyConfig',
-    'conservation.apps.ConservationConfig',
 )
 
 DEBUG_APPS = ('debug_toolbar',)

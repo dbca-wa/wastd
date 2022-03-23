@@ -1,9 +1,0 @@
-{% if request.user.is_staff %}
-<a href="{% url 'admin:taxonomy_community_change' object.pk %}"
-  class="btn btn-success btn-sm{% if block %} btn-block{% endif%} text-left mb-2"
-  role="button"
-  title="Edit community details">
-  <span class="oi oi-pencil" aria-hidden="true"></span>
-  {% if label %}Edit community details{% endif %}
-</a>
-{% endif %}

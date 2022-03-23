@@ -1,8 +1,0 @@
-{% for obj in object.active_gazettals %}
-<h6 class="card-subtitle mb-2">
-  <span class="badge badge-{% if obj.is_active %}danger{% else %}secondary{% endif %}">
-  <span class="oi oi-shield" title="Listed as {{ obj.label_cache }}" aria-hidden="true"></span>
-    {{ obj.label_cache }}
-  </span>
-</h6>
-{% endfor %}

@@ -17,7 +17,6 @@ from rest_framework.authtoken import views as drf_authviews
 from rest_framework.documentation import include_docs_urls
 # from graphene_django.views import GraphQLView
 
-from occurrence.models import CommunityAreaEncounter
 from wastd.router import router
 from wastd.observations import models as wastd_models
 from wastd.observations import views as wastd_views
@@ -39,11 +38,6 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('adminactions/', include('adminactions.urls')),
     path('select2/', include('django_select2.urls')),
-
-    # # TSC tax, cons, occ
-    # path('', include(('taxonomy.urls'), namespace='taxonomy')),
-    # path('conservation/', include(('conservation.urls'), namespace='conservation')),
-    # path('occurrence/', include(('occurrence.urls'), namespace='occurrence')),
 
     # WAStD Encounters
     path('encounters/', wastd_views.EncounterTableView.as_view(), name="encounter_list"),
@@ -84,11 +78,11 @@ urlpatterns = [
     ), name='encounter-tiled-geojson'),
 
     # CommunityAreaEncounter as tiled GeoJSON
-    path('community-encounters-poly/<int:z>/<int:x>/<int:y>.geojson', TiledGeoJSONLayerView.as_view(
-        model=CommunityAreaEncounter,
-        properties=('as_html', 'label'),
-        geometry_field="geom"
-    ), name='community-area-encounter-tiled-geojson'),
+    # path('community-encounters-poly/<int:z>/<int:x>/<int:y>.geojson', TiledGeoJSONLayerView.as_view(
+    #     model=CommunityAreaEncounter,
+    #     properties=('as_html', 'label'),
+    #     geometry_field="geom"
+    # ), name='community-area-encounter-tiled-geojson'),
 
     # path('areas/<int:z>/<int:x>/<int:y>.geojson', TiledGeoJSONLayerView.as_view(
     #     model=Area, properties=('name',), geometry_field="geom"
