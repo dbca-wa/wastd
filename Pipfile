@@ -101,6 +101,7 @@ graphene-django = "*"
 django-graphql-geojson = "*"
 pymemcache = "*"
 django-pymemcache = "*"
+environ = "*"
 
 [requires]
 python_version = "3.8"
