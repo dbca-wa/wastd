@@ -74,6 +74,13 @@ SOURCE_CHOICES = (
     ("reconstructed", _("Reconstructed by WAStD")),
 )
 
+SIGHTING_STATUS_CHOICES = (
+    ('na', 'Unidentified'),
+    ('new', 'Initial sighting'),
+    ('resighting', 'Resighting'),
+    ('remigrant', 'Remigrant'),
+)
+
 BODY_PART_DEFAULT = "whole"
 TURTLE_BODY_PART_CHOICES = (
     ("head", "head"),
@@ -2295,8 +2302,14 @@ class AnimalEncounter(Encounter):
         default=NA_VALUE,
         help_text=_("The habitat in which the animal was encountered."), )
 
+    sighting_status = models.CharField(
+        max_length=300,
+        verbose_name=_("Sighting status"),
+        choices=SIGHTING_STATUS_CHOICES,
+        default=NA_VALUE,
+        help_text=_("Whether and where this animal was identified last."),)
+
     # ODK form Turtle Tagging > nest_observed_nesting_success
-    # W@ w2_data$enc$
     nesting_event = models.CharField( # TODO rename to nesting_success
         max_length=300,
         verbose_name=_("Nesting success"),

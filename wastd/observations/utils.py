@@ -162,8 +162,8 @@ def allocate_animal_names():
     ss = [s.save() for s in Survey.objects.all()]
     ae = [a.set_name_and_propagate(a.primary_flipper_tag.name)
           for a in AnimalEncounter.objects.all() if a.is_new_capture]
-    le = [a.save() for a in LoggerEncounter.objects.all()]
-    return [ss, ae, le]
+    # le = [a.save() for a in LoggerEncounter.objects.all()]
+    return [ss, ae]
 
 
 def symlink_one_resource(t_dir, rj):
@@ -684,7 +684,7 @@ def handle_turtlenestobs(d, e, m):
     logger.debug("  Creating TurtleNestObservation...")
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
-        nest_position=m["habitat"][d["habitat"]],
+        #nest_position=m["habitat"][d["habitat"]],
         no_egg_shells=d["no_egg_shells"],
         no_live_hatchlings_neck_of_nest=d[
             "no_live_hatchlings_neck_of_nest"] if "no_live_hatchlings_neck_of_nest" in d else None,
@@ -745,7 +745,7 @@ def handle_turtlenestobs31(d, e):
     logger.debug("  Creating TurtleNestObservation...")
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
-        nest_position=d["habitat"],
+        #nest_position=d["habitat"],
         no_egg_shells=int_or_none(d["no_egg_shells"]),
         no_live_hatchlings_neck_of_nest=int_or_none(d[
             "no_live_hatchlings_neck_of_nest"] if "no_live_hatchlings_neck_of_nest" in d else None),

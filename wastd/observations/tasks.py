@@ -15,15 +15,15 @@ logger = logging.getLogger(__name__)
 
 @background(queue="admin-tasks", schedule=timezone.now())
 def update_names():
-    """Update cached names on Encounters and Loggers and reconstructs Surveys."""
+    """Update cached names on Encounters and reconstructs Surveys."""
     msg = "[wastd.observations.tasks.update_names] Start updating names..."
     logger.info(msg)
     capture_message(msg, level="info")
-    surveys, names, loggers = utils.allocate_animal_names()
+    surveys, names = utils.allocate_animal_names()
     msg = ("[wastd.observations.tasks.update_names] {0} surveys reconstructed, "
-           "{1} animal names reconstructed, {2} logger names set. "
+           "{1} animal names reconstructed. "
            "Task successfully finished.".format(
-               len(surveys), len(names), len(loggers)))
+               len(surveys), len(names)))
     logger.info(msg)
     capture_message(msg, level="warning")
 
