@@ -9,6 +9,7 @@ import environ
 import os
 import shutil
 from datetime import datetime, timedelta
+from collections import ChainMap
 
 import pandas
 import requests
@@ -29,7 +30,7 @@ from wastd.observations.models import *
 # from django.utils.timezone import get_fixed_timezone, utc
 
 env = environ.Env(
-    ODKA_URL=(str,''),
+    ODKA_URL=(str, ''),
     ODKA_UN=(str, ''),
     ODKA_PW=(str, ''),
 )
@@ -118,10 +119,10 @@ def reconstruct_missing_surveys(buffer_mins=30):
         s = Survey.objects.create(
             source="reconstructed",
             site=ste,
-            start_location = ste.centroid,
+            start_location=ste.centroid,
             start_time=row['datetime']['min'] - bfr,
             end_time=row['datetime']['max'] + bfr,
-            end_location = ste.centroid,
+            end_location=ste.centroid,
             reporter=row['reporter']['first'],
             start_comments="[QA][AUTO] Reconstructed by WAStD from Encounters without surveys."
         )
@@ -135,14 +136,200 @@ def reconstruct_missing_surveys(buffer_mins=30):
     return None
 
 
+#-----------------------------------------------------------------------------#
+# Helpers for reconstruct_animal_names
+#
+def filter_tags_not_taken(tags):
+    """Filter out tags that have already been taken."""
+    return [tag for tag in tags if tag['taken'] == False]
+
+
+def filter_encounters_without_name_new(encs):
+    """From a dict of Encounters, filter Encounters where name_new is None."""
+    return [enc for enc in encs if enc['name_new'] is None]
+
+
+def get_linked_tags(tags, enc_id):
+    """From a list of tag dicts (tags), return those linked to encounter enc_id.
+    
+    Args:
+        tags (list): List of tag dicts.
+        enc_id (int): Encounter ID.
+    
+    Return:
+        list: List of tag dicts linked to encounter enc_id.
+    """
+    
+    return [t for t in tags if t['encounter_id'] == enc_id]
+
+def get_linked_encs(tags, tag_dict, encs):
+    """From a list of tag dicts (tags), return all encounter_ids linked to a dict of tags by name.
+    
+    Using the unique set of tag names from tag_dict, find all encounters linked to these names.
+    This is an important difference to get_linked_tags, which returns all tags linked to a given encounter by encounter_id.
+
+    Return a dict of dicts of encounters with tags from tag_dict, keyed by encounter id.
+
+    Args:
+        tags (list): List of tag dicts.
+        tag_dict (dict): List of tag  dicts keyed by tag id that are known, a subset of tags.
+        enc (dict): dict of dicts of encounters, keyed by encounter id.
+
+    Return:
+        dict: dict of dicts of encounters with tags from tag_dict, keyed by encounter id.
+    """
+    # The list if known_tags is a subset of the list of tags. 
+    # Each refers to a tag name (e.g. WA12345), which could be encountered in other tag observations.
+    tag_names = list(set([t['name'] for t in tag_dict]))
+
+    # Find all encounter ids from the master set of (not yet allocated) tag observations.
+    linked_enc_ids = list(set([t['encounter_id'] for t in tags if t['name'] in tag_names]))
+
+    # Get the full encounter dict from enc for each encounter id in linked_enc_ids.
+    return {enc_id: encs[enc_id] for enc_id in linked_enc_ids}
+
+    
+def get_encounter_history(tags, encs):
+    """Manipulate two dicts of tags and encounters and return them.
+
+    Args:
+        tags: list of dicts of tags from reconstruct_animal_names, filtered to those not yet "taken"
+        encs: list of dicts of encounters from reconstruct_animal_names
+
+    Returns: the initial data after processing the entire history of one individual animal.
+
+    * The dict of tags will be returned with the set of tags allocated to a set of encounters 
+      with the same entity set to "taken": True.
+    * The dict of encs will be returned with the set of encounters with the same entity updated
+      to have the atrribute "name_new" set to the value of the earliest observed tag on the animal.
+    """
+    # Get the first tag
+    tag = tags[0]
+
+    # Get the first enc
+    enc = encs[tag['encounter_id']]
+
+    # Create a stash of encounters with the same entity
+    known_enc = {}
+
+    # Add the first encounter to the stash
+    known_enc[enc["id"]] = enc
+
+    # Find all tags of the first encounter
+    known_tags = get_linked_tags(tags, enc["id"])
+
+    # Create a stash of encounters for the next iteration
+    new_enc = {}
+
+    # Create a stash of tags for the next iteration
+    new_tags = known_tags
+
+    # Create an iteration criterion
+    show_must_go_on = True
+
+    while show_must_go_on:
+        # Find new encounters linked to the list of known tags
+        new_enc = get_linked_encs(tags, known_tags, encs)
+        known_enc = {**known_enc, **new_enc}
+        new_tags_list_of_dicts = [get_linked_tags(tags, enc_id) for enc_id in list(new_enc.keys())]
+        new_tags = [item for sublist in new_tags_list_of_dicts for item in sublist]
+        new_tag_ids = [t['id'] for t in new_tags]
+        known_tag_ids = [t['id'] for t in known_tags]
+        extra_tags = [t for t in new_tag_ids if t not in known_tag_ids]
+        known_tags.extend(new_tags)
+        # TODO: only continue if we have found new tags
+        show_must_go_on = len(extra_tags) > 0
+
+    # TODO
+    # From known_tags, get tag with the earliest "encounter__animalencounter__when"
+    earliest_tag = min(known_tags, key=lambda t: t['encounter__animalencounter__when'])
+    
+    # Remove known_tags from tags
+    # TODO does this work?
+    tags = [t for t in tags if t['id'] not in known_tag_ids]
+
+    # set name_new in encs for all list(set(known_enc)) as tag['name'] of tag with earliest_tag["name"]
+    for enc in known_enc:
+        known_enc[enc]["name_new"] = earliest_tag["name"]
+    encs.update(known_enc)
+
+    return tags, encs
+
+
 def reconstruct_animal_names():
     """Reconstruct names of Animals from their first allocated Flipper Tag in bulk.
 
-    WIP
-    """
+    Approach: Use dict and list manipulations to derive a master dict of Encounters to update,
+    then bulk update just the fields "sighting_status" and "name" for each Encounter.
 
-    tag_obs = TagObservation.objects.values("name", "status", "tag_location", "encounter_id", "id")
-    enc = {tag["encounter_id"]: tag for tag in tag_obs}
+    tags: list of tags, plus new field "taken"
+    encs: list of encounters with tags, plus new fields "name_new" and "sighting_status_new"
+
+    While there are tags (not yet taken),
+    take first tag and add to a second list tag_stash,
+    take first tag's encounter,
+    find all tags linked to that encounter,
+    if there are new tags not yet in stash,
+    repeat tag > encounter > tags > encounter until we have the consistent stash of tags and encounters
+    """
+    msg = "Reconstructing names of Animals from their first allocated Flipper Tag in bulk."
+    logger.info(msg)
+
+    # A list of dicts of tags.
+    tags = [dict(tag) 
+        for tag in TagObservation.objects.values(
+            "id",
+            "name",
+            "status",
+            "tag_location",
+            "encounter_id",
+            "encounter__animalencounter__when",
+            "encounter__animalencounter__sighting_status",
+            "encounter__animalencounter__name"
+        )
+    ]
+
+    # Unique encounter ids from tags, deduped because one encounter can have multiple tags.
+    enc_ids = list(set([tag['encounter_id'] for tag in tags]))
+
+    # A dict of dicts of encounters, keyed by encounter id, 
+    # with additional fields for newly reconstructed sighting_status and name.
+    # The additional field are initially 'na' and None, respectively.
+    encs = {
+        e["id"]: dict(e, **{'sighting_status_new': 'na', 'name_new': None})
+        for e in AnimalEncounter.objects.filter(id__in=enc_ids).values(
+            "id", "sighting_status", "name", "when", "site__name"
+        )
+    }
+
+    msg = "Starting with {} tags and {} encounters.".format(len(tags), len(encs))
+    logger.info(msg)
+
+    # The dict of tags to reconstruct Encounter histories from will shrink to zero.
+    # The dict of encs will remain the same length, but name_new will be updated
+    # for all encounters with reconstructed histories (and assigned names).
+    while len(tags) > 0:
+        msg = "Iterating with {} remaining unallocated tags.".format(len(tags))
+        logger.debug(msg)
+        tags, encs = get_encounter_history(tags, encs)
+
+    # We only have to update encounters with a different sighting_status or name.
+    encs_to_update = {
+        enc for enc in encs if (
+            enc["name_new"] != enc["name"] or 
+            enc["sighting_status_new"] != enc["sighting_status"]
+        )
+    }
+
+    msg = "Encounters to update: {}.".format(len(encs_to_update))
+    logger.info(msg)
+
+    # Bulk update AnimalEncounters with encs_to_update
+    # AnimalEncounter.objects.filter(id__in=encs_to_update.keys()).update(
+    #     name=F("name_new"), sighting_status=F("sighting_status_new"))
+    msg = "Encounters updated. (TODO)"
+    logger.info(msg)
+
 
 def allocate_animal_names():
     """Reconstruct names of Animals from their first allocated Flipper Tag.
@@ -158,6 +345,11 @@ def allocate_animal_names():
       allocated FlipperTag and no other existing, resighted tags)
     * For each new capture, get the primary flipper tag name as animal name
     * Set the animal name of this and all related Encounters
+
+
+    This function will be superseded with a more efficient implementation.
+    The assumption will be that flipper tags will be phased out to be replaced
+    by PIT tags, so a PIT tag could be the initial tag, too.
     """
     ss = [s.save() for s in Survey.objects.all()]
     ae = [a.set_name_and_propagate(a.primary_flipper_tag.name)
@@ -684,7 +876,7 @@ def handle_turtlenestobs(d, e, m):
     logger.debug("  Creating TurtleNestObservation...")
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
-        #nest_position=m["habitat"][d["habitat"]],
+        # nest_position=m["habitat"][d["habitat"]],
         no_egg_shells=d["no_egg_shells"],
         no_live_hatchlings_neck_of_nest=d[
             "no_live_hatchlings_neck_of_nest"] if "no_live_hatchlings_neck_of_nest" in d else None,
@@ -745,7 +937,7 @@ def handle_turtlenestobs31(d, e):
     logger.debug("  Creating TurtleNestObservation...")
     dd, created = TurtleNestObservation.objects.get_or_create(
         encounter=e,
-        #nest_position=d["habitat"],
+        # nest_position=d["habitat"],
         no_egg_shells=int_or_none(d["no_egg_shells"]),
         no_live_hatchlings_neck_of_nest=int_or_none(d[
             "no_live_hatchlings_neck_of_nest"] if "no_live_hatchlings_neck_of_nest" in d else None),
@@ -1578,47 +1770,47 @@ def import_one_record_tt05(r, m):
     UN = "cheloniidae-fam"
 
     tally_mapping = [
-        [FB, "old",   "track-not-assessed",     r["fb_no_old_tracks"] or 0],
-        [FB, "fresh", "successful-crawl",       r["fb_no_fresh_successful_crawls"] or 0],
-        [FB, "fresh", "false-crawl",            r["fb_no_fresh_false_crawls"] or 0],
-        [FB, "fresh", "track-unsure",           r["fb_no_fresh_tracks_unsure"] or 0],
-        [FB, "fresh", "track-not-assessed",     r["fb_no_fresh_tracks_not_assessed"] or 0],
-        [FB, "fresh", "hatched-nest",           r["fb_no_hatched_nests"] or 0],
+        [FB, "old", "track-not-assessed", r["fb_no_old_tracks"] or 0],
+        [FB, "fresh", "successful-crawl", r["fb_no_fresh_successful_crawls"] or 0],
+        [FB, "fresh", "false-crawl", r["fb_no_fresh_false_crawls"] or 0],
+        [FB, "fresh", "track-unsure", r["fb_no_fresh_tracks_unsure"] or 0],
+        [FB, "fresh", "track-not-assessed", r["fb_no_fresh_tracks_not_assessed"] or 0],
+        [FB, "fresh", "hatched-nest", r["fb_no_hatched_nests"] or 0],
 
-        [GN, "old",     "track-not-assessed",   r["gn_no_old_tracks"] or 0],
-        [GN, "fresh",   "successful-crawl",     r["gn_no_fresh_successful_crawls"] or 0],
-        [GN, "fresh",   "false-crawl",          r["gn_no_fresh_false_crawls"] or 0],
-        [GN, "fresh",   "track-unsure",         r["gn_no_fresh_tracks_unsure"] or 0],
-        [GN, "fresh",   "track-not-assessed",   r["gn_no_fresh_tracks_not_assessed"] or 0],
-        [GN, "fresh",   "hatched-nest",         r["gn_no_hatched_nests"] or 0],
+        [GN, "old", "track-not-assessed", r["gn_no_old_tracks"] or 0],
+        [GN, "fresh", "successful-crawl", r["gn_no_fresh_successful_crawls"] or 0],
+        [GN, "fresh", "false-crawl", r["gn_no_fresh_false_crawls"] or 0],
+        [GN, "fresh", "track-unsure", r["gn_no_fresh_tracks_unsure"] or 0],
+        [GN, "fresh", "track-not-assessed", r["gn_no_fresh_tracks_not_assessed"] or 0],
+        [GN, "fresh", "hatched-nest", r["gn_no_hatched_nests"] or 0],
 
-        [HB, "old",     "track-not-assessed",   r["hb_no_old_tracks"] or 0],
-        [HB, "fresh",   "successful-crawl",     r["hb_no_fresh_successful_crawls"] or 0],
-        [HB, "fresh",   "false-crawl",          r["hb_no_fresh_false_crawls"] or 0],
-        [HB, "fresh",   "track-unsure",         r["hb_no_fresh_tracks_unsure"] or 0],
-        [HB, "fresh",   "track-not-assessed",   r["hb_no_fresh_tracks_not_assessed"] or 0],
-        [HB, "fresh",   "hatched-nest",         r["hb_no_hatched_nests"] or 0],
+        [HB, "old", "track-not-assessed", r["hb_no_old_tracks"] or 0],
+        [HB, "fresh", "successful-crawl", r["hb_no_fresh_successful_crawls"] or 0],
+        [HB, "fresh", "false-crawl", r["hb_no_fresh_false_crawls"] or 0],
+        [HB, "fresh", "track-unsure", r["hb_no_fresh_tracks_unsure"] or 0],
+        [HB, "fresh", "track-not-assessed", r["hb_no_fresh_tracks_not_assessed"] or 0],
+        [HB, "fresh", "hatched-nest", r["hb_no_hatched_nests"] or 0],
 
-        [LH, "old",     "track-not-assessed",   r["lh_no_old_tracks"] or 0],
-        [LH, "fresh",   "successful-crawl",     r["lh_no_fresh_successful_crawls"] or 0],
-        [LH, "fresh",   "false-crawl",          r["lh_no_fresh_false_crawls"] or 0],
-        [LH, "fresh",   "track-unsure",         r["lh_no_fresh_tracks_unsure"] or 0],
-        [LH, "fresh",   "track-not-assessed",   r["lh_no_fresh_tracks_not_assessed"] or 0],
-        [LH, "fresh",   "hatched-nest",         r["lh_no_hatched_nests"] or 0],
+        [LH, "old", "track-not-assessed", r["lh_no_old_tracks"] or 0],
+        [LH, "fresh", "successful-crawl", r["lh_no_fresh_successful_crawls"] or 0],
+        [LH, "fresh", "false-crawl", r["lh_no_fresh_false_crawls"] or 0],
+        [LH, "fresh", "track-unsure", r["lh_no_fresh_tracks_unsure"] or 0],
+        [LH, "fresh", "track-not-assessed", r["lh_no_fresh_tracks_not_assessed"] or 0],
+        [LH, "fresh", "hatched-nest", r["lh_no_hatched_nests"] or 0],
 
-        [OR, "old",     "track-not-assessed",   r["or_no_old_tracks"] or 0],
-        [OR, "fresh",   "successful-crawl",     r["or_no_fresh_successful_crawls"] or 0],
-        [OR, "fresh",   "false-crawl",          r["or_no_fresh_false_crawls"] or 0],
-        [OR, "fresh",   "track-unsure",         r["or_no_fresh_tracks_unsure"] or 0],
-        [OR, "fresh",   "track-not-assessed",   r["or_no_fresh_tracks_not_assessed"] or 0],
-        [OR, "fresh",   "hatched-nest",         r["or_no_hatched_nests"] or 0],
+        [OR, "old", "track-not-assessed", r["or_no_old_tracks"] or 0],
+        [OR, "fresh", "successful-crawl", r["or_no_fresh_successful_crawls"] or 0],
+        [OR, "fresh", "false-crawl", r["or_no_fresh_false_crawls"] or 0],
+        [OR, "fresh", "track-unsure", r["or_no_fresh_tracks_unsure"] or 0],
+        [OR, "fresh", "track-not-assessed", r["or_no_fresh_tracks_not_assessed"] or 0],
+        [OR, "fresh", "hatched-nest", r["or_no_hatched_nests"] or 0],
 
-        [UN, "old",     "track-not-assessed",   r["unk_no_old_tracks"] or 0],
-        [UN, "fresh",   "successful-crawl",     r["unk_no_fresh_successful_crawls"] or 0],
-        [UN, "fresh",   "false-crawl",          r["unk_no_fresh_false_crawls"] or 0],
-        [UN, "fresh",   "track-unsure",         r["unk_no_fresh_tracks_unsure"] or 0],
-        [UN, "fresh",   "track-not-assessed",   r["unk_no_fresh_tracks_not_assessed"] or 0],
-        [UN, "fresh",   "hatched-nest",         r["unk_no_hatched_nests"] or 0],
+        [UN, "old", "track-not-assessed", r["unk_no_old_tracks"] or 0],
+        [UN, "fresh", "successful-crawl", r["unk_no_fresh_successful_crawls"] or 0],
+        [UN, "fresh", "false-crawl", r["unk_no_fresh_false_crawls"] or 0],
+        [UN, "fresh", "track-unsure", r["unk_no_fresh_tracks_unsure"] or 0],
+        [UN, "fresh", "track-not-assessed", r["unk_no_fresh_tracks_not_assessed"] or 0],
+        [UN, "fresh", "hatched-nest", r["unk_no_hatched_nests"] or 0],
     ]
 
     [make_tallyobs(e, x[0], x[1], x[2], x[3]) for x in tally_mapping]
@@ -2523,7 +2715,7 @@ def make_mapping():
         "nesting": yes_no,
 
         "overwrite": [t["source_id"] for t in
-        Encounter.objects.filter(
+                      Encounter.objects.filter(
             source="odk",
             status=Encounter.STATUS_NEW
         ).values('source_id')]
@@ -3437,7 +3629,7 @@ def handle_odka_loggerobservation(enc, media, data):
 
             # Build data dict for update
             new_data = dict(
-                encounter_id = enc.id,
+                encounter_id=enc.id,
                 source=2,
                 source_id="{0}-{1}".format(enc.source_id, obs["logger_id"]),
                 logger_id=obs["logger_id"],
@@ -3462,7 +3654,6 @@ def handle_odka_loggerobservation(enc, media, data):
 
     else:
         logger.info("  [handle_odka_loggerobservation] found no LoggerObservation")
-
 
     return None
 
@@ -4149,38 +4340,38 @@ def handle_odka_fanangles(enc, media, data):
 
             # Build data dict for update
             new_data = dict(
-                encounter_id = enc.id,
-                bearing_to_water_degrees = float_or_none(
+                encounter_id=enc.id,
+                bearing_to_water_degrees=float_or_none(
                     obs.get("bearing_to_water_manual", None) or
                     obs.get("bearing_to_water_auto", None)
                 ),
-                bearing_leftmost_track_degrees = float_or_none(
+                bearing_leftmost_track_degrees=float_or_none(
                     obs.get("leftmost_track_manual", None) or
                     obs.get("leftmost_track_auto", None)
                 ),
-                bearing_rightmost_track_degrees = float_or_none(
+                bearing_rightmost_track_degrees=float_or_none(
                     obs.get("rightmost_track_manual", None) or
                     obs.get("rightmost_track_auto", None)
                 ),
-                no_tracks_main_group = int_or_none(
+                no_tracks_main_group=int_or_none(
                     obs["no_tracks_main_group"]),
-                no_tracks_main_group_min = int_or_none(
+                no_tracks_main_group_min=int_or_none(
                     obs["no_tracks_main_group_min"]),
-                no_tracks_main_group_max = int_or_none(
+                no_tracks_main_group_max=int_or_none(
                     obs["no_tracks_main_group_max"]),
-                outlier_tracks_present = str_or_na(
+                outlier_tracks_present=str_or_na(
                     obs.get("outlier_tracks_present", "na")),
-                path_to_sea_comments = "{0} {1}".format(
+                path_to_sea_comments="{0} {1}".format(
                     obs["hatchling_path_to_sea"], obs["path_to_sea_comments"]),
-                hatchling_emergence_time_known = str_or_na(
+                hatchling_emergence_time_known=str_or_na(
                     obs["hatchling_emergence_time_known"]),
-                light_sources_present = str_or_na(
+                light_sources_present=str_or_na(
                     obs["light_sources_present"]),
-                hatchling_emergence_time = int_or_none(
+                hatchling_emergence_time=int_or_none(
                     data["hatchling_emergence_time_group"]["hatchling_emergence_time"]),
-                hatchling_emergence_time_accuracy = str_or_na(
+                hatchling_emergence_time_accuracy=str_or_na(
                     data["hatchling_emergence_time_group"]["hatchling_emergence_time_source"]),
-                cloud_cover_at_emergence = int_or_none(data["emergence_climate"]["cloud_cover_at_emergence"]),
+                cloud_cover_at_emergence=int_or_none(data["emergence_climate"]["cloud_cover_at_emergence"]),
             )
 
             criteria = new_data
@@ -4199,7 +4390,6 @@ def handle_odka_fanangles(enc, media, data):
                 handle_media_attachment_odka(
                     enc, media, obs["photo_hatchling_tracks_seawards"], title="Photo {0}".format(e.__str__()))
 
-
             if obs["photo_hatchling_tracks_relief"]:
                 handle_media_attachment_odka(
                     enc, media, obs["photo_hatchling_tracks_relief"], title="Photo {0}".format(e.__str__()))
@@ -4217,15 +4407,15 @@ def handle_odka_fanangles(enc, media, data):
             #     "outlier_track_comment": null
             #  },
             new_data = dict(
-                    encounter_id = enc.id,
-                    bearing_outlier_track_degrees = float_or_none(
-                        obs.get("outlier_track_bearing_manual", None) or
-                        obs.get("track_bearing_manual", None) or
-                        obs.get("track_bearing_auto", None)
-                    ),
-                    outlier_group_size = int_or_none(obs["outlier_group_size"]),
-                    outlier_track_comment = obs["outlier_track_comment"],
-                )
+                encounter_id=enc.id,
+                bearing_outlier_track_degrees=float_or_none(
+                    obs.get("outlier_track_bearing_manual", None) or
+                    obs.get("track_bearing_manual", None) or
+                    obs.get("track_bearing_auto", None)
+                ),
+                outlier_group_size=int_or_none(obs["outlier_group_size"]),
+                outlier_track_comment=obs["outlier_track_comment"],
+            )
             criteria = new_data
             target = TurtleHatchlingEmergenceOutlierObservation.objects.filter(**criteria)
             if target.exists():
@@ -4259,14 +4449,14 @@ def handle_odka_fanangles(enc, media, data):
             #     }
             # ]
             new_data = dict(
-                    encounter_id = enc.id,
-                    bearing_light_degrees = float_or_none(
-                        obs.get("light_bearing_manual", None) or
-                        obs.get("light_bearing_auto", None)
-                    ),
-                    light_source_type = obs["light_source_type"],
-                    light_source_description = obs["light_source_description"],
-                )
+                encounter_id=enc.id,
+                bearing_light_degrees=float_or_none(
+                    obs.get("light_bearing_manual", None) or
+                    obs.get("light_bearing_auto", None)
+                ),
+                light_source_type=obs["light_source_type"],
+                light_source_description=obs["light_source_description"],
+            )
             criteria = new_data
             target = LightSourceObservation.objects.filter(**criteria)
             if target.exists():
@@ -4278,11 +4468,7 @@ def handle_odka_fanangles(enc, media, data):
                 e = LightSourceObservation.objects.create(**new_data)
                 logger.info("  [handle_odka_fanangle_lightsource] Created new {0}...".format(e.__str__()))
 
-
-
-
     return None
-
 
 
 # ---------------------------------------------------------------------------#
@@ -5217,47 +5403,47 @@ def import_odka_tal05(r):
         UN = "cheloniidae-fam"
 
         tally_mapping = [
-            [FB, "old",   "track-not-assessed",     data["fb"]["fb_no_old_tracks"] or 0],
-            [FB, "fresh", "successful-crawl",       data["fb"]["fb_no_fresh_successful_crawls"] or 0],
-            [FB, "fresh", "false-crawl",            data["fb"]["fb_no_fresh_false_crawls"] or 0],
-            [FB, "fresh", "track-unsure",           data["fb"]["fb_no_fresh_tracks_unsure"] or 0],
-            [FB, "fresh", "track-not-assessed",     data["fb"]["fb_no_fresh_tracks_not_assessed"] or 0],
-            [FB, "fresh", "hatched-nest",           data["fb"]["fb_no_hatched_nests"] or 0],
+            [FB, "old", "track-not-assessed", data["fb"]["fb_no_old_tracks"] or 0],
+            [FB, "fresh", "successful-crawl", data["fb"]["fb_no_fresh_successful_crawls"] or 0],
+            [FB, "fresh", "false-crawl", data["fb"]["fb_no_fresh_false_crawls"] or 0],
+            [FB, "fresh", "track-unsure", data["fb"]["fb_no_fresh_tracks_unsure"] or 0],
+            [FB, "fresh", "track-not-assessed", data["fb"]["fb_no_fresh_tracks_not_assessed"] or 0],
+            [FB, "fresh", "hatched-nest", data["fb"]["fb_no_hatched_nests"] or 0],
 
-            [GN, "old",     "track-not-assessed",   data["gn"]["gn_no_old_tracks"] or 0],
-            [GN, "fresh",   "successful-crawl",     data["gn"]["gn_no_fresh_successful_crawls"] or 0],
-            [GN, "fresh",   "false-crawl",          data["gn"]["gn_no_fresh_false_crawls"] or 0],
-            [GN, "fresh",   "track-unsure",         data["gn"]["gn_no_fresh_tracks_unsure"] or 0],
-            [GN, "fresh",   "track-not-assessed",   data["gn"]["gn_no_fresh_tracks_not_assessed"] or 0],
-            [GN, "fresh",   "hatched-nest",         data["gn"]["gn_no_hatched_nests"] or 0],
+            [GN, "old", "track-not-assessed", data["gn"]["gn_no_old_tracks"] or 0],
+            [GN, "fresh", "successful-crawl", data["gn"]["gn_no_fresh_successful_crawls"] or 0],
+            [GN, "fresh", "false-crawl", data["gn"]["gn_no_fresh_false_crawls"] or 0],
+            [GN, "fresh", "track-unsure", data["gn"]["gn_no_fresh_tracks_unsure"] or 0],
+            [GN, "fresh", "track-not-assessed", data["gn"]["gn_no_fresh_tracks_not_assessed"] or 0],
+            [GN, "fresh", "hatched-nest", data["gn"]["gn_no_hatched_nests"] or 0],
 
-            [HB, "old",     "track-not-assessed",   data["hb"]["hb_no_old_tracks"] or 0],
-            [HB, "fresh",   "successful-crawl",     data["hb"]["hb_no_fresh_successful_crawls"] or 0],
-            [HB, "fresh",   "false-crawl",          data["hb"]["hb_no_fresh_false_crawls"] or 0],
-            [HB, "fresh",   "track-unsure",         data["hb"]["hb_no_fresh_tracks_unsure"] or 0],
-            [HB, "fresh",   "track-not-assessed",   data["hb"]["hb_no_fresh_tracks_not_assessed"] or 0],
-            [HB, "fresh",   "hatched-nest",         data["hb"]["hb_no_hatched_nests"] or 0],
+            [HB, "old", "track-not-assessed", data["hb"]["hb_no_old_tracks"] or 0],
+            [HB, "fresh", "successful-crawl", data["hb"]["hb_no_fresh_successful_crawls"] or 0],
+            [HB, "fresh", "false-crawl", data["hb"]["hb_no_fresh_false_crawls"] or 0],
+            [HB, "fresh", "track-unsure", data["hb"]["hb_no_fresh_tracks_unsure"] or 0],
+            [HB, "fresh", "track-not-assessed", data["hb"]["hb_no_fresh_tracks_not_assessed"] or 0],
+            [HB, "fresh", "hatched-nest", data["hb"]["hb_no_hatched_nests"] or 0],
 
-            [LH, "old",     "track-not-assessed",   data["lh"]["lh_no_old_tracks"] or 0],
-            [LH, "fresh",   "successful-crawl",     data["lh"]["lh_no_fresh_successful_crawls"] or 0],
-            [LH, "fresh",   "false-crawl",          data["lh"]["lh_no_fresh_false_crawls"] or 0],
-            [LH, "fresh",   "track-unsure",         data["lh"]["lh_no_fresh_tracks_unsure"] or 0],
-            [LH, "fresh",   "track-not-assessed",   data["lh"]["lh_no_fresh_tracks_not_assessed"] or 0],
-            [LH, "fresh",   "hatched-nest",         data["lh"]["lh_no_hatched_nests"] or 0],
+            [LH, "old", "track-not-assessed", data["lh"]["lh_no_old_tracks"] or 0],
+            [LH, "fresh", "successful-crawl", data["lh"]["lh_no_fresh_successful_crawls"] or 0],
+            [LH, "fresh", "false-crawl", data["lh"]["lh_no_fresh_false_crawls"] or 0],
+            [LH, "fresh", "track-unsure", data["lh"]["lh_no_fresh_tracks_unsure"] or 0],
+            [LH, "fresh", "track-not-assessed", data["lh"]["lh_no_fresh_tracks_not_assessed"] or 0],
+            [LH, "fresh", "hatched-nest", data["lh"]["lh_no_hatched_nests"] or 0],
 
-            [OR, "old",     "track-not-assessed",   data["or"]["or_no_old_tracks"] or 0],
-            [OR, "fresh",   "successful-crawl",     data["or"]["or_no_fresh_successful_crawls"] or 0],
-            [OR, "fresh",   "false-crawl",          data["or"]["or_no_fresh_false_crawls"] or 0],
-            [OR, "fresh",   "track-unsure",         data["or"]["or_no_fresh_tracks_unsure"] or 0],
-            [OR, "fresh",   "track-not-assessed",   data["or"]["or_no_fresh_tracks_not_assessed"] or 0],
-            [OR, "fresh",   "hatched-nest",         data["or"]["or_no_hatched_nests"] or 0],
+            [OR, "old", "track-not-assessed", data["or"]["or_no_old_tracks"] or 0],
+            [OR, "fresh", "successful-crawl", data["or"]["or_no_fresh_successful_crawls"] or 0],
+            [OR, "fresh", "false-crawl", data["or"]["or_no_fresh_false_crawls"] or 0],
+            [OR, "fresh", "track-unsure", data["or"]["or_no_fresh_tracks_unsure"] or 0],
+            [OR, "fresh", "track-not-assessed", data["or"]["or_no_fresh_tracks_not_assessed"] or 0],
+            [OR, "fresh", "hatched-nest", data["or"]["or_no_hatched_nests"] or 0],
 
-            [UN, "old",     "track-not-assessed",   data["unk"]["unk_no_old_tracks"] or 0],
-            [UN, "fresh",   "successful-crawl",     data["unk"]["unk_no_fresh_successful_crawls"] or 0],
-            [UN, "fresh",   "false-crawl",          data["unk"]["unk_no_fresh_false_crawls"] or 0],
-            [UN, "fresh",   "track-unsure",         data["unk"]["unk_no_fresh_tracks_unsure"] or 0],
-            [UN, "fresh",   "track-not-assessed",   data["unk"]["unk_no_fresh_tracks_not_assessed"] or 0],
-            [UN, "fresh",   "hatched-nest",         data["unk"]["unk_no_hatched_nests"] or 0],
+            [UN, "old", "track-not-assessed", data["unk"]["unk_no_old_tracks"] or 0],
+            [UN, "fresh", "successful-crawl", data["unk"]["unk_no_fresh_successful_crawls"] or 0],
+            [UN, "fresh", "false-crawl", data["unk"]["unk_no_fresh_false_crawls"] or 0],
+            [UN, "fresh", "track-unsure", data["unk"]["unk_no_fresh_tracks_unsure"] or 0],
+            [UN, "fresh", "track-not-assessed", data["unk"]["unk_no_fresh_tracks_not_assessed"] or 0],
+            [UN, "fresh", "hatched-nest", data["unk"]["unk_no_hatched_nests"] or 0],
         ]
 
         [make_tallyobs(enc, x[0], x[1], x[2], x[3]) for x in tally_mapping]
@@ -5456,7 +5642,8 @@ def import_odka_mwi05(r):
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_top"], title="Turtle head top")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_front"], title="Turtle head front")
         handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_side"], title="Turtle head side")
-        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_carapace_top"], title="Turtle carapace top")
+        handle_media_attachment_odka(enc, media, data["photos_turtle"]
+                                     ["photo_carapace_top"], title="Turtle carapace top")
 
         handle_odka_tagsobs(enc, media, data)
         handle_odka_managementaction(enc, media, data)
