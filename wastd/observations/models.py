@@ -27,6 +27,7 @@ import urllib
 from datetime import timedelta
 from dateutil import parser as dateparser
 from dateutil import tz
+from dateutil.relativedelta import relativedelta
 
 import slugify
 from django.conf import settings
@@ -2022,6 +2023,14 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         """Return the full datetime of the Encounter."""
         return self.when
 
+    @property
+    def season(self):
+        """Return the season of the Encounter, the start year of the fiscal year.
+        
+        Calculated as the calendar year 180 days before the date of the Encounter.
+        """
+        return (self.when - relativedelta(months=6)).year
+
     # def save(self, *args, **kwargs):
     #     """Cache expensive properties.
 
@@ -2070,7 +2079,11 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
 
     @property
     def inferred_name(self):
-        """Return the inferred name from related new capture if existing."""
+        """Return the inferred name from related new capture if existing.
+        
+        TODO replace with reconstruct_animal_names logic
+        """
+        return None
         # TODO less dirty
         try:
             return [enc.name
@@ -2307,7 +2320,9 @@ class AnimalEncounter(Encounter):
         verbose_name=_("Sighting status"),
         choices=SIGHTING_STATUS_CHOICES,
         default=NA_VALUE,
-        help_text=_("Whether and where this animal was identified last."),)
+        help_text=_(
+            "The status is inferred automatically based on whether"
+            " and where this animal was processed and identified last."),)
 
     # ODK form Turtle Tagging > nest_observed_nesting_success
     nesting_event = models.CharField( # TODO rename to nesting_success

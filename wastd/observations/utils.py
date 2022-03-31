@@ -20,6 +20,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import LineString, Point
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files import File
+from django.db.models import F
 from django.utils.dateparse import parse_datetime
 from requests.auth import HTTPDigestAuth
 from shared.utils import sanitize_tag_label
@@ -59,6 +60,10 @@ def str_or_na(string):
         return string
     except:
         return "na"
+
+def turtle_season(datetime_obj):
+    """The calendar year 180 days before the given datetime_obj."""
+    return (datetime_obj - relativedelta(months=6)).year
 
 
 def set_site(sites, encounter):
@@ -205,9 +210,19 @@ def get_encounter_history(tags, encs):
     """
     # Get the first tag
     tag = tags[0]
+    msg = "Starting with tag {} enc {}".format(tag["id"], tag["encounter_id"])
+    logger.debug(msg)
 
     # Get the first enc
-    enc = encs[tag['encounter_id']]
+    # Gatecheck: if the tag's encounter ID is missing from encs, return.
+    try:
+        enc = encs[tag['encounter_id']]
+    except:
+        msg = "Tag not found in encs, skipping tag."
+        logger.info(msg)
+        tags.pop(0)
+        return tags, encs
+
 
     # Create a stash of encounters with the same entity
     known_enc = {}
@@ -237,21 +252,57 @@ def get_encounter_history(tags, encs):
         known_tag_ids = [t['id'] for t in known_tags]
         extra_tags = [t for t in new_tag_ids if t not in known_tag_ids]
         known_tags.extend(new_tags)
-        # TODO: only continue if we have found new tags
+        # Continue if we have found new tags
         show_must_go_on = len(extra_tags) > 0
 
-    # TODO
     # From known_tags, get tag with the earliest "encounter__animalencounter__when"
     earliest_tag = min(known_tags, key=lambda t: t['encounter__animalencounter__when'])
     
     # Remove known_tags from tags
-    # TODO does this work?
     tags = [t for t in tags if t['id'] not in known_tag_ids]
 
     # set name_new in encs for all list(set(known_enc)) as tag['name'] of tag with earliest_tag["name"]
     for enc in known_enc:
         known_enc[enc]["name_new"] = earliest_tag["name"]
     encs.update(known_enc)
+
+    # Iterate over known_encs sorted by "when" and infer sighting_status_new from "site_name" and season.
+    sorted_encs = sorted(known_enc.values(), key=lambda e: e["when"])
+    for idx, enc in enumerate(sorted_encs):
+        # List known_tags for this encounter_id
+        reason = "default value"
+        enc_tags_status_list = list(set([t["status"] for t in known_tags if t["encounter_id"] == enc["id"]]))
+        msg = "Inferring sighting status for {} position {} with tag statuses {}".format(enc["id"], idx, enc_tags_status_list)
+        logger.debug(msg)
+        # If the tags have no other status than "applied-new", then set sighting_status_new to "new"
+        if enc_tags_status_list == ["applied-new"]:
+            enc["sighting_status_new"] = "new"
+            reason = "only new tags, no existing tags"
+        # If some tags are resighted, the animal has been processed before and is not "new".
+        else:
+            # Same site, same season = resighted
+            if idx > 1 and enc["site__name"] == sorted_encs[idx-1]["site__name"] and enc["season"] == sorted_encs[idx-1]["season"]:
+                enc["sighting_status_new"] = "resighting"
+                reason="existing tags, same site, same season"
+
+            # Same site, different season = remigrant
+            elif idx > 1 and enc["site__name"] == sorted_encs[idx-1]["site__name"] and enc["season"] != sorted_encs[idx-1]["season"]:
+                enc["sighting_status_new"] = "remigrant"
+                reason="existing tags, same site, different season"
+            # Different site, different season = remigrant (this option is split from above option so we can choose a different status)
+            elif idx > 1 and enc["site__name"] != sorted_encs[idx-1]["site__name"] and enc["season"] != sorted_encs[idx-1]["season"]:
+                enc["sighting_status_new"] = "remigrant"
+                reason="existing tags, different site, different season"
+            # Catch-all: this is the default, but we set it explicitly
+            else:
+                enc["sighting_status_new"] = "na"
+                reason="no rule applicable"
+        msg = "Sighting status for encounter {} inferred as {} with reason {}".format(enc["id"], enc["sighting_status_new"], reason)
+        logger.debug(msg)
+    
+    # Update encs from sorted_encs
+    sorted_encs_by_id =  {e["id"]: e for e in sorted_encs}
+    encs.update(sorted_encs_by_id)
 
     return tags, encs
 
@@ -261,18 +312,16 @@ def reconstruct_animal_names():
 
     Approach: Use dict and list manipulations to derive a master dict of Encounters to update,
     then bulk update just the fields "sighting_status" and "name" for each Encounter.
+    The heavy lifting is done in memory as dict and list manipulations.
+    The database is only hit for the initial data load and the final updating of objects.
 
-    tags: list of tags, plus new field "taken"
-    encs: list of encounters with tags, plus new fields "name_new" and "sighting_status_new"
-
-    While there are tags (not yet taken),
-    take first tag and add to a second list tag_stash,
-    take first tag's encounter,
-    find all tags linked to that encounter,
-    if there are new tags not yet in stash,
-    repeat tag > encounter > tags > encounter until we have the consistent stash of tags and encounters
+    Info level log messages are emitted after each component of the process.
+    Debug level log messages are emitted for each encounter.
+    
+    Returns:
+      A dict of encounters to update, keyed by encounter id, containing old and new names and sighting_status.
     """
-    msg = "Reconstructing names of Animals from their first allocated Flipper Tag in bulk."
+    msg = "Reconstructing names of Animals from applied tags in bulk."
     logger.info(msg)
 
     # A list of dicts of tags.
@@ -297,10 +346,22 @@ def reconstruct_animal_names():
     # The additional field are initially 'na' and None, respectively.
     encs = {
         e["id"]: dict(e, **{'sighting_status_new': 'na', 'name_new': None})
-        for e in AnimalEncounter.objects.filter(id__in=enc_ids).values(
-            "id", "sighting_status", "name", "when", "site__name"
+        for e in AnimalEncounter.objects.filter(
+            id__in=enc_ids
+        # ).annotate(season = turtle_season(F("when")))
+        ).values(
+            "id", "sighting_status", "name", "when", "site__name" #, "season"
         )
     }
+
+    for enc in encs:
+        encs[enc]["season"] = turtle_season(encs[enc]["when"])
+
+    # Ignore tags with links to non-existing encs - TODO speed up
+    # removed_tags = [t for t in tags if t['encounter_id'] not in enc_ids]
+    # msg = "Ignoring tags pointing to non-existing encs: {}".format(removed_tags)
+    # logger.info(msg)
+    # tags = [t for t in tags if t['encounter_id'] in enc_ids]
 
     msg = "Starting with {} tags and {} encounters.".format(len(tags), len(encs))
     logger.info(msg)
@@ -315,9 +376,10 @@ def reconstruct_animal_names():
 
     # We only have to update encounters with a different sighting_status or name.
     encs_to_update = {
-        enc for enc in encs if (
-            enc["name_new"] != enc["name"] or 
-            enc["sighting_status_new"] != enc["sighting_status"]
+        k:v for (k,v) in encs.items() 
+        if v["name_new"] is not None and (
+            v["name_new"] != v["name"] or 
+            v["sighting_status_new"] != v["sighting_status"]
         )
     }
 
@@ -325,10 +387,16 @@ def reconstruct_animal_names():
     logger.info(msg)
 
     # Bulk update AnimalEncounters with encs_to_update
-    # AnimalEncounter.objects.filter(id__in=encs_to_update.keys()).update(
-    #     name=F("name_new"), sighting_status=F("sighting_status_new"))
-    msg = "Encounters updated. (TODO)"
+    for enc in encs_to_update:                
+        AnimalEncounter.objects.filter(id=encs_to_update[enc]["id"]).update(
+            name=encs_to_update[enc]["name_new"],
+            sighting_status=encs_to_update[enc]["sighting_status_new"]
+        )
+    
+    msg = "Encounters updated."
     logger.info(msg)
+
+    return encs_to_update
 
 
 def allocate_animal_names():
