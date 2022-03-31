@@ -170,6 +170,7 @@ class AnimalEncounterFilter(EncounterFilter):
             'health',
             'activity',
             'habitat',
+            'sighting_status',
             'nesting_event',
             'nesting_disturbed',
             'laparoscopy',

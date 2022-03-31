@@ -1057,6 +1057,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'cause_of_death', 'cause_of_death_confidence',
         'maturity_display', 'sex_display', 'behaviour',
         'habitat_display',
+        'sighting_status',
         'nesting_event', 'nesting_disturbed',
         'checked_for_injuries',
         'scanned_for_pit_tags',
@@ -1072,6 +1073,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'maturity',
         'sex',
         'habitat',
+        'sighting_status',
         'nesting_event',
         'nesting_disturbed',
         'checked_for_injuries',
@@ -1079,6 +1081,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'checked_for_flipper_tags',
         'laparoscopy',
     )
+    readonly_fields = ('name', 'sighting_status', )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
          {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -1091,6 +1094,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
              'behaviour',
              'habitat',
              'health', 'cause_of_death', 'cause_of_death_confidence',
+             'sighting_status', 
              'nesting_event', 'nesting_disturbed',
              'checked_for_injuries',
              'scanned_for_pit_tags',
@@ -1117,6 +1121,11 @@ class AnimalEncounterAdmin(EncounterAdmin):
         ).prefetch_related(
             'observer', 'reporter', 'area', 'site',
         )
+
+    def sighting_status_display(self, obj):
+        """Make sighting status human readable."""
+        return obj.get_sighting_status_display()
+    sighting_status_display.short_description = 'Sighting Status'
 
     def health_display(self, obj):
         """Make health status human readable."""

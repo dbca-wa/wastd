@@ -19,11 +19,12 @@ def update_names():
     msg = "[wastd.observations.tasks.update_names] Start updating names..."
     logger.info(msg)
     capture_message(msg, level="info")
-    surveys, names = utils.allocate_animal_names()
+    surveys = [s.save() for s in Survey.objects.all()]
+    encs = utils.reconstruct_animal_names()
     msg = ("[wastd.observations.tasks.update_names] {0} surveys reconstructed, "
            "{1} animal names reconstructed. "
            "Task successfully finished.".format(
-               len(surveys), len(names)))
+               len(surveys), len(encs)))
     logger.info(msg)
     capture_message(msg, level="warning")
 

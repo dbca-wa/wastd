@@ -316,6 +316,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
             "behaviour",
             "habitat",
             "activity",
+            "sighting_status",
             "nesting_event",
             "nesting_disturbed",
             "laparoscopy",
