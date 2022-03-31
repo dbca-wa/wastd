@@ -8,7 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 from sentry_sdk import capture_message
 
-from wastd.observations import utils
+from wastd.observations import utils, models
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ def update_names():
     msg = "[wastd.observations.tasks.update_names] Start updating names..."
     logger.info(msg)
     capture_message(msg, level="info")
-    surveys = [s.save() for s in Survey.objects.all()]
+    surveys = [s.save() for s in models.Survey.objects.all()]
     encs = utils.reconstruct_animal_names()
     msg = ("[wastd.observations.tasks.update_names] {0} surveys reconstructed, "
            "{1} animal names reconstructed. "
