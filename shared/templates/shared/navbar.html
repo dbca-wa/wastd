@@ -402,10 +402,16 @@
                Reconstruct missing Surveys
               </a>
               <a class="dropdown-item"
-                href="{% url 'update-names' %}"
+                href="{% url 'resave-surveys' %}"
                 title="Rebuild names for surveys, tagged animals, and loggers.">
+              <span class="oi oi-loop-circular" aria-hidden="true"></span>
+              Re-save existing Surveys
+              </a>
+              <a class="dropdown-item"
+                href="{% url 'update-names' %}"
+                title="Reconstruct animal encounter case histories.">
                <span class="oi oi-loop-circular" aria-hidden="true"></span>
-               Rebuild Animal Names
+               Reconstruct Animal Case Histories
               </a>
 
              <!--  <a class="dropdown-item"

@@ -256,6 +256,7 @@ def get_encounter_history(tags, encs):
         show_must_go_on = len(extra_tags) > 0
 
     # From known_tags, get tag with the earliest "encounter__animalencounter__when"
+    # TODO is this determinstic for encounters with multiple tags?
     earliest_tag = min(known_tags, key=lambda t: t['encounter__animalencounter__when'])
     
     # Remove known_tags from tags
@@ -266,7 +267,7 @@ def get_encounter_history(tags, encs):
         known_enc[enc]["name_new"] = earliest_tag["name"]
     encs.update(known_enc)
 
-    # Iterate over known_encs sorted by "when" and infer sighting_status_new from "site_name" and season.
+    # Iterate over known_encs sorted by "when" and infer sighting_status_new from "area__name" and season.
     sorted_encs = sorted(known_enc.values(), key=lambda e: e["when"])
     for idx, enc in enumerate(sorted_encs):
         # List known_tags for this encounter_id
@@ -274,29 +275,42 @@ def get_encounter_history(tags, encs):
         enc_tags_status_list = list(set([t["status"] for t in known_tags if t["encounter_id"] == enc["id"]]))
         msg = "Inferring sighting status for {} position {} with tag statuses {}".format(enc["id"], idx, enc_tags_status_list)
         logger.debug(msg)
-        # If the tags have no other status than "applied-new", then set sighting_status_new to "new"
-        if enc_tags_status_list == ["applied-new"]:
-            enc["sighting_status_new"] = "new"
-            reason = "only new tags, no existing tags"
-        # If some tags are resighted, the animal has been processed before and is not "new".
-        else:
-            # Same site, same season = resighted
-            if idx > 1 and enc["site__name"] == sorted_encs[idx-1]["site__name"] and enc["season"] == sorted_encs[idx-1]["season"]:
-                enc["sighting_status_new"] = "resighting"
-                reason="existing tags, same site, same season"
 
-            # Same site, different season = remigrant
-            elif idx > 1 and enc["site__name"] == sorted_encs[idx-1]["site__name"] and enc["season"] != sorted_encs[idx-1]["season"]:
-                enc["sighting_status_new"] = "remigrant"
-                reason="existing tags, same site, different season"
-            # Different site, different season = remigrant (this option is split from above option so we can choose a different status)
-            elif idx > 1 and enc["site__name"] != sorted_encs[idx-1]["site__name"] and enc["season"] != sorted_encs[idx-1]["season"]:
-                enc["sighting_status_new"] = "remigrant"
-                reason="existing tags, different site, different season"
-            # Catch-all: this is the default, but we set it explicitly
+        # Classification criteria
+        only_new_tags = enc_tags_status_list == ["applied-new"]
+
+        if idx == 0:
+            if only_new_tags:
+                # First recorded encounter, no other tags than "applied-new": new
+                enc['sighting_status_new'] = "new"
+                reason = "first recorded encounter, only new tags, no existing tags"
             else:
-                enc["sighting_status_new"] = "na"
+                enc['sighting_status_new'] = "resighting"
+                reason = "first recorded encounter, existing tags"
+        else:
+            # Classification criteria pt II
+            same_area = enc["area__name"] == sorted_encs[idx-1]["area__name"]
+            same_season = enc["season"] == sorted_encs[idx-1]["season"]
+
+            # Set from previous encounter
+            enc['datetime_of_last_sighting'] = sorted_encs[idx-1]["when"]
+
+            if same_area and same_season:
+                enc["sighting_status_new"] = "resighting"
+                reason="resighting, same area, same season"
+            elif same_area and (not same_season):
+                enc["sighting_status_new"] = "remigrant"
+                reason="remigrant, same area, different season"
+            elif (not same_area) and same_season:
+                enc["sighting_status_new"] = "remigrant"
+                reason="remigrant, different area, same season"
+            elif (not same_area) and (not same_season):
+                enc["sighting_status_new"] = "remigrant"
+                reason="remigrant, different area, different season"
+            else:
+                enc["sighting_status_new"] = "resighting"
                 reason="no rule applicable"
+
         msg = "Sighting status for encounter {} inferred as {} with reason {}".format(enc["id"], enc["sighting_status_new"], reason)
         logger.debug(msg)
     
@@ -345,12 +359,17 @@ def reconstruct_animal_names():
     # with additional fields for newly reconstructed sighting_status and name.
     # The additional field are initially 'na' and None, respectively.
     encs = {
-        e["id"]: dict(e, **{'sighting_status_new': 'na', 'name_new': None})
+        e["id"]: dict(
+            e, **{
+                'sighting_status_new': 'na', 
+                'name_new': None, 
+                'datetime_of_last_sighting': None
+            })
         for e in AnimalEncounter.objects.filter(
             id__in=enc_ids
         # ).annotate(season = turtle_season(F("when")))
         ).values(
-            "id", "sighting_status", "name", "when", "site__name" #, "season"
+            "id", "sighting_status", "name", "when", "site__name", "area__name" #, "season"
         )
     }
 
@@ -390,7 +409,8 @@ def reconstruct_animal_names():
     for enc in encs_to_update:                
         AnimalEncounter.objects.filter(id=encs_to_update[enc]["id"]).update(
             name=encs_to_update[enc]["name_new"],
-            sighting_status=encs_to_update[enc]["sighting_status_new"]
+            sighting_status=encs_to_update[enc]["sighting_status_new"],
+            datetime_of_last_sighting=encs_to_update[enc]["datetime_of_last_sighting"]
         )
     
     msg = "Encounters updated."

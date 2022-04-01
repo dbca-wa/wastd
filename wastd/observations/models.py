@@ -2324,6 +2324,13 @@ class AnimalEncounter(Encounter):
             "The status is inferred automatically based on whether"
             " and where this animal was processed and identified last."),)
 
+    datetime_of_last_sighting = models.DateTimeField(
+        verbose_name=_("Last seen on"),
+        blank=True, null=True,
+        help_text=_("The observation datetime of this animal's last sighting, "
+                    "shown as local time (no daylight savings), stored as UTC. "
+                    "Blank if the animal has never been seen before."))
+
     # ODK form Turtle Tagging > nest_observed_nesting_success
     nesting_event = models.CharField( # TODO rename to nesting_success
         max_length=300,

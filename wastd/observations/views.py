@@ -52,7 +52,7 @@ from wastd.observations.resources import (
 
 from wastd.observations import admin
 
-from wastd.observations.tasks import import_odka, update_names, reconstruct_surveys
+from wastd.observations.tasks import import_odka, update_names, reconstruct_surveys, resave_surveys
 
 @csrf_exempt
 def import_odka_view(request):
@@ -66,13 +66,22 @@ def import_odka_view(request):
 
 @csrf_exempt
 def update_names_view(request):
-    """Import all available ODK-Aggregate forms."""
-    capture_message("[wastd.observations.views.update_names] Rebuilding names.", level="error")
+    """Reconstruct animal encounter case histories and sighting status."""
+    capture_message("[wastd.observations.views.update_names] Reconstructing AnimalEncounter sighting histories.", level="error")
     msg = update_names.now()
     messages.success(request, msg)
     capture_message(msg, level="error")
     return HttpResponseRedirect("/")
 
+
+@csrf_exempt
+def resave_surveys_view(request):
+    """Re-save all Surveys."""
+    capture_message("[wastd.observations.views.resave_surveys_view] Re-saving Surveys.", level="error")
+    msg = resave_surveys.now()
+    messages.success(request, msg)
+    capture_message(msg, level="error")
+    return HttpResponseRedirect("/")
 
 @csrf_exempt
 def reconstruct_surveys_view(request):
