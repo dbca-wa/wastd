@@ -2,9 +2,6 @@
 {% load observations %}
 
 {% block title_row %}
-{% if object.sighting_status != 'na' %}
-{{ object.get_sighting_status_display }}
-{% endif %}
 {{ object.get_health_display|title }}
 {{ object.get_maturity_display }}
 {{ object.get_species_display }}
