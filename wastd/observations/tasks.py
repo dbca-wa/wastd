@@ -19,15 +19,24 @@ def update_names():
     msg = "[wastd.observations.tasks.update_names] Start updating names..."
     logger.info(msg)
     capture_message(msg, level="info")
-    surveys = [s.save() for s in models.Survey.objects.all()]
     encs = utils.reconstruct_animal_names()
-    msg = ("[wastd.observations.tasks.update_names] {0} surveys reconstructed, "
-           "{1} animal names reconstructed. "
-           "Task successfully finished.".format(
-               len(surveys), len(encs)))
+    msg = ("[wastd.observations.tasks.update_names] "
+           "{} animal names reconstructed. ".format(len(encs)))
     logger.info(msg)
     capture_message(msg, level="warning")
 
+
+@background(queue="admin-tasks", schedule=timezone.now())
+def resave_surveys():
+    """Re-save Surveys."""
+    msg = "[wastd.observations.tasks.resave_surveys] Start re-saving Surveys..."
+    logger.info(msg)
+    capture_message(msg, level="info")
+    surveys = [s.save() for s in models.Survey.objects.all()]
+   
+    msg = "[wastd.observations.tasks.resave_surveys] {0} surveys reconstructed".format(len(surveys))
+    logger.info(msg)
+    capture_message(msg, level="warning")
 
 @background(queue="admin-tasks", schedule=timezone.now())
 def import_odka():

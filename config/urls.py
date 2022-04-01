@@ -90,6 +90,7 @@ urlpatterns = [
 
     path('tasks/import-odka/', wastd_views.import_odka_view, name="import-odka"),
     path('tasks/update-names/', wastd_views.update_names_view, name="update-names"),
+    path('tasks/resave-surveys/', wastd_views.resave_surveys_view, name="resave-surveys"),
     path('tasks/reconstruct-surveys/', wastd_views.reconstruct_surveys_view, name="reconstruct-surveys"),
 
     path('400/', default_views.bad_request, kwargs={'exception': Exception('Bad request')}),
