@@ -288,6 +288,9 @@ def get_encounter_history(tags, encs):
             else:
                 enc['sighting_status_new'] = "resighting"
                 reason = "first recorded encounter, existing tags"
+            enc['datetime_of_last_sighting'] = sorted_encs[0]["when"]
+            enc['site_of_first_sighting'] = sorted_encs[0]["site__pk"]
+            enc['site_of_last_sighting'] = sorted_encs[0]["site__pk"]
         else:
             # Classification criteria pt II
             same_area = enc["area__name"] == sorted_encs[idx-1]["area__name"]
