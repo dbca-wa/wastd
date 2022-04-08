@@ -409,7 +409,8 @@ class AnimalEncounterViewSet(BatchUpsertViewSet):
 
     latex_name = "latex/animalencounter.tex"
     queryset = models.AnimalEncounter.objects.all().prefetch_related(
-        "observer", "reporter", "survey", "site", "area", "survey__reporter"
+        "observer", "reporter", "survey", "site", "area", "survey__reporter",
+        "site_of_first_sighting", "site_of_last_sighting",
     )
     serializer_class = serializers.AnimalEncounterSerializer
     filter_class = AnimalEncounterFilter
