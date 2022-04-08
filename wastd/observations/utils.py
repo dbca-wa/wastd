@@ -185,10 +185,10 @@ def get_linked_encs(tags, tag_dict, encs):
     """
     # The list if known_tags is a subset of the list of tags. 
     # Each refers to a tag name (e.g. WA12345), which could be encountered in other tag observations.
-    tag_names = list(set([t['name'] for t in tag_dict]))
+    tag_names = set([t['name'] for t in tag_dict])
 
     # Find all encounter ids from the master set of (not yet allocated) tag observations.
-    linked_enc_ids = list(set([t['encounter_id'] for t in tags if t['name'] in tag_names]))
+    linked_enc_ids = set([t['encounter_id'] for t in tags if t['name'] in tag_names])
 
     # Get the full encounter dict from enc for each encounter id in linked_enc_ids.
     return {enc_id: encs[enc_id] for enc_id in linked_enc_ids}
@@ -215,6 +215,7 @@ def get_encounter_history(tags, encs):
 
     # Get the first enc
     # Gatecheck: if the tag's encounter ID is missing from encs, return.
+    # Some tags are allocated to Encounters other than AnimalEncounters.
     try:
         enc = encs[tag['encounter_id']]
     except:
@@ -248,9 +249,9 @@ def get_encounter_history(tags, encs):
         known_enc = {**known_enc, **new_enc}
         new_tags_list_of_dicts = [get_linked_tags(tags, enc_id) for enc_id in list(new_enc.keys())]
         new_tags = [item for sublist in new_tags_list_of_dicts for item in sublist]
-        new_tag_ids = [t['id'] for t in new_tags]
-        known_tag_ids = [t['id'] for t in known_tags]
-        extra_tags = [t for t in new_tag_ids if t not in known_tag_ids]
+        new_tag_ids = set([t['id'] for t in new_tags])
+        known_tag_ids = set([t['id'] for t in known_tags])
+        extra_tags = set([t for t in new_tag_ids if t not in known_tag_ids])
         known_tags.extend(new_tags)
         # Continue if we have found new tags
         show_must_go_on = len(extra_tags) > 0
@@ -353,7 +354,8 @@ def reconstruct_animal_names():
     ]
 
     # Unique encounter ids from tags, deduped because one encounter can have multiple tags.
-    enc_ids = list(set([tag['encounter_id'] for tag in tags]))
+    # DEBUG: list(...)
+    enc_ids = set([tag['encounter_id'] for tag in tags])
 
     # A dict of dicts of encounters, keyed by encounter id, 
     # with additional fields for newly reconstructed sighting_status and name.
