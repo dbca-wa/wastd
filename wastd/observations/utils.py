@@ -210,7 +210,7 @@ def get_encounter_history(tags, encs):
     """
     # Get the first tag
     tag = tags[0]
-    msg = "Starting with tag {} enc {}".format(tag["id"], tag["encounter_id"])
+    msg = "  Starting with tag {} enc {}".format(tag["id"], tag["encounter_id"])
     logger.debug(msg)
 
     # Get the first enc
@@ -219,7 +219,7 @@ def get_encounter_history(tags, encs):
     try:
         enc = encs[tag['encounter_id']]
     except:
-        msg = "Tag not found in encs, skipping tag."
+        msg = "  Tag not found in encs, skipping tag."
         logger.info(msg)
         tags.pop(0)
         return tags, encs
@@ -274,7 +274,7 @@ def get_encounter_history(tags, encs):
         # List known_tags for this encounter_id
         reason = "default value"
         enc_tags_status_list = list(set([t["status"] for t in known_tags if t["encounter_id"] == enc["id"]]))
-        msg = "Inferring sighting status for {} position {} with tag statuses {}".format(enc["id"], idx, enc_tags_status_list)
+        msg = "  Inferring sighting status for {} position {} with tag statuses {}".format(enc["id"], idx, enc_tags_status_list)
         logger.debug(msg)
 
         # Classification criteria
@@ -295,6 +295,8 @@ def get_encounter_history(tags, encs):
 
             # Set from previous encounter
             enc['datetime_of_last_sighting'] = sorted_encs[idx-1]["when"]
+            enc['site_of_first_sighting'] = sorted_encs[0]["site__pk"]
+            enc['site_of_last_sighting'] = sorted_encs[idx-1]["site__pk"]
 
             if same_area and same_season:
                 enc["sighting_status_new"] = "resighting"
@@ -312,7 +314,9 @@ def get_encounter_history(tags, encs):
                 enc["sighting_status_new"] = "resighting"
                 reason="no rule applicable"
 
-        msg = "Sighting status for encounter {} inferred as {} with reason {}".format(enc["id"], enc["sighting_status_new"], reason)
+        msg = "  Sighting status for encounter {} inferred as {} with reason {}".format(
+            enc["id"], enc["sighting_status_new"], reason
+        )
         logger.debug(msg)
     
     # Update encs from sorted_encs
@@ -371,7 +375,13 @@ def reconstruct_animal_names():
             id__in=enc_ids
         # ).annotate(season = turtle_season(F("when")))
         ).values(
-            "id", "sighting_status", "name", "when", "site__name", "area__name" #, "season"
+            "id", 
+            "sighting_status", 
+            "name", 
+            "when", 
+            "site__pk", 
+            "site__name", 
+            "area__name"
         )
     }
 
@@ -412,7 +422,9 @@ def reconstruct_animal_names():
         AnimalEncounter.objects.filter(id=encs_to_update[enc]["id"]).update(
             name=encs_to_update[enc]["name_new"],
             sighting_status=encs_to_update[enc]["sighting_status_new"],
-            datetime_of_last_sighting=encs_to_update[enc]["datetime_of_last_sighting"]
+            datetime_of_last_sighting=encs_to_update[enc]["datetime_of_last_sighting"],
+            site_of_last_sighting_id=encs_to_update[enc]["site_of_last_sighting"],
+            site_of_first_sighting_id=encs_to_update[enc]["site_of_first_sighting"]
         )
     
     msg = "Encounters updated."

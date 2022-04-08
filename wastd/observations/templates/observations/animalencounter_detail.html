@@ -14,6 +14,9 @@
 {% endblock %}
 
   {% block obsdetails %}
+    <strong>First seen at:</strong> {{ object.site_of_first_sighting }}<br>
+    <strong>Last seen at:</strong> {{ object.site_of_last_sighting }}<br>
+    <strong>Last seen on:</strong> {{ object.datetime_of_last_sighting|date:'d M Y H:i'  }}<br>
     <strong>Data source:</strong> {{ object.get_source_display }}<br>
     <strong>Health status:</strong> {{ object.get_health_display }}<br>
     <strong>Sex:</strong> {{ object.get_sex_display }}<br>

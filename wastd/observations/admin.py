@@ -1058,12 +1058,19 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'maturity_display', 'sex_display', 'behaviour',
         'habitat_display',
         'sighting_status',
+        "site_of_first_sighting", 
+        "datetime_of_last_sighting",
+        "site_of_last_sighting",
         'nesting_event', 'nesting_disturbed',
         'checked_for_injuries',
         'scanned_for_pit_tags',
         'checked_for_flipper_tags',
     ) + EncounterAdmin.LAST_COLS
-    list_select_related = ('area', 'site', 'survey', )
+    list_select_related = (
+        'area', 'site', 'survey', 
+        'observer', 'reporter', 
+        "site_of_first_sighting",
+        "site_of_last_sighting",)
     list_filter = EncounterAdmin.list_filter + (
         'taxon',
         'species',
@@ -1074,6 +1081,8 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'sex',
         'habitat',
         'sighting_status',
+        "datetime_of_last_sighting", 
+        "site_of_first_sighting", "site_of_last_sighting",
         'nesting_event',
         'nesting_disturbed',
         'checked_for_injuries',
@@ -1081,7 +1090,13 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'checked_for_flipper_tags',
         'laparoscopy',
     )
-    readonly_fields = ('name', 'sighting_status', )
+    readonly_fields = (
+        "name",
+        "sighting_status", 
+        "datetime_of_last_sighting",
+        "site_of_first_sighting",
+        "site_of_last_sighting",
+    )
     fieldsets = EncounterAdmin.fieldsets + (
         ('Animal',
          {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
@@ -1093,14 +1108,27 @@ class AnimalEncounterAdmin(EncounterAdmin):
              'activity',
              'behaviour',
              'habitat',
-             'health', 'cause_of_death', 'cause_of_death_confidence',
-             'sighting_status', 
-             'nesting_event', 'nesting_disturbed',
+             'health', 'cause_of_death', 
+             'cause_of_death_confidence',
+             'nesting_event', 
+             'nesting_disturbed',
              'checked_for_injuries',
              'scanned_for_pit_tags',
              'checked_for_flipper_tags',
              'laparoscopy',
-         )}), )
+         )}), 
+        ('Recapture Status',
+         {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+          'fields': (
+
+        'sighting_status', 
+        "datetime_of_last_sighting",
+        "site_of_first_sighting",
+        "site_of_last_sighting",
+         )}), 
+         
+         
+        )
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
@@ -1120,6 +1148,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
             request
         ).prefetch_related(
             'observer', 'reporter', 'area', 'site',
+            "site_of_first_sighting", "site_of_last_sighting",
         )
 
     def sighting_status_display(self, obj):

@@ -296,7 +296,8 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
 
     def get_queryset(self):
         qs = super(AnimalEncounterList, self).get_queryset().prefetch_related(
-            "observer", "reporter", "area", "site").order_by('-when')
+            "observer", "reporter", "area", "site", 
+            "site_of_first_sighting", "site_of_last_sighting",).order_by('-when')
         return AnimalEncounterFilter(self.request.GET, queryset=qs).qs
 
 
