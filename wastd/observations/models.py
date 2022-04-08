@@ -2331,6 +2331,22 @@ class AnimalEncounter(Encounter):
                     "shown as local time (no daylight savings), stored as UTC. "
                     "Blank if the animal has never been seen before."))
 
+    site_of_last_sighting = models.ForeignKey(
+        Area,
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        related_name="encounter_last_sighting",
+        verbose_name=_("Last seen at"),
+        help_text=_("The Site in which the animal was encountered last."), )
+
+    site_of_first_sighting = models.ForeignKey(
+        Area,
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        related_name="encounter_first_sighting",
+        verbose_name=_("First seen at"),
+        help_text=_("The Site in which the animal was encountered first."), )
+
     # ODK form Turtle Tagging > nest_observed_nesting_success
     nesting_event = models.CharField( # TODO rename to nesting_success
         max_length=300,
