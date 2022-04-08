@@ -284,6 +284,8 @@ class AnimalEncounterSerializer(EncounterSerializer):
     """
     # photographs = MediaAttachmentSerializer(many=True, read_only=False)
     # tx_logs = ReadOnlyField()
+    site_of_first_sighting = FastAreaSerializer(required=False)
+    site_of_last_sighting = FastAreaSerializer(required=False)
 
     class Meta:
         model = models.AnimalEncounter
@@ -317,7 +319,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
             "habitat",
             "activity",
             "sighting_status",
-            "datetime_of_first_sighting",
+            "datetime_of_last_sighting",
             "site_of_first_sighting",
             "site_of_last_sighting",
             "nesting_event",
