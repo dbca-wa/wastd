@@ -1,6 +1,6 @@
-FROM python:3.8.5-buster as builder_base
+FROM python:3.10.4-buster as builder_base
 LABEL maintainer=Florian.Mayer@dbca.wa.gov.au
-LABEL description="Python 3.8.5-buster plus Latex, GDAL, Pandoc."
+LABEL description="Python 3.10.4-buster plus Latex, GDAL, Pandoc."
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
@@ -11,9 +11,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     postgresql postgresql-client openssh-client rsync \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
-  && wget https://github.com/jgm/pandoc/releases/download/2.10.1/pandoc-2.10.1-1-amd64.deb \
-  && dpkg -i pandoc-2.10.1-1-amd64.deb \
-  && rm pandoc-2.10.1-1-amd64.deb
+  && wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-amd64.deb \
+  && dpkg -i pandoc-2.18-1-amd64.deb \
+  && rm pandoc-2.18-1-amd64.deb
 
 FROM builder_base as python_libs_wastd
 WORKDIR /usr/src/app

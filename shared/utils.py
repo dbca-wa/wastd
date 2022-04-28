@@ -1,5 +1,5 @@
 """Shared utilities."""
-import slugify
+import re
 from collections import namedtuple
 from collections.abc import Iterable
 
@@ -9,7 +9,7 @@ Breadcrumb = namedtuple('Breadcrumb', ['name', 'url'])
 
 def sanitize_tag_label(label_string):
     """Return string slugified, uppercased and without dashes."""
-    return slugify.slugify(label_string).upper().replace("-", "")
+    return re.sub(r'[-\s]+', '-', (re.sub(r'[^\w\s]', '',label_string).strip().upper()))
 
 
 def flatten(x):
