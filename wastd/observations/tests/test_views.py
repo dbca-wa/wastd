@@ -8,8 +8,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.urls import reverse  # noqa
-from model_mommy import mommy  # noqa
-from mommy_spatial_generators import MOMMY_SPATIAL_FIELDS  # noqa
 
 from wastd.observations.models import (  # noqa
     NA,
