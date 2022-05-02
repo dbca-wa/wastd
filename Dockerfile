@@ -27,4 +27,4 @@ RUN python manage.py collectstatic -v 0 --clear --noinput -l
 EXPOSE 8080
 HEALTHCHECK --interval=1m --timeout=20s --start-period=10s --retries=3 \
   CMD ["wget", "-q", "-O", "-", "http://localhost:8220/healthcheck/"]
-CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini"]
+CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini", "--access-logfile", "-"]
