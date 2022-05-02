@@ -39,6 +39,9 @@ env = environ.Env(
     MEMCACHED_URL=(str, 'memcached.default'),
     MEMCACHED_URL_SELECT2=(str, 'memcached.default'),
     WASTD_RELEASE=(str, '0.0.1'),
+    ENABLE_AUTH2_GROUPS=(bool, False),
+    LOCAL_USERGROUPS=(list, ["data viewer", "data curator", "data custodian", "data entry", "api"]),
+    ALLOWED_EMAIL_SUFFIXES=(list, ["@dbca.wa.gov.au", ]),
 )
 
 WASTD_RELEASE = env('WASTD_RELEASE')

@@ -2,9 +2,11 @@
 """wastd.observations view test suite testing URLs, templates, and views."""
 from __future__ import unicode_literals
 
+from django import http
 from django.utils import timezone  # noqa
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.urls import reverse  # noqa
@@ -43,6 +45,99 @@ from wastd.observations.models import (  # noqa
     LightSourceObservation,
     LoggerObservation
 )
+
+class HomeViewTestsSuperuser(TestCase):
+    """Home view tests for superusers."""
+
+    def setUp(self):
+        """Setup: create a new list."""
+        self.superuser = get_user_model().objects.create_superuser(
+            username="superuser",
+            email="super@gmail.com",
+            password="test")
+
+        self.superuser.save()
+
+        self.client.force_login(self.superuser)
+
+
+    def test_superuser_can_view_home(self):
+        """A superuser should see the Home view."""        
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+
+
+class HomeViewTestsInternal(TestCase):
+    """Home view tests for internal users."""
+
+    def setUp(self):
+        """Setup: create a new user."""
+        self.internal_user = get_user_model().objects.create_user(
+            username="internaluser",
+            email="internal@gmail.com",
+            password="test")
+
+        self.internal_user.save()
+
+        # Get or create Group "viewers"
+        self.viewers, _ = Group.objects.get_or_create(name="data viewer")
+        
+        # Add internal user to Group "viewers"
+        self.internal_user.groups.add(self.viewers)
+
+        self.client.force_login(self.internal_user)
+
+
+    def test_internaluser_is_data_viewer(self):
+        """The internal user should belong to Group self.viewers."""
+        self.assertTrue(self.viewers in self.internal_user.groups.all())
+    
+    def test_internaluser_can_view_home(self):
+        """An interal user should see the Home view.
+        
+        Internal users belong to the Group "viewers".
+        They should be able to see all data read-only.
+        """
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+
+
+class HomeViewTestsExternal(TestCase):
+    """Home view tests for external users."""
+
+    def setUp(self):
+        """Setup: create a new user."""
+        self.external_user = get_user_model().objects.create_user(
+            username="internaluser",
+            email="internal@gmail.com",
+            password="test")
+
+        self.external_user.save()
+
+        # Get or create Group "viewers"
+        self.viewers, _ = Group.objects.get_or_create(name="data viewer")
+        
+        # # Add internal user to Group "viewers"
+        # self.internal_user.groups.add(self.viewers)
+
+        #self.client.force_login(self.external_user)
+
+
+    def test_externaluser_is_not_data_viewer(self):
+        """The external user should not belong to Group self.viewers."""
+        self.assertTrue(self.viewers not in self.external_user.groups.all())
+    
+    def test_externaluser_can_view_home(self):
+        """An exteral user should see the Home view.
+        
+        External users do not belong to the Group "viewers".
+        They should not be able to see all data read-only.
+        """
+        response = self.client.get(reverse('home'))
+
+        # TODO user should see a "forbidden" message
+        self.assertEqual(response.status_code, 200) 
+        
 
 class EncounterViewTests(TestCase):
     """Encounter view tests."""
