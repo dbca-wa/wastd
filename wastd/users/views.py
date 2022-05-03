@@ -65,7 +65,7 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
             "area",
             "site",
             "encounter_set__observations"
-        )
+        )[0:100]
         context['encounters'] = Encounter.objects.filter(
             reporter_id=self.kwargs["pk"]
         ).prefetch_related(
@@ -74,7 +74,7 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
             "area",
             "site",
             "observations"
-        )
+        )[0:100]
         return context
 
     def get_object(self):
