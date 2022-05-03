@@ -90,6 +90,7 @@ django-mptt = "^0.13.4"
 dbca-utils = {git = "https://github.com/dbca-wa/dbca-utils.git"}
 django-settings-export = "^1.2.1"
 mommy_spatial_generators = "^0.1.2"
+python-slugify = "^6.1.2"
 
 [tool.poetry.dev-dependencies]
 
