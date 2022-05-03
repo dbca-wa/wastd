@@ -11,16 +11,19 @@ Set up development environment
 * Good pyenv intro: https://realpython.com/intro-to-pyenv/
 * Use pyenv to install Python 3.10.4 or later.
 * Clone WAStD repo.
-* Use Poetry to install dependencies: ``poetry install``.
-
+* Use pyenv to create a virtualenv followign `<https://realpython.com/intro-to-pyenv/>`_
+* ``pyenv virtualenv 3.10.4 wastd`` 
+  with ``3.10.4`` being the latest Python version available at the time of writing.
+* ``pyenv local wastd``
+* Install dependencies through ``poetry install --no-root``.
 
 Alternatives: Develop with Docker / docker-compose following https://docs.docker.com/samples/django/.
 
 Day to day development
 ======================
 
-* Enter WAStD repo.
-* Activate virtualenv with ``poetry env use 3.10.4``.
+* Enter WAStD repo, which activates the virtualenv.
+* TODO this does not load vars from ``.env`` yet.
 * Ballmer.jpg
 * Run tests with ``fab test``.
 * Deactivate virtualenv with ``source deavtivate``.
