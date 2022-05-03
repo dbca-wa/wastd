@@ -156,7 +156,6 @@ Unipath==1.1
 uritemplate==4.1.1
 urllib3==1.26.9
 uWSGI==2.0.20
-wastd==0.58.7
 whitenoise==6.0.0
 wrapt==1.14.0
 xlrd==2.0.1
