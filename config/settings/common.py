@@ -39,11 +39,13 @@ env = environ.Env(
     MEMCACHED_URL=(str, 'memcached.default'),
     MEMCACHED_URL_SELECT2=(str, 'memcached.default'),
     WASTD_RELEASE=(str, '0.0.1'),
-    ENABLE_AUTH2_GROUPS=(bool, False),
+    ENABLE_AUTH2_GROUPS=(bool, True),
     LOCAL_USERGROUPS=(list, ["data viewer", "data curator", "data custodian", "data entry", "api"]),
     ALLOWED_EMAIL_SUFFIXES=(list, ["@dbca.wa.gov.au", ]),
 )
 
+ENABLE_AUTH2_GROUPS = env('ENABLE_AUTH2_GROUPS')
+LOCAL_USERGROUPS = env('LOCAL_USERGROUPS')
 WASTD_RELEASE = env('WASTD_RELEASE')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))  # Populate env
@@ -164,7 +166,8 @@ MIDDLEWARE_FIRST = (
 
 MIDDLEWARE_LAST = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'dbca_utils.middleware.SSOLoginMiddleware',
+    #'dbca_utils.middleware.SSOLoginMiddleware',
+    'shared.middleware.SSOLoginMiddleware'
 )
 
 
