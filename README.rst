@@ -58,7 +58,7 @@ First, create a postgis database on an available database cluster.::
 
     export CLUSTERNAME=sdis
     export CLUSTERPORT=5444
-    export PG_VERSION=10
+    export PG_VERSION=14
     sudo -u postgres pg_createcluster -p $CLUSTERPORT $PG_VERSION $CLUSTERNAME --start && \
     sudo -u postgres createuser -s $CLUSTERNAME -p $CLUSTERPORT -P && \
     sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /etc/postgresql/$PG_VERSION/$CLUSTERNAME/postgresql.conf && \
