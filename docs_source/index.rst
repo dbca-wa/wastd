@@ -107,6 +107,7 @@ The journey so far:
   turtle track census. One program is relatively small and remote, the other lacks basic literacy among available data collectors, favouring pictogram-based and established solutions like CyberTracker.
 * Season 2019-20: Migration from ODK Aggregate to ODK Central, ETL via API and R packages wastdr and etlTurtleNesting.
 * Season 2020-21: Inclusion of turtle tagging in electronic data capture.
+* 2022: Third party access for non-DBCA users enabled.
 
 What is where
 =============
@@ -121,6 +122,7 @@ What is where
 .. toctree::
    :maxdepth: 3
 
+   third_party_access
    data_collection/data_collection_admin
    data_collection/data_collection_training
    data_collection/data_collection_development

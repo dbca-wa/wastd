@@ -4,6 +4,7 @@ import logging
 from django import http, VERSION
 from django.conf import settings
 from django.contrib.auth import login, logout, get_user_model
+from django.core.exceptions import PermissionDenied
 from django.db.models import signals
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
@@ -133,7 +134,7 @@ class SSOLoginMiddleware(MiddlewareMixin):
                 if not any(
                     [attributemap["email"].lower().endswith(x) for x in allowed]
                 ):
-                    return http.HttpResponseForbidden()
+                    raise PermissionDenied
 
             if (
                 attributemap["email"]
@@ -153,7 +154,8 @@ class SSOLoginMiddleware(MiddlewareMixin):
             # https://github.com/dbca-wa/wastd/issues/384
             if 'data viewer' not in [g.name for g in user.groups.all()]:
                 logger.warning(f"[SSOLoginMiddleware.process_request] rejected user without data viewer permission: {user.email}")
-                return http.HttpResponseForbidden()
+                
+                raise PermissionDenied
 
             login(request, user)
             # synchronize the user groups
