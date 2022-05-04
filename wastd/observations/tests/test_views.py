@@ -108,8 +108,8 @@ class HomeViewTestsExternal(TestCase):
     def setUp(self):
         """Setup: create a new user."""
         self.external_user = get_user_model().objects.create_user(
-            username="internaluser",
-            email="internal@gmail.com",
+            username="externaluser",
+            email="external@gmail.com",
             password="test")
 
         self.external_user.save()
@@ -117,10 +117,7 @@ class HomeViewTestsExternal(TestCase):
         # Get or create Group "viewers"
         self.viewers, _ = Group.objects.get_or_create(name="data viewer")
         
-        # # Add internal user to Group "viewers"
-        # self.internal_user.groups.add(self.viewers)
-
-        #self.client.force_login(self.external_user)
+        self.client.force_login(self.external_user)
 
 
     def test_externaluser_is_not_data_viewer(self):
