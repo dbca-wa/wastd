@@ -9,6 +9,7 @@ from django.views import defaults as default_views
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
+from django.views import defaults
 
 from ajax_select import urls as ajax_select_urls
 from adminactions import actions
@@ -93,10 +94,10 @@ urlpatterns = [
     path('tasks/resave-surveys/', wastd_views.resave_surveys_view, name="resave-surveys"),
     path('tasks/reconstruct-surveys/', wastd_views.reconstruct_surveys_view, name="reconstruct-surveys"),
 
-    path('400/', default_views.bad_request, kwargs={'exception': Exception('Bad request')}),
-    path('403/', default_views.permission_denied, kwargs={'exception': Exception('Permission denied')}),
-    path('404/', default_views.page_not_found, kwargs={'exception': Exception('Page not found')}),
-    # path('500/', default_views.server_error, kwargs={'exception': Exception('Internal Server Error')}),
+    path('400/', defaults.bad_request, kwargs={'exception': Exception('Bad request')}),
+    path('403/', defaults.permission_denied, kwargs={'exception': Exception('Permission denied')}),
+    path('404/', defaults.page_not_found, kwargs={'exception': Exception('Page not found')}),
+    path('500/', defaults.server_error),
     path('favicon.ico', RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
     staticfiles_urlpatterns()

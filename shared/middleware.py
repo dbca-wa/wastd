@@ -86,7 +86,7 @@ class SSOLoginMiddleware(MiddlewareMixin):
     def process_request(self, request):
         User = get_user_model()
 
-        logger.debug(f"[SSOLoginMiddleware.process_request] found request META: {str(request.META)}")
+        # logger.debug(f"[SSOLoginMiddleware.process_request] found request META: {str(request.META)}")
 
         if (
             (
@@ -151,11 +151,9 @@ class SSOLoginMiddleware(MiddlewareMixin):
             user.backend = "django.contrib.auth.backends.ModelBackend"
             # If the user is not in Group "data viewer", forbid any further access
             # https://github.com/dbca-wa/wastd/issues/384
-            # TODO let user request access 
             if 'data viewer' not in [g.name for g in user.groups.all()]:
-                logger.debug(f"[SSOLoginMiddleware.process_request] rejected user without data viewer permission: {user.email}")
+                logger.warning(f"[SSOLoginMiddleware.process_request] rejected user without data viewer permission: {user.email}")
                 return http.HttpResponseForbidden()
-
 
             login(request, user)
             # synchronize the user groups
