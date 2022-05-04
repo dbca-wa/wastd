@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wastd.observations.views &mdash; WAStD 0.56.1 documentation</title>
+  <title>wastd.observations.views &mdash; WAStD 0.58.7 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
             <a href="../../../index.html" class="icon icon-home"> WAStD
           </a>
               <div class="version">
-                0.56
+                0.58
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -38,6 +38,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../third_party_access.html">Third party access</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_training.html">Data collection protocols and training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_development.html">Data collection development</a></li>
@@ -131,7 +132,7 @@
 
 <span class="kn">from</span> <span class="nn">wastd.observations</span> <span class="kn">import</span> <span class="n">admin</span>
 
-<span class="kn">from</span> <span class="nn">wastd.observations.tasks</span> <span class="kn">import</span> <span class="n">import_odka</span><span class="p">,</span> <span class="n">update_names</span><span class="p">,</span> <span class="n">reconstruct_surveys</span>
+<span class="kn">from</span> <span class="nn">wastd.observations.tasks</span> <span class="kn">import</span> <span class="n">import_odka</span><span class="p">,</span> <span class="n">update_names</span><span class="p">,</span> <span class="n">reconstruct_surveys</span><span class="p">,</span> <span class="n">resave_surveys</span>
 
 <div class="viewcode-block" id="import_odka_view"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.import_odka_view">[docs]</a><span class="nd">@csrf_exempt</span>
 <span class="k">def</span> <span class="nf">import_odka_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
@@ -145,13 +146,22 @@
 
 <div class="viewcode-block" id="update_names_view"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.update_names_view">[docs]</a><span class="nd">@csrf_exempt</span>
 <span class="k">def</span> <span class="nf">update_names_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Import all available ODK-Aggregate forms.&quot;&quot;&quot;</span>
-    <span class="n">capture_message</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.views.update_names] Rebuilding names.&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Reconstruct animal encounter case histories and sighting status.&quot;&quot;&quot;</span>
+    <span class="n">capture_message</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.views.update_names] Reconstructing AnimalEncounter sighting histories.&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="n">update_names</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
     <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
     <span class="n">capture_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="resave_surveys_view"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.resave_surveys_view">[docs]</a><span class="nd">@csrf_exempt</span>
+<span class="k">def</span> <span class="nf">resave_surveys_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Re-save all Surveys.&quot;&quot;&quot;</span>
+    <span class="n">capture_message</span><span class="p">(</span><span class="s2">&quot;[wastd.observations.views.resave_surveys_view] Re-saving Surveys.&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">resave_surveys</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+    <span class="n">capture_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="reconstruct_surveys_view"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.reconstruct_surveys_view">[docs]</a><span class="nd">@csrf_exempt</span>
 <span class="k">def</span> <span class="nf">reconstruct_surveys_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
@@ -366,7 +376,8 @@
 
 <div class="viewcode-block" id="AnimalEncounterList.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.AnimalEncounterList.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">qs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AnimalEncounterList</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
-            <span class="s2">&quot;observer&quot;</span><span class="p">,</span> <span class="s2">&quot;reporter&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-when&#39;</span><span class="p">)</span>
+            <span class="s2">&quot;observer&quot;</span><span class="p">,</span> <span class="s2">&quot;reporter&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;site_of_first_sighting&quot;</span><span class="p">,</span> <span class="s2">&quot;site_of_last_sighting&quot;</span><span class="p">,)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-when&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">AnimalEncounterFilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">qs</span></div></div>
 
 

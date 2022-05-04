@@ -13,7 +13,39 @@ In this chapter, we will discuss:
 * the API - programmatic data retrieval and query
 * the custom User app
 * remaining modules of the observations app
+* design smells
 
+
+.. _design-smells:
+Design smells
+=============
+Let's start this chapter with early design decisions that could be refactored to be improved.
+
+Unique identifiers
+------------------
+Fields with unique identifiers are called ``name``. The word ``name`` is overloaded.
+The mixin class :ref:`shared.models.CodeLabelDescriptionMixin`_ brings three fields:
+
+* code  - a unique, short, URL-safe short code
+* label - a human-readable label
+* description - a longer, comprehensive, complete description
+
+Smell: inconsistent use of "name", "label", for unique identifiers across the codebase and docstrings.
+
+Legacy sources
+--------------
+Two competing ways of tracking an upstream point of truth:
+:ref:`shared.models.LegacySourceMixin`_ and per model ChoiceField lookups.
+The underlying value is either a SmallInt (quick lookups, but incomrehensive to the user), or a short string.
+
+Smell: refactor to use :ref:`shared.models.LegacySourceMixin`_. Mind that R package wastdr and ETL pipelines need to be updated too.
+
+Hard-coded lookups
+------------------
+Hard-coding lookups prevents data corruption by over-eager admin users.
+Since we have much higher code churn than data model churn, these lookups are easy enough to maintain.
+
+Smell: where to define lookup dicts - currently mixed in ``wastd.observations.models`` at both top level and model level.
 
 .. _extend-app:
 Extending the application
