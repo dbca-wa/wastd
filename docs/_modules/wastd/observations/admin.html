@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wastd.observations.admin &mdash; WAStD 0.56.1 documentation</title>
+  <title>wastd.observations.admin &mdash; WAStD 0.58.7 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
             <a href="../../../index.html" class="icon icon-home"> WAStD
           </a>
               <div class="version">
-                0.56
+                0.58
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -38,6 +38,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../third_party_access.html">Third party access</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_training.html">Data collection protocols and training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_development.html">Data collection development</a></li>
@@ -1136,12 +1137,20 @@
         <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death_confidence&#39;</span><span class="p">,</span>
         <span class="s1">&#39;maturity_display&#39;</span><span class="p">,</span> <span class="s1">&#39;sex_display&#39;</span><span class="p">,</span> <span class="s1">&#39;behaviour&#39;</span><span class="p">,</span>
         <span class="s1">&#39;habitat_display&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sighting_status&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;site_of_first_sighting&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;datetime_of_last_sighting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;site_of_last_sighting&quot;</span><span class="p">,</span>
         <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span> <span class="s1">&#39;nesting_disturbed&#39;</span><span class="p">,</span>
         <span class="s1">&#39;checked_for_injuries&#39;</span><span class="p">,</span>
         <span class="s1">&#39;scanned_for_pit_tags&#39;</span><span class="p">,</span>
         <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">+</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">LAST_COLS</span>
-    <span class="n">list_select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">list_select_related</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> 
+        <span class="s2">&quot;site_of_first_sighting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;site_of_last_sighting&quot;</span><span class="p">,)</span>
     <span class="n">list_filter</span> <span class="o">=</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">list_filter</span> <span class="o">+</span> <span class="p">(</span>
         <span class="s1">&#39;taxon&#39;</span><span class="p">,</span>
         <span class="s1">&#39;species&#39;</span><span class="p">,</span>
@@ -1151,12 +1160,22 @@
         <span class="s1">&#39;maturity&#39;</span><span class="p">,</span>
         <span class="s1">&#39;sex&#39;</span><span class="p">,</span>
         <span class="s1">&#39;habitat&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sighting_status&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;datetime_of_last_sighting&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;site_of_first_sighting&quot;</span><span class="p">,</span> <span class="s2">&quot;site_of_last_sighting&quot;</span><span class="p">,</span>
         <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span>
         <span class="s1">&#39;nesting_disturbed&#39;</span><span class="p">,</span>
         <span class="s1">&#39;checked_for_injuries&#39;</span><span class="p">,</span>
         <span class="s1">&#39;scanned_for_pit_tags&#39;</span><span class="p">,</span>
         <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,</span>
         <span class="s1">&#39;laparoscopy&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sighting_status&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;datetime_of_last_sighting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;site_of_first_sighting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;site_of_last_sighting&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">fieldsets</span> <span class="o">=</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">fieldsets</span> <span class="o">+</span> <span class="p">(</span>
         <span class="p">(</span><span class="s1">&#39;Animal&#39;</span><span class="p">,</span>
@@ -1169,13 +1188,27 @@
              <span class="s1">&#39;activity&#39;</span><span class="p">,</span>
              <span class="s1">&#39;behaviour&#39;</span><span class="p">,</span>
              <span class="s1">&#39;habitat&#39;</span><span class="p">,</span>
-             <span class="s1">&#39;health&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death_confidence&#39;</span><span class="p">,</span>
-             <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span> <span class="s1">&#39;nesting_disturbed&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;health&#39;</span><span class="p">,</span> <span class="s1">&#39;cause_of_death&#39;</span><span class="p">,</span> 
+             <span class="s1">&#39;cause_of_death_confidence&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;nesting_event&#39;</span><span class="p">,</span> 
+             <span class="s1">&#39;nesting_disturbed&#39;</span><span class="p">,</span>
              <span class="s1">&#39;checked_for_injuries&#39;</span><span class="p">,</span>
              <span class="s1">&#39;scanned_for_pit_tags&#39;</span><span class="p">,</span>
              <span class="s1">&#39;checked_for_flipper_tags&#39;</span><span class="p">,</span>
              <span class="s1">&#39;laparoscopy&#39;</span><span class="p">,</span>
-         <span class="p">)}),</span> <span class="p">)</span>
+         <span class="p">)}),</span> 
+        <span class="p">(</span><span class="s1">&#39;Recapture Status&#39;</span><span class="p">,</span>
+         <span class="p">{</span><span class="s1">&#39;classes&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;grp-collapse&#39;</span><span class="p">,</span> <span class="s1">&#39;grp-open&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">,</span> <span class="s1">&#39;extrapretty&#39;</span><span class="p">),</span>
+          <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span>
+
+        <span class="s1">&#39;sighting_status&#39;</span><span class="p">,</span> 
+        <span class="s2">&quot;datetime_of_last_sighting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;site_of_first_sighting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;site_of_last_sighting&quot;</span><span class="p">,</span>
+         <span class="p">)}),</span> 
+         
+         
+        <span class="p">)</span>
     <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">MediaAttachmentInline</span><span class="p">,</span>
         <span class="n">TagObservationInline</span><span class="p">,</span>
@@ -1195,7 +1228,13 @@
             <span class="n">request</span>
         <span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
             <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;site_of_first_sighting&quot;</span><span class="p">,</span> <span class="s2">&quot;site_of_last_sighting&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnimalEncounterAdmin.sighting_status_display"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.AnimalEncounterAdmin.sighting_status_display">[docs]</a>    <span class="k">def</span> <span class="nf">sighting_status_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make sighting status human readable.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_sighting_status_display</span><span class="p">()</span></div>
+    <span class="n">sighting_status_display</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Sighting Status&#39;</span>
 
 <div class="viewcode-block" id="AnimalEncounterAdmin.health_display"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.AnimalEncounterAdmin.health_display">[docs]</a>    <span class="k">def</span> <span class="nf">health_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Make health status human readable.&quot;&quot;&quot;</span>

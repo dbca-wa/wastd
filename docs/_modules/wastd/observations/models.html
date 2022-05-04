@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wastd.observations.models &mdash; WAStD 0.56.1 documentation</title>
+  <title>wastd.observations.models &mdash; WAStD 0.58.7 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
             <a href="../../../index.html" class="icon icon-home"> WAStD
           </a>
               <div class="version">
-                0.56
+                0.58
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -38,6 +38,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../third_party_access.html">Third party access</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_training.html">Data collection protocols and training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_collection/data_collection_development.html">Data collection development</a></li>
@@ -106,6 +107,7 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">parser</span> <span class="k">as</span> <span class="n">dateparser</span>
 <span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">tz</span>
+<span class="kn">from</span> <span class="nn">dateutil.relativedelta</span> <span class="kn">import</span> <span class="n">relativedelta</span>
 
 <span class="kn">import</span> <span class="nn">slugify</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
@@ -151,6 +153,13 @@
     <span class="p">(</span><span class="s2">&quot;cet&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Cetacean strandings DB&quot;</span><span class="p">)),</span>
     <span class="p">(</span><span class="s2">&quot;pin&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Pinniped strandings DB&quot;</span><span class="p">)),</span>
     <span class="p">(</span><span class="s2">&quot;reconstructed&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Reconstructed by WAStD&quot;</span><span class="p">)),</span>
+<span class="p">)</span>
+
+<span class="n">SIGHTING_STATUS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s1">&#39;na&#39;</span><span class="p">,</span> <span class="s1">&#39;Unidentified&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;new&#39;</span><span class="p">,</span> <span class="s1">&#39;Initial sighting&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;resighting&#39;</span><span class="p">,</span> <span class="s1">&#39;Resighting&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;remigrant&#39;</span><span class="p">,</span> <span class="s1">&#39;Remigrant&#39;</span><span class="p">),</span>
 <span class="p">)</span>
 
 <span class="n">BODY_PART_DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;whole&quot;</span>
@@ -1292,6 +1301,13 @@
             <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M %Z&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_html</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;An HTML representation.&quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;popup/</span><span class="si">{0}</span><span class="s2">.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">))</span>
+        <span class="c1"># c = Context({&quot;original&quot;: self})</span>
+        <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">({</span><span class="s2">&quot;original&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}))</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">absolute_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the absolute admin change URL.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;admin:</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">_change&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -2087,6 +2103,14 @@
         <span class="sd">&quot;&quot;&quot;Return the full datetime of the Encounter.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">when</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">season</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the season of the Encounter, the start year of the fiscal year.</span>
+<span class="sd">        </span>
+<span class="sd">        Calculated as the calendar year 180 days before the date of the Encounter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">when</span> <span class="o">-</span> <span class="n">relativedelta</span><span class="p">(</span><span class="n">months</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span><span class="o">.</span><span class="n">year</span>
+
     <span class="c1"># def save(self, *args, **kwargs):</span>
     <span class="c1">#     &quot;&quot;&quot;Cache expensive properties.</span>
 
@@ -2135,7 +2159,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">inferred_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the inferred name from related new capture if existing.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return the inferred name from related new capture if existing.</span>
+<span class="sd">        </span>
+<span class="sd">        TODO replace with reconstruct_animal_names logic</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
         <span class="c1"># TODO less dirty</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">enc</span><span class="o">.</span><span class="n">name</span>
@@ -2367,8 +2395,39 @@
         <span class="n">default</span><span class="o">=</span><span class="n">NA_VALUE</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The habitat in which the animal was encountered.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
+    <span class="n">sighting_status</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Sighting status&quot;</span><span class="p">),</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">SIGHTING_STATUS_CHOICES</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">NA_VALUE</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;The status is inferred automatically based on whether&quot;</span>
+            <span class="s2">&quot; and where this animal was processed and identified last.&quot;</span><span class="p">),)</span>
+
+    <span class="n">datetime_of_last_sighting</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Last seen on&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The observation datetime of this animal&#39;s last sighting, &quot;</span>
+                    <span class="s2">&quot;shown as local time (no daylight savings), stored as UTC. &quot;</span>
+                    <span class="s2">&quot;Blank if the animal has never been seen before.&quot;</span><span class="p">))</span>
+
+    <span class="n">site_of_last_sighting</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Area</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;encounter_last_sighting&quot;</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Last seen at&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Site in which the animal was encountered last.&quot;</span><span class="p">),</span> <span class="p">)</span>
+
+    <span class="n">site_of_first_sighting</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Area</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;encounter_first_sighting&quot;</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;First seen at&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Site in which the animal was encountered first.&quot;</span><span class="p">),</span> <span class="p">)</span>
+
     <span class="c1"># ODK form Turtle Tagging &gt; nest_observed_nesting_success</span>
-    <span class="c1"># W@ w2_data$enc$</span>
     <span class="n">nesting_event</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span> <span class="c1"># TODO rename to nesting_success</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nesting success&quot;</span><span class="p">),</span>
@@ -2690,7 +2749,14 @@
         <span class="sd">&quot;&quot;&quot;Return the WGS 84 DD longitude.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="o">.</span><span class="n">x</span>
 
-    <span class="c1"># TODO def inferred_name(self): from first nest tag obs name</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inferred_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the first NestTag name or None.&quot;&quot;&quot;</span>
+        <span class="n">nest_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_set</span><span class="o">.</span><span class="n">instance_of</span><span class="p">(</span><span class="n">NestTagObservation</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nest_tag</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nest_tag</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># URLs</span>
@@ -2738,6 +2804,10 @@
         <span class="k">return</span> <span class="s2">&quot;Line tx </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pk</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="LineTransectEncounter.inferred_name"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.LineTransectEncounter.inferred_name">[docs]</a>    <span class="k">def</span> <span class="nf">inferred_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return an empty string.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">get_encounter_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2932,8 +3002,8 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">source_id</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">source_id</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">short_name</span>
     <span class="c1"># This is slow, use set_name() instead in bulk</span>
-    <span class="c1"># if (not self.name) and self.inferred_name:</span>
-    <span class="c1">#     self.name = self.inferred_name</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">instance</span><span class="o">.</span><span class="n">inferred_name</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">inferred_name</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">site</span><span class="p">:</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">site</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">guess_site</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">area</span><span class="p">:</span>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Python Module Index &mdash; WAStD 0.58.7 documentation</title>
+  <title>Third party access &mdash; WAStD 0.58.7 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,9 +18,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
- 
-
-
+    <link rel="next" title="Data collection administrators" href="data_collection/data_collection_admin.html" />
+    <link rel="prev" title="WAStD - WA Sea Turtle and Strandings Database" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,8 +40,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="third_party_access.html">Third party access</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Third party access</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection protocols and training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_development.html">Data collection development</a></li>
@@ -70,8 +70,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Python Module Index</li>
+      <li>Third party access</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="_sources/third_party_access.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -79,64 +80,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-
-   <h1>Python Module Index</h1>
-
-   <div class="modindex-jumpbox">
-   <a href="#cap-w"><strong>w</strong></a>
-   </div>
-
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-w"><td></td><td>
-       <strong>w</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">wastd</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="developers.html#module-wastd.observations.admin"><code class="xref">wastd.observations.admin</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="developers.html#module-wastd.observations.models"><code class="xref">wastd.observations.models</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="developers.html#module-wastd.observations.tests"><code class="xref">wastd.observations.tests</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="developers.html#module-wastd.observations.views"><code class="xref">wastd.observations.views</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="developers.html#module-wastd.users.admin"><code class="xref">wastd.users.admin</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="developers.html#module-wastd.users.tests"><code class="xref">wastd.users.tests</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="developers.html#module-wastd.users.views"><code class="xref">wastd.users.views</code></a></td><td>
-       <em></em></td></tr>
-   </table>
+  <section id="third-party-access">
+<span id="pa"></span><h1>Third party access<a class="headerlink" href="#third-party-access" title="Permalink to this headline"></a></h1>
+<p>If you are DBCA staff and not yet signed in, or if you are an external user,
+visiting WAStD will redirect you to the DBCA Auth2 page to authenticate through DBCA Microsoft 365
+or sign up using a Microsoft account, Google, or an arbitrary email.</p>
+<p>On first login, you will land on the “Permission denied” page.
+Your access attempt will be logged and we will be in touch once your permissions have been assigned.
+Once permissions have been assigned, you can login again and will get to the WAStD home page.</p>
+<p>Logins are valid for a day. Once a login has expired, you will need to login again.</p>
+<p>Data viewers will be able to view all data, but not edit it.</p>
+<p>Data curators will be able to access the data curation and QA portal.</p>
+<p>Data analysts can find instructions how to access and authenticate against the API on their profile page.</p>
+<p>More fine-grained permission management will be added as the need arises.</p>
+</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="WAStD - WA Sea Turtle and Strandings Database" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data_collection/data_collection_admin.html" class="btn btn-neutral float-right" title="Data collection administrators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

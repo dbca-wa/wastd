@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Developer documentation &mdash; WAStD 0.56.1 documentation</title>
+  <title>Developer documentation &mdash; WAStD 0.58.7 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,7 +29,7 @@
             <a href="index.html" class="icon icon-home"> WAStD
           </a>
               <div class="version">
-                0.56
+                0.58
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -40,6 +40,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="third_party_access.html">Third party access</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection protocols and training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_development.html">Data collection development</a></li>
@@ -52,11 +53,17 @@
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html#reproducible-research">Reproducible Research</a></li>
 <li class="toctree-l1"><a class="reference internal" href="maintainers.html">Application maintainers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Design smells</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#unique-identifiers">Unique identifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacy-sources">Legacy sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hard-coded-lookups">Hard-coded lookups</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#extending-the-application">Extending the application</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#observationgroup">ObservationGroup</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">Data model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id8">Data model</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-wastd.observations.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.models</span></code> Module</a></li>
 </ul>
 </li>
@@ -120,7 +127,36 @@ the underlying data model.</p>
 <li><p>the API - programmatic data retrieval and query</p></li>
 <li><p>the custom User app</p></li>
 <li><p>remaining modules of the observations app</p></li>
+<li><p>design smells</p></li>
 </ul>
+<section id="id1">
+<h2>Design smells<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<p>Let’s start this chapter with early design decisions that could be refactored to be improved.</p>
+<section id="unique-identifiers">
+<h3>Unique identifiers<a class="headerlink" href="#unique-identifiers" title="Permalink to this headline"></a></h3>
+<p>Fields with unique identifiers are called <code class="docutils literal notranslate"><span class="pre">name</span></code>. The word <code class="docutils literal notranslate"><span class="pre">name</span></code> is overloaded.
+The mixin class <a href="#id2"><span class="problematic" id="id3">:ref:`shared.models.CodeLabelDescriptionMixin`_</span></a> brings three fields:</p>
+<ul class="simple">
+<li><p>code  - a unique, short, URL-safe short code</p></li>
+<li><p>label - a human-readable label</p></li>
+<li><p>description - a longer, comprehensive, complete description</p></li>
+</ul>
+<p>Smell: inconsistent use of “name”, “label”, for unique identifiers across the codebase and docstrings.</p>
+</section>
+<section id="legacy-sources">
+<h3>Legacy sources<a class="headerlink" href="#legacy-sources" title="Permalink to this headline"></a></h3>
+<p>Two competing ways of tracking an upstream point of truth:
+<a href="#id4"><span class="problematic" id="id5">:ref:`shared.models.LegacySourceMixin`_</span></a> and per model ChoiceField lookups.
+The underlying value is either a SmallInt (quick lookups, but incomrehensive to the user), or a short string.</p>
+<p>Smell: refactor to use <a href="#id6"><span class="problematic" id="id7">:ref:`shared.models.LegacySourceMixin`_</span></a>. Mind that R package wastdr and ETL pipelines need to be updated too.</p>
+</section>
+<section id="hard-coded-lookups">
+<h3>Hard-coded lookups<a class="headerlink" href="#hard-coded-lookups" title="Permalink to this headline"></a></h3>
+<p>Hard-coding lookups prevents data corruption by over-eager admin users.
+Since we have much higher code churn than data model churn, these lookups are easy enough to maintain.</p>
+<p>Smell: where to define lookup dicts - currently mixed in <code class="docutils literal notranslate"><span class="pre">wastd.observations.models</span></code> at both top level and model level.</p>
+</section>
+</section>
 <section id="extending-the-application">
 <h2>Extending the application<a class="headerlink" href="#extending-the-application" title="Permalink to this headline"></a></h2>
 <section id="observationgroup">
@@ -143,8 +179,8 @@ WAStD can add new instances of <code class="docutils literal notranslate"><span 
 </ul>
 </section>
 </section>
-<section id="id1">
-<h2>Data model<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<section id="id8">
+<h2>Data model<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h2>
 <p>WAStD is designed to handle biological
 observations of any kind which happen during an encounter.</p>
 <p>Both Encounters and Observations are polymorphic (database table inheritance)
@@ -258,6 +294,13 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.datetime_of_last_sighting">
+<span class="sig-name descname"><span class="pre">datetime_of_last_sighting</span></span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.datetime_of_last_sighting" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.encounter_ptr">
 <span class="sig-name descname"><span class="pre">encounter_ptr</span></span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.encounter_ptr" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
@@ -278,7 +321,7 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.get_absolute_url">
 <span class="sig-name descname"><span class="pre">get_absolute_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/models.html#AnimalEncounter.get_absolute_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.get_absolute_url" title="Permalink to this definition"></a></dt>
 <dd><p>Detail url, used by Django to link admin to site.</p>
-<p>Default: app:model-detail(<a href="#id2"><span class="problematic" id="id3">**</span></a>pk).</p>
+<p>Default: app:model-detail(<a href="#id9"><span class="problematic" id="id10">**</span></a>pk).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -353,6 +396,11 @@ animal (whether that makes sense or not) can also be tagged.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.get_sex_display">
 <span class="sig-name descname"><span class="pre">get_sex_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">sex&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.get_sex_display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.get_sighting_status_display">
+<span class="sig-name descname"><span class="pre">get_sighting_status_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">sighting_status&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.get_sighting_status_display" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -482,6 +530,49 @@ animals of the same species and deadness.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.sighting_status">
+<span class="sig-name descname"><span class="pre">sighting_status</span></span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.sighting_status" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.site_of_first_sighting">
+<span class="sig-name descname"><span class="pre">site_of_first_sighting</span></span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.site_of_first_sighting" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.site_of_first_sighting_id">
+<span class="sig-name descname"><span class="pre">site_of_first_sighting_id</span></span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.site_of_first_sighting_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.site_of_last_sighting">
+<span class="sig-name descname"><span class="pre">site_of_last_sighting</span></span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.site_of_last_sighting" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.site_of_last_sighting_id">
+<span class="sig-name descname"><span class="pre">site_of_last_sighting_id</span></span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.site_of_last_sighting_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.models.AnimalEncounter.species">
 <span class="sig-name descname"><span class="pre">species</span></span><a class="headerlink" href="#wastd.observations.models.AnimalEncounter.species" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -609,6 +700,36 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.models.Area.encounter_area">
 <span class="sig-name descname"><span class="pre">encounter_area</span></span><a class="headerlink" href="#wastd.observations.models.Area.encounter_area" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.models.Area.encounter_first_sighting">
+<span class="sig-name descname"><span class="pre">encounter_first_sighting</span></span><a class="headerlink" href="#wastd.observations.models.Area.encounter_first_sighting" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.models.Area.encounter_last_sighting">
+<span class="sig-name descname"><span class="pre">encounter_last_sighting</span></span><a class="headerlink" href="#wastd.observations.models.Area.encounter_last_sighting" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -1254,6 +1375,7 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="wastd.observations.models.Encounter.inferred_name">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inferred_name</span></span><a class="headerlink" href="#wastd.observations.models.Encounter.inferred_name" title="Permalink to this definition"></a></dt>
 <dd><p>Return the inferred name from related new capture if existing.</p>
+<p>TODO replace with reconstruct_animal_names logic</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1472,6 +1594,13 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dt class="sig sig-object py" id="wastd.observations.models.Encounter.reporter_id">
 <span class="sig-name descname"><span class="pre">reporter_id</span></span><a class="headerlink" href="#wastd.observations.models.Encounter.reporter_id" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="wastd.observations.models.Encounter.season">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">season</span></span><a class="headerlink" href="#wastd.observations.models.Encounter.season" title="Permalink to this definition"></a></dt>
+<dd><p>Return the season of the Encounter, the start year of the fiscal year.</p>
+<p>Calculated as the calendar year 180 days before the date of the Encounter.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wastd.observations.models.Encounter.set_name">
@@ -2057,6 +2186,12 @@ beach), collected under time pressure.</p>
 <dd><p>Infer the encounter type.</p>
 <p>If TrackTallyObservations are related, it’s a track observation.</p>
 <p>TODO support other types of line transects when added</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wastd.observations.models.LineTransectEncounter.inferred_name">
+<span class="sig-name descname"><span class="pre">inferred_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/models.html#LineTransectEncounter.inferred_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.models.LineTransectEncounter.inferred_name" title="Permalink to this definition"></a></dt>
+<dd><p>Return an empty string.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -3301,6 +3436,12 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dt class="sig sig-object py" id="wastd.observations.models.Survey.area_id">
 <span class="sig-name descname"><span class="pre">area_id</span></span><a class="headerlink" href="#wastd.observations.models.Survey.area_id" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="wastd.observations.models.Survey.as_html">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">as_html</span></span><a class="headerlink" href="#wastd.observations.models.Survey.as_html" title="Permalink to this definition"></a></dt>
+<dd><p>An HTML representation.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.models.Survey.attachments">
@@ -5327,7 +5468,7 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="wastd.observations.models.TurtleNestEncounter.get_absolute_url">
 <span class="sig-name descname"><span class="pre">get_absolute_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/models.html#TurtleNestEncounter.get_absolute_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.models.TurtleNestEncounter.get_absolute_url" title="Permalink to this definition"></a></dt>
 <dd><p>Detail url, used by Django to link admin to site.</p>
-<p>Default: app:model-detail(<a href="#id4"><span class="problematic" id="id5">**</span></a>pk).</p>
+<p>Default: app:model-detail(<a href="#id11"><span class="problematic" id="id12">**</span></a>pk).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5399,6 +5540,12 @@ object the first time, the query is executed.</p>
 <span class="sig-name descname"><span class="pre">hatchlings_measured</span></span><a class="headerlink" href="#wastd.observations.models.TurtleNestEncounter.hatchlings_measured" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="wastd.observations.models.TurtleNestEncounter.inferred_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inferred_name</span></span><a class="headerlink" href="#wastd.observations.models.TurtleNestEncounter.inferred_name" title="Permalink to this definition"></a></dt>
+<dd><p>Return the first NestTag name or None.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -5804,7 +5951,7 @@ curators add and update data.</p>
 <p>Admin for AnimalEncounter.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.admin.AnimalEncounterAdmin.fieldsets">
-<span class="sig-name descname"><span class="pre">fieldsets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(('Encounter',</span> <span class="pre">{'classes':</span> <span class="pre">('grp-collapse',</span> <span class="pre">'grp-open',</span> <span class="pre">'wide',</span> <span class="pre">'extrapretty'),</span> <span class="pre">'fields':</span> <span class="pre">('area',</span> <span class="pre">'site',</span> <span class="pre">'survey',</span> <span class="pre">'where',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'location_accuracy_m',</span> <span class="pre">'when',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'source',</span> <span class="pre">'source_id',</span> <span class="pre">'name')}),</span> <span class="pre">('Animal',</span> <span class="pre">{'classes':</span> <span class="pre">('grp-collapse',</span> <span class="pre">'grp-open',</span> <span class="pre">'wide',</span> <span class="pre">'extrapretty'),</span> <span class="pre">'fields':</span> <span class="pre">('taxon',</span> <span class="pre">'species',</span> <span class="pre">'maturity',</span> <span class="pre">'sex',</span> <span class="pre">'activity',</span> <span class="pre">'behaviour',</span> <span class="pre">'habitat',</span> <span class="pre">'health',</span> <span class="pre">'cause_of_death',</span> <span class="pre">'cause_of_death_confidence',</span> <span class="pre">'nesting_event',</span> <span class="pre">'nesting_disturbed',</span> <span class="pre">'checked_for_injuries',</span> <span class="pre">'scanned_for_pit_tags',</span> <span class="pre">'checked_for_flipper_tags',</span> <span class="pre">'laparoscopy')}))</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.fieldsets" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fieldsets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(('Encounter',</span> <span class="pre">{'classes':</span> <span class="pre">('grp-collapse',</span> <span class="pre">'grp-open',</span> <span class="pre">'wide',</span> <span class="pre">'extrapretty'),</span> <span class="pre">'fields':</span> <span class="pre">('area',</span> <span class="pre">'site',</span> <span class="pre">'survey',</span> <span class="pre">'where',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'location_accuracy_m',</span> <span class="pre">'when',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'source',</span> <span class="pre">'source_id',</span> <span class="pre">'name')}),</span> <span class="pre">('Animal',</span> <span class="pre">{'classes':</span> <span class="pre">('grp-collapse',</span> <span class="pre">'grp-open',</span> <span class="pre">'wide',</span> <span class="pre">'extrapretty'),</span> <span class="pre">'fields':</span> <span class="pre">('taxon',</span> <span class="pre">'species',</span> <span class="pre">'maturity',</span> <span class="pre">'sex',</span> <span class="pre">'activity',</span> <span class="pre">'behaviour',</span> <span class="pre">'habitat',</span> <span class="pre">'health',</span> <span class="pre">'cause_of_death',</span> <span class="pre">'cause_of_death_confidence',</span> <span class="pre">'nesting_event',</span> <span class="pre">'nesting_disturbed',</span> <span class="pre">'checked_for_injuries',</span> <span class="pre">'scanned_for_pit_tags',</span> <span class="pre">'checked_for_flipper_tags',</span> <span class="pre">'laparoscopy')}),</span> <span class="pre">('Recapture</span> <span class="pre">Status',</span> <span class="pre">{'classes':</span> <span class="pre">('grp-collapse',</span> <span class="pre">'grp-open',</span> <span class="pre">'wide',</span> <span class="pre">'extrapretty'),</span> <span class="pre">'fields':</span> <span class="pre">('sighting_status',</span> <span class="pre">'datetime_of_last_sighting',</span> <span class="pre">'site_of_first_sighting',</span> <span class="pre">'site_of_last_sighting')}))</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.fieldsets" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -5839,17 +5986,17 @@ admin site. This is used by changelist_view.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.admin.AnimalEncounterAdmin.list_display">
-<span class="sig-name descname"><span class="pre">list_display</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('when',</span> <span class="pre">'area',</span> <span class="pre">'site',</span> <span class="pre">'latitude',</span> <span class="pre">'longitude',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'location_accuracy_m',</span> <span class="pre">'name_link',</span> <span class="pre">'taxon',</span> <span class="pre">'species',</span> <span class="pre">'health_display',</span> <span class="pre">'cause_of_death',</span> <span class="pre">'cause_of_death_confidence',</span> <span class="pre">'maturity_display',</span> <span class="pre">'sex_display',</span> <span class="pre">'behaviour',</span> <span class="pre">'habitat_display',</span> <span class="pre">'nesting_event',</span> <span class="pre">'nesting_disturbed',</span> <span class="pre">'checked_for_injuries',</span> <span class="pre">'scanned_for_pit_tags',</span> <span class="pre">'checked_for_flipper_tags',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'source_display',</span> <span class="pre">'source_id',</span> <span class="pre">'status',</span> <span class="pre">'encounter_type')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_display" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">list_display</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('when',</span> <span class="pre">'area',</span> <span class="pre">'site',</span> <span class="pre">'latitude',</span> <span class="pre">'longitude',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'location_accuracy_m',</span> <span class="pre">'name_link',</span> <span class="pre">'taxon',</span> <span class="pre">'species',</span> <span class="pre">'health_display',</span> <span class="pre">'cause_of_death',</span> <span class="pre">'cause_of_death_confidence',</span> <span class="pre">'maturity_display',</span> <span class="pre">'sex_display',</span> <span class="pre">'behaviour',</span> <span class="pre">'habitat_display',</span> <span class="pre">'sighting_status',</span> <span class="pre">'site_of_first_sighting',</span> <span class="pre">'datetime_of_last_sighting',</span> <span class="pre">'site_of_last_sighting',</span> <span class="pre">'nesting_event',</span> <span class="pre">'nesting_disturbed',</span> <span class="pre">'checked_for_injuries',</span> <span class="pre">'scanned_for_pit_tags',</span> <span class="pre">'checked_for_flipper_tags',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'source_display',</span> <span class="pre">'source_id',</span> <span class="pre">'status',</span> <span class="pre">'encounter_type')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_display" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.admin.AnimalEncounterAdmin.list_filter">
-<span class="sig-name descname"><span class="pre">list_filter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source',</span> <span class="pre">'taxon',</span> <span class="pre">'species',</span> <span class="pre">'health',</span> <span class="pre">'cause_of_death',</span> <span class="pre">'cause_of_death_confidence',</span> <span class="pre">'maturity',</span> <span class="pre">'sex',</span> <span class="pre">'habitat',</span> <span class="pre">'nesting_event',</span> <span class="pre">'nesting_disturbed',</span> <span class="pre">'checked_for_injuries',</span> <span class="pre">'scanned_for_pit_tags',</span> <span class="pre">'checked_for_flipper_tags',</span> <span class="pre">'laparoscopy')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_filter" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">list_filter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(('area',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.AreaFilter'&gt;),</span> <span class="pre">('site',</span> <span class="pre">&lt;class</span> <span class="pre">'wastd.observations.admin.SiteFilter'&gt;),</span> <span class="pre">'status',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'location_accuracy',</span> <span class="pre">'encounter_type',</span> <span class="pre">'source',</span> <span class="pre">'taxon',</span> <span class="pre">'species',</span> <span class="pre">'health',</span> <span class="pre">'cause_of_death',</span> <span class="pre">'cause_of_death_confidence',</span> <span class="pre">'maturity',</span> <span class="pre">'sex',</span> <span class="pre">'habitat',</span> <span class="pre">'sighting_status',</span> <span class="pre">'datetime_of_last_sighting',</span> <span class="pre">'site_of_first_sighting',</span> <span class="pre">'site_of_last_sighting',</span> <span class="pre">'nesting_event',</span> <span class="pre">'nesting_disturbed',</span> <span class="pre">'checked_for_injuries',</span> <span class="pre">'scanned_for_pit_tags',</span> <span class="pre">'checked_for_flipper_tags',</span> <span class="pre">'laparoscopy')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_filter" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.admin.AnimalEncounterAdmin.list_select_related">
-<span class="sig-name descname"><span class="pre">list_select_related</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('area',</span> <span class="pre">'site',</span> <span class="pre">'survey')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_select_related" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">list_select_related</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('area',</span> <span class="pre">'site',</span> <span class="pre">'survey',</span> <span class="pre">'observer',</span> <span class="pre">'reporter',</span> <span class="pre">'site_of_first_sighting',</span> <span class="pre">'site_of_last_sighting')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.list_select_related" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -5863,10 +6010,21 @@ admin site. This is used by changelist_view.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.media" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wastd.observations.admin.AnimalEncounterAdmin.readonly_fields">
+<span class="sig-name descname"><span class="pre">readonly_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('name',</span> <span class="pre">'sighting_status',</span> <span class="pre">'datetime_of_last_sighting',</span> <span class="pre">'site_of_first_sighting',</span> <span class="pre">'site_of_last_sighting')</span></em><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.readonly_fields" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="wastd.observations.admin.AnimalEncounterAdmin.sex_display">
 <span class="sig-name descname"><span class="pre">sex_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/admin.html#AnimalEncounterAdmin.sex_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.sex_display" title="Permalink to this definition"></a></dt>
 <dd><p>Make sex human readable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wastd.observations.admin.AnimalEncounterAdmin.sighting_status_display">
+<span class="sig-name descname"><span class="pre">sighting_status_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/admin.html#AnimalEncounterAdmin.sighting_status_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.admin.AnimalEncounterAdmin.sighting_status_display" title="Permalink to this definition"></a></dt>
+<dd><p>Make sighting status human readable.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -8055,7 +8213,7 @@ POST variables and then check if it’s valid.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wastd.observations.views.AnimalEncounterTable.base_columns">
-<span class="sig-name descname"><span class="pre">base_columns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activity':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'area':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'behaviour':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'cause_of_death':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'cause_of_death_confidence':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'checked_for_flipper_tags':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'checked_for_injuries':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'comments':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'encounter_type':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'habitat':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'health':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'id':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'laparoscopy':</span> <span class="pre">&lt;django_tables2.columns.booleancolumn.BooleanColumn</span> <span class="pre">object&gt;,</span> <span class="pre">'location_accuracy':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'location_accuracy_m':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'maturity':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'name':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'nesting_disturbed':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'nesting_event':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'observer':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'reporter':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'scanned_for_pit_tags':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'sex':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'site':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'source':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'source_id':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'species':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'status':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'survey':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'taxon':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'when':</span> <span class="pre">&lt;django_tables2.columns.datetimecolumn.DateTimeColumn</span> <span class="pre">object&gt;,</span> <span class="pre">'where':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable.base_columns" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">base_columns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activity':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'area':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'behaviour':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'cause_of_death':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'cause_of_death_confidence':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'checked_for_flipper_tags':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'checked_for_injuries':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'comments':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'datetime_of_last_sighting':</span> <span class="pre">&lt;django_tables2.columns.datetimecolumn.DateTimeColumn</span> <span class="pre">object&gt;,</span> <span class="pre">'encounter_type':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'habitat':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'health':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'id':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'laparoscopy':</span> <span class="pre">&lt;django_tables2.columns.booleancolumn.BooleanColumn</span> <span class="pre">object&gt;,</span> <span class="pre">'location_accuracy':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'location_accuracy_m':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'maturity':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'name':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'nesting_disturbed':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'nesting_event':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'observer':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'reporter':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'scanned_for_pit_tags':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'sex':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'sighting_status':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'site':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'site_of_first_sighting':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'site_of_last_sighting':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'source':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'source_id':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'species':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'status':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'survey':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'taxon':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;,</span> <span class="pre">'when':</span> <span class="pre">&lt;django_tables2.columns.datetimecolumn.DateTimeColumn</span> <span class="pre">object&gt;,</span> <span class="pre">'where':</span> <span class="pre">&lt;django_tables2.columns.base.Column</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#wastd.observations.views.AnimalEncounterTable.base_columns" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -8650,9 +8808,15 @@ adopt all Encounters from all duplicate surveys, and adjust its duration.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="wastd.observations.views.resave_surveys_view">
+<span class="sig-prename descclassname"><span class="pre">wastd.observations.views.</span></span><span class="sig-name descname"><span class="pre">resave_surveys_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/views.html#resave_surveys_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.views.resave_surveys_view" title="Permalink to this definition"></a></dt>
+<dd><p>Re-save all Surveys.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="wastd.observations.views.update_names_view">
 <span class="sig-prename descclassname"><span class="pre">wastd.observations.views.</span></span><span class="sig-name descname"><span class="pre">update_names_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wastd/observations/views.html#update_names_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wastd.observations.views.update_names_view" title="Permalink to this definition"></a></dt>
-<dd><p>Import all available ODK-Aggregate forms.</p>
+<dd><p>Reconstruct animal encounter case histories and sighting status.</p>
 </dd></dl>
 
 <section id="project-delivery-ticking-the-boxes">

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WAStD - WA Sea Turtle and Strandings Database &mdash; WAStD 0.56.1 documentation</title>
+  <title>WAStD - WA Sea Turtle and Strandings Database &mdash; WAStD 0.58.7 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data collection administrators" href="data_collection/data_collection_admin.html" /> 
+    <link rel="next" title="Third party access" href="third_party_access.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,7 +29,7 @@
             <a href="#" class="icon icon-home"> WAStD
           </a>
               <div class="version">
-                0.56
+                0.58
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -40,6 +40,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="third_party_access.html">Third party access</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection protocols and training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_development.html">Data collection development</a></li>
@@ -80,6 +81,7 @@
              
   <section id="wastd-wa-sea-turtle-and-strandings-database">
 <h1>WAStD - WA Sea Turtle and Strandings Database<a class="headerlink" href="#wastd-wa-sea-turtle-and-strandings-database" title="Permalink to this headline"></a></h1>
+<a class="reference external image-reference" href="https://github.com/dbca-wa/wastd/actions/workflows/docker.yml"><img alt="Docker" src="https://github.com/dbca-wa/wastd/actions/workflows/docker.yml/badge.svg" /></a>
 <a class="reference external image-reference" href="https://github.com/dbca-wa/wastd/actions"><img alt="CodeQL" src="https://github.com/dbca-wa/wastd/workflows/CodeQL/badge.svg?branch=master" /></a>
 <a class="reference external image-reference" href="https://github.com/dbca-wa/wastd/actions"><img alt="DjangoCI" src="https://github.com/dbca-wa/wastd/workflows/DjangoCI/badge.svg?branch=master" /></a>
 <a class="reference external image-reference" href="https://coveralls.io/github/dbca-wa/wastd?branch=master"><img alt="Test coverage" src="https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master" /></a>
@@ -164,6 +166,7 @@ egg, hatchling and logger measurements.</p></li>
 turtle track census. One program is relatively small and remote, the other lacks basic literacy among available data collectors, favouring pictogram-based and established solutions like CyberTracker.</p></li>
 <li><p>Season 2019-20: Migration from ODK Aggregate to ODK Central, ETL via API and R packages wastdr and etlTurtleNesting.</p></li>
 <li><p>Season 2020-21: Inclusion of turtle tagging in electronic data capture.</p></li>
+<li><p>2022: Third party access for non-DBCA users enabled.</p></li>
 </ul>
 <section id="what-is-where">
 <h2>What is where<a class="headerlink" href="#what-is-where" title="Permalink to this headline"></a></h2>
@@ -178,6 +181,7 @@ turtle track census. One program is relatively small and remote, the other lacks
 </ul>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="third_party_access.html">Third party access</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data_collection/data_collection_admin.html#admin-getting-started">Admin: Getting started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_collection/data_collection_admin.html#admin-prepare-field-packs">Admin: Prepare field packs</a></li>
@@ -449,16 +453,29 @@ turtle track census. One program is relatively small and remote, the other lacks
 </li>
 <li class="toctree-l1"><a class="reference internal" href="business_analysts.html#reproducible-research">Reproducible Research</a></li>
 <li class="toctree-l1"><a class="reference internal" href="maintainers.html">Application maintainers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="maintainers.html#release">Release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="maintainers.html#deployment">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maintainers.html#set-up-development-environment">Set up development environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maintainers.html#day-to-day-development">Day to day development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maintainers.html#release">Release</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="maintainers.html#pre-release">Pre-release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maintainers.html#id1">Release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maintainers.html#deploy">Deploy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="maintainers.html#useful-commands">Useful commands</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developers.html#id1">Design smells</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="developers.html#unique-identifiers">Unique identifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="developers.html#legacy-sources">Legacy sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="developers.html#hard-coded-lookups">Hard-coded lookups</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="developers.html#extending-the-application">Extending the application</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="developers.html#observationgroup">ObservationGroup</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="developers.html#id1">Data model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developers.html#id8">Data model</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="developers.html#module-wastd.observations.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wastd.observations.models</span></code> Module</a></li>
 </ul>
 </li>
@@ -499,7 +516,7 @@ turtle track census. One program is relatively small and remote, the other lacks
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="data_collection/data_collection_admin.html" class="btn btn-neutral float-right" title="Data collection administrators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="third_party_access.html" class="btn btn-neutral float-right" title="Third party access" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
