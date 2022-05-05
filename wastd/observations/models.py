@@ -954,75 +954,24 @@ class Expedition(geo_models.Model):
             start_time__gte=self.start_time,
             end_time__lte=self.end_time)
 
+    @property
+    def encounters(self):
+        """Return the QuerySet of all Encounters within this Expedition."""
+        return Encounter.objects.filter(
+            where__coveredby=self.site.geom,
+            when__gte=self.start_time,
+            when__lte=self.end_time)
 
-# TODO delete - we use Survey instead
-# class SiteVisit(Expedition):
-#     """A visit to one site by a team of field workers collecting data."""
 
-#     source = models.CharField(
-#         max_length=300,
-#         verbose_name=_("Data Source"),
-#         default=SOURCE_DEFAULT,
-#         choices=SOURCE_CHOICES,
-#         help_text=_("Where was this record captured initially?"), )
-
-#     source_id = models.CharField(
-#         max_length=1000,
-#         blank=True, null=True,
-#         verbose_name=_("Source ID"),
-#         help_text=_("The ID of the start point in the original source, or "
-#                     "a newly allocated ID if left blank. Delete and save "
-#                     "to regenerate this ID."), )
-
-#     end_source_id = models.CharField(
-#         max_length=1000,
-#         blank=True, null=True,
-#         verbose_name=_("Source ID of end point"),
-#         help_text=_("The ID of the record in the original source, or "
-#                     "a newly allocated ID if left blank. Delete and save "
-#                     "to regenerate this ID."), )
-
-#     start_location = geo_models.PointField(
-#         srid=4326,
-#         blank=True, null=True,
-#         verbose_name=_("Start location"),
-#         help_text=_("The start location as point in WGS84"))
-
-#     end_location = geo_models.PointField(
-#         srid=4326,
-#         blank=True, null=True,
-#         verbose_name=_("End location"),
-#         help_text=_("The end location as point in WGS84"))
-
-#     transect = geo_models.LineStringField(
-#         srid=4326,
-#         blank=True, null=True,
-#         verbose_name=_("Transect line"),
-#         help_text=_("The surveyed path as LineString in WGS84, optional."))
-
-#     def __str__(self):
-#         """The unicode representation."""
-#         return "Site Visit {0} of {1} from {2} to {3}".format(
-#             self.pk,
-#             "unknown site" if not self.site else self.site.name,
-#             "na" if not self.started_on else self.started_on.isoformat(),
-#             "na" if not self.finished_on else self.finished_on.isoformat())
-
-#     @property
-#     def encounters(self):
-#         """Return the QuerySet of all Encounters within this SiteVisit."""
-#         return Encounter.objects.filter(
-#             where__contained=self.site.geom,
-#             when__gte=self.started_on,
-#             when__lte=self.finished_on)
-
-#     def claim_encounters(self):
-#         """Update Encounters within this SiteVisit with reference to self."""
-#         self.encounters.update(site_visit=self)
-
-#     def claim_end_points(self):
-#         """TODO Claim SiteVisitEnd."""
-#         pass
+@receiver(post_save, sender=Expedition)
+def expedition_post_save(sender, instance, *args, **kwargs):
+    """Expedition: Claim Surveys and Encounters."""
+    for s in instance.surveys:
+        s.expedition = instance
+        s.save()
+        for e in s.encounters:
+            e.expedition = instance
+            e.save()
 
 
 class FieldMediaAttachment(models.Model):
@@ -1399,6 +1348,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         self.save()
         logger.info(msg)
         return msg
+
 
 def guess_area(survey_instance):
     """Return the first Area containing the start_location or None."""
