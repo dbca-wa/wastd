@@ -918,6 +918,9 @@ class ExpeditionAdmin(admin.ModelAdmin):
     form = s2form(Expedition, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "area":
+            kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
 
 @admin.register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
