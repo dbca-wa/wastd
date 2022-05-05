@@ -38,7 +38,10 @@
       Lat {{ o.latitude|floatformat:"-4" }} Lon {{ o.longitude|floatformat:"-4" }}
       ({{ o.crs }}) &plusmn; {{ o.location_accuracy_m }} m WGS 84
 </div>
-
+<div class="row">
+  <span class="oi oi-shield" title="Owned by" aria-hidden="true"></span>
+  {% if object.expedition %} {{ object.expedition.owner }}{% else %}-{% endif %}
+</div>
 <!-- Observer/reporter -->
 <div class="row">
   <span class="oi oi-eye"></span>&nbsp;

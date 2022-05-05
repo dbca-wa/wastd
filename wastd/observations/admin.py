@@ -20,6 +20,7 @@ from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
 
 from wastd.observations.models import (
+    Expedition,
     AnimalEncounter,
     Area,
     DispatchRecord,
@@ -66,7 +67,6 @@ class AreaFilter(RelatedFieldListFilter):
 class SiteFilter(RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
         return field.get_choices(include_blank=False, limit_choices_to={'area_type': Area.AREATYPE_SITE})
-
 
 class MediaAttachmentInline(admin.TabularInline):
     """TabularInlineAdmin for MediaAttachment."""
@@ -831,10 +831,13 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         'end_comments',
         'status',
         'production',
+        'owner',
     )
     list_filter = (
+        'expedition__owner',
         ('area', AreaFilter),
         ('site', SiteFilter),
+        # ('owner', ExpeditionFilter),
         'reporter',
         'status',
         'production',
@@ -865,6 +868,9 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         (_('Time'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
              'fields': ('start_time', 'end_time',)}),
+        (_('Expedition'),
+            {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+             'fields': ('expedition', )}),     
         (_('Team'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
              'fields': ('start_comments', 'end_comments', 'reporter', 'team',
@@ -882,6 +888,14 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
             kwargs["queryset"] = get_user_model().objects.filter(is_active=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def owner(self, obj):
+        """Resolve owner."""
+        if obj.expedition:
+            return obj.expedition.owner
+        else:
+            return "-"
+    owner.short_description = 'Data Owner'
+
 
 @admin.register(Area)
 class AreaAdmin(admin.ModelAdmin):
@@ -891,6 +905,17 @@ class AreaAdmin(admin.ModelAdmin):
     list_filter = ("area_type", )
     search_fields = ("name__icontains", "w2_location_code__iexact", "w2_place_code__iexact",)
     form = s2form(Area, attrs=S2ATTRS)
+    formfield_overrides = FORMFIELD_OVERRIDES
+
+
+@admin.register(Expedition)
+class ExpeditionAdmin(admin.ModelAdmin):
+    """Expedition admin."""
+
+    list_display = ("area", "start_time", "end_time", "owner", )
+    list_filter = ("owner", "viewers")
+    search_fields = ("owner__name__icontains", )
+    form = s2form(Expedition, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
 
 
@@ -908,6 +933,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     date_hierarchy = 'when'
     # Filters for change_list
     list_filter = (
+        'expedition__owner',
         ('area', AreaFilter),
         ('site', SiteFilter),
         'status',
@@ -923,7 +949,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     FIRST_COLS = ('when', 'area', 'site', 'latitude', 'longitude',
                   'location_accuracy', 'location_accuracy_m', 'name_link')
     LAST_COLS = ('observer', 'reporter', 'source_display', 'source_id',
-                 'status', 'encounter_type')  # 'survey',
+                 'status', 'encounter_type', 'owner')  # 'survey',
     list_display = FIRST_COLS + LAST_COLS
     # Layout: save buttons also on top - overridden by Grapelli admin skin
     # save_on_top = True
@@ -935,14 +961,14 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # Performance
     # https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
     # #django.contrib.admin.ModelAdmin.list_select_related
-    list_select_related = ('area', 'site', 'survey', 'observer', 'reporter', )
+    list_select_related = ('area', 'site', 'survey', 'observer', 'reporter', 'expedition')
 
     # -------------------------------------------------------------------------
     # Change form
     # select2 widgets for searchable dropdowns
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ['area', 'site', 'survey', ]
+    autocomplete_fields = ['area', 'site', 'survey', 'expedition']
     # UserWidget excludes inactive users
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
@@ -959,6 +985,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                 'fields': (
                     'area',
                     'site',
+                    'expedition', 
                     'survey',
                     'where',
                     'location_accuracy',
@@ -1000,7 +1027,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         ).get_queryset(
             request
         ).prefetch_related(
-            'observer', 'reporter', 'area', 'site',
+            'observer', 'reporter', 'area', 'site', 'survey', 'expedition'
         )
 
     def name_link(self, obj):
@@ -1032,6 +1059,14 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         """Make encounter type readable."""
         return obj.get_encounter_type_display()
     encounter_type_display.short_description = 'Encounter Type'
+
+    def owner(self, obj):
+        """Resolve owner."""
+        if obj.expedition:
+            return obj.expedition.owner
+        else:
+            return "-"
+    owner.short_description = 'Data Owner'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """Restrict Area and Site options to Localities and Sites,
@@ -1147,7 +1182,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         ).get_queryset(
             request
         ).prefetch_related(
-            'observer', 'reporter', 'area', 'site',
+            'observer', 'reporter', 'area', 'site', 'survey', 'expedition',
             "site_of_first_sighting", "site_of_last_sighting",
         )
 
@@ -1280,51 +1315,51 @@ class LineTransectEncounterAdmin(EncounterAdmin):
         )
 
 
-@admin.register(LoggerEncounter)
-class LoggerEncounterAdmin(EncounterAdmin):
-    """Admin for LoggerEncounter. To be replaced with LoggerObservation."""
+# @admin.register(LoggerEncounter)
+# class LoggerEncounterAdmin(EncounterAdmin):
+#     """Admin for LoggerEncounter. To be replaced with LoggerObservation."""
 
-    form = s2form(LoggerEncounter, attrs=S2ATTRS)
-    list_display = EncounterAdmin.FIRST_COLS + (
-        'logger_type_display', 'deployment_status_display',
-        'logger_id', 'comments',
-    ) + EncounterAdmin.LAST_COLS
-    list_select_related = ('area', 'site', 'survey', )
-    list_filter = EncounterAdmin.list_filter + \
-        ('logger_type', 'deployment_status',)
-    search_fields = ('logger_id', 'source_id')
-    fieldsets = EncounterAdmin.fieldsets + (
-        ('Logger',
-            {
-                'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-                'fields': (
-                    'logger_type', 'deployment_status', 'logger_id', 'comments',)
-            }), )
-    inlines = [
-        MediaAttachmentInline,
-        TagObservationInline,
-        NestTagObservationInline,
-        TemperatureLoggerSettingsInline,
-        DispatchRecordInline,
-        TemperatureLoggerDeploymentInline,
-        CustomStateLogInline
-    ]
+#     form = s2form(LoggerEncounter, attrs=S2ATTRS)
+#     list_display = EncounterAdmin.FIRST_COLS + (
+#         'logger_type_display', 'deployment_status_display',
+#         'logger_id', 'comments',
+#     ) + EncounterAdmin.LAST_COLS
+#     list_select_related = ('area', 'site', 'survey', )
+#     list_filter = EncounterAdmin.list_filter + \
+#         ('logger_type', 'deployment_status',)
+#     search_fields = ('logger_id', 'source_id')
+#     fieldsets = EncounterAdmin.fieldsets + (
+#         ('Logger',
+#             {
+#                 'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+#                 'fields': (
+#                     'logger_type', 'deployment_status', 'logger_id', 'comments',)
+#             }), )
+#     inlines = [
+#         MediaAttachmentInline,
+#         TagObservationInline,
+#         NestTagObservationInline,
+#         TemperatureLoggerSettingsInline,
+#         DispatchRecordInline,
+#         TemperatureLoggerDeploymentInline,
+#         CustomStateLogInline
+#     ]
 
-    def get_queryset(self, request):
-        return super(
-            LoggerEncounterAdmin, self
-        ).get_queryset(
-            request
-        ).prefetch_related(
-            'observer', 'reporter', 'area', 'site',
-        )
+#     def get_queryset(self, request):
+#         return super(
+#             LoggerEncounterAdmin, self
+#         ).get_queryset(
+#             request
+#         ).prefetch_related(
+#             'observer', 'reporter', 'area', 'site',
+#         )
 
-    def logger_type_display(self, obj):
-        """Make habitat human readable."""
-        return obj.get_logger_type_display()
-    logger_type_display.short_description = 'Logger Type'
+#     def logger_type_display(self, obj):
+#         """Make habitat human readable."""
+#         return obj.get_logger_type_display()
+#     logger_type_display.short_description = 'Logger Type'
 
-    def deployment_status_display(self, obj):
-        """Make habitat human readable."""
-        return obj.get_deployment_status_display()
-    deployment_status_display.short_description = 'Deployment Status'
+#     def deployment_status_display(self, obj):
+#         """Make habitat human readable."""
+#         return obj.get_deployment_status_display()
+#     deployment_status_display.short_description = 'Deployment Status'

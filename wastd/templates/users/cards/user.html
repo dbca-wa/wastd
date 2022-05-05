@@ -36,6 +36,9 @@
       <span class="oi oi-comment-square" title="Role" aria-hidden="true"></span> {{ object.role|default:"-" }}
     </div>
     <div class="card-text">
+      <span class="oi oi-briefcase" title="Organisations" aria-hidden="true"></span> {{ object.organisation_set.all|default:"-" }}
+    </div>
+    <div class="card-text">
       <span class="oi oi-briefcase" title="Affiliation" aria-hidden="true"></span> {{ object.affiliation|default:"-" }}
     </div>
     <div class="card-text">

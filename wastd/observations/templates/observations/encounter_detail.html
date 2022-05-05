@@ -32,8 +32,16 @@
 
       <div class="card-body">
 
+        <span class="oi oi-shield" title="Owned by" aria-hidden="true"></span>
+        {% if object.expedition %} {{ object.expedition.owner }}{% else %}-{% endif %}
+
         <div class="card-text">
-            <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
+          <i class="oi oi-calendar" title="Expedition" aria-hidden="true"></i>&nbsp;
+          <a href="{{ object.expedition.get_absolute_url }}">{{ object.expedition }}</a>
+        </div>
+
+        <div class="card-text">
+            <i class="oi oi-calendar" title="Survey" aria-hidden="true"></i>&nbsp;
             <a href="{{ object.survey.get_absolute_url }}">{{ object.survey }}</a>
         </div>
 
