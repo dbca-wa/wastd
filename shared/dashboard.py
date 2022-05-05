@@ -34,11 +34,12 @@ class AdminDashboard(Dashboard):
             collapsible=True,
             children=[
                 modules.AppList(
-                    _('Places and Surveys'),
+                    _('Places, Expeditions, Surveys'),
                     column=2,
                     collapsible=True,
                     models=(
                         'wastd.observations.models.Area',
+                        'wastd.observations.models.Expedition',
                         'wastd.observations.models.Survey',
                     ),
                 ),
@@ -51,7 +52,7 @@ class AdminDashboard(Dashboard):
                         'wastd.observations.models.AnimalEncounter',
                         'wastd.observations.models.TurtleNestEncounter',
                         'wastd.observations.models.LineTransectEncounter',
-                        'wastd.observations.models.LoggerEncounter',
+                        # 'wastd.observations.models.LoggerEncounter',
                     ),
                 ),
                 modules.AppList(

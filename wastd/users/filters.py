@@ -24,7 +24,7 @@ class UserFilter(FilterSet):
     """
 
     class Meta:
-        """Options for EncounterFilter."""
+        """Options for UserFilter."""
         model = User
         filter_overrides = FILTER_OVERRIDES
         fields = [
@@ -36,6 +36,7 @@ class UserFilter(FilterSet):
             'email',
             'phone',
             'affiliation',
+            # 'organisations',
             'is_staff',
             'is_active',
             'date_joined',

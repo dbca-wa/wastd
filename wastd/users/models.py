@@ -27,15 +27,42 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    """Create API auth token."""
-    if created:
-        Token.objects.create(user=instance)
-        # try:
-            # Token.objects.create(user=instance)
-        # except:
-            # logger.warning("Failed to create Token for User {0}".format(instance))
+class Organisation(models.Model):
+    """An Organisation owns records and has Users.
+
+    * Organisations run Expeditions, which create Encounters and Surveys, which are owned by the Organisation.
+    * Users belong to a set of Organisations.
+    * The relationship of Users and Records (Enc, Surv) to Organsations can be used to manage data visibility and access.
+    * Equal to CodeLabelDescriptionMixin but cannot be imported here to avoid cyclic dependency.
+    """
+    code = models.SlugField(
+        max_length=500,
+        unique=True,
+        verbose_name=_("Code"),
+        help_text=_("A unique, url-safe code."),
+    )
+
+    label = models.CharField(
+        blank=True, null=True,
+        max_length=500,
+        verbose_name=_("Label"),
+        help_text=_("A human-readable, self-explanatory label."),
+    )
+
+    description = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Description"),
+        help_text=_("A comprehensive description."),
+    )
+
+    class Meta:
+        """Class opts."""
+
+        ordering = ["code", ]
+
+    def __str__(self):
+        """The full name."""
+        return self.label
 
 
 class User(AbstractUser):
@@ -74,7 +101,17 @@ class User(AbstractUser):
     affiliation = models.TextField(
         _("Affiliation"),
         blank=True,
-        help_text=_("The organisational affiliation of the user.")
+        help_text=_("The organisational affiliation of the user as free text.")
+    )
+
+    organisations = models.ManyToManyField(
+        Organisation,
+        related_name="members",
+        blank=True,
+        help_text=_(
+            "The organisational affiliation is used to control data visibility and access. "
+            "A user can be a member of several Organisations."
+        )
     )
 
     phone = PhoneNumberField(
@@ -110,7 +147,7 @@ class User(AbstractUser):
         )
 
     def save(self, *args, **kwargs):
-        """Guess site."""
+        """Save User."""
         if not self.password:
             self.set_unusable_password()
         if not self.date_joined:
@@ -181,3 +218,14 @@ class User(AbstractUser):
         """List url property. Default: app:model-list."""
         return reverse('{0}:{1}-list'.format(
             cls._meta.app_label, cls._meta.model_name))
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    """Create API auth token."""
+    if created:
+        Token.objects.create(user=instance)
+        # try:
+            # Token.objects.create(user=instance)
+        # except:
+            # logger.warning("Failed to create Token for User {0}".format(instance))

@@ -81,6 +81,7 @@ class SurveyFilter(FilterSet):
         model = Survey
         filter_overrides = FILTER_OVERRIDES
         fields = [
+            'expedition__owner', 
             'area',
             'site',
             'no_start',
@@ -144,6 +145,7 @@ class EncounterFilter(FilterSet):
         model = Encounter
         filter_overrides = FILTER_OVERRIDES
         fields = [
+            'expedition__owner',
             'area',
             'site',
             'when',

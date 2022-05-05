@@ -53,6 +53,21 @@ class AreaViewSet(ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
+
+class ExpeditionViewSet(BatchUpsertViewSet):
+    """Expedition ModelViewSet.
+
+    alt: BatchUpsertViewSet
+
+    All filters are available on all fields except location and team.
+    """
+    queryset = models.Expedition.objects.all().prefetch_related("owner", "viewers")
+    serializer_class = serializers.ExpeditionSerializer
+    # filter_class = ExpeditionFilter
+    pagination_class = MyGeoJsonPagination  # provides top level features
+    model = models.Expedition
+
+
 class SurveyFilter(FilterSet):
     """Survey Filter. All filter methods available on all fields except location and team.
 

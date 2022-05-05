@@ -128,7 +128,7 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
 
     def get_queryset(self):
         qs = super(SurveyList, self).get_queryset().prefetch_related(
-            "reporter", "site", "encounter_set",
+            "reporter", "site", "encounter_set", "expedition"
         ).order_by('-start_time')
         return SurveyFilter(self.request.GET, queryset=qs).qs
 

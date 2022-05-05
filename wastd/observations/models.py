@@ -23,6 +23,7 @@ actions:
 """
 import itertools
 import logging
+from tabnanny import verbose
 import urllib
 from datetime import timedelta
 from dateutil import parser as dateparser
@@ -56,7 +57,7 @@ from shared.models import (
 )
 from shared.utils import sanitize_tag_label
 
-from wastd.users.models import User
+from wastd.users.models import User, Organisation
 
 logger = logging.getLogger(__name__)
 
@@ -884,122 +885,144 @@ class SiteVisitStartEnd(geo_models.Model):
             self.datetime.isoformat())
 
 
-class Expedition(PolymorphicModel, geo_models.Model):
-    """An endeavour of a team to a location within a defined time range."""
+class Expedition(geo_models.Model):
+    """An endeavour of a team to a Locality within a defined time range.
+    
+    * Expeditions are owned by an Organisation.
+    * Expeditions own all Surveys and Encounters within its area and time range.
+    * Expeditions can nominate other Organisations as viewers of their data.
 
-    site = models.ForeignKey(
+    High level specs: https://github.com/dbca-wa/biosys-turtles/issues/81
+    """
+
+    area = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
         blank=True, null=True,
-        verbose_name=_("Surveyed area"),
+        verbose_name=_("Destination"),
         help_text=_("The entire surveyed area."), )
 
-    started_on = models.DateTimeField(
-        verbose_name=_("Site entered on"),
+    start_time = models.DateTimeField(
+        verbose_name=_("Expedition start"),
         blank=True, null=True,
-        help_text=_("The datetime of entering the site, shown as local time "
+        help_text=_("The Expedition start, shown as local time "
                     "(no daylight savings), stored as UTC."))
 
-    finished_on = models.DateTimeField(
-        verbose_name=_("Site left on"),
+    end_time = models.DateTimeField(
+        verbose_name=_("Expedition end"),
         blank=True, null=True,
-        help_text=_("The datetime of leaving the site, shown as local time "
+        help_text=_("The Expedition end, shown as local time "
                     "(no daylight savings), stored as UTC."))
 
     comments = models.TextField(
         verbose_name=_("Comments"),
         blank=True, null=True,
-        help_text=_("Describe any circumstances affecting data collection, "
-                    "e.g. days without surveys."), )
+        help_text=_("Comments about the Expedition."), )
 
     team = models.ManyToManyField(
         User,
+        blank=True,
         related_name="expedition_team")
 
-    def __str__(self):
-        """The unicode representation."""
-        return "Expedition {0} to {1} from {2} to {3}".format(
-            self.pk,
-            "unknown site" if not self.site else self.site.name,
-            "na" if not self.started_on else self.started_on.isoformat(),
-            "na" if not self.finished_on else self.finished_on.isoformat())
-
-    @property
-    def site_visits(self):
-        """Return a QuerySet of site visits."""
-        return SiteVisit.objects.filter(
-            site__geom__contained=self.site.geom,
-            started_on__gte=self.started_on,
-            finished_on__lte=self.finished_on)
-
-
-class SiteVisit(Expedition):
-    """A visit to one site by a team of field workers collecting data."""
-
-    source = models.CharField(
-        max_length=300,
-        verbose_name=_("Data Source"),
-        default=SOURCE_DEFAULT,
-        choices=SOURCE_CHOICES,
-        help_text=_("Where was this record captured initially?"), )
-
-    source_id = models.CharField(
-        max_length=1000,
+    owner = models.ForeignKey(
+        Organisation,
+        on_delete=models.SET_NULL,
         blank=True, null=True,
-        verbose_name=_("Source ID"),
-        help_text=_("The ID of the start point in the original source, or "
-                    "a newly allocated ID if left blank. Delete and save "
-                    "to regenerate this ID."), )
+        verbose_name=_("Owner"),
+        help_text=_("The organisation that ran this Expedition owns all records (Surveys and Encounters)."))
 
-    end_source_id = models.CharField(
-        max_length=1000,
-        blank=True, null=True,
-        verbose_name=_("Source ID of end point"),
-        help_text=_("The ID of the record in the original source, or "
-                    "a newly allocated ID if left blank. Delete and save "
-                    "to regenerate this ID."), )
-
-    start_location = geo_models.PointField(
-        srid=4326,
-        blank=True, null=True,
-        verbose_name=_("Start location"),
-        help_text=_("The start location as point in WGS84"))
-
-    end_location = geo_models.PointField(
-        srid=4326,
-        blank=True, null=True,
-        verbose_name=_("End location"),
-        help_text=_("The end location as point in WGS84"))
-
-    transect = geo_models.LineStringField(
-        srid=4326,
-        blank=True, null=True,
-        verbose_name=_("Transect line"),
-        help_text=_("The surveyed path as LineString in WGS84, optional."))
+    viewers = models.ManyToManyField(
+        Organisation,
+        related_name="shared_expeditions",
+        blank=True,
+        help_text=_("The nominated organisations are able to view the Expedition's records."))
 
     def __str__(self):
         """The unicode representation."""
-        return "Site Visit {0} of {1} from {2} to {3}".format(
-            self.pk,
-            "unknown site" if not self.site else self.site.name,
-            "na" if not self.started_on else self.started_on.isoformat(),
-            "na" if not self.finished_on else self.finished_on.isoformat())
+        return "{0} {1} {2}-{3}".format(
+            "-" if not self.owner else self.owner.label,
+            "-" if not self.area else self.area.name,
+            "na" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d"),
+            "na" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d")
+        )
 
     @property
-    def encounters(self):
-        """Return the QuerySet of all Encounters within this SiteVisit."""
-        return Encounter.objects.filter(
-            where__contained=self.site.geom,
-            when__gte=self.started_on,
-            when__lte=self.finished_on)
+    def surveys(self):
+        """Return a QuerySet of Surveys."""
+        return Survey.objects.filter(
+            site__geom__contained=self.area.geom,
+            start_time__gte=self.start_time,
+            end_time__lte=self.end_time)
 
-    def claim_encounters(self):
-        """Update Encounters within this SiteVisit with reference to self."""
-        self.encounters.update(site_visit=self)
 
-    def claim_end_points(self):
-        """TODO Claim SiteVisitEnd."""
-        pass
+# TODO delete - we use Survey instead
+# class SiteVisit(Expedition):
+#     """A visit to one site by a team of field workers collecting data."""
+
+#     source = models.CharField(
+#         max_length=300,
+#         verbose_name=_("Data Source"),
+#         default=SOURCE_DEFAULT,
+#         choices=SOURCE_CHOICES,
+#         help_text=_("Where was this record captured initially?"), )
+
+#     source_id = models.CharField(
+#         max_length=1000,
+#         blank=True, null=True,
+#         verbose_name=_("Source ID"),
+#         help_text=_("The ID of the start point in the original source, or "
+#                     "a newly allocated ID if left blank. Delete and save "
+#                     "to regenerate this ID."), )
+
+#     end_source_id = models.CharField(
+#         max_length=1000,
+#         blank=True, null=True,
+#         verbose_name=_("Source ID of end point"),
+#         help_text=_("The ID of the record in the original source, or "
+#                     "a newly allocated ID if left blank. Delete and save "
+#                     "to regenerate this ID."), )
+
+#     start_location = geo_models.PointField(
+#         srid=4326,
+#         blank=True, null=True,
+#         verbose_name=_("Start location"),
+#         help_text=_("The start location as point in WGS84"))
+
+#     end_location = geo_models.PointField(
+#         srid=4326,
+#         blank=True, null=True,
+#         verbose_name=_("End location"),
+#         help_text=_("The end location as point in WGS84"))
+
+#     transect = geo_models.LineStringField(
+#         srid=4326,
+#         blank=True, null=True,
+#         verbose_name=_("Transect line"),
+#         help_text=_("The surveyed path as LineString in WGS84, optional."))
+
+#     def __str__(self):
+#         """The unicode representation."""
+#         return "Site Visit {0} of {1} from {2} to {3}".format(
+#             self.pk,
+#             "unknown site" if not self.site else self.site.name,
+#             "na" if not self.started_on else self.started_on.isoformat(),
+#             "na" if not self.finished_on else self.finished_on.isoformat())
+
+#     @property
+#     def encounters(self):
+#         """Return the QuerySet of all Encounters within this SiteVisit."""
+#         return Encounter.objects.filter(
+#             where__contained=self.site.geom,
+#             when__gte=self.started_on,
+#             when__lte=self.finished_on)
+
+#     def claim_encounters(self):
+#         """Update Encounters within this SiteVisit with reference to self."""
+#         self.encounters.update(site_visit=self)
+
+#     def claim_end_points(self):
+#         """TODO Claim SiteVisitEnd."""
+#         pass
 
 
 class FieldMediaAttachment(models.Model):
@@ -1014,9 +1037,10 @@ class FieldMediaAttachment(models.Model):
 
     expedition = models.ForeignKey(
         Expedition,
-        on_delete=models.CASCADE,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
         verbose_name=_("Expedition"),
-        help_text=_("Surveys can be conducted during an expedition."), )
+        help_text=_("The linked Expedition."), )
 
     media_type = models.CharField(
         max_length=300,
@@ -1051,6 +1075,13 @@ class FieldMediaAttachment(models.Model):
 class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
+    expedition = models.ForeignKey(
+        Expedition,
+        null=True, blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Expedition"),
+        help_text=_("The linked Expedition."), )
+
     source = models.CharField(
         max_length=300,
         verbose_name=_("Data Source"),
@@ -1082,7 +1113,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         Area,
         on_delete=models.SET_NULL,
         blank=True, null=True,
-        verbose_name=_("Surveyed site"),
+        verbose_name=_("Surveyed Site"),
         help_text=_("The surveyed site, if known."), )
 
     transect = geo_models.LineStringField(
@@ -1754,6 +1785,12 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         ENCOUNTER_LOGGER: 'orange',
         ENCOUNTER_OTHER: 'purple'
     }
+    expedition = models.ForeignKey(
+        Expedition,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Expedition"),
+        help_text=_("The Expedition during which this encounter happened, if known."), )
 
     survey = models.ForeignKey(
         Survey,

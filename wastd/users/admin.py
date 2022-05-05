@@ -9,9 +9,21 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.shortcuts import render
 
-from .models import User
+from .models import User, Organisation
 
 logger = logging.getLogger(__name__)
+
+
+@admin.register(Organisation)
+class OrganisationAdmin(admin.ModelAdmin):
+    """Organisation admin."""
+
+    list_display = ("code", "label", "description" )
+    # list_filter = ("owner", "viewers")
+    search_fields = ("label__icontains", "description__icontains", )
+    # form = s2form(Organisation, attrs=S2ATTRS)
+    # formfield_overrides = FORMFIELD_OVERRIDES
+
 
 class MyUserChangeForm(UserChangeForm):
 
@@ -43,17 +55,26 @@ class MyUserAdmin(AuthUserAdmin):
     add_form = MyUserCreationForm
     fieldsets = (
         ("User Profile",
-            {"fields": ("name", "nickname", "aliases", "role", "affiliation", "phone", "alive")}),
+            {"fields": (
+                "name", 
+                "nickname", 
+                "aliases", 
+                "role", 
+                "affiliation", 
+                "organisations", 
+                "phone", 
+                "alive")}),
     ) + AuthUserAdmin.fieldsets
-    list_filter = ("is_superuser", "is_staff", "is_active", "alive")
+    list_filter = ("is_superuser", "is_staff", "is_active", "alive",)
     list_display = (
         "username",
+        "email",
         "name",
         "nickname",
         "aliases",
+        # "organisations",
         "role",
         "phone",
-        "email",
         "is_superuser",
         "is_staff",
         "is_active",
@@ -69,3 +90,16 @@ class MyUserAdmin(AuthUserAdmin):
         "email__icontains",
         "phone__icontains"
     ]
+    readonly_fields = [
+        "organisations",
+        "is_superuser",
+        "is_staff",
+        ]
+
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_staff:
+            if request.user.is_superuser:
+                return []
+            else:
+                return [f.name for f in self.model._meta.fields]
