@@ -939,7 +939,7 @@ class Expedition(geo_models.Model):
 
     def __str__(self):
         """The unicode representation."""
-        return "{0} {1} {2}-{3}".format(
+        return "{0} {1} {2} to {3}".format(
             "-" if not self.owner else self.owner.label,
             "-" if not self.area else self.area.name,
             "na" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d"),
@@ -1193,7 +1193,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
 
     @property
     def make_label(self):
-        return "Survey {0} of {1} from {2} {3}-{4}".format(
+        return "Survey {0} of {1} from {2} {3} to {4}".format(
             self.pk,
             "unknown site" if not self.site else self.site.name,
             "na" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d "),
