@@ -27,7 +27,6 @@ from wastd.observations.models import (  # noqa
     ManagementAction,
     MediaAttachment,
     NestTagObservation,
-    SiteVisit,
     Survey,
     TagObservation,
     TemperatureLoggerDeployment,
