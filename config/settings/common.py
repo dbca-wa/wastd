@@ -41,10 +41,12 @@ env = environ.Env(
     WASTD_RELEASE=(str, '0.0.1'),
     ENABLE_AUTH2_GROUPS=(bool, True),
     LOCAL_USERGROUPS=(list, ["data viewer", "data curator", "data custodian", "data entry", "api"]),
+    INTERNAL_EMAIL_SUFFIXES=(list, ["@dbca.wa.gov.au", ]),
     ALLOWED_EMAIL_SUFFIXES=(list, ["@dbca.wa.gov.au", ]),
 )
 
 ENABLE_AUTH2_GROUPS = env('ENABLE_AUTH2_GROUPS')
+INTERNAL_EMAIL_SUFFIXES=env('INTERNAL_EMAIL_SUFFIXES')
 LOCAL_USERGROUPS = env('LOCAL_USERGROUPS')
 WASTD_RELEASE = env('WASTD_RELEASE')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
