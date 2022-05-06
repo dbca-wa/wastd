@@ -21,3 +21,23 @@ Data curators will be able to access the data curation and QA portal.
 Data analysts can find instructions how to access and authenticate against the API on their profile page.
 
 More fine-grained permission management will be added as the need arises.
+
+
+Managing access
+===============
+
+Add a User to Group "data viewers" to give them initial access to WAStD,
+and add the User to their Organisation to give them visibility to all data owned by this or shared with this Organisation.
+Users can be part of several Organisations, although most will belong to exactly one.
+
+
+Bulk updates run by an admin on the ``./manage.py shell_plus`` on the server::
+    # Add active users with a DBCA email who have logged into WAStD in the past to Group "DBCA"
+    # This gives them access to DBCA data
+    dbca = Organisation.objects.get(code="dbca")
+    dv = Group.objects.get(name="data viewer")
+    [[u.organisations.add(dbca), u.groups.add(dv)] for u in User.objects.filter(email__icontains="@dbca.wa.gov.au", is_active=True).exclude(last_login=None)]
+
+    # Add active users who have logged into WAStD in the past to Group "data viewers"
+    # This gives them access to WAStD
+    [u.groups.add(dv) for u in User.objects.exclude(last_login=None).filter(is_active=True)]

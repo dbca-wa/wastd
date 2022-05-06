@@ -100,6 +100,7 @@
 <span class="kn">from</span> <span class="nn">reversion.admin</span> <span class="kn">import</span> <span class="n">VersionAdmin</span>
 
 <span class="kn">from</span> <span class="nn">wastd.observations.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Expedition</span><span class="p">,</span>
     <span class="n">AnimalEncounter</span><span class="p">,</span>
     <span class="n">Area</span><span class="p">,</span>
     <span class="n">DispatchRecord</span><span class="p">,</span>
@@ -146,7 +147,6 @@
 <div class="viewcode-block" id="SiteFilter"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.SiteFilter">[docs]</a><span class="k">class</span> <span class="nc">SiteFilter</span><span class="p">(</span><span class="n">RelatedFieldListFilter</span><span class="p">):</span>
 <div class="viewcode-block" id="SiteFilter.field_choices"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.SiteFilter.field_choices">[docs]</a>    <span class="k">def</span> <span class="nf">field_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">model_admin</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">field</span><span class="o">.</span><span class="n">get_choices</span><span class="p">(</span><span class="n">include_blank</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit_choices_to</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;area_type&#39;</span><span class="p">:</span> <span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">})</span></div></div>
-
 
 <div class="viewcode-block" id="MediaAttachmentInline"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.MediaAttachmentInline">[docs]</a><span class="k">class</span> <span class="nc">MediaAttachmentInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">TabularInline</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;TabularInlineAdmin for MediaAttachment.&quot;&quot;&quot;</span>
@@ -911,10 +911,13 @@
         <span class="s1">&#39;end_comments&#39;</span><span class="p">,</span>
         <span class="s1">&#39;status&#39;</span><span class="p">,</span>
         <span class="s1">&#39;production&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;owner&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;expedition__owner&#39;</span><span class="p">,</span>
         <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">AreaFilter</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="n">SiteFilter</span><span class="p">),</span>
+        <span class="c1"># (&#39;owner&#39;, ExpeditionFilter),</span>
         <span class="s1">&#39;reporter&#39;</span><span class="p">,</span>
         <span class="s1">&#39;status&#39;</span><span class="p">,</span>
         <span class="s1">&#39;production&#39;</span><span class="p">,</span>
@@ -945,6 +948,9 @@
         <span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">),</span>
             <span class="p">{</span><span class="s1">&#39;classes&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;grp-collapse&#39;</span><span class="p">,</span> <span class="s1">&#39;grp-open&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">,</span> <span class="s1">&#39;extrapretty&#39;</span><span class="p">),</span>
              <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;start_time&#39;</span><span class="p">,</span> <span class="s1">&#39;end_time&#39;</span><span class="p">,)}),</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Expedition&#39;</span><span class="p">),</span>
+            <span class="p">{</span><span class="s1">&#39;classes&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;grp-collapse&#39;</span><span class="p">,</span> <span class="s1">&#39;grp-open&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">,</span> <span class="s1">&#39;extrapretty&#39;</span><span class="p">),</span>
+             <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;expedition&#39;</span><span class="p">,</span> <span class="p">)}),</span>     
         <span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Team&#39;</span><span class="p">),</span>
             <span class="p">{</span><span class="s1">&#39;classes&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;grp-collapse&#39;</span><span class="p">,</span> <span class="s1">&#39;grp-open&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">,</span> <span class="s1">&#39;extrapretty&#39;</span><span class="p">),</span>
              <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;start_comments&#39;</span><span class="p">,</span> <span class="s1">&#39;end_comments&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;team&#39;</span><span class="p">,</span>
@@ -960,7 +966,15 @@
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;queryset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_SITE</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">db_field</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;reporter&quot;</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;queryset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_user_model</span><span class="p">()</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">formfield_for_foreignkey</span><span class="p">(</span><span class="n">db_field</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">formfield_for_foreignkey</span><span class="p">(</span><span class="n">db_field</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurveyAdmin.owner"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.SurveyAdmin.owner">[docs]</a>    <span class="k">def</span> <span class="nf">owner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resolve owner.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">expedition</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">expedition</span><span class="o">.</span><span class="n">owner</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;-&quot;</span></div>
+    <span class="n">owner</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Data Owner&#39;</span></div>
 
 
 <div class="viewcode-block" id="AreaAdmin"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.AreaAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Area</span><span class="p">)</span>
@@ -973,6 +987,20 @@
     <span class="n">form</span> <span class="o">=</span> <span class="n">s2form</span><span class="p">(</span><span class="n">Area</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">S2ATTRS</span><span class="p">)</span>
     <span class="n">formfield_overrides</span> <span class="o">=</span> <span class="n">FORMFIELD_OVERRIDES</span></div>
 
+
+<div class="viewcode-block" id="ExpeditionAdmin"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.ExpeditionAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Expedition</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ExpeditionAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Expedition admin.&quot;&quot;&quot;</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;start_time&quot;</span><span class="p">,</span> <span class="s2">&quot;end_time&quot;</span><span class="p">,</span> <span class="s2">&quot;owner&quot;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">,</span> <span class="s2">&quot;viewers&quot;</span><span class="p">)</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;owner__name__icontains&quot;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">s2form</span><span class="p">(</span><span class="n">Expedition</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">S2ATTRS</span><span class="p">)</span>
+    <span class="n">formfield_overrides</span> <span class="o">=</span> <span class="n">FORMFIELD_OVERRIDES</span>
+
+<div class="viewcode-block" id="ExpeditionAdmin.formfield_for_foreignkey"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.ExpeditionAdmin.formfield_for_foreignkey">[docs]</a>    <span class="k">def</span> <span class="nf">formfield_for_foreignkey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_field</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db_field</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;area&quot;</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;queryset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Area</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">area_type</span><span class="o">=</span><span class="n">Area</span><span class="o">.</span><span class="n">AREATYPE_LOCALITY</span><span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="EncounterAdmin"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.EncounterAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Encounter</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">EncounterAdmin</span><span class="p">(</span><span class="n">FSMTransitionMixin</span><span class="p">,</span> <span class="n">VersionAdmin</span><span class="p">):</span>
@@ -988,6 +1016,7 @@
     <span class="n">date_hierarchy</span> <span class="o">=</span> <span class="s1">&#39;when&#39;</span>
     <span class="c1"># Filters for change_list</span>
     <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;expedition__owner&#39;</span><span class="p">,</span>
         <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">AreaFilter</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="n">SiteFilter</span><span class="p">),</span>
         <span class="s1">&#39;status&#39;</span><span class="p">,</span>
@@ -1003,7 +1032,7 @@
     <span class="n">FIRST_COLS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;when&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span>
                   <span class="s1">&#39;location_accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;location_accuracy_m&#39;</span><span class="p">,</span> <span class="s1">&#39;name_link&#39;</span><span class="p">)</span>
     <span class="n">LAST_COLS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;source_display&#39;</span><span class="p">,</span> <span class="s1">&#39;source_id&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;encounter_type&#39;</span><span class="p">)</span>  <span class="c1"># &#39;survey&#39;,</span>
+                 <span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;encounter_type&#39;</span><span class="p">,</span> <span class="s1">&#39;owner&#39;</span><span class="p">)</span>  <span class="c1"># &#39;survey&#39;,</span>
     <span class="n">list_display</span> <span class="o">=</span> <span class="n">FIRST_COLS</span> <span class="o">+</span> <span class="n">LAST_COLS</span>
     <span class="c1"># Layout: save buttons also on top - overridden by Grapelli admin skin</span>
     <span class="c1"># save_on_top = True</span>
@@ -1015,14 +1044,14 @@
     <span class="c1"># Performance</span>
     <span class="c1"># https://docs.djangoproject.com/en/1.11/ref/contrib/admin/</span>
     <span class="c1"># #django.contrib.admin.ModelAdmin.list_select_related</span>
-    <span class="n">list_select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">list_select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;expedition&#39;</span><span class="p">)</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Change form</span>
     <span class="c1"># select2 widgets for searchable dropdowns</span>
     <span class="n">form</span> <span class="o">=</span> <span class="n">s2form</span><span class="p">(</span><span class="n">Encounter</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">S2ATTRS</span><span class="p">)</span>
     <span class="n">formfield_overrides</span> <span class="o">=</span> <span class="n">FORMFIELD_OVERRIDES</span>
-    <span class="n">autocomplete_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="p">]</span>
+    <span class="n">autocomplete_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="s1">&#39;expedition&#39;</span><span class="p">]</span>
     <span class="c1"># UserWidget excludes inactive users</span>
     <span class="n">observer</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">UserWidget</span><span class="p">())</span>
     <span class="n">reporter</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">UserWidget</span><span class="p">())</span>
@@ -1039,6 +1068,7 @@
                 <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span>
                     <span class="s1">&#39;area&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;site&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;expedition&#39;</span><span class="p">,</span> 
                     <span class="s1">&#39;survey&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;where&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;location_accuracy&#39;</span><span class="p">,</span>
@@ -1080,7 +1110,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">(</span>
             <span class="n">request</span>
         <span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
-            <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="s1">&#39;expedition&#39;</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="EncounterAdmin.name_link"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.EncounterAdmin.name_link">[docs]</a>    <span class="k">def</span> <span class="nf">name_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -1112,6 +1142,14 @@
         <span class="sd">&quot;&quot;&quot;Make encounter type readable.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_encounter_type_display</span><span class="p">()</span></div>
     <span class="n">encounter_type_display</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Encounter Type&#39;</span>
+
+<div class="viewcode-block" id="EncounterAdmin.owner"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.EncounterAdmin.owner">[docs]</a>    <span class="k">def</span> <span class="nf">owner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resolve owner.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">expedition</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">expedition</span><span class="o">.</span><span class="n">owner</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;-&quot;</span></div>
+    <span class="n">owner</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Data Owner&#39;</span>
 
 <div class="viewcode-block" id="EncounterAdmin.formfield_for_foreignkey"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.EncounterAdmin.formfield_for_foreignkey">[docs]</a>    <span class="k">def</span> <span class="nf">formfield_for_foreignkey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_field</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Restrict Area and Site options to Localities and Sites,</span>
@@ -1227,7 +1265,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">(</span>
             <span class="n">request</span>
         <span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
-            <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="s1">&#39;expedition&#39;</span><span class="p">,</span>
             <span class="s2">&quot;site_of_first_sighting&quot;</span><span class="p">,</span> <span class="s2">&quot;site_of_last_sighting&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -1360,54 +1398,54 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="LoggerEncounterAdmin"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.LoggerEncounterAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">LoggerEncounter</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">LoggerEncounterAdmin</span><span class="p">(</span><span class="n">EncounterAdmin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Admin for LoggerEncounter. To be replaced with LoggerObservation.&quot;&quot;&quot;</span>
+<span class="c1"># @admin.register(LoggerEncounter)</span>
+<span class="c1"># class LoggerEncounterAdmin(EncounterAdmin):</span>
+<span class="c1">#     &quot;&quot;&quot;Admin for LoggerEncounter. To be replaced with LoggerObservation.&quot;&quot;&quot;</span>
 
-    <span class="n">form</span> <span class="o">=</span> <span class="n">s2form</span><span class="p">(</span><span class="n">LoggerEncounter</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">S2ATTRS</span><span class="p">)</span>
-    <span class="n">list_display</span> <span class="o">=</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">FIRST_COLS</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="s1">&#39;logger_type_display&#39;</span><span class="p">,</span> <span class="s1">&#39;deployment_status_display&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;logger_id&#39;</span><span class="p">,</span> <span class="s1">&#39;comments&#39;</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">+</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">LAST_COLS</span>
-    <span class="n">list_select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="s1">&#39;survey&#39;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">list_filter</span> <span class="o">=</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">list_filter</span> <span class="o">+</span> \
-        <span class="p">(</span><span class="s1">&#39;logger_type&#39;</span><span class="p">,</span> <span class="s1">&#39;deployment_status&#39;</span><span class="p">,)</span>
-    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;logger_id&#39;</span><span class="p">,</span> <span class="s1">&#39;source_id&#39;</span><span class="p">)</span>
-    <span class="n">fieldsets</span> <span class="o">=</span> <span class="n">EncounterAdmin</span><span class="o">.</span><span class="n">fieldsets</span> <span class="o">+</span> <span class="p">(</span>
-        <span class="p">(</span><span class="s1">&#39;Logger&#39;</span><span class="p">,</span>
-            <span class="p">{</span>
-                <span class="s1">&#39;classes&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;grp-collapse&#39;</span><span class="p">,</span> <span class="s1">&#39;grp-open&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">,</span> <span class="s1">&#39;extrapretty&#39;</span><span class="p">),</span>
-                <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="s1">&#39;logger_type&#39;</span><span class="p">,</span> <span class="s1">&#39;deployment_status&#39;</span><span class="p">,</span> <span class="s1">&#39;logger_id&#39;</span><span class="p">,</span> <span class="s1">&#39;comments&#39;</span><span class="p">,)</span>
-            <span class="p">}),</span> <span class="p">)</span>
-    <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">MediaAttachmentInline</span><span class="p">,</span>
-        <span class="n">TagObservationInline</span><span class="p">,</span>
-        <span class="n">NestTagObservationInline</span><span class="p">,</span>
-        <span class="n">TemperatureLoggerSettingsInline</span><span class="p">,</span>
-        <span class="n">DispatchRecordInline</span><span class="p">,</span>
-        <span class="n">TemperatureLoggerDeploymentInline</span><span class="p">,</span>
-        <span class="n">CustomStateLogInline</span>
-    <span class="p">]</span>
+<span class="c1">#     form = s2form(LoggerEncounter, attrs=S2ATTRS)</span>
+<span class="c1">#     list_display = EncounterAdmin.FIRST_COLS + (</span>
+<span class="c1">#         &#39;logger_type_display&#39;, &#39;deployment_status_display&#39;,</span>
+<span class="c1">#         &#39;logger_id&#39;, &#39;comments&#39;,</span>
+<span class="c1">#     ) + EncounterAdmin.LAST_COLS</span>
+<span class="c1">#     list_select_related = (&#39;area&#39;, &#39;site&#39;, &#39;survey&#39;, )</span>
+<span class="c1">#     list_filter = EncounterAdmin.list_filter + \</span>
+<span class="c1">#         (&#39;logger_type&#39;, &#39;deployment_status&#39;,)</span>
+<span class="c1">#     search_fields = (&#39;logger_id&#39;, &#39;source_id&#39;)</span>
+<span class="c1">#     fieldsets = EncounterAdmin.fieldsets + (</span>
+<span class="c1">#         (&#39;Logger&#39;,</span>
+<span class="c1">#             {</span>
+<span class="c1">#                 &#39;classes&#39;: (&#39;grp-collapse&#39;, &#39;grp-open&#39;, &#39;wide&#39;, &#39;extrapretty&#39;),</span>
+<span class="c1">#                 &#39;fields&#39;: (</span>
+<span class="c1">#                     &#39;logger_type&#39;, &#39;deployment_status&#39;, &#39;logger_id&#39;, &#39;comments&#39;,)</span>
+<span class="c1">#             }), )</span>
+<span class="c1">#     inlines = [</span>
+<span class="c1">#         MediaAttachmentInline,</span>
+<span class="c1">#         TagObservationInline,</span>
+<span class="c1">#         NestTagObservationInline,</span>
+<span class="c1">#         TemperatureLoggerSettingsInline,</span>
+<span class="c1">#         DispatchRecordInline,</span>
+<span class="c1">#         TemperatureLoggerDeploymentInline,</span>
+<span class="c1">#         CustomStateLogInline</span>
+<span class="c1">#     ]</span>
 
-<div class="viewcode-block" id="LoggerEncounterAdmin.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.LoggerEncounterAdmin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span>
-            <span class="n">LoggerEncounterAdmin</span><span class="p">,</span> <span class="bp">self</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">(</span>
-            <span class="n">request</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
-            <span class="s1">&#39;observer&#39;</span><span class="p">,</span> <span class="s1">&#39;reporter&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">,</span>
-        <span class="p">)</span></div>
+<span class="c1">#     def get_queryset(self, request):</span>
+<span class="c1">#         return super(</span>
+<span class="c1">#             LoggerEncounterAdmin, self</span>
+<span class="c1">#         ).get_queryset(</span>
+<span class="c1">#             request</span>
+<span class="c1">#         ).prefetch_related(</span>
+<span class="c1">#             &#39;observer&#39;, &#39;reporter&#39;, &#39;area&#39;, &#39;site&#39;,</span>
+<span class="c1">#         )</span>
 
-<div class="viewcode-block" id="LoggerEncounterAdmin.logger_type_display"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.LoggerEncounterAdmin.logger_type_display">[docs]</a>    <span class="k">def</span> <span class="nf">logger_type_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Make habitat human readable.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_logger_type_display</span><span class="p">()</span></div>
-    <span class="n">logger_type_display</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Logger Type&#39;</span>
+<span class="c1">#     def logger_type_display(self, obj):</span>
+<span class="c1">#         &quot;&quot;&quot;Make habitat human readable.&quot;&quot;&quot;</span>
+<span class="c1">#         return obj.get_logger_type_display()</span>
+<span class="c1">#     logger_type_display.short_description = &#39;Logger Type&#39;</span>
 
-<div class="viewcode-block" id="LoggerEncounterAdmin.deployment_status_display"><a class="viewcode-back" href="../../../developers.html#wastd.observations.admin.LoggerEncounterAdmin.deployment_status_display">[docs]</a>    <span class="k">def</span> <span class="nf">deployment_status_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Make habitat human readable.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_deployment_status_display</span><span class="p">()</span></div>
-    <span class="n">deployment_status_display</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">&#39;Deployment Status&#39;</span></div>
+<span class="c1">#     def deployment_status_display(self, obj):</span>
+<span class="c1">#         &quot;&quot;&quot;Make habitat human readable.&quot;&quot;&quot;</span>
+<span class="c1">#         return obj.get_deployment_status_display()</span>
+<span class="c1">#     deployment_status_display.short_description = &#39;Deployment Status&#39;</span>
 </pre></div>
 
            </div>
