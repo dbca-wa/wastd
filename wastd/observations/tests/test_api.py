@@ -35,7 +35,6 @@ class EncounterSerializerTests(TestCase):
                 'animalencounter',
                 'turtlenestencounter',
                 'linetransectencounter',
-                'loggerencounter'
         ]:
             url = reverse('api:{}-list'.format(i))
             resp = self.client.get(url, {'format': 'json'})
