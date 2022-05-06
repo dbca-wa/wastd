@@ -29,7 +29,7 @@ from wastd.observations.models import (
     FieldMediaAttachment,
     HatchlingMorphometricObservation,
     LineTransectEncounter,
-    LoggerEncounter,
+    # LoggerEncounter,
     ManagementAction,
     MediaAttachment,
     NestTagObservation,

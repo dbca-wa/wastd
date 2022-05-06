@@ -18,6 +18,6 @@ urlpatterns = [
     path('turtle-nest-encounters/', views.TurtleNestEncounterList.as_view(), name='turtlenestencounter-list'),
     path('line-transect-encounters/<int:pk>/', views.LineTransectEncounterDetail.as_view(), name='linetransectencounter-detail'),
     path('line-transect-encounters/', views.LineTransectEncounterList.as_view(), name='linetransectencounter-list'),
-    path('logger-encounters/<int:pk>/', views.LoggerEncounterDetail.as_view(), name='loggerencounter-detail'),
-    path('logger-encounters/', views.LoggerEncounterList.as_view(), name='loggerencounter-list'),
+    # path('logger-encounters/<int:pk>/', views.LoggerEncounterDetail.as_view(), name='loggerencounter-detail'),
+    # path('logger-encounters/', views.LoggerEncounterList.as_view(), name='loggerencounter-list'),
 ]

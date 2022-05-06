@@ -20,7 +20,7 @@ from wastd.observations.models import (
     Encounter,
     AnimalEncounter,
     TurtleNestEncounter,
-    LoggerEncounter,
+    # LoggerEncounter,
     LineTransectEncounter
 )
 
@@ -205,16 +205,16 @@ class TurtleNestEncounterFilter(EncounterFilter):
         ]
 
 
-class LoggerEncounterFilter(EncounterFilter):
+# class LoggerEncounterFilter(EncounterFilter):
 
-    class Meta(EncounterFilter.Meta):
+#     class Meta(EncounterFilter.Meta):
 
-        model = LoggerEncounter
-        fields = EncounterFilter._meta.fields + [
-            'logger_type',
-            'deployment_status',
-            'logger_id',
-        ]
+#         model = LoggerEncounter
+#         fields = EncounterFilter._meta.fields + [
+#             'logger_type',
+#             'deployment_status',
+#             'logger_id',
+#         ]
 
 
 class LineTransectEncounterFilter(EncounterFilter):

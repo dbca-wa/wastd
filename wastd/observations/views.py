@@ -24,13 +24,13 @@ from wastd.observations.filters import (
     AnimalEncounterFilter,
     TurtleNestEncounterFilter,
     LineTransectEncounterFilter,
-    LoggerEncounterFilter
+    # LoggerEncounterFilter
 )
 from wastd.observations.forms import (
     EncounterListFormHelper,
     AnimalEncounterForm,
     AnimalEncounterListFormHelper,
-    FlipperTagObservationFormSet
+    # FlipperTagObservationFormSet
 )
 from wastd.observations.models import (
     Survey,
@@ -47,7 +47,7 @@ from wastd.observations.resources import (
     AnimalEncounterResource,
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
-    LoggerEncounterResource
+    # LoggerEncounterResource
 )
 
 from wastd.observations import admin
@@ -440,34 +440,34 @@ class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 
 # -----------------------------------------------------------------------------#
 # LoggerEncounter
-class LoggerEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
-    model = LoggerEncounter
-    template_name = 'pages/default_list.html'
-    paginate_by = 20
-    filter_class = LoggerEncounterFilter
-    resource_class = LoggerEncounterResource
+# class LoggerEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+#     model = LoggerEncounter
+#     template_name = 'pages/default_list.html'
+#     paginate_by = 20
+#     filter_class = LoggerEncounterFilter
+#     resource_class = LoggerEncounterResource
 
-    def get_context_data(self, **kwargs):
-        context = super(LoggerEncounterList, self).get_context_data(**kwargs)
-        context['list_filter'] = LoggerEncounterFilter(
-            self.request.GET, queryset=self.get_queryset()
-        )
-        context['model_admin'] = admin.LoggerEncounterAdmin
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super(LoggerEncounterList, self).get_context_data(**kwargs)
+#         context['list_filter'] = LoggerEncounterFilter(
+#             self.request.GET, queryset=self.get_queryset()
+#         )
+#         context['model_admin'] = admin.LoggerEncounterAdmin
+#         return context
 
-    def get_queryset(self):
-        qs = super(LoggerEncounterList, self).get_queryset().prefetch_related(
-            "observer", "reporter", "area", "site").order_by('-when')
-        return LoggerEncounterFilter(self.request.GET, queryset=qs).qs
+#     def get_queryset(self):
+#         qs = super(LoggerEncounterList, self).get_queryset().prefetch_related(
+#             "observer", "reporter", "area", "site").order_by('-when')
+#         return LoggerEncounterFilter(self.request.GET, queryset=qs).qs
 
 
-class LoggerEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
-    model = LoggerEncounter
+# class LoggerEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
+#     model = LoggerEncounter
 
-    def get_context_data(self, **kwargs):
-        data = super(LoggerEncounterDetail, self).get_context_data(**kwargs)
-        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
-        return data
+#     def get_context_data(self, **kwargs):
+#         data = super(LoggerEncounterDetail, self).get_context_data(**kwargs)
+#         # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+#         return data
 
 
 # Django-Rest-Swagger View ---------------------------------------------------#
